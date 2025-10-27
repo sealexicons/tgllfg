@@ -1,0 +1,48 @@
+# .gitignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+*.pyd
+*.dylib
+
+# Packaging / build artifacts
+build/
+dist/
+*.whl
+
+# Hatch / hatchling
+.hatch/
+.hatch-venv/
+.hatch/*
+
+# Virtualenvs commonly created by hatch or locally
+.venv/
+
+# Testing / coverage / caches
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.cache/
+
+# Environment files
+.env
+.env.*
+
+# Editor/OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Miscellaneous
+*~
+*.bak
+*.log
