@@ -33,21 +33,29 @@ class Grammar:
             ["VP_PV"],
             ["(↑)=↓1"]
         ))
+
         R.append(Rule(
             "VP_PV",
             ["V[VOICE=PV]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
             [
-              "(↑ PRED) = ↓1 PRED",
-              "(↑ SUBJ) = ↓3",           # NOM → SUBJ (patient pivot)
-              "(↑ OBL-AG) = ↓2"          # genitive agent as oblique/by-phrase
-            ]
+                "(↑ PRED) = ↓1 PRED",
+                "(↑ VOICE) = ↓1 VOICE",    # voice feature from verb
+                "(↑ SUBJ) = ↓3",           # NOM → SUBJ (patient pivot)
+                "(↑ OBL-AG) = ↓2",         # genitive agent as oblique/by-phrase
+            ],
         ))
 
         # Actor Voice intransitive: V NP(NOM actor)
         R.append(Rule(
             "S_AV",
-            ["V[VOICE=AV]","NP[CASE=NOM]"],
-            ["(↑ PRED) = ↓1 PRED", "(↑ SUBJ) = ↓2"]
+            ["V[VOICE=AV]", "NP[CASE=NOM]"],
+            [
+                "(↑ PRED) = ↓1 PRED",
+                "(↑ VOICE) = ↓1 VOICE",    # voice feature from verb
+                "(↑ ASPECT) = ↓1 ASPECT",  # aspect feature from verb
+                "(↑ MOOD) = ↓1 MOOD",      # aspect feature from verb
+                "(↑ SUBJ) = ↓2",
+            ],
         ))
 
         return Grammar(R)
