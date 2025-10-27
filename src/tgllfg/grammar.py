@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass
 from typing import Sequence
-from . import CNode
 
 @dataclass
 class Rule:

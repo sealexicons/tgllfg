@@ -9,7 +9,6 @@ from .earley import parse_with_annotations
 from .unify import build_f_structure
 from .lmt import apply_lmt
 from .fs_checks import lfg_well_formed
-from .renderers import render_c, render_f, render_a
 
 def parse_text(text: str):
     # 1) tokenize & clitic handling
