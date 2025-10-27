@@ -40,7 +40,7 @@ dependencies = [
 check = "ruff check . && mypy --install-types --non-interactive {args:src/tgllfg tests}"
 demo = "python -m tgllfg.examples.demo"
 lint = "ruff check ."
-test = "pytest -q"
+test = "pytest"
 types = "mypy --install-types --non-interactive {args:src/tgllfg tests}"
 
 [tool.coverage.run]

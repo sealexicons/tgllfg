@@ -1,4 +1,4 @@
-# tagalog_lfg/lmt.py
+# tgllfg/lmt.py
 
 from . import AStructure, FStructure
 

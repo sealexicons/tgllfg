@@ -9,13 +9,19 @@ from typing import Tuple, List
 from . import CNode, FStructure
 
 # --- Tiny equation grammar (patterns we support in this prototype) ---
-RE_ATOM = re.compile(r"^\(↑\s+([A-Z0-9\-]+)\)\s*=\s*'([^']*)'\s*$")
-# e.g., (↑ PRED) = ↓1 PRED
-RE_FROM_CHILD_ATTR = re.compile(r"^\(↑\s+([A-Z0-9\-]+)\)\s*=\s*↓(\d+)\s+([A-Z0-9\-]+)\s*$")
-# e.g., (↑ SUBJ) = ↓3
-RE_FROM_CHILD = re.compile(r"^\(↑\s+([A-Z0-9\-]+)\)\s*=\s*↓(\d+)\s*$")
-# e.g., (↑) = ↓1   (structural identity)
-RE_UP_EQUALS_CHILD = re.compile(r"^\(↑\)\s*=\s*↓(\d+)\s*$")
+FEAT = r"[A-Za-z_][A-Za-z0-9_\-]*"
+RE_ATOM = re.compile(
+    rf"^\(↑\s+({FEAT})\)\s*=\s*'([^']*)'\s*$"
+)
+RE_FROM_CHILD_ATTR = re.compile(
+    rf"^\(↑\s+({FEAT})\)\s*=\s*↓(\d+)\s+({FEAT})\s*$"
+)
+RE_FROM_CHILD = re.compile(
+    rf"^\(↑\s+({FEAT})\)\s*=\s*↓(\d+)\s*$"
+)
+RE_UP_EQUALS_CHILD = re.compile(
+    r"^\(↑\)\s*=\s*↓(\d+)\s*$"
+)
 
 _id_counter = itertools.count(1)
 
