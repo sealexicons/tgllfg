@@ -39,6 +39,8 @@ def build_demo_tree(sentence_lex, grammar) -> CNode:
     vnode = CNode("V", [], equations=[
         f"(↑ PRED) = '{v_le.pred}'",
         "(↑ VOICE) = 'PV'",
+        "(↑ ASPECT) = 'PFV'",
+        "(↑ MOOD) = 'IND'",
     ])
 
     np_gen = CNode("NP[CASE=GEN]", [], equations=["(↑ CASE)='GEN'"])
@@ -46,6 +48,9 @@ def build_demo_tree(sentence_lex, grammar) -> CNode:
 
     vp = CNode("VP_PV", [vnode, np_gen, np_nom], equations=[
         "(↑ PRED) = ↓1 PRED",
+        "(↑ VOICE) = ↓1 VOICE",
+        "(↑ ASPECT)= ↓1 ASPECT",
+        "(↑ MOOD)  = ↓1 MOOD",
         "(↑ SUBJ) = ↓3",
         "(↑ OBL-AG) = ↓2",
     ])
