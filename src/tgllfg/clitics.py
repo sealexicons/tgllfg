@@ -13,7 +13,7 @@ def split_enclitics(tokens: list[Token]) -> list[Token]:
             base, after = t.surface.split("=", 1)
             out.append(Token(base, base.lower(), t.start, t.start+len(base)))
             if after in ENCLITICS:
-                out.append(Token(after, after, t.start+len(base)+1, t.end))
+                out.append(Token(after, after.lower(), t.start+len(base)+1, t.end))
         else:
             out.append(t)
     return out

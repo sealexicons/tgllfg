@@ -2,6 +2,7 @@
 
 from . import AStructure, FStructure
 
+# Apply lexical mapping theory to produce an A-Structure from F-Structure
 def apply_lmt(f: FStructure) -> AStructure:
     pred = (f.feats.get("PRED") or "").split()[0]  # "EAT <...>" -> "EAT"
 

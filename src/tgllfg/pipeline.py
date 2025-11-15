@@ -16,7 +16,7 @@ def parse_text(text: str):
     toks = split_enclitics(toks)
 
     # 2) morphology (Tagalog voice/aspect; particles ang/ng/sa; proper nouns; pronouns)
-    mlist = analyze_tokens(toks)  # List[list[MorphAnalysis]] (n-best analyses)
+    mlist = analyze_tokens(toks)  # list[list[MorphAnalysis]] (n-best analyses)
 
     # 3) lexical lookup adds PRED & a-structure candidates
     lex_items = lookup_lexicon(mlist)

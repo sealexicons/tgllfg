@@ -5,8 +5,8 @@ from . import Token
 
 _WORD = re.compile(r"\w+|\S")
 
-def tokenize(s: str):
-    out = []
+def tokenize(s: str) -> list[Token]:
+    out: list[Token] = []
     for m in _WORD.finditer(s.strip()):
         t = m.group(0)
         out.append(Token(surface=t, norm=t.lower(), start=m.start(), end=m.end()))

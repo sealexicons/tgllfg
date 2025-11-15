@@ -3,22 +3,21 @@
 from __future__ import annotations
 
 import re
-from typing import List
 
 from . import Token, MorphAnalysis
 
 """
 Minimal Tagalog morphology stub for the demo pipeline.
 
-- Recognizes particles: ang/si/ng/ni/sa, and 'hindi'
-- Handles basic verb forms in the kain-family:
+- recognizes particles: ang/si/ng/ni/sa, and 'hindi'
+- handles basic verb forms in the kain-family:
     kinain  -> PV PFV TR
     kainin  -> PV IMPF TR
     kumain  -> AV PFV INTR
-- Falls back to a tiny noun list; otherwise tags as X
+- falls back to a tiny noun list; otherwise tags as X
 """
 
-# --- Particles / function words ---
+# Particles / function words
 PARTICLES: dict[str, tuple[str, dict[str, object]]] = {
     "ang": ("DET", {"CASE": "NOM", "MARKER": "ANG"}),
     "si":  ("DET", {"CASE": "NOM", "MARKER": "SI", "HUMAN": True}),
@@ -28,10 +27,10 @@ PARTICLES: dict[str, tuple[str, dict[str, object]]] = {
     "hindi": ("PART", {"POLARITY": "NEG"}),
 }
 
-# --- Tiny demo noun list (extend as needed) ---
+# Tiny demo noun list (extend as needed)
 NOUNS: set[str] = {"aso", "isda", "bata", "maria", "juan"}
 
-# --- Verb patterns for the 'kain' family used in the demo ---
+# Verb patterns for the 'kain' family used in the demo
 V_KAIN_PATTERNS: list[tuple[re.Pattern[str], dict[str, object]]] = [
     (re.compile(r"^kinain$", re.IGNORECASE), {"VOICE": "PV", "ASPECT": "PFV", "TR": "TR"}),
     (re.compile(r"^kainin$", re.IGNORECASE), {"VOICE": "PV", "ASPECT": "IMPF", "TR": "TR"}),
@@ -39,25 +38,25 @@ V_KAIN_PATTERNS: list[tuple[re.Pattern[str], dict[str, object]]] = [
 ]
 
 
-def analyze_tokens(tokens: List[Token]) -> List[List[MorphAnalysis]]:
+def analyze_tokens(tokens: list[Token]) -> list[list[MorphAnalysis]]:
     """
     Return n-best analyses per token (here: just 1-best per token for simplicity).
 
     Each item in the outer list corresponds to a surface token and contains a list
     of possible MorphAnalysis candidates for that token.
     """
-    analyses: List[List[MorphAnalysis]] = []
+    analyses: list[list[MorphAnalysis]] = []
 
     for t in tokens:
-        n = t.norm.lower()
+        n = t.norm
 
-        # Particles / function words
+        # particles / function words
         if n in PARTICLES:
             pos, feats = PARTICLES[n]
             analyses.append([MorphAnalysis(lemma=n, pos=pos, feats=dict(feats))])
             continue
 
-        # Verb patterns (demo: 'kain' family)
+        # verb patterns (demo: 'kain' family)
         matched = False
         for pat, feats in V_KAIN_PATTERNS:
             if pat.match(n):
@@ -67,12 +66,12 @@ def analyze_tokens(tokens: List[Token]) -> List[List[MorphAnalysis]]:
         if matched:
             continue
 
-        # Simple nouns
+        # simple nouns
         if n in NOUNS:
             analyses.append([MorphAnalysis(lemma=n, pos="NOUN", feats={})])
             continue
 
-        # Fallback unknown
+        # fallback
         analyses.append([MorphAnalysis(lemma=n, pos="X", feats={})])
 
     return analyses

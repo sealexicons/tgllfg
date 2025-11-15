@@ -22,7 +22,7 @@ BASE = {
 }
 
 def lookup_lexicon(mlist: list[list[MorphAnalysis]]) -> list[list[tuple[MorphAnalysis, LexicalEntry|None]]]:
-    out = []
+    out: list[list[tuple[MorphAnalysis, LexicalEntry|None]]] = []
     for cand_list in mlist:
         pairs: list[tuple[MorphAnalysis, LexicalEntry|None]] = []
         for ma in cand_list:
