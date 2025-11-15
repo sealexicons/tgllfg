@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import itertools
 import re
-from typing import Tuple, List
 
 from . import CNode, FStructure
 
@@ -30,7 +29,7 @@ def build_f_structure(root: CNode) -> FStructure:
     f, _ = _build_f_for_node(root)
     return f
 
-def _build_f_for_node(node: CNode) -> Tuple[FStructure, List[str]]:
+def _build_f_for_node(node: CNode) -> tuple[FStructure, list[str]]:
     """
     Build an F-structure for this node.
     Returns (fs, diagnostics). This is a very small evaluator:
@@ -38,9 +37,9 @@ def _build_f_for_node(node: CNode) -> Tuple[FStructure, List[str]]:
     - Applies equations on the current node to compose features / reentrancies
     - Supports a few core equation forms sufficient for the demo
     """
-    diags: List[str] = []
+    diags: list[str] = []
     # 1) Build children first
-    child_fs: List[FStructure] = []
+    child_fs: list[FStructure] = []
     for ch in node.children:
         ch_fs, ch_d = _build_f_for_node(ch)
         child_fs.append(ch_fs)
