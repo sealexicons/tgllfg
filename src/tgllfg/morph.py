@@ -30,11 +30,15 @@ PARTICLES: dict[str, tuple[str, dict[str, object]]] = {
 # Tiny demo noun list (extend as needed)
 NOUNS: set[str] = {"aso", "isda", "bata", "maria", "juan"}
 
-# Verb patterns for the 'kain' family used in the demo
+# Verb patterns for the 'kain' family used in the demo. MOOD defaults
+# to IND here because the demo input is indicative; Phase 2's real
+# morphology will derive mood from imperative/abilitative/etc.
+# affixes. Keeping the default here means lex_equations can stay
+# uniform — every morph feature becomes one (↑ FEAT) = 'VAL' equation.
 V_KAIN_PATTERNS: list[tuple[re.Pattern[str], dict[str, object]]] = [
-    (re.compile(r"^kinain$", re.IGNORECASE), {"VOICE": "PV", "ASPECT": "PFV", "TR": "TR"}),
-    (re.compile(r"^kainin$", re.IGNORECASE), {"VOICE": "PV", "ASPECT": "IMPF", "TR": "TR"}),
-    (re.compile(r"^kumain$", re.IGNORECASE), {"VOICE": "AV", "ASPECT": "PFV", "TR": "INTR"}),
+    (re.compile(r"^kinain$", re.IGNORECASE), {"VOICE": "PV", "ASPECT": "PFV", "MOOD": "IND", "TR": "TR"}),
+    (re.compile(r"^kainin$", re.IGNORECASE), {"VOICE": "PV", "ASPECT": "IMPF", "MOOD": "IND", "TR": "TR"}),
+    (re.compile(r"^kumain$", re.IGNORECASE), {"VOICE": "AV", "ASPECT": "PFV", "MOOD": "IND", "TR": "INTR"}),
 ]
 
 
@@ -71,7 +75,9 @@ def analyze_tokens(tokens: list[Token]) -> list[list[MorphAnalysis]]:
             analyses.append([MorphAnalysis(lemma=n, pos="NOUN", feats={})])
             continue
 
-        # fallback
-        analyses.append([MorphAnalysis(lemma=n, pos="X", feats={})])
+        # fallback: unrecognised token (punctuation, unknown word, etc.).
+        # The "_UNK" sentinel must not collide with any grammar
+        # category; the parser strips _UNK-only tokens before parsing.
+        analyses.append([MorphAnalysis(lemma=n, pos="_UNK", feats={})])
 
     return analyses
