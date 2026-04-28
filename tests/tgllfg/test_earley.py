@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from tgllfg.common import LexicalEntry, MorphAnalysis
-from tgllfg.earley import (
+from tgllfg.parse import (
     PackedForest,
     parse_with_annotations,
 )
-from tgllfg.grammar import Grammar, Rule
+from tgllfg.cfg import Grammar, Rule
 
 
 # === Helpers ===============================================================

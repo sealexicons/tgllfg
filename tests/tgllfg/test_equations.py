@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from tgllfg.equations import (
+from tgllfg.fstruct import (
     AltFeature,
     Atom,
     ConstrainingEquation,

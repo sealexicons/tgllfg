@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from tgllfg.common import FStructure
-from tgllfg.fs_checks import (
+from tgllfg.fstruct import (
     PredTemplate,
     is_governable_gf,
     lfg_well_formed,
@@ -259,8 +259,8 @@ class TestPipelineFiltering:
         # GF (OBL-AG) that the PRED template doesn't name. The pipeline
         # should suppress this parse.
         from tgllfg.common import CNode
-        from tgllfg.fs_checks import lfg_well_formed
-        from tgllfg.unify import solve
+        from tgllfg.fstruct import lfg_well_formed
+        from tgllfg.fstruct import solve
 
         node = CNode(
             label="S",
@@ -328,7 +328,7 @@ class TestDiagnosticShape:
 
 class TestIsBlocking:
     def test_well_formedness_kinds_block(self) -> None:
-        from tgllfg.fgraph import Diagnostic
+        from tgllfg.fstruct import Diagnostic
         for kind in (
             "completeness-failed",
             "coherence-failed",
@@ -338,11 +338,11 @@ class TestIsBlocking:
             assert d.is_blocking()
 
     def test_deferred_does_not_block(self) -> None:
-        from tgllfg.fgraph import Diagnostic
+        from tgllfg.fstruct import Diagnostic
         d = Diagnostic(kind="deferred", message="x")
         assert not d.is_blocking()
 
     def test_unsupported_does_not_block(self) -> None:
-        from tgllfg.fgraph import Diagnostic
+        from tgllfg.fstruct import Diagnostic
         d = Diagnostic(kind="unsupported", message="x")
         assert not d.is_blocking()

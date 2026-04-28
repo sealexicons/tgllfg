@@ -4,8 +4,8 @@
 
 The function returns one tuple per parse that survives well-formedness
 filtering. Each tuple carries the full diagnostic list — both the
-unifier's diagnostics from :func:`tgllfg.unify.solve` and the
-well-formedness diagnostics from :func:`tgllfg.fs_checks.lfg_well_formed`.
+unifier's diagnostics from :func:`tgllfg.fstruct.solve` and the
+well-formedness diagnostics from :func:`tgllfg.fstruct.lfg_well_formed`.
 A parse is suppressed when any *blocking* diagnostic was produced;
 informational diagnostics (``deferred``, ``unsupported``) pass
 through and accompany the surviving parse.
@@ -13,17 +13,14 @@ through and accompany the surviving parse.
 
 from __future__ import annotations
 
+from .cfg import Grammar
 from .common import AStructure, CNode, FStructure
-from .clitics import split_enclitics
-from .earley import parse_with_annotations
-from .fgraph import Diagnostic
-from .fs_checks import lfg_well_formed
-from .grammar import Grammar
+from .fstruct import Diagnostic, lfg_well_formed, solve
 from .lexicon import lookup_lexicon
 from .lmt import apply_lmt
 from .morph import analyze_tokens
-from .tokenizer import tokenize
-from .unify import solve
+from .parse import parse_with_annotations
+from .text import split_enclitics, tokenize
 
 
 def parse_text(

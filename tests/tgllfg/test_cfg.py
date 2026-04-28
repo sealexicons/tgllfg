@@ -4,12 +4,13 @@ import pytest
 
 from tgllfg.cfg import (
     CategoryPattern,
+    Grammar,
+    Rule,
     compile_grammar,
     matches,
     merge_features,
     parse_pattern,
 )
-from tgllfg.grammar import Grammar, Rule
 
 
 # === parse_pattern ========================================================

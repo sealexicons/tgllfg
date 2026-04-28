@@ -49,15 +49,15 @@ from collections import deque
 from dataclasses import dataclass, field
 from typing import Iterator
 
-from .common import CNode, LexicalEntry, MorphAnalysis
-from .cfg import (
+from ..cfg import (
     CategoryPattern,
     CompiledGrammar,
     CompiledRule,
+    Grammar,
     compile_grammar,
     matches,
 )
-from .grammar import Grammar
+from ..common import CNode, LexicalEntry, MorphAnalysis
 
 
 # Treat morph POS tag VERB as the grammar category V; nothing else

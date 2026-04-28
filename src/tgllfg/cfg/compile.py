@@ -1,4 +1,4 @@
-# tgllfg/cfg.py
+# tgllfg/cfg/compile.py
 
 """Grammar compilation: category-pattern parsing and rule indexing.
 
@@ -15,7 +15,7 @@ Compilation
 * ``parse_pattern(s)`` parses a surface string into a
   :class:`CategoryPattern` whose features are sorted by key (so that
   equal patterns hash equally).
-* ``compile_grammar(g)`` turns a :class:`tgllfg.grammar.Grammar`
+* ``compile_grammar(g)`` turns a :class:`tgllfg.cfg.Grammar`
   into a :class:`CompiledGrammar` with rules indexed by LHS category
   for fast Earley prediction.
 

@@ -5,15 +5,16 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from tgllfg.common import CNode, FStructure
-from tgllfg.fgraph import (
+from tgllfg.fstruct import (
     AtomValue,
     ComplexValue,
     Diagnostic,
     FGraph,
     NodeId,
     SetValue,
+    build_f_structure,
+    solve,
 )
-from tgllfg.unify import build_f_structure, solve
 
 
 # Hypothesis strategies for atoms and feature names: short uppercase
