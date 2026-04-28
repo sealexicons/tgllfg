@@ -1,15 +1,19 @@
 # data/tgl/particles.yaml
 #
-# Closed-class function words: case-marking determiners and adpositions,
-# polarity, and the standalone linker `na`. The bound `-ng` linker
-# enclitic isn't represented here because it requires orthographic
-# detection at tokenization time; that lives with §7.3 clitic
-# placement work in Phase 4.
+# Closed-class function words: case markers, demonstratives,
+# polarity, the standalone linker, and the second-position
+# adverbial enclitic cluster. The bound `-ng` linker enclitic isn't
+# represented here because it requires orthographic detection at
+# tokenization time; that lives with §7.3 clitic-placement work in
+# Phase 4.
 #
-# HUMAN distinguishes the personal-name series (`si`, `ni`, `kay`)
-# from the common-noun series (`ang`, `ng`, `sa`).
+# Conventions:
+#   HUMAN     — distinguishes the personal-name series (si/ni/kay)
+#               from the common-noun series (ang/ng/sa).
+#   DEIXIS    — PROX (this), MED (that-near), DIST (that-far).
+#   is_clitic — surfaces in the second-position (Wackernagel) cluster.
 
-# --- Common-noun case markers ---
+# === Common-noun case markers ============================================
 - surface: ang
   pos: DET
   feats: {CASE: NOM, MARKER: ANG}
@@ -20,7 +24,7 @@
   pos: ADP
   feats: {CASE: DAT, MARKER: SA}
 
-# --- Personal-name case markers ---
+# === Personal-name case markers ==========================================
 - surface: si
   pos: DET
   feats: {CASE: NOM, MARKER: SI, HUMAN: true}
@@ -31,7 +35,39 @@
   pos: ADP
   feats: {CASE: DAT, MARKER: KAY, HUMAN: true}
 
-# --- Polarity ---
+# === Demonstratives ======================================================
+# Three deixis values × three cases.
+- surface: ito
+  pos: DET
+  feats: {CASE: NOM, DEIXIS: PROX}
+- surface: nito
+  pos: ADP
+  feats: {CASE: GEN, DEIXIS: PROX}
+- surface: dito
+  pos: ADP
+  feats: {CASE: DAT, DEIXIS: PROX}
+
+- surface: iyan
+  pos: DET
+  feats: {CASE: NOM, DEIXIS: MED}
+- surface: niyan
+  pos: ADP
+  feats: {CASE: GEN, DEIXIS: MED}
+- surface: diyan
+  pos: ADP
+  feats: {CASE: DAT, DEIXIS: MED}
+
+- surface: iyon
+  pos: DET
+  feats: {CASE: NOM, DEIXIS: DIST}
+- surface: niyon
+  pos: ADP
+  feats: {CASE: GEN, DEIXIS: DIST}
+- surface: doon
+  pos: ADP
+  feats: {CASE: DAT, DEIXIS: DIST}
+
+# === Polarity ============================================================
 - surface: hindi
   pos: PART
   feats: {POLARITY: NEG}
@@ -39,7 +75,78 @@
   pos: PART
   feats: {POLARITY: NEG, MOOD: IMP}
 
-# --- Linker (standalone form) ---
+# === Linker (standalone form) ============================================
 - surface: na
   pos: PART
   feats: {LINKER: true}
+
+# === Second-position adverbial enclitics =================================
+# These attach to the first prosodic word in the clause; §7.3 will
+# add the clitic-placement c-structure rules. Schachter & Otanes 1972
+# §3.5 documents the cluster ordering.
+
+- surface: na
+  pos: PART
+  feats: {ASPECT_PART: ALREADY}
+  is_clitic: true
+  clitic_class: 2P
+- surface: pa
+  pos: PART
+  feats: {ASPECT_PART: STILL}
+  is_clitic: true
+  clitic_class: 2P
+- surface: ba
+  pos: PART
+  feats: {QUESTION: true}
+  is_clitic: true
+  clitic_class: 2P
+- surface: daw
+  pos: PART
+  feats: {EVID: REPORT}
+  is_clitic: true
+  clitic_class: 2P
+- surface: raw
+  pos: PART
+  feats: {EVID: REPORT}
+  is_clitic: true
+  clitic_class: 2P
+- surface: din
+  pos: PART
+  feats: {ADV: ALSO}
+  is_clitic: true
+  clitic_class: 2P
+- surface: rin
+  pos: PART
+  feats: {ADV: ALSO}
+  is_clitic: true
+  clitic_class: 2P
+- surface: lang
+  pos: PART
+  feats: {ADV: ONLY}
+  is_clitic: true
+  clitic_class: 2P
+- surface: nga
+  pos: PART
+  feats: {EMPHATIC: true}
+  is_clitic: true
+  clitic_class: 2P
+- surface: pala
+  pos: PART
+  feats: {MIRATIVE: true}
+  is_clitic: true
+  clitic_class: 2P
+- surface: kasi
+  pos: PART
+  feats: {DISCOURSE: BECAUSE}
+  is_clitic: true
+  clitic_class: 2P
+- surface: man
+  pos: PART
+  feats: {ADV: EVEN}
+  is_clitic: true
+  clitic_class: 2P
+- surface: yata
+  pos: PART
+  feats: {EPISTEMIC: PRESUMABLY}
+  is_clitic: true
+  clitic_class: 2P

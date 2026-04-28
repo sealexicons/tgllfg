@@ -76,11 +76,15 @@ def _load_roots(path: Path) -> list[Root]:
     out: list[Root] = []
     for i, rec in enumerate(_read_yaml(path)):
         where = f"{path}[{i}]"
+        affix_class_raw = rec.get("affix_class", [])
+        if not isinstance(affix_class_raw, list):
+            raise ValueError(f"{where}: 'affix_class' must be a list")
         out.append(Root(
             citation=_require(rec, "citation", where),
             pos=_require(rec, "pos", where),
             gloss=rec.get("gloss", ""),
             transitivity=rec.get("transitivity", ""),
+            affix_class=list(affix_class_raw),
         ))
     return out
 
@@ -102,6 +106,7 @@ def _load_paradigm_cells(path: Path) -> list[ParadigmCell]:
             aspect=_require(rec, "aspect", where),
             mood=rec.get("mood", "IND"),
             transitivity=rec.get("transitivity", ""),
+            affix_class=rec.get("affix_class", ""),
             operations=operations,
             notes=rec.get("notes", ""),
         ))

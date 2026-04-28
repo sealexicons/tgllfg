@@ -1,25 +1,96 @@
 # data/tgl/roots.yaml
 #
-# Seed roots for Phase 2. Verbs cover the kain family fully across
-# AV / OV / DV / IV × PFV / IPFV / CTPL. `bili` exercises the
-# vowel-hiatus sandhi rule on suffixation. Nouns are the small set
-# the demo grammar exercises plus a couple of proper-name placeholders
-# pending a richer pronominal/proper-noun lexicon in Phase 3.
+# Seed roots for Phase 2. Each verb declares its `affix_class` — the
+# paradigm patterns it participates in. Generation only fires for
+# cells whose affix_class is in the root's list, so a -um- only root
+# never produces ungrammatical mag-/mang- forms.
+#
+# Affix-class vocabulary (Phase 2 seed):
+#
+#   um         — AV with -um- infix (kumain, bumili)
+#   mag        — AV with mag-/nag- prefix (naglinis, magbigay)
+#   mang       — AV with mang-/nang- distributive + nasal substitution
+#                (mamili, manguha, manahi)
+#   maka       — AV with naka-/maka- abilitative (MOOD=ABIL)
+#   in_oblig   — OV with -in suffix / -in- realis infix
+#   an_oblig   — DV with -an suffix
+#   i_oblig    — IV with i- prefix
 #
 # Citations: Kroeger 1993 ch. 4 (voice morphology) and Schachter &
-# Otanes 1972 ch. 5 (aspect/mood paradigm) for the verb forms.
+# Otanes 1972 ch. 5 (aspect/mood paradigm) for the verb forms;
+# Ramos 1971 cross-checked.
 
 # --- Verbs ---
+
 - citation: kain
   pos: VERB
   gloss: eat
   transitivity: TR
+  affix_class: [um, in_oblig, an_oblig, i_oblig, maka]
+
 - citation: bili
   pos: VERB
   gloss: buy
   transitivity: TR
+  # Takes mang- distributive ("mamili" — to shop) and maka-
+  # abilitative ("nakabili" — was able to buy).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka]
+
+- citation: kuha
+  pos: VERB
+  gloss: get, take
+  transitivity: TR
+  # Takes mang- distributive (manguha) and maka- abilitative.
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka]
+
+- citation: tahi
+  pos: VERB
+  gloss: sew
+  transitivity: TR
+  # Takes mang- distributive (nanahi).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang]
+
+- citation: linis
+  pos: VERB
+  gloss: clean
+  transitivity: TR
+  # mag- class (l-initial sonorant; -in- → ni- realisation deferred to
+  # Phase 2B, so OV/DV/IV cells are not declared here).
+  affix_class: [mag]
+
+- citation: bigay
+  pos: VERB
+  gloss: give
+  transitivity: TR
+  # mag- class.
+  affix_class: [mag]
+
+- citation: sulat
+  pos: VERB
+  gloss: write
+  transitivity: TR
+  # Takes both -um- and mag- in AV; the -um- form is more common in
+  # speech, mag- in writing-context idioms. Plus maka- abilitative.
+  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka]
+
+- citation: takbo
+  pos: VERB
+  gloss: run
+  transitivity: INTR
+  # Intransitive: only AV cells fire (the TR-only OV/DV/IV cells
+  # are filtered out by the transitivity guard).
+  affix_class: [um, mag]
+
+- citation: tulog
+  pos: VERB
+  gloss: sleep
+  transitivity: INTR
+  # Intransitive; takes maka- abilitative ("nakatulog" = was able to
+  # sleep) in addition to plain AV.
+  affix_class: [um, mag, maka]
 
 # --- Nouns ---
+
 - citation: aso
   pos: NOUN
   gloss: dog

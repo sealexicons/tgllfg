@@ -24,19 +24,37 @@ class Root:
     pos: str                # "VERB", "NOUN", "ADJ"
     gloss: str = ""
     transitivity: str = ""  # "TR" or "INTR" for verbs; empty otherwise
+    # Affix classes the root participates in. Generation only fires
+    # for paradigm cells whose `affix_class` is in this list. For
+    # backward compatibility, an empty list (or a root without this
+    # field) is treated as participating in any cell whose
+    # `affix_class` is also empty.
+    affix_class: list[str] = field(default_factory=list)
 
 
 @dataclass
 class Operation:
     """A single morphological operation applied during paradigm generation.
 
+    Operations are applied to the root in YAML-declared order — the
+    engine does not reorder them.
+
     ``op`` is one of:
 
-    * ``cv_redup``  — prepend the first CV of the current base
-    * ``infix``     — insert ``value`` after the first consonant
-                      (or as a prefix when the base is vowel-initial)
-    * ``suffix``    — append ``value`` (with vowel-hiatus sandhi)
-    * ``prefix``    — prepend ``value``
+    * ``cv_redup``         — prepend the first CV of the current base.
+    * ``infix``            — insert ``value`` after the first consonant
+                             (or as a prefix when the base is
+                             vowel-initial).
+    * ``suffix``           — append ``value`` (with vowel-hiatus
+                             ``-h-`` epenthesis).
+    * ``prefix``           — prepend ``value``.
+    * ``nasal_substitute`` — replace the base's first consonant with
+                             the homorganic nasal of an ng-final
+                             prefix (``mang``/``nang``/``pang``):
+                             b/p → m, t/d/s → n, k/g → ng. The
+                             prefix head (``na-``/``ma-``/``pa-``)
+                             is supplied by a subsequent ``prefix``
+                             op.
     """
     op: str
     value: str = ""
@@ -49,6 +67,9 @@ class ParadigmCell:
     aspect: str             # PFV / IPFV / CTPL
     mood: str = "IND"
     transitivity: str = ""  # filter: cell only fires for roots with this transitivity
+    affix_class: str = ""   # filter: cell only fires for roots whose affix_class
+                            # list contains this string. Empty means "applies to
+                            # roots whose affix_class is also empty" (legacy default).
     operations: list[Operation] = field(default_factory=list)
     notes: str = ""
 
