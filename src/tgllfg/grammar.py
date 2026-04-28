@@ -43,7 +43,7 @@ class Grammar:
                 "(↑ MOOD) = ↓1 MOOD",
                 "(↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT",
                 "(↑ SUBJ) = ↓3",           # NOM → SUBJ (patient pivot)
-                "(↑ OBL-AG) = ↓2",         # genitive agent as oblique/by-phrase
+                "(↑ OBJ) = ↓2",            # ng-non-pivot as OBJ (Kroeger 1993)
             ],
         ))
 

@@ -317,7 +317,7 @@ class TestOrchestration:
         assert f.feats["VOICE"] == "PV"
         assert f.feats["ASPECT"] == "PFV"
         assert f.feats["PRED"].startswith("EAT")
-        assert "SUBJ" in f.feats and "OBL-AG" in f.feats
+        assert "SUBJ" in f.feats and "OBJ" in f.feats
 
 
 # === Set equations on c-trees =============================================
