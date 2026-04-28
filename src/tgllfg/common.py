@@ -54,11 +54,19 @@ class CNode:
     equations: list[str] = field(default_factory=list)
 
 
-@dataclass
+@dataclass(eq=False)
 class FStructure:
     # AVM with reentrancy via ids; keys are LFG feature names.
+    # Identity-based equality (`eq=False`) so two distinct projections
+    # compare unequal even when their `feats` happen to coincide; the
+    # canonical-node id is what carries reentrancy semantics. The
+    # `__hash__` returns the id so projected f-structures can live in
+    # frozensets (set-valued attributes).
     feats: dict[str, FeatureValue] = field(default_factory=dict)
     id: int = 0
+
+    def __hash__(self) -> int:
+        return self.id
 
 
 @dataclass

@@ -31,6 +31,7 @@ path = "src/tgllfg/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
+  "hypothesis>=6.0",
   "mypy>=1.0.0",
   "pytest",
   "ruff",
