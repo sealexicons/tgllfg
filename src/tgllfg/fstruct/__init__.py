@@ -1,0 +1,93 @@
+# tgllfg/fstruct/__init__.py
+
+from .checks import (
+    PredTemplate,
+    is_governable_gf,
+    lfg_well_formed,
+    parse_pred_template,
+)
+from .equations import (
+    AltFeature,
+    Atom,
+    Base,
+    ConstrainingEquation,
+    DefiningEquation,
+    Designator,
+    Down,
+    Equation,
+    ExistentialConstraint,
+    Feature,
+    NegEquation,
+    NegExistentialConstraint,
+    ParseError,
+    PathElement,
+    PlusFeature,
+    Right,
+    SetMembership,
+    StarFeature,
+    Up,
+    Value,
+    parse_equation,
+    unparse,
+)
+from .graph import (
+    NON_BLOCKING_KINDS,
+    AtomValue,
+    ComplexValue,
+    DiagKind,
+    Diagnostic,
+    FGraph,
+    FValue,
+    NodeId,
+    SetValue,
+)
+from .unify import (
+    SolveResult,
+    build_f_structure,
+    solve,
+)
+
+__all__ = [
+    # equations AST
+    "AltFeature",
+    "Atom",
+    "Base",
+    "ConstrainingEquation",
+    "DefiningEquation",
+    "Designator",
+    "Down",
+    "Equation",
+    "ExistentialConstraint",
+    "Feature",
+    "NegEquation",
+    "NegExistentialConstraint",
+    "ParseError",
+    "PathElement",
+    "PlusFeature",
+    "Right",
+    "SetMembership",
+    "StarFeature",
+    "Up",
+    "Value",
+    "parse_equation",
+    "unparse",
+    # graph
+    "AtomValue",
+    "ComplexValue",
+    "DiagKind",
+    "Diagnostic",
+    "FGraph",
+    "FValue",
+    "NodeId",
+    "NON_BLOCKING_KINDS",
+    "SetValue",
+    # unifier orchestration
+    "SolveResult",
+    "build_f_structure",
+    "solve",
+    # well-formedness
+    "PredTemplate",
+    "is_governable_gf",
+    "lfg_well_formed",
+    "parse_pred_template",
+]

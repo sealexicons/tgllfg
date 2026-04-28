@@ -38,9 +38,12 @@ class Grammar:
             ["V[VOICE=PV]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
             [
                 "(↑ PRED) = ↓1 PRED",
-                "(↑ VOICE) = ↓1 VOICE",    # voice feature from verb
+                "(↑ VOICE) = ↓1 VOICE",
+                "(↑ ASPECT) = ↓1 ASPECT",
+                "(↑ MOOD) = ↓1 MOOD",
+                "(↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT",
                 "(↑ SUBJ) = ↓3",           # NOM → SUBJ (patient pivot)
-                "(↑ OBL-AG) = ↓2",         # genitive agent as oblique/by-phrase
+                "(↑ OBJ) = ↓2",            # ng-non-pivot as OBJ (Kroeger 1993)
             ],
         ))
 

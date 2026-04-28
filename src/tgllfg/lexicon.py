@@ -16,7 +16,9 @@ BASE = {
             pred="EAT <SUBJ, OBJ>",            # transitive template (Patient Voice common)
             a_structure=["AGENT","PATIENT"],
             morph_constraints={"VOICE":"PV","TR":"TR"},
-            gf_defaults={"PATIENT":"SUBJ","AGENT":"OBL-AG"}
+            # ng-non-pivot maps to OBJ per Kroeger 1993; see
+            # docs/analysis-choices.md.
+            gf_defaults={"PATIENT":"SUBJ","AGENT":"OBJ"}
         )
     ]
 }

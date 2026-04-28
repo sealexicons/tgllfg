@@ -1,8 +1,8 @@
-# tgllfg/clitics.py
+# tgllfg/text/clitics.py
 
 # Handle enclitic cluster ordering (e.g., =na, =pa, =ba, =din/rin, =yata, etc.)
 # Prototype: leave as-is but split tokens like "kainin=pa" or "kainin pa" → ["kainin","pa"]
-from . import Token
+from ..common import Token
 
 ENCLITICS = {"na", "pa", "ba", "din", "rin", "yata", "man", "daw", "raw", "lang"}
 

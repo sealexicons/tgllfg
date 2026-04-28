@@ -1,7 +1,8 @@
-# tgllfg/tokenizer.py
+# tgllfg/text/tokenizer.py
 
 import re
-from . import Token
+
+from ..common import Token
 
 _WORD = re.compile(r"\w+|\S")
 
