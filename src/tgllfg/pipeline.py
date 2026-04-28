@@ -1,36 +1,59 @@
 # tgllfg/pipeline.py
 
-from .tokenizer import tokenize
-from .clitics import split_enclitics
-from .morph import analyze_tokens
-from .lexicon import lookup_lexicon
-from .grammar import Grammar
-from .earley import parse_with_annotations
-from .unify import build_f_structure
-from .lmt import apply_lmt
-from .fs_checks import lfg_well_formed
+"""End-to-end parse pipeline: text → c-/f-/a-structure with diagnostics.
 
-def parse_text(text: str):
-    # 1) tokenize & clitic handling
+The function returns one tuple per parse that survives well-formedness
+filtering. Each tuple carries the full diagnostic list — both the
+unifier's diagnostics from :func:`tgllfg.unify.solve` and the
+well-formedness diagnostics from :func:`tgllfg.fs_checks.lfg_well_formed`.
+A parse is suppressed when any *blocking* diagnostic was produced;
+informational diagnostics (``deferred``, ``unsupported``) pass
+through and accompany the surviving parse.
+"""
+
+from __future__ import annotations
+
+from .common import AStructure, CNode, FStructure
+from .clitics import split_enclitics
+from .earley import parse_with_annotations
+from .fgraph import Diagnostic
+from .fs_checks import lfg_well_formed
+from .grammar import Grammar
+from .lexicon import lookup_lexicon
+from .lmt import apply_lmt
+from .morph import analyze_tokens
+from .tokenizer import tokenize
+from .unify import solve
+
+
+def parse_text(
+    text: str,
+    *,
+    n_best: int = 5,
+) -> list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]]:
+    """Parse a sentence end to end.
+
+    Returns one ``(c-tree, f-structure, a-structure, diagnostics)`` per
+    parse that survives well-formedness filtering. The diagnostic list
+    contains every diagnostic produced for the surviving parse,
+    including informational ones; a parse is dropped only when at
+    least one diagnostic is *blocking* (see
+    :attr:`tgllfg.fgraph.Diagnostic.is_blocking`).
+    """
     toks = tokenize(text)
     toks = split_enclitics(toks)
-
-    # 2) morphology (Tagalog voice/aspect; particles ang/ng/sa; proper nouns; pronouns)
-    mlist = analyze_tokens(toks)  # list[list[MorphAnalysis]] (n-best analyses)
-
-    # 3) lexical lookup adds PRED & a-structure candidates
+    mlist = analyze_tokens(toks)
     lex_items = lookup_lexicon(mlist)
-
-    # 4) c-structure parse with functional annotations carried on rules
     grammar = Grammar.load_default()
-    packed_forest = parse_with_annotations(lex_items, grammar)
+    forest = parse_with_annotations(lex_items, grammar)
 
-    # 5) for each tree: build f-structure via equation collection + unification
-    results = []
-    for ctree in packed_forest.best_k(5):
-        f = build_f_structure(ctree)
-        a = apply_lmt(f)  # produce an AStructure from lexical info + VOICE
-        ok, diagnostics = lfg_well_formed(f, ctree)
-        if ok:
-            results.append((ctree, f, a, diagnostics))
+    results: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    for ctree in forest.best_k(n_best):
+        result = solve(ctree)
+        a = apply_lmt(result.fstructure)
+        _, wf_diags = lfg_well_formed(result.fstructure, ctree)
+        diagnostics = list(result.diagnostics) + wf_diags
+        if any(d.is_blocking() for d in diagnostics):
+            continue
+        results.append((ctree, result.fstructure, a, diagnostics))
     return results

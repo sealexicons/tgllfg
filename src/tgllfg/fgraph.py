@@ -89,9 +89,20 @@ DiagKind = Literal[
     "set-membership-clash",
     "path-through-non-complex",
     "parse-error",
+    # Well-formedness (§4.4):
+    "completeness-failed",
+    "coherence-failed",
+    "subject-condition-failed",
+    # Informational only — do not block a parse from being returned.
     "deferred",
     "unsupported",
 ]
+
+
+# Diagnostic kinds that are informational rather than fatal: parses
+# carrying only these may still be returned by the pipeline. Add
+# new informational kinds here to keep the policy in one place.
+NON_BLOCKING_KINDS: frozenset[str] = frozenset({"deferred", "unsupported"})
 
 
 @dataclass(frozen=True)
@@ -106,6 +117,12 @@ class Diagnostic:
     equation: str | None = None
     cnode_label: str | None = None
     detail: Mapping[str, object] = field(default_factory=dict)
+
+    def is_blocking(self) -> bool:
+        """True iff this diagnostic should suppress the parse from
+        being returned. Informational kinds (``deferred``,
+        ``unsupported``) are non-blocking."""
+        return self.kind not in NON_BLOCKING_KINDS
 
 
 # === Graph =================================================================
@@ -410,6 +427,7 @@ __all__ = [
     "SetValue",
     "FValue",
     "DiagKind",
+    "NON_BLOCKING_KINDS",
     "Diagnostic",
     "FGraph",
 ]
