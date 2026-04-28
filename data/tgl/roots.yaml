@@ -1,0 +1,40 @@
+# data/tgl/roots.yaml
+#
+# Seed roots for Phase 2. Verbs cover the kain family fully across
+# AV / OV / DV / IV × PFV / IPFV / CTPL. `bili` exercises the
+# vowel-hiatus sandhi rule on suffixation. Nouns are the small set
+# the demo grammar exercises plus a couple of proper-name placeholders
+# pending a richer pronominal/proper-noun lexicon in Phase 3.
+#
+# Citations: Kroeger 1993 ch. 4 (voice morphology) and Schachter &
+# Otanes 1972 ch. 5 (aspect/mood paradigm) for the verb forms.
+
+# --- Verbs ---
+- citation: kain
+  pos: VERB
+  gloss: eat
+  transitivity: TR
+- citation: bili
+  pos: VERB
+  gloss: buy
+  transitivity: TR
+
+# --- Nouns ---
+- citation: aso
+  pos: NOUN
+  gloss: dog
+- citation: isda
+  pos: NOUN
+  gloss: fish
+- citation: bata
+  pos: NOUN
+  gloss: child
+- citation: libro
+  pos: NOUN
+  gloss: book
+- citation: maria
+  pos: NOUN
+  gloss: Maria (proper name)
+- citation: juan
+  pos: NOUN
+  gloss: Juan (proper name)

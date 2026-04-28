@@ -32,7 +32,7 @@ class Token:
 class MorphAnalysis:
     lemma: str
     pos: str
-    # e.g., {"VOICE": "PV", "ASPECT": "PFV", "TR": "TR", "CASE": "NOM"}
+    # e.g., {"VOICE": "OV", "ASPECT": "PFV", "TR": "TR", "CASE": "NOM"}
     feats: dict[str, FeatureValue]
 
 
@@ -41,7 +41,7 @@ class LexicalEntry:
     lemma: str
     pred: str                                       # 'EAT <SUBJ, OBJ>' (LFG-style)
     a_structure: list[str]                          # ["AGENT", "PATIENT"]
-    morph_constraints: dict[str, FeatureValue]      # VOICE=PV, TR=TR, ...
+    morph_constraints: dict[str, FeatureValue]      # VOICE=OV, TR=TR, ...
     gf_defaults: dict[str, str]                     # bare-form fallbacks
 
 

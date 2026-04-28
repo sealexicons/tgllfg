@@ -1,0 +1,45 @@
+# data/tgl/particles.yaml
+#
+# Closed-class function words: case-marking determiners and adpositions,
+# polarity, and the standalone linker `na`. The bound `-ng` linker
+# enclitic isn't represented here because it requires orthographic
+# detection at tokenization time; that lives with §7.3 clitic
+# placement work in Phase 4.
+#
+# HUMAN distinguishes the personal-name series (`si`, `ni`, `kay`)
+# from the common-noun series (`ang`, `ng`, `sa`).
+
+# --- Common-noun case markers ---
+- surface: ang
+  pos: DET
+  feats: {CASE: NOM, MARKER: ANG}
+- surface: ng
+  pos: ADP
+  feats: {CASE: GEN, MARKER: NG}
+- surface: sa
+  pos: ADP
+  feats: {CASE: DAT, MARKER: SA}
+
+# --- Personal-name case markers ---
+- surface: si
+  pos: DET
+  feats: {CASE: NOM, MARKER: SI, HUMAN: true}
+- surface: ni
+  pos: ADP
+  feats: {CASE: GEN, MARKER: NI, HUMAN: true}
+- surface: kay
+  pos: ADP
+  feats: {CASE: DAT, MARKER: KAY, HUMAN: true}
+
+# --- Polarity ---
+- surface: hindi
+  pos: PART
+  feats: {POLARITY: NEG}
+- surface: huwag
+  pos: PART
+  feats: {POLARITY: NEG, MOOD: IMP}
+
+# --- Linker (standalone form) ---
+- surface: na
+  pos: PART
+  feats: {LINKER: true}

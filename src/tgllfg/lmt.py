@@ -9,7 +9,7 @@ from . import AStructure, FStructure
 def apply_lmt(f: FStructure) -> AStructure:
     pred = (f.feats.get("PRED") or "").split()[0]  # "EAT <...>" -> "EAT"
 
-    # Heuristic: PV when agent surfaces as OBJ alongside the SUBJ pivot
+    # Heuristic: OV when agent surfaces as OBJ alongside the SUBJ pivot
     # (the ng-non-pivot-as-OBJ analysis; see docs/analysis-choices.md).
     if "SUBJ" in f.feats and "OBJ" in f.feats:
         roles = ["AGENT", "PATIENT"]          # θ-roles

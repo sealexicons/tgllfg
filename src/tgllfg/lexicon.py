@@ -13,9 +13,9 @@ BASE = {
         ),
         LexicalEntry(
             lemma="kain",
-            pred="EAT <SUBJ, OBJ>",            # transitive template (Patient Voice common)
+            pred="EAT <SUBJ, OBJ>",            # transitive template (Objective Voice)
             a_structure=["AGENT","PATIENT"],
-            morph_constraints={"VOICE":"PV","TR":"TR"},
+            morph_constraints={"VOICE":"OV","TR":"TR"},
             # ng-non-pivot maps to OBJ per Kroeger 1993; see
             # docs/analysis-choices.md.
             gf_defaults={"PATIENT":"SUBJ","AGENT":"OBJ"}

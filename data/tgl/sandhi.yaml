@@ -1,0 +1,23 @@
+# data/tgl/sandhi.yaml
+#
+# Phonological rules. The seed engine bakes vowel-hiatus repair into
+# attach_suffix; entries here are documentation of the rules the
+# engine applies plus a hook for Phase 3, when the analyzer becomes
+# data-driven against this list. Adding a rule here without code
+# changes will be the goal once the FST or Phase 3 ingestion lands.
+
+- description: |
+    Vowel-hiatus repair on suffixation: a vowel-final base + a
+    vowel-initial suffix drops the root-final vowel and epenthesises
+    /h/. Schachter & Otanes 1972 §4.21.
+  context: vowel-hiatus
+  pattern: "V + V"
+  replacement: "Ø + h + V"
+
+- description: |
+    First-consonant infixation: -um- and -in- attach after the first
+    consonant of the base. Vowel-initial bases take them as
+    prefixes. Kroeger 1993 §4.2.
+  context: infixation
+  pattern: "C(V...) + -um-/-in-"
+  replacement: "C + um/in + (V...)"

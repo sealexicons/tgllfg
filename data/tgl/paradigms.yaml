@@ -1,0 +1,132 @@
+# data/tgl/paradigms.yaml
+#
+# Verbal paradigm cells for the Kroeger four-voice system, transitive
+# subset. Each cell describes how to build the surface form from a
+# root through the standard operation order:
+#
+#   1. cv_redup  — first-CV reduplication of the base
+#   2. infix     — `-um-` (AV) or `-in-` (realis) after the first
+#                  consonant; prefix on vowel-initial bases
+#   3. suffix    — `-in` (OV CTPL), `-an` (DV)
+#   4. prefix    — `i-` (IV)
+#
+# CTPL (contemplative / future) cells omit the realis -in- infix; the
+# realis/irrealis split is folded into ASPECT for now (the plan §7.2
+# mentions a separate MOOD analysis later).
+#
+# Citations: Kroeger 1993 §§4.2–4.5; Schachter & Otanes 1972 §§5.20–5.30.
+
+# === AV — Actor Voice =====================================================
+
+- voice: AV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: infix, value: um}
+  notes: kumain, bumili
+
+- voice: AV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: cv_redup}
+    - {op: infix, value: um}
+  notes: kumakain, bumibili
+
+- voice: AV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: cv_redup}
+  notes: kakain, bibili (irrealis — no realis infix)
+
+# === OV — Objective (Patient) Voice =======================================
+
+- voice: OV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: infix, value: in}
+  notes: kinain, binili
+
+- voice: OV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: cv_redup}
+    - {op: infix, value: in}
+  notes: kinakain, binibili
+
+- voice: OV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: cv_redup}
+    - {op: suffix, value: in}
+  notes: kakainin, bibilhin (sandhi for vowel-final root)
+
+# === DV — Dative / Locative Voice ========================================
+
+- voice: DV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: infix, value: in}
+    - {op: suffix, value: an}
+  notes: kinainan, binilhan
+
+- voice: DV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: cv_redup}
+    - {op: infix, value: in}
+    - {op: suffix, value: an}
+  notes: kinakainan, binibilhan
+
+- voice: DV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: cv_redup}
+    - {op: suffix, value: an}
+  notes: kakainan, bibilhan
+
+# === IV — Instrumental / Benefactive Voice ===============================
+
+- voice: IV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: infix, value: in}
+    - {op: prefix, value: "i"}
+  notes: ikinain, ibinili
+
+- voice: IV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: cv_redup}
+    - {op: infix, value: in}
+    - {op: prefix, value: "i"}
+  notes: ikinakain, ibinibili
+
+- voice: IV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "i"}
+  notes: ikakain, ibibili
