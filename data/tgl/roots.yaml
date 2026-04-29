@@ -675,7 +675,8 @@
   pos: VERB
   gloss: throw away
   transitivity: TR
-  affix_class: [mag, in_oblig, maka]
+  # Phase 4 §7.1 anchor for IV (conveyed-theme pivot, "itinapon").
+  affix_class: [mag, in_oblig, i_oblig, maka]
 
 - citation: butas
   pos: VERB
@@ -1498,6 +1499,15 @@
 - citation: wika
   pos: NOUN
   gloss: language
+
+# --- Phase 4 §7.1 anchor nouns ------------------------------------------
+# Direct objects / pivots in the Phase 4 voice-extension test sentences.
+- citation: liham
+  pos: NOUN
+  gloss: letter (correspondence)
+- citation: basura
+  pos: NOUN
+  gloss: garbage, trash
 
 # --- Phase 2C bulk noun scale-up (Commit 3b) -----------------------------
 

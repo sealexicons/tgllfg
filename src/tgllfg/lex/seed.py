@@ -68,6 +68,7 @@ class SeedReport:
     sandhi_rules: int
     particles: int
     pronouns: int
+    voice_aliases: int
     metadata_keys: int
 
 
@@ -262,6 +263,35 @@ async def _replace_affixes(
     return len(rows)
 
 
+async def _replace_voice_aliases(
+    session: AsyncSession, language_id: UUID, alias_records: list[dict[str, Any]]
+) -> int:
+    """Phase 4 §7.1: seed the Schachter-Otanes ↔ Kroeger voice mapping
+    table. Each record has ``label``, ``voice``, optional ``appl`` /
+    ``caus`` / ``notes``."""
+    await session.execute(
+        text("DELETE FROM voice_alias WHERE language_id = :l"), {"l": language_id}
+    )
+    if not alias_records:
+        return 0
+    rows = []
+    for i, rec in enumerate(alias_records):
+        if "label" not in rec or "voice" not in rec:
+            raise ValueError(f"voice_alias record {i}: missing 'label' or 'voice'")
+        rows.append(
+            {
+                "language_id": language_id,
+                "label": rec["label"],
+                "voice": rec["voice"],
+                "appl": rec.get("appl"),
+                "caus": rec.get("caus"),
+                "notes": rec.get("notes"),
+            }
+        )
+    await session.execute(pg_insert(m.VoiceAlias).values(rows))
+    return len(rows)
+
+
 async def _upsert_metadata(session: AsyncSession, key: str, value: str) -> None:
     stmt = (
         pg_insert(m.LexMetadata)
@@ -293,6 +323,7 @@ async def seed_database(
     base = Path(data_dir) if data_dir is not None else _DEFAULT_DATA_DIR
     morph = load_morph_data(base)
     affix_records = _read_yaml_list(base / "affixes.yaml")
+    voice_alias_records = _read_yaml_list(base / "voice_aliases.yaml")
 
     engine = create_async_engine(_ensure_async_url(database_url), future=True)
     sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
@@ -306,6 +337,7 @@ async def seed_database(
                 await _replace_sandhi_rules(session, language_id, morph.sandhi_rules)
                 await _replace_particles(session, language_id, morph.particles)
                 await _replace_pronouns(session, language_id, morph.pronouns)
+                await _replace_voice_aliases(session, language_id, voice_alias_records)
                 await _upsert_metadata(session, "data_version", data_version)
 
             async with session.begin():
@@ -317,6 +349,7 @@ async def seed_database(
                     sandhi_rules=await _count(session, "sandhi_rule"),
                     particles=await _count(session, "particle"),
                     pronouns=await _count(session, "pronoun"),
+                    voice_aliases=await _count(session, "voice_alias"),
                     metadata_keys=await _count(session, "lex_metadata"),
                 )
     finally:

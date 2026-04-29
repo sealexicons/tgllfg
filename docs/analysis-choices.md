@@ -228,3 +228,80 @@ YAML carries but §6.2 doesn't have a slot for:
 
 Plan §6.2 explicitly notes "Names below are illustrative; finalized
 in migration." These deviations are within that latitude.
+
+## Phase 4 §7.1: voice and case extensions
+
+**Date:** 2026-04-30. **Status:** active.
+
+Phase 4 generalises the OBJ analysis of §1 (originally written up
+for OV transitives) to all four Kroeger voices, and lays the
+secondary-feature inventory (`APPL`, `CAUS`) the §7.7 applicatives
+and causatives commit will populate.
+
+### Grammar shape
+
+The Phase 4 grammar is V-initial and **flat**: `S → V (NP)*`. There
+is no VP intermediate node. Sentential rules vary by:
+
+- the verb's voice (`AV` / `OV` / `DV` / `IV`);
+- the case of each post-verbal NP (`NOM` / `GEN` / `DAT`);
+- the order of `NP[NOM]` and `NP[GEN]` (Tagalog freely permits either).
+
+Case-to-GF mapping is **uniform across voices**: NOM → SUBJ, GEN →
+OBJ, DAT → ADJUNCT (as a non-governable set member). The voice
+feature percolates from the verb but does not affect the case-to-GF
+mapping at the c-structure level — voice's syntactic effect lives in
+which thematic role the pivot bears, which is encoded in the
+lex_entry's role-to-GF mapping (Phase 5 LMT will compute this from
+intrinsic classification + voice).
+
+### OBJ-uniform extended to DV / IV
+
+The §1 analysis (ng-non-pivot in transitive non-AV → OBJ) is
+extended verbatim to DV and IV. In a DV transitive
+(`Sinulatan ng bata ang ina`), the pivot recipient is SUBJ and the
+ng-NP agent is OBJ. In an IV transitive
+(`Isinulat ng bata ang liham`), the pivot conveyed is SUBJ and the
+ng-NP agent is OBJ. The §1 diagnostics (subjecthood is monolithic;
+ng-NP behaves like a core argument; the analysis composes with LMT)
+hold uniformly across the four voices.
+
+**Outstanding lit review:** Manueli; Mercado bear specifically on
+the OBJ-θ vs OBJ question for DV and IV (whether the ng-non-pivot
+should be typed as a thematic-OBJ — OBJ-GOAL, OBJ-CONVEYED — or as
+a bare OBJ). The Phase 4 implementation commits to the bare-OBJ
+analysis; this can be revisited if the lit review motivates a
+typed-OBJ analysis. The grammar's `(↑ OBJ) = ↓N` equation is
+trivially upgradable to `(↑ OBJ-θ) = ↓N` once the typing decision
+is made.
+
+### Sa-NPs: ADJUNCT for now, OBL-X under Phase 5 LMT
+
+`sa`-marked NPs (`NP[CASE=DAT]`) are attached as members of the
+matrix f-structure's `ADJUNCT` set. Phase 4 does **not** classify
+them as `OBL-LOC`, `OBL-GOAL`, or `OBL-BEN` — the classification
+depends on the verb's argument structure and is properly an LMT
+concern. Phase 5 will reclassify ADJUNCT members as typed OBL-X
+based on the verb's intrinsic classification. The well-formedness
+check treats ADJUNCT as non-governable, so this punt does not
+introduce false-positive coherence failures.
+
+### APPL / CAUS feature inventory
+
+Phase 4 §7.1 fixes the secondary-feature inventory:
+
+- `APPL ∈ {INSTR, BEN, REASON, CONVEY, ∅}` — applicative type.
+- `CAUS ∈ {DIRECT, INDIRECT, ∅}` — `pa-` causative variants.
+
+No Phase 4 grammar rule consumes these yet; lexical entries may
+carry them, and §7.7 (applicatives & causatives) will introduce the
+rules that route them through the f-structure.
+
+### Voice alias seed
+
+The §6.2 `voice_alias` table is seeded from
+`data/tgl/voice_aliases.yaml` with the Schachter-Otanes ↔ Kroeger
+mapping (AF→AV, GF/PF→OV, LF/DF→DV, BF→IV+BEN, IF→IV+INSTR,
+RF→IV+REASON, CF→AV+CAUS=DIRECT). The CF entry is partial: the
+biclausal indirect-causative frame is captured as XCOMP (Phase 4
+§7.6) rather than a single (VOICE, APPL, CAUS) triple.

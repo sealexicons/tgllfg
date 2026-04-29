@@ -228,15 +228,13 @@ class TestDemoGrammar:
     def test_kinain_sentence_via_pipeline(self) -> None:
         # Black-box: the full pipeline parses the demo sentence and
         # produces the c-/f-/a- structures the percolation test expects.
+        # Phase 4: grammar is flat (S → V NP NP), no VP intermediate.
         from tgllfg.pipeline import parse_text
         results = parse_text("Kinain ng aso ang isda.")
         assert len(results) >= 1
         ctree, _, _, _ = results[0]
         assert ctree.label == "S"
-        # S → VP_OV, VP_OV → V NP[CASE=GEN] NP[CASE=NOM].
-        assert ctree.children[0].label == "VP_OV"
-        vp = ctree.children[0]
-        assert [c.label for c in vp.children] == [
+        assert [c.label for c in ctree.children] == [
             "V", "NP[CASE=GEN]", "NP[CASE=NOM]",
         ]
 
@@ -244,7 +242,7 @@ class TestDemoGrammar:
         from tgllfg.pipeline import parse_text
         results = parse_text("Kinain ng aso ang isda.")
         ctree, _, _, _ = results[0]
-        v = ctree.children[0].children[0]  # S → VP_OV → V
+        v = ctree.children[0]  # Phase 4 flat S: V is the first child of S.
         assert v.label == "V"
         assert "(↑ VOICE) = 'OV'" in v.equations
         assert "(↑ ASPECT) = 'PFV'" in v.equations

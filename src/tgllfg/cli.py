@@ -97,7 +97,8 @@ def main(argv: Sequence[str] | None = None) -> None:
             f"seeded: language={report.languages} lemma={report.lemmas} "
             f"affix={report.affixes} paradigm_cell={report.paradigm_cells} "
             f"sandhi_rule={report.sandhi_rules} particle={report.particles} "
-            f"pronoun={report.pronouns} metadata={report.metadata_keys}\n"
+            f"pronoun={report.pronouns} voice_alias={report.voice_aliases} "
+            f"metadata={report.metadata_keys}\n"
         )
         return
 

@@ -59,6 +59,7 @@ async def test_seed_populates_every_table(
     assert report.sandhi_rules > 0
     assert report.particles > 0
     assert report.pronouns > 0
+    assert report.voice_aliases > 0
     assert report.metadata_keys >= 1
 
     sessionmaker = async_sessionmaker(empty_migrated_engine, expire_on_commit=False)
@@ -76,6 +77,16 @@ async def test_seed_populates_every_table(
         )
         assert result.scalar_one() > 0
 
+        # Phase 4 §7.1: voice_alias rows seeded — AF→AV, GF→OV, etc.
+        result = await session.execute(
+            text("SELECT voice FROM voice_alias WHERE label = 'AF'")
+        )
+        assert result.scalar_one() == "AV"
+        result = await session.execute(
+            text("SELECT voice, appl FROM voice_alias WHERE label = 'BF'")
+        )
+        assert result.one() == ("IV", "BEN")
+
 
 async def test_seed_is_idempotent(
     postgres_container: PostgresContainer, empty_migrated_engine: AsyncEngine
@@ -90,6 +101,7 @@ async def test_seed_is_idempotent(
     assert first.sandhi_rules == second.sandhi_rules
     assert first.particles == second.particles
     assert first.pronouns == second.pronouns
+    assert first.voice_aliases == second.voice_aliases
     assert first.metadata_keys == second.metadata_keys
 
 
