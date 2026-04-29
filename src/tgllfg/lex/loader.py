@@ -32,9 +32,35 @@ from tgllfg.morph.paradigms import MorphData
 BACKEND_ENV = "TGLLFG_LEX_BACKEND"
 DATABASE_URL_ENV = "DATABASE_URL"
 
+# The minimum ``data_version`` (as written into ``lex_metadata`` by
+# the seed loader) that this build of the parser knows how to
+# interpret. Bump this in the same commit that introduces a
+# breaking change to the seed shape; the parser will then refuse to
+# start against an older seed instead of producing subtly wrong
+# parses.
+MIN_COMPATIBLE_DATA_VERSION = "0.1.0"
+
+
+class IncompatibleDataVersionError(RuntimeError):
+    """The DB-side ``data_version`` is older than this parser
+    requires. Re-run ``tgllfg lex seed`` to bring it up to date."""
+
+
+def _parse_version(v: str) -> tuple[int, ...]:
+    try:
+        return tuple(int(part) for part in v.split("."))
+    except ValueError as exc:
+        raise IncompatibleDataVersionError(
+            f"unparseable data_version {v!r}: expected dotted integers"
+        ) from exc
+
 
 async def aload_morph_data_from_url(database_url: str, iso_code: str = "tgl") -> MorphData:
-    """Async load of ``MorphData`` from a Postgres lexicon URL."""
+    """Async load of ``MorphData`` from a Postgres lexicon URL.
+
+    Raises :class:`IncompatibleDataVersionError` if the seeded
+    ``data_version`` is older than :data:`MIN_COMPATIBLE_DATA_VERSION`.
+    """
     engine = create_async_engine(_ensure_async_url(database_url), future=True)
     sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
     try:
@@ -42,7 +68,21 @@ async def aload_morph_data_from_url(database_url: str, iso_code: str = "tgl") ->
             cache = await build_cache(session)
     finally:
         await engine.dispose()
+    _check_data_version(cache.metadata.get("data_version"))
     return cache_to_morph_data(cache, iso_code=iso_code)
+
+
+def _check_data_version(observed: str | None) -> None:
+    if observed is None:
+        raise IncompatibleDataVersionError(
+            "lex_metadata.data_version is not set; run `tgllfg lex seed` first"
+        )
+    if _parse_version(observed) < _parse_version(MIN_COMPATIBLE_DATA_VERSION):
+        raise IncompatibleDataVersionError(
+            f"seeded data_version={observed!r} is older than this parser's "
+            f"minimum compatible {MIN_COMPATIBLE_DATA_VERSION!r}; "
+            "re-run `tgllfg lex seed`"
+        )
 
 
 def load_morph_data_from_url(database_url: str, iso_code: str = "tgl") -> MorphData:
@@ -77,6 +117,8 @@ def resolve_morph_data() -> MorphData:
 __all__ = [
     "BACKEND_ENV",
     "DATABASE_URL_ENV",
+    "MIN_COMPATIBLE_DATA_VERSION",
+    "IncompatibleDataVersionError",
     "aload_morph_data_from_url",
     "load_morph_data_from_url",
     "resolve_morph_data",

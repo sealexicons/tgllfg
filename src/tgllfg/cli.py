@@ -20,8 +20,11 @@ import os
 import sys
 from collections.abc import Sequence
 
+from pathlib import Path
+
 from alembic import command
 
+from tgllfg.lex.import_csv import import_lemmas_csv
 from tgllfg.lex.migrations import build_alembic_config
 from tgllfg.lex.seed import seed_database
 
@@ -45,6 +48,22 @@ def _build_parser() -> argparse.ArgumentParser:
         "--data-dir",
         default=None,
         help="path to data/tgl/ (default: shipped seed)",
+    )
+
+    imp = lex_sub.add_parser(
+        "import",
+        help="import a CSV of additive lemma data with source citation",
+    )
+    imp.add_argument("path", help="path to a CSV file with the lemma rows")
+    imp.add_argument(
+        "--source-short-name",
+        required=True,
+        help="short_name to record in the `source` table (e.g. 'Kaufman1939')",
+    )
+    imp.add_argument(
+        "--source-full-citation",
+        required=True,
+        help="full bibliographic citation for the source",
     )
 
     return parser
@@ -79,6 +98,22 @@ def main(argv: Sequence[str] | None = None) -> None:
             f"affix={report.affixes} paradigm_cell={report.paradigm_cells} "
             f"sandhi_rule={report.sandhi_rules} particle={report.particles} "
             f"pronoun={report.pronouns} metadata={report.metadata_keys}\n"
+        )
+        return
+
+    if args.lex_cmd == "import":
+        import_report = asyncio.run(
+            import_lemmas_csv(
+                db_url,
+                Path(args.path),
+                source_short_name=args.source_short_name,
+                source_full_citation=args.source_full_citation,
+            )
+        )
+        sys.stdout.write(
+            f"imported: rows_read={import_report.rows_read} "
+            f"rows_upserted={import_report.rows_upserted} "
+            f"source={import_report.source_short_name}\n"
         )
         return
 
