@@ -43,6 +43,7 @@ def cache_to_morph_data(cache: LexCache, iso_code: str = "tgl") -> MorphData:
             gloss=lemma.gloss or "",
             transitivity=lemma.transitivity,
             affix_class=list(lemma.affix_class),
+            sandhi_flags=list(lemma.sandhi_flags),
         )
         for lemma in cache.lemmas
         if lemma.language_id == lang_id

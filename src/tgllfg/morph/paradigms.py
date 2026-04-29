@@ -30,6 +30,14 @@ class Root:
     # field) is treated as participating in any cell whose
     # `affix_class` is also empty.
     affix_class: list[str] = field(default_factory=list)
+    # Per-root opt-in phonological rules. Recognised flags
+    # (Phase 2C):
+    #   "d_to_r"               — /d/ → /r/ intervocalic post-processor
+    #                            (e.g. dating, lakad).
+    #   "high_vowel_deletion"  — colloquial high-vowel deletion variant
+    #                            of suffix attachment (bili + -in →
+    #                            bilhin instead of bilihin).
+    sandhi_flags: list[str] = field(default_factory=list)
 
 
 @dataclass

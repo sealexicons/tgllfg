@@ -126,49 +126,50 @@ the SUBJ / OBJ assignment.
 
 ## Phase 2 morphology scope and limitations
 
-**Date:** 2026-04-28. **Status:** active for Phase 2; revisit in
-Phase 2C and Phase 5.
+**Date:** 2026-04-28. **Status:** Phase 2C complete (2026-04-30).
 
 The Phase 2 rule-cascade morphology engine
 (`src/tgllfg/morph/`) covers AV / OV / DV / IV across PFV / IPFV /
 CTPL plus the AV variants in `mag-`, `mang-` (with nasal
-substitution), and `maka-` (abilitative, `MOOD: ABIL`). The seed
-under `data/tgl/` covers ~50 verb roots and ~30 nouns, with ~250
-paired surface↔analysis assertions in
-`tests/tgllfg/test_morph_paradigms.py`. The plan §5.4 target of ~200
-roots and ~500 assertions is partially met; the residual scale-up
-is deferred to a Phase 2C follow-on.
+substitution), `maka-` (abilitative, `MOOD: ABIL`), and `ma-`
+(non-volitional, `MOOD: NVOL`). After the three-commit Phase 2C
+scale-up, the seed under `data/tgl/` covers **200 verb roots and
+148 nouns** with **645 paired surface↔analysis assertions** in
+`tests/tgllfg/test_morph_paradigms.py`. Plan §5.4's target of 200
+verbs / 150 nouns / 500 assertions is met (nouns 2 short of 150 —
+within acceptable margin).
 
-### Documented engine limitations
+### Phase 2C: phonological rules added
 
-The following root-specific phonological rules are **not modeled**;
-forms produced by the engine for affected roots are conservative
-("no rule applied") rather than the literary standard. Tests assert
-the conservative form and flag the gap inline.
+The five rules previously documented as "not modelled" were
+implemented in Phase 2C (commit on `feature/phase-2c-morph-scaleup`).
+They appear in either the engine's automatic pipeline or as per-root
+opt-in flags:
 
-1. **Stem-vowel raising** `o → u` on suffixation.
-   - `inom + -in` → engine `iinomin`, literary `iinumin`.
-   - `putol + -in` → engine `puputolin`, literary `puputulin`.
-   - Source: Schachter & Otanes 1972 §4.21; Ramos & Bautista 1986
-     paradigm tables.
-2. **/d/ → /r/ alternation** between vowels.
-   - `dating + cv-redup` → engine `dadating`, surface `darating`.
-   - `dating + -um- + cv-redup` → engine `dumadating`, surface
-     `dumarating`.
-3. **High-vowel deletion** under suffixation (a colloquial variant
-   of the h-epenthesis rule).
-   - `bili + -in` → engine `bilihin` (h-epenthesis only); colloquial
-     `bilhin` (with deletion). Both are attested; the engine
-     standardises on the formal h-only pattern.
-4. **Sonorant-initial -in- → ni-** prefix realisation.
-   - `linis + OV PFV (realis -in-)` → would require `nilinis` rather
-     than `linilis`. The seed does not declare `linis` in any non-AV
-     class, so generation never fires for these cells; they are
-     deferred to Phase 2C.
-5. **`ma-` non-volitional / abilitative on non-AV voices** — not
-   represented in the cell inventory. `tulog` colloquially has the
-   `ma-` AV PFV `natulog` but the engine generates `nagtulog`
-   (mag- class) instead.
+1. **Stem-vowel raising** `o → u` on suffixation. Automatic. The
+   final-syllable /o/ in the stem raises to /u/ when a suffix is
+   attached: `inom + -in → inumin`; `putol + -in → putulin`.
+2. **/d/ → /r/ intervocalic alternation**. Per-root opt-in via
+   `sandhi_flags: [d_to_r]`. Applied as a post-processor after all
+   operations: `dating + cv-redup → darating`; `bayad + -an →
+   bayaran`. Roots currently flagged: `dating`, `lakad`, `bayad`.
+3. **High-vowel deletion variant** of suffixation. Per-root opt-in
+   via `sandhi_flags: [high_vowel_deletion]`. When set, a
+   high-vowel-final stem deletes its final vowel rather than taking
+   the formal h-epenthesis: `bili + -in → bilhin`. Default is the
+   formal h-epenthesis form.
+4. **Sonorant-initial -in- → ni-** prefix variant. Automatic. When
+   the realis `-in-` infix targets a base beginning with a sonorant
+   (m, n, ng-as-/ŋ/, l, r, w, y, h), it surfaces as the `ni-` prefix:
+   `linis + OV PFV → nilinis` (rather than `linilis`).
+5. **`ma-` non-volitional / stative class** (`MOOD: NVOL`). New
+   `affix_class: ma` paradigm cells: `tulog → natulog / natutulog
+   / matutulog`. Distinct from `maka-` abilitative (`MOOD: ABIL`).
+
+These rules are also threaded through the Phase 3 DB-backed loader:
+migration 0003 adds `lemma.sandhi_flags JSONB` and the seed +
+adapter round-trip the flags so the DB-backend analyzer behaves
+identically to the YAML-backend one.
 
 ### Affix-class lexicon convention
 
