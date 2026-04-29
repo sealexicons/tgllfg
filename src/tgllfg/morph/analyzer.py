@@ -44,7 +44,6 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from ..common import MorphAnalysis, Token
-from .loader import load_morph_data
 from .paradigms import (
     MorphData,
     Operation,
@@ -107,9 +106,14 @@ class Analyzer:
 
     @classmethod
     def from_default(cls) -> "Analyzer":
-        """Construct an analyzer using the seed lexicon shipped with
-        the package."""
-        return cls(load_morph_data())
+        """Construct an analyzer using the backend selected by
+        ``TGLLFG_LEX_BACKEND`` (default ``yaml``). When the env var
+        is unset or set to ``yaml``, this is the legacy YAML path.
+        Set it to ``db`` to load from a Postgres lexicon at
+        ``DATABASE_URL`` (Phase 3+)."""
+        from tgllfg.lex.loader import resolve_morph_data
+
+        return cls(resolve_morph_data())
 
     def analyze_one(self, token: Token) -> list[MorphAnalysis]:
         """Return all analyses for a single token, in priority order:

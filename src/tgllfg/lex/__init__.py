@@ -21,6 +21,12 @@ from tgllfg.lex.cache import (
     VoiceAliasEntry,
     build_cache,
 )
+from tgllfg.lex.adapter import cache_to_morph_data
+from tgllfg.lex.loader import (
+    aload_morph_data_from_url,
+    load_morph_data_from_url,
+    resolve_morph_data,
+)
 from tgllfg.lex.migrations import build_alembic_config
 from tgllfg.lex.repo import AsyncLexRepository
 
@@ -39,6 +45,10 @@ __all__ = [
     "SandhiRuleEntry",
     "SourceEntry",
     "VoiceAliasEntry",
+    "aload_morph_data_from_url",
     "build_alembic_config",
     "build_cache",
+    "cache_to_morph_data",
+    "load_morph_data_from_url",
+    "resolve_morph_data",
 ]
