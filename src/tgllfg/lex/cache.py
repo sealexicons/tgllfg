@@ -48,6 +48,8 @@ class LemmaEntry:
     pos: str
     gloss: str | None = None
     source_ref: str | None = None
+    transitivity: str = ""
+    affix_class: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -84,6 +86,20 @@ class ParadigmEntry:
     language_id: UUID
     name: str
     slots: tuple[ParadigmSlotEntry, ...] = ()
+
+
+@dataclass(frozen=True)
+class ParadigmCellEntry:
+    id: UUID
+    language_id: UUID
+    voice: str
+    aspect: str
+    mood: str
+    transitivity: str
+    affix_class: str
+    operations: tuple[Mapping[str, Any], ...]
+    ordering: int
+    notes: str | None = None
 
 
 @dataclass(frozen=True)
@@ -136,6 +152,7 @@ class LexCache:
     lex_entries: tuple[LexEntryRow, ...] = ()
     affixes: tuple[AffixEntry, ...] = ()
     paradigms: tuple[ParadigmEntry, ...] = ()
+    paradigm_cells: tuple[ParadigmCellEntry, ...] = ()
     sandhi_rules: tuple[SandhiRuleEntry, ...] = ()
     particles: tuple[ParticleEntry, ...] = ()
     pronouns: tuple[PronounEntry, ...] = ()
@@ -178,6 +195,8 @@ async def build_cache(session: AsyncSession) -> LexCache:
             pos=r.pos,
             gloss=r.gloss,
             source_ref=r.source_ref,
+            transitivity=r.transitivity or "",
+            affix_class=tuple(r.affix_class or ()),
         )
         for r in (await session.scalars(select(m.Lemma))).all()
     ]
@@ -218,6 +237,21 @@ async def build_cache(session: AsyncSession) -> LexCache:
             slots=tuple(sorted(slots_by_paradigm.get(r.id, []), key=lambda s: s.position)),
         )
         for r in (await session.scalars(select(m.Paradigm))).all()
+    ]
+    paradigm_cells = [
+        ParadigmCellEntry(
+            id=r.id,
+            language_id=r.language_id,
+            voice=r.voice,
+            aspect=r.aspect,
+            mood=r.mood,
+            transitivity=r.transitivity or "",
+            affix_class=r.affix_class or "",
+            operations=tuple(r.operations),
+            ordering=r.ordering,
+            notes=r.notes,
+        )
+        for r in (await session.scalars(select(m.ParadigmCellRow))).all()
     ]
     sandhi_rules = [
         SandhiRuleEntry(
@@ -273,6 +307,7 @@ async def build_cache(session: AsyncSession) -> LexCache:
         lex_entries=tuple(lex_entries),
         affixes=tuple(affixes),
         paradigms=tuple(paradigms),
+        paradigm_cells=tuple(paradigm_cells),
         sandhi_rules=tuple(sandhi_rules),
         particles=tuple(particles),
         pronouns=tuple(pronouns),
@@ -290,6 +325,7 @@ __all__ = [
     "LemmaEntry",
     "LexCache",
     "LexEntryRow",
+    "ParadigmCellEntry",
     "ParadigmEntry",
     "ParadigmSlotEntry",
     "ParticleEntry",

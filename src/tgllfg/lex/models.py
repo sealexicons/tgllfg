@@ -63,6 +63,10 @@ class Lemma(Base):
     gloss: Mapped[str | None] = mapped_column(Text)
     notes: Mapped[str | None] = mapped_column(Text)
     source_ref: Mapped[str | None] = mapped_column(Text)
+    transitivity: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("''"))
+    affix_class: Mapped[Any] = mapped_column(
+        JSONB, nullable=False, server_default=text("'[]'::jsonb")
+    )
 
 
 class LexEntry(Base):
@@ -197,6 +201,33 @@ class VoiceAlias(Base):
     notes: Mapped[str | None] = mapped_column(Text)
 
 
+class ParadigmCellRow(Base):
+    """Operational view of a verb paradigm cell.
+
+    The §6.2 ``paradigm`` / ``paradigm_slot`` / ``affix`` triple
+    describes affix inventories abstractly. This table mirrors the
+    ``ParadigmCell`` shape consumed by ``morph.analyzer.generate_form``:
+    one row per (voice, aspect, mood, transitivity, affix_class) cell,
+    with the ordered operation list stored as JSONB.
+    """
+
+    __tablename__ = "paradigm_cell"
+    id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), primary_key=True, server_default=_UUID_PK_DEFAULT
+    )
+    language_id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("language.id"), nullable=False
+    )
+    voice: Mapped[str] = mapped_column(Text, nullable=False)
+    aspect: Mapped[str] = mapped_column(Text, nullable=False)
+    mood: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'IND'"))
+    transitivity: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("''"))
+    affix_class: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("''"))
+    operations: Mapped[Any] = mapped_column(JSONB, nullable=False)
+    ordering: Mapped[int] = mapped_column(Integer, nullable=False)
+    notes: Mapped[str | None] = mapped_column(Text)
+
+
 class LexMetadata(Base):
     __tablename__ = "lex_metadata"
     key: Mapped[str] = mapped_column(Text, primary_key=True)
@@ -212,6 +243,7 @@ __all__ = [
     "LexEntry",
     "LexMetadata",
     "Paradigm",
+    "ParadigmCellRow",
     "ParadigmSlot",
     "Particle",
     "Pronoun",

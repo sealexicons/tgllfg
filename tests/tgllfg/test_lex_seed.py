@@ -55,6 +55,7 @@ async def test_seed_populates_every_table(
     assert report.languages == 1
     assert report.lemmas > 0
     assert report.affixes > 0
+    assert report.paradigm_cells > 0
     assert report.sandhi_rules > 0
     assert report.particles > 0
     assert report.pronouns > 0
@@ -85,6 +86,7 @@ async def test_seed_is_idempotent(
     assert first.languages == second.languages
     assert first.lemmas == second.lemmas
     assert first.affixes == second.affixes
+    assert first.paradigm_cells == second.paradigm_cells
     assert first.sandhi_rules == second.sandhi_rules
     assert first.particles == second.particles
     assert first.pronouns == second.pronouns
@@ -117,6 +119,44 @@ async def test_seed_refreshes_lemma_gloss(
         assert result.scalar_one() != "CORRUPTED"
 
 
+async def test_seed_populates_lemma_morph_metadata(
+    postgres_container: PostgresContainer, empty_migrated_engine: AsyncEngine
+) -> None:
+    """The new lemma.transitivity and lemma.affix_class columns must
+    arrive populated for verbs that declare them in roots.yaml."""
+    await seed_database(postgres_container.get_connection_url())
+
+    sessionmaker = async_sessionmaker(empty_migrated_engine, expire_on_commit=False)
+    async with sessionmaker() as session:
+        result = await session.execute(
+            text(
+                "SELECT transitivity, affix_class FROM lemma "
+                "WHERE citation_form = 'kain' AND pos = 'VERB'"
+            )
+        )
+        row = result.one()
+        assert row[0] == "TR"
+        assert "um" in row[1]
+
+
+async def test_seed_populates_paradigm_cell_operations(
+    postgres_container: PostgresContainer, empty_migrated_engine: AsyncEngine
+) -> None:
+    """Paradigm cells round-trip with their full operation list."""
+    await seed_database(postgres_container.get_connection_url())
+
+    sessionmaker = async_sessionmaker(empty_migrated_engine, expire_on_commit=False)
+    async with sessionmaker() as session:
+        result = await session.execute(
+            text(
+                "SELECT operations FROM paradigm_cell "
+                "WHERE voice = 'AV' AND aspect = 'PFV' AND affix_class = 'um'"
+            )
+        )
+        ops = result.scalar_one()
+        assert any(op["op"] == "infix" and op["value"] == "um" for op in ops)
+
+
 async def test_cli_seed_subcommand(
     postgres_container: PostgresContainer,
     empty_migrated_engine: AsyncEngine,
@@ -133,3 +173,4 @@ async def test_cli_seed_subcommand(
     assert "seeded:" in out
     assert "language=1" in out
     assert "lemma=" in out
+    assert "paradigm_cell=" in out

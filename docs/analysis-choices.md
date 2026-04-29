@@ -193,3 +193,37 @@ and the R&B 1986 PDF live under `data/tgl/dictionaries/`
 (gitignored) for grep-verification during seed authoring; the
 binaries are not redistributed. Schachter & Otanes 1972 and Kroeger
 1993 are cited by section number in commit messages.
+
+## Phase 3 schema deviations from plan §6.2
+
+**Date:** 2026-04-29. **Status:** active.
+
+The Phase 3 lexicon schema (Alembic migrations 0001 + 0002) follows
+plan §6.2 verbatim for all 13 originally-listed tables. Two
+deviations were introduced in migration 0002 to host data the seed
+YAML carries but §6.2 doesn't have a slot for:
+
+1. **`lemma.transitivity` (TEXT) and `lemma.affix_class` (JSONB).**
+   Per-root lexical properties read by the analyzer (TR/INTR; the
+   list of paradigm patterns the root participates in: um, mag,
+   mang, maka, in_oblig, an_oblig, i_oblig). §6.2 documents these
+   as living in `lex_entry.morph_constraints`, but `lex_entry` also
+   requires `pred_template` / `a_structure` / `intrinsic_classification`
+   which are properly authored LFG predicates (Phase 4+). Putting
+   transitivity and affix_class on `lemma` keeps `lex_entry`
+   reserved for predicates that have actually been worked out.
+
+2. **`paradigm_cell` table.** §6.2's `paradigm` /
+   `paradigm_slot` / `affix` triple describes affix inventories
+   abstractly (one slot fills with one affix per position). The
+   seed YAML `paradigms.yaml` describes paradigm cells
+   *operationally* — an ordered list of CV-redup / infix / suffix /
+   prefix / nasal-substitute operations per
+   (voice, aspect, mood, transitivity, affix_class) cell. Those are
+   at different levels of description and don't reduce to each
+   other, so they coexist: §6.2's tables for the abstract view (used
+   later for richer LFG morphology), `paradigm_cell` for the
+   operational view the analyzer actually executes.
+
+Plan §6.2 explicitly notes "Names below are illustrative; finalized
+in migration." These deviations are within that latitude.

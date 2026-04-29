@@ -64,6 +64,7 @@ class SeedReport:
     languages: int
     lemmas: int
     affixes: int
+    paradigm_cells: int
     sandhi_rules: int
     particles: int
     pronouns: int
@@ -114,13 +115,19 @@ async def _upsert_lemmas(
             "citation_form": r.citation,
             "pos": r.pos,
             "gloss": r.gloss or None,
+            "transitivity": r.transitivity or "",
+            "affix_class": list(r.affix_class or ()),
         }
         for r in roots
     ]
     stmt = pg_insert(m.Lemma).values(rows)
     stmt = stmt.on_conflict_do_update(
         constraint="uq_lemma_lang_form_pos",
-        set_={"gloss": stmt.excluded.gloss},
+        set_={
+            "gloss": stmt.excluded.gloss,
+            "transitivity": stmt.excluded.transitivity,
+            "affix_class": stmt.excluded.affix_class,
+        },
     )
     await session.execute(stmt)
     return len(rows)
@@ -167,6 +174,33 @@ async def _replace_pronouns(
         for p in pronouns
     ]
     await session.execute(pg_insert(m.Pronoun).values(rows))
+    return len(rows)
+
+
+async def _replace_paradigm_cells(
+    session: AsyncSession, language_id: UUID, cells: list[Any]
+) -> int:
+    await session.execute(
+        text("DELETE FROM paradigm_cell WHERE language_id = :l"), {"l": language_id}
+    )
+    if not cells:
+        return 0
+    rows = []
+    for i, c in enumerate(cells):
+        rows.append(
+            {
+                "language_id": language_id,
+                "voice": c.voice,
+                "aspect": c.aspect,
+                "mood": c.mood or "IND",
+                "transitivity": c.transitivity or "",
+                "affix_class": c.affix_class or "",
+                "operations": [{"op": op.op, "value": op.value} for op in c.operations],
+                "ordering": i,
+                "notes": (c.notes or None),
+            }
+        )
+    await session.execute(pg_insert(m.ParadigmCellRow).values(rows))
     return len(rows)
 
 
@@ -266,6 +300,7 @@ async def seed_database(
                 language_id = await _upsert_language(session, iso_code, language_name)
                 await _upsert_lemmas(session, language_id, morph.roots)
                 await _replace_affixes(session, language_id, affix_records)
+                await _replace_paradigm_cells(session, language_id, morph.paradigm_cells)
                 await _replace_sandhi_rules(session, language_id, morph.sandhi_rules)
                 await _replace_particles(session, language_id, morph.particles)
                 await _replace_pronouns(session, language_id, morph.pronouns)
@@ -276,6 +311,7 @@ async def seed_database(
                     languages=await _count(session, "language"),
                     lemmas=await _count(session, "lemma"),
                     affixes=await _count(session, "affix"),
+                    paradigm_cells=await _count(session, "paradigm_cell"),
                     sandhi_rules=await _count(session, "sandhi_rule"),
                     particles=await _count(session, "particle"),
                     pronouns=await _count(session, "pronoun"),

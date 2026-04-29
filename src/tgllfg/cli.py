@@ -76,9 +76,9 @@ def main(argv: Sequence[str] | None = None) -> None:
         report = asyncio.run(seed_database(db_url, args.data_dir))
         sys.stdout.write(
             f"seeded: language={report.languages} lemma={report.lemmas} "
-            f"affix={report.affixes} sandhi_rule={report.sandhi_rules} "
-            f"particle={report.particles} pronoun={report.pronouns} "
-            f"metadata={report.metadata_keys}\n"
+            f"affix={report.affixes} paradigm_cell={report.paradigm_cells} "
+            f"sandhi_rule={report.sandhi_rules} particle={report.particles} "
+            f"pronoun={report.pronouns} metadata={report.metadata_keys}\n"
         )
         return
 
