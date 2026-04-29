@@ -67,6 +67,9 @@ class Lemma(Base):
     affix_class: Mapped[Any] = mapped_column(
         JSONB, nullable=False, server_default=text("'[]'::jsonb")
     )
+    sandhi_flags: Mapped[Any] = mapped_column(
+        JSONB, nullable=False, server_default=text("'[]'::jsonb")
+    )
 
 
 class LexEntry(Base):

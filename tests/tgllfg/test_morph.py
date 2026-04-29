@@ -20,8 +20,10 @@ from tgllfg.morph import (
 from tgllfg.morph.sandhi import (
     attach_suffix,
     cv_reduplicate,
+    d_to_r_intervocalic,
     first_cv,
     infix_after_first_consonant,
+    is_sonorant_initial,
     is_vowel,
     nasal_substitute,
 )
@@ -99,6 +101,117 @@ class TestReduplication:
     def test_vowel_initial(self) -> None:
         # Just-vowel redup for vowel-initial roots.
         assert cv_reduplicate("alis") == "aalis"
+
+
+# === Phase 2C sandhi rules ================================================
+
+class TestSonorantInitial:
+    def test_known_sonorants_match(self) -> None:
+        for stem in ("linis", "mahal", "nakaw", "rud", "wala", "yaman", "hugot"):
+            assert is_sonorant_initial(stem), stem
+
+    def test_ng_digraph_matches(self) -> None:
+        assert is_sonorant_initial("nguya")
+
+    def test_obstruents_do_not_match(self) -> None:
+        for stem in ("kain", "bili", "putol", "tahi", "dating", "gawa", "sulat"):
+            assert not is_sonorant_initial(stem), stem
+
+    def test_vowel_initial_does_not_match(self) -> None:
+        assert not is_sonorant_initial("alis")
+
+    def test_empty(self) -> None:
+        assert not is_sonorant_initial("")
+
+
+class TestSonorantNiPrefix:
+    """Sonorant-initial roots take the realis -in- as a ni- prefix."""
+
+    def test_l_initial(self) -> None:
+        assert infix_after_first_consonant("linis", "in") == "nilinis"
+
+    def test_m_initial(self) -> None:
+        assert infix_after_first_consonant("mahal", "in") == "nimahal"
+
+    def test_n_initial(self) -> None:
+        assert infix_after_first_consonant("nakaw", "in") == "ninakaw"
+
+    def test_obstruent_unaffected(self) -> None:
+        # /k/ is not a sonorant; canonical infix.
+        assert infix_after_first_consonant("kain", "in") == "kinain"
+
+    def test_um_infix_unaffected(self) -> None:
+        # The rule is specific to the "in" infix; "um" still infixes.
+        assert infix_after_first_consonant("linis", "um") == "luminis"
+
+
+class TestOToURaising:
+    """Stem-final /o/ raises to /u/ on suffix attachment."""
+
+    def test_inom_in(self) -> None:
+        assert attach_suffix("inom", "in") == "inumin"
+
+    def test_putol_in(self) -> None:
+        assert attach_suffix("putol", "in") == "putulin"
+
+    def test_no_o_unaffected(self) -> None:
+        assert attach_suffix("kain", "in") == "kainin"
+
+    def test_o_only_in_non_final_syllable_unaffected(self) -> None:
+        # Only the final-syllable vowel raises; an earlier /o/ stays.
+        assert attach_suffix("oras", "an").startswith("oras")
+
+    def test_redup_does_not_trigger_raising(self) -> None:
+        # Reduplication alone is not a suffix; cv_redup keeps /o/.
+        assert cv_reduplicate("inom") == "iinom"
+
+
+class TestHighVowelDeletion:
+    """Per-root opt-in: high vowel + V-suffix deletes the stem vowel."""
+
+    def test_bili_in_with_flag(self) -> None:
+        assert attach_suffix("bili", "in", high_vowel_deletion=True) == "bilhin"
+
+    def test_bili_in_without_flag(self) -> None:
+        # Default is h-epenthesis, not deletion.
+        assert attach_suffix("bili", "in") == "bilihin"
+
+    def test_low_vowel_unaffected(self) -> None:
+        # /a/ stems take h-epenthesis even with the flag.
+        assert attach_suffix("basa", "an", high_vowel_deletion=True) == "basahan"
+
+    def test_consonant_final_unaffected(self) -> None:
+        assert attach_suffix("kain", "in", high_vowel_deletion=True) == "kainin"
+
+
+class TestDToRIntervocalic:
+    """Post-processor: /d/ → /r/ when bracketed by vowels."""
+
+    def test_simple_intervocalic(self) -> None:
+        assert d_to_r_intervocalic("dadating") == "darating"
+
+    def test_after_um_infix(self) -> None:
+        assert d_to_r_intervocalic("dumadating") == "dumarating"
+
+    def test_word_initial_unchanged(self) -> None:
+        # Word-initial /d/ has no preceding vowel.
+        assert d_to_r_intervocalic("dating") == "dating"
+
+    def test_word_final_unchanged(self) -> None:
+        assert d_to_r_intervocalic("lakad") == "lakad"
+
+    def test_d_before_consonant_unchanged(self) -> None:
+        assert d_to_r_intervocalic("daw") == "daw"
+
+    def test_at_suffix_boundary(self) -> None:
+        # bayad + -an: /d/ between /a/ and /a/.
+        assert d_to_r_intervocalic("bayadan") == "bayaran"
+
+    def test_uppercase_d_preserves_case(self) -> None:
+        assert d_to_r_intervocalic("aDa") == "aRa"
+
+    def test_empty(self) -> None:
+        assert d_to_r_intervocalic("") == ""
 
 
 # === Generation: kain family across all 12 cells =========================
@@ -367,8 +480,9 @@ class TestAnalyzerWithCustomData:
             )],
         )
         analyzer = Analyzer(data)
-        # Generated form: r-in-ud → rinud.
-        out = analyzer.analyze_one(_tok("rinud"))
+        # Generated form: sonorant /r/-initial root takes -in- as
+        # ni- prefix (Phase 2C sonorant rule).
+        out = analyzer.analyze_one(_tok("nirud"))
         assert any(a.lemma == "rud" and a.pos == "VERB" for a in out)
         # Particle and pronoun lookup.
         assert analyzer.analyze_one(_tok("foo"))[0].pos == "PART"

@@ -190,8 +190,10 @@
   gloss: walk
   transitivity: INTR
   # R&B 144: -um- / -in / -an. Walks to/towards take -in/-an objects;
-  # bare walking is intransitive.
+  # bare walking is intransitive. /d/ → /r/ intervocalic ("lakarin"
+  # rather than "lakadin" under suffixation).
   affix_class: [um, in_oblig, an_oblig, maka]
+  sandhi_flags: [d_to_r]
 
 - citation: alis
   pos: VERB
@@ -204,8 +206,10 @@
   pos: VERB
   gloss: arrive
   transitivity: INTR
-  # -um-.
+  # -um-. /d/ → /r/ intervocalic: dadating → darating, dumadating →
+  # dumarating. Phase 2C automatic post-processor.
   affix_class: [um, maka]
+  sandhi_flags: [d_to_r]
 
 # --- mag- class verbs -----------------------------------------------------
 
@@ -213,10 +217,10 @@
   pos: VERB
   gloss: clean
   transitivity: TR
-  # R&B 162: mag- / -in / ipang-. -in is the OV suffix (literal
-  # "linisin" ≈ "to clean") not the realis -in- (which on
-  # sonorant-initial roots surfaces as ni-, deferred to Phase 2C).
-  affix_class: [mag, maka]
+  # R&B 162: mag- / -in / ipang-. The realis -in- on sonorant-initial
+  # roots surfaces as a ni- prefix (Phase 2C automatic rule), so OV
+  # PFV is "nilinis" (not "linilis") and OV IPFV is "nililinis".
+  affix_class: [mag, in_oblig, an_oblig, maka]
 
 - citation: bigay
   pos: VERB
@@ -237,8 +241,10 @@
   pos: VERB
   gloss: pay
   transitivity: TR
-  # mag- / -an.
+  # mag- / -an. /d/ → /r/ intervocalic on suffix attachment:
+  # bayad + -an → bayaran (Phase 2C).
   affix_class: [mag, an_oblig, maka]
+  sandhi_flags: [d_to_r]
 
 - citation: hatid
   pos: VERB
@@ -386,11 +392,10 @@
   pos: VERB
   gloss: sleep
   transitivity: INTR
-  # R&B 275: ma- / -an. (Bare AV uses MA- which is a different class
-  # than mag-; we encode the colloquial mag- alternation here. The
-  # primary "matulog" (ma- AV) form is deferred to Phase 2C when ma-
-  # AV cells are added.)
-  affix_class: [um, mag, maka]
+  # R&B 275: ma- / -an. ma- non-volitional is the primary AV class
+  # ("natulog" / "natutulog" / "matutulog", MOOD=NVOL). The colloquial
+  # mag- and -um- alternations are also kept.
+  affix_class: [um, mag, ma, maka]
 
 - citation: simula
   pos: VERB

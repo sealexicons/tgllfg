@@ -117,6 +117,7 @@ async def _upsert_lemmas(
             "gloss": r.gloss or None,
             "transitivity": r.transitivity or "",
             "affix_class": list(r.affix_class or ()),
+            "sandhi_flags": list(r.sandhi_flags or ()),
         }
         for r in roots
     ]
@@ -127,6 +128,7 @@ async def _upsert_lemmas(
             "gloss": stmt.excluded.gloss,
             "transitivity": stmt.excluded.transitivity,
             "affix_class": stmt.excluded.affix_class,
+            "sandhi_flags": stmt.excluded.sandhi_flags,
         },
     )
     await session.execute(stmt)

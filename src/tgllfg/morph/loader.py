@@ -79,12 +79,16 @@ def _load_roots(path: Path) -> list[Root]:
         affix_class_raw = rec.get("affix_class", [])
         if not isinstance(affix_class_raw, list):
             raise ValueError(f"{where}: 'affix_class' must be a list")
+        sandhi_flags_raw = rec.get("sandhi_flags", [])
+        if not isinstance(sandhi_flags_raw, list):
+            raise ValueError(f"{where}: 'sandhi_flags' must be a list")
         out.append(Root(
             citation=_require(rec, "citation", where),
             pos=_require(rec, "pos", where),
             gloss=rec.get("gloss", ""),
             transitivity=rec.get("transitivity", ""),
             affix_class=list(affix_class_raw),
+            sandhi_flags=list(sandhi_flags_raw),
         ))
     return out
 

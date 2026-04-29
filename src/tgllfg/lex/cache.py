@@ -50,6 +50,7 @@ class LemmaEntry:
     source_ref: str | None = None
     transitivity: str = ""
     affix_class: tuple[str, ...] = ()
+    sandhi_flags: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -197,6 +198,7 @@ async def build_cache(session: AsyncSession) -> LexCache:
             source_ref=r.source_ref,
             transitivity=r.transitivity or "",
             affix_class=tuple(r.affix_class or ()),
+            sandhi_flags=tuple(r.sandhi_flags or ()),
         )
         for r in (await session.scalars(select(m.Lemma))).all()
     ]

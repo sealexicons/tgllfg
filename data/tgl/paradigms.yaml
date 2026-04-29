@@ -255,3 +255,43 @@
     - {op: cv_redup}
     - {op: prefix, value: "i"}
   notes: ikakain, ibibili
+
+# === AV — ma- non-volitional / stative class =============================
+#
+# The ma- prefix marks non-volitional / accidental / stative readings
+# distinct from the maka- abilitative (which carries MOOD=ABIL). MOOD
+# here is NVOL ("non-volitional") — Schachter & Otanes 1972 §5.27,
+# Kroeger 1993 §4.5. The realis/irrealis split parallels mag-: na-
+# in PFV/IPFV, ma- in CTPL.
+#
+# Examples: ma- + tulog → natulog ("happened to fall asleep");
+# ma- + upo → naupo ("happened to sit down").
+
+- voice: AV
+  aspect: PFV
+  mood: NVOL
+  transitivity: ''
+  affix_class: ma
+  operations:
+    - {op: prefix, value: "na"}
+  notes: natulog, naupo (ma- non-volitional realis PFV)
+
+- voice: AV
+  aspect: IPFV
+  mood: NVOL
+  transitivity: ''
+  affix_class: ma
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "na"}
+  notes: natutulog, nauupo
+
+- voice: AV
+  aspect: CTPL
+  mood: NVOL
+  transitivity: ''
+  affix_class: ma
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ma"}
+  notes: matutulog, mauupo (ma- non-volitional irrealis)

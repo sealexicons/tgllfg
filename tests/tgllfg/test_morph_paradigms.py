@@ -63,10 +63,10 @@ UM_PARADIGM_FORMS = [
     ("inom", "AV", "CTPL", "iinom"),
     ("inom", "OV", "PFV",  "ininom"),
     ("inom", "OV", "IPFV", "iniinom"),
-    # NB: literary form is "iinumin" with o→u stem-vowel raising;
+    # NB: o→u stem-vowel raising on suffixation is now applied
     # the engine doesn't model this Phase 2 root-specific rule, so
-    # "iinomin" (engine-generated, conservative) is asserted here.
-    ("inom", "OV", "CTPL", "iinomin"),
+    # automatically (Phase 2C sandhi rule).
+    ("inom", "OV", "CTPL", "iinumin"),
     # basa — read
     ("basa", "AV", "PFV",  "bumasa"),
     ("basa", "AV", "IPFV", "bumabasa"),
@@ -111,8 +111,8 @@ UM_PARADIGM_FORMS = [
     ("putol", "AV", "CTPL", "puputol"),
     ("putol", "OV", "PFV",  "pinutol"),
     ("putol", "OV", "IPFV", "pinuputol"),
-    # Same o→u raising note as inom; "puputolin" is engine output.
-    ("putol", "OV", "CTPL", "puputolin"),
+    # Same o→u raising as inom (puputol → puputul- before -in).
+    ("putol", "OV", "CTPL", "puputulin"),
 ]
 
 # -- mag- class verbs ----------------------------------------------------
@@ -256,13 +256,13 @@ INTR_PARADIGM_FORMS = [
     ("alis", "AV", "PFV",  "umalis"),
     ("alis", "AV", "IPFV", "umaalis"),
     ("alis", "AV", "CTPL", "aalis"),
-    # dating — arrive. Standard surface forms have /d/ → /r/
-    # alternation between vowels (dumarating, darating); the engine
-    # doesn't model this yet (Phase 2C), so the un-alternated forms
-    # are asserted.
+    # dating — arrive. /d/ → /r/ intervocalic (Phase 2C; declared on
+    # the root via sandhi_flags=[d_to_r]). PFV "dumating" keeps /d/
+    # because it's adjacent to /m/ (not vowel-bracketed); IPFV and
+    # CTPL surface the /r/.
     ("dating", "AV", "PFV",  "dumating"),
-    ("dating", "AV", "IPFV", "dumadating"),
-    ("dating", "AV", "CTPL", "dadating"),
+    ("dating", "AV", "IPFV", "dumarating"),
+    ("dating", "AV", "CTPL", "darating"),
     # tawa — laugh
     ("tawa", "AV", "PFV",  "tumawa"),
     ("tawa", "AV", "IPFV", "tumatawa"),
@@ -284,6 +284,52 @@ INTR_PARADIGM_FORMS = [
 ]
 
 
+# -- ma- non-volitional (MOOD=NVOL) --------------------------------------
+#
+# Phase 2C: ma- AV class for non-volitional / accidental / stative
+# readings, distinct from maka- abilitative (MOOD=ABIL). The realis
+# carries the na- prefix (PFV/IPFV) and the irrealis carries ma-
+# (CTPL); both pattern with cv-redup in IPFV/CTPL.
+
+MA_NVOL_PARADIGM_FORMS = [
+    ("tulog", "AV", "PFV",  "natulog"),
+    ("tulog", "AV", "IPFV", "natutulog"),
+    ("tulog", "AV", "CTPL", "matutulog"),
+]
+
+
+# -- Sonorant-initial roots: realis -in- → ni- prefix --------------------
+#
+# Phase 2C: when a non-AV cell applies the realis -in- infix to a
+# sonorant-initial base (m, n, ng, l, r, w, y, h), the infix surfaces
+# as a ni- prefix instead.
+
+SONORANT_NI_PARADIGM_FORMS = [
+    ("linis", "OV", "PFV",  "nilinis"),
+    ("linis", "OV", "IPFV", "nililinis"),
+    ("linis", "OV", "CTPL", "lilinisin"),
+    ("linis", "DV", "PFV",  "nilinisan"),
+    ("linis", "DV", "IPFV", "nililinisan"),
+    ("linis", "DV", "CTPL", "lilinisan"),
+]
+
+
+# -- /d/ → /r/ intervocalic alternation ----------------------------------
+#
+# Phase 2C: per-root opt-in via sandhi_flags=[d_to_r]. Catches
+# stem-internal d→r in reduplication (dadating → darating) and stem-
+# suffix-boundary d→r (lakadin → lakarin). PFV "dumating" keeps /d/
+# because position is /m_a/, not vowel-vowel.
+
+D_TO_R_PARADIGM_FORMS = [
+    # dating exercises stem-internal d→r in cv-redup.
+    ("dating", "AV", "IPFV", "dumarating"),
+    ("dating", "AV", "CTPL", "darating"),
+    # bayad exercises stem-suffix-boundary d→r on -an attachment.
+    ("bayad", "DV", "CTPL", "babayaran"),
+]
+
+
 # === Test parametrization ================================================
 
 ALL_PAIRED_FORMS = (
@@ -293,6 +339,9 @@ ALL_PAIRED_FORMS = (
     + MANG_PARADIGM_FORMS
     + MAKA_PARADIGM_FORMS
     + INTR_PARADIGM_FORMS
+    + MA_NVOL_PARADIGM_FORMS
+    + SONORANT_NI_PARADIGM_FORMS
+    + D_TO_R_PARADIGM_FORMS
 )
 
 

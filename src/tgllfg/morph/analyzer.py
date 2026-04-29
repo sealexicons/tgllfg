@@ -53,6 +53,7 @@ from .paradigms import (
 from .sandhi import (
     attach_suffix,
     cv_reduplicate,
+    d_to_r_intervocalic,
     infix_after_first_consonant,
     nasal_substitute,
 )
@@ -60,20 +61,31 @@ from .sandhi import (
 
 def generate_form(root: Root, cell: ParadigmCell) -> str:
     """Apply ``cell.operations`` to ``root.citation`` in YAML-declared
-    order and return the resulting surface form."""
+    order and return the resulting surface form.
+
+    Per-root sandhi flags (Phase 2C) are applied at the appropriate
+    stage: ``high_vowel_deletion`` modifies suffix attachment;
+    ``d_to_r`` runs as a post-processor over the final form so it
+    catches both intra-stem and stem-suffix intervocalic /d/.
+    """
+    flags = set(root.sandhi_flags)
     base = root.citation
     for op in cell.operations:
-        base = _apply(op, base)
+        base = _apply(op, base, flags)
+    if "d_to_r" in flags:
+        base = d_to_r_intervocalic(base)
     return base
 
 
-def _apply(op: Operation, base: str) -> str:
+def _apply(op: Operation, base: str, flags: set[str]) -> str:
     if op.op == "cv_redup":
         return cv_reduplicate(base)
     if op.op == "infix":
         return infix_after_first_consonant(base, op.value)
     if op.op == "suffix":
-        return attach_suffix(base, op.value)
+        return attach_suffix(
+            base, op.value, high_vowel_deletion="high_vowel_deletion" in flags
+        )
     if op.op == "prefix":
         return op.value + base
     if op.op == "nasal_substitute":

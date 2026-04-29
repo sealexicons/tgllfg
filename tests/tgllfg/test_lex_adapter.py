@@ -149,6 +149,25 @@ def test_resolve_morph_data_default_is_yaml(monkeypatch: pytest.MonkeyPatch) -> 
     assert any(r.citation == "kain" for r in data.roots)
 
 
+async def test_sandhi_flags_round_trip_through_db(
+    postgres_container: PostgresContainer, seeded_engine: AsyncEngine
+) -> None:
+    """The Phase 2C per-root sandhi flags survive YAML → DB → cache →
+    adapter → MorphData. Verified via dating's d_to_r flag and the
+    surface form it produces."""
+    db_data = await aload_morph_data_from_url(postgres_container.get_connection_url())
+
+    dating = next(r for r in db_data.roots if r.citation == "dating")
+    assert "d_to_r" in dating.sandhi_flags
+
+    cell = next(
+        c
+        for c in db_data.paradigm_cells
+        if c.voice == "AV" and c.aspect == "CTPL" and c.affix_class == "um"
+    )
+    assert generate_form(dating, cell) == "darating"
+
+
 def test_cache_to_morph_data_unknown_language_returns_empty() -> None:
     from tgllfg.lex.cache import LexCache
 
