@@ -36,7 +36,7 @@ nasal substitution); Ramos & Bautista 1986 paradigm tables.
 from __future__ import annotations
 
 VOWELS: frozenset[str] = frozenset("aeiouAEIOU")
-SONORANTS: frozenset[str] = frozenset("mnlrwyhMNLRWYH")
+SONORANTS: frozenset[str] = frozenset("mnlrwyMNLRWY")
 
 
 def is_vowel(c: str) -> bool:
@@ -45,7 +45,12 @@ def is_vowel(c: str) -> bool:
 
 def is_sonorant_initial(base: str) -> bool:
     """Return True if ``base`` begins with a sonorant consonant
-    (m, n, ng-as-/ŋ/, l, r, w, y, h)."""
+    (m, n, ng-as-/ŋ/, l, r, w, y).
+
+    /h/ is *not* counted: although phonetically a sonorant in some
+    analyses, the realis -in- infix surfaces normally on /h/-initial
+    bases (``hampas + -in- → hinampas``, not ``*ninampas``).
+    """
     if not base:
         return False
     if base[:2].lower() == "ng":
@@ -88,10 +93,13 @@ def first_cv(s: str) -> str:
 def infix_after_first_consonant(base: str, infix: str) -> str:
     """Insert ``infix`` after the first consonant of ``base``.
 
-    Two structural exceptions:
+    Three structural exceptions:
 
     * Vowel-initial bases prepend ``infix`` (the standard Tagalog rule
       for ``-um-`` / ``-in-`` on vowel-initial roots).
+    * The orthographic digraph ``ng`` is treated as a single consonant
+      /ŋ/, so ``ngiti + -um- → ngumiti`` (not the erroneous
+      ``*numgiti``).
     * Sonorant-initial bases take the realis ``-in-`` as a ``ni-``
       *prefix* rather than an infix. This is automatic for the ``in``
       infix value; ``-um-`` is unaffected. ``linis + -in- → nilinis``;
@@ -103,6 +111,8 @@ def infix_after_first_consonant(base: str, infix: str) -> str:
         return infix + base
     if infix == "in" and is_sonorant_initial(base):
         return "ni" + base
+    if base[:2].lower() == "ng":
+        return base[:2] + infix + base[2:]
     return base[0] + infix + base[1:]
 
 

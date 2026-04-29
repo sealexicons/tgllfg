@@ -327,6 +327,218 @@ D_TO_R_PARADIGM_FORMS = [
     ("dating", "AV", "CTPL", "darating"),
     # bayad exercises stem-suffix-boundary d→r on -an attachment.
     ("bayad", "DV", "CTPL", "babayaran"),
+    # dama: stem-internal d→r in CV-redup carries through CTPL.
+    ("dama", "AV", "IPFV", "dumarama"),
+    ("dama", "AV", "CTPL", "darama"),
+]
+
+
+# -- Phase 2C bulk verb scale-up — AV PFV/IPFV/CTPL ----------------------
+#
+# Three-cell coverage for ~50 newly-seeded verbs. Class chosen per
+# verb based on its primary affix-class membership; non-AV cells are
+# tested below in PHASE2C_NON_AV_FORMS where the engine generates
+# stable surfaces.
+
+PHASE2C_UM_AV_FORMS = [
+    ("abot",   "AV", "PFV",  "umabot"),
+    ("abot",   "AV", "IPFV", "umaabot"),
+    ("abot",   "AV", "CTPL", "aabot"),
+    ("buhat",  "AV", "PFV",  "bumuhat"),
+    ("buhat",  "AV", "IPFV", "bumubuhat"),
+    ("buhat",  "AV", "CTPL", "bubuhat"),
+    ("higop",  "AV", "PFV",  "humigop"),
+    ("higop",  "AV", "IPFV", "humihigop"),
+    ("higop",  "AV", "CTPL", "hihigop"),
+    ("kagat",  "AV", "PFV",  "kumagat"),
+    ("kagat",  "AV", "IPFV", "kumakagat"),
+    ("kagat",  "AV", "CTPL", "kakagat"),
+    ("lunok",  "AV", "PFV",  "lumunok"),
+    ("lunok",  "AV", "IPFV", "lumulunok"),
+    ("lunok",  "AV", "CTPL", "lulunok"),
+    ("piga",   "AV", "PFV",  "pumiga"),
+    ("piga",   "AV", "IPFV", "pumipiga"),
+    ("piga",   "AV", "CTPL", "pipiga"),
+    ("pukol",  "AV", "PFV",  "pumukol"),
+    ("pukol",  "AV", "IPFV", "pumupukol"),
+    ("pukol",  "AV", "CTPL", "pupukol"),
+    ("sigaw",  "AV", "PFV",  "sumigaw"),
+    ("sigaw",  "AV", "IPFV", "sumisigaw"),
+    ("sigaw",  "AV", "CTPL", "sisigaw"),
+    ("subo",   "AV", "PFV",  "sumubo"),
+    ("subo",   "AV", "IPFV", "sumusubo"),
+    ("subo",   "AV", "CTPL", "susubo"),
+    ("tanong", "AV", "PFV",  "tumanong"),
+    ("tanong", "AV", "IPFV", "tumatanong"),
+    ("tanong", "AV", "CTPL", "tatanong"),
+    ("tikim",  "AV", "PFV",  "tumikim"),
+    ("tikim",  "AV", "IPFV", "tumitikim"),
+    ("tikim",  "AV", "CTPL", "titikim"),
+    ("tira",   "AV", "PFV",  "tumira"),
+    ("tira",   "AV", "IPFV", "tumitira"),
+    ("tira",   "AV", "CTPL", "titira"),
+    ("hampas", "AV", "PFV",  "humampas"),
+    ("hampas", "AV", "IPFV", "humahampas"),
+    ("hampas", "AV", "CTPL", "hahampas"),
+    ("higit",  "AV", "PFV",  "humigit"),
+    ("higit",  "AV", "IPFV", "humihigit"),
+    ("higit",  "AV", "CTPL", "hihigit"),
+    ("hingi",  "AV", "PFV",  "humingi"),
+    ("hingi",  "AV", "IPFV", "humihingi"),
+    ("hingi",  "AV", "CTPL", "hihingi"),
+    ("punta",  "AV", "PFV",  "pumunta"),
+    ("punta",  "AV", "IPFV", "pumupunta"),
+    ("punta",  "AV", "CTPL", "pupunta"),
+    ("daan",   "AV", "PFV",  "dumaan"),
+    ("daan",   "AV", "IPFV", "dumadaan"),
+    ("daan",   "AV", "CTPL", "dadaan"),
+    ("baba",   "AV", "PFV",  "bumaba"),
+    ("baba",   "AV", "IPFV", "bumababa"),
+    ("baba",   "AV", "CTPL", "bababa"),
+    ("labas",  "AV", "PFV",  "lumabas"),
+    ("labas",  "AV", "IPFV", "lumalabas"),
+    ("labas",  "AV", "CTPL", "lalabas"),
+    ("tindig", "AV", "PFV",  "tumindig"),
+    ("tindig", "AV", "IPFV", "tumitindig"),
+    ("tindig", "AV", "CTPL", "titindig"),
+    ("layo",   "AV", "PFV",  "lumayo"),
+    ("layo",   "AV", "IPFV", "lumalayo"),
+    ("layo",   "AV", "CTPL", "lalayo"),
+    ("uwi",    "AV", "PFV",  "umuwi"),
+    ("uwi",    "AV", "IPFV", "umuuwi"),
+    ("uwi",    "AV", "CTPL", "uuwi"),
+    ("ngiti",  "AV", "PFV",  "ngumiti"),
+    ("ngiti",  "AV", "IPFV", "ngumingiti"),
+    ("ngiti",  "AV", "CTPL", "ngingiti"),
+    ("nguya",  "AV", "PFV",  "ngumuya"),
+    ("nguya",  "AV", "IPFV", "ngumunguya"),
+    ("nguya",  "AV", "CTPL", "ngunguya"),
+]
+
+
+PHASE2C_MAG_AV_FORMS = [
+    ("aral",    "AV", "PFV",  "nagaral"),
+    ("aral",    "AV", "IPFV", "nagaaral"),
+    ("aral",    "AV", "CTPL", "magaaral"),
+    ("ayos",    "AV", "PFV",  "nagayos"),
+    ("ayos",    "AV", "IPFV", "nagaayos"),
+    ("ayos",    "AV", "CTPL", "magaayos"),
+    ("bisita",  "AV", "PFV",  "nagbisita"),
+    ("bisita",  "AV", "IPFV", "nagbibisita"),
+    ("bisita",  "AV", "CTPL", "magbibisita"),
+    ("handa",   "AV", "PFV",  "naghanda"),
+    ("handa",   "AV", "IPFV", "naghahanda"),
+    ("handa",   "AV", "CTPL", "maghahanda"),
+    ("isip",    "AV", "PFV",  "nagisip"),
+    ("isip",    "AV", "IPFV", "nagiisip"),
+    ("isip",    "AV", "CTPL", "magiisip"),
+    ("kuwento", "AV", "PFV",  "nagkuwento"),
+    ("kuwento", "AV", "IPFV", "nagkukuwento"),
+    ("kuwento", "AV", "CTPL", "magkukuwento"),
+    ("maneho",  "AV", "PFV",  "nagmaneho"),
+    ("maneho",  "AV", "IPFV", "nagmamaneho"),
+    ("maneho",  "AV", "CTPL", "magmamaneho"),
+    ("usap",    "AV", "PFV",  "nagusap"),
+    ("usap",    "AV", "IPFV", "naguusap"),
+    ("usap",    "AV", "CTPL", "maguusap"),
+    ("balak",   "AV", "PFV",  "nagbalak"),
+    ("balak",   "AV", "IPFV", "nagbabalak"),
+    ("balak",   "AV", "CTPL", "magbabalak"),
+    ("hamon",   "AV", "PFV",  "naghamon"),
+    ("hamon",   "AV", "IPFV", "naghahamon"),
+    ("hamon",   "AV", "CTPL", "maghahamon"),
+    ("tapon",   "AV", "PFV",  "nagtapon"),
+    ("tapon",   "AV", "IPFV", "nagtatapon"),
+    ("tapon",   "AV", "CTPL", "magtatapon"),
+    ("butas",   "AV", "PFV",  "nagbutas"),
+    ("butas",   "AV", "IPFV", "nagbubutas"),
+    ("butas",   "AV", "CTPL", "magbubutas"),
+    ("baon",    "AV", "PFV",  "nagbaon"),
+    ("baon",    "AV", "IPFV", "nagbabaon"),
+    ("baon",    "AV", "CTPL", "magbabaon"),
+]
+
+
+PHASE2C_MA_NVOL_FORMS = [
+    ("gising",  "AV", "PFV",  "nagising"),
+    ("gising",  "AV", "IPFV", "nagigising"),
+    ("gising",  "AV", "CTPL", "magigising"),
+    ("upo",     "AV", "PFV",  "naupo"),
+    ("upo",     "AV", "IPFV", "nauupo"),
+    ("upo",     "AV", "CTPL", "mauupo"),
+    ("higa",    "AV", "PFV",  "nahiga"),
+    ("higa",    "AV", "IPFV", "nahihiga"),
+    ("higa",    "AV", "CTPL", "mahihiga"),
+    ("dapa",    "AV", "PFV",  "nadapa"),
+    ("dapa",    "AV", "IPFV", "nadadapa"),
+    ("dapa",    "AV", "CTPL", "madadapa"),
+    ("kita",    "AV", "PFV",  "nakita"),
+    ("kita",    "AV", "IPFV", "nakikita"),
+    ("kita",    "AV", "CTPL", "makikita"),
+    ("gulat",   "AV", "PFV",  "nagulat"),
+    ("gulat",   "AV", "IPFV", "nagugulat"),
+    ("gulat",   "AV", "CTPL", "magugulat"),
+    ("takot",   "AV", "PFV",  "natakot"),
+    ("takot",   "AV", "IPFV", "natatakot"),
+    ("takot",   "AV", "CTPL", "matatakot"),
+    ("galit",   "AV", "PFV",  "nagalit"),
+    ("galit",   "AV", "IPFV", "nagagalit"),
+    ("galit",   "AV", "CTPL", "magagalit"),
+    ("lungkot", "AV", "PFV",  "nalungkot"),
+    ("lungkot", "AV", "IPFV", "nalulungkot"),
+    ("lungkot", "AV", "CTPL", "malulungkot"),
+    ("saya",    "AV", "PFV",  "nasaya"),
+    ("saya",    "AV", "IPFV", "nasasaya"),
+    ("saya",    "AV", "CTPL", "masasaya"),
+    ("inis",    "AV", "PFV",  "nainis"),
+    ("inis",    "AV", "IPFV", "naiinis"),
+    ("inis",    "AV", "CTPL", "maiinis"),
+    ("sira",    "AV", "PFV",  "nasira"),
+    ("sira",    "AV", "IPFV", "nasisira"),
+    ("sira",    "AV", "CTPL", "masisira"),
+]
+
+
+PHASE2C_MANG_AV_FORMS = [
+    # /d/ → /n/ via nasal substitution.
+    ("dukot",   "AV", "PFV",  "nanukot"),
+    ("dukot",   "AV", "IPFV", "nanunukot"),
+    ("dukot",   "AV", "CTPL", "manunukot"),
+    # /k/ → /ng/ via nasal substitution.
+    ("kabit",   "AV", "PFV",  "nangabit"),
+    ("kabit",   "AV", "IPFV", "nangangabit"),
+    ("kabit",   "AV", "CTPL", "mangangabit"),
+]
+
+
+# -- Selected non-AV cells from the bulk additions ------------------------
+#
+# Spot-checks for OV/DV/IV cells where the expected surface is stable.
+# Includes a sonorant ni- exemplar (nguya) and the o→u suffix-attachment
+# raising for o-final stems.
+
+PHASE2C_NON_AV_FORMS = [
+    ("abot",    "OV", "PFV",  "inabot"),
+    ("abot",    "OV", "CTPL", "aabutin"),     # o→u raising
+    ("buhat",   "OV", "PFV",  "binuhat"),
+    ("buhat",   "IV", "PFV",  "ibinuhat"),
+    ("kagat",   "OV", "PFV",  "kinagat"),
+    ("kagat",   "OV", "CTPL", "kakagatin"),
+    ("pukol",   "OV", "PFV",  "pinukol"),
+    ("pukol",   "OV", "CTPL", "pupukulin"),    # o→u raising
+    ("hampas",  "OV", "PFV",  "hinampas"),     # /h/ takes -in- infix
+    ("higit",   "OV", "PFV",  "hinigit"),
+    ("aral",    "OV", "PFV",  "inaral"),
+    ("aral",    "OV", "CTPL", "aaralin"),
+    ("handa",   "OV", "PFV",  "hinanda"),
+    ("handa",   "DV", "CTPL", "hahandahan"),
+    ("isip",    "OV", "PFV",  "inisip"),
+    ("isip",    "OV", "CTPL", "iisipin"),
+    ("nguya",   "OV", "PFV",  "ninguya"),       # sonorant ni- (ng)
+    ("nguya",   "OV", "IPFV", "ningunguya"),    # ng-digraph in CV-redup + ni-
+    ("dukot",   "OV", "PFV",  "dinukot"),
+    ("kita",    "OV", "PFV",  "kinita"),
+    ("kabit",   "DV", "CTPL", "kakabitan"),
 ]
 
 
@@ -342,6 +554,11 @@ ALL_PAIRED_FORMS = (
     + MA_NVOL_PARADIGM_FORMS
     + SONORANT_NI_PARADIGM_FORMS
     + D_TO_R_PARADIGM_FORMS
+    + PHASE2C_UM_AV_FORMS
+    + PHASE2C_MAG_AV_FORMS
+    + PHASE2C_MA_NVOL_FORMS
+    + PHASE2C_MANG_AV_FORMS
+    + PHASE2C_NON_AV_FORMS
 )
 
 
@@ -437,12 +654,12 @@ def test_seed_lexicon_size() -> None:
     data = load_morph_data()
     verbs = [r for r in data.roots if r.pos == "VERB"]
     nouns = [r for r in data.roots if r.pos == "NOUN"]
-    assert len(verbs) >= 50, f"verb count regressed: {len(verbs)}"
+    assert len(verbs) >= 110, f"verb count regressed: {len(verbs)}"
     assert len(nouns) >= 30, f"noun count regressed: {len(nouns)}"
 
 
 def test_paired_assertion_count() -> None:
-    """At least 100 paired assertions in the table — bumps the floor
-    well above the kain/bili anchors and below the plan's 500 target,
-    which would require Phase 2C scale-up."""
-    assert len(ALL_PAIRED_FORMS) >= 100
+    """At least 350 paired assertions in the table — Phase 2C bulk
+    scale-up brought the count from ~180 to ~360, on track for the
+    plan's §5.4 target of ~500 (final ~140 land in Phase 2C Commit 3)."""
+    assert len(ALL_PAIRED_FORMS) >= 350

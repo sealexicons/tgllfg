@@ -107,14 +107,16 @@ class TestReduplication:
 
 class TestSonorantInitial:
     def test_known_sonorants_match(self) -> None:
-        for stem in ("linis", "mahal", "nakaw", "rud", "wala", "yaman", "hugot"):
+        for stem in ("linis", "mahal", "nakaw", "rud", "wala", "yaman"):
             assert is_sonorant_initial(stem), stem
 
     def test_ng_digraph_matches(self) -> None:
         assert is_sonorant_initial("nguya")
 
     def test_obstruents_do_not_match(self) -> None:
-        for stem in ("kain", "bili", "putol", "tahi", "dating", "gawa", "sulat"):
+        # /h/ is excluded from the sonorant set: hampas + -in- → hinampas
+        # is the standard form, not *ninampas.
+        for stem in ("kain", "bili", "putol", "tahi", "dating", "gawa", "sulat", "hugot"):
             assert not is_sonorant_initial(stem), stem
 
     def test_vowel_initial_does_not_match(self) -> None:
