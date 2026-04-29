@@ -21,6 +21,9 @@ classifiers = [
 ]
 dependencies = [
   "pyyaml>=6.0",
+  "sqlalchemy[asyncio]>=2.0",
+  "asyncpg>=0.29",
+  "alembic>=1.13",
 ]
 
 [project.urls]
@@ -36,7 +39,9 @@ dependencies = [
   "hypothesis>=6.0",
   "mypy>=1.0.0",
   "pytest",
+  "pytest-asyncio>=0.23",
   "ruff",
+  "testcontainers[postgres]>=4.0",
   "types-pyyaml",
 ]
 
@@ -64,6 +69,12 @@ exclude_lines = [
   "no cov",
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = [
+  "postgres: tests that require a running Docker daemon (Postgres 17 testcontainer)",
 ]
 
 [build-system]
