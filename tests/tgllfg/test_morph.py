@@ -78,9 +78,9 @@ class TestSuffixation:
         assert attach_suffix("kain", "an") == "kainan"
 
     def test_vowel_hiatus_repair(self) -> None:
-        # bili (vowel-final) + -in (vowel-initial) → bilhin.
-        assert attach_suffix("bili", "in") == "bilhin"
-        assert attach_suffix("bili", "an") == "bilhan"
+        # bili (vowel-final) + -in (vowel-initial) → bilihin.
+        assert attach_suffix("bili", "in") == "bilihin"
+        assert attach_suffix("bili", "an") == "bilihan"
 
     def test_consonant_initial_suffix(self) -> None:
         # Hypothetical consonant-initial suffix: no hiatus.
@@ -149,10 +149,10 @@ BILI_FORMS = [
     ("AV", "CTPL", "bibili"),
     ("OV", "PFV",  "binili"),
     ("OV", "IPFV", "binibili"),
-    ("OV", "CTPL", "bibilhin"),     # vowel-hiatus: bili + -in → bilhin
-    ("DV", "PFV",  "binilhan"),     # bili + -an → bilhan
-    ("DV", "IPFV", "binibilhan"),
-    ("DV", "CTPL", "bibilhan"),
+    ("OV", "CTPL", "bibilihin"),     # vowel-hiatus: bili + -in → bilihin
+    ("DV", "PFV",  "binilihan"),     # bili + -an → bilihan
+    ("DV", "IPFV", "binibilihan"),
+    ("DV", "CTPL", "bibilihan"),
     ("IV", "PFV",  "ibinili"),
     ("IV", "IPFV", "ibinibili"),
     ("IV", "CTPL", "ibibili"),

@@ -188,7 +188,7 @@
   operations:
     - {op: cv_redup}
     - {op: suffix, value: in}
-  notes: kakainin, bibilhin (sandhi for vowel-final root)
+  notes: kakainin, bibilihin (sandhi for vowel-final root)
 
 # === DV — Dative / Locative Voice ========================================
 
@@ -200,7 +200,7 @@
   operations:
     - {op: infix, value: in}
     - {op: suffix, value: an}
-  notes: kinainan, binilhan
+  notes: kinainan, binilihan
 
 - voice: DV
   aspect: IPFV
@@ -211,7 +211,7 @@
     - {op: cv_redup}
     - {op: infix, value: in}
     - {op: suffix, value: an}
-  notes: kinakainan, binibilhan
+  notes: kinakainan, binibilihan
 
 - voice: DV
   aspect: CTPL
@@ -221,7 +221,7 @@
   operations:
     - {op: cv_redup}
     - {op: suffix, value: an}
-  notes: kakainan, bibilhan
+  notes: kakainan, bibilihan
 
 # === IV — Instrumental / Benefactive Voice ===============================
 

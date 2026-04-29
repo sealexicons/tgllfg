@@ -29,15 +29,33 @@ def is_vowel(c: str) -> bool:
 
 def first_cv(s: str) -> str:
     """Return the first CV (or just V) of ``s``: the chunk used as the
-    target of CV-reduplication. ``kain`` → ``ka``; ``alis`` → ``a``;
-    ``bili`` → ``bi``."""
+    target of CV-reduplication.
+
+    The first consonant alone (skipping any rest of an onset cluster)
+    plus the first vowel: ``kain`` → ``ka``, ``bili`` → ``bi``,
+    ``alis`` → ``a``, ``trabaho`` → ``ta`` (skipping the ``r`` of the
+    onset cluster, per the standard Tagalog redup rule). Vowel-initial
+    bases redup just the leading vowel.
+
+    The orthographic digraph ``ng`` is treated as a single consonant
+    /ŋ/, so a base like ``nguha`` (the post-nasal-substitution form
+    of ``kuha``) reduplicates to ``ngunguha`` rather than the
+    erroneous ``nunguha``.
+    """
     if not s:
         return ""
     if is_vowel(s[0]):
         return s[0]
+    # Digraph ng (one consonant /ŋ/).
+    if s[:2].lower() == "ng":
+        for i in range(2, len(s)):
+            if is_vowel(s[i]):
+                return s[:2] + s[i]
+        return s[:2]
+    # Single-letter consonant onset.
     for i in range(1, len(s)):
         if is_vowel(s[i]):
-            return s[: i + 1]
+            return s[0] + s[i]
     return s  # all consonants — degenerate
 
 
@@ -57,13 +75,22 @@ def attach_suffix(base: str, suffix: str) -> str:
     """Append ``suffix`` to ``base`` with vowel-hiatus repair.
 
     If ``base`` ends in a vowel and ``suffix`` begins with a vowel,
-    the root-final vowel is dropped and ``/h/`` is epenthesised:
-    ``bili + -in → bilhin``. Otherwise concatenation is direct.
+    ``/h/`` is epenthesised between them: ``basa + -in → basahin``,
+    ``bili + -in → bilihin``, ``gawa + -in → gawahin``. Otherwise
+    concatenation is direct.
+
+    Schachter & Otanes 1972 §4.21 documents both this h-epenthesis
+    pattern and an optional high-vowel deletion (``bili + -in →
+    bilhin``) for high-vowel stems; the engine standardises on the
+    epenthesis-only pattern (the more conservative form found in
+    formal registers and consistently in Ramos & Bautista 1986).
+    The colloquial deletion variant can be added per-root via a
+    sandhi rule when needed.
     """
     if not suffix:
         return base
     if base and is_vowel(base[-1]) and is_vowel(suffix[0]):
-        return base[:-1] + "h" + suffix
+        return base + "h" + suffix
     return base + suffix
 
 
