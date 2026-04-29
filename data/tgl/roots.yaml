@@ -837,6 +837,319 @@
   # ng-initial sonorant; ng treated as one consonant in CV-redup.
   affix_class: [um, in_oblig, maka]
 
+# --- Phase 2C bulk verb scale-up B (Commit 3a) ---------------------------
+#
+# Second batch toward plan §5.4's 200-verb target. Same authoring
+# convention as the first batch: conservative affix_class membership,
+# R&B 1986 page numbers TBD per entry. The batch favours common verbs
+# that round out the engine's affix-class diversity (additional -um-
+# transitives, mag- class verbs, ma- non-volitional readings, and
+# state predicates).
+
+# -- additional -um- / OV transitives --
+- citation: hawak
+  pos: VERB
+  gloss: hold, grip
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: pisil
+  pos: VERB
+  gloss: squeeze, press
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: tulak
+  pos: VERB
+  gloss: push
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, an_oblig, maka]
+
+- citation: bunot
+  pos: VERB
+  gloss: pull out, draw
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: saksak
+  pos: VERB
+  gloss: stab, thrust
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: itak
+  pos: VERB
+  gloss: chop with a bolo
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: salok
+  pos: VERB
+  gloss: scoop, ladle
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
+
+- citation: hagis
+  pos: VERB
+  gloss: throw, hurl
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: hatak
+  pos: VERB
+  gloss: drag, pull
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: tunaw
+  pos: VERB
+  gloss: melt, dissolve
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: bayo
+  pos: VERB
+  gloss: pound (rice, pestle-style)
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: halo
+  pos: VERB
+  gloss: mix
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: sundo
+  pos: VERB
+  gloss: fetch, pick up (a person)
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: tiklop
+  pos: VERB
+  gloss: fold
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: sipsip
+  pos: VERB
+  gloss: suck, sip
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+# -- additional mag- transitives --
+- citation: lagay
+  pos: VERB
+  gloss: place, put
+  transitivity: TR
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
+- citation: patong
+  pos: VERB
+  gloss: lay on top
+  transitivity: TR
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
+- citation: timpla
+  pos: VERB
+  gloss: mix (a drink, a recipe)
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: lutas
+  pos: VERB
+  gloss: solve, settle
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: kuskos
+  pos: VERB
+  gloss: scrub
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: giling
+  pos: VERB
+  gloss: grind, mill
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: hubad
+  pos: VERB
+  gloss: undress, take off (clothes)
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: buhos
+  pos: VERB
+  gloss: pour
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: saing
+  pos: VERB
+  gloss: steam (rice)
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: taas
+  pos: VERB
+  gloss: raise, lift up
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: utang
+  pos: VERB
+  gloss: borrow (money), owe
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: hiram
+  pos: VERB
+  gloss: borrow (an object)
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: dagdag
+  pos: VERB
+  gloss: add to
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: bawas
+  pos: VERB
+  gloss: subtract, reduce
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: balot
+  pos: VERB
+  gloss: wrap, cover
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+# -- ma- non-volitional / state predicates --
+- citation: pagod
+  pos: VERB
+  gloss: be tired
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: gutom
+  pos: VERB
+  gloss: be hungry
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: uhaw
+  pos: VERB
+  gloss: be thirsty
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: ginaw
+  pos: VERB
+  gloss: be cold
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: init
+  pos: VERB
+  gloss: be hot, be heated
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: hilo
+  pos: VERB
+  gloss: be dizzy
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: bingi
+  pos: VERB
+  gloss: be deaf
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: bulag
+  pos: VERB
+  gloss: be blind
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: pawis
+  pos: VERB
+  gloss: sweat
+  transitivity: INTR
+  affix_class: [ma, mag, maka]
+
+- citation: ingay
+  pos: VERB
+  gloss: be noisy
+  transitivity: INTR
+  affix_class: [um, mag, ma, maka]
+
+# -- communication / state additions --
+- citation: salita
+  pos: VERB
+  gloss: speak, utter
+  transitivity: INTR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: sabi
+  pos: VERB
+  gloss: say, tell
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: tugon
+  pos: VERB
+  gloss: respond, answer
+  transitivity: TR
+  affix_class: [um, mag, an_oblig, maka]
+
+- citation: tinda
+  pos: VERB
+  gloss: sell
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: ingat
+  pos: VERB
+  gloss: be careful, take care
+  transitivity: INTR
+  affix_class: [mag, an_oblig, maka]
+
+- citation: pasa
+  pos: VERB
+  gloss: pass (an object), hand over
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: taka
+  pos: VERB
+  gloss: wonder, be surprised
+  transitivity: INTR
+  affix_class: [mag, ma, maka]
+
+- citation: asikaso
+  pos: VERB
+  gloss: attend to, take care of
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: tagal
+  pos: VERB
+  gloss: delay, take a long time
+  transitivity: INTR
+  affix_class: [mag, maka]
+
+- citation: pahinga
+  pos: VERB
+  gloss: rest
+  transitivity: INTR
+  affix_class: [mag, maka]
+
 # === Noun roots ==========================================================
 
 # --- Common nouns ---

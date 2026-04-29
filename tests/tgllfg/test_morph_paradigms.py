@@ -517,6 +517,193 @@ PHASE2C_MANG_AV_FORMS = [
 # Includes a sonorant ni- exemplar (nguya) and the o→u suffix-attachment
 # raising for o-final stems.
 
+PHASE2C_B_UM_AV_FORMS = [
+    ("hawak",  "AV", "PFV",  "humawak"),
+    ("hawak",  "AV", "IPFV", "humahawak"),
+    ("hawak",  "AV", "CTPL", "hahawak"),
+    ("pisil",  "AV", "PFV",  "pumisil"),
+    ("pisil",  "AV", "IPFV", "pumipisil"),
+    ("pisil",  "AV", "CTPL", "pipisil"),
+    ("tulak",  "AV", "PFV",  "tumulak"),
+    ("tulak",  "AV", "IPFV", "tumutulak"),
+    ("tulak",  "AV", "CTPL", "tutulak"),
+    ("bunot",  "AV", "PFV",  "bumunot"),
+    ("bunot",  "AV", "IPFV", "bumubunot"),
+    ("bunot",  "AV", "CTPL", "bubunot"),
+    ("saksak", "AV", "PFV",  "sumaksak"),
+    ("saksak", "AV", "IPFV", "sumasaksak"),
+    ("saksak", "AV", "CTPL", "sasaksak"),
+    ("itak",   "AV", "PFV",  "umitak"),
+    ("itak",   "AV", "IPFV", "umiitak"),
+    ("itak",   "AV", "CTPL", "iitak"),
+    ("salok",  "AV", "PFV",  "sumalok"),
+    ("salok",  "AV", "IPFV", "sumasalok"),
+    ("salok",  "AV", "CTPL", "sasalok"),
+    ("hagis",  "AV", "PFV",  "humagis"),
+    ("hagis",  "AV", "IPFV", "humahagis"),
+    ("hagis",  "AV", "CTPL", "hahagis"),
+    ("hatak",  "AV", "PFV",  "humatak"),
+    ("hatak",  "AV", "IPFV", "humahatak"),
+    ("hatak",  "AV", "CTPL", "hahatak"),
+    ("tunaw",  "AV", "PFV",  "tumunaw"),
+    ("tunaw",  "AV", "IPFV", "tumutunaw"),
+    ("tunaw",  "AV", "CTPL", "tutunaw"),
+    ("bayo",   "AV", "PFV",  "bumayo"),
+    ("bayo",   "AV", "IPFV", "bumabayo"),
+    ("bayo",   "AV", "CTPL", "babayo"),
+    ("halo",   "AV", "PFV",  "humalo"),
+    ("halo",   "AV", "IPFV", "humahalo"),
+    ("halo",   "AV", "CTPL", "hahalo"),
+    ("sundo",  "AV", "PFV",  "sumundo"),
+    ("sundo",  "AV", "IPFV", "sumusundo"),
+    ("sundo",  "AV", "CTPL", "susundo"),
+    ("tiklop", "AV", "PFV",  "tumiklop"),
+    ("tiklop", "AV", "IPFV", "tumitiklop"),
+    ("tiklop", "AV", "CTPL", "titiklop"),
+    ("sipsip", "AV", "PFV",  "sumipsip"),
+    ("sipsip", "AV", "IPFV", "sumisipsip"),
+    ("sipsip", "AV", "CTPL", "sisipsip"),
+    ("utang",  "AV", "PFV",  "umutang"),
+    ("utang",  "AV", "IPFV", "umuutang"),
+    ("utang",  "AV", "CTPL", "uutang"),
+    ("hiram",  "AV", "PFV",  "humiram"),
+    ("hiram",  "AV", "IPFV", "humihiram"),
+    ("hiram",  "AV", "CTPL", "hihiram"),
+    ("tugon",  "AV", "PFV",  "tumugon"),
+    ("tugon",  "AV", "IPFV", "tumutugon"),
+    ("tugon",  "AV", "CTPL", "tutugon"),
+    ("pasa",   "AV", "PFV",  "pumasa"),
+    ("pasa",   "AV", "IPFV", "pumapasa"),
+    ("pasa",   "AV", "CTPL", "papasa"),
+]
+
+
+PHASE2C_B_MAG_AV_FORMS = [
+    ("lagay",    "AV", "PFV",  "naglagay"),
+    ("lagay",    "AV", "IPFV", "naglalagay"),
+    ("lagay",    "AV", "CTPL", "maglalagay"),
+    ("patong",   "AV", "PFV",  "nagpatong"),
+    ("patong",   "AV", "IPFV", "nagpapatong"),
+    ("patong",   "AV", "CTPL", "magpapatong"),
+    ("timpla",   "AV", "PFV",  "nagtimpla"),
+    ("timpla",   "AV", "IPFV", "nagtitimpla"),
+    ("timpla",   "AV", "CTPL", "magtitimpla"),
+    ("lutas",    "AV", "PFV",  "naglutas"),
+    ("lutas",    "AV", "IPFV", "naglulutas"),
+    ("lutas",    "AV", "CTPL", "maglulutas"),
+    ("kuskos",   "AV", "PFV",  "nagkuskos"),
+    ("kuskos",   "AV", "IPFV", "nagkukuskos"),
+    ("kuskos",   "AV", "CTPL", "magkukuskos"),
+    ("giling",   "AV", "PFV",  "naggiling"),
+    ("giling",   "AV", "IPFV", "naggigiling"),
+    ("giling",   "AV", "CTPL", "maggigiling"),
+    ("hubad",    "AV", "PFV",  "naghubad"),
+    ("hubad",    "AV", "IPFV", "naghuhubad"),
+    ("hubad",    "AV", "CTPL", "maghuhubad"),
+    ("buhos",    "AV", "PFV",  "nagbuhos"),
+    ("buhos",    "AV", "IPFV", "nagbubuhos"),
+    ("buhos",    "AV", "CTPL", "magbubuhos"),
+    ("saing",    "AV", "PFV",  "nagsaing"),
+    ("saing",    "AV", "IPFV", "nagsasaing"),
+    ("saing",    "AV", "CTPL", "magsasaing"),
+    ("taas",     "AV", "PFV",  "nagtaas"),
+    ("taas",     "AV", "IPFV", "nagtataas"),
+    ("taas",     "AV", "CTPL", "magtataas"),
+    ("dagdag",   "AV", "PFV",  "nagdagdag"),
+    ("dagdag",   "AV", "IPFV", "nagdadagdag"),
+    ("dagdag",   "AV", "CTPL", "magdadagdag"),
+    ("bawas",    "AV", "PFV",  "nagbawas"),
+    ("bawas",    "AV", "IPFV", "nagbabawas"),
+    ("bawas",    "AV", "CTPL", "magbabawas"),
+    ("balot",    "AV", "PFV",  "nagbalot"),
+    ("balot",    "AV", "IPFV", "nagbabalot"),
+    ("balot",    "AV", "CTPL", "magbabalot"),
+    ("salita",   "AV", "PFV",  "nagsalita"),
+    ("salita",   "AV", "IPFV", "nagsasalita"),
+    ("salita",   "AV", "CTPL", "magsasalita"),
+    ("sabi",     "AV", "PFV",  "nagsabi"),
+    ("sabi",     "AV", "IPFV", "nagsasabi"),
+    ("sabi",     "AV", "CTPL", "magsasabi"),
+    ("tinda",    "AV", "PFV",  "nagtinda"),
+    ("tinda",    "AV", "IPFV", "nagtitinda"),
+    ("tinda",    "AV", "CTPL", "magtitinda"),
+    ("ingat",    "AV", "PFV",  "nagingat"),
+    ("ingat",    "AV", "IPFV", "nagiingat"),
+    ("ingat",    "AV", "CTPL", "magiingat"),
+    ("asikaso",  "AV", "PFV",  "nagasikaso"),
+    ("asikaso",  "AV", "IPFV", "nagaasikaso"),
+    ("asikaso",  "AV", "CTPL", "magaasikaso"),
+    ("tagal",    "AV", "PFV",  "nagtagal"),
+    ("tagal",    "AV", "IPFV", "nagtatagal"),
+    ("tagal",    "AV", "CTPL", "magtatagal"),
+    ("pahinga",  "AV", "PFV",  "nagpahinga"),
+    ("pahinga",  "AV", "IPFV", "nagpapahinga"),
+    ("pahinga",  "AV", "CTPL", "magpapahinga"),
+]
+
+
+PHASE2C_B_MA_NVOL_FORMS = [
+    ("pagod",  "AV", "PFV",  "napagod"),
+    ("pagod",  "AV", "IPFV", "napapagod"),
+    ("pagod",  "AV", "CTPL", "mapapagod"),
+    ("gutom",  "AV", "PFV",  "nagutom"),
+    ("gutom",  "AV", "IPFV", "nagugutom"),
+    ("gutom",  "AV", "CTPL", "magugutom"),
+    ("uhaw",   "AV", "PFV",  "nauhaw"),
+    ("uhaw",   "AV", "IPFV", "nauuhaw"),
+    ("uhaw",   "AV", "CTPL", "mauuhaw"),
+    ("ginaw",  "AV", "PFV",  "naginaw"),
+    ("ginaw",  "AV", "IPFV", "nagiginaw"),
+    ("ginaw",  "AV", "CTPL", "magiginaw"),
+    ("init",   "AV", "PFV",  "nainit"),
+    ("init",   "AV", "IPFV", "naiinit"),
+    ("init",   "AV", "CTPL", "maiinit"),
+    ("hilo",   "AV", "PFV",  "nahilo"),
+    ("hilo",   "AV", "IPFV", "nahihilo"),
+    ("hilo",   "AV", "CTPL", "mahihilo"),
+    ("bingi",  "AV", "PFV",  "nabingi"),
+    ("bingi",  "AV", "IPFV", "nabibingi"),
+    ("bingi",  "AV", "CTPL", "mabibingi"),
+    ("bulag",  "AV", "PFV",  "nabulag"),
+    ("bulag",  "AV", "IPFV", "nabubulag"),
+    ("bulag",  "AV", "CTPL", "mabubulag"),
+    ("pawis",  "AV", "PFV",  "napawis"),
+    ("pawis",  "AV", "IPFV", "napapawis"),
+    ("pawis",  "AV", "CTPL", "mapapawis"),
+    ("taka",   "AV", "PFV",  "nataka"),
+    ("taka",   "AV", "IPFV", "natataka"),
+    ("taka",   "AV", "CTPL", "matataka"),
+]
+
+
+PHASE2C_B_NON_AV_FORMS = [
+    # /h/-initial: -in- infix surfaces normally (not ni-).
+    ("hawak",  "OV", "PFV",  "hinawak"),
+    ("hawak",  "OV", "CTPL", "hahawakin"),
+    ("hagis",  "OV", "PFV",  "hinagis"),
+    ("hatak",  "OV", "PFV",  "hinatak"),
+    ("halo",   "OV", "CTPL", "hahaluhin"),       # o→u raising
+    ("hubad",  "OV", "PFV",  "hinubad"),
+    # o→u raising on suffix attachment.
+    ("bunot",  "OV", "CTPL", "bubunutin"),
+    ("bayo",   "OV", "CTPL", "babayuhin"),
+    ("sundo",  "OV", "CTPL", "susunduhin"),
+    ("tiklop", "OV", "CTPL", "titiklupin"),
+    ("balot",  "OV", "CTPL", "babalutin"),
+    # /a/-final: standard h-epenthesis.
+    ("kuskos", "DV", "CTPL", "kukuskusan"),
+    ("buhos",  "DV", "CTPL", "bubuhusan"),
+    ("dagdag", "DV", "CTPL", "dadagdagan"),
+    ("bawas",  "DV", "CTPL", "babawasan"),
+    ("taas",   "DV", "CTPL", "tataasan"),
+    # IV variants on lagay/patong.
+    ("lagay",  "IV", "PFV",  "inilagay"),
+    ("patong", "IV", "PFV",  "ipinatong"),
+    # sabi DV: regular -an attachment over h-epenthesis.
+    ("sabi",   "DV", "CTPL", "sasabihan"),
+]
+
+
 PHASE2C_NON_AV_FORMS = [
     ("abot",    "OV", "PFV",  "inabot"),
     ("abot",    "OV", "CTPL", "aabutin"),     # o→u raising
@@ -559,6 +746,10 @@ ALL_PAIRED_FORMS = (
     + PHASE2C_MA_NVOL_FORMS
     + PHASE2C_MANG_AV_FORMS
     + PHASE2C_NON_AV_FORMS
+    + PHASE2C_B_UM_AV_FORMS
+    + PHASE2C_B_MAG_AV_FORMS
+    + PHASE2C_B_MA_NVOL_FORMS
+    + PHASE2C_B_NON_AV_FORMS
 )
 
 
@@ -654,12 +845,12 @@ def test_seed_lexicon_size() -> None:
     data = load_morph_data()
     verbs = [r for r in data.roots if r.pos == "VERB"]
     nouns = [r for r in data.roots if r.pos == "NOUN"]
-    assert len(verbs) >= 110, f"verb count regressed: {len(verbs)}"
+    assert len(verbs) >= 160, f"verb count regressed: {len(verbs)}"
     assert len(nouns) >= 30, f"noun count regressed: {len(nouns)}"
 
 
 def test_paired_assertion_count() -> None:
-    """At least 350 paired assertions in the table — Phase 2C bulk
-    scale-up brought the count from ~180 to ~360, on track for the
-    plan's §5.4 target of ~500 (final ~140 land in Phase 2C Commit 3)."""
-    assert len(ALL_PAIRED_FORMS) >= 350
+    """At least 500 paired assertions — meets plan §5.4's morphology
+    coverage target. Phase 2C Commit 3a brought the count past 500;
+    Commit 3b adds the remaining nouns and a final batch of verbs."""
+    assert len(ALL_PAIRED_FORMS) >= 500
