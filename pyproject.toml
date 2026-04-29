@@ -26,6 +26,9 @@ dependencies = [
   "alembic>=1.13",
 ]
 
+[project.scripts]
+tgllfg = "tgllfg.cli:main"
+
 [project.urls]
 Documentation = "https://github.com/skynavga/tgllfg#readme"
 Issues = "https://github.com/skynavga/tgllfg/issues"
