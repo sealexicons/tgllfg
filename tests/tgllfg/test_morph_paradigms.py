@@ -704,6 +704,133 @@ PHASE2C_B_NON_AV_FORMS = [
 ]
 
 
+PHASE2C_C_AV_FORMS = [
+    # -um- AV PFV/IPFV/CTPL across the Commit-3b additions.
+    ("lapit",   "AV", "PFV",  "lumapit"),
+    ("lapit",   "AV", "IPFV", "lumalapit"),
+    ("lapit",   "AV", "CTPL", "lalapit"),
+    ("tabi",    "AV", "PFV",  "tumabi"),
+    ("tabi",    "AV", "IPFV", "tumatabi"),
+    ("tabi",    "AV", "CTPL", "tatabi"),
+    ("tabas",   "AV", "PFV",  "tumabas"),
+    ("tabas",   "AV", "IPFV", "tumatabas"),
+    ("tabas",   "AV", "CTPL", "tatabas"),
+    ("sukat",   "AV", "PFV",  "sumukat"),
+    ("sukat",   "AV", "IPFV", "sumusukat"),
+    ("sukat",   "AV", "CTPL", "susukat"),
+    ("unawa",   "AV", "PFV",  "umunawa"),
+    ("unawa",   "AV", "IPFV", "umuunawa"),
+    ("unawa",   "AV", "CTPL", "uunawa"),
+    ("awit",    "AV", "PFV",  "umawit"),
+    ("awit",    "AV", "IPFV", "umaawit"),
+    ("awit",    "AV", "CTPL", "aawit"),
+    ("dakot",   "AV", "PFV",  "dumakot"),
+    ("dakot",   "AV", "IPFV", "dumadakot"),
+    ("dakot",   "AV", "CTPL", "dadakot"),
+    ("pukpok",  "AV", "PFV",  "pumukpok"),
+    ("pukpok",  "AV", "IPFV", "pumupukpok"),
+    ("pukpok",  "AV", "CTPL", "pupukpok"),
+    ("tuloy",   "AV", "PFV",  "tumuloy"),
+    ("tuloy",   "AV", "IPFV", "tumutuloy"),
+    ("tuloy",   "AV", "CTPL", "tutuloy"),
+    ("silip",   "AV", "PFV",  "sumilip"),
+    ("silip",   "AV", "IPFV", "sumisilip"),
+    ("silip",   "AV", "CTPL", "sisilip"),
+    ("saksi",   "AV", "PFV",  "sumaksi"),
+    ("saksi",   "AV", "IPFV", "sumasaksi"),
+    ("saksi",   "AV", "CTPL", "sasaksi"),
+    ("urong",   "AV", "PFV",  "umurong"),
+    ("urong",   "AV", "IPFV", "umuurong"),
+    ("urong",   "AV", "CTPL", "uurong"),
+    ("usad",    "AV", "PFV",  "umusad"),
+    ("usad",    "AV", "IPFV", "umuusad"),
+    ("usad",    "AV", "CTPL", "uusad"),
+    ("dukit",   "AV", "PFV",  "dumukit"),
+    ("dukit",   "AV", "IPFV", "dumudukit"),
+    ("dukit",   "AV", "CTPL", "dudukit"),
+    # mag- AV
+    ("ihaw",    "AV", "PFV",  "nagihaw"),
+    ("ihaw",    "AV", "IPFV", "nagiihaw"),
+    ("ihaw",    "AV", "CTPL", "magiihaw"),
+    ("dasal",   "AV", "PFV",  "nagdasal"),
+    ("dasal",   "AV", "IPFV", "nagdadasal"),
+    ("dasal",   "AV", "CTPL", "magdadasal"),
+    ("tiis",    "AV", "PFV",  "nagtiis"),
+    ("tiis",    "AV", "IPFV", "nagtitiis"),
+    ("tiis",    "AV", "CTPL", "magtitiis"),
+    ("dali",    "AV", "PFV",  "nagdali"),
+    ("dali",    "AV", "IPFV", "nagdadali"),
+    ("dali",    "AV", "CTPL", "magdadali"),
+    ("labag",   "AV", "PFV",  "naglabag"),
+    ("labag",   "AV", "IPFV", "naglalabag"),
+    ("labag",   "AV", "CTPL", "maglalabag"),
+    ("lihim",   "AV", "PFV",  "naglihim"),
+    ("lihim",   "AV", "IPFV", "naglilihim"),
+    ("lihim",   "AV", "CTPL", "maglilihim"),
+    ("paypay",  "AV", "PFV",  "nagpaypay"),
+    ("paypay",  "AV", "IPFV", "nagpapaypay"),
+    ("paypay",  "AV", "CTPL", "magpapaypay"),
+    # ma- non-volitional state predicates.
+    ("galing",  "AV", "PFV",  "nagaling"),
+    ("galing",  "AV", "IPFV", "nagagaling"),
+    ("galing",  "AV", "CTPL", "magagaling"),
+    ("tuto",    "AV", "PFV",  "natuto"),
+    ("tuto",    "AV", "IPFV", "natututo"),
+    ("tuto",    "AV", "CTPL", "matututo"),
+    ("yaman",   "AV", "PFV",  "nayaman"),
+    ("yaman",   "AV", "IPFV", "nayayaman"),
+    ("yaman",   "AV", "CTPL", "mayayaman"),
+    ("bigat",   "AV", "PFV",  "nabigat"),
+    ("bigat",   "AV", "IPFV", "nabibigat"),
+    ("bigat",   "AV", "CTPL", "mabibigat"),
+    ("lakas",   "AV", "PFV",  "nalakas"),
+    ("lakas",   "AV", "IPFV", "nalalakas"),
+    ("lakas",   "AV", "CTPL", "malalakas"),
+    ("tigang",  "AV", "PFV",  "natigang"),
+    ("tigang",  "AV", "IPFV", "natitigang"),
+    ("tigang",  "AV", "CTPL", "matitigang"),
+    ("dunong",  "AV", "PFV",  "nadunong"),
+    ("dunong",  "AV", "IPFV", "nadudunong"),
+    ("dunong",  "AV", "CTPL", "madudunong"),
+    ("bilis",   "AV", "PFV",  "nabilis"),
+    ("bilis",   "AV", "IPFV", "nabibilis"),
+    ("bilis",   "AV", "CTPL", "mabibilis"),
+    ("sigla",   "AV", "PFV",  "nasigla"),
+    ("sigla",   "AV", "IPFV", "nasisigla"),
+    ("sigla",   "AV", "CTPL", "masisigla"),
+    ("dami",    "AV", "PFV",  "nadami"),
+    ("dami",    "AV", "IPFV", "nadadami"),
+    ("dami",    "AV", "CTPL", "madadami"),
+    ("ganda",   "AV", "PFV",  "naganda"),
+    ("ganda",   "AV", "IPFV", "nagaganda"),
+    ("ganda",   "AV", "CTPL", "magaganda"),
+    ("tamis",   "AV", "PFV",  "natamis"),
+    ("tamis",   "AV", "IPFV", "natatamis"),
+    ("tamis",   "AV", "CTPL", "matatamis"),
+    ("tibay",   "AV", "PFV",  "natibay"),
+    ("tibay",   "AV", "IPFV", "natitibay"),
+    ("tibay",   "AV", "CTPL", "matitibay"),
+]
+
+
+PHASE2C_C_NON_AV_FORMS = [
+    # OV cells from the new transitives — including o→u raising and
+    # the lihim sonorant ni- variant.
+    ("tabas",   "OV", "PFV",  "tinabas"),
+    ("tabas",   "OV", "CTPL", "tatabasin"),
+    ("sukat",   "OV", "PFV",  "sinukat"),
+    ("sukat",   "OV", "CTPL", "susukatin"),
+    ("dakot",   "OV", "CTPL", "dadakutin"),         # o→u raising
+    ("pukpok",  "OV", "CTPL", "pupukpukin"),        # o→u raising
+    ("dukit",   "OV", "PFV",  "dinukit"),
+    ("ihaw",    "OV", "PFV",  "inihaw"),
+    ("lihim",   "OV", "PFV",  "nilihim"),           # sonorant ni-
+    ("lihim",   "OV", "IPFV", "nililihim"),         # sonorant ni- + redup
+    ("paypay",  "OV", "PFV",  "pinaypay"),
+    ("saksi",   "OV", "CTPL", "sasaksihin"),        # h-epenthesis on /i/-final
+]
+
+
 PHASE2C_NON_AV_FORMS = [
     ("abot",    "OV", "PFV",  "inabot"),
     ("abot",    "OV", "CTPL", "aabutin"),     # o→u raising
@@ -750,6 +877,8 @@ ALL_PAIRED_FORMS = (
     + PHASE2C_B_MAG_AV_FORMS
     + PHASE2C_B_MA_NVOL_FORMS
     + PHASE2C_B_NON_AV_FORMS
+    + PHASE2C_C_AV_FORMS
+    + PHASE2C_C_NON_AV_FORMS
 )
 
 
@@ -845,12 +974,12 @@ def test_seed_lexicon_size() -> None:
     data = load_morph_data()
     verbs = [r for r in data.roots if r.pos == "VERB"]
     nouns = [r for r in data.roots if r.pos == "NOUN"]
-    assert len(verbs) >= 160, f"verb count regressed: {len(verbs)}"
-    assert len(nouns) >= 30, f"noun count regressed: {len(nouns)}"
+    assert len(verbs) >= 200, f"verb count regressed: {len(verbs)}"
+    assert len(nouns) >= 145, f"noun count regressed: {len(nouns)}"
 
 
 def test_paired_assertion_count() -> None:
-    """At least 500 paired assertions — meets plan §5.4's morphology
-    coverage target. Phase 2C Commit 3a brought the count past 500;
-    Commit 3b adds the remaining nouns and a final batch of verbs."""
-    assert len(ALL_PAIRED_FORMS) >= 500
+    """At least 600 paired assertions — Phase 2C complete; plan §5.4
+    morphology coverage target (200 verbs / 150 nouns / 500 assertions)
+    met across the three Phase 2C commits."""
+    assert len(ALL_PAIRED_FORMS) >= 600

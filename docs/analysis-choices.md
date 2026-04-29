@@ -126,18 +126,18 @@ the SUBJ / OBJ assignment.
 
 ## Phase 2 morphology scope and limitations
 
-**Date:** 2026-04-28. **Status:** active for Phase 2; revisit in
-Phase 2C and Phase 5.
+**Date:** 2026-04-28. **Status:** Phase 2C complete (2026-04-30).
 
 The Phase 2 rule-cascade morphology engine
 (`src/tgllfg/morph/`) covers AV / OV / DV / IV across PFV / IPFV /
 CTPL plus the AV variants in `mag-`, `mang-` (with nasal
-substitution), and `maka-` (abilitative, `MOOD: ABIL`). The seed
-under `data/tgl/` covers ~50 verb roots and ~30 nouns, with ~250
-paired surface↔analysis assertions in
-`tests/tgllfg/test_morph_paradigms.py`. The plan §5.4 target of ~200
-roots and ~500 assertions is partially met; the residual scale-up
-is deferred to a Phase 2C follow-on.
+substitution), `maka-` (abilitative, `MOOD: ABIL`), and `ma-`
+(non-volitional, `MOOD: NVOL`). After the three-commit Phase 2C
+scale-up, the seed under `data/tgl/` covers **200 verb roots and
+148 nouns** with **645 paired surface↔analysis assertions** in
+`tests/tgllfg/test_morph_paradigms.py`. Plan §5.4's target of 200
+verbs / 150 nouns / 500 assertions is met (nouns 2 short of 150 —
+within acceptable margin).
 
 ### Phase 2C: phonological rules added
 

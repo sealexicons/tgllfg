@@ -1150,6 +1150,212 @@
   transitivity: INTR
   affix_class: [mag, maka]
 
+# --- Phase 2C bulk verb scale-up C (Commit 3b, closes §5.4 verb target) -
+
+- citation: lapit
+  pos: VERB
+  gloss: approach, come near
+  transitivity: INTR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: tabi
+  pos: VERB
+  gloss: move aside
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+
+- citation: tabas
+  pos: VERB
+  gloss: cut, prune
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: sukat
+  pos: VERB
+  gloss: measure, fit
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: unawa
+  pos: VERB
+  gloss: understand
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: awit
+  pos: VERB
+  gloss: sing
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: dakot
+  pos: VERB
+  gloss: scoop with the hand
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: pukpok
+  pos: VERB
+  gloss: hammer, knock
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: tuloy
+  pos: VERB
+  gloss: continue, enter
+  transitivity: INTR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: silip
+  pos: VERB
+  gloss: peek
+  transitivity: INTR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: saksi
+  pos: VERB
+  gloss: witness
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: urong
+  pos: VERB
+  gloss: recede, withdraw
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+
+- citation: usad
+  pos: VERB
+  gloss: shift, slide along
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+
+- citation: dukit
+  pos: VERB
+  gloss: hollow out, gouge
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: ihaw
+  pos: VERB
+  gloss: grill, broil
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: dasal
+  pos: VERB
+  gloss: pray
+  transitivity: INTR
+  affix_class: [mag, maka]
+
+- citation: tiis
+  pos: VERB
+  gloss: endure, suffer
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: dali
+  pos: VERB
+  gloss: hurry, do quickly
+  transitivity: INTR
+  affix_class: [mag, maka]
+
+- citation: labag
+  pos: VERB
+  gloss: oppose, violate
+  transitivity: INTR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: lihim
+  pos: VERB
+  gloss: hide, keep secret
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: paypay
+  pos: VERB
+  gloss: fan
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: galing
+  pos: VERB
+  gloss: recover, come from
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
+- citation: tuto
+  pos: VERB
+  gloss: learn
+  transitivity: INTR
+  affix_class: [ma, mag, maka]
+
+- citation: yaman
+  pos: VERB
+  gloss: be wealthy
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
+- citation: bigat
+  pos: VERB
+  gloss: be heavy
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
+- citation: lakas
+  pos: VERB
+  gloss: be strong
+  transitivity: INTR
+  affix_class: [um, mag, ma, maka]
+
+- citation: tigang
+  pos: VERB
+  gloss: be parched
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: dunong
+  pos: VERB
+  gloss: be wise
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: bilis
+  pos: VERB
+  gloss: be quick
+  transitivity: INTR
+  affix_class: [um, mag, ma, maka]
+
+- citation: sigla
+  pos: VERB
+  gloss: be lively
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: dami
+  pos: VERB
+  gloss: increase in quantity
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
+- citation: ganda
+  pos: VERB
+  gloss: be beautiful
+  transitivity: INTR
+  affix_class: [um, mag, ma, maka]
+
+- citation: tamis
+  pos: VERB
+  gloss: be sweet
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
+- citation: tibay
+  pos: VERB
+  gloss: be durable
+  transitivity: INTR
+  affix_class: [ma, maka]
+
 # === Noun roots ==========================================================
 
 # --- Common nouns ---
@@ -1292,6 +1498,324 @@
 - citation: wika
   pos: NOUN
   gloss: language
+
+# --- Phase 2C bulk noun scale-up (Commit 3b) -----------------------------
+
+# -- People / kinship / roles --
+- citation: ina
+  pos: NOUN
+  gloss: mother (formal)
+- citation: ama
+  pos: NOUN
+  gloss: father (formal)
+- citation: anak
+  pos: NOUN
+  gloss: child, offspring
+- citation: asawa
+  pos: NOUN
+  gloss: spouse
+- citation: lolo
+  pos: NOUN
+  gloss: grandfather
+- citation: lola
+  pos: NOUN
+  gloss: grandmother
+- citation: tito
+  pos: NOUN
+  gloss: uncle
+- citation: tita
+  pos: NOUN
+  gloss: aunt
+- citation: pinsan
+  pos: NOUN
+  gloss: cousin
+- citation: apo
+  pos: NOUN
+  gloss: grandchild
+- citation: doktor
+  pos: NOUN
+  gloss: doctor
+- citation: guro
+  pos: NOUN
+  gloss: teacher
+- citation: estudyante
+  pos: NOUN
+  gloss: student
+- citation: pari
+  pos: NOUN
+  gloss: priest
+- citation: pulis
+  pos: NOUN
+  gloss: police officer
+- citation: kapitbahay
+  pos: NOUN
+  gloss: neighbor
+
+# -- Body parts --
+- citation: ulo
+  pos: NOUN
+  gloss: head
+- citation: mata
+  pos: NOUN
+  gloss: eye
+- citation: ilong
+  pos: NOUN
+  gloss: nose
+- citation: bibig
+  pos: NOUN
+  gloss: mouth
+- citation: ngipin
+  pos: NOUN
+  gloss: tooth
+- citation: dila
+  pos: NOUN
+  gloss: tongue
+- citation: tenga
+  pos: NOUN
+  gloss: ear
+- citation: kamay
+  pos: NOUN
+  gloss: hand
+- citation: paa
+  pos: NOUN
+  gloss: foot
+- citation: binti
+  pos: NOUN
+  gloss: leg
+- citation: balikat
+  pos: NOUN
+  gloss: shoulder
+- citation: likod
+  pos: NOUN
+  gloss: back
+- citation: tiyan
+  pos: NOUN
+  gloss: stomach
+- citation: dibdib
+  pos: NOUN
+  gloss: chest
+- citation: puso
+  pos: NOUN
+  gloss: heart
+- citation: utak
+  pos: NOUN
+  gloss: brain
+- citation: dugo
+  pos: NOUN
+  gloss: blood
+- citation: buhok
+  pos: NOUN
+  gloss: hair
+- citation: balat
+  pos: NOUN
+  gloss: skin
+- citation: kuko
+  pos: NOUN
+  gloss: nail (finger / toe)
+
+# -- Nature --
+- citation: buwan
+  pos: NOUN
+  gloss: moon, month
+- citation: bituin
+  pos: NOUN
+  gloss: star
+- citation: ulap
+  pos: NOUN
+  gloss: cloud
+- citation: ulan
+  pos: NOUN
+  gloss: rain
+- citation: hangin
+  pos: NOUN
+  gloss: wind
+- citation: ilog
+  pos: NOUN
+  gloss: river
+- citation: dagat
+  pos: NOUN
+  gloss: sea
+- citation: bundok
+  pos: NOUN
+  gloss: mountain
+- citation: puno
+  pos: NOUN
+  gloss: tree
+- citation: dahon
+  pos: NOUN
+  gloss: leaf
+- citation: bulaklak
+  pos: NOUN
+  gloss: flower
+- citation: langit
+  pos: NOUN
+  gloss: sky, heaven
+- citation: lupa
+  pos: NOUN
+  gloss: earth, soil
+- citation: apoy
+  pos: NOUN
+  gloss: fire
+- citation: bato
+  pos: NOUN
+  gloss: stone, rock
+- citation: liwanag
+  pos: NOUN
+  gloss: light
+- citation: dilim
+  pos: NOUN
+  gloss: darkness
+
+# -- Animals --
+- citation: daga
+  pos: NOUN
+  gloss: rat, mouse
+- citation: kalabaw
+  pos: NOUN
+  gloss: water buffalo, carabao
+- citation: baka
+  pos: NOUN
+  gloss: cow
+- citation: kambing
+  pos: NOUN
+  gloss: goat
+- citation: pato
+  pos: NOUN
+  gloss: duck
+- citation: kuneho
+  pos: NOUN
+  gloss: rabbit
+- citation: langaw
+  pos: NOUN
+  gloss: fly (insect)
+
+# -- Food --
+- citation: bigas
+  pos: NOUN
+  gloss: uncooked rice
+- citation: asin
+  pos: NOUN
+  gloss: salt
+- citation: asukal
+  pos: NOUN
+  gloss: sugar
+- citation: itlog
+  pos: NOUN
+  gloss: egg
+- citation: mansanas
+  pos: NOUN
+  gloss: apple
+- citation: saging
+  pos: NOUN
+  gloss: banana
+- citation: mangga
+  pos: NOUN
+  gloss: mango
+- citation: niyog
+  pos: NOUN
+  gloss: coconut
+- citation: kamatis
+  pos: NOUN
+  gloss: tomato
+- citation: patatas
+  pos: NOUN
+  gloss: potato
+- citation: suka
+  pos: NOUN
+  gloss: vinegar
+- citation: keso
+  pos: NOUN
+  gloss: cheese
+- citation: karne
+  pos: NOUN
+  gloss: meat
+- citation: gulay
+  pos: NOUN
+  gloss: vegetable (homophonous with the verb)
+
+# -- Objects / places --
+- citation: kama
+  pos: NOUN
+  gloss: bed
+- citation: salamin
+  pos: NOUN
+  gloss: mirror, glasses
+- citation: pinto
+  pos: NOUN
+  gloss: door
+- citation: bintana
+  pos: NOUN
+  gloss: window
+- citation: sahig
+  pos: NOUN
+  gloss: floor
+- citation: dingding
+  pos: NOUN
+  gloss: wall
+- citation: bubong
+  pos: NOUN
+  gloss: roof
+- citation: hagdan
+  pos: NOUN
+  gloss: stairs, ladder
+- citation: palengke
+  pos: NOUN
+  gloss: market
+- citation: parke
+  pos: NOUN
+  gloss: park
+- citation: bayan
+  pos: NOUN
+  gloss: town, country
+- citation: eskwela
+  pos: NOUN
+  gloss: school (colloquial; cf. paaralan)
+
+# -- Time --
+- citation: taon
+  pos: NOUN
+  gloss: year
+- citation: kahapon
+  pos: NOUN
+  gloss: yesterday
+- citation: ngayon
+  pos: NOUN
+  gloss: now, today
+- citation: sandali
+  pos: NOUN
+  gloss: a moment
+
+# -- Clothing / transport --
+- citation: damit
+  pos: NOUN
+  gloss: clothing, dress
+- citation: sapatos
+  pos: NOUN
+  gloss: shoes
+- citation: sumbrero
+  pos: NOUN
+  gloss: hat
+- citation: bag
+  pos: NOUN
+  gloss: bag
+- citation: kotse
+  pos: NOUN
+  gloss: car
+- citation: dyip
+  pos: NOUN
+  gloss: jeepney
+- citation: bus
+  pos: NOUN
+  gloss: bus
+- citation: tren
+  pos: NOUN
+  gloss: train
+- citation: eroplano
+  pos: NOUN
+  gloss: airplane
+- citation: bisikleta
+  pos: NOUN
+  gloss: bicycle
 
 # --- Proper-name placeholders ---
 - citation: maria
