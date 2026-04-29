@@ -1,4 +1,4 @@
-# tgllfg/grammar.py
+# tgllfg/cfg/grammar.py
 
 from dataclasses import dataclass
 from typing import Sequence
@@ -23,19 +23,21 @@ class Grammar:
         R.append(Rule("NP[CASE=DAT]", ["ADP[CASE=DAT]","N"], ["(↑ CASE)= 'DAT'", "(↑ PRED) = ↓2 PRED"]))
 
         # Lexical projections
-        R.append(Rule("N", ["NOUN"], ["(↑ PRED) = '"+"NOUN"+"(↑ FORM)'" ]))  # toy; you’ll set PRED from lexicon
+        R.append(Rule("N", ["NOUN"], ["(↑ PRED) = '"+"NOUN"+"(↑ FORM)'" ]))  # toy; PRED from lexicon in Phase 3
 
-        # VP and S (V-initial)
-        # Patient Voice transitive: V NP(GEN agent) NP(NOM patient)
+        # VP and S (V-initial). Voice naming follows Kroeger 1993:
+        # AV / OV / DV / IV. The legacy "PV" (Patient Voice) label
+        # is identified with OV.
         R.append(Rule(
             "S",
-            ["VP_PV"],
+            ["VP_OV"],
             ["(↑)=↓1"]
         ))
 
+        # OV transitive: V NP(GEN ng-non-pivot) NP(NOM ang-pivot)
         R.append(Rule(
-            "VP_PV",
-            ["V[VOICE=PV]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            "VP_OV",
+            ["V[VOICE=OV]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
             [
                 "(↑ PRED) = ↓1 PRED",
                 "(↑ VOICE) = ↓1 VOICE",

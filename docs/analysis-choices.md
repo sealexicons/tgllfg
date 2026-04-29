@@ -123,3 +123,73 @@ the SUBJ / OBJ assignment.
   system.
 - Bresnan, Joan. 2001. *Lexical-Functional Syntax*. Blackwell.
   Background on LMT and the SUBJ/OBJ/OBJ-θ inventory.
+
+## Phase 2 morphology scope and limitations
+
+**Date:** 2026-04-28. **Status:** active for Phase 2; revisit in
+Phase 2C and Phase 5.
+
+The Phase 2 rule-cascade morphology engine
+(`src/tgllfg/morph/`) covers AV / OV / DV / IV across PFV / IPFV /
+CTPL plus the AV variants in `mag-`, `mang-` (with nasal
+substitution), and `maka-` (abilitative, `MOOD: ABIL`). The seed
+under `data/tgl/` covers ~50 verb roots and ~30 nouns, with ~250
+paired surface↔analysis assertions in
+`tests/tgllfg/test_morph_paradigms.py`. The plan §5.4 target of ~200
+roots and ~500 assertions is partially met; the residual scale-up
+is deferred to a Phase 2C follow-on.
+
+### Documented engine limitations
+
+The following root-specific phonological rules are **not modeled**;
+forms produced by the engine for affected roots are conservative
+("no rule applied") rather than the literary standard. Tests assert
+the conservative form and flag the gap inline.
+
+1. **Stem-vowel raising** `o → u` on suffixation.
+   - `inom + -in` → engine `iinomin`, literary `iinumin`.
+   - `putol + -in` → engine `puputolin`, literary `puputulin`.
+   - Source: Schachter & Otanes 1972 §4.21; Ramos & Bautista 1986
+     paradigm tables.
+2. **/d/ → /r/ alternation** between vowels.
+   - `dating + cv-redup` → engine `dadating`, surface `darating`.
+   - `dating + -um- + cv-redup` → engine `dumadating`, surface
+     `dumarating`.
+3. **High-vowel deletion** under suffixation (a colloquial variant
+   of the h-epenthesis rule).
+   - `bili + -in` → engine `bilihin` (h-epenthesis only); colloquial
+     `bilhin` (with deletion). Both are attested; the engine
+     standardises on the formal h-only pattern.
+4. **Sonorant-initial -in- → ni-** prefix realisation.
+   - `linis + OV PFV (realis -in-)` → would require `nilinis` rather
+     than `linilis`. The seed does not declare `linis` in any non-AV
+     class, so generation never fires for these cells; they are
+     deferred to Phase 2C.
+5. **`ma-` non-volitional / abilitative on non-AV voices** — not
+   represented in the cell inventory. `tulog` colloquially has the
+   `ma-` AV PFV `natulog` but the engine generates `nagtulog`
+   (mag- class) instead.
+
+### Affix-class lexicon convention
+
+Each verb root carries an `affix_class` list listing the paradigm
+patterns it participates in (`um`, `mag`, `mang`, `maka`,
+`in_oblig`, `an_oblig`, `i_oblig`). Generation only fires for cells
+whose `affix_class` is in the root's list, so a `-um-` only verb
+does not produce ungrammatical `mag-` or `mang-` forms. R&B 1986's
+back-of-book index summarises each verb's affix-class membership
+(e.g. `eat káin (-um-/ -in/ -an) 126`), and the seed encodes these
+directly. Where R&B records additional classes the engine doesn't
+yet support (`ipag-`, `ipang-`, `magpa-`, `ika-`, `magka-`,
+`pag- -an`, `ma-`, `maki-`, `magsi-`), the unsupported entries are
+omitted from `affix_class` with a comment in `roots.yaml` flagging
+the gap.
+
+### Citation policy
+
+Per-verb citations live as YAML comments in `data/tgl/roots.yaml`
+referencing R&B 1986 page numbers. The Ramos 1971 dictionary OCR
+and the R&B 1986 PDF live under `data/tgl/dictionaries/`
+(gitignored) for grep-verification during seed authoring; the
+binaries are not redistributed. Schachter & Otanes 1972 and Kroeger
+1993 are cited by section number in commit messages.

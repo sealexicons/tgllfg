@@ -315,7 +315,7 @@ class TestOrchestration:
         results = parse_text("Kinain ng aso ang isda.")
         assert len(results) >= 1
         _, f, _, _ = results[0]
-        assert f.feats["VOICE"] == "PV"
+        assert f.feats["VOICE"] == "OV"
         assert f.feats["ASPECT"] == "PFV"
         assert f.feats["PRED"].startswith("EAT")
         assert "SUBJ" in f.feats and "OBJ" in f.feats

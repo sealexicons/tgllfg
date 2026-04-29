@@ -1,0 +1,56 @@
+# data/tgl/affixes.yaml
+#
+# Inventory of voice/aspect-bearing affixes referenced by paradigm
+# cells. The seed engine doesn't read this file directly — paradigms
+# encode the operation list — but recording the affix inventory here
+# keeps the data model symmetric with the eventual DB schema (§6.2)
+# and makes the contributor surface for "add a new affix" obvious.
+#
+# `position`:
+#   PREFIX | INFIX | SUFFIX | REDUPLICATION
+# `features` are the morphosyntactic features the affix contributes.
+#
+# Citations: Kroeger 1993 ch. 4; Schachter & Otanes 1972 ch. 5.
+
+- shape: um
+  position: INFIX
+  features: {VOICE: AV}
+  notes: |
+    Infixed after the first consonant of the root; surfaces as a
+    prefix on vowel-initial bases. Marks Actor Voice in PFV/IPFV.
+
+- shape: in
+  position: INFIX
+  features: {ASPECT: PFV, MOOD: REALIS}
+  notes: |
+    The realis infix; combines with non-AV voices to mark
+    PFV / IPFV. Distinct from the OV `-in` suffix despite the
+    orthographic overlap.
+
+- shape: in
+  position: SUFFIX
+  features: {VOICE: OV}
+  notes: |
+    Objective Voice suffix; typically present in OV CTPL and
+    IPFV (with the realis -in- infix), absent in OV PFV.
+
+- shape: an
+  position: SUFFIX
+  features: {VOICE: DV}
+  notes: |
+    Dative / Locative Voice suffix.
+
+- shape: i
+  position: PREFIX
+  features: {VOICE: IV}
+  notes: |
+    Instrumental / Benefactive Voice prefix.
+
+- shape: CV
+  position: REDUPLICATION
+  features: {ASPECT: IPFV-or-CTPL}
+  notes: |
+    First-CV reduplication. In combination with the realis infix it
+    marks IPFV (kinakain); without the realis infix it marks CTPL
+    (kakainin). The aspect emerges from the combination, not from
+    the redup alone.

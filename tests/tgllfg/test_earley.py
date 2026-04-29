@@ -233,8 +233,8 @@ class TestDemoGrammar:
         assert len(results) >= 1
         ctree, _, _, _ = results[0]
         assert ctree.label == "S"
-        # S → VP_PV, VP_PV → V NP[CASE=GEN] NP[CASE=NOM].
-        assert ctree.children[0].label == "VP_PV"
+        # S → VP_OV, VP_OV → V NP[CASE=GEN] NP[CASE=NOM].
+        assert ctree.children[0].label == "VP_OV"
         vp = ctree.children[0]
         assert [c.label for c in vp.children] == [
             "V", "NP[CASE=GEN]", "NP[CASE=NOM]",
@@ -244,9 +244,9 @@ class TestDemoGrammar:
         from tgllfg.pipeline import parse_text
         results = parse_text("Kinain ng aso ang isda.")
         ctree, _, _, _ = results[0]
-        v = ctree.children[0].children[0]  # S → VP_PV → V
+        v = ctree.children[0].children[0]  # S → VP_OV → V
         assert v.label == "V"
-        assert "(↑ VOICE) = 'PV'" in v.equations
+        assert "(↑ VOICE) = 'OV'" in v.equations
         assert "(↑ ASPECT) = 'PFV'" in v.equations
         assert "(↑ PRED) = 'EAT <SUBJ, OBJ>'" in v.equations
 

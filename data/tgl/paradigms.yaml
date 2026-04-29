@@ -1,0 +1,257 @@
+# data/tgl/paradigms.yaml
+#
+# Verbal paradigm cells for the Kroeger four-voice system. Each cell
+# is filtered by `affix_class` — a string the root's affix_class list
+# must contain for the cell to fire. This prevents a -um- only root
+# like `kain` from generating mag-/mang- forms it doesn't support.
+#
+# Operation order applied during generation (see analyzer.py):
+#
+#   1. cv_redup     — first-CV reduplication of the base
+#   2. infix        — -um- (AV) or -in- (realis) after first consonant;
+#                     prefix on vowel-initial bases
+#   3. suffix       — -in (OV CTPL), -an (DV)
+#   4. prefix       — i- (IV), nag-/mag-, naka-/maka-
+#   5. nasal_prefix — nang-/mang- with nasal substitution
+#
+# CTPL (contemplative / future) cells omit the realis -in- infix; the
+# realis/irrealis split is folded into ASPECT for now (the plan §7.2
+# leaves a separate MOOD analysis to a later phase).
+#
+# Citations: Kroeger 1993 §§4.2–4.5; Schachter & Otanes 1972 §§5.20–5.30.
+
+# === AV — Actor Voice (-um- class) =======================================
+
+- voice: AV
+  aspect: PFV
+  mood: IND
+  transitivity: ''
+  affix_class: um
+  operations:
+    - {op: infix, value: um}
+  notes: kumain, bumili (-um- after first consonant)
+
+- voice: AV
+  aspect: IPFV
+  mood: IND
+  transitivity: ''
+  affix_class: um
+  operations:
+    - {op: cv_redup}
+    - {op: infix, value: um}
+  notes: kumakain, bumibili
+
+- voice: AV
+  aspect: CTPL
+  mood: IND
+  transitivity: ''
+  affix_class: um
+  operations:
+    - {op: cv_redup}
+  notes: kakain, bibili (irrealis — no -um-)
+
+# === AV — Actor Voice (mag- class) =======================================
+
+- voice: AV
+  aspect: PFV
+  mood: IND
+  transitivity: ''
+  affix_class: mag
+  operations:
+    - {op: prefix, value: "nag"}
+  notes: naglinis, nagbigay (mag- → nag- in realis)
+
+- voice: AV
+  aspect: IPFV
+  mood: IND
+  transitivity: ''
+  affix_class: mag
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "nag"}
+  notes: naglilinis, nagbibigay
+
+- voice: AV
+  aspect: CTPL
+  mood: IND
+  transitivity: ''
+  affix_class: mag
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "mag"}
+  notes: maglilinis, magbibigay (mag- in irrealis)
+
+# === AV — Actor Voice (mang- distributive class) =========================
+#
+# The mang- prefix exhibits nasal substitution: the prefix's final ng
+# adapts to the base's first consonant, which then drops. nang- is
+# the realis (PFV/IPFV) variant; mang- is the irrealis (CTPL). The
+# IPFV/CTPL reduplication target is the *post-substitution* base
+# (bili → mili → mimili), so the sequence is
+# nasal_substitute → cv_redup → prefix.
+#
+# Examples: mang + bili → mamili; mang + kuha → manguha; mang + tahi
+# → manahi. PFV uses na- as the prefix head, CTPL uses ma-.
+
+- voice: AV
+  aspect: PFV
+  mood: IND
+  transitivity: ''
+  affix_class: mang
+  operations:
+    - {op: nasal_substitute}
+    - {op: prefix, value: "na"}
+  notes: namili (← nang+bili), nanahi (← nang+tahi)
+
+- voice: AV
+  aspect: IPFV
+  mood: IND
+  transitivity: ''
+  affix_class: mang
+  operations:
+    - {op: nasal_substitute}
+    - {op: cv_redup}
+    - {op: prefix, value: "na"}
+  notes: namimili (← nang+CV-redup of post-subst base)
+
+- voice: AV
+  aspect: CTPL
+  mood: IND
+  transitivity: ''
+  affix_class: mang
+  operations:
+    - {op: nasal_substitute}
+    - {op: cv_redup}
+    - {op: prefix, value: "ma"}
+  notes: mamimili (← mang+CV-redup of post-subst base)
+
+# === AV — Actor Voice (maka- abilitative class) ==========================
+#
+# MOOD = ABIL distinguishes abilitative readings ("be able to ...").
+# The naka-/maka- alternation parallels nag-/mag- in realis vs irrealis.
+
+- voice: AV
+  aspect: PFV
+  mood: ABIL
+  transitivity: ''
+  affix_class: maka
+  operations:
+    - {op: prefix, value: "naka"}
+  notes: nakakain, nakabili ("was able to eat / buy")
+
+- voice: AV
+  aspect: IPFV
+  mood: ABIL
+  transitivity: ''
+  affix_class: maka
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "naka"}
+  notes: nakakakain, nakakabili
+
+- voice: AV
+  aspect: CTPL
+  mood: ABIL
+  transitivity: ''
+  affix_class: maka
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "maka"}
+  notes: makakakain, makakabili
+
+# === OV — Objective (Patient) Voice ======================================
+
+- voice: OV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  affix_class: in_oblig
+  operations:
+    - {op: infix, value: in}
+  notes: kinain, binili
+
+- voice: OV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  affix_class: in_oblig
+  operations:
+    - {op: cv_redup}
+    - {op: infix, value: in}
+  notes: kinakain, binibili
+
+- voice: OV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: in_oblig
+  operations:
+    - {op: cv_redup}
+    - {op: suffix, value: in}
+  notes: kakainin, bibilihin (sandhi for vowel-final root)
+
+# === DV — Dative / Locative Voice ========================================
+
+- voice: DV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  affix_class: an_oblig
+  operations:
+    - {op: infix, value: in}
+    - {op: suffix, value: an}
+  notes: kinainan, binilihan
+
+- voice: DV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  affix_class: an_oblig
+  operations:
+    - {op: cv_redup}
+    - {op: infix, value: in}
+    - {op: suffix, value: an}
+  notes: kinakainan, binibilihan
+
+- voice: DV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: an_oblig
+  operations:
+    - {op: cv_redup}
+    - {op: suffix, value: an}
+  notes: kakainan, bibilihan
+
+# === IV — Instrumental / Benefactive Voice ===============================
+
+- voice: IV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  affix_class: i_oblig
+  operations:
+    - {op: infix, value: in}
+    - {op: prefix, value: "i"}
+  notes: ikinain, ibinili
+
+- voice: IV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  affix_class: i_oblig
+  operations:
+    - {op: cv_redup}
+    - {op: infix, value: in}
+    - {op: prefix, value: "i"}
+  notes: ikinakain, ibinibili
+
+- voice: IV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: i_oblig
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "i"}
+  notes: ikakain, ibibili

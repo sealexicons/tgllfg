@@ -1,0 +1,81 @@
+# data/tgl/pronouns.yaml
+#
+# Full Tagalog personal pronoun paradigm: 7 person/number/clusivity
+# slots × 3 cases (NOM, GEN, DAT). 2sg-NOM has two forms — the full
+# `ikaw` and the second-position clitic `ka`. Genitive forms are
+# clitics and pattern with the Wackernagel cluster (handled
+# orthographically by clitics.py and syntactically in §7.3).
+#
+# Feature conventions:
+#   PERS  ∈ {1, 2, 3}
+#   NUM   ∈ {SG, PL}
+#   CLUSV ∈ {INCL, EXCL}  (only on 1pl)
+#   CASE  ∈ {NOM, GEN, DAT}
+#
+# Citations: Schachter & Otanes 1972 §3.2; Kroeger 1993 §2.2.
+
+# --- 1sg ---
+- surface: ako
+  feats: {PERS: 1, NUM: SG, CASE: NOM}
+- surface: ko
+  feats: {PERS: 1, NUM: SG, CASE: GEN}
+  is_clitic: true
+- surface: akin
+  feats: {PERS: 1, NUM: SG, CASE: DAT}
+
+# --- 1pl inclusive ---
+- surface: tayo
+  feats: {PERS: 1, NUM: PL, CLUSV: INCL, CASE: NOM}
+- surface: natin
+  feats: {PERS: 1, NUM: PL, CLUSV: INCL, CASE: GEN}
+  is_clitic: true
+- surface: atin
+  feats: {PERS: 1, NUM: PL, CLUSV: INCL, CASE: DAT}
+
+# --- 1pl exclusive ---
+- surface: kami
+  feats: {PERS: 1, NUM: PL, CLUSV: EXCL, CASE: NOM}
+- surface: namin
+  feats: {PERS: 1, NUM: PL, CLUSV: EXCL, CASE: GEN}
+  is_clitic: true
+- surface: amin
+  feats: {PERS: 1, NUM: PL, CLUSV: EXCL, CASE: DAT}
+
+# --- 2sg ---
+- surface: ikaw
+  feats: {PERS: 2, NUM: SG, CASE: NOM}
+- surface: ka
+  feats: {PERS: 2, NUM: SG, CASE: NOM}
+  is_clitic: true
+- surface: mo
+  feats: {PERS: 2, NUM: SG, CASE: GEN}
+  is_clitic: true
+- surface: iyo
+  feats: {PERS: 2, NUM: SG, CASE: DAT}
+
+# --- 2pl ---
+- surface: kayo
+  feats: {PERS: 2, NUM: PL, CASE: NOM}
+- surface: ninyo
+  feats: {PERS: 2, NUM: PL, CASE: GEN}
+  is_clitic: true
+- surface: inyo
+  feats: {PERS: 2, NUM: PL, CASE: DAT}
+
+# --- 3sg ---
+- surface: siya
+  feats: {PERS: 3, NUM: SG, CASE: NOM}
+- surface: niya
+  feats: {PERS: 3, NUM: SG, CASE: GEN}
+  is_clitic: true
+- surface: kanya
+  feats: {PERS: 3, NUM: SG, CASE: DAT}
+
+# --- 3pl ---
+- surface: sila
+  feats: {PERS: 3, NUM: PL, CASE: NOM}
+- surface: nila
+  feats: {PERS: 3, NUM: PL, CASE: GEN}
+  is_clitic: true
+- surface: kanila
+  feats: {PERS: 3, NUM: PL, CASE: DAT}

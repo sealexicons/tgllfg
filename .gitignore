@@ -46,3 +46,7 @@ Thumbs.db
 *~
 *.bak
 *.log
+
+# Reference dictionaries / corpora staged for Phase 3 ingestion;
+# excluded from the repo for binary-size and licensing reasons.
+data/tgl/dictionaries/
