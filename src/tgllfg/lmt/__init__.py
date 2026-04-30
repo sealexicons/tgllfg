@@ -17,8 +17,11 @@ from .common import (
     IntrinsicFeatures,
     MappingResult,
     Role,
+    default_intrinsics,
+    intrinsics_for,
     obj_theta,
     obl_theta,
+    stipulated_gfs_for,
 )
 from .legacy import apply_lmt
 from .principles import (
@@ -27,7 +30,6 @@ from .principles import (
     check_biuniqueness,
     check_subject_condition,
     compute_mapping,
-    default_intrinsics,
     fill_defaults,
     non_subject_mapping,
     subject_mapping,
@@ -51,6 +53,9 @@ __all__ = [
     "fill_defaults",
     "non_subject_mapping",
     "subject_mapping",
+    # Lex-entry bridges (Commit 4)
+    "intrinsics_for",
+    "stipulated_gfs_for",
     # Legacy (deleted in Commit 8)
     "apply_lmt",
 ]

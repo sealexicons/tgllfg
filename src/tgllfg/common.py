@@ -43,6 +43,16 @@ class LexicalEntry:
     a_structure: list[str]                          # ["AGENT", "PATIENT"]
     morph_constraints: dict[str, FeatureValue]      # VOICE=OV, TR=TR, ...
     gf_defaults: dict[str, str]                     # bare-form fallbacks
+    # Phase 5 §8: per-voice [±r, ±o] intrinsic profile keyed by role
+    # name. Empty dict means "no intrinsics declared" — the LMT
+    # bridge :func:`tgllfg.lmt.intrinsics_for` falls back to
+    # :data:`tgllfg.lmt._DEFAULT_INTRINSICS` per role. Tuples are
+    # ``(r, o)`` with each component ``True`` (``+``), ``False``
+    # (``-``), or ``None`` (unspecified — fill-by-defaults at LMT
+    # step 3).
+    intrinsic_classification: dict[
+        str, tuple[bool | None, bool | None]
+    ] = field(default_factory=dict)
 
 
 @dataclass

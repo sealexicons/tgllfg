@@ -34,9 +34,25 @@ from .common import (
     IntrinsicFeatures,
     MappingResult,
     Role,
+    default_intrinsics,
     obj_theta,
     obl_theta,
 )
+
+
+__all__ = [
+    "ROLE_HIERARCHY",
+    "apply_voice_constraints",
+    "check_biuniqueness",
+    "check_subject_condition",
+    "compute_mapping",
+    # Re-exported for backward compatibility — the canonical home is
+    # tgllfg.lmt.common as of Commit 4.
+    "default_intrinsics",
+    "fill_defaults",
+    "non_subject_mapping",
+    "subject_mapping",
+]
 
 
 # === Role hierarchy ========================================================
@@ -74,51 +90,6 @@ def _hierarchy_index(role: Role) -> int:
         return ROLE_HIERARCHY.index(role)
     except ValueError:
         return len(ROLE_HIERARCHY)
-
-
-# === Default intrinsic table ===============================================
-
-# Bresnan & Kanerva 1989 canonical intrinsic feature per role. Used by
-# Commit 4 to bootstrap lex entries with empty
-# ``intrinsic_classification`` JSONB; the runtime engine doesn't
-# consult this directly — it expects the lex entry to carry a
-# per-voice intrinsic profile because Tagalog voice morphology is
-# voice-specific.
-
-_DEFAULT_INTRINSICS: dict[Role, IntrinsicFeatures] = {
-    # Non-objective intrinsic ([-o]) — the role cannot be OBJ-typed.
-    Role.AGENT:        IntrinsicFeatures(o=False),
-    Role.ACTOR:        IntrinsicFeatures(o=False),
-    Role.CAUSER:       IntrinsicFeatures(o=False),
-    Role.EXPERIENCER:  IntrinsicFeatures(o=False),
-    Role.BENEFICIARY:  IntrinsicFeatures(o=False),
-    Role.RECIPIENT:    IntrinsicFeatures(o=False),
-    Role.GOAL:         IntrinsicFeatures(o=False),
-    Role.INSTRUMENT:   IntrinsicFeatures(o=False),
-    Role.LOCATION:     IntrinsicFeatures(o=False),
-    # Unrestricted intrinsic ([-r]) — patient-like roles default to
-    # the lex's natural OBJ candidate.
-    Role.PATIENT:      IntrinsicFeatures(r=False),
-    Role.THEME:        IntrinsicFeatures(r=False),
-    Role.CONVEYED:     IntrinsicFeatures(r=False),
-    Role.CAUSEE:       IntrinsicFeatures(r=False),
-    Role.STIMULUS:     IntrinsicFeatures(r=False),
-    # COMPLEMENT and EVENT are off-hierarchy XCOMP-bound roles; the
-    # truth table doesn't apply, so we don't pre-classify.
-}
-
-
-def default_intrinsics(role: Role) -> IntrinsicFeatures:
-    """Return `role`'s canonical intrinsic feature pair per
-    Bresnan & Kanerva 1989.
-
-    Used by Commit 4's lex-entry bootstrap to fill empty
-    ``intrinsic_classification`` JSONB. The runtime engine does not
-    consult this — it expects each lex entry to supply a complete
-    per-voice intrinsic profile (since Tagalog voice morphology
-    targets a specific argument per voice form).
-    """
-    return _DEFAULT_INTRINSICS.get(role, IntrinsicFeatures())
 
 
 # === Step 2: voice constraint merge ========================================
