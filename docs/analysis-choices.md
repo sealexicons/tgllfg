@@ -305,3 +305,81 @@ mapping (AF→AV, GF/PF→OV, LF/DF→DV, BF→IV+BEN, IF→IV+INSTR,
 RF→IV+REASON, CF→AV+CAUS=DIRECT). The CF entry is partial: the
 biclausal indirect-causative frame is captured as XCOMP (Phase 4
 §7.6) rather than a single (VOICE, APPL, CAUS) triple.
+
+## Phase 4 §7.2: aspect, mood, polarity
+
+**Date:** 2026-04-30. **Status:** active.
+
+### Aspect inventory expanded to {PFV, IPFV, CTPL, RECPFV}
+
+The recent-perfective ("just-completed") aspect is added to the
+inventory. Morphology is uniform across affix classes: ``ka-`` +
+CV-reduplication of the root, no infix or voice suffix.
+
+- AV-um: ``kakakain`` (just ate), ``kabibili`` (just bought).
+- AV-mag: ``kasusulat``, ``kalilinis``.
+- AV-ma: ``katutulog`` (just fell asleep).
+
+`RECPFV` cells exist for the three productive AV affix-classes (um,
+mag, ma). Non-AV RECPFV is rare in modern Tagalog and is deferred to
+a Phase 5 / scale-up commit.
+
+Citations: Schachter & Otanes 1972 §5.31; Ramos & Bautista 1986
+paradigm tables (RECPFV column).
+
+### Mood inventory expanded to {IND, IMP, ABIL, NVOL, SOC}
+
+`IND`, `ABIL`, and `NVOL` are already populated by Phase 2C
+morphology (default IND, abilitative `maka-`, non-volitional `ma-`).
+Phase 4 §7.2 adds `IMP` (imperative) and `SOC` (social) as
+recognised values; their morphological / particle triggers are
+partial in this commit:
+
+- `IMP` is borne by the `huwag` particle's f-structure (lex feats
+  POLARITY=NEG, MOOD=IMP) but is **not** lifted to the matrix MOOD
+  in this commit (see "Phase 4 §7.2 limitation" below).
+- `SOC` requires §7.3 clitics (the social `tayo` 1pl-incl pivot)
+  and is left as inventory only.
+
+### Polarity from `hindi` and `huwag`
+
+Clausal negation is added with a single grammar rule:
+
+```
+S → PART[POLARITY=NEG] S
+   (↑) = ↓2
+   (↑ POLARITY) = 'NEG'
+```
+
+The matrix S inherits the inner clause's f-structure wholesale and
+overlays POLARITY=NEG. Both `hindi` (declarative-negation, just
+POLARITY=NEG) and `huwag` (imperative-negation, POLARITY=NEG +
+MOOD=IMP on the particle) match this rule. POLARITY=NEG appears at
+the top of the matrix f-structure, above any per-voice projections.
+
+**Phase 4 §7.2 limitation: huwag's MOOD=IMP is not lifted to
+matrix.** The full-inheritance equation `(↑) = ↓2` propagates the
+inner verb's MOOD=IND to the matrix, and overlaying MOOD=IMP from
+the particle would clash with that IND. Resolving the clash
+requires either (a) selectively projecting individual GFs from the
+inner clause (which creates phantom OBJ slots for intransitive
+inner clauses, tripping coherence) or (b) a richer feature
+architecture distinguishing predicate-mood from clausal-mood. Both
+are out of scope for §7.2; the imperative-mood lifting is
+revisitable in §7.3 (clitics often co-occur with imperatives) or
+§7.6 (control / raising). The huwag particle's own f-structure
+does carry MOOD=IMP, accessible via the c-tree.
+
+### Lexicon fallback for verbs not in the in-process BASE
+
+Phase 4 introduces `_synthesize_verb_entry` in `src/tgllfg/lexicon.py`:
+when the morph engine recognises a verb (any of the 200 seeded
+roots) but no hand-authored entry exists in `BASE`, the lookup
+synthesises a voice-aware default `LexicalEntry`. The synthesised
+PRED is the lemma in upper case; argument-structure and GF defaults
+match `lmt.apply_lmt`'s per-voice mapping. This avoids empty-PRED
+f-structures for the 194 seeded verbs not in the Phase 4 anchor set
+and keeps the well-formedness checks meaningful across the corpus.
+The hand-authored anchor entries (kain, bili, basa, sulat, gawa,
+tapon) take precedence; fallback applies only to lemmas absent from
+`BASE`.

@@ -175,24 +175,87 @@ BASE: dict[str, list[LexicalEntry]] = {
 }
 
 
+def _synthesize_verb_entry(ma: MorphAnalysis) -> LexicalEntry:
+    """Phase 4 fallback for verbs not in :data:`BASE`. Synthesizes a
+    voice-aware ``LexicalEntry`` from the morph analysis so any
+    verb the morph engine recognises produces a complete
+    f-structure (PRED, a-structure, GF defaults).
+
+    The synthesized PRED is the lemma in upper case; argument
+    structure follows the verb's transitivity (TR → 2-arg, INTR →
+    1-arg) and voice. Per-voice GF defaults match ``lmt.apply_lmt``
+    so a-structure mapping is consistent with hand-authored entries.
+    """
+    pred_name = ma.lemma.upper()
+    voice = ma.feats.get("VOICE")
+    is_tr = ma.feats.get("TR") == "TR"
+
+    if not is_tr:
+        return LexicalEntry(
+            lemma=ma.lemma,
+            pred=f"{pred_name} <SUBJ>",
+            a_structure=["ACTOR"],
+            morph_constraints={},
+            gf_defaults={"ACTOR": "SUBJ"},
+        )
+
+    pred = f"{pred_name} <SUBJ, OBJ>"
+    if voice == "AV":
+        return LexicalEntry(
+            lemma=ma.lemma, pred=pred,
+            a_structure=["AGENT", "PATIENT"],
+            morph_constraints={},
+            gf_defaults={"AGENT": "SUBJ", "PATIENT": "OBJ"},
+        )
+    if voice == "DV":
+        return LexicalEntry(
+            lemma=ma.lemma, pred=pred,
+            a_structure=["AGENT", "GOAL"],
+            morph_constraints={},
+            gf_defaults={"GOAL": "SUBJ", "AGENT": "OBJ"},
+        )
+    if voice == "IV":
+        return LexicalEntry(
+            lemma=ma.lemma, pred=pred,
+            a_structure=["AGENT", "CONVEYED"],
+            morph_constraints={},
+            gf_defaults={"CONVEYED": "SUBJ", "AGENT": "OBJ"},
+        )
+    # OV or unknown voice: patient pivot (the OV-shaped fallback).
+    return LexicalEntry(
+        lemma=ma.lemma, pred=pred,
+        a_structure=["AGENT", "PATIENT"],
+        morph_constraints={},
+        gf_defaults={"PATIENT": "SUBJ", "AGENT": "OBJ"},
+    )
+
+
 def lookup_lexicon(
     mlist: list[list[MorphAnalysis]],
 ) -> list[list[tuple[MorphAnalysis, LexicalEntry | None]]]:
     """Pair each MorphAnalysis with the compatible LexicalEntry(s) from
-    ``BASE``. Returns one list per token in lattice form.
+    ``BASE``, falling back to a synthesized entry for verbs not in
+    BASE. Returns one list per token in lattice form.
 
-    Compatibility rule: every key in the entry's ``morph_constraints``
-    must equal the corresponding feature on the MorphAnalysis. Missing
-    features on the analysis are not matched (so an entry constrained
-    on ``TR=TR`` won't match an analysis without a TR feature)."""
+    Compatibility rule for BASE entries: every key in the entry's
+    ``morph_constraints`` must equal the corresponding feature on the
+    MorphAnalysis. Missing features on the analysis are not matched
+    (so an entry constrained on ``TR=TR`` won't match an analysis
+    without a TR feature). For verbs absent from BASE,
+    :func:`_synthesize_verb_entry` produces a voice-aware default so
+    every recognised verb yields a complete f-structure.
+    """
     out: list[list[tuple[MorphAnalysis, LexicalEntry | None]]] = []
     for cand_list in mlist:
         pairs: list[tuple[MorphAnalysis, LexicalEntry | None]] = []
         for ma in cand_list:
-            if ma.pos == "VERB" and ma.lemma in BASE:
-                for le in BASE[ma.lemma]:
-                    if all(ma.feats.get(k) == v for k, v in le.morph_constraints.items()):
-                        pairs.append((ma, le))
+            if ma.pos == "VERB":
+                if ma.lemma in BASE:
+                    for le in BASE[ma.lemma]:
+                        if all(ma.feats.get(k) == v for k, v in le.morph_constraints.items()):
+                            pairs.append((ma, le))
+                else:
+                    pairs.append((ma, _synthesize_verb_entry(ma)))
             else:
                 pairs.append((ma, None))
         out.append(pairs)

@@ -256,6 +256,46 @@
     - {op: prefix, value: "i"}
   notes: ikakain, ibibili
 
+# === AV — RECPFV ("just-completed") =====================================
+#
+# Phase 4 §7.2: the recent-perfective aspect uses the ka- prefix +
+# CV-redup of the root, no infix or voice morphology beyond the
+# affix-class filter. Surfaces: "kakakain" (just ate), "kabibili"
+# (just bought), "kasusulat" (just wrote). MOOD remains IND.
+#
+# Citations: Schachter & Otanes 1972 §5.31; Ramos & Bautista 1986
+# paradigm tables (RECPFV column).
+
+- voice: AV
+  aspect: RECPFV
+  mood: IND
+  transitivity: ''
+  affix_class: um
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ka"}
+  notes: kakakain, kabibili (RECPFV across um-class roots)
+
+- voice: AV
+  aspect: RECPFV
+  mood: IND
+  transitivity: ''
+  affix_class: mag
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ka"}
+  notes: kasusulat, kalilinis (RECPFV across mag-class roots)
+
+- voice: AV
+  aspect: RECPFV
+  mood: IND
+  transitivity: ''
+  affix_class: ma
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ka"}
+  notes: katutulog, kakikita (RECPFV across ma-class roots)
+
 # === AV — ma- non-volitional / stative class =============================
 #
 # The ma- prefix marks non-volitional / accidental / stative readings

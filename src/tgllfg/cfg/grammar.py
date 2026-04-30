@@ -28,6 +28,13 @@ REASON, CONVEY, ∅}`` and ``CAUS ∈ {DIRECT, INDIRECT, ∅}`` are
 recognised by the grammar (lex_entry templates may carry them), but
 no Phase 4 grammar rule consumes them yet — applicatives and
 causatives proper land in §7.7.
+
+Phase 4 §7.2 adds clausal negation: ``hindi`` (declarative
+``POLARITY=NEG``) and ``huwag`` (imperative ``POLARITY=NEG, MOOD=IMP``)
+attach as a left-edge particle to a full ``S``. The matrix
+f-structure inherits ``PRED``/``VOICE``/``ASPECT``/``SUBJ``/``OBJ``
+from the inner clause and overlays ``POLARITY`` (and, for ``huwag``,
+``MOOD=IMP``) from the particle.
 """
 
 from __future__ import annotations
@@ -124,6 +131,33 @@ class Grammar:
             "S",
             ["V[VOICE=AV]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
             _eqs("(↑ SUBJ) = ↓2", "↓3 ∈ (↑ ADJUNCT)"),
+        ))
+
+        # --- Phase 4 §7.2: clausal negation ---
+        #
+        # `hindi` is a declarative-negation particle (POLARITY=NEG).
+        # `huwag` is an imperative-negation particle (POLARITY=NEG,
+        # MOOD=IMP on the particle's lex feats).
+        #
+        # Single grammar rule: the matrix S inherits the inner S's
+        # f-structure wholesale via ``(↑) = ↓2`` and overlays
+        # POLARITY=NEG. Selectively projecting individual GFs
+        # (PRED, SUBJ, OBJ, ...) was tried first but creates phantom
+        # OBJ slots for intransitive inner clauses, tripping the
+        # coherence check.
+        #
+        # The huwag-specific MOOD=IMP override is NOT lifted to the
+        # matrix MOOD in Phase 4 §7.2 — the inner clause's verb
+        # already projects MOOD=IND, and overriding from the particle
+        # would clash. The particle's MOOD=IMP rides on its own
+        # f-structure for now; full imperative-mood lifting is left
+        # to a Phase 4 §7.3 / §7.6 follow-up that integrates clitic
+        # placement and irrealis-form selection. Documented in
+        # ``docs/analysis-choices.md`` "Phase 4 §7.2".
+        rules.append(Rule(
+            "S",
+            ["PART[POLARITY=NEG]", "S"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
         ))
 
         # Transitive frames per voice, two NP orderings each, with and
