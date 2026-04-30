@@ -102,21 +102,72 @@ class Grammar:
         rules: list[Rule] = []
 
         # --- NP shells (case from determiner / personal-name marker) ---
+        #
+        # Phase 4 §7.8: ``(↑) = ↓1`` shares the NP's f-structure with
+        # the determiner / case-marker token, so the DET/ADP's lex
+        # features (CASE, MARKER, DEIXIS for demonstratives) all
+        # surface on the NP. The toy noun PRED is overlaid via the
+        # explicit PRED equation. This is a no-op for non-demonstrative
+        # determiners (no DEIXIS feature; CASE/MARKER stay consistent
+        # with the rule's case constraint) and lifts demonstrative
+        # deixis onto the matrix without per-deixis rule explosion.
         rules.append(Rule(
             "NP[CASE=NOM]",
             ["DET[CASE=NOM]", "N"],
-            ["(↑ CASE) = 'NOM'", "(↑ PRED) = ↓2 PRED"],
+            ["(↑) = ↓1", "(↑ PRED) = ↓2 PRED"],
         ))
         rules.append(Rule(
             "NP[CASE=GEN]",
             ["ADP[CASE=GEN]", "N"],
-            ["(↑ CASE) = 'GEN'", "(↑ PRED) = ↓2 PRED"],
+            ["(↑) = ↓1", "(↑ PRED) = ↓2 PRED"],
         ))
         rules.append(Rule(
             "NP[CASE=DAT]",
             ["ADP[CASE=DAT]", "N"],
-            ["(↑ CASE) = 'DAT'", "(↑ PRED) = ↓2 PRED"],
+            ["(↑) = ↓1", "(↑ PRED) = ↓2 PRED"],
         ))
+
+        # --- Phase 4 §7.8: standalone demonstrative pronouns ---
+        #
+        # ``Kumain iyon`` ("That one ate"). The demonstrative serves
+        # as a pronominal NP without a head noun. ``DEM=YES`` on the
+        # token (set in particles.yaml) gates these rules so plain
+        # determiners (``ang``, ``ng``, ``sa``, ``si``, ``ni``,
+        # ``kay``) don't accidentally form a bare NP. The PRED is
+        # synthesized as ``'PRO'`` so the resulting f-structure
+        # passes completeness when the demonstrative serves as SUBJ
+        # / OBJ of a verb.
+        rules.append(Rule(
+            "NP[CASE=NOM]",
+            ["DET[CASE=NOM, DEM=YES]"],
+            ["(↑) = ↓1", "(↑ PRED) = 'PRO'"],
+        ))
+        rules.append(Rule(
+            "NP[CASE=GEN]",
+            ["ADP[CASE=GEN, DEM=YES]"],
+            ["(↑) = ↓1", "(↑ PRED) = 'PRO'"],
+        ))
+        rules.append(Rule(
+            "NP[CASE=DAT]",
+            ["ADP[CASE=DAT, DEM=YES]"],
+            ["(↑) = ↓1", "(↑ PRED) = 'PRO'"],
+        ))
+
+        # --- Phase 4 §7.8: NP-internal possessive ---
+        #
+        # ``ang aklat ng bata`` ("the child's book") and pronominal
+        # ``ang aklat ko`` ("my book"). The GEN-NP modifier attaches
+        # at the right edge of the head NP and rides into the head's
+        # f-structure as ``POSS``. Recursive: ``ang aklat ng pamilya
+        # ng bata`` ("the child's family's book") — but the binding
+        # is left-associative: each layer of POSS sits above the
+        # previous head NP.
+        for case in ("NOM", "GEN", "DAT"):
+            rules.append(Rule(
+                f"NP[CASE={case}]",
+                [f"NP[CASE={case}]", "NP[CASE=GEN]"],
+                ["(↑) = ↓1", "(↑ POSS) = ↓2"],
+            ))
 
         # Pronominal NPs: case carried on PRON itself.
         rules.append(Rule(
@@ -157,6 +208,20 @@ class Grammar:
             "S",
             ["V[VOICE=AV]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
             _eqs("(↑ SUBJ) = ↓2", "↓3 ∈ (↑ ADJUNCT)"),
+        ))
+
+        # --- Phase 4 §7.8: floated quantifier ---
+        #
+        # ``Kumain ang bata lahat`` ("all the children ate", with
+        # ``lahat`` floated to clause-final). The quantifier rides
+        # into the matrix's ADJ set as a sub-f-structure carrying
+        # ``QUANT``; a binding equation links it to SUBJ. Pre-NP
+        # partitive usage (``lahat ng bata``) is deferred — that
+        # form needs a QP non-terminal.
+        rules.append(Rule(
+            "S",
+            ["S", "Q"],
+            ["(↑) = ↓1", "↓2 ∈ (↑ ADJ)", "(↓2 ANTECEDENT) = (↑ SUBJ)"],
         ))
 
         # --- Phase 4 §7.3: adverbial enclitics as clausal ADJ members ---

@@ -175,6 +175,13 @@ class Analyzer:
                 # the grammar so rules can match ``PART[CLITIC_CLASS=2P]``
                 # for the Wackernagel-cluster attachment.
                 feats["CLITIC_CLASS"] = p.clitic_class
+            # Phase 4 §7.8: default DEM=NO on DET/ADP entries that
+            # don't explicitly mark DEM. The standalone-demonstrative
+            # NP rule expects ``DEM=YES``; without the sentinel,
+            # plain ``ang`` / ``ng`` / ``sa`` would also match under
+            # the parser's non-conflict matcher.
+            if p.pos in ("DET", "ADP"):
+                feats.setdefault("DEM", "NO")
             self._index.particles.setdefault(p.surface.lower(), []).append(
                 MorphAnalysis(
                     lemma=p.surface,

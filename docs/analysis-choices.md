@@ -874,3 +874,100 @@ non-conflict matcher ignores feature keys absent from one side.
   Phase 5 territory per the original plan §7.7.
 - **``pa-...-an`` DV causative** and other less-common applicative
   affix variants.
+
+## Phase 4 §7.8: demonstratives, possessives, quantifier float
+
+**Date:** 2026-04-30. **Status:** active.
+
+### Demonstrative pronouns and DEIXIS percolation
+
+The 9 demonstrative entries in ``particles.yaml`` (3 deixis ×
+3 cases) gain a ``DEM=YES`` feature so a single per-case
+standalone-NP rule can select them:
+
+```
+NP[CASE=X] → DET[CASE=X, DEM=YES]      (NOM forms ito/iyan/iyon)
+NP[CASE=X] → ADP[CASE=X, DEM=YES]      (GEN/DAT forms nito/dito/...)
+   (↑) = ↓1
+   (↑ PRED) = 'PRO'
+```
+
+This admits ``Kumain ito`` "This ate", ``Kinain iyan ng aso``
+"The dog ate that one", etc. PRED is synthesized as ``'PRO'`` so
+the demonstrative-as-NP passes completeness when it serves as
+SUBJ / OBJ.
+
+Non-demonstrative DET / ADP entries (``ang``, ``si``, ``ng``,
+``sa``, ``ni``, ``kay``) get ``DEM=NO`` defaulted by the analyzer.
+Without the sentinel, the parser's non-conflict matcher would
+let plain ``ang`` match ``DET[CASE=NOM, DEM=YES]`` and form a
+spurious bare NP.
+
+The existing ``NP[CASE=X] → DET[CASE=X] N`` rule's equation list
+is also updated to ``(↑) = ↓1, (↑ PRED) = ↓2 PRED`` so DET
+features (CASE, MARKER, DEIXIS for demonstratives) percolate into
+the NP's f-structure. Previously the rule only set CASE explicitly
+and DEIXIS was lost.
+
+### NP-internal possessive
+
+A per-case rule attaches a GEN-NP possessor on the head NP:
+
+```
+NP[CASE=X] → NP[CASE=X] NP[CASE=GEN]
+   (↑) = ↓1
+   (↑ POSS) = ↓2
+```
+
+``Kinain ng aso ang isda ng bata`` "The dog ate the child's fish":
+the matrix SUBJ is ``isda`` with ``POSS = bata``.
+
+The rule is recursive — multi-level possession (``isda ng bata ng
+pamilya``) chains as left-associative POSS layers. It also
+introduces structural ambiguity: a sequence like ``ang batang
+kumain ng isda`` (relativized head with RC) parses both as
+relativization (``ng isda`` is OBJ inside the RC) AND as
+possession (``ng isda`` is possessor of the RC-modified head).
+Both are valid LFG-wise; the existing §7.5 relativization tests
+were updated to use ``n_best=10`` and pick the relativization
+parse explicitly.
+
+### Pronominal possessive — deferred
+
+The pronominal possessive form (``ang aklat ko`` "my book")
+conflicts with the §7.3 Wackernagel clitic placement, which
+moves pronominal clitics to immediately after the verb. Without
+context-aware placement (e.g. "don't move ``ko`` when it follows
+a noun head"), the pronominal possessive surfaces as an agent /
+SUBJ clitic instead. Out of scope for this commit; revisit when
+context-aware placement is wired up.
+
+### Quantifier float
+
+Two quantifiers are seeded as ``Q`` (a new POS):
+
+- ``lahat`` "all" (``QUANT=ALL``)
+- ``iba`` "other" (``QUANT=OTHER``)
+
+A single recursive rule attaches a floated quantifier to the
+clause-final position as a matrix ADJ member:
+
+```
+S → S Q
+   (↑) = ↓1
+   ↓2 ∈ (↑ ADJ)
+   (↓2 ANTECEDENT) = (↑ SUBJ)
+```
+
+``Kumain ang bata lahat`` "All the children ate" produces an ADJ
+member with ``QUANT=ALL`` and ``ANTECEDENT`` bound to the matrix
+SUBJ — this is the canonical LFG analysis of floating
+quantifiers (Bresnan 2001 §6.6).
+
+### Pre-NP partitive (``lahat ng bata``) — deferred
+
+The pre-NP partitive form requires a new ``QP`` non-terminal and
+its own grammar rule (the quantifier heads a sub-NP that admits
+a partitive ``ng``-NP). Out of scope for this commit; the floated
+form is the more common surface pattern and exercises the
+binding mechanism.

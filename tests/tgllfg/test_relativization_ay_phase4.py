@@ -46,6 +46,38 @@ def _first(text: str) -> FStructure:
     return results[0][1]
 
 
+def _find_with_rc(
+    text: str, rc_pred: str
+) -> FStructure:
+    """Find the parse whose SUBJ.ADJ contains an RC with PRED=rc_pred.
+    Phase 4 §7.8 added a possessive rule that creates competing
+    parses for sequences like ``head-NP-with-RC + ng-NP``; this
+    helper picks the relativization reading explicitly. Uses
+    ``n_best=10`` so the desired parse isn't truncated by the
+    default top-5 cap."""
+    results = parse_text(text, n_best=10)
+    assert results, f"no parse for {text!r}"
+    for _, f, _, _ in results:
+        subj = f.feats.get("SUBJ")
+        if not isinstance(subj, FStructure):
+            continue
+        adj = subj.feats.get("ADJ")
+        if adj is None:
+            continue
+        if any(
+            isinstance(m, FStructure) and m.feats.get("PRED") == rc_pred
+            for m in adj  # type: ignore[union-attr]
+        ):
+            return f
+    msg_preds = [
+        str(f.feats.get("SUBJ").feats.get("ADJ")) if isinstance(f.feats.get("SUBJ"), FStructure) else None  # type: ignore[union-attr]
+        for _, f, _, _ in results
+    ]
+    raise AssertionError(
+        f"no parse with RC PRED={rc_pred!r}; got {msg_preds}"
+    )
+
+
 def _members(adj: object) -> list[FStructure]:
     if adj is None:
         return []
@@ -160,14 +192,16 @@ def test_rel_ng_intransitive_subj_gap() -> None:
 
 def test_rel_ng_transitive_subj_gap() -> None:
     """``Tumakbo ang batang kumain ng isda``: AV-transitive RC,
-    gap=SUBJ (the actor pivot), OBJ=isda inside the RC."""
-    f = _first("Tumakbo ang batang kumain ng isda.")
+    gap=SUBJ (the actor pivot), OBJ=isda inside the RC. Phase 4
+    §7.8 introduces possessive ambiguity (the NP-final ``ng isda``
+    can also parse as a possessor of the relativized head); pick
+    the RC-with-OBJ parse explicitly."""
+    f = _find_with_rc("Tumakbo ang batang kumain ng isda.", "EAT <SUBJ, OBJ>")
     subj = f.feats.get("SUBJ")
     assert isinstance(subj, FStructure)
     members = _members(subj.feats.get("ADJ"))
     rcs = [m for m in members if m.feats.get("PRED") == "EAT <SUBJ, OBJ>"]
-    assert rcs, f"no RC in head ADJ; members={[m.feats for m in members]}"
-    assert "OBJ" in rcs[0].feats
+    assert rcs[0].feats.get("OBJ") is not None
 
 
 def test_rel_ng_ov_voice_relativization() -> None:
@@ -219,12 +253,11 @@ def test_rel_head_features_share_with_rc_subj() -> None:
     """The RC's SUBJ inherits the head NP's CASE via the anaphoric
     REL-PRO sharing equations ``(↓3 REL-PRO PRED) = (↓1 PRED)`` and
     ``(↓3 REL-PRO CASE) = (↓1 CASE)``."""
-    f = _first("Tumakbo ang batang kumain ng isda.")
+    f = _find_with_rc("Tumakbo ang batang kumain ng isda.", "EAT <SUBJ, OBJ>")
     subj = f.feats.get("SUBJ")
     assert isinstance(subj, FStructure)
     members = _members(subj.feats.get("ADJ"))
     rcs = [m for m in members if m.feats.get("PRED") == "EAT <SUBJ, OBJ>"]
-    assert rcs
     rc = rcs[0]
     rc_subj = rc.feats.get("SUBJ")
     assert isinstance(rc_subj, FStructure)
