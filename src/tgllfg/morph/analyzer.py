@@ -152,18 +152,33 @@ class Analyzer:
 
     def _build_index(self) -> None:
         for p in self._data.particles:
+            feats: dict[str, object] = dict(p.feats)
+            if p.is_clitic:
+                # Phase 4 §7.3: ``is_clitic`` (boolean) drives
+                # pre-parse clitic placement; it is invisible to the
+                # grammar because only str-valued feats are emitted as
+                # lex equations / category-pattern features.
+                feats["is_clitic"] = True
+            if p.clitic_class:
+                # ``CLITIC_CLASS`` (string, e.g. "2P") *is* exposed to
+                # the grammar so rules can match ``PART[CLITIC_CLASS=2P]``
+                # for the Wackernagel-cluster attachment.
+                feats["CLITIC_CLASS"] = p.clitic_class
             self._index.particles.setdefault(p.surface.lower(), []).append(
                 MorphAnalysis(
                     lemma=p.surface,
                     pos=p.pos,
-                    feats=dict(p.feats),
+                    feats=feats,
                 )
             )
         for pn in self._data.pronouns:
+            feats = dict(pn.feats)
+            if pn.is_clitic:
+                feats["is_clitic"] = True
             self._index.pronouns[pn.surface.lower()] = MorphAnalysis(
                 lemma=pn.surface,
                 pos="PRON",
-                feats=dict(pn.feats),
+                feats=feats,
             )
         for r in self._data.roots:
             if r.pos == "VERB":

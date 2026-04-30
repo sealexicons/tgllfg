@@ -1,0 +1,73 @@
+# data/tgl/clitic_order.yaml
+#
+# Schachter & Otanes 1972 ch. 6: cluster ordering for the Wackernagel
+# 2P clitic position. Priorities are integers; lower = earlier in the
+# cluster. The ordering is approximate and follows the most common
+# conventions; rare orderings (e.g. when multiple monosyllabic
+# pronouns co-occur) are handled by S&O 1972 §6.7's specific rules
+# beyond what this table encodes.
+#
+# Pronominal clitics come first (NOM-marked pivot clitic, then
+# GEN-marked agent clitic), followed by the adverbial-enclitic
+# cluster in S&O's documented order.
+#
+# Citations: Schachter & Otanes 1972 ch. 6; Kroeger 1993 §3.2 (clitic
+# placement and pivot/non-pivot pronominal clitics).
+
+# --- Pronominal clitics (monosyllabic 2P) ---
+- surface: ka
+  priority: 10
+  notes: 2sg-NOM enclitic pronoun
+- surface: ko
+  priority: 20
+  notes: 1sg-GEN enclitic pronoun
+- surface: mo
+  priority: 30
+  notes: 2sg-GEN enclitic pronoun
+- surface: niya
+  priority: 40
+  notes: 3sg-GEN enclitic pronoun (canonical spelling)
+- surface: nya
+  priority: 40
+  notes: 3sg-GEN enclitic pronoun (alternate / colloquial spelling)
+
+# --- Adverbial enclitics (S&O 1972 §6.7 ordering) ---
+- surface: na
+  priority: 100
+  notes: aspectual "already"
+- surface: pa
+  priority: 110
+  notes: aspectual "still / yet"
+- surface: ba
+  priority: 120
+  notes: yes/no question marker
+- surface: daw
+  priority: 130
+  notes: reportative "they say"
+- surface: raw
+  priority: 130
+  notes: reportative (allomorph of daw after vowels)
+- surface: din
+  priority: 140
+  notes: '"also"'
+- surface: rin
+  priority: 140
+  notes: '"also" (allomorph of din after vowels)'
+- surface: lang
+  priority: 150
+  notes: '"only / just"'
+- surface: nga
+  priority: 160
+  notes: emphatic / "indeed"
+- surface: pala
+  priority: 170
+  notes: mirative "oh!"
+- surface: kasi
+  priority: 180
+  notes: causal "because"
+- surface: man
+  priority: 190
+  notes: concessive
+- surface: yata
+  priority: 200
+  notes: epistemic "perhaps / I think"

@@ -1,0 +1,209 @@
+"""Pre-parse Wackernagel-cluster reordering.
+
+Algorithm
+---------
+
+1. Scan the morph-analyzed token sequence for the first verb token
+   ("V token"). This is the host on the Tagalog V-initial reading.
+2. Collect every other token whose primary analysis carries
+   ``is_clitic=True`` (any analysis among its candidates). These are
+   pronominal clitics (``PRON``) and adverbial enclitics (``PART``).
+3. Remove the clitics from their original positions, leaving a
+   cluster-free skeleton.
+4. Insert all clitics immediately after the V token, sorted by
+   the priority loaded from ``data/tgl/clitic_order.yaml``. Clitics
+   not in the priority table sort after the listed ones (priority =
+   ``DEFAULT_PRIORITY``).
+
+Tokens that are not clitics keep their original relative order.
+Words preceding the verb (e.g. the negation particle ``hindi``) are
+unaffected — they remain ahead of the verb. The single exception is
+that any clitic appearing before the verb is hoisted out and lands
+in the post-V cluster, which is the desired Wackernagel surface
+form.
+
+If the input sentence has no verb, no reordering is performed —
+the placement module is a verb-anchored 2P implementation; verbless
+fragments fall through unchanged.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Mapping
+from dataclasses import dataclass
+from pathlib import Path
+
+import yaml
+
+from tgllfg.common import MorphAnalysis
+
+DEFAULT_PRIORITY: int = 999
+
+_DEFAULT_DATA_DIR = Path(__file__).resolve().parents[3] / "data" / "tgl"
+
+
+@dataclass(frozen=True)
+class CliticOrder:
+    """Priority table for clitic surfaces. Lower priority sorts
+    earlier in the cluster."""
+
+    priorities: Mapping[str, int]
+
+    def priority_for(self, surface: str) -> int:
+        return self.priorities.get(surface.lower(), DEFAULT_PRIORITY)
+
+
+def load_clitic_order(data_dir: Path | None = None) -> CliticOrder:
+    """Load the priority table from ``clitic_order.yaml``."""
+    base = Path(data_dir) if data_dir is not None else _DEFAULT_DATA_DIR
+    path = base / "clitic_order.yaml"
+    if not path.exists():
+        return CliticOrder(priorities={})
+    with path.open(encoding="utf-8") as fh:
+        loaded = yaml.safe_load(fh) or []
+    if not isinstance(loaded, list):
+        raise ValueError(f"{path}: expected top-level list")
+    priorities: dict[str, int] = {}
+    for i, rec in enumerate(loaded):
+        if "surface" not in rec or "priority" not in rec:
+            raise ValueError(
+                f"{path}[{i}]: clitic_order entry must have 'surface' and 'priority'"
+            )
+        priorities[str(rec["surface"]).lower()] = int(rec["priority"])
+    return CliticOrder(priorities=priorities)
+
+
+# Module-level cached instance — loaded once.
+_default_order: CliticOrder | None = None
+
+
+def _get_default_order() -> CliticOrder:
+    global _default_order
+    if _default_order is None:
+        _default_order = load_clitic_order()
+    return _default_order
+
+
+def _is_clitic_token(cands: list[MorphAnalysis]) -> bool:
+    """A token is treated as a clitic if any of its candidate analyses
+    declares ``is_clitic=True``."""
+    return any(ma.feats.get("is_clitic") is True for ma in cands)
+
+
+def _is_verb_token(cands: list[MorphAnalysis]) -> bool:
+    return any(ma.pos == "VERB" for ma in cands)
+
+
+def _surface_for_priority(cands: list[MorphAnalysis]) -> str:
+    """The surface used to look up priority. Use the first analysis's
+    lemma — clitics have a stable canonical form (``mo``, ``na``, etc.)
+    even when the grammar would treat them with multiple senses."""
+    if not cands:
+        return ""
+    return cands[0].lemma
+
+
+def _is_pron_clitic(cands: list[MorphAnalysis]) -> bool:
+    return any(
+        ma.feats.get("is_clitic") is True and ma.pos == "PRON" for ma in cands
+    )
+
+
+def _is_adv_clitic(cands: list[MorphAnalysis]) -> bool:
+    return any(
+        ma.feats.get("is_clitic") is True and ma.pos == "PART" for ma in cands
+    )
+
+
+def reorder_clitics(
+    analyses: list[list[MorphAnalysis]],
+    order: CliticOrder | None = None,
+) -> list[list[MorphAnalysis]]:
+    """Return a new analyses list with clitics moved to canonical
+    Wackernagel positions and sorted by priority.
+
+    Two cluster positions:
+
+    * **Pronominal clitics** (``PRON`` with ``is_clitic=True``,
+      e.g. ``ako``, ``ko``, ``mo``, ``niya``) move to immediately
+      after the verb. They appear in NP-argument slots in the
+      grammar via the existing ``NP[CASE=X] → PRON[CASE=X]`` rules.
+    * **Adverbial enclitics** (``PART`` with ``is_clitic=True`` and
+      ``clitic_class=2P``, e.g. ``na``, ``pa``, ``ba``, ``daw``)
+      move to the end of the clause. The grammar absorbs them via a
+      recursive ``S → S PART[CLITIC_CLASS=2P]`` rule that adds them
+      as members of the matrix's ``ADJ`` set.
+
+    Within each group, clitics are sorted by the priority table
+    loaded from ``data/tgl/clitic_order.yaml``. Clitics not in the
+    table sort after listed ones (priority = ``DEFAULT_PRIORITY``).
+
+    Tokens that are not clitics keep their relative order. The
+    leading host (e.g. the negation particle ``hindi``) keeps its
+    sentence-initial position. If the input has no verb token, the
+    input is returned unchanged; if there are no clitics, the input
+    is returned unchanged (identity, not a copy).
+    """
+    if not analyses:
+        return analyses
+
+    verb_idx: int | None = None
+    for i, cands in enumerate(analyses):
+        if _is_verb_token(cands):
+            verb_idx = i
+            break
+    if verb_idx is None:
+        return analyses
+
+    pron_indices = [
+        i for i, cands in enumerate(analyses)
+        if i != verb_idx and _is_pron_clitic(cands)
+    ]
+    adv_indices = [
+        i for i, cands in enumerate(analyses)
+        if i != verb_idx and _is_adv_clitic(cands)
+    ]
+    if not pron_indices and not adv_indices:
+        return analyses
+
+    if order is None:
+        order = _get_default_order()
+
+    pron_indices.sort(
+        key=lambda i: (order.priority_for(_surface_for_priority(analyses[i])), i)
+    )
+    adv_indices.sort(
+        key=lambda i: (order.priority_for(_surface_for_priority(analyses[i])), i)
+    )
+
+    def _filter_pron(cands: list[MorphAnalysis]) -> list[MorphAnalysis]:
+        # Tokens in the cluster keep only their clitic-flavored
+        # analyses. This avoids having a homophonous non-clitic
+        # reading (e.g. ``na`` as a linker rather than the aspectual
+        # enclitic) ride into the cluster slot through the grammar's
+        # non-conflict feature matcher.
+        return [m for m in cands if m.feats.get("is_clitic") is True and m.pos == "PRON"]
+
+    def _filter_adv(cands: list[MorphAnalysis]) -> list[MorphAnalysis]:
+        return [m for m in cands if m.feats.get("is_clitic") is True and m.pos == "PART"]
+
+    clitic_set = set(pron_indices) | set(adv_indices)
+    result: list[list[MorphAnalysis]] = []
+    for i, cands in enumerate(analyses):
+        if i in clitic_set:
+            continue
+        result.append(cands)
+        if i == verb_idx:
+            for j in pron_indices:
+                result.append(_filter_pron(analyses[j]))
+    for j in adv_indices:
+        result.append(_filter_adv(analyses[j]))
+    return result
+
+
+__all__ = [
+    "CliticOrder",
+    "DEFAULT_PRIORITY",
+    "load_clitic_order",
+    "reorder_clitics",
+]

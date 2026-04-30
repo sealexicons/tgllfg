@@ -133,6 +133,25 @@ class Grammar:
             _eqs("(↑ SUBJ) = ↓2", "↓3 ∈ (↑ ADJUNCT)"),
         ))
 
+        # --- Phase 4 §7.3: adverbial enclitics as clausal ADJ members ---
+        #
+        # The pre-parse clitic-placement pass moves adverbial enclitics
+        # (``na``, ``pa``, ``ba``, ``daw``/``raw``, ``din``/``rin``,
+        # ``lang``, ``nga``, ``pala``, ``kasi``, ...) to the end of the
+        # sentence in priority order. This recursive rule absorbs each
+        # one as a member of the matrix f-structure's ADJ set; the
+        # particle's own f-structure (carrying ASPECT_PART, EVID, etc.)
+        # rides into ADJ as a sub-structure.
+        #
+        # ``CLITIC_CLASS=2P`` distinguishes Wackernagel enclitics from
+        # the other PART tokens (linkers, the ``hindi`` negation
+        # particle).
+        rules.append(Rule(
+            "S",
+            ["S", "PART[CLITIC_CLASS=2P]"],
+            ["(↑) = ↓1", "↓2 ∈ (↑ ADJ)"],
+        ))
+
         # --- Phase 4 §7.2: clausal negation ---
         #
         # `hindi` is a declarative-negation particle (POLARITY=NEG).

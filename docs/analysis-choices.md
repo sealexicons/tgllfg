@@ -383,3 +383,87 @@ and keeps the well-formedness checks meaningful across the corpus.
 The hand-authored anchor entries (kain, bili, basa, sulat, gawa,
 tapon) take precedence; fallback applies only to lemmas absent from
 `BASE`.
+
+## Phase 4 §7.3: Wackernagel 2P clitic placement
+
+**Date:** 2026-04-30. **Status:** active.
+
+### Pre-parse reordering as the implementation strategy
+
+Plan §7.3 specifies a pre-parse reordering pass that "exposes the
+cluster as a constituent" so the parser sees a normalized order.
+The Phase 4 implementation lives in `src/tgllfg/clitics/`, called
+between morph analysis and lexicon lookup in
+`src/tgllfg/pipeline.py:parse_text`.
+
+### Two cluster destinations
+
+The pass distinguishes two clitic groups:
+
+1. **Pronominal clitics** (`PRON` with `is_clitic=True`): `ako`,
+   `ka`, `ko`, `mo`, `niya`, ... Move to immediately after the
+   verb. They appear in NP-argument slots through the existing
+   `NP[CASE=X] → PRON[CASE=X]` shells; no new grammar rule.
+2. **Adverbial enclitics** (`PART` with `clitic_class="2P"`):
+   `na`, `pa`, `ba`, `daw`/`raw`, `din`/`rin`, `lang`, `nga`,
+   `pala`, `kasi`, ... Move to the **end** of the clause. The
+   grammar absorbs them via a recursive
+   `S → S PART[CLITIC_CLASS=2P]` rule with `↓2 ∈ (↑ ADJ)`,
+   placing each enclitic into the matrix's ADJ set as a
+   sub-f-structure carrying its own feature contributions
+   (ASPECT_PART, EVID, etc.).
+
+The end-of-clause placement for adverbials is a c-structure
+simplification — Wackernagel's 2P semantics (clitic IMMEDIATELY
+after the host) is preserved at the *abstract* level by the
+single-rule absorption (the cluster is a constituent of S), but
+the concrete c-structure puts adverbs at clause-final position
+because the recursive `S → S PART` rule is the simplest CFG
+shape that admits arbitrary cluster size without combinatorial
+rule explosion.
+
+### Order within the cluster
+
+`data/tgl/clitic_order.yaml` tabulates priorities for known
+clitics, following Schachter & Otanes 1972 §6.7. Priorities are
+integers, lower-sorts-first. Pronouns occupy priority < 100; the
+adverbial cluster is 100-200, internally ordered as
+`na < pa < ba < daw/raw < din/rin < lang < nga < pala < kasi <
+man < yata`. Unknown surfaces sort after listed ones at
+`DEFAULT_PRIORITY=999`.
+
+### Filtering ambiguous-clitic analyses in the cluster
+
+The morph analyzer can produce both clitic and non-clitic readings
+for a homophonous surface (notably `na` as either the linker
+particle or the aspectual enclitic; `daw` / `raw` are usually
+unambiguous). Once a token is selected for cluster placement
+(any analysis carries `is_clitic=True`), the placement pass
+filters its candidates to only the clitic-flavored analyses. This
+prevents the linker reading from riding into the cluster slot
+through the grammar's non-conflict feature matcher and producing
+a phantom parse with an empty ADJ entry.
+
+### Boolean feats are placement-only
+
+`is_clitic=True` is added to the morph analyzer's feature dict
+as a boolean. Because the pipeline's lex-equation derivation only
+emits string-valued feats as LFG equations (and the category-
+pattern builder only carries string features), `is_clitic` is
+invisible to the grammar — exactly what we want, since 2P
+membership is a placement concern, not a category-feature concern.
+The `clitic_class` field is exposed as `CLITIC_CLASS` (string) so
+the grammar's adverbial-cluster rule can match
+`PART[CLITIC_CLASS=2P]` while ignoring linker `PART` tokens.
+
+### Out-of-scope for this commit
+
+* No verb-host: verbless fragments fall through unchanged. The
+  placement pass is verb-anchored.
+* SOC mood (e.g. `magkape tayo`) requires the `tayo` 1pl-incl
+  pronoun in pivot position with mag-class morphology. SOC stays
+  inventory-only (Phase 4 §7.2) until §7.6 / §7.7 wire it up.
+* Three-way clitic ambiguity (e.g. some pronouns can be NOM or
+  GEN depending on context) is approximated by the morph
+  analyzer's per-form indexing; `kita` (1sg-GEN + 2sg-NOM
+  fusion) is left to a future commit.

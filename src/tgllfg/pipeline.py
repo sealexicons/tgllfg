@@ -14,6 +14,7 @@ through and accompany the surviving parse.
 from __future__ import annotations
 
 from .cfg import Grammar
+from .clitics import reorder_clitics
 from .common import AStructure, CNode, FStructure
 from .fstruct import Diagnostic, lfg_well_formed, solve
 from .lexicon import lookup_lexicon
@@ -40,6 +41,13 @@ def parse_text(
     toks = tokenize(text)
     toks = split_enclitics(toks)
     mlist = analyze_tokens(toks)
+    # Phase 4 §7.3: pull Wackernagel clitics into their canonical
+    # post-verbal cluster before lexicon lookup. Pronominal clitics
+    # land immediately after V (and reach the grammar through the
+    # NP[CASE=X] → PRON[CASE=X] shells); adverbial enclitics land at
+    # the end of the clause and are absorbed by the recursive
+    # S → S PART[CLITIC_CLASS=2P] rule.
+    mlist = reorder_clitics(mlist)
     lex_items = lookup_lexicon(mlist)
     grammar = Grammar.load_default()
     forest = parse_with_annotations(lex_items, grammar)
