@@ -34,29 +34,36 @@
   gloss: eat
   transitivity: TR
   # R&B 126: -um- / -in / -an. + maka- abilitative (productive).
-  affix_class: [um, in_oblig, an_oblig, i_oblig, maka]
+  # Phase 4 §7.7: pa_in (pinakain "fed", direct causative) and
+  # magpa (nagpakain "had-eat", biclausal causative).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa]
 
 - citation: bili
   pos: VERB
   gloss: buy
   transitivity: TR
   # R&B 37: -um- / -in / -an / i- / ipang-. mang- distributive
-  # ("mamili" — to shop). +maka- abilitative.
-  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka]
+  # ("mamili" — to shop). +maka- abilitative. Phase 4 §7.7: ipag
+  # (ipinagbili "sold-for", benefactive applicative IV).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipag]
 
 - citation: inom
   pos: VERB
   gloss: drink
   transitivity: TR
   # R&B 117: -um- / -in / -an.
-  affix_class: [um, in_oblig, an_oblig, maka]
+  # Phase 4 §7.7: pa_in (pininom "made-drink") and magpa
+  # (nagpainom "had-drink", biclausal causative).
+  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa]
 
 - citation: basa
   pos: VERB
   gloss: read
   transitivity: TR
   # R&B 24: -um- / -in / -an.
-  affix_class: [um, in_oblig, an_oblig, maka]
+  # Phase 4 §7.7: pa_in (pinabasa "made-read") and magpa
+  # (nagpabasa "had-read", biclausal causative).
+  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa]
 
 - citation: kuha
   pos: VERB
@@ -98,8 +105,9 @@
   pos: VERB
   gloss: do, make
   transitivity: TR
-  # R&B 71: -um- / -in / -an.
-  affix_class: [um, in_oblig, an_oblig, maka]
+  # R&B 71: -um- / -in / -an. Phase 4 §7.7: ipag (ipinaggawa
+  # "made-for", benefactive applicative IV).
+  affix_class: [um, in_oblig, an_oblig, maka, ipag]
 
 - citation: tawag
   pos: VERB
@@ -235,7 +243,8 @@
   gloss: write
   transitivity: TR
   # R&B 237: -um- / -in / i- / -an. Both -um- and mag- in AV.
-  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka]
+  # Phase 4 §7.7: ipag (ipinagsulat "wrote-for", benefactive IV).
+  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, ipag]
 
 - citation: bayad
   pos: VERB
@@ -675,7 +684,8 @@
   pos: VERB
   gloss: throw away
   transitivity: TR
-  affix_class: [mag, in_oblig, maka]
+  # Phase 4 §7.1 anchor for IV (conveyed-theme pivot, "itinapon").
+  affix_class: [mag, in_oblig, i_oblig, maka]
 
 - citation: butas
   pos: VERB
@@ -1499,6 +1509,15 @@
   pos: NOUN
   gloss: language
 
+# --- Phase 4 §7.1 anchor nouns ------------------------------------------
+# Direct objects / pivots in the Phase 4 voice-extension test sentences.
+- citation: liham
+  pos: NOUN
+  gloss: letter (correspondence)
+- citation: basura
+  pos: NOUN
+  gloss: garbage, trash
+
 # --- Phase 2C bulk noun scale-up (Commit 3b) -----------------------------
 
 # -- People / kinship / roles --
@@ -1816,6 +1835,39 @@
 - citation: bisikleta
   pos: NOUN
   gloss: bicycle
+
+# --- Phase 4 §7.6: control verbs ----------------------------------------
+# Verbs that select an XCOMP complement clause introduced by the
+# linker (`na` / `-ng`). The `feats: {CTRL_CLASS: INTRANS|TRANS}`
+# field (Phase 4 §7.6) flags the verb's class for the grammar's
+# control wrap rules. Inflected control verbs (regular AV / OV / DV
+# paradigms) live here; the uninflected pseudo-verb psych predicates
+# (gusto / ayaw / kaya) live in particles.yaml because they have no
+# verbal morphology to drive paradigm generation.
+- citation: payag
+  pos: VERB
+  gloss: agree
+  transitivity: INTR
+  # AV-only intransitive control verb: pumayag (PFV) / pumapayag
+  # (IPFV) / papayag (CTPL). The complement is an XCOMP introduced
+  # by the linker; matrix SUBJ controls the embedded SUBJ.
+  affix_class: [um, maka]
+  feats: {CTRL_CLASS: INTRANS}
+- citation: pilit
+  pos: VERB
+  gloss: force, compel
+  transitivity: TR
+  # Transitive control: pivot is forcee (matrix SUBJ in OV/DV);
+  # GEN-NP is forcer (matrix OBJ). pinilit = OV PFV.
+  affix_class: [um, in_oblig, an_oblig, maka]
+  feats: {CTRL_CLASS: TRANS}
+- citation: utos
+  pos: VERB
+  gloss: order, command
+  transitivity: TR
+  # DV pivot is recipient/orderee. inutusan = "ordered someone".
+  affix_class: [um, in_oblig, an_oblig, maka]
+  feats: {CTRL_CLASS: TRANS}
 
 # --- Proper-name placeholders ---
 - citation: maria

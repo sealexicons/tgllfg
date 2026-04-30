@@ -1,21 +1,68 @@
 # tgllfg/lmt.py
 
-from . import AStructure, FStructure
+"""Phase 4 voice-aware role-to-GF heuristic.
 
-# Apply lexical mapping theory to produce an A-Structure from F-Structure.
-# This is the §4.2-vintage heuristic; Phase 5 replaces it with a real
-# Bresnan–Kanerva-style LMT that maps from a-structure plus voice
-# morphology rather than reading off a finished f-structure.
+This is the §4.2-vintage LMT — a hand-coded mapping per voice rather
+than the Bresnan–Kanerva [±r, ±o] feature system. Phase 5 replaces
+this with a real LMT that derives the mapping from the verb's
+intrinsic role classification plus voice morphology.
+
+The mapping reads ``f.feats["VOICE"]`` to pick the correct
+role-to-GF assignment. For non-AV voices the *ng*-non-pivot is OBJ
+(``docs/analysis-choices.md`` "ng-non-pivot in transitive non-AV →
+OBJ"). The role labels here are placeholders chosen by voice:
+
+* AV — ``[AGENT, PATIENT]``: AGENT → SUBJ, PATIENT → OBJ.
+* OV — ``[AGENT, PATIENT]``: PATIENT → SUBJ, AGENT → OBJ.
+* DV — ``[AGENT, GOAL]``:    GOAL → SUBJ, AGENT → OBJ.
+* IV — ``[AGENT, CONVEYED]``: CONVEYED → SUBJ, AGENT → OBJ.
+
+Intransitive (no OBJ) — ``[ACTOR]``: ACTOR → SUBJ.
+"""
+
+from __future__ import annotations
+
+from .common import AStructure, FStructure
+
+
 def apply_lmt(f: FStructure) -> AStructure:
-    pred = (f.feats.get("PRED") or "").split()[0]  # "EAT <...>" -> "EAT"
+    pred = (f.feats.get("PRED") or "").split()[0]  # "EAT <SUBJ, OBJ>" -> "EAT"
+    voice = f.feats.get("VOICE")
+    has_obj = "OBJ" in f.feats
 
-    # Heuristic: OV when agent surfaces as OBJ alongside the SUBJ pivot
-    # (the ng-non-pivot-as-OBJ analysis; see docs/analysis-choices.md).
-    if "SUBJ" in f.feats and "OBJ" in f.feats:
-        roles = ["AGENT", "PATIENT"]          # θ-roles
-        mapping = {"PATIENT": "SUBJ", "AGENT": "OBJ"}
-    else:
-        roles = ["ACTOR"]
-        mapping = {"ACTOR": "SUBJ"}
+    if not has_obj:
+        return AStructure(pred=pred, roles=["ACTOR"], mapping={"ACTOR": "SUBJ"})
 
-    return AStructure(pred=pred, roles=roles, mapping=mapping)
+    if voice == "AV":
+        return AStructure(
+            pred=pred,
+            roles=["AGENT", "PATIENT"],
+            mapping={"AGENT": "SUBJ", "PATIENT": "OBJ"},
+        )
+    if voice == "OV":
+        return AStructure(
+            pred=pred,
+            roles=["AGENT", "PATIENT"],
+            mapping={"PATIENT": "SUBJ", "AGENT": "OBJ"},
+        )
+    if voice == "DV":
+        return AStructure(
+            pred=pred,
+            roles=["AGENT", "GOAL"],
+            mapping={"GOAL": "SUBJ", "AGENT": "OBJ"},
+        )
+    if voice == "IV":
+        return AStructure(
+            pred=pred,
+            roles=["AGENT", "CONVEYED"],
+            mapping={"CONVEYED": "SUBJ", "AGENT": "OBJ"},
+        )
+
+    # Voice-less or unknown voice: fall back to the OV-shaped mapping
+    # (this preserves Phase 1 behaviour for synthetic test fixtures
+    # that don't set VOICE).
+    return AStructure(
+        pred=pred,
+        roles=["AGENT", "PATIENT"],
+        mapping={"PATIENT": "SUBJ", "AGENT": "OBJ"},
+    )

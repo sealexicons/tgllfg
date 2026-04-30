@@ -1,10 +1,29 @@
 # tgllfg/text/clitics.py
 
-# Handle enclitic cluster ordering (e.g., =na, =pa, =ba, =din/rin, =yata, etc.)
-# Prototype: leave as-is but split tokens like "kainin=pa" or "kainin pa" → ["kainin","pa"]
+"""Token-stream pre-passes between tokenize and morph analysis:
+
+* :func:`split_enclitics` splits hand-marked ``host=enc`` orthography
+  (a development convention) into separate host and enclitic tokens.
+* :func:`split_linker_ng` splits the bound linker enclitic ``-ng``
+  off of vowel-final hosts (``batang`` → ``bata`` + ``-ng``). The
+  split is informed by the morph analyzer: a ``Vng`` surface that is
+  itself a known full form (e.g. ``bumibilang``, ``darating``) is
+  left untouched; only when the full surface is unknown AND the
+  stem is known does the split fire. The synthetic ``-ng`` token
+  carries that exact surface so it cannot collide with the
+  standalone case marker ``ng``.
+"""
+
+from __future__ import annotations
+
+import re
+
 from ..common import Token
 
 ENCLITICS = {"na", "pa", "ba", "din", "rin", "yata", "man", "daw", "raw", "lang"}
+
+_VOWEL_NG_END = re.compile(r"^(.+[aeiouAEIOU])ng$")
+
 
 def split_enclitics(tokens: list[Token]) -> list[Token]:
     out: list[Token] = []
@@ -16,4 +35,43 @@ def split_enclitics(tokens: list[Token]) -> list[Token]:
                 out.append(Token(after, after.lower(), t.start+len(base)+1, t.end))
         else:
             out.append(t)
+    return out
+
+
+def split_linker_ng(tokens: list[Token]) -> list[Token]:
+    """Split the bound linker ``-ng`` from vowel-final hosts.
+
+    The decision rule:
+
+    * If the surface is itself a known full form (verb / noun /
+      particle / pronoun in the analyzer index), keep it intact.
+      This protects the 122+ verb forms ending in ``Vng``
+      (``bumibilang``, ``darating``, ...).
+    * Else, if the stem (surface without trailing ``ng``) is a known
+      surface, split into stem + synthetic ``-ng`` token.
+    * Else, leave intact (will fall through to ``_UNK``).
+
+    The synthetic linker token uses surface ``-ng`` so its morph
+    lookup hits the dedicated ``-ng`` particle entry rather than the
+    standalone genitive case marker ``ng``.
+    """
+    from ..morph.analyzer import _get_default
+
+    analyzer = _get_default()
+    out: list[Token] = []
+    for t in tokens:
+        m = _VOWEL_NG_END.match(t.surface)
+        if m is None:
+            out.append(t)
+            continue
+        if analyzer.is_known_surface(t.norm):
+            out.append(t)
+            continue
+        stem = m.group(1)
+        if not analyzer.is_known_surface(stem.lower()):
+            out.append(t)
+            continue
+        stem_end = t.start + len(stem)
+        out.append(Token(surface=stem, norm=stem.lower(), start=t.start, end=stem_end))
+        out.append(Token(surface="-ng", norm="-ng", start=stem_end, end=t.end))
     return out

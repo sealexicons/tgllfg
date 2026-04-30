@@ -1,0 +1,82 @@
+# data/tgl/voice_aliases.yaml
+#
+# Mapping from Schachter & Otanes 1972 "focus" labels to Kroeger 1993
+# four-voice triples (VOICE, APPL, CAUS). Seeded into the
+# `voice_alias` table by `tgllfg lex seed` (Phase 3 §6.2 schema).
+#
+# The table lets example data tagged in the S-O idiom be ingested
+# without re-tagging: a corpus row labelled `LF` resolves to
+# (VOICE=DV, APPL=∅, CAUS=∅).
+#
+# Citations: Schachter & Otanes 1972 §5.20–5.30 ("focus" inventory);
+# Kroeger 1993 §1.3 (four-voice reduction) and ch. 4 (per-voice
+# argument structure).
+#
+# Empty/absent appl/caus mean "no applicative / no causative" — the
+# unmarked default for the base four voices.
+
+- label: AF
+  voice: AV
+  notes: |
+    Actor Focus. Maps to Kroeger's Actor Voice (AV) directly. The
+    actor is the pivot; transitively, the patient is *ng*-marked
+    (=OBJ per the OBJ-uniform analysis).
+
+- label: GF
+  voice: OV
+  notes: |
+    Goal Focus (patient/theme pivot). Maps to Kroeger's Objective
+    Voice (OV). Schachter & Otanes's "GF" subsumes earlier "Patient
+    Focus" (PF) terminology used in Bloomfield 1917 and others.
+
+- label: PF
+  voice: OV
+  notes: |
+    Patient Focus — older terminology for what S&O 1972 call Goal
+    Focus. Both label OV in Kroeger's system.
+
+- label: LF
+  voice: DV
+  notes: |
+    Locative Focus. Maps to Kroeger's Dative Voice (DV) — the
+    locative / source / recipient pivot, marked by the `-an` suffix.
+
+- label: DF
+  voice: DV
+  notes: |
+    Directional Focus — alternative S&O label that overlaps with
+    LF; Kroeger collapses both to DV.
+
+- label: BF
+  voice: IV
+  appl: BEN
+  notes: |
+    Benefactive Focus. Maps to IV with the BEN applicative feature
+    set. The benefactive pivot is marked by the `i-` prefix
+    (`ibinili`); the agent is *ng*-marked.
+
+- label: IF
+  voice: IV
+  appl: INSTR
+  notes: |
+    Instrumental Focus. Maps to IV with INSTR applicative. The
+    instrument pivot is marked by the `ipang-` / `i-` prefixes
+    depending on construction.
+
+- label: RF
+  voice: IV
+  appl: REASON
+  notes: |
+    Reason Focus. Maps to IV with REASON applicative. The cause /
+    reason pivot is marked by `ika-` constructions (Kroeger 1993
+    §4.5).
+
+- label: CF
+  voice: AV
+  caus: DIRECT
+  notes: |
+    Causative Focus. Maps to AV with CAUS=DIRECT for the bare `pa-`
+    direct-causative; the indirect / "indirect causative" frame is
+    biclausal and not captured by a single (VOICE, APPL, CAUS)
+    triple — it surfaces as XCOMP in the f-structure (Phase 4 §7.6
+    + §7.7).

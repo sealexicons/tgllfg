@@ -1,0 +1,2491 @@
+- text: Tumakbo ang aso.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Tumakbo ang bata.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Tumakbo ang nanay.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Tumakbo ang lalaki.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Tumatakbo ang aso.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Tumatakbo ang bata.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Tumatakbo ang nanay.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Tumatakbo ang lalaki.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Tatakbo ang aso.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Tatakbo ang bata.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Tatakbo ang nanay.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Tatakbo ang lalaki.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Natulog ang aso.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Natulog ang bata.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Natulog ang nanay.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Natulog ang lalaki.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Natutulog ang aso.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Natutulog ang bata.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Natutulog ang nanay.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Natutulog ang lalaki.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Matutulog ang aso.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Matutulog ang bata.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Matutulog ang nanay.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Matutulog ang lalaki.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Umuwi ang aso.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Umuwi ang bata.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Umuwi ang nanay.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Umuwi ang lalaki.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Umuuwi ang aso.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Umuuwi ang bata.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Umuuwi ang nanay.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Umuuwi ang lalaki.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Uuwi ang aso.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Uuwi ang bata.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Uuwi ang nanay.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Uuwi ang lalaki.
+  construction: 'voice/aspect: AV-intransitive'
+  expected: parse
+- text: Nakakain ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakain ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakain ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakain ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakain ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakain ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakain ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakain ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakain ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakakain ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakakain ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakakain ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakakain ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakakain ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakakain ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakakain ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakakain ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakakakain ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makakakain ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makakakain ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makakakain ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makakakain ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makakakain ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makakakain ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makakakain ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makakakain ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makakakain ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabili ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabili ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabili ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabili ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabili ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabili ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabili ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabili ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabili ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabibili ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabibili ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabibili ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabibili ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabibili ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabibili ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabibili ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabibili ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabibili ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makabibili ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makabibili ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makabibili ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makabibili ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makabibili ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makabibili ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makabibili ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makabibili ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makabibili ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabasa ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabasa ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabasa ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabasa ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabasa ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabasa ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabasa ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabasa ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakabasa ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakababasa ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakababasa ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakababasa ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakababasa ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakababasa ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakababasa ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakababasa ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakababasa ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakababasa ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makababasa ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makababasa ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makababasa ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makababasa ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makababasa ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makababasa ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makababasa ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makababasa ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makababasa ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasulat ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasulat ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasulat ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasulat ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasulat ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasulat ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasulat ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasulat ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasulat ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasusulat ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasusulat ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasusulat ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasusulat ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasusulat ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasusulat ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasusulat ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasusulat ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakasusulat ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makasusulat ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makasusulat ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makasusulat ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makasusulat ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makasusulat ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makasusulat ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makasusulat ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makasusulat ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makasusulat ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagawa ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagawa ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagawa ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagawa ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagawa ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagawa ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagawa ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagawa ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagawa ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagagawa ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagagawa ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagagawa ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagagawa ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagagawa ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagagawa ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagagawa ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagagawa ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Nakagagawa ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makagagawa ang aso ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makagagawa ang aso ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makagagawa ang aso ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makagagawa ang bata ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makagagawa ang bata ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makagagawa ang bata ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makagagawa ang nanay ng aso.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makagagawa ang nanay ng bata.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Makagagawa ang nanay ng nanay.
+  construction: 'voice/aspect: AV-transitive'
+  expected: parse
+- text: Kinain ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kinain ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kinain ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kinain ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kinakain ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kinakain ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kinakain ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kinakain ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kakainin ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kakainin ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kakainin ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kakainin ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binili ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binili ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binili ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binili ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binibili ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binibili ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binibili ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binibili ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Bibilihin ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Bibilihin ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Bibilihin ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Bibilihin ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binasa ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binasa ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binasa ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binasa ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binabasa ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binabasa ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binabasa ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Binabasa ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Babasahin ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Babasahin ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Babasahin ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Babasahin ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Sinulat ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Sinulat ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Sinulat ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Sinulat ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Sinusulat ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Sinusulat ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Sinusulat ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Sinusulat ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Susulatin ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Susulatin ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Susulatin ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Susulatin ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Ginawa ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Ginawa ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Ginawa ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Ginawa ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Ginagawa ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Ginagawa ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Ginagawa ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Ginagawa ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Gagawahin ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Gagawahin ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Gagawahin ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Gagawahin ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tinapon ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tinapon ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tinapon ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tinapon ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tinatapon ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tinatapon ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tinatapon ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tinatapon ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tatapunin ng aso ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tatapunin ng bata ang aso.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tatapunin ng aso ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Tatapunin ng bata ang bata.
+  construction: 'voice/aspect: OV-transitive'
+  expected: parse
+- text: Kinainan ng aso ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Kinainan ng bata ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Kinainan ng aso ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Kinainan ng bata ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Kinakainan ng aso ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Kinakainan ng bata ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Kinakainan ng aso ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Kinakainan ng bata ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Kakainan ng aso ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Kakainan ng bata ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Kakainan ng aso ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Kakainan ng bata ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Sinulatan ng aso ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Sinulatan ng bata ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Sinulatan ng aso ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Sinulatan ng bata ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Sinusulatan ng aso ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Sinusulatan ng bata ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Sinusulatan ng aso ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Sinusulatan ng bata ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Susulatan ng aso ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Susulatan ng bata ang aso.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Susulatan ng aso ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Susulatan ng bata ang bata.
+  construction: 'voice/aspect: DV-transitive'
+  expected: parse
+- text: Isinulat ng aso ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Isinulat ng bata ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Isinulat ng aso ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Isinulat ng bata ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Isinusulat ng aso ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Isinusulat ng bata ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Isinusulat ng aso ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Isinusulat ng bata ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Isusulat ng aso ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Isusulat ng bata ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Isusulat ng aso ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Isusulat ng bata ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itinapon ng aso ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itinapon ng bata ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itinapon ng aso ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itinapon ng bata ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itinatapon ng aso ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itinatapon ng bata ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itinatapon ng aso ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itinatapon ng bata ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itatapon ng aso ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itatapon ng bata ang aso.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itatapon ng aso ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Itatapon ng bata ang bata.
+  construction: 'voice/aspect: IV-transitive'
+  expected: parse
+- text: Hindi nakakain ang aso.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakakain ang bata.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakakain ang nanay.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi kinain ng aso ang aso.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi kinain ng bata ang bata.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi kinain ng nanay ang nanay.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi nakakakain ang aso.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakakakain ang bata.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakakakain ang nanay.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi kinakain ng aso ang aso.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi kinakain ng bata ang bata.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi kinakain ng nanay ang nanay.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi nakabili ang aso.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakabili ang bata.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakabili ang nanay.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi binili ng aso ang aso.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi binili ng bata ang bata.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi binili ng nanay ang nanay.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi nakabibili ang aso.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakabibili ang bata.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakabibili ang nanay.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi binibili ng aso ang aso.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi binibili ng bata ang bata.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi binibili ng nanay ang nanay.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi nakabasa ang aso.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakabasa ang bata.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakabasa ang nanay.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi binasa ng aso ang aso.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi binasa ng bata ang bata.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi binasa ng nanay ang nanay.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi nakababasa ang aso.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakababasa ang bata.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi nakababasa ang nanay.
+  construction: 'negation: hindi declarative'
+  expected: parse
+- text: Hindi binabasa ng aso ang aso.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi binabasa ng bata ang bata.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Hindi binabasa ng nanay ang nanay.
+  construction: 'negation: hindi + transitive'
+  expected: parse
+- text: Huwag nakakain ang aso.
+  construction: 'negation: huwag imperative'
+  expected: parse
+- text: Huwag nakakain ang bata.
+  construction: 'negation: huwag imperative'
+  expected: parse
+- text: Huwag nakabasa ang aso.
+  construction: 'negation: huwag imperative'
+  expected: parse
+- text: Huwag nakabasa ang bata.
+  construction: 'negation: huwag imperative'
+  expected: parse
+- text: Nakakain ako ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakain ako ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakain ka ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakain ka ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakain siya ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakain siya ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakain kami ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakain kami ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakakain ako ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakakain ako ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakakain ka ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakakain ka ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakakain siya ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakakain siya ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakakain kami ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakakakain kami ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabili ako ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabili ako ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabili ka ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabili ka ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabili siya ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabili siya ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabili kami ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabili kami ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabibili ako ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabibili ako ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabibili ka ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabibili ka ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabibili siya ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabibili siya ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabibili kami ng aso.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Nakabibili kami ng bata.
+  construction: 'clitic: pron-NOM as SUBJ'
+  expected: parse
+- text: Kinain ko ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinain ko ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinain mo ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinain mo ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinain niya ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinain niya ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinain namin ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinain namin ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinakain ko ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinakain ko ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinakain mo ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinakain mo ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinakain niya ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinakain niya ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinakain namin ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinakain namin ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binasa ko ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binasa ko ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binasa mo ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binasa mo ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binasa niya ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binasa niya ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binasa namin ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binasa namin ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binabasa ko ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binabasa ko ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binabasa mo ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binabasa mo ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binabasa niya ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binabasa niya ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binabasa namin ang aso.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Binabasa namin ang bata.
+  construction: 'clitic: pron-GEN as OBJ'
+  expected: parse
+- text: Kinain na ng aso ang aso.
+  construction: 'clitic: adv enclitic na'
+  expected: parse
+- text: Kinain na ng aso ang bata.
+  construction: 'clitic: adv enclitic na'
+  expected: parse
+- text: Kinain pa ng aso ang aso.
+  construction: 'clitic: adv enclitic pa'
+  expected: parse
+- text: Kinain pa ng aso ang bata.
+  construction: 'clitic: adv enclitic pa'
+  expected: parse
+- text: Kinain ba ng aso ang aso.
+  construction: 'clitic: adv enclitic ba'
+  expected: parse
+- text: Kinain ba ng aso ang bata.
+  construction: 'clitic: adv enclitic ba'
+  expected: parse
+- text: Binasa na ng aso ang aso.
+  construction: 'clitic: adv enclitic na'
+  expected: parse
+- text: Binasa na ng aso ang bata.
+  construction: 'clitic: adv enclitic na'
+  expected: parse
+- text: Binasa pa ng aso ang aso.
+  construction: 'clitic: adv enclitic pa'
+  expected: parse
+- text: Binasa pa ng aso ang bata.
+  construction: 'clitic: adv enclitic pa'
+  expected: parse
+- text: Binasa ba ng aso ang aso.
+  construction: 'clitic: adv enclitic ba'
+  expected: parse
+- text: Binasa ba ng aso ang bata.
+  construction: 'clitic: adv enclitic ba'
+  expected: parse
+- text: Kinain ko na ang aso.
+  construction: 'clitic: cluster pron + adv'
+  expected: parse
+- text: Kinain mo na ang bata.
+  construction: 'clitic: cluster pron + adv'
+  expected: parse
+- text: Kinain niya na ang nanay.
+  construction: 'clitic: cluster pron + adv'
+  expected: parse
+- text: Kinain ko ba ang aso.
+  construction: 'clitic: cluster pron + adv'
+  expected: parse
+- text: Kinain mo ba ang bata.
+  construction: 'clitic: cluster pron + adv'
+  expected: parse
+- text: Kinain niya ba ang nanay.
+  construction: 'clitic: cluster pron + adv'
+  expected: parse
+- text: Ang aso ay nakakain.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang aso ay nakakain ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay nakakain ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakakain.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang bata ay nakakain ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakakain ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakakain.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang nanay ay nakakain ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakakain ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay nakakakain.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang aso ay nakakakain ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay nakakakain ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakakakain.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang bata ay nakakakain ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakakakain ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakakakain.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang nanay ay nakakakain ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakakakain ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay nakabili.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang aso ay nakabili ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay nakabili ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakabili.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang bata ay nakabili ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakabili ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakabili.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang nanay ay nakabili ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakabili ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay nakabibili.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang aso ay nakabibili ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay nakabibili ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakabibili.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang bata ay nakabibili ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakabibili ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakabibili.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang nanay ay nakabibili ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakabibili ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay nakabasa.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang aso ay nakabasa ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay nakabasa ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakabasa.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang bata ay nakabasa ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakabasa ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakabasa.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang nanay ay nakabasa ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakabasa ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay nakababasa.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang aso ay nakababasa ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay nakababasa ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakababasa.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang bata ay nakababasa ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang bata ay nakababasa ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakababasa.
+  construction: 'ay-inversion: SUBJ-fronted intransitive'
+  expected: parse
+- text: Ang nanay ay nakababasa ng aso.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang nanay ay nakababasa ng bata.
+  construction: 'ay-inversion: SUBJ-fronted transitive'
+  expected: parse
+- text: Ang aso ay hindi nakakain.
+  construction: 'ay-inversion: with NEG'
+  expected: parse
+- text: Ang bata ay hindi nakakain.
+  construction: 'ay-inversion: with NEG'
+  expected: parse
+- text: Ang nanay ay hindi nakakain.
+  construction: 'ay-inversion: with NEG'
+  expected: parse
+- text: Tumakbo ang batang nakakain ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang batang nakakain ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang babaeng nakakain ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang babaeng nakakain ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang lalaking nakakain ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang lalaking nakakain ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang inang nakakain ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang inang nakakain ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang batang nakabili ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang batang nakabili ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang babaeng nakabili ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang babaeng nakabili ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang lalaking nakabili ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang lalaking nakabili ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang inang nakabili ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang inang nakabili ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang batang nakabasa ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang batang nakabasa ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang babaeng nakabasa ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang babaeng nakabasa ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang lalaking nakabasa ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang lalaking nakabasa ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang inang nakabasa ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang inang nakabasa ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang batang nakakain ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang batang nakakain ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang babaeng nakakain ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang babaeng nakakain ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang lalaking nakakain ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang lalaking nakakain ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang inang nakakain ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang inang nakakain ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang batang nakabili ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang batang nakabili ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang babaeng nakabili ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang babaeng nakabili ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang lalaking nakabili ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang lalaking nakabili ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang inang nakabili ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang inang nakabili ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang batang nakabasa ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang batang nakabasa ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang babaeng nakabasa ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang babaeng nakabasa ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang lalaking nakabasa ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang lalaking nakabasa ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang inang nakabasa ng aso.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Natulog ang inang nakabasa ng bata.
+  construction: 'relativization: -ng linker, AV RC'
+  expected: parse
+- text: Tumakbo ang libro na binasa ng aso.
+  construction: 'relativization: na linker, OV RC'
+  expected: parse
+- text: Tumakbo ang libro na binasa ng bata.
+  construction: 'relativization: na linker, OV RC'
+  expected: parse
+- text: Tumakbo ang libro na kinain ng aso.
+  construction: 'relativization: na linker, OV RC'
+  expected: parse
+- text: Tumakbo ang libro na kinain ng bata.
+  construction: 'relativization: na linker, OV RC'
+  expected: parse
+- text: Tumakbo ang batang kinain ang isda.
+  construction: 'relativization: OBJ-rel rejected (SUBJ-only)'
+  expected: fragment
+  notes: Tagalog SUBJ-only restriction; full parse fails, sub-spans surface as fragments
+- text: Tumakbo ang batang binili ang isda.
+  construction: 'relativization: OBJ-rel rejected (SUBJ-only)'
+  expected: fragment
+  notes: Tagalog SUBJ-only restriction; full parse fails, sub-spans surface as fragments
+- text: Gusto kong kumain.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto kong bumili.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto kong natulog.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto kong kumain ng isda.
+  construction: 'control: psych gusto + transitive XCOMP'
+  expected: parse
+- text: Gusto mong kumain.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto mong bumili.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto mong natulog.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto mong kumain ng isda.
+  construction: 'control: psych gusto + transitive XCOMP'
+  expected: parse
+- text: Gusto niyang kumain.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto niyang bumili.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto niyang natulog.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto niyang kumain ng isda.
+  construction: 'control: psych gusto + transitive XCOMP'
+  expected: parse
+- text: Gusto namin na kumain.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto namin na bumili.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto namin na natulog.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto namin na kumain ng isda.
+  construction: 'control: psych gusto + transitive XCOMP'
+  expected: parse
+- text: Gusto nilang kumain.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto nilang bumili.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto nilang natulog.
+  construction: 'control: psych gusto'
+  expected: parse
+- text: Gusto nilang kumain ng isda.
+  construction: 'control: psych gusto + transitive XCOMP'
+  expected: parse
+- text: Ayaw kong kumain.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw kong bumili.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw kong natulog.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw kong kumain ng isda.
+  construction: 'control: psych ayaw + transitive XCOMP'
+  expected: parse
+- text: Ayaw mong kumain.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw mong bumili.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw mong natulog.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw mong kumain ng isda.
+  construction: 'control: psych ayaw + transitive XCOMP'
+  expected: parse
+- text: Ayaw niyang kumain.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw niyang bumili.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw niyang natulog.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw niyang kumain ng isda.
+  construction: 'control: psych ayaw + transitive XCOMP'
+  expected: parse
+- text: Ayaw namin na kumain.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw namin na bumili.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw namin na natulog.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw namin na kumain ng isda.
+  construction: 'control: psych ayaw + transitive XCOMP'
+  expected: parse
+- text: Ayaw nilang kumain.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw nilang bumili.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw nilang natulog.
+  construction: 'control: psych ayaw'
+  expected: parse
+- text: Ayaw nilang kumain ng isda.
+  construction: 'control: psych ayaw + transitive XCOMP'
+  expected: parse
+- text: Kaya kong kumain.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya kong bumili.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya kong natulog.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya kong kumain ng isda.
+  construction: 'control: psych kaya + transitive XCOMP'
+  expected: parse
+- text: Kaya mong kumain.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya mong bumili.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya mong natulog.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya mong kumain ng isda.
+  construction: 'control: psych kaya + transitive XCOMP'
+  expected: parse
+- text: Kaya niyang kumain.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya niyang bumili.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya niyang natulog.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya niyang kumain ng isda.
+  construction: 'control: psych kaya + transitive XCOMP'
+  expected: parse
+- text: Kaya namin na kumain.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya namin na bumili.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya namin na natulog.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya namin na kumain ng isda.
+  construction: 'control: psych kaya + transitive XCOMP'
+  expected: parse
+- text: Kaya nilang kumain.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya nilang bumili.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya nilang natulog.
+  construction: 'control: psych kaya'
+  expected: parse
+- text: Kaya nilang kumain ng isda.
+  construction: 'control: psych kaya + transitive XCOMP'
+  expected: parse
+- text: Pumayag siyang kumain.
+  construction: 'control: intransitive (pumayag)'
+  expected: parse
+- text: Pumayag siyang tumakbo.
+  construction: 'control: intransitive (pumayag)'
+  expected: parse
+- text: Pumayag siyang natulog.
+  construction: 'control: intransitive (pumayag)'
+  expected: parse
+- text: Pumayag akong kumain.
+  construction: 'control: intransitive (pumayag)'
+  expected: parse
+- text: Pumayag akong tumakbo.
+  construction: 'control: intransitive (pumayag)'
+  expected: parse
+- text: Pumayag akong natulog.
+  construction: 'control: intransitive (pumayag)'
+  expected: parse
+- text: Pumayag kaming kumain.
+  construction: 'control: intransitive (pumayag)'
+  expected: parse
+- text: Pumayag kaming tumakbo.
+  construction: 'control: intransitive (pumayag)'
+  expected: parse
+- text: Pumayag kaming natulog.
+  construction: 'control: intransitive (pumayag)'
+  expected: parse
+- text: Pinilit ng aso ang asong kumain ng isda.
+  construction: 'control: transitive OV (pinilit)'
+  expected: parse
+- text: Pinilit ng aso ang batang kumain ng isda.
+  construction: 'control: transitive OV (pinilit)'
+  expected: parse
+- text: Pinilit ng aso ang nanay na kumain ng isda.
+  construction: 'control: transitive OV (pinilit)'
+  expected: parse
+- text: Pinilit ng bata ang asong kumain ng isda.
+  construction: 'control: transitive OV (pinilit)'
+  expected: parse
+- text: Pinilit ng bata ang batang kumain ng isda.
+  construction: 'control: transitive OV (pinilit)'
+  expected: parse
+- text: Pinilit ng bata ang nanay na kumain ng isda.
+  construction: 'control: transitive OV (pinilit)'
+  expected: parse
+- text: Pinilit ng nanay ang asong kumain ng isda.
+  construction: 'control: transitive OV (pinilit)'
+  expected: parse
+- text: Pinilit ng nanay ang batang kumain ng isda.
+  construction: 'control: transitive OV (pinilit)'
+  expected: parse
+- text: Pinilit ng nanay ang nanay na kumain ng isda.
+  construction: 'control: transitive OV (pinilit)'
+  expected: parse
+- text: Inutusan ng aso si Maria na umuwi.
+  construction: 'control: transitive DV (inutusan)'
+  expected: parse
+- text: Inutusan ng aso si Juan na umuwi.
+  construction: 'control: transitive DV (inutusan)'
+  expected: parse
+- text: Inutusan ng bata si Maria na umuwi.
+  construction: 'control: transitive DV (inutusan)'
+  expected: parse
+- text: Inutusan ng bata si Juan na umuwi.
+  construction: 'control: transitive DV (inutusan)'
+  expected: parse
+- text: Hindi gusto kong kumain.
+  construction: 'control: outer NEG + gusto'
+  expected: parse
+- text: Gusto kong hindi kumain.
+  construction: 'control: inner NEG + gusto'
+  expected: parse
+- text: Hindi ayaw kong kumain.
+  construction: 'control: outer NEG + ayaw'
+  expected: parse
+- text: Ayaw kong hindi kumain.
+  construction: 'control: inner NEG + ayaw'
+  expected: parse
+- text: Ipinaggawa ng aso ang aso.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggawa ng aso ang bata.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggawa ng aso ang nanay.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggawa ng bata ang aso.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggawa ng bata ang bata.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggawa ng bata ang nanay.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggawa ng nanay ang aso.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggawa ng nanay ang bata.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggawa ng nanay ang nanay.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggagawa ng aso ang aso.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggagawa ng aso ang bata.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggagawa ng aso ang nanay.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggagawa ng bata ang aso.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggagawa ng bata ang bata.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggagawa ng bata ang nanay.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggagawa ng nanay ang aso.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggagawa ng nanay ang bata.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinaggagawa ng nanay ang nanay.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipaggagawa ng aso ang aso.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipaggagawa ng aso ang bata.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipaggagawa ng aso ang nanay.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipaggagawa ng bata ang aso.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipaggagawa ng bata ang bata.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipaggagawa ng bata ang nanay.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipaggagawa ng nanay ang aso.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipaggagawa ng nanay ang bata.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipaggagawa ng nanay ang nanay.
+  construction: 'applicative: ipag- benefactive (gawa)'
+  expected: parse
+- text: Ipinagsulat ng aso ang aso.
+  construction: 'applicative: ipag- benefactive (sulat)'
+  expected: parse
+- text: Ipinagsulat ng aso ang bata.
+  construction: 'applicative: ipag- benefactive (sulat)'
+  expected: parse
+- text: Ipinagsulat ng aso ang nanay.
+  construction: 'applicative: ipag- benefactive (sulat)'
+  expected: parse
+- text: Ipinagsulat ng bata ang aso.
+  construction: 'applicative: ipag- benefactive (sulat)'
+  expected: parse
+- text: Ipinagsulat ng bata ang bata.
+  construction: 'applicative: ipag- benefactive (sulat)'
+  expected: parse
+- text: Ipinagsulat ng bata ang nanay.
+  construction: 'applicative: ipag- benefactive (sulat)'
+  expected: parse
+- text: Ipinagsulat ng nanay ang aso.
+  construction: 'applicative: ipag- benefactive (sulat)'
+  expected: parse
+- text: Ipinagsulat ng nanay ang bata.
+  construction: 'applicative: ipag- benefactive (sulat)'
+  expected: parse
+- text: Ipinagsulat ng nanay ang nanay.
+  construction: 'applicative: ipag- benefactive (sulat)'
+  expected: parse
+- text: Ipinagbili ng aso ang aso.
+  construction: 'applicative: ipag- benefactive (bili)'
+  expected: parse
+- text: Ipinagbili ng aso ang bata.
+  construction: 'applicative: ipag- benefactive (bili)'
+  expected: parse
+- text: Ipinagbili ng aso ang nanay.
+  construction: 'applicative: ipag- benefactive (bili)'
+  expected: parse
+- text: Ipinagbili ng bata ang aso.
+  construction: 'applicative: ipag- benefactive (bili)'
+  expected: parse
+- text: Ipinagbili ng bata ang bata.
+  construction: 'applicative: ipag- benefactive (bili)'
+  expected: parse
+- text: Ipinagbili ng bata ang nanay.
+  construction: 'applicative: ipag- benefactive (bili)'
+  expected: parse
+- text: Ipinagbili ng nanay ang aso.
+  construction: 'applicative: ipag- benefactive (bili)'
+  expected: parse
+- text: Ipinagbili ng nanay ang bata.
+  construction: 'applicative: ipag- benefactive (bili)'
+  expected: parse
+- text: Ipinagbili ng nanay ang nanay.
+  construction: 'applicative: ipag- benefactive (bili)'
+  expected: parse
+- text: Pinakain ng aso ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakain ng aso ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakain ng aso ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakain ng bata ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakain ng bata ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakain ng bata ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakain ng nanay ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakain ng nanay ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakain ng nanay ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakakain ng aso ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakakain ng aso ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakakain ng aso ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakakain ng bata ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakakain ng bata ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakakain ng bata ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakakain ng nanay ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakakain ng nanay ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinakakain ng nanay ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pakakainin ng aso ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pakakainin ng aso ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pakakainin ng aso ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pakakainin ng bata ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pakakainin ng bata ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pakakainin ng bata ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pakakainin ng nanay ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pakakainin ng nanay ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pakakainin ng nanay ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (kain)'
+  expected: parse
+- text: Pinabasa ng aso ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (basa)'
+  expected: parse
+- text: Pinabasa ng aso ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (basa)'
+  expected: parse
+- text: Pinabasa ng aso ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (basa)'
+  expected: parse
+- text: Pinabasa ng bata ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (basa)'
+  expected: parse
+- text: Pinabasa ng bata ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (basa)'
+  expected: parse
+- text: Pinabasa ng bata ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (basa)'
+  expected: parse
+- text: Pinabasa ng nanay ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (basa)'
+  expected: parse
+- text: Pinabasa ng nanay ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (basa)'
+  expected: parse
+- text: Pinabasa ng nanay ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (basa)'
+  expected: parse
+- text: Pinainom ng aso ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (inom)'
+  expected: parse
+- text: Pinainom ng aso ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (inom)'
+  expected: parse
+- text: Pinainom ng aso ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (inom)'
+  expected: parse
+- text: Pinainom ng bata ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (inom)'
+  expected: parse
+- text: Pinainom ng bata ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (inom)'
+  expected: parse
+- text: Pinainom ng bata ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (inom)'
+  expected: parse
+- text: Pinainom ng nanay ang aso.
+  construction: 'causative: pa-...-in OV monoclausal (inom)'
+  expected: parse
+- text: Pinainom ng nanay ang bata.
+  construction: 'causative: pa-...-in OV monoclausal (inom)'
+  expected: parse
+- text: Pinainom ng nanay ang nanay.
+  construction: 'causative: pa-...-in OV monoclausal (inom)'
+  expected: parse
+- text: Nagpakain ang aso na kumain.
+  construction: 'causative: magpa- AV biclausal (kain)'
+  expected: parse
+- text: Nagpakain ang aso na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Nagpakain ang bata na kumain.
+  construction: 'causative: magpa- AV biclausal (kain)'
+  expected: parse
+- text: Nagpakain ang bata na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Nagpakain ang nanay na kumain.
+  construction: 'causative: magpa- AV biclausal (kain)'
+  expected: parse
+- text: Nagpakain ang nanay na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Nagpapakain ang aso na kumain.
+  construction: 'causative: magpa- AV biclausal (kain)'
+  expected: parse
+- text: Nagpapakain ang aso na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Nagpapakain ang bata na kumain.
+  construction: 'causative: magpa- AV biclausal (kain)'
+  expected: parse
+- text: Nagpapakain ang bata na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Nagpapakain ang nanay na kumain.
+  construction: 'causative: magpa- AV biclausal (kain)'
+  expected: parse
+- text: Nagpapakain ang nanay na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Magpapakain ang aso na kumain.
+  construction: 'causative: magpa- AV biclausal (kain)'
+  expected: parse
+- text: Magpapakain ang aso na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Magpapakain ang bata na kumain.
+  construction: 'causative: magpa- AV biclausal (kain)'
+  expected: parse
+- text: Magpapakain ang bata na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Magpapakain ang nanay na kumain.
+  construction: 'causative: magpa- AV biclausal (kain)'
+  expected: parse
+- text: Magpapakain ang nanay na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Nagpabasa ang aso na kumain.
+  construction: 'causative: magpa- AV biclausal (basa)'
+  expected: parse
+- text: Nagpabasa ang aso na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Nagpabasa ang bata na kumain.
+  construction: 'causative: magpa- AV biclausal (basa)'
+  expected: parse
+- text: Nagpabasa ang bata na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Nagpabasa ang nanay na kumain.
+  construction: 'causative: magpa- AV biclausal (basa)'
+  expected: parse
+- text: Nagpabasa ang nanay na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Nagpainom ang aso na kumain.
+  construction: 'causative: magpa- AV biclausal (inom)'
+  expected: parse
+- text: Nagpainom ang aso na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Nagpainom ang bata na kumain.
+  construction: 'causative: magpa- AV biclausal (inom)'
+  expected: parse
+- text: Nagpainom ang bata na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Nagpainom ang nanay na kumain.
+  construction: 'causative: magpa- AV biclausal (inom)'
+  expected: parse
+- text: Nagpainom ang nanay na kumain ng isda.
+  construction: 'causative: magpa- AV biclausal + transitive XCOMP'
+  expected: parse
+- text: Ipinambili ng titser ang panulat.
+  construction: 'applicative: ipang- (deferred)'
+  expected: fail
+- text: Kumain ito.
+  construction: 'demonstrative: standalone NOM'
+  expected: parse
+- text: Kumain iyan.
+  construction: 'demonstrative: standalone NOM'
+  expected: parse
+- text: Kumain iyon.
+  construction: 'demonstrative: standalone NOM'
+  expected: parse
+- text: Tumakbo ito.
+  construction: 'demonstrative: standalone NOM'
+  expected: parse
+- text: Tumakbo iyan.
+  construction: 'demonstrative: standalone NOM'
+  expected: parse
+- text: Tumakbo iyon.
+  construction: 'demonstrative: standalone NOM'
+  expected: parse
+- text: Natulog ito.
+  construction: 'demonstrative: standalone NOM'
+  expected: parse
+- text: Natulog iyan.
+  construction: 'demonstrative: standalone NOM'
+  expected: parse
+- text: Natulog iyon.
+  construction: 'demonstrative: standalone NOM'
+  expected: parse
+- text: Kumain ang aso nito.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Kumain ang bata nito.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Kumain ang aso niyan.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Kumain ang bata niyan.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Kumain ang aso niyon.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Kumain ang bata niyon.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Bumasa ang aso nito.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Bumasa ang bata nito.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Bumasa ang aso niyan.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Bumasa ang bata niyan.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Bumasa ang aso niyon.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Bumasa ang bata niyon.
+  construction: 'demonstrative: GEN demonstrative as OBJ'
+  expected: parse
+- text: Kumain ang aso ng isda ng nanay.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Kumain ang aso ng isda ng bata.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Kumain ang aso ng isda ng lalaki.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Kumain ang bata ng isda ng nanay.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Kumain ang bata ng isda ng bata.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Kumain ang bata ng isda ng lalaki.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Kumain ang nanay ng isda ng nanay.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Kumain ang nanay ng isda ng bata.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Kumain ang nanay ng isda ng lalaki.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Bumili ang aso ng isda ng nanay.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Bumili ang aso ng isda ng bata.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Bumili ang aso ng isda ng lalaki.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Bumili ang bata ng isda ng nanay.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Bumili ang bata ng isda ng bata.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Bumili ang bata ng isda ng lalaki.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Bumili ang nanay ng isda ng nanay.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Bumili ang nanay ng isda ng bata.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Bumili ang nanay ng isda ng lalaki.
+  construction: 'possessive: ng-NP modifier on OBJ'
+  expected: parse
+- text: Kumain ang aso lahat.
+  construction: 'quantifier: floated lahat'
+  expected: parse
+- text: Kumain ang aso iba.
+  construction: 'quantifier: floated iba'
+  expected: parse
+- text: Kumain ang bata lahat.
+  construction: 'quantifier: floated lahat'
+  expected: parse
+- text: Kumain ang bata iba.
+  construction: 'quantifier: floated iba'
+  expected: parse
+- text: Kumain ang nanay lahat.
+  construction: 'quantifier: floated lahat'
+  expected: parse
+- text: Kumain ang nanay iba.
+  construction: 'quantifier: floated iba'
+  expected: parse
+- text: Tumakbo ang aso lahat.
+  construction: 'quantifier: floated lahat'
+  expected: parse
+- text: Tumakbo ang aso iba.
+  construction: 'quantifier: floated iba'
+  expected: parse
+- text: Tumakbo ang bata lahat.
+  construction: 'quantifier: floated lahat'
+  expected: parse
+- text: Tumakbo ang bata iba.
+  construction: 'quantifier: floated iba'
+  expected: parse
+- text: Tumakbo ang nanay lahat.
+  construction: 'quantifier: floated lahat'
+  expected: parse
+- text: Tumakbo ang nanay iba.
+  construction: 'quantifier: floated iba'
+  expected: parse
+- text: Kumain ng aso ang.
+  construction: 'robustness: incomplete NP'
+  expected: fragment
+- text: Kumain xyzqwerty ng aso.
+  construction: 'robustness: garbage word'
+  expected: fragment
+  notes: xyzqwerty stripped, but residue lacks NOM-NP
+- text: Aso ang isda.
+  construction: 'robustness: no verb'
+  expected: fail
+  notes: no V → no rule predictions; no fragments either
+- text: Kumain ng.
+  construction: 'robustness: incomplete GEN-NP'
+  expected: fail
+  notes: ng without N produces no completed NP states
+- text: Kumain ang aso ng isda.
+  construction: 'classic: AV transitive (Kroeger)'
+  expected: parse
+  source: Kroeger 1993 §1
+- text: Kinain ng aso ang isda.
+  construction: 'classic: OV transitive (Kroeger)'
+  expected: parse
+  source: Kroeger 1993 §1
+- text: Sumulat si Juan kay Maria.
+  construction: 'classic: AV with DAT recipient'
+  expected: parse
+  source: Schachter & Otanes 1972
+- text: Sinulatan ni Juan si Maria.
+  construction: 'classic: DV — Maria=pivot'
+  expected: parse
+  source: Schachter & Otanes 1972
+- text: Isinulat ni Juan ang liham.
+  construction: 'classic: IV — liham=pivot'
+  expected: parse
+  source: Schachter & Otanes 1972
+- text: Gusto kong kumain ng isda.
+  construction: 'classic: psych control (Kroeger)'
+  expected: parse
+  source: Kroeger 1993 §6
+- text: Pumayag siyang kumain.
+  construction: 'classic: intransitive control'
+  expected: parse
+  source: Schachter & Otanes 1972
+- text: Pinakain ng nanay ang bata.
+  construction: 'classic: monoclausal causative'
+  expected: parse
+  source: Schachter & Otanes 1972 §5.34
+- text: Si Maria ay kumain.
+  construction: 'classic: ay-inversion'
+  expected: parse
+  source: Schachter & Otanes 1972
+- text: Tumakbo ang batang kumain.
+  construction: 'classic: relativization'
+  expected: parse
+  source: Kroeger 1993 §1
+- text: Kumain na ang aso.
+  construction: 'classic: aspectual na'
+  expected: parse
+  source: Schachter & Otanes 1972 §6.7
+- text: Hindi kumain ang aso.
+  construction: 'classic: declarative negation'
+  expected: parse
+  source: Schachter & Otanes 1972
+- text: Aalis na ako.
+  construction: 'rg: AV-CTPL with na-clitic'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Hindi ka nakita ng kaibigan mo.
+  construction: 'rg: NEG + OV (kita)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Bumili siya ng bahay.
+  construction: 'rg: AV transitive (bili)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Kumain ka na ba?
+  construction: 'rg: question with adv enclitics na/ba'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Dumating na siya.
+  construction: 'rg: AV-PFV (dating) with na'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Kumakanta siya.
+  construction: 'rg: AV-IPFV (kanta)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Nauhaw ang aso.
+  construction: 'rg: AV-PFV NVOL (uhaw)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Nagdaan na ba ang bus?
+  construction: 'rg: question with na/ba (daan)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Kumain na ako.
+  construction: 'rg: aspectual na'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Umabot ka ng kanin.
+  construction: 'rg: AV transitive imperative-like (abot)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Yayaman siya.
+  construction: 'rg: AV-CTPL (yaman)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Umiyak ang bata.
+  construction: 'rg: AV intransitive (iyak)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Hindi umiiyak ang bata.
+  construction: 'rg: NEG + AV-IPFV intransitive'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Siya ay tumakbo.
+  construction: 'rg: ay-inversion (takbo)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Pumunta ka na.
+  construction: 'rg: AV-PFV imperative-like (punta)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Pupunta ka ba?
+  construction: 'rg: AV-CTPL question (punta)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Umalis siya.
+  construction: 'rg: AV intransitive (alis)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Dumating siya.
+  construction: 'rg: AV-PFV (dating)'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Hinuli niya ang manok.
+  construction: 'rg: OV-PFV (huli) + niya'
+  expected: parse
+  source: Ramos & Goulet 1981
+- text: Nakita niya ang manok.
+  construction: 'rg: OV-PFV NVOL (kita)'
+  expected: parse
+  source: Ramos & Goulet 1981

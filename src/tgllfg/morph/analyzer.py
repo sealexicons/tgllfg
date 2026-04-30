@@ -148,22 +148,55 @@ class Analyzer:
     def analyze(self, tokens: list[Token]) -> list[list[MorphAnalysis]]:
         return [self.analyze_one(t) for t in tokens]
 
+    def is_known_surface(self, norm: str) -> bool:
+        """True iff a non-_UNK analysis exists for ``norm`` (lower-cased
+        surface)."""
+        idx = self._index
+        return (
+            norm in idx.particles
+            or norm in idx.pronouns
+            or norm in idx.verb_forms
+            or norm in idx.nouns
+        )
+
     # --- Index construction -----------------------------------------------
 
     def _build_index(self) -> None:
         for p in self._data.particles:
+            feats: dict[str, object] = dict(p.feats)
+            if p.is_clitic:
+                # Phase 4 §7.3: ``is_clitic`` (boolean) drives
+                # pre-parse clitic placement; it is invisible to the
+                # grammar because only str-valued feats are emitted as
+                # lex equations / category-pattern features.
+                feats["is_clitic"] = True
+            if p.clitic_class:
+                # ``CLITIC_CLASS`` (string, e.g. "2P") *is* exposed to
+                # the grammar so rules can match ``PART[CLITIC_CLASS=2P]``
+                # for the Wackernagel-cluster attachment.
+                feats["CLITIC_CLASS"] = p.clitic_class
+            # Phase 4 §7.8: default DEM=NO on DET/ADP entries that
+            # don't explicitly mark DEM. The standalone-demonstrative
+            # NP rule expects ``DEM=YES``; without the sentinel,
+            # plain ``ang`` / ``ng`` / ``sa`` would also match under
+            # the parser's non-conflict matcher.
+            if p.pos in ("DET", "ADP"):
+                feats.setdefault("DEM", "NO")
             self._index.particles.setdefault(p.surface.lower(), []).append(
                 MorphAnalysis(
                     lemma=p.surface,
                     pos=p.pos,
-                    feats=dict(p.feats),
+                    feats=feats,
                 )
             )
         for pn in self._data.pronouns:
+            feats = dict(pn.feats)
+            if pn.is_clitic:
+                feats["is_clitic"] = True
             self._index.pronouns[pn.surface.lower()] = MorphAnalysis(
                 lemma=pn.surface,
                 pos="PRON",
-                feats=dict(pn.feats),
+                feats=feats,
             )
         for r in self._data.roots:
             if r.pos == "VERB":
@@ -189,6 +222,34 @@ class Analyzer:
             }
             if root.transitivity:
                 feats["TR"] = root.transitivity
+            # Per-cell lex feats (Phase 4 §7.7): APPL and CAUS values
+            # ride from the paradigm cell into the MorphAnalysis. Cell
+            # feats win over root feats for the same key (the cell is
+            # the more specific source — a single verb root can
+            # generate forms across multiple applicative variants).
+            for k, v in cell.feats.items():
+                feats[k] = v
+            # Per-root lex feats (Phase 4 §7.6): CTRL_CLASS et al.
+            # ride into every generated form so the parser's
+            # category-pattern matcher can discriminate control
+            # verbs (V[CTRL_CLASS=INTRANS] vs V[CTRL_CLASS=TRANS])
+            # at the rule level.
+            for k, v in root.feats.items():
+                feats.setdefault(k, v)
+            # Default CTRL_CLASS=NONE on verbs not declared as a
+            # control class. Without this, the grammar's
+            # ``V[CTRL_CLASS=PSYCH]`` (etc.) patterns would fire on
+            # ANY verb under the parser's non-conflict matcher
+            # (shared keys must agree; missing keys don't conflict).
+            # The sentinel value ensures non-control verbs are
+            # ruled out at rule-match time.
+            feats.setdefault("CTRL_CLASS", "NONE")
+            # Same sentinel pattern for APPL / CAUS: non-applicative
+            # / non-causative verbs need a NONE default so the
+            # grammar's ``V[APPL=BEN]`` etc. don't fire on plain
+            # verbs.
+            feats.setdefault("APPL", "NONE")
+            feats.setdefault("CAUS", "NONE")
             analysis = MorphAnalysis(
                 lemma=root.citation,
                 pos="VERB",

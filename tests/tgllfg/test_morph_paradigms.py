@@ -333,6 +333,23 @@ D_TO_R_PARADIGM_FORMS = [
 ]
 
 
+# -- Phase 4 §7.2: RECPFV (recent-perfective) ----------------------------
+#
+# ka- + CV-redup of the root, no infix or voice-marking suffix. Uniform
+# across um / mag / ma affix-classes.
+
+RECPFV_PARADIGM_FORMS = [
+    ("kain",   "AV", "RECPFV", "kakakain"),
+    ("bili",   "AV", "RECPFV", "kabibili"),
+    ("basa",   "AV", "RECPFV", "kababasa"),
+    ("sulat",  "AV", "RECPFV", "kasusulat"),
+    ("linis",  "AV", "RECPFV", "kalilinis"),
+    ("tulog",  "AV", "RECPFV", "katutulog"),
+    ("gawa",   "AV", "RECPFV", "kagagawa"),
+    ("bigay",  "AV", "RECPFV", "kabibigay"),
+]
+
+
 # -- Phase 2C bulk verb scale-up — AV PFV/IPFV/CTPL ----------------------
 #
 # Three-cell coverage for ~50 newly-seeded verbs. Class chosen per
@@ -879,6 +896,7 @@ ALL_PAIRED_FORMS = (
     + PHASE2C_B_NON_AV_FORMS
     + PHASE2C_C_AV_FORMS
     + PHASE2C_C_NON_AV_FORMS
+    + RECPFV_PARADIGM_FORMS
 )
 
 

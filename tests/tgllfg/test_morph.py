@@ -328,13 +328,16 @@ class TestParticles:
         out = analyzer.analyze_one(_tok("ang"))
         det = [a for a in out if a.pos == "DET"]
         assert det
-        assert det[0].feats == {"CASE": "NOM", "MARKER": "ANG"}
+        # Phase 4 §7.8: DEM=NO sentinel rides on non-demonstrative
+        # DET/ADP entries so the standalone-demonstrative NP rule
+        # (which expects DEM=YES) doesn't fire on plain ``ang``.
+        assert det[0].feats == {"CASE": "NOM", "MARKER": "ANG", "DEM": "NO"}
 
     def test_ng_genitive(self, analyzer: Analyzer) -> None:
         out = analyzer.analyze_one(_tok("ng"))
         adp = [a for a in out if a.pos == "ADP"]
         assert adp
-        assert adp[0].feats == {"CASE": "GEN", "MARKER": "NG"}
+        assert adp[0].feats == {"CASE": "GEN", "MARKER": "NG", "DEM": "NO"}
 
     def test_si_personal_marker(self, analyzer: Analyzer) -> None:
         out = analyzer.analyze_one(_tok("si"))
@@ -349,7 +352,7 @@ class TestParticles:
 
     def test_linker_na(self, analyzer: Analyzer) -> None:
         out = analyzer.analyze_one(_tok("na"))
-        assert any(a.feats.get("LINKER") is True for a in out)
+        assert any(a.feats.get("LINK") == "NA" for a in out)
 
 
 class TestPronouns:
@@ -750,5 +753,5 @@ class TestEnclitics:
         # `na` is both the linker and the aspectual "already".
         out = analyzer.analyze_one(_tok("na"))
         feats = [a.feats for a in out]
-        assert any(f.get("LINKER") is True for f in feats)
+        assert any(f.get("LINK") == "NA" for f in feats)
         assert any(f.get("ASPECT_PART") == "ALREADY" for f in feats)

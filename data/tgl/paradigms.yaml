@@ -225,11 +225,16 @@
 
 # === IV — Instrumental / Benefactive Voice ===============================
 
+# Bare IV `i-` carries APPL=CONVEY — the conveyed-pivot reading
+# (Phase 4 §7.7). Other applicative variants (BEN via ipag-,
+# INSTR via ipang-, REASON via ika-) live under their own affix
+# classes below.
 - voice: IV
   aspect: PFV
   mood: IND
   transitivity: TR
   affix_class: i_oblig
+  feats: {APPL: CONVEY}
   operations:
     - {op: infix, value: in}
     - {op: prefix, value: "i"}
@@ -240,6 +245,7 @@
   mood: IND
   transitivity: TR
   affix_class: i_oblig
+  feats: {APPL: CONVEY}
   operations:
     - {op: cv_redup}
     - {op: infix, value: in}
@@ -251,10 +257,51 @@
   mood: IND
   transitivity: TR
   affix_class: i_oblig
+  feats: {APPL: CONVEY}
   operations:
     - {op: cv_redup}
     - {op: prefix, value: "i"}
   notes: ikakain, ibibili
+
+# === AV — RECPFV ("just-completed") =====================================
+#
+# Phase 4 §7.2: the recent-perfective aspect uses the ka- prefix +
+# CV-redup of the root, no infix or voice morphology beyond the
+# affix-class filter. Surfaces: "kakakain" (just ate), "kabibili"
+# (just bought), "kasusulat" (just wrote). MOOD remains IND.
+#
+# Citations: Schachter & Otanes 1972 §5.31; Ramos & Bautista 1986
+# paradigm tables (RECPFV column).
+
+- voice: AV
+  aspect: RECPFV
+  mood: IND
+  transitivity: ''
+  affix_class: um
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ka"}
+  notes: kakakain, kabibili (RECPFV across um-class roots)
+
+- voice: AV
+  aspect: RECPFV
+  mood: IND
+  transitivity: ''
+  affix_class: mag
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ka"}
+  notes: kasusulat, kalilinis (RECPFV across mag-class roots)
+
+- voice: AV
+  aspect: RECPFV
+  mood: IND
+  transitivity: ''
+  affix_class: ma
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ka"}
+  notes: katutulog, kakikita (RECPFV across ma-class roots)
 
 # === AV — ma- non-volitional / stative class =============================
 #
@@ -295,3 +342,139 @@
     - {op: cv_redup}
     - {op: prefix, value: "ma"}
   notes: matutulog, mauupo (ma- non-volitional irrealis)
+
+# === Phase 4 §7.7: applicatives + causatives ============================
+#
+# Applicative IV variants beyond the bare ``i-`` (CONVEY) reading:
+# ``ipag-`` benefactive (APPL=BEN) is added here. ``ipang-``
+# instrumental (APPL=INSTR) and ``ika-`` reason (APPL=REASON)
+# require homorganic-nasal sandhi and additional infrastructure;
+# deferred (see docs/analysis-choices.md "Phase 4 §7.7").
+#
+# Causatives use the ``pa-`` prefix in two configurations:
+#   - **Monoclausal direct causative** (``pa_in`` OV): ``pinakain``
+#     "fed (cause-eat)". Causee is pivot/SUBJ; causer is GEN/OBJ.
+#     Single-clause; argument structure ``<SUBJ, OBJ>``.
+#   - **Biclausal indirect causative** (``magpa`` AV): ``nagpakain``
+#     "had-eaten / caused to eat". Causer is pivot/SUBJ; the caused
+#     event is an XCOMP. Re-uses the §7.6 control infrastructure
+#     via ``CTRL_CLASS=INTRANS`` on the lex entry.
+#
+# Citations: Schachter & Otanes 1972 §5.32–5.34; Ramos & Bautista
+# 1986 paradigm tables (BEN, CAUS columns); Kroeger 1993 §6 on
+# applicatives.
+
+# --- ipag- benefactive applicative (APPL=BEN) -----------------------------
+- voice: IV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  affix_class: ipag
+  feats: {APPL: BEN}
+  operations:
+    - {op: prefix, value: "pag"}
+    - {op: infix, value: in}
+    - {op: prefix, value: "i"}
+  notes: ipinaggawa, ipinagsulat (BEN PFV; agent GEN, beneficiary NOM)
+
+- voice: IV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  affix_class: ipag
+  feats: {APPL: BEN}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pag"}
+    - {op: infix, value: in}
+    - {op: prefix, value: "i"}
+  notes: ipinaggagawa, ipinagsusulat
+
+- voice: IV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: ipag
+  feats: {APPL: BEN}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pag"}
+    - {op: prefix, value: "i"}
+  notes: ipaggagawa, ipagsusulat
+
+# --- pa-...-in monoclausal direct causative (CAUS=DIRECT, OV) -----------
+- voice: OV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  affix_class: pa_in
+  feats: {CAUS: DIRECT}
+  operations:
+    - {op: prefix, value: "pa"}
+    - {op: infix, value: in}
+  notes: pinakain, pinabasa (causee=SUBJ via NOM; causer=OBJ via GEN)
+
+- voice: OV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  affix_class: pa_in
+  feats: {CAUS: DIRECT}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pa"}
+    - {op: infix, value: in}
+  notes: pinakakain, pinababasa
+
+- voice: OV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: pa_in
+  feats: {CAUS: DIRECT}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pa"}
+    - {op: suffix, value: in}
+  notes: "pakakainin, pababasahin (CTPL — cv-redup + pa- prefix + -in suffix)"
+
+# --- magpa- biclausal indirect causative (CAUS=INDIRECT, AV) -----------
+#
+# These verb forms compose with the §7.6 control machinery: the
+# matrix verb is AV, takes a NOM-marked causer as SUBJ, and selects
+# an XCOMP via the linker (``na`` / ``-ng``). Lex entries set
+# CTRL_CLASS=INTRANS so the existing control wrap rule fires.
+- voice: AV
+  aspect: PFV
+  mood: IND
+  transitivity: ''
+  affix_class: magpa
+  feats: {CAUS: INDIRECT, CTRL_CLASS: INTRANS}
+  operations:
+    - {op: prefix, value: "pa"}
+    - {op: prefix, value: "nag"}
+  notes: nagpakain, nagpabasa (causer=SUBJ; XCOMP via linker)
+
+- voice: AV
+  aspect: IPFV
+  mood: IND
+  transitivity: ''
+  affix_class: magpa
+  feats: {CAUS: INDIRECT, CTRL_CLASS: INTRANS}
+  operations:
+    - {op: prefix, value: "pa"}
+    - {op: cv_redup}
+    - {op: prefix, value: "nag"}
+  notes: nagpapakain (cv-redup of "pa" → "papakain" → "nagpapakain")
+
+- voice: AV
+  aspect: CTPL
+  mood: IND
+  transitivity: ''
+  affix_class: magpa
+  feats: {CAUS: INDIRECT, CTRL_CLASS: INTRANS}
+  operations:
+    - {op: prefix, value: "pa"}
+    - {op: cv_redup}
+    - {op: prefix, value: "mag"}
+  notes: magpapakain

@@ -38,6 +38,13 @@ class Root:
     #                            of suffix attachment (bili + -in →
     #                            bilhin instead of bilihin).
     sandhi_flags: list[str] = field(default_factory=list)
+    # Per-root lex features that the analyzer copies into every
+    # generated MorphAnalysis. Phase 4 §7.6 introduces ``CTRL_CLASS``
+    # (PSYCH / INTRANS / TRANS) to discriminate control-verb classes
+    # at the parser's category-pattern level. String-valued entries
+    # become grammar-visible category features; bool/non-str values
+    # ride through f-equations only.
+    feats: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
@@ -80,6 +87,12 @@ class ParadigmCell:
                             # roots whose affix_class is also empty" (legacy default).
     operations: list[Operation] = field(default_factory=list)
     notes: str = ""
+    # Per-cell lex features that the analyzer copies into the
+    # generated MorphAnalysis. Phase 4 §7.7 introduces ``APPL`` and
+    # ``CAUS`` to encode applicative type (BEN / INSTR / REASON /
+    # CONVEY) and causative type (DIRECT / INDIRECT). String-valued
+    # entries become grammar-visible category features.
+    feats: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass

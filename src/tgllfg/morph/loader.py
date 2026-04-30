@@ -82,6 +82,9 @@ def _load_roots(path: Path) -> list[Root]:
         sandhi_flags_raw = rec.get("sandhi_flags", [])
         if not isinstance(sandhi_flags_raw, list):
             raise ValueError(f"{where}: 'sandhi_flags' must be a list")
+        feats_raw = rec.get("feats", {})
+        if not isinstance(feats_raw, dict):
+            raise ValueError(f"{where}: 'feats' must be a mapping")
         out.append(Root(
             citation=_require(rec, "citation", where),
             pos=_require(rec, "pos", where),
@@ -89,6 +92,7 @@ def _load_roots(path: Path) -> list[Root]:
             transitivity=rec.get("transitivity", ""),
             affix_class=list(affix_class_raw),
             sandhi_flags=list(sandhi_flags_raw),
+            feats=dict(feats_raw),
         ))
     return out
 
@@ -105,6 +109,9 @@ def _load_paradigm_cells(path: Path) -> list[ParadigmCell]:
                       value=o.get("value", ""))
             for j, o in enumerate(ops_raw)
         ]
+        feats_raw = rec.get("feats", {})
+        if not isinstance(feats_raw, dict):
+            raise ValueError(f"{where}: 'feats' must be a mapping")
         out.append(ParadigmCell(
             voice=_require(rec, "voice", where),
             aspect=_require(rec, "aspect", where),
@@ -113,6 +120,7 @@ def _load_paradigm_cells(path: Path) -> list[ParadigmCell]:
             affix_class=rec.get("affix_class", ""),
             operations=operations,
             notes=rec.get("notes", ""),
+            feats=dict(feats_raw),
         ))
     return out
 

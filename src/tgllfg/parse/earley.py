@@ -45,6 +45,7 @@ matches the order rules were added to the grammar.
 
 from __future__ import annotations
 
+import itertools
 from collections import deque
 from dataclasses import dataclass, field
 from typing import Iterator
@@ -95,16 +96,27 @@ type Completion = LeafCompletion | StateInfo
 class PackedForest:
     """A view over completed start-symbol states. ``best_k(k)`` walks
     the forest deterministically, optionally truncated by the size
-    cap configured at parse time."""
+    cap configured at parse time.
+
+    Phase 4 §7.9 also exposes the underlying chart (``chart``) so the
+    pipeline can extract fragments — the largest non-root completed
+    states — when full-sentence parsing fails.
+    """
 
     def __init__(
         self,
         roots: list[StateInfo],
         *,
         size_cap: int | None = None,
+        chart: list[dict[tuple[int, int, int], StateInfo]] | None = None,
+        sentence_length: int = 0,
     ) -> None:
         self.roots: list[StateInfo] = list(roots)
         self.size_cap: int | None = size_cap
+        self.chart: tuple[dict[tuple[int, int, int], StateInfo], ...] = (
+            tuple(chart) if chart is not None else ()
+        )
+        self.sentence_length: int = sentence_length
 
     def best_k(self, k: int) -> list[CNode]:
         out: list[CNode] = []
@@ -117,10 +129,10 @@ class PackedForest:
     def iter_trees(self) -> Iterator[CNode]:
         emitted = 0
         for root in self.roots:
-            for hist in _iter_histories(root):
+            for cnode in _iter_cnodes(root):
                 if self.size_cap is not None and emitted >= self.size_cap:
                     return
-                yield _to_cnode(root, hist)
+                yield cnode
                 emitted += 1
 
     def __len__(self) -> int:
@@ -130,6 +142,47 @@ class PackedForest:
     @property
     def trees(self) -> list[CNode]:
         return list(self.iter_trees())
+
+    def iter_fragments(self) -> Iterator[tuple[tuple[int, int], CNode]]:
+        """Yield ``(span, cnode)`` for every non-root completed state
+        in the chart, ranked by decreasing span size. Phase 4 §7.9
+        fragment extraction: when no full-sentence parse exists, the
+        pipeline emits the largest sub-spans the parser was able to
+        complete, with their partial f-structures, for diagnostic
+        debugging."""
+        n = self.sentence_length
+        seen: set[tuple[str, int, int]] = set()
+        # Collect completed states across all columns. A "completed"
+        # state has dot at end-of-RHS. We rank by span size.
+        candidates: list[StateInfo] = []
+        for col_chart in self.chart:
+            for state in col_chart.values():
+                if state.dot != len(state.rule.rhs):
+                    continue
+                span_len = state.end - state.start
+                # Skip states that span the whole sentence (those
+                # would be roots; they're already in ``roots`` if
+                # they passed the start-symbol filter, otherwise
+                # they're not interesting fragments).
+                if state.start == 0 and state.end == n:
+                    continue
+                if span_len <= 0:
+                    continue
+                candidates.append(state)
+        # Sort: largest span first; break ties on start column.
+        candidates.sort(
+            key=lambda s: (-(s.end - s.start), s.start, s.rule.lhs.category),
+        )
+        for state in candidates:
+            key = (state.rule.lhs.category, state.start, state.end)
+            if key in seen:
+                continue
+            seen.add(key)
+            for cnode in _iter_cnodes(state):
+                yield (state.start, state.end), cnode
+                # One CNode per (label, span) is enough for fragment
+                # debugging; more would dilute the signal.
+                break
 
 
 def parse_with_annotations(
@@ -182,7 +235,12 @@ class _Earley:
                 and matches(self.grammar.start, state.rule.lhs)
             ):
                 roots.append(state)
-        return PackedForest(roots, size_cap=self.cap)
+        return PackedForest(
+            roots,
+            size_cap=self.cap,
+            chart=self._chart,
+            sentence_length=n,
+        )
 
     def _step(self, col: int, state: StateInfo) -> None:
         if state.dot < len(state.rule.rhs):
@@ -285,28 +343,38 @@ def _iter_histories(state: StateInfo) -> Iterator[tuple[Completion, ...]]:
             yield prefix + (completion,)
 
 
-def _to_cnode(state: StateInfo, history: tuple[Completion, ...]) -> CNode:
-    children: list[CNode] = []
-    for c in history:
-        if isinstance(c, LeafCompletion):
-            children.append(
-                CNode(
-                    label=c.category.category,
-                    children=[],
-                    equations=list(c.equations),
-                )
+def _iter_cnodes(state: StateInfo) -> Iterator[CNode]:
+    """Yield every CNode for ``state``, expanding sub-history
+    alternatives at every nonterminal slot. This propagates lex
+    ambiguity (e.g. AV-intransitive vs AV-transitive entries for
+    ``kumain``) outwards through nested rule completions, where the
+    earlier first-sub-history shortcut would have collapsed it."""
+    for hist in _iter_histories(state):
+        slot_options: list[list[CNode]] = []
+        for c in hist:
+            if isinstance(c, LeafCompletion):
+                slot_options.append([
+                    CNode(
+                        label=c.category.category,
+                        children=[],
+                        equations=list(c.equations),
+                    )
+                ])
+            else:
+                slot_options.append(list(_iter_cnodes(c)))
+        if not slot_options:
+            yield CNode(
+                label=_format_pattern(state.rule.lhs),
+                children=[],
+                equations=list(state.rule.equations),
             )
-        else:
-            # Pick the first sub-history. Multiple alternatives surface
-            # via PackedForest.iter_trees yielding multiple top-level
-            # trees; here we resolve to one canonical sub-derivation.
-            sub = next(_iter_histories(c))
-            children.append(_to_cnode(c, sub))
-    return CNode(
-        label=_format_pattern(state.rule.lhs),
-        children=children,
-        equations=list(state.rule.equations),
-    )
+            continue
+        for combo in itertools.product(*slot_options):
+            yield CNode(
+                label=_format_pattern(state.rule.lhs),
+                children=list(combo),
+                equations=list(state.rule.equations),
+            )
 
 
 # === Lexical interface ====================================================
