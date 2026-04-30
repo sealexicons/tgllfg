@@ -518,7 +518,15 @@ def _robustness_corpus() -> list[dict[str, Any]]:
 
 def _classic_corpus() -> list[dict[str, Any]]:
     """Hand-authored "classic" Tagalog example sentences from the
-    literature. Format: (text, construction, expected, source)."""
+    literature. Format: (text, construction, expected, source).
+
+    The Ramos & Goulet 1981 sentences were mined from
+    ``data/tgl/dictionaries/intermediate-tagalog-...txt`` (the
+    OCR'd companion text of the bundled PDF) by filtering
+    candidates whose vocabulary is fully in the seed lexicon.
+    Page numbers are omitted — the .txt loses page boundaries in
+    OCR. Future enrichment can hand-correlate citations to the
+    physical pages."""
     return [
         {"text": "Kumain ang aso ng isda.",
          "construction": "classic: AV transitive (Kroeger)",
@@ -568,6 +576,91 @@ def _classic_corpus() -> list[dict[str, Any]]:
          "construction": "classic: declarative negation",
          "expected": "parse",
          "source": "Schachter & Otanes 1972"},
+        # === Ramos & Goulet 1981, Intermediate Tagalog =============
+        # Sentences mined from the OCR'd companion .txt by filtering
+        # for fully-seed-vocabulary candidates that the Phase 4
+        # grammar parses successfully. Source citation is the book
+        # as a whole; page-level cross-reference deferred.
+        {"text": "Aalis na ako.",
+         "construction": "rg: AV-CTPL with na-clitic",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Hindi ka nakita ng kaibigan mo.",
+         "construction": "rg: NEG + OV (kita)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Bumili siya ng bahay.",
+         "construction": "rg: AV transitive (bili)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Kumain ka na ba?",
+         "construction": "rg: question with adv enclitics na/ba",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Dumating na siya.",
+         "construction": "rg: AV-PFV (dating) with na",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Kumakanta siya.",
+         "construction": "rg: AV-IPFV (kanta)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Nauhaw ang aso.",
+         "construction": "rg: AV-PFV NVOL (uhaw)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Nagdaan na ba ang bus?",
+         "construction": "rg: question with na/ba (daan)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Kumain na ako.",
+         "construction": "rg: aspectual na",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Umabot ka ng kanin.",
+         "construction": "rg: AV transitive imperative-like (abot)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Yayaman siya.",
+         "construction": "rg: AV-CTPL (yaman)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Umiyak ang bata.",
+         "construction": "rg: AV intransitive (iyak)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Hindi umiiyak ang bata.",
+         "construction": "rg: NEG + AV-IPFV intransitive",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Siya ay tumakbo.",
+         "construction": "rg: ay-inversion (takbo)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Pumunta ka na.",
+         "construction": "rg: AV-PFV imperative-like (punta)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Pupunta ka ba?",
+         "construction": "rg: AV-CTPL question (punta)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Umalis siya.",
+         "construction": "rg: AV intransitive (alis)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Dumating siya.",
+         "construction": "rg: AV-PFV (dating)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Hinuli niya ang manok.",
+         "construction": "rg: OV-PFV (huli) + niya",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
+        {"text": "Nakita niya ang manok.",
+         "construction": "rg: OV-PFV NVOL (kita)",
+         "expected": "parse",
+         "source": "Ramos & Goulet 1981"},
     ]
 
 
