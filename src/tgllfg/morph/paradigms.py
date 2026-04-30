@@ -87,6 +87,12 @@ class ParadigmCell:
                             # roots whose affix_class is also empty" (legacy default).
     operations: list[Operation] = field(default_factory=list)
     notes: str = ""
+    # Per-cell lex features that the analyzer copies into the
+    # generated MorphAnalysis. Phase 4 §7.7 introduces ``APPL`` and
+    # ``CAUS`` to encode applicative type (BEN / INSTR / REASON /
+    # CONVEY) and causative type (DIRECT / INDIRECT). String-valued
+    # entries become grammar-visible category features.
+    feats: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass

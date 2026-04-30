@@ -215,13 +215,20 @@ class Analyzer:
             }
             if root.transitivity:
                 feats["TR"] = root.transitivity
+            # Per-cell lex feats (Phase 4 §7.7): APPL and CAUS values
+            # ride from the paradigm cell into the MorphAnalysis. Cell
+            # feats win over root feats for the same key (the cell is
+            # the more specific source — a single verb root can
+            # generate forms across multiple applicative variants).
+            for k, v in cell.feats.items():
+                feats[k] = v
             # Per-root lex feats (Phase 4 §7.6): CTRL_CLASS et al.
             # ride into every generated form so the parser's
             # category-pattern matcher can discriminate control
             # verbs (V[CTRL_CLASS=INTRANS] vs V[CTRL_CLASS=TRANS])
             # at the rule level.
             for k, v in root.feats.items():
-                feats[k] = v
+                feats.setdefault(k, v)
             # Default CTRL_CLASS=NONE on verbs not declared as a
             # control class. Without this, the grammar's
             # ``V[CTRL_CLASS=PSYCH]`` (etc.) patterns would fire on
@@ -230,6 +237,12 @@ class Analyzer:
             # The sentinel value ensures non-control verbs are
             # ruled out at rule-match time.
             feats.setdefault("CTRL_CLASS", "NONE")
+            # Same sentinel pattern for APPL / CAUS: non-applicative
+            # / non-causative verbs need a NONE default so the
+            # grammar's ``V[APPL=BEN]`` etc. don't fire on plain
+            # verbs.
+            feats.setdefault("APPL", "NONE")
+            feats.setdefault("CAUS", "NONE")
             analysis = MorphAnalysis(
                 lemma=root.citation,
                 pos="VERB",

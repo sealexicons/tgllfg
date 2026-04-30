@@ -43,10 +43,22 @@ def _entry(
 ) -> LexicalEntry:
     """Build a LexicalEntry. ``transitive`` defaults to True; when
     False, ``morph_constraints`` omits the TR feature so the entry
-    matches both transitively-marked and bare verb analyses."""
-    constraints: dict[str, object] = {"VOICE": voice}
+    matches both transitively-marked and bare verb analyses.
+
+    Phase 4 §7.7: bare voice entries also constrain ``CAUS=NONE``
+    so they don't spuriously match causative forms (``nagpakain``
+    has VOICE=AV but CAUS=INDIRECT). For IV entries, the bare
+    conveyed-pivot reading is constrained to ``APPL=CONVEY`` —
+    benefactive / instrumental applicatives need their own entries
+    matching ``APPL=BEN`` / ``APPL=INSTR``.
+    """
+    constraints: dict[str, object] = {"VOICE": voice, "CAUS": "NONE"}
     if transitive:
         constraints["TR"] = "TR"
+    if voice == "IV":
+        constraints["APPL"] = "CONVEY"
+    else:
+        constraints["APPL"] = "NONE"
     return LexicalEntry(
         lemma=lemma,
         pred=pred,
@@ -251,6 +263,104 @@ BASE: dict[str, list[LexicalEntry]] = {
         ),
     ],
 }
+
+
+# ===== Phase 4 §7.7: applicative & causative entries appended to BASE =====
+#
+# Each applicative / causative variant is constrained to a
+# specific (VOICE, APPL|CAUS) combination so it pairs with the
+# corresponding morph cell. The patient role is omitted from
+# 2-arg PRED templates — multi-GEN-NP frames are out of scope for
+# this commit (see docs/analysis-choices.md "Phase 4 §7.7").
+#
+# These entries are appended to existing BASE keys (kain, bili,
+# gawa, basa, inom, sulat) so the lex lookup picks them up
+# alongside the verbs' standard voice entries; the
+# ``morph_constraints`` discriminate which variant matches a given
+# MorphAnalysis at lookup time.
+
+# Benefactive applicatives (ipag-): SUBJ = beneficiary, OBJ = agent
+# (the GEN-marked actor of the doing).
+BASE["gawa"].append(LexicalEntry(
+    lemma="gawa",
+    pred="MAKE-FOR <SUBJ, OBJ>",
+    a_structure=["AGENT", "BENEFICIARY"],
+    morph_constraints={"VOICE": "IV", "APPL": "BEN"},
+    gf_defaults={"BENEFICIARY": "SUBJ", "AGENT": "OBJ"},
+))
+BASE["sulat"].append(LexicalEntry(
+    lemma="sulat",
+    pred="WRITE-FOR <SUBJ, OBJ>",
+    a_structure=["AGENT", "BENEFICIARY"],
+    morph_constraints={"VOICE": "IV", "APPL": "BEN"},
+    gf_defaults={"BENEFICIARY": "SUBJ", "AGENT": "OBJ"},
+))
+BASE["bili"].append(LexicalEntry(
+    lemma="bili",
+    pred="BUY-FOR <SUBJ, OBJ>",
+    a_structure=["AGENT", "BENEFICIARY"],
+    morph_constraints={"VOICE": "IV", "APPL": "BEN"},
+    gf_defaults={"BENEFICIARY": "SUBJ", "AGENT": "OBJ"},
+))
+
+# Direct (monoclausal) causatives (pa-...-in OV): SUBJ = causee
+# (the pivot, NOM-marked), OBJ = causer (GEN-marked agent of
+# causing). Single-clause; the embedded eventuality is folded into
+# the matrix's PRED.
+BASE["kain"].append(LexicalEntry(
+    lemma="kain",
+    pred="CAUSE-EAT <SUBJ, OBJ>",
+    a_structure=["CAUSER", "CAUSEE"],
+    morph_constraints={"VOICE": "OV", "CAUS": "DIRECT"},
+    gf_defaults={"CAUSEE": "SUBJ", "CAUSER": "OBJ"},
+))
+BASE["basa"].append(LexicalEntry(
+    lemma="basa",
+    pred="CAUSE-READ <SUBJ, OBJ>",
+    a_structure=["CAUSER", "CAUSEE"],
+    morph_constraints={"VOICE": "OV", "CAUS": "DIRECT"},
+    gf_defaults={"CAUSEE": "SUBJ", "CAUSER": "OBJ"},
+))
+BASE.setdefault("inom", []).append(LexicalEntry(
+    lemma="inom",
+    pred="CAUSE-DRINK <SUBJ, OBJ>",
+    a_structure=["CAUSER", "CAUSEE"],
+    morph_constraints={"VOICE": "OV", "CAUS": "DIRECT"},
+    gf_defaults={"CAUSEE": "SUBJ", "CAUSER": "OBJ"},
+))
+
+# Indirect (biclausal) causatives (magpa- AV): SUBJ = causer,
+# XCOMP = caused event. Re-uses §7.6 control infrastructure
+# (CTRL_CLASS=INTRANS) so the existing intransitive control wrap
+# rule fires. The causee surfaces as a controlled SUBJ inside the
+# XCOMP.
+BASE["kain"].append(LexicalEntry(
+    lemma="kain",
+    pred="CAUSE-EAT <SUBJ, XCOMP>",
+    a_structure=["CAUSER", "EVENT"],
+    morph_constraints={
+        "VOICE": "AV", "CAUS": "INDIRECT", "CTRL_CLASS": "INTRANS",
+    },
+    gf_defaults={"CAUSER": "SUBJ", "EVENT": "XCOMP"},
+))
+BASE["basa"].append(LexicalEntry(
+    lemma="basa",
+    pred="CAUSE-READ <SUBJ, XCOMP>",
+    a_structure=["CAUSER", "EVENT"],
+    morph_constraints={
+        "VOICE": "AV", "CAUS": "INDIRECT", "CTRL_CLASS": "INTRANS",
+    },
+    gf_defaults={"CAUSER": "SUBJ", "EVENT": "XCOMP"},
+))
+BASE["inom"].append(LexicalEntry(
+    lemma="inom",
+    pred="CAUSE-DRINK <SUBJ, XCOMP>",
+    a_structure=["CAUSER", "EVENT"],
+    morph_constraints={
+        "VOICE": "AV", "CAUS": "INDIRECT", "CTRL_CLASS": "INTRANS",
+    },
+    gf_defaults={"CAUSER": "SUBJ", "EVENT": "XCOMP"},
+))
 
 
 def _synthesize_verb_entry(ma: MorphAnalysis) -> LexicalEntry:

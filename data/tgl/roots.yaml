@@ -34,29 +34,36 @@
   gloss: eat
   transitivity: TR
   # R&B 126: -um- / -in / -an. + maka- abilitative (productive).
-  affix_class: [um, in_oblig, an_oblig, i_oblig, maka]
+  # Phase 4 §7.7: pa_in (pinakain "fed", direct causative) and
+  # magpa (nagpakain "had-eat", biclausal causative).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa]
 
 - citation: bili
   pos: VERB
   gloss: buy
   transitivity: TR
   # R&B 37: -um- / -in / -an / i- / ipang-. mang- distributive
-  # ("mamili" — to shop). +maka- abilitative.
-  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka]
+  # ("mamili" — to shop). +maka- abilitative. Phase 4 §7.7: ipag
+  # (ipinagbili "sold-for", benefactive applicative IV).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipag]
 
 - citation: inom
   pos: VERB
   gloss: drink
   transitivity: TR
   # R&B 117: -um- / -in / -an.
-  affix_class: [um, in_oblig, an_oblig, maka]
+  # Phase 4 §7.7: pa_in (pininom "made-drink") and magpa
+  # (nagpainom "had-drink", biclausal causative).
+  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa]
 
 - citation: basa
   pos: VERB
   gloss: read
   transitivity: TR
   # R&B 24: -um- / -in / -an.
-  affix_class: [um, in_oblig, an_oblig, maka]
+  # Phase 4 §7.7: pa_in (pinabasa "made-read") and magpa
+  # (nagpabasa "had-read", biclausal causative).
+  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa]
 
 - citation: kuha
   pos: VERB
@@ -98,8 +105,9 @@
   pos: VERB
   gloss: do, make
   transitivity: TR
-  # R&B 71: -um- / -in / -an.
-  affix_class: [um, in_oblig, an_oblig, maka]
+  # R&B 71: -um- / -in / -an. Phase 4 §7.7: ipag (ipinaggawa
+  # "made-for", benefactive applicative IV).
+  affix_class: [um, in_oblig, an_oblig, maka, ipag]
 
 - citation: tawag
   pos: VERB
@@ -235,7 +243,8 @@
   gloss: write
   transitivity: TR
   # R&B 237: -um- / -in / i- / -an. Both -um- and mag- in AV.
-  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka]
+  # Phase 4 §7.7: ipag (ipinagsulat "wrote-for", benefactive IV).
+  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, ipag]
 
 - citation: bayad
   pos: VERB

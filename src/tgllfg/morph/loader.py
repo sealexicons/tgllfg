@@ -109,6 +109,9 @@ def _load_paradigm_cells(path: Path) -> list[ParadigmCell]:
                       value=o.get("value", ""))
             for j, o in enumerate(ops_raw)
         ]
+        feats_raw = rec.get("feats", {})
+        if not isinstance(feats_raw, dict):
+            raise ValueError(f"{where}: 'feats' must be a mapping")
         out.append(ParadigmCell(
             voice=_require(rec, "voice", where),
             aspect=_require(rec, "aspect", where),
@@ -117,6 +120,7 @@ def _load_paradigm_cells(path: Path) -> list[ParadigmCell]:
             affix_class=rec.get("affix_class", ""),
             operations=operations,
             notes=rec.get("notes", ""),
+            feats=dict(feats_raw),
         ))
     return out
 

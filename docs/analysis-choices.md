@@ -760,3 +760,117 @@ infrastructure for non-thematic args is needed elsewhere.
   pronoun hosts; the current implementation accepts both via the
   per-link wrap-rule pair, but we don't enforce a single canonical
   choice per construction.
+
+## Phase 4 §7.7: applicatives + pa-causatives
+
+**Date:** 2026-04-30. **Status:** active.
+
+### APPL / CAUS feature inventory populated
+
+The §7.1 secondary-feature inventory (``APPL ∈ {INSTR, BEN, REASON,
+CONVEY, NONE}``, ``CAUS ∈ {DIRECT, INDIRECT, NONE}``) is now
+populated by the morphology and lexicon. ``NONE`` is the sentinel
+value emitted by the analyzer for non-applicative / non-causative
+verbs — the same pattern as §7.6's ``CTRL_CLASS=NONE``. Without the
+sentinel, the parser's non-conflict matcher would let an
+``V[APPL=BEN]`` rule fire on any plain verb.
+
+### Per-cell ``feats`` on ParadigmCell
+
+Phase 4 §7.6 added per-root ``feats``. §7.7 generalises to per-cell
+``feats``: a paradigm cell can declare ``APPL=BEN`` or
+``CAUS=DIRECT`` (etc.) and those feature values ride into every
+generated MorphAnalysis. Cell-level feats override root-level feats
+on the same key — the cell is the more specific source (one root
+can generate forms across multiple applicative variants).
+
+### Benefactive applicative ``ipag-`` (APPL=BEN)
+
+A single applicative variant is implemented in this commit. Three
+new IV cells under ``affix_class: ipag``:
+
+- PFV: ``ipinaggawa`` ← ``[prefix("pag"), infix("in"), prefix("i")]``
+- IPFV: ``ipinaggagawa`` ← ``[cv_redup, prefix("pag"), infix("in"), prefix("i")]``
+- CTPL: ``ipaggagawa`` ← ``[cv_redup, prefix("pag"), prefix("i")]``
+
+Lex entries for ``gawa-BEN`` / ``sulat-BEN`` / ``bili-BEN`` carry
+``MAKE-FOR <SUBJ, OBJ>`` etc., with ``morph_constraints={VOICE:
+IV, APPL: BEN}``. The bare ``i-`` IV cells are now annotated
+``APPL=CONVEY`` so they discriminate against the new BEN forms.
+
+The patient role (the thing made / written / bought) is **omitted**
+from the 2-arg PRED — Tagalog's full benefactive frame
+(``Ipinaggawa ng nanay ang anak ng kanin``) admits two GEN-NPs,
+which our existing grammar doesn't support. Multi-GEN-NP frames
+deferred to a later commit (Phase 5 LMT will reclassify them as
+typed obliques).
+
+### ``ipang-`` instrumental and ``ika-`` reason — deferred
+
+Both require homorganic-nasal place-assimilation (``pang-`` + b →
+``pam-``; + d → ``pan-``; + k → ``pang-``). Our existing
+``nasal_substitute`` op replaces the base's first consonant rather
+than prepending an assimilated nasal, so it doesn't produce
+``ipinambili`` (instrument-bought) from ``bili``. Either a new
+phonological op or per-base-class cell duplication is needed.
+Deferred until Phase 5 corpus pressure warrants the extra work.
+
+### Direct (monoclausal) causative ``pa-...-in`` (CAUS=DIRECT)
+
+Three new OV cells under ``affix_class: pa_in``:
+
+- PFV: ``pinakain`` ← ``[prefix("pa"), infix("in")]``
+- IPFV: ``pinakakain`` ← ``[cv_redup, prefix("pa"), infix("in")]``
+- CTPL: ``pakakainin`` ← ``[cv_redup, prefix("pa"), suffix("in")]``
+
+Lex entries: ``CAUSE-EAT <SUBJ, OBJ>`` for ``kain``, etc. SUBJ is
+the causee (NOM-marked pivot); OBJ is the causer (GEN-marked agent
+of causing). Single-clause; the embedded eventuality is folded
+into the matrix's PRED (no XCOMP). The food / patient is again
+omitted from the 2-arg PRED.
+
+### Indirect (biclausal) causative ``magpa-`` (CAUS=INDIRECT)
+
+Three new AV cells under ``affix_class: magpa``:
+
+- PFV: ``nagpakain`` ← ``[prefix("pa"), prefix("nag")]``
+- IPFV: ``nagpapakain`` ← ``[prefix("pa"), cv_redup, prefix("nag")]``
+- CTPL: ``magpapakain`` ← ``[prefix("pa"), cv_redup, prefix("mag")]``
+
+Note the IPFV / CTPL reduplication targets the ``pa-`` prefix
+(``papakain``), not the root cv. This is encoded by ordering
+``prefix("pa")`` before ``cv_redup`` in the ops list (the existing
+AV IPFV cells reduplicate root cv by ordering ``cv_redup`` first).
+
+Cells declare ``CTRL_CLASS=INTRANS`` so the §7.6 intransitive
+control wrap rule fires:
+
+```
+S → V[CTRL_CLASS=INTRANS] NP[CASE=NOM] PART[LINK] S_XCOMP
+```
+
+The matrix has ``CAUSE-EAT <SUBJ, XCOMP>`` (causer = SUBJ; caused
+event = XCOMP). The causee is realised as the controlled SUBJ
+inside the XCOMP — Tagalog's biclausal causative composes
+seamlessly with the existing control infrastructure.
+
+### Existing ``_entry`` helper tightened
+
+The lexicon's ``_entry`` helper now adds ``CAUS=NONE`` (and
+``APPL=NONE`` for non-IV voices, ``APPL=CONVEY`` for IV) to every
+constructed BASE entry's ``morph_constraints``. Without this,
+existing ``kain`` AV-tr / OV entries would spuriously match the
+new causative forms (``nagpakain`` / ``pinakain``) because the
+non-conflict matcher ignores feature keys absent from one side.
+
+### Out-of-scope (deferred)
+
+- **``ipang-`` instrumental**, **``ika-`` reason**: need
+  homorganic-nasal sandhi.
+- **Multi-GEN-NP frames** (full applicative / causative argument
+  structures with both agent and patient as GEN-marked): need
+  grammar rule extensions and disambiguation.
+- **LMT-driven OBL-X classification** of the demoted oblique:
+  Phase 5 territory per the original plan §7.7.
+- **``pa-...-an`` DV causative** and other less-common applicative
+  affix variants.
