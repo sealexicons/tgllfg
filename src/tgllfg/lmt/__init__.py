@@ -12,6 +12,11 @@ remains available via :func:`apply_lmt` (re-exported from
 :mod:`.legacy`) through Commit 5; Commit 8 deletes it.
 """
 
+from .check import (
+    apply_lmt_with_check,
+    find_matrix_lex_entry,
+    lmt_check,
+)
 from .common import (
     IntrinsicClassification,
     IntrinsicFeatures,
@@ -56,6 +61,10 @@ __all__ = [
     # Lex-entry bridges (Commit 4)
     "intrinsics_for",
     "stipulated_gfs_for",
+    # Pipeline-facing check (Commit 5)
+    "apply_lmt_with_check",
+    "find_matrix_lex_entry",
+    "lmt_check",
     # Legacy (deleted in Commit 8)
     "apply_lmt",
 ]

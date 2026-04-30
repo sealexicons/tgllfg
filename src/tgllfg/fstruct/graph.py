@@ -111,7 +111,15 @@ DiagKind = Literal[
 # Diagnostic kinds that are informational rather than fatal: parses
 # carrying only these may still be returned by the pipeline. Add
 # new informational kinds here to keep the policy in one place.
-NON_BLOCKING_KINDS: frozenset[str] = frozenset({"deferred", "unsupported"})
+#
+# Phase 5 §8 Commit 5: ``lmt-mismatch`` is informational while the
+# Phase 4 grammar still emits bare ``OBJ`` for non-AV ng-non-pivots
+# and the LMT engine produces ``OBJ-θ``. Commit 7 may add a
+# blocking variant for the Subject-slot subset (re-routed through
+# ``subject-condition-failed``).
+NON_BLOCKING_KINDS: frozenset[str] = frozenset({
+    "deferred", "unsupported", "lmt-mismatch",
+})
 
 
 @dataclass(frozen=True)
