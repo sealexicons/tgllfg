@@ -97,10 +97,15 @@ BASE: dict[str, list[LexicalEntry]] = {
             {"PATIENT": "SUBJ", "AGENT": "OBJ"},
         ),
     ],
-    # bili — buy. Two voices for Commit 1 (AV-TR, OV-TR); the IV
-    # benefactive ("ibinili ng X kay Y") needs a 3-arg PRED frame and
-    # is deferred to Phase 5 LMT.
+    # bili — buy. Phase 4 §7.10: AV-intransitive entry added so
+    # "Bumili siya sa palengke" parses without an explicit patient.
     "bili": [
+        _entry(
+            "bili", "AV", "BUY <SUBJ>",
+            ["AGENT"],
+            {"AGENT": "SUBJ"},
+            transitive=False,
+        ),
         _entry(
             "bili", "AV", "BUY <SUBJ, OBJ>",
             ["AGENT", "THEME"],
@@ -112,8 +117,14 @@ BASE: dict[str, list[LexicalEntry]] = {
             {"THEME": "SUBJ", "AGENT": "OBJ"},
         ),
     ],
-    # basa — read.
+    # basa — read. Phase 4 §7.10: AV-intransitive added.
     "basa": [
+        _entry(
+            "basa", "AV", "READ <SUBJ>",
+            ["AGENT"],
+            {"AGENT": "SUBJ"},
+            transitive=False,
+        ),
         _entry(
             "basa", "AV", "READ <SUBJ, OBJ>",
             ["AGENT", "THEME"],
@@ -127,8 +138,16 @@ BASE: dict[str, list[LexicalEntry]] = {
     ],
     # sulat — write. Demonstrates all four voices: AV (actor pivot),
     # OV (theme pivot), DV (recipient pivot, ``sinulatan``), IV
-    # (conveyed pivot, ``isinulat``).
+    # (conveyed pivot, ``isinulat``). Phase 4 §7.10: AV-intransitive
+    # added for "Sumulat si Juan kay Maria" patterns where the
+    # patient is unspecified.
     "sulat": [
+        _entry(
+            "sulat", "AV", "WRITE <SUBJ>",
+            ["AGENT"],
+            {"AGENT": "SUBJ"},
+            transitive=False,
+        ),
         _entry(
             "sulat", "AV", "WRITE <SUBJ, OBJ>",
             ["AGENT", "THEME"],
@@ -438,11 +457,23 @@ def lookup_lexicon(
         pairs: list[tuple[MorphAnalysis, LexicalEntry | None]] = []
         for ma in cand_list:
             if ma.pos == "VERB":
+                matched = False
                 if ma.lemma in BASE:
                     for le in BASE[ma.lemma]:
-                        if all(ma.feats.get(k) == v for k, v in le.morph_constraints.items()):
+                        if all(
+                            ma.feats.get(k) == v
+                            for k, v in le.morph_constraints.items()
+                        ):
                             pairs.append((ma, le))
-                else:
+                            matched = True
+                # Phase 4 §7.10: fall back to synthesis when no BASE
+                # entry matches the morph analysis. Previously this
+                # only fired for lemmas absent from BASE; verbs in
+                # BASE without an entry for the current voice would
+                # produce no lex item and the parse would fail. The
+                # synthesizer gives them voice-aware default
+                # gf-mappings so unauthored voices still parse.
+                if not matched:
                     pairs.append((ma, _synthesize_verb_entry(ma)))
             else:
                 pairs.append((ma, None))

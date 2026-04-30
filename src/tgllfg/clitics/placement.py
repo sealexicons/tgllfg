@@ -132,7 +132,12 @@ def disambiguate_homophone_clitics(
     * If the preceding token is a VERB (or PRON in cluster position),
       the surface here is the aspectual / Wackernagel enclitic
       (``kumain na``, ``kinain mo na``). Drop the linker analyses so
-      placement moves the token to the cluster.
+      placement moves the token to the cluster. **Exception** for
+      Phase 4 §7.10: when the PRON is preceded by a control verb
+      (``CTRL_CLASS != NONE``), the PRON is the experiencer / pivot
+      and the following ``na`` is the linker introducing XCOMP
+      (``Kaya namin na kumain``). Preserve linker readings in that
+      case.
     * Otherwise (sentence-initial, after a clitic, after punctuation),
       leave both readings in place — the parser will pick whichever
       yields a complete f-structure, or the placement pass's own
@@ -154,7 +159,29 @@ def disambiguate_homophone_clitics(
         if "NOUN" in prev_pos or "N" in prev_pos:
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif "VERB" in prev_pos or "PRON" in prev_pos:
-            out.append([ma for ma in cands if ma.feats.get("is_clitic") is True])
+            # Look two tokens back: if a control verb (CTRL_CLASS !=
+            # NONE) precedes the PRON, treat ``na`` as the linker
+            # rather than the clitic. This handles the
+            # ``Kaya namin na kumain`` pattern (psych control with
+            # consonant-final pronominal experiencer).
+            prev_prev = analyses[i - 2] if i >= 2 else None
+            is_ctrl_pron_seq = (
+                "PRON" in prev_pos
+                and prev_prev is not None
+                and any(
+                    ma.pos == "VERB"
+                    and ma.feats.get("CTRL_CLASS") not in (None, "NONE")
+                    for ma in prev_prev
+                )
+            )
+            if is_ctrl_pron_seq:
+                out.append([
+                    ma for ma in cands if ma.feats.get("is_clitic") is not True
+                ])
+            else:
+                out.append([
+                    ma for ma in cands if ma.feats.get("is_clitic") is True
+                ])
         else:
             out.append(cands)
     return out
