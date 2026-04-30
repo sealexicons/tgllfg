@@ -93,6 +93,15 @@ DiagKind = Literal[
     "completeness-failed",
     "coherence-failed",
     "subject-condition-failed",
+    # LMT (Phase 5 §8): emitted by the LMT engine when its derived
+    # role-to-GF mapping disagrees with the parsed f-structure, or
+    # when biuniqueness fails. ``lmt-mismatch`` is informational by
+    # default (commit 5); commit 7 promotes a configured subset
+    # (Subject-slot mismatches plus biuniqueness violations) to
+    # blocking by surfacing them through ``subject-condition-failed``
+    # and ``lmt-biuniqueness-violated`` instead.
+    "lmt-mismatch",
+    "lmt-biuniqueness-violated",
     # Informational only — do not block a parse from being returned.
     "deferred",
     "unsupported",

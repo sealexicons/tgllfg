@@ -1,11 +1,14 @@
-# tgllfg/lmt.py
+# tgllfg/lmt/legacy.py
 
-"""Phase 4 voice-aware role-to-GF heuristic.
+"""Phase 4 voice-aware role-to-GF heuristic (kept during Phase 5 transition).
 
 This is the §4.2-vintage LMT — a hand-coded mapping per voice rather
-than the Bresnan–Kanerva [±r, ±o] feature system. Phase 5 replaces
+than the Bresnan–Kanerva [±r, ±o] feature system. Phase 5 §8 replaces
 this with a real LMT that derives the mapping from the verb's
-intrinsic role classification plus voice morphology.
+intrinsic role classification plus voice morphology. The heuristic
+is preserved here unchanged so the pipeline keeps working through
+Phase 5 commits 1–4; commit 5 swaps the call site to the new engine
+and commit 8 deletes this module.
 
 The mapping reads ``f.feats["VOICE"]`` to pick the correct
 role-to-GF assignment. For non-AV voices the *ng*-non-pivot is OBJ
@@ -22,7 +25,7 @@ Intransitive (no OBJ) — ``[ACTOR]``: ACTOR → SUBJ.
 
 from __future__ import annotations
 
-from .common import AStructure, FStructure
+from ..common import AStructure, FStructure
 
 
 def apply_lmt(f: FStructure) -> AStructure:
