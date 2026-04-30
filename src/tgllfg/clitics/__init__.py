@@ -17,8 +17,14 @@ calls it.
 
 from tgllfg.clitics.placement import (
     CliticOrder,
+    disambiguate_homophone_clitics,
     load_clitic_order,
     reorder_clitics,
 )
 
-__all__ = ["CliticOrder", "load_clitic_order", "reorder_clitics"]
+__all__ = [
+    "CliticOrder",
+    "disambiguate_homophone_clitics",
+    "load_clitic_order",
+    "reorder_clitics",
+]

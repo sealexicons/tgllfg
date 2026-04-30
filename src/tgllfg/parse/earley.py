@@ -45,6 +45,7 @@ matches the order rules were added to the grammar.
 
 from __future__ import annotations
 
+import itertools
 from collections import deque
 from dataclasses import dataclass, field
 from typing import Iterator
@@ -117,10 +118,10 @@ class PackedForest:
     def iter_trees(self) -> Iterator[CNode]:
         emitted = 0
         for root in self.roots:
-            for hist in _iter_histories(root):
+            for cnode in _iter_cnodes(root):
                 if self.size_cap is not None and emitted >= self.size_cap:
                     return
-                yield _to_cnode(root, hist)
+                yield cnode
                 emitted += 1
 
     def __len__(self) -> int:
@@ -285,28 +286,38 @@ def _iter_histories(state: StateInfo) -> Iterator[tuple[Completion, ...]]:
             yield prefix + (completion,)
 
 
-def _to_cnode(state: StateInfo, history: tuple[Completion, ...]) -> CNode:
-    children: list[CNode] = []
-    for c in history:
-        if isinstance(c, LeafCompletion):
-            children.append(
-                CNode(
-                    label=c.category.category,
-                    children=[],
-                    equations=list(c.equations),
-                )
+def _iter_cnodes(state: StateInfo) -> Iterator[CNode]:
+    """Yield every CNode for ``state``, expanding sub-history
+    alternatives at every nonterminal slot. This propagates lex
+    ambiguity (e.g. AV-intransitive vs AV-transitive entries for
+    ``kumain``) outwards through nested rule completions, where the
+    earlier first-sub-history shortcut would have collapsed it."""
+    for hist in _iter_histories(state):
+        slot_options: list[list[CNode]] = []
+        for c in hist:
+            if isinstance(c, LeafCompletion):
+                slot_options.append([
+                    CNode(
+                        label=c.category.category,
+                        children=[],
+                        equations=list(c.equations),
+                    )
+                ])
+            else:
+                slot_options.append(list(_iter_cnodes(c)))
+        if not slot_options:
+            yield CNode(
+                label=_format_pattern(state.rule.lhs),
+                children=[],
+                equations=list(state.rule.equations),
             )
-        else:
-            # Pick the first sub-history. Multiple alternatives surface
-            # via PackedForest.iter_trees yielding multiple top-level
-            # trees; here we resolve to one canonical sub-derivation.
-            sub = next(_iter_histories(c))
-            children.append(_to_cnode(c, sub))
-    return CNode(
-        label=_format_pattern(state.rule.lhs),
-        children=children,
-        equations=list(state.rule.equations),
-    )
+            continue
+        for combo in itertools.product(*slot_options):
+            yield CNode(
+                label=_format_pattern(state.rule.lhs),
+                children=list(combo),
+                equations=list(state.rule.equations),
+            )
 
 
 # === Lexical interface ====================================================

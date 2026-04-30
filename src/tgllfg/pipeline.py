@@ -21,7 +21,7 @@ from .lexicon import lookup_lexicon
 from .lmt import apply_lmt
 from .morph import analyze_tokens
 from .parse import parse_with_annotations
-from .text import split_enclitics, tokenize
+from .text import split_enclitics, split_linker_ng, tokenize
 
 
 def parse_text(
@@ -40,6 +40,11 @@ def parse_text(
     """
     toks = tokenize(text)
     toks = split_enclitics(toks)
+    # Phase 4 §7.5: detach the bound linker ``-ng`` from vowel-final
+    # hosts (``batang`` → ``bata`` + ``-ng``) so the relativization
+    # rules see a uniform ``PART[LINK=NA|NG]`` between the head NP
+    # and the relative clause.
+    toks = split_linker_ng(toks)
     mlist = analyze_tokens(toks)
     # Phase 4 §7.3: pull Wackernagel clitics into their canonical
     # post-verbal cluster before lexicon lookup. Pronominal clitics

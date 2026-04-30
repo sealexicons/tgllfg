@@ -35,6 +35,19 @@ attach as a left-edge particle to a full ``S``. The matrix
 f-structure inherits ``PRED``/``VOICE``/``ASPECT``/``SUBJ``/``OBJ``
 from the inner clause and overlays ``POLARITY`` (and, for ``huwag``,
 ``MOOD=IMP``) from the particle.
+
+Phase 4 §7.4 (ay-inversion) and §7.5 (relativization) introduce a
+SUBJ-gapped non-terminal ``S_GAP``: a clause whose surface is
+``V (NP[CASE=GEN])* (NP[CASE=DAT])*`` — i.e. an inner S without the
+NOM-marked SUBJ argument. Each S_GAP rule binds its missing SUBJ to
+``REL-PRO`` via ``(↑ SUBJ) = (↑ REL-PRO)``; an enclosing wrap rule
+then sets ``REL-PRO`` from the displaced phrase (the ay-fronted
+topic, or the head NP of a relative clause). The SUBJ-only
+restriction on relativization is enforced by the wrap rule's
+constraining equation ``(↓3 REL-PRO) =c (↓3 SUBJ)``: vacuous today
+because S_GAP only has SUBJ-gapped frames, but ready for the
+non-SUBJ-gap variants that would arise under §7.6 long-distance or
+§7.8 non-pivot ay-fronting.
 """
 
 from __future__ import annotations
@@ -178,6 +191,120 @@ class Grammar:
             ["PART[POLARITY=NEG]", "S"],
             ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
         ))
+
+        # --- Phase 4 §7.4 + §7.5: SUBJ-gapped clauses (S_GAP) ---
+        #
+        # ``S_GAP`` is the inner clause of an ay-inversion or a
+        # relative clause: a V-initial S with the NOM-marked SUBJ
+        # argument absent. The missing SUBJ is bound to ``REL-PRO``
+        # via the equation ``(↑ SUBJ) = (↑ REL-PRO)``; an enclosing
+        # wrap rule (ay-inversion or NP-relativization) sets REL-PRO
+        # to the displaced phrase, which transitively fills SUBJ.
+        #
+        # These rules duplicate the regular S frames but omit the
+        # NOM NP. ``S_GAP`` never appears at the top level (the start
+        # symbol is ``S``, not ``S_GAP``); it is reachable only via
+        # the wrap rules below.
+        rules.append(Rule(
+            "S_GAP",
+            ["V[VOICE=AV]"],
+            _eqs("(↑ SUBJ) = (↑ REL-PRO)"),
+        ))
+        for voice in ("AV", "OV", "DV", "IV"):
+            v_cat = f"V[VOICE={voice}]"
+            rules.append(Rule(
+                "S_GAP",
+                [v_cat, "NP[CASE=GEN]"],
+                _eqs("(↑ OBJ) = ↓2", "(↑ SUBJ) = (↑ REL-PRO)"),
+            ))
+            rules.append(Rule(
+                "S_GAP",
+                [v_cat, "NP[CASE=GEN]", "NP[CASE=DAT]"],
+                _eqs(
+                    "(↑ OBJ) = ↓2",
+                    "↓3 ∈ (↑ ADJUNCT)",
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                ),
+            ))
+
+        # Negation inside a SUBJ-gapped clause: ``hindi kumain``
+        # under ay-inversion or relativization. The recursion mirrors
+        # the regular ``S → PART[POLARITY=NEG] S`` rule so negation
+        # composes the same way through gapped clauses.
+        rules.append(Rule(
+            "S_GAP",
+            ["PART[POLARITY=NEG]", "S_GAP"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
+        # --- Phase 4 §7.4: ay-inversion ---
+        #
+        # ``Si Maria ay kumain ng isda``: the topic phrase moves to
+        # clause-initial position, separated from the inner clause by
+        # the linker particle ``ay``. The fronted phrase is the SUBJ
+        # of the inner clause; per Phase 4 §7.4 scope, only pivot
+        # (SUBJ) fronting is admitted. Non-pivot ay-fronting is
+        # deferred to §7.8 (``docs/analysis-choices.md`` "Phase 4
+        # §7.4: ay-inversion").
+        #
+        # The wrap rule:
+        #   - sets ``TOPIC`` on the matrix f-structure to the fronted
+        #     NP;
+        #   - sets the inner clause's ``REL-PRO`` to the same NP, so
+        #     that S_GAP's ``(↑ SUBJ) = (↑ REL-PRO)`` fills SUBJ;
+        #   - constrains REL-PRO to equal SUBJ (vacuous now; pins
+        #     SUBJ-only fronting structurally).
+        rules.append(Rule(
+            "S",
+            ["NP[CASE=NOM]", "PART[LINK=AY]", "S_GAP"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "(↓3 REL-PRO) = ↓1",
+                "(↓3 REL-PRO) =c (↓3 SUBJ)",
+            ],
+        ))
+
+        # --- Phase 4 §7.5: relativization ---
+        #
+        # ``ang batang kumain ng isda`` ("the child that ate fish"):
+        # head-initial NP relativization. The head NP is followed by
+        # the linker (``na`` after consonant-final hosts, the bound
+        # ``-ng`` after vowel-final hosts) and a SUBJ-gapped inner
+        # clause. SUBJ-only relativization is the well-known Tagalog
+        # restriction (Kroeger 1993): only the ang-NP can be
+        # relativized.
+        #
+        # **Anaphoric REL-PRO** (not structure-sharing). The canonical
+        # LFG analysis equates the head NP with the RC's REL-PRO
+        # via full identity ``(↓3 REL-PRO) = ↓1``. That creates a
+        # cyclic f-structure (head NP ⊇ ADJ ⊇ RC ⊇ REL-PRO = head NP)
+        # which our unifier's occurs-check rejects. We instead share
+        # the head NP's salient features (``PRED``, ``CASE``) with
+        # REL-PRO via individual atomic-path equations, and bind the
+        # RC's SUBJ to REL-PRO inside S_GAP. The constraining
+        # equation ``(↓3 REL-PRO) =c (↓3 SUBJ)`` still pins the
+        # SUBJ-only restriction (vacuous today, non-vacuous under
+        # §7.6 non-SUBJ S_GAP frames). Documented in
+        # ``docs/analysis-choices.md`` "Phase 4 §7.5".
+        #
+        # Six wrap rules (3 head cases × 2 linker variants) — the
+        # head NP's case percolates to the matrix; both linkers (NA
+        # standalone, NG bound enclitic) carry the same f-equations.
+        for case in ("NOM", "GEN", "DAT"):
+            np_cat = f"NP[CASE={case}]"
+            for link in ("NA", "NG"):
+                rules.append(Rule(
+                    np_cat,
+                    [np_cat, f"PART[LINK={link}]", "S_GAP"],
+                    [
+                        "(↑) = ↓1",
+                        "↓3 ∈ (↑ ADJ)",
+                        "(↓3 REL-PRO PRED) = (↓1 PRED)",
+                        "(↓3 REL-PRO CASE) = (↓1 CASE)",
+                        "(↓3 REL-PRO) =c (↓3 SUBJ)",
+                    ],
+                ))
 
         # Transitive frames per voice, two NP orderings each, with and
         # without a trailing sa-oblique (ADJUNCT).

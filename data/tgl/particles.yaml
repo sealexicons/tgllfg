@@ -75,10 +75,26 @@
   pos: PART
   feats: {POLARITY: NEG, MOOD: IMP}
 
-# === Linker (standalone form) ============================================
+# === Linker ==============================================================
+# `na` is the standalone linker (after consonant-final hosts and as the
+# default in many fixed phrases). `-ng` is the bound enclitic form
+# attached to vowel-final hosts (the tokenizer splits it off as a
+# separate token with surface `-ng`). Both carry `LINK` (string-valued,
+# grammar-visible) so the relativization and ay-inversion rules can
+# match `PART[LINK=NA]` / `PART[LINK=NG]` / `PART[LINK=AY]` distinctly.
 - surface: na
   pos: PART
-  feats: {LINKER: true}
+  feats: {LINK: NA}
+- surface: -ng
+  pos: PART
+  feats: {LINK: NG}
+
+# === Topicalization linker ===============================================
+# `ay` is the linker between a fronted topic and the inner clause in
+# the ay-inversion construction (Phase 4 §7.4).
+- surface: ay
+  pos: PART
+  feats: {LINK: AY}
 
 # === Second-position adverbial enclitics =================================
 # These attach to the first prosodic word in the clause; §7.3 will

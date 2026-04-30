@@ -349,7 +349,7 @@ class TestParticles:
 
     def test_linker_na(self, analyzer: Analyzer) -> None:
         out = analyzer.analyze_one(_tok("na"))
-        assert any(a.feats.get("LINKER") is True for a in out)
+        assert any(a.feats.get("LINK") == "NA" for a in out)
 
 
 class TestPronouns:
@@ -750,5 +750,5 @@ class TestEnclitics:
         # `na` is both the linker and the aspectual "already".
         out = analyzer.analyze_one(_tok("na"))
         feats = [a.feats for a in out]
-        assert any(f.get("LINKER") is True for f in feats)
+        assert any(f.get("LINK") == "NA" for f in feats)
         assert any(f.get("ASPECT_PART") == "ALREADY" for f in feats)

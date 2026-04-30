@@ -115,6 +115,51 @@ def _is_adv_clitic(cands: list[MorphAnalysis]) -> bool:
     )
 
 
+def disambiguate_homophone_clitics(
+    analyses: list[list[MorphAnalysis]],
+) -> list[list[MorphAnalysis]]:
+    """Disambiguate homophone tokens that carry both clitic and
+    non-clitic analyses (notably ``na``, which is both the aspectual
+    second-position enclitic ``ALREADY`` and the standalone linker).
+
+    The decision is left-context-driven:
+
+    * If the preceding content token is a NOUN, the surface here is
+      almost certainly the linker (``aklat na binasa``, ``bata na
+      malaki``). Drop the clitic analyses so placement leaves the
+      token in place and the grammar's relativization rules see the
+      linker reading.
+    * If the preceding token is a VERB (or PRON in cluster position),
+      the surface here is the aspectual / Wackernagel enclitic
+      (``kumain na``, ``kinain mo na``). Drop the linker analyses so
+      placement moves the token to the cluster.
+    * Otherwise (sentence-initial, after a clitic, after punctuation),
+      leave both readings in place — the parser will pick whichever
+      yields a complete f-structure, or the placement pass's own
+      cluster-slot filter will resolve it.
+
+    Returns a new list; analyses lists are not mutated in place.
+    """
+    out: list[list[MorphAnalysis]] = []
+    for i, cands in enumerate(analyses):
+        has_clitic = any(ma.feats.get("is_clitic") is True for ma in cands)
+        has_non_clitic = any(ma.feats.get("is_clitic") is not True for ma in cands)
+        if not (has_clitic and has_non_clitic):
+            out.append(cands)
+            continue
+        prev = analyses[i - 1] if i > 0 else None
+        prev_pos = (
+            {ma.pos for ma in prev} if prev is not None else set()
+        )
+        if "NOUN" in prev_pos or "N" in prev_pos:
+            out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+        elif "VERB" in prev_pos or "PRON" in prev_pos:
+            out.append([ma for ma in cands if ma.feats.get("is_clitic") is True])
+        else:
+            out.append(cands)
+    return out
+
+
 def reorder_clitics(
     analyses: list[list[MorphAnalysis]],
     order: CliticOrder | None = None,
@@ -146,6 +191,8 @@ def reorder_clitics(
     """
     if not analyses:
         return analyses
+
+    analyses = disambiguate_homophone_clitics(analyses)
 
     verb_idx: int | None = None
     for i, cands in enumerate(analyses):

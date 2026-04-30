@@ -148,6 +148,17 @@ class Analyzer:
     def analyze(self, tokens: list[Token]) -> list[list[MorphAnalysis]]:
         return [self.analyze_one(t) for t in tokens]
 
+    def is_known_surface(self, norm: str) -> bool:
+        """True iff a non-_UNK analysis exists for ``norm`` (lower-cased
+        surface)."""
+        idx = self._index
+        return (
+            norm in idx.particles
+            or norm in idx.pronouns
+            or norm in idx.verb_forms
+            or norm in idx.nouns
+        )
+
     # --- Index construction -----------------------------------------------
 
     def _build_index(self) -> None:

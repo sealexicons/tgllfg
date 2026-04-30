@@ -467,3 +467,168 @@ the grammar's adverbial-cluster rule can match
   GEN depending on context) is approximated by the morph
   analyzer's per-form indexing; `kita` (1sg-GEN + 2sg-NOM
   fusion) is left to a future commit.
+
+## Phase 4 §7.4: ay-inversion
+
+**Date:** 2026-04-30. **Status:** active.
+
+### SUBJ-gapped inner clause (S_GAP)
+
+Both ay-inversion and relativization (§7.5) need an inner clause
+shape with the NOM-NP missing — the SUBJ slot becomes the gap that
+the outer construction binds. We introduce a single ``S_GAP``
+non-terminal whose rules duplicate the regular S frames except they
+omit the NOM NP:
+
+```
+S_GAP → V[VOICE=AV]                          (intransitive AV)
+S_GAP → V NP[CASE=GEN]                       (transitive any voice)
+S_GAP → V NP[CASE=GEN] NP[CASE=DAT]          (with DAT adjunct)
+S_GAP → PART[POLARITY=NEG] S_GAP             (recursive negation)
+```
+
+Each frame binds its missing SUBJ to ``REL-PRO`` via
+``(↑ SUBJ) = (↑ REL-PRO)``. ``S_GAP`` is never a top-level start
+symbol, so a top-level S_GAP would have an unbound REL-PRO and fail
+completeness — this is the structural mechanism keeping S_GAP
+reachable only via wrap rules.
+
+### Wrap rule and TOPIC binding
+
+```
+S → NP[CASE=NOM] PART[LINK=AY] S_GAP
+   (↑) = ↓3
+   (↑ TOPIC) = ↓1
+   (↓3 REL-PRO) = ↓1
+   (↓3 REL-PRO) =c (↓3 SUBJ)
+```
+
+The matrix ``S`` shares its f-structure with the inner clause
+(``(↑) = ↓3``) and overlays a TOPIC. The displaced NP fills the
+inner clause's REL-PRO via full identity — no cycle here because
+the inner clause IS the matrix and the head sits at TOPIC, not
+inside an ADJ that reaches back. The constraining equation
+``(↓3 REL-PRO) =c (↓3 SUBJ)`` is vacuous today (S_GAP has only
+SUBJ-gapped frames) but pins SUBJ-only fronting structurally.
+
+### Out-of-scope
+
+- **Non-pivot ay-fronting**: ``Kanya ay binili ang aklat`` (a
+  GEN-NP topic) and similar are deferred to §7.8. The §7.4 rule
+  only takes ``NP[CASE=NOM]``.
+- **AdvP / PP fronting**: ``Kahapon ay tumakbo si Maria``
+  (temporal AdvP). Out of scope until the categorial inventory
+  expands (§7.8).
+
+## Phase 4 §7.5: relativization
+
+**Date:** 2026-04-30. **Status:** active.
+
+### Anaphoric REL-PRO (not full identity)
+
+The canonical LFG analysis of relativization shares the head NP's
+f-structure with the relative clause's REL-PRO via full identity:
+``(↓3 REL-PRO) = ↓1``. Combined with the standard practice of
+hanging the RC off the head's ADJ set
+(``↓3 ∈ (↑ ADJ)``), this produces a **cyclic** f-structure: head
+NP ⊇ ADJ ⊇ RC ⊇ REL-PRO = head NP. LFG formalism admits cyclic
+f-structures (XLE supports them), but our unifier's occurs-check
+rejects any unification that would create one.
+
+Phase 4 §7.5 deviates from full identity in favour of **anaphoric
+sharing**: the head NP's salient atomic features (``PRED``,
+``CASE``) are copied onto REL-PRO via per-path equations. REL-PRO
+is then a separate f-structure that *resembles* the head but isn't
+identical to it.
+
+```
+NP[CASE=X] → NP[CASE=X] PART[LINK=NA|NG] S_GAP
+   (↑) = ↓1
+   ↓3 ∈ (↑ ADJ)
+   (↓3 REL-PRO PRED) = (↓1 PRED)
+   (↓3 REL-PRO CASE) = (↓1 CASE)
+   (↓3 REL-PRO) =c (↓3 SUBJ)
+```
+
+The RC's SUBJ is bound to REL-PRO inside ``S_GAP``, so SUBJ in the
+RC inherits PRED/CASE from the head. The constraining equation
+holds trivially today and rules out non-SUBJ S_GAP frames once they
+arrive (e.g. for §7.6 long-distance binding via XCOMP).
+
+This anaphoric move is reversible: when the unifier learns to
+support cyclic f-structures (the canonical LFG convention), the
+two path-equation copies can be replaced with a single
+``(↓3 REL-PRO) = ↓1`` and the analysis becomes structure-sharing.
+The constraint and the SUBJ-only restriction remain unchanged.
+
+### Linker `na` / `-ng` allomorphy
+
+Tagalog's linker is realised in two surface shapes:
+
+- **Standalone ``na``** after consonant-final hosts:
+  ``aklat na binasa``, ``bata na malaki``.
+- **Bound ``-ng``** glued to vowel-final hosts:
+  ``batang kumain``, ``librong binasa``, ``niyang kinain``.
+
+The bound form is split off at pre-morph time by
+:func:`tgllfg.text.split_linker_ng`, which emits a synthetic
+``-ng`` token (using the surface ``-ng`` so the morph index hits
+the dedicated linker entry rather than the standalone genitive
+``ng``). The split is **informed by the morph index**: a
+``Vng``-final surface that is itself a known full form (122
+verb-class members like ``bumibilang``, ``darating``,
+``katatanong``, ``ipinatong``, ...) is left intact; only when the
+full surface is unknown AND the stem is a known noun / verb /
+pronoun does the split fire. This also protects short closed-class
+words like ``ang``: the stem ``a`` is unknown, so ``ang`` stays
+intact.
+
+### Homophone `na` disambiguation
+
+Surface ``na`` is ambiguous between the linker (PART, ``LINK=NA``)
+and the second-position aspectual enclitic (PART,
+``CLITIC_CLASS=2P``, ``ASPECT_PART=ALREADY``). Both readings ride
+into morph analysis, but Wackernagel placement (Phase 4 §7.3)
+needs a single answer per token — placement moves clitics to the
+cluster slot, while the linker stays put.
+
+The disambiguator
+:func:`tgllfg.clitics.disambiguate_homophone_clitics` runs first in
+the placement pass and uses left-context:
+
+- After ``NOUN``: drop clitic readings, keep the linker (e.g.
+  ``aklat na ...``).
+- After ``VERB`` / ``PRON``: drop the linker, keep the clitic
+  (e.g. ``kumain na``, ``mo na``).
+- Otherwise: leave both readings; the parser's grammar match
+  resolves it.
+
+The placement pass's existing cluster-slot filter (PRON/PART must
+have ``is_clitic=True`` to ride a cluster slot) is preserved as a
+second line of defence.
+
+### SUBJ-only restriction
+
+Tagalog's well-known SUBJ-only restriction on relativization
+(Kroeger 1993) falls out structurally: ``S_GAP`` only admits frames
+where the NOM-NP slot is missing — i.e., the gap is SUBJ. Attempts
+to relativize a non-SUBJ argument (e.g.,
+``*ang batang kinain ang isda`` to relativize the agent of OV) fail
+at the parser level because the inner clause would contain a
+NOM-NP, which no S_GAP rule admits.
+
+The constraining equation ``(↓3 REL-PRO) =c (↓3 SUBJ)`` provides
+a redundant check today and becomes load-bearing under §7.6
+non-SUBJ gap shapes.
+
+### Out-of-scope
+
+- **Long-distance relativization** (``ang batang gusto kong
+  makain``): requires XCOMP/COMP path traversal in the constraint
+  ``(↑ REL-PRO) =c (↑ {COMP|XCOMP}* SUBJ)``. Functional
+  uncertainty isn't yet supported by the unifier; defer to a later
+  commit (§7.6 control & raising introduces XCOMP, but the FU
+  machinery itself is its own follow-up).
+- **Resumptive pronouns** in RCs (rare in modern Tagalog) and
+  **headless / free relatives** (``ang kumain``).
+- **Non-restrictive RCs** with intonational/orthographic separation.
