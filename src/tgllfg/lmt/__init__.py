@@ -4,11 +4,12 @@
 
 Replaces the Phase 4 voice-aware heuristic with a Bresnan–Kanerva
 ``[±r, ±o]`` engine. Commit 1 lays down the data types
-(:mod:`.common`); commits 2–8 add the principles, lexicon
-integration, pipeline wiring, sa-NP reclassification, well-formedness
-promotion, and documentation. The Phase 4 heuristic remains
-available via :func:`apply_lmt` (re-exported from :mod:`.legacy`)
-through commit 5; commit 8 deletes it.
+(:mod:`.common`); Commit 2 adds the principles
+(:mod:`.principles`); Commits 3–8 add per-voice tests, lexicon
+integration, pipeline wiring, sa-NP reclassification,
+well-formedness promotion, and documentation. The Phase 4 heuristic
+remains available via :func:`apply_lmt` (re-exported from
+:mod:`.legacy`) through Commit 5; Commit 8 deletes it.
 """
 
 from .common import (
@@ -20,13 +21,36 @@ from .common import (
     obl_theta,
 )
 from .legacy import apply_lmt
+from .principles import (
+    ROLE_HIERARCHY,
+    apply_voice_constraints,
+    check_biuniqueness,
+    check_subject_condition,
+    compute_mapping,
+    default_intrinsics,
+    fill_defaults,
+    non_subject_mapping,
+    subject_mapping,
+)
 
 __all__ = [
+    # Data types (Commit 1)
     "IntrinsicClassification",
     "IntrinsicFeatures",
     "MappingResult",
     "Role",
-    "apply_lmt",
     "obj_theta",
     "obl_theta",
+    # Principles (Commit 2)
+    "ROLE_HIERARCHY",
+    "apply_voice_constraints",
+    "check_biuniqueness",
+    "check_subject_condition",
+    "compute_mapping",
+    "default_intrinsics",
+    "fill_defaults",
+    "non_subject_mapping",
+    "subject_mapping",
+    # Legacy (deleted in Commit 8)
+    "apply_lmt",
 ]
