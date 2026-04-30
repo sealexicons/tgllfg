@@ -96,16 +96,27 @@ type Completion = LeafCompletion | StateInfo
 class PackedForest:
     """A view over completed start-symbol states. ``best_k(k)`` walks
     the forest deterministically, optionally truncated by the size
-    cap configured at parse time."""
+    cap configured at parse time.
+
+    Phase 4 §7.9 also exposes the underlying chart (``chart``) so the
+    pipeline can extract fragments — the largest non-root completed
+    states — when full-sentence parsing fails.
+    """
 
     def __init__(
         self,
         roots: list[StateInfo],
         *,
         size_cap: int | None = None,
+        chart: list[dict[tuple[int, int, int], StateInfo]] | None = None,
+        sentence_length: int = 0,
     ) -> None:
         self.roots: list[StateInfo] = list(roots)
         self.size_cap: int | None = size_cap
+        self.chart: tuple[dict[tuple[int, int, int], StateInfo], ...] = (
+            tuple(chart) if chart is not None else ()
+        )
+        self.sentence_length: int = sentence_length
 
     def best_k(self, k: int) -> list[CNode]:
         out: list[CNode] = []
@@ -131,6 +142,47 @@ class PackedForest:
     @property
     def trees(self) -> list[CNode]:
         return list(self.iter_trees())
+
+    def iter_fragments(self) -> Iterator[tuple[tuple[int, int], CNode]]:
+        """Yield ``(span, cnode)`` for every non-root completed state
+        in the chart, ranked by decreasing span size. Phase 4 §7.9
+        fragment extraction: when no full-sentence parse exists, the
+        pipeline emits the largest sub-spans the parser was able to
+        complete, with their partial f-structures, for diagnostic
+        debugging."""
+        n = self.sentence_length
+        seen: set[tuple[str, int, int]] = set()
+        # Collect completed states across all columns. A "completed"
+        # state has dot at end-of-RHS. We rank by span size.
+        candidates: list[StateInfo] = []
+        for col_chart in self.chart:
+            for state in col_chart.values():
+                if state.dot != len(state.rule.rhs):
+                    continue
+                span_len = state.end - state.start
+                # Skip states that span the whole sentence (those
+                # would be roots; they're already in ``roots`` if
+                # they passed the start-symbol filter, otherwise
+                # they're not interesting fragments).
+                if state.start == 0 and state.end == n:
+                    continue
+                if span_len <= 0:
+                    continue
+                candidates.append(state)
+        # Sort: largest span first; break ties on start column.
+        candidates.sort(
+            key=lambda s: (-(s.end - s.start), s.start, s.rule.lhs.category),
+        )
+        for state in candidates:
+            key = (state.rule.lhs.category, state.start, state.end)
+            if key in seen:
+                continue
+            seen.add(key)
+            for cnode in _iter_cnodes(state):
+                yield (state.start, state.end), cnode
+                # One CNode per (label, span) is enough for fragment
+                # debugging; more would dilute the signal.
+                break
 
 
 def parse_with_annotations(
@@ -183,7 +235,12 @@ class _Earley:
                 and matches(self.grammar.start, state.rule.lhs)
             ):
                 roots.append(state)
-        return PackedForest(roots, size_cap=self.cap)
+        return PackedForest(
+            roots,
+            size_cap=self.cap,
+            chart=self._chart,
+            sentence_length=n,
+        )
 
     def _step(self, col: int, state: StateInfo) -> None:
         if state.dot < len(state.rule.rhs):

@@ -971,3 +971,118 @@ its own grammar rule (the quantifier heads a sub-NP that admits
 a partitive ``ng``-NP). Out of scope for this commit; the floated
 form is the more common surface pattern and exercises the
 binding mechanism.
+
+## Phase 4 §7.9: robustness — fragments, ranking, --strict
+
+**Date:** 2026-04-30. **Status:** active.
+
+### ParseResult / Fragment dataclasses
+
+The legacy :func:`parse_text` is preserved unchanged (returning a
+list of 4-tuples) for backward compatibility with the 41+ existing
+test sites that destructure the tuple shape. Phase 4 §7.9 adds a
+sibling :func:`parse_text_with_fragments` that returns a
+:class:`ParseResult` with two fields:
+
+- ``parses`` — complete parses (the same 4-tuple list, ranked).
+- ``fragments`` — :class:`Fragment` instances when no complete
+  parse exists. Each fragment carries a span, partial CNode,
+  partial f-structure, and the diagnostics that prevented
+  promotion.
+
+At most one of the two fields is non-empty: a successful parse
+suppresses fragment output (the user wanted a parse and got one).
+:func:`parse_text` is now a thin wrapper around
+:func:`parse_text_with_fragments` that just returns ``.parses``.
+
+### Fragment extraction algorithm
+
+The Earley chart already carries every completed sub-derivation —
+the parser builds them while exploring rules. :class:`PackedForest`
+is extended with a ``chart`` attribute (the full per-column dict
+of states) and an ``iter_fragments()`` method that walks the chart
+for non-root completed states (``state.dot == len(rule.rhs)`` and
+``not (start == 0 and end == n)``).
+
+Fragments are ranked by (decreasing span size, ascending start
+column, alphabetical category) and deduplicated by
+``(label, start, end)`` so a single (label, span) yields one
+fragment CNode, not the cartesian product of all sub-history
+combinations. This keeps fragment output bounded and useful for
+debugging without dominating the result list.
+
+### Heuristic parse ranking
+
+Complete parses are sorted by a tuple key
+``(depth, voice_score)`` — smaller is better:
+
+1. ``depth`` — total CNode count. Shorter derivations win, which
+   resolves the new §7.8 possessive-vs-relativization ambiguity
+   (the possessive wrap nests one extra layer) and the AV-tr vs
+   AV-intr-with-possessive ambiguity in transitive contexts.
+2. ``voice_score`` — 0 if the leftmost-spine V leaf is AV, 1
+   otherwise. Tagalog AV is the most-frequent voice; when the
+   same surface ambiguates AV vs non-AV (e.g. ``mag-`` /
+   ``-um-`` syncretism), prefer AV.
+
+The plan §7.9 also calls for a "lex specificity" component
+(prefer hand-authored BASE entries over the synthesized fallback).
+A heuristic over PRED templates was prototyped but dropped — it
+mis-classified hand-authored short PREDs (``EAT``, ``BUY``) as
+synthesized. Reliable distinction needs marking on the
+LexicalEntry itself; deferred until the BASE / synthesizer split
+is more deterministic.
+
+The ranker walks all candidates returned by ``forest.iter_trees``
+(no early ``best_k`` truncation), sorts, and only then truncates
+to ``n_best``. This fixes a latent bug where ``best_k(5)`` could
+discard a valid parse that survived past position 5 in the
+forest's enumeration order.
+
+### CLI: ``tgllfg parse`` with ``--strict``
+
+A new ``parse`` subcommand prints a parse summary:
+
+```
+$ tgllfg parse "Kumain ang aso ng isda."
+Parse #1:
+  PRED: EAT <SUBJ, OBJ>
+  VOICE: AV
+  ASPECT: PFV
+...
+```
+
+On failure, default mode emits fragments:
+
+```
+$ tgllfg parse "Kumain ng aso ang."
+(partial: 2 fragment(s))
+Fragment #1 [tokens 1..3]: NP[CASE=GEN]
+Fragment #2 [tokens 2..3]: N
+```
+
+``--strict`` suppresses fragment output: empty stdout, brief
+notice to stderr, exit 0 (Unix-tool convention: no match → no
+output, but exit cleanly).
+
+### Diagnostic ``cnode_label`` — partial
+
+The plan §7.9 calls for diagnostics to "name the offending
+equation and c-structure path". Equation strings are already
+populated by :mod:`tgllfg.fstruct.unify`. The ``cnode_label``
+field on :class:`tgllfg.fstruct.graph.Diagnostic` is a placeholder
+note in the existing checks code — populating it requires a
+node-id → c-tree-node mapping during well-formedness checks.
+Deferred to a follow-up; the equation strings already give
+enough handle for v1 debugging.
+
+### Out-of-scope (deferred)
+
+- **Statistical reranker** trained on a gold corpus. The plan
+  explicitly marks this as a v1 follow-up.
+- **All-fragments mode**: extracting fragments even when no
+  non-root rule completes (e.g. for ``aso ang isda`` with no
+  verb, the parser predicts no rules so no completions exist).
+  Would require changing the parser's prediction strategy.
+- **Path-rendering on diagnostics**: ``cnode_label`` placeholder
+  remains TODO.
