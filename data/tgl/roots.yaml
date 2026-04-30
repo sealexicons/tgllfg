@@ -1827,6 +1827,39 @@
   pos: NOUN
   gloss: bicycle
 
+# --- Phase 4 §7.6: control verbs ----------------------------------------
+# Verbs that select an XCOMP complement clause introduced by the
+# linker (`na` / `-ng`). The `feats: {CTRL_CLASS: INTRANS|TRANS}`
+# field (Phase 4 §7.6) flags the verb's class for the grammar's
+# control wrap rules. Inflected control verbs (regular AV / OV / DV
+# paradigms) live here; the uninflected pseudo-verb psych predicates
+# (gusto / ayaw / kaya) live in particles.yaml because they have no
+# verbal morphology to drive paradigm generation.
+- citation: payag
+  pos: VERB
+  gloss: agree
+  transitivity: INTR
+  # AV-only intransitive control verb: pumayag (PFV) / pumapayag
+  # (IPFV) / papayag (CTPL). The complement is an XCOMP introduced
+  # by the linker; matrix SUBJ controls the embedded SUBJ.
+  affix_class: [um, maka]
+  feats: {CTRL_CLASS: INTRANS}
+- citation: pilit
+  pos: VERB
+  gloss: force, compel
+  transitivity: TR
+  # Transitive control: pivot is forcee (matrix SUBJ in OV/DV);
+  # GEN-NP is forcer (matrix OBJ). pinilit = OV PFV.
+  affix_class: [um, in_oblig, an_oblig, maka]
+  feats: {CTRL_CLASS: TRANS}
+- citation: utos
+  pos: VERB
+  gloss: order, command
+  transitivity: TR
+  # DV pivot is recipient/orderee. inutusan = "ordered someone".
+  affix_class: [um, in_oblig, an_oblig, maka]
+  feats: {CTRL_CLASS: TRANS}
+
 # --- Proper-name placeholders ---
 - citation: maria
   pos: NOUN

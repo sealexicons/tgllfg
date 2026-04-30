@@ -96,6 +96,25 @@
   pos: PART
   feats: {LINK: AY}
 
+# === Phase 4 §7.6: psych control predicates ==============================
+# Pseudo-verbal predicates that select an XCOMP complement clause and
+# take a GEN-marked experiencer. They have no verbal morphology
+# (no voice / aspect / mood inflection), so they live here as
+# closed-class entries with `pos: VERB` rather than as roots.yaml
+# entries that would drive the paradigm engine. The matrix SUBJ is
+# the GEN-NP (a deviation from the otherwise-uniform NOM→SUBJ
+# mapping; see docs/analysis-choices.md "Phase 4 §7.6"); SUBJ
+# controls the embedded SUBJ via `(↑ SUBJ) = (↑ XCOMP REL-PRO)`.
+- surface: gusto
+  pos: VERB
+  feats: {CTRL_CLASS: PSYCH}
+- surface: ayaw
+  pos: VERB
+  feats: {CTRL_CLASS: PSYCH}
+- surface: kaya
+  pos: VERB
+  feats: {CTRL_CLASS: PSYCH}
+
 # === Second-position adverbial enclitics =================================
 # These attach to the first prosodic word in the clause; §7.3 will
 # add the clitic-placement c-structure rules. Schachter & Otanes 1972

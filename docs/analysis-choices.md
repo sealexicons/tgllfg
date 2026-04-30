@@ -632,3 +632,131 @@ non-SUBJ gap shapes.
 - **Resumptive pronouns** in RCs (rare in modern Tagalog) and
   **headless / free relatives** (``ang kumain``).
 - **Non-restrictive RCs** with intonational/orthographic separation.
+
+## Phase 4 §7.6: control (raising deferred)
+
+**Date:** 2026-04-30. **Status:** active.
+
+### Three control patterns, one control equation
+
+Three control verb classes are seeded; all three use SUBJ-control
+over an XCOMP complement clause via the same equation
+``(↑ SUBJ) = (↑ XCOMP REL-PRO)``. The classes differ only in
+which case-marked NP fills the matrix SUBJ slot:
+
+- **Psych** (``gusto`` "want", ``ayaw`` "dislike", ``kaya``
+  "be able"): GEN-marked experiencer is matrix SUBJ. PRED carries
+  ``<SUBJ, XCOMP>``. Uninflected pseudo-verbs.
+- **Intransitive** (``payag`` → ``pumayag``): NOM-marked agent is
+  matrix SUBJ; AV-only inflection. PRED ``AGREE <SUBJ, XCOMP>``.
+- **Transitive** (``pilit`` → ``pinilit`` OV; ``utos`` →
+  ``inutusan`` DV): NOM-marked pivot (forcee / orderee) is matrix
+  SUBJ; GEN-marked agent is matrix OBJ. PRED ``FORCE <SUBJ, OBJ,
+  XCOMP>``. The pivot, not the agent, controls the embedded gap —
+  this is the canonical Tagalog control pattern under the
+  OBJ-uniform analysis.
+
+### Psych predicates take GEN-marked SUBJ
+
+``gusto``-class predicates take a GEN-marked experiencer that
+fills the matrix SUBJ slot — a deviation from the otherwise-uniform
+NOM→SUBJ mapping. Alternative encodings were considered:
+
+- **Clausal SUBJ** (matrix SUBJ = the embedded clause; experiencer
+  is OBJ): conflicts with the LFG Subject Condition under our
+  current PRED-template + completeness machinery. Workable in
+  principle but requires the matrix SUBJ to be a non-thematic
+  pointer to XCOMP, which our well-formedness checker would have
+  to special-case.
+- **Subject Condition exemption** for psych predicates: deviates
+  from the LFG checker's uniform behavior, harder to debug.
+- **GEN-as-SUBJ deviation**: small, lexicalized, well-attested
+  in the Tagalog literature (Kroeger 1993 argues the GEN
+  experiencer of psych predicates passes subjecthood diagnostics).
+  Picked.
+
+The deviation is one verb class wide and gated by the
+``CTRL_CLASS=PSYCH`` lex feature — non-psych predicates retain
+the uniform NOM→SUBJ mapping.
+
+### S_XCOMP: AV-restricted SUBJ-gapped clause
+
+The control complement is parsed by a new non-terminal
+``S_XCOMP`` whose frames mirror ``S_GAP`` (§7.4 / §7.5) but with
+the verb fixed to ``V[VOICE=AV]``. The voice restriction encodes
+Tagalog's canonical "controlled = actor → AV pivot" pattern:
+under AV the actor is the SUBJ, so binding the gap to REL-PRO
+(= matrix's controller) targets the actor.
+
+OV / DV control complements (where the controller binds the
+embedded agent / OBJ) — e.g. ``Gusto kong kainin ang isda`` "I
+want the fish to be eaten" — are grammatical Tagalog but require
+non-SUBJ S_XCOMP frames + matching wrap-rule plumbing. Out of
+scope for this commit; revisit when corpus pressure warrants.
+
+### CTRL_CLASS as a discriminating category feature
+
+Each control verb's class rides on its morph analysis as
+``CTRL_CLASS ∈ {PSYCH, INTRANS, TRANS}``. The grammar's wrap rules
+match ``V[CTRL_CLASS=PSYCH]`` etc. so the rule fires only on the
+right verb class.
+
+Because the parser's matcher is non-conflict (shared keys must
+agree, missing keys don't conflict), non-control verbs would
+**also** match ``V[CTRL_CLASS=PSYCH]`` if they had no CTRL_CLASS
+feature at all. The morph analyzer therefore defaults
+``CTRL_CLASS=NONE`` on every verb without an explicit value —
+the sentinel value conflicts with PSYCH / INTRANS / TRANS at
+rule-match time, ruling non-control verbs out structurally.
+
+### Per-root ``feats`` on ``Root``
+
+To carry ``CTRL_CLASS=INTRANS`` / ``TRANS`` on inflected control
+verbs (``payag``, ``pilit``, ``utos``), a new
+``feats: dict[str, object]`` field is added to
+:class:`tgllfg.morph.paradigms.Root`. The analyzer copies these
+per-root feats into every generated MorphAnalysis. Uninflected
+pseudo-verbs (``gusto`` / ``ayaw`` / ``kaya``) live in
+``particles.yaml`` because they have no verbal morphology to drive
+the paradigm engine; their CTRL_CLASS comes from the existing
+``Particle.feats`` field.
+
+### No cycle — control is structure-sharing
+
+Unlike §7.5 relativization (where head-NP-contains-RC creates a
+cyclic f-structure under full identity, forcing the anaphoric
+REL-PRO workaround), control's matrix and XCOMP are **sibling**
+f-nodes. The shared SUBJ is referenced from both
+``matrix.SUBJ`` and ``matrix.XCOMP.SUBJ`` but doesn't
+structurally contain either parent — so the unifier's
+occurs-check is satisfied. Full identity holds:
+``matrix.SUBJ.id == matrix.XCOMP.SUBJ.id``.
+
+### Raising deferred
+
+Tagalog raising verbs (``mukha`` "seem", ``baka`` "might") are
+out of scope:
+
+- Lexical disambiguation: ``mukha`` is also a noun ("face");
+  ``baka`` is also a noun ("cow"). Reliable disambiguation needs
+  context features (clause-initial position, modal-like usage)
+  that aren't yet wired up.
+- Non-thematic SUBJ: raising verbs have a SUBJ slot that doesn't
+  correspond to a thematic role. The PRED template format would
+  need extension to mark such args (e.g. ``seem <XCOMP> SUBJ``
+  with SUBJ outside the angle-brackets). The completeness checker
+  would also need to know about non-thematic args.
+
+Both pieces are tractable but additive — defer until the lex
+infrastructure for non-thematic args is needed elsewhere.
+
+### Out-of-scope (will revisit)
+
+- **OV / DV control complements** (non-SUBJ-gap inside XCOMP).
+- **Long-distance control** through nested XCOMP (functional
+  uncertainty in the unifier).
+- **Embedded-clause complementizer choice**: complement could be
+  introduced by ``na`` instead of ``-ng`` after vowel-final
+  pronoun hosts; the current implementation accepts both via the
+  per-link wrap-rule pair, but we don't enforce a single canonical
+  choice per construction.

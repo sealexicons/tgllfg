@@ -172,6 +172,84 @@ BASE: dict[str, list[LexicalEntry]] = {
             {"CONVEYED": "SUBJ", "AGENT": "OBJ"},
         ),
     ],
+    # ===== Phase 4 §7.6: control verbs =====================================
+    #
+    # Three control patterns, all sharing SUBJ-control over an XCOMP
+    # complement: the matrix SUBJ binds the embedded SUBJ via
+    # ``(↑ SUBJ) = (↑ XCOMP REL-PRO)``. The patterns differ in which
+    # case-marked NP fills the matrix SUBJ slot.
+    #
+    # Psych predicates (gusto / ayaw / kaya): GEN experiencer is
+    # matrix SUBJ. PRED carries SUBJ + XCOMP only (no OBJ). The
+    # ``CTRL_CLASS=PSYCH`` constraint matches the entries seeded
+    # under ``particles.yaml`` (uninflected pseudo-verbs).
+    "gusto": [
+        LexicalEntry(
+            lemma="gusto",
+            pred="WANT <SUBJ, XCOMP>",
+            a_structure=["EXPERIENCER", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "PSYCH"},
+            gf_defaults={"EXPERIENCER": "SUBJ", "COMPLEMENT": "XCOMP"},
+        ),
+    ],
+    "ayaw": [
+        LexicalEntry(
+            lemma="ayaw",
+            pred="DISLIKE <SUBJ, XCOMP>",
+            a_structure=["EXPERIENCER", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "PSYCH"},
+            gf_defaults={"EXPERIENCER": "SUBJ", "COMPLEMENT": "XCOMP"},
+        ),
+    ],
+    "kaya": [
+        LexicalEntry(
+            lemma="kaya",
+            pred="ABLE <SUBJ, XCOMP>",
+            a_structure=["EXPERIENCER", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "PSYCH"},
+            gf_defaults={"EXPERIENCER": "SUBJ", "COMPLEMENT": "XCOMP"},
+        ),
+    ],
+    # Intransitive control (payag → pumayag, pumapayag, papayag):
+    # AV-only, NOM-NP is matrix SUBJ. AGREE <SUBJ, XCOMP>.
+    "payag": [
+        LexicalEntry(
+            lemma="payag",
+            pred="AGREE <SUBJ, XCOMP>",
+            a_structure=["AGENT", "COMPLEMENT"],
+            morph_constraints={"VOICE": "AV", "CTRL_CLASS": "INTRANS"},
+            gf_defaults={"AGENT": "SUBJ", "COMPLEMENT": "XCOMP"},
+        ),
+    ],
+    # Transitive control (pilit, utos): pivot is forcee/orderee
+    # (matrix SUBJ in OV / DV), GEN-NP is forcer/orderer (matrix
+    # OBJ). 3-arg PRED ``<SUBJ, OBJ, XCOMP>``.
+    "pilit": [
+        LexicalEntry(
+            lemma="pilit",
+            pred="FORCE <SUBJ, OBJ, XCOMP>",
+            a_structure=["AGENT", "PATIENT", "COMPLEMENT"],
+            morph_constraints={"VOICE": "OV", "CTRL_CLASS": "TRANS"},
+            gf_defaults={
+                "PATIENT": "SUBJ",
+                "AGENT": "OBJ",
+                "COMPLEMENT": "XCOMP",
+            },
+        ),
+    ],
+    "utos": [
+        LexicalEntry(
+            lemma="utos",
+            pred="ORDER <SUBJ, OBJ, XCOMP>",
+            a_structure=["AGENT", "RECIPIENT", "COMPLEMENT"],
+            morph_constraints={"VOICE": "DV", "CTRL_CLASS": "TRANS"},
+            gf_defaults={
+                "RECIPIENT": "SUBJ",
+                "AGENT": "OBJ",
+                "COMPLEMENT": "XCOMP",
+            },
+        ),
+    ],
 }
 
 

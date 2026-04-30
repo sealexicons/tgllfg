@@ -48,6 +48,19 @@ constraining equation ``(↓3 REL-PRO) =c (↓3 SUBJ)``: vacuous today
 because S_GAP only has SUBJ-gapped frames, but ready for the
 non-SUBJ-gap variants that would arise under §7.6 long-distance or
 §7.8 non-pivot ay-fronting.
+
+Phase 4 §7.6 (control & raising) adds ``S_XCOMP``: a separate
+SUBJ-gapped non-terminal restricted to ``V[VOICE=AV]`` frames. The
+distinction from ``S_GAP`` is voice-coverage: relativization can
+have OV / DV / IV embedded clauses (pivot-relativization works in
+any voice), but control complements canonically only license AV
+embedded clauses (the controllee is the actor, which is SUBJ in AV
+only). Control wrap rules attach ``S_XCOMP`` to a control verb plus
+its arguments and bind matrix SUBJ to ``XCOMP REL-PRO``. The
+control verb's class is discriminated by ``CTRL_CLASS ∈ {PSYCH,
+INTRANS, TRANS}`` carried on the V's morph analysis (per-root
+``feats`` field on inflected verbs; particles.yaml entry on
+uninflected psych predicates).
 """
 
 from __future__ import annotations
@@ -237,6 +250,45 @@ class Grammar:
             ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
         ))
 
+        # --- Phase 4 §7.6: control complement (S_XCOMP) ---
+        #
+        # ``S_XCOMP`` is the AV-restricted SUBJ-gapped clause that
+        # serves as the XCOMP of a control verb. The voice-restriction
+        # encodes Tagalog's canonical "controlled = actor" pattern:
+        # under AV the actor is the pivot/SUBJ, so binding the gap
+        # to REL-PRO (= matrix's controller) targets the actor.
+        # OV / DV control complements (where the controller binds the
+        # embedded agent / OBJ) are out of scope for this commit.
+        #
+        # The frames mirror S_GAP but with voice fixed to AV:
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=AV]"],
+            _eqs("(↑ SUBJ) = (↑ REL-PRO)"),
+        ))
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=AV]", "NP[CASE=GEN]"],
+            _eqs("(↑ OBJ) = ↓2", "(↑ SUBJ) = (↑ REL-PRO)"),
+        ))
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=AV]", "NP[CASE=GEN]", "NP[CASE=DAT]"],
+            _eqs(
+                "(↑ OBJ) = ↓2",
+                "↓3 ∈ (↑ ADJUNCT)",
+                "(↑ SUBJ) = (↑ REL-PRO)",
+            ),
+        ))
+        # Inner negation under control: ``Gusto kong hindi kumain``
+        # — the embedded clause is negated. Mirrors the S / S_GAP
+        # negation rule shape.
+        rules.append(Rule(
+            "S_XCOMP",
+            ["PART[POLARITY=NEG]", "S_XCOMP"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
         # --- Phase 4 §7.4: ay-inversion ---
         #
         # ``Si Maria ay kumain ng isda``: the topic phrase moves to
@@ -305,6 +357,100 @@ class Grammar:
                         "(↓3 REL-PRO) =c (↓3 SUBJ)",
                     ],
                 ))
+
+        # --- Phase 4 §7.6: control wrap rules ---
+        #
+        # Three control patterns, all using SUBJ-control: the matrix
+        # SUBJ binds the embedded SUBJ via the wrap rule's
+        # ``(↑ SUBJ) = (↑ XCOMP REL-PRO)`` equation. Inside S_XCOMP,
+        # the gap is bound by ``(↑ SUBJ) = (↑ REL-PRO)``, so the
+        # composition makes matrix.SUBJ = matrix.XCOMP.SUBJ. No
+        # cycle — matrix and XCOMP are sibling f-nodes; the shared
+        # SUBJ is referenced from both but doesn't contain either.
+        #
+        # The control verb's class is selected by ``CTRL_CLASS`` on
+        # the V token (set by the morph analyzer from the root's
+        # per-root feats / from the particles.yaml entry).
+        #
+        # **Psych predicates** (gusto, ayaw, kaya): GEN-marked
+        # experiencer is matrix SUBJ. PRED ``WANT <SUBJ, XCOMP>``.
+        # The deviation from the otherwise-uniform NOM→SUBJ mapping
+        # is documented in docs/analysis-choices.md "Phase 4 §7.6".
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "S",
+                [
+                    "V[CTRL_CLASS=PSYCH]",
+                    "NP[CASE=GEN]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    "(↑ XCOMP) = ↓4",
+                    "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                ),
+            ))
+
+        # **Intransitive control** (payag): NOM-marked agent is
+        # matrix SUBJ; AV verb. PRED ``AGREE <SUBJ, XCOMP>``.
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "S",
+                [
+                    "V[CTRL_CLASS=INTRANS]",
+                    "NP[CASE=NOM]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    "(↑ XCOMP) = ↓4",
+                    "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                ),
+            ))
+
+        # **Transitive control** (pilit OV, utos DV): NOM-marked
+        # pivot is matrix SUBJ (forcee / orderee); GEN-marked agent
+        # is matrix OBJ. The pivot controls XCOMP. PRED
+        # ``FORCE <SUBJ, OBJ, XCOMP>``. Both NOM-GEN and GEN-NOM
+        # orderings are admitted, mirroring the regular transitive
+        # frames' freedom.
+        for link in ("NA", "NG"):
+            # GEN-NOM order
+            rules.append(Rule(
+                "S",
+                [
+                    "V[CTRL_CLASS=TRANS]",
+                    "NP[CASE=GEN]",
+                    "NP[CASE=NOM]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ OBJ) = ↓2",
+                    "(↑ SUBJ) = ↓3",
+                    "(↑ XCOMP) = ↓5",
+                    "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                ),
+            ))
+            # NOM-GEN order
+            rules.append(Rule(
+                "S",
+                [
+                    "V[CTRL_CLASS=TRANS]",
+                    "NP[CASE=NOM]",
+                    "NP[CASE=GEN]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    "(↑ OBJ) = ↓3",
+                    "(↑ XCOMP) = ↓5",
+                    "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                ),
+            ))
 
         # Transitive frames per voice, two NP orderings each, with and
         # without a trailing sa-oblique (ADJUNCT).

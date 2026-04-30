@@ -215,6 +215,21 @@ class Analyzer:
             }
             if root.transitivity:
                 feats["TR"] = root.transitivity
+            # Per-root lex feats (Phase 4 §7.6): CTRL_CLASS et al.
+            # ride into every generated form so the parser's
+            # category-pattern matcher can discriminate control
+            # verbs (V[CTRL_CLASS=INTRANS] vs V[CTRL_CLASS=TRANS])
+            # at the rule level.
+            for k, v in root.feats.items():
+                feats[k] = v
+            # Default CTRL_CLASS=NONE on verbs not declared as a
+            # control class. Without this, the grammar's
+            # ``V[CTRL_CLASS=PSYCH]`` (etc.) patterns would fire on
+            # ANY verb under the parser's non-conflict matcher
+            # (shared keys must agree; missing keys don't conflict).
+            # The sentinel value ensures non-control verbs are
+            # ruled out at rule-match time.
+            feats.setdefault("CTRL_CLASS", "NONE")
             analysis = MorphAnalysis(
                 lemma=root.citation,
                 pos="VERB",
