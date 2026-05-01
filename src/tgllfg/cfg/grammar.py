@@ -546,4 +546,60 @@ class Grammar:
                 _eqs("(↑ SUBJ) = ↓3", "(↑ OBJ) = ↓2", "↓4 ∈ (↑ ADJUNCT)"),
             ))
 
+        # --- Phase 5b: multi-GEN-NP applicative frames (IV-BEN) ---
+        #
+        # Three-argument applicatives like ``Ipinaggawa niya ng silya
+        # ang kapatid`` ("he made a chair for his sibling") have two
+        # ng-marked non-pivots (AGENT + PATIENT) plus the ang-marked
+        # pivot (BENEFICIARY). The Phase 5 LMT engine produces typed
+        # ``OBJ-AGENT`` and ``OBJ-PATIENT`` for the two ng-NPs (per
+        # the [+r, +o] truth-table cell); these are distinct GFs
+        # under :func:`is_governable_gf` and don't clash by
+        # biuniqueness.
+        #
+        # Word-order convention: the first ng-NP after V is AGENT,
+        # the second is PATIENT (Schachter & Otanes 1972 §6.5;
+        # Kroeger 1993 §3.3 on post-V positioning). When the pivot
+        # ang-NP intervenes, the AGENT/PATIENT order across the
+        # ang-NP is preserved (i.e., the two ng-NPs that flank or
+        # follow the ang-NP are still AGENT-then-PATIENT in surface
+        # order).
+        #
+        # Scope: IV-BEN only in this commit. pa-OV-direct three-arg
+        # causatives use the same shape and lift trivially with new
+        # grammar rules + lex entries; deferred until commit 2 so
+        # this commit's analytical commitment can be reviewed
+        # against the IV-BEN corpus first.
+        v_iv = "V[VOICE=IV]"
+        # NOM-GEN-GEN: pivot first, AGENT, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_iv, "NP[CASE=NOM]", "NP[CASE=GEN]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-AGENT) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-NOM-GEN: AGENT, pivot, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_iv, "NP[CASE=GEN]", "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-AGENT) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-GEN-NOM: AGENT, PATIENT, pivot.
+        rules.append(Rule(
+            "S",
+            [v_iv, "NP[CASE=GEN]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓4",
+                "(↑ OBJ-AGENT) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+            ),
+        ))
+
         return Grammar(rules)

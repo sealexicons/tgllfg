@@ -137,6 +137,16 @@ _IV_BEN_AGENT_BENEFICIARY: dict[str, tuple[bool | None, bool | None]] = {
     "AGENT": (True, True),
     "BENEFICIARY": (False, False),
 }
+# Phase 5b: three-arg IV-BEN with explicit PATIENT in addition to
+# AGENT and BENEFICIARY. Both AGENT and PATIENT are [+r, +o] →
+# typed OBJ-θ (OBJ-AGENT and OBJ-PATIENT, distinct GFs).
+_IV_BEN_AGENT_PATIENT_BENEFICIARY: dict[
+    str, tuple[bool | None, bool | None]
+] = {
+    "AGENT": (True, True),
+    "PATIENT": (True, True),
+    "BENEFICIARY": (False, False),
+}
 _OV_CAUS_DIRECT: dict[str, tuple[bool | None, bool | None]] = {
     "CAUSER": (True, True),
     "CAUSEE": (False, False),
@@ -481,6 +491,48 @@ BASE["bili"].append(LexicalEntry(
     morph_constraints={"VOICE": "IV", "APPL": "BEN"},
     gf_defaults={"BENEFICIARY": "SUBJ", "AGENT": "OBJ"},
     intrinsic_classification=_IV_BEN_AGENT_BENEFICIARY,
+))
+
+# Phase 5b: three-arg IV-BEN variants with explicit PATIENT. Both
+# the AGENT and the PATIENT are demoted to typed OBJ-θ slots
+# (OBJ-AGENT, OBJ-PATIENT) by the LMT engine; the multi-GEN-NP
+# grammar rules in cfg/grammar.py bind them positionally
+# (first ng-NP after V → AGENT, second → PATIENT).
+BASE["gawa"].append(LexicalEntry(
+    lemma="gawa",
+    pred="MAKE-FOR <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+    a_structure=["AGENT", "PATIENT", "BENEFICIARY"],
+    morph_constraints={"VOICE": "IV", "APPL": "BEN"},
+    gf_defaults={
+        "BENEFICIARY": "SUBJ",
+        "AGENT": "OBJ-AGENT",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_IV_BEN_AGENT_PATIENT_BENEFICIARY,
+))
+BASE["sulat"].append(LexicalEntry(
+    lemma="sulat",
+    pred="WRITE-FOR <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+    a_structure=["AGENT", "PATIENT", "BENEFICIARY"],
+    morph_constraints={"VOICE": "IV", "APPL": "BEN"},
+    gf_defaults={
+        "BENEFICIARY": "SUBJ",
+        "AGENT": "OBJ-AGENT",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_IV_BEN_AGENT_PATIENT_BENEFICIARY,
+))
+BASE["bili"].append(LexicalEntry(
+    lemma="bili",
+    pred="BUY-FOR <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+    a_structure=["AGENT", "PATIENT", "BENEFICIARY"],
+    morph_constraints={"VOICE": "IV", "APPL": "BEN"},
+    gf_defaults={
+        "BENEFICIARY": "SUBJ",
+        "AGENT": "OBJ-AGENT",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_IV_BEN_AGENT_PATIENT_BENEFICIARY,
 ))
 
 # Direct (monoclausal) causatives (pa-...-in OV): SUBJ = causee

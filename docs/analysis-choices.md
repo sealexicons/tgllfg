@@ -1240,3 +1240,91 @@ the parse for a lex-internal inconsistency would be wrong.
   surfaced via the AStructure and the diagnostic detail. A future
   rewrite to `(↑ OBJ-θ) = ↓N` would eliminate the
   `lmt-mismatch` noise.
+
+## Phase 5b §7.7 follow-on: multi-GEN-NP applicative frames
+
+**Status:** active. Phase 4 §7.7 deferred three-argument
+applicative / causative frames where the demoted-from-pivot
+oblique surfaces as a second `ng`-marked NP. Phase 5b lifts that
+deferral incrementally: this section records the choices for the
+IV-BEN scope; pa-OV-direct multi-GEN follows the same pattern and
+will lift in a subsequent commit.
+
+### Word-order convention: first ng-NP = AGENT, second = PATIENT
+
+Tagalog admits free order among non-pivot ng-NPs but a strong
+post-V positional preference: the agentive role sits closer to
+the verb than the patient. Schachter & Otanes 1972 §6.5 describes
+the `actor first, then goal` ordering as the unmarked Tagalog
+post-verbal pattern; Kroeger 1993 §3.3 confirms it for
+three-argument constructions.
+
+The Phase 5b grammar rules encode this positional convention
+directly:
+
+```
+S → V[VOICE=IV] NP[NOM] NP[GEN] NP[GEN]
+   ↳ (↑ SUBJ) = ↓2, (↑ OBJ-AGENT) = ↓3, (↑ OBJ-PATIENT) = ↓4
+S → V[VOICE=IV] NP[GEN] NP[NOM] NP[GEN]
+   ↳ (↑ SUBJ) = ↓3, (↑ OBJ-AGENT) = ↓2, (↑ OBJ-PATIENT) = ↓4
+S → V[VOICE=IV] NP[GEN] NP[GEN] NP[NOM]
+   ↳ (↑ SUBJ) = ↓4, (↑ OBJ-AGENT) = ↓2, (↑ OBJ-PATIENT) = ↓3
+```
+
+The pivot `ang`-NP is the BENEFICIARY (the IV-BEN promotion
+target); the two `ng`-NPs are AGENT and PATIENT in surface order.
+A sentence with the ng-NPs in the *opposite* semantic order
+(PATIENT before AGENT) would parse with reversed bindings —
+this is a known limitation that semantic disambiguation
+(animacy, definiteness, prior context) could fix. Phase 5b's
+positional binding is the placeholder.
+
+### Typed OBJ-θ slots
+
+Both ng-NPs map to typed `OBJ-θ` GFs (`OBJ-AGENT` and
+`OBJ-PATIENT`). The LMT engine produces these directly from each
+role's `[+r, +o]` intrinsic profile. The two GFs are distinct
+fully-qualified strings under
+`tgllfg.fstruct.checks.is_governable_gf`, so biuniqueness
+(LMT step 7) doesn't flag them as a clash.
+
+The lex entry's PRED template is upgraded to typed form:
+
+```
+MAKE-FOR <SUBJ, OBJ-AGENT, OBJ-PATIENT>
+```
+
+Completeness checks the f-structure has all three governables;
+coherence checks no extras. The pre-existing two-arg lex entry
+(`MAKE-FOR <SUBJ, OBJ>`, no PATIENT) coexists — sentences without
+a second ng-NP fall through to it because the three-arg's
+completeness check fails when OBJ-PATIENT is absent.
+
+### Scope
+
+IV-BEN three-argument applicatives only in this commit (verbs:
+`gawa`, `sulat`, `bili`). The same shape applies to:
+
+* **pa-OV-direct three-argument causatives** (e.g.,
+  `Pinakain niya ng kanin ang bata` — "He fed the child rice"):
+  CAUSER + PATIENT + CAUSEE. Same rule structure with `V[VOICE=OV]`
+  and `[CAUSER, PATIENT, CAUSEE]` profiles. Lifts in the next
+  Phase 5b commit.
+* **DV three-argument constructions** (rarer): would need a
+  third ng-NP for a non-RECIPIENT theme. No current Phase 4
+  BASE entry has the shape.
+* **Magpa-AV-indirect three-argument** would require the embedded
+  XCOMP to take its own arguments — the matrix only has CAUSER
+  and EVENT, so multi-GEN doesn't apply at the matrix level.
+
+The Phase 5b deferral list also includes:
+
+* **Multi-OBL semantic disambiguation** for sa-NPs — out of
+  scope here (this commit is GEN-only).
+* **Pre-NP partitive** (`lahat ng bata`) — the floated-quantifier
+  rule in §7.8 stays; the partitive form needs a QP non-terminal.
+* **OV/DV control complements** — separate problem (controller
+  binds embedded AGENT, not embedded SUBJ).
+* **Raising verbs**, **`ipang-` / `ika-` applicatives**,
+  **pronominal possessive**, **long-distance relativization** —
+  all unchanged from the Phase 4 deferral inventory.
