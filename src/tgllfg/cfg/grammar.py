@@ -367,15 +367,16 @@ class Grammar:
 
         # --- Phase 4 §7.6: control complement (S_XCOMP) ---
         #
-        # ``S_XCOMP`` is the AV-restricted SUBJ-gapped clause that
-        # serves as the XCOMP of a control verb. The voice-restriction
-        # encodes Tagalog's canonical "controlled = actor" pattern:
-        # under AV the actor is the pivot/SUBJ, so binding the gap
-        # to REL-PRO (= matrix's controller) targets the actor.
-        # OV / DV control complements (where the controller binds the
-        # embedded agent / OBJ) are out of scope for this commit.
+        # ``S_XCOMP`` is the SUBJ-gapped clause that serves as the
+        # XCOMP of a control verb. The original Phase 4 frames are
+        # AV-only: the controllee is the actor, which is SUBJ in AV.
+        # Phase 5c §7.6 follow-on adds non-AV variants where the
+        # controllee is the actor's *typed* GF — ``OBJ-AGENT`` under
+        # the Phase 5b OBJ-θ-in-grammar alignment. The matrix wrap
+        # rule's ``(↑ SUBJ) = (↑ XCOMP REL-PRO)`` is unchanged; only
+        # the embedded clause's REL-PRO routing differs per voice.
         #
-        # The frames mirror S_GAP but with voice fixed to AV:
+        # AV frames: REL-PRO routes to SUBJ.
         rules.append(Rule(
             "S_XCOMP",
             ["V[VOICE=AV]"],
@@ -393,6 +394,37 @@ class Grammar:
                 "(↑ OBJ) = ↓2",
                 "↓3 ∈ (↑ ADJUNCT)",
                 "(↑ SUBJ) = (↑ REL-PRO)",
+            ),
+        ))
+        # Phase 5c §7.6 follow-on: non-AV embedded clauses, where
+        # REL-PRO routes to ``OBJ-AGENT`` (the actor's typed GF in
+        # OV / DV / IV). The patient / recipient / theme NOM-pivot
+        # is overt; the actor is the gap. CAUS=NONE on OV
+        # discriminates against pa-OV (CAUS=DIRECT) where the typed
+        # slot would be ``OBJ-CAUSER``; APPL=CONVEY on IV
+        # discriminates against IV-BEN multi-GEN frames.
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=OV, CAUS=NONE]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=DV]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=IV, APPL=CONVEY]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
             ),
         ))
         # Inner negation under control: ``Gusto kong hindi kumain``

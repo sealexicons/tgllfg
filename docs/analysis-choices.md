@@ -765,6 +765,8 @@ infrastructure for non-thematic args is needed elsewhere.
 ### Out-of-scope (will revisit)
 
 - **OV / DV control complements** (non-SUBJ-gap inside XCOMP).
+  **Update (Phase 5c):** lifted in Phase 5c §7.6 follow-on (see
+  the entry below).
 - **Long-distance control** through nested XCOMP (functional
   uncertainty in the unifier).
 - **Embedded-clause complementizer choice**: complement could be
@@ -772,6 +774,83 @@ infrastructure for non-thematic args is needed elsewhere.
   pronoun hosts; the current implementation accepts both via the
   per-link wrap-rule pair, but we don't enforce a single canonical
   choice per construction.
+
+## Phase 5c §7.6 follow-on: non-AV control complements
+
+**Date:** 2026-04-30. **Status:** active. Phase 4 §7.6 restricted
+``S_XCOMP`` to AV; the canonical "controlled = actor" pattern
+trivially identifies the actor with SUBJ under AV. Phase 5c lifts
+the restriction so the actor's *typed* GF (``OBJ-AGENT`` under
+non-AV, per the Phase 5b OBJ-θ-in-grammar alignment) is the
+gap-binding target.
+
+### Three new ``S_XCOMP`` variants
+
+```
+S_XCOMP → V[VOICE=OV, CAUS=NONE] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+
+S_XCOMP → V[VOICE=DV] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+
+S_XCOMP → V[VOICE=IV, APPL=CONVEY] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+```
+
+The matrix wrap rules don't change — ``(↑ SUBJ) = (↑ XCOMP REL-PRO)``
+binds the matrix controller to the embedded REL-PRO regardless of
+the embedded voice. Composing the two equations gives
+``matrix.SUBJ = matrix.XCOMP.OBJ-AGENT`` for non-AV embedded
+clauses, mirroring the AV identity ``matrix.SUBJ = matrix.XCOMP.SUBJ``.
+
+### Why ``OBJ-AGENT`` is the controllee
+
+In Tagalog non-AV clauses, the actor is realised as the GEN-marked
+ng-non-pivot. Under Phase 5b's OBJ-θ-in-grammar alignment that
+slot is typed ``OBJ-AGENT`` (verbs whose actor role is AGENT) or
+``OBJ-CAUSER`` (verbs of direct causation). The embedded clauses
+admitted by these new rules are non-causative non-AV verbs
+(``CAUS=NONE`` / ``APPL=CONVEY``), so ``OBJ-AGENT`` is the right
+target. ``OBJ-CAUSER`` for pa-OV embedded under control is a
+narrower follow-on if ever wanted; deferred until corpus pressure
+warrants it (the construction "I forced him to feed-cause the
+child" is rare and cumbersome even in fluent speech).
+
+### Aspect independence preserved
+
+Embedded aspect is fully independent of matrix: PFV (``kinain``),
+IPFV (``kinakain``), and CTPL (``kakainin``) all parse under
+psych or transitive control. The CTPL form is the canonical
+"infinitive-like" form in fluent speech (Schachter & Otanes 1972
+§5.16); the current grammar admits all three.
+
+### Inner negation composes
+
+The recursive ``S_XCOMP → PART[POLARITY=NEG] S_XCOMP`` rule is
+voice-agnostic, so ``Gusto kong hindi kakainin ang isda`` ("I
+don't want to eat the fish") parses with the embedded OV clause
+carrying ``POLARITY=NEG``.
+
+### Phase 5b embedded-clause LMT check stays clean
+
+The new construction surfaces no spurious ``lmt-mismatch``
+diagnostics: the embedded lex entry's intrinsic profile (e.g.,
+``EAT <SUBJ, OBJ-AGENT>`` for OV ``kain``) predicts ``{SUBJ,
+OBJ-AGENT}``, and the grammar emits exactly that pair under the
+new rules. Engine and grammar agree at every embedded level.
+
+### Out-of-scope (still deferred)
+
+- **pa-OV (CAUS=DIRECT) embedded under control** — would route
+  REL-PRO to ``OBJ-CAUSER``. Rare and not exercised by corpus.
+- **IV-BEN multi-GEN embedded under control** — interaction
+  between control and Phase 5b multi-GEN frames. Two-GEN slots
+  inside a controlled clause aren't seeded; deferred.
+- **Embedded-clause complementizer choice** (``na`` vs ``-ng``):
+  unchanged from Phase 4 §7.6.
 
 ## Phase 4 §7.7: applicatives + pa-causatives
 
