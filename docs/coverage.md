@@ -161,9 +161,6 @@ list (see `docs/analysis-choices.md`):
   (`ang batang ito`) — §7.8 partial coverage; the standalone
   pronominal use parses, the post-modifier-with-linker pattern
   doesn't.
-- **Raising verbs** (`mukha`, `baka`) — §7.6 deferral; needs
-  non-thematic SUBJ in PRED templates plus lexical disambiguation
-  for the noun homonyms.
 
 ### Recently lifted (still listed for archaeological context)
 
@@ -185,6 +182,14 @@ list (see `docs/analysis-choices.md`):
   `pambili`, distinct from the existing drop pattern of
   `nasal_substitute`). 6 new IV cells (3 INSTR, 3 REASON) +
   4 lex entries; new `REASON` role in the Role enum.
+- **Raising verbs** (`mukha` "seem", `baka` "might") — lifted in
+  Phase 5c §7.6 follow-on Commit 5. PRED-template format
+  extended with non-thematic args (``SEEM <XCOMP> SUBJ``); new
+  ``CTRL_CLASS=RAISING`` lex entries; matrix wrap rule
+  ``S → V[CTRL_CLASS=RAISING] PART[LINK] S`` with structure-
+  shared SUBJ. Noun homonymy (``mukha`` "face", ``baka`` "cow")
+  resolves via syntactic-position constraints — no pre-parse
+  disambiguation needed.
 - **Pronominal possessive** (`ang libro ko`, `ng aklat niya`,
   etc.) — lifted in Phase 5c §7.8 follow-on. Context-aware
   Wackernagel placement keeps a PRON-clitic in place when it

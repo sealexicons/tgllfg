@@ -199,6 +199,15 @@ _DV_TRANS_CONTROL: dict[str, tuple[bool | None, bool | None]] = {
     "RECIPIENT": (False, False),
     "COMPLEMENT": (None, None),
 }
+# Phase 5c §7.6 follow-on (Commit 5): raising verbs declare a
+# non-thematic SUBJ outside the angle-bracketed PRED template
+# (``SEEM <XCOMP> SUBJ``), so the only thematic role is
+# COMPLEMENT (the proposition). The matrix's SUBJ is filled by
+# structure-sharing with the embedded XCOMP.SUBJ via the grammar's
+# raising binding, NOT by mapping a thematic role.
+_RAISING: dict[str, tuple[bool | None, bool | None]] = {
+    "COMPLEMENT": (None, None),
+}
 
 # Phase 5 §8: motion-verb profile with sa-marked locative argument.
 # ACTOR is the AV pivot; LOCATION is OBL-θ via the [+r, -o]
@@ -468,6 +477,36 @@ BASE: dict[str, list[LexicalEntry]] = {
                 "COMPLEMENT": "XCOMP",
             },
             intrinsic_classification=_DV_TRANS_CONTROL,
+        ),
+    ],
+    # Phase 5c §7.6 follow-on (Commit 5): raising verbs.
+    # ``mukha`` "seem", ``baka`` "might". Closed-class, uninflected
+    # pseudo-verbs seeded under ``particles.yaml`` with
+    # ``CTRL_CLASS=RAISING``. PRED uses the non-thematic notation
+    # ``<XCOMP> SUBJ``: COMPLEMENT is the only thematic role; SUBJ
+    # is structurally required (shared with embedded XCOMP.SUBJ via
+    # the grammar's raising binding) but bears no theta role on
+    # the matrix. Both surfaces are also nouns (``mukha`` "face",
+    # ``baka`` "cow"); the grammar's wrap-rule pattern resolves
+    # the homonymy at parse time.
+    "mukha": [
+        LexicalEntry(
+            lemma="mukha",
+            pred="SEEM <XCOMP> SUBJ",
+            a_structure=["COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "RAISING"},
+            gf_defaults={"COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_RAISING,
+        ),
+    ],
+    "baka": [
+        LexicalEntry(
+            lemma="baka",
+            pred="MIGHT <XCOMP> SUBJ",
+            a_structure=["COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "RAISING"},
+            gf_defaults={"COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_RAISING,
         ),
     ],
 }

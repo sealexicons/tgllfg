@@ -762,6 +762,9 @@ out of scope:
 Both pieces are tractable but additive — defer until the lex
 infrastructure for non-thematic args is needed elsewhere.
 
+**Update (Phase 5c):** lifted in Phase 5c §7.6 follow-on
+Commit 5 (see the entry below).
+
 ### Out-of-scope (will revisit)
 
 - **OV / DV control complements** (non-SUBJ-gap inside XCOMP).
@@ -1816,3 +1819,123 @@ new applicatives natural test fixtures: ``karayom`` "needle"
   (``mambili`` retain vs ``mamili`` drop). The drop pattern is
   the documented default; retain readings would need per-base
   flagging. Deferred.
+
+## Phase 5c §7.6 follow-on: raising verbs
+
+**Date:** 2026-05-01. **Status:** active. Lifts the §7.6
+"Raising deferred" item: ``mukha`` "seem" and ``baka`` "might"
+now parse with structure-shared SUBJ between matrix and
+embedded XCOMP.
+
+### Three pieces
+
+**(a) PRED-template extension for non-thematic args.**
+:class:`tgllfg.fstruct.checks.PredTemplate` gains separate
+``thematic`` and ``non_thematic`` tuples; ``governables``
+remains the canonical union (used by completeness / coherence).
+The parser :func:`parse_pred_template` recognises trailing
+non-thematic args after the closing ``>``:
+
+```
+SEEM <XCOMP> SUBJ      → thematic=("XCOMP",) non_thematic=("SUBJ",)
+EAT <SUBJ, OBJ>        → thematic=("SUBJ","OBJ") non_thematic=()  (existing case)
+RAIN <> SUBJ           → thematic=() non_thematic=("SUBJ",)        (0-thematic future-proofing)
+```
+
+The completeness check (:func:`_check_completeness`) iterates
+over ``governables`` so non-thematic args are required just like
+thematic ones. The coherence check (:func:`_check_coherence`)
+allows them by membership in the same union. Subject Condition
+fires unchanged (still requires SUBJ if any args).
+
+**(b) ``CTRL_CLASS=RAISING`` lex entries.** ``mukha`` and
+``baka`` are seeded under :file:`data/tgl/particles.yaml` as
+closed-class, uninflected pseudo-verbs (mirroring the §7.6
+psych control entries). Lex entries in :data:`tgllfg.lexicon.BASE`:
+
+```
+SEEM <XCOMP> SUBJ      mukha   a_structure=[COMPLEMENT]
+MIGHT <XCOMP> SUBJ     baka    a_structure=[COMPLEMENT]
+```
+
+Only one thematic role (COMPLEMENT, the proposition) — SUBJ is
+non-thematic and bears no theta role. The matching intrinsic
+profile ``_RAISING`` has the single COMPLEMENT entry with
+``(None, None)`` (XCOMP-stipulated, off the truth table).
+
+**(c) Grammar wrap rule.** A new pattern in
+:file:`src/tgllfg/cfg/grammar.py`:
+
+```
+S → V[CTRL_CLASS=RAISING] PART[LINK=…] S
+   (↑ XCOMP) = ↓3
+   (↑ SUBJ) = (↑ XCOMP SUBJ)
+```
+
+The right-hand S is a complete embedded clause (with its own
+SUBJ — distinct from the control case where the embedded clause
+has a SUBJ-gap inside ``S_XCOMP``). The raising binding
+``(↑ SUBJ) = (↑ XCOMP SUBJ)`` lifts the embedded SUBJ to the
+matrix.
+
+### Disambiguation by syntactic position
+
+Both surfaces are also nouns (``mukha`` "face", ``baka`` "cow",
+the latter pre-existing in :file:`data/tgl/roots.yaml`; ``mukha``
+added alongside Commit 5). The morph analyzer returns both
+candidates per token. The grammar's wrap-rule pattern is
+distinctive: it requires a ``V[CTRL_CLASS=RAISING]`` token in
+clause-initial position followed by a linker plus an embedded
+S. The noun reading has no syntactic place to fit when this
+pattern matches; conversely, when the surface appears mid-clause
+(``Kumain ang baka`` "the cow ate"), the verb reading has no
+wrap rule to apply to and the noun reading wins. No pre-parse
+disambiguation is needed.
+
+### LMT bridge: non-thematic SUBJ added to expected GFs
+
+:func:`tgllfg.lmt.lmt_check` now consults the lex entry's PRED
+template and unions the non-thematic args into ``expected_gfs``
+before the actual-vs-expected comparison. The BK engine maps
+only thematic roles, so without this addition raising verbs would
+fire a spurious ``lmt-mismatch`` (engine produces ``{XCOMP}``
+but f-structure has ``{XCOMP, SUBJ}``).
+
+### Coexistence with control
+
+Raising and control structures share the matrix wrap-rule shape
+(matrix V + linker + embedded clause) but differ in two ways:
+
+1. The embedded clause: control uses ``S_XCOMP`` (SUBJ-gap);
+   raising uses full ``S`` (overt SUBJ).
+2. The matrix SUBJ: control's matrix SUBJ comes from a thematic
+   role (mapped via LMT); raising's matrix SUBJ is non-thematic
+   and structure-shared with embedded SUBJ.
+
+The grammar uses ``CTRL_CLASS`` as the discriminating feature so
+control and raising rules don't accidentally cross-fire.
+
+### Sentences enabled
+
+```
+Mukhang kumakain ang bata.            — "the child seems to be eating"
+Mukhang kumain ang bata.               (PFV embedded)
+Mukhang kinakain ng aso ang isda.     — OV embedded; matrix.SUBJ = isda
+Mukhang kumakain ang bata ng isda.    — embedded AV transitive with OBJ
+Mukhang hindi kumakain ang bata.      — inner negation in XCOMP
+Bakang umuwi ang bata.                — "the child might leave"
+```
+
+### Out-of-scope (still deferred)
+
+* **Raising chains** (raising matrix embedding another raising
+  matrix — ``Mukhang bakang umuwi ang bata``). The wrap rule's
+  right-hand S admits any complete clause, so this should
+  technically work; not exercised by the corpus and not
+  separately tested.
+* **Other raising verbs.** Tagalog has a small closed class —
+  ``parang``, ``tila``, ``yata`` are also raising-like. Only
+  ``mukha`` and ``baka`` are seeded.
+* **Raising under control** (a control verb embedding a raising
+  matrix). The infrastructure composes, but the construction
+  isn't exercised.

@@ -664,6 +664,30 @@ class Grammar:
                 ),
             ))
 
+        # Phase 5c §7.6 follow-on (Commit 5): raising verbs.
+        # ``Mukhang kumakain ang bata`` "the child seems to be
+        # eating". The matrix has no thematic SUBJ; its SUBJ is
+        # structure-shared with the embedded clause's SUBJ. Surface
+        # shape: V[CTRL_CLASS=RAISING] + linker + full embedded S
+        # (the embedded clause is a complete clause with its own
+        # SUBJ — distinct from the control case where the embedded
+        # clause has a SUBJ-gap). The raising binding equation
+        # ``(↑ SUBJ) = (↑ XCOMP SUBJ)`` lifts the embedded SUBJ to
+        # the matrix.
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "S",
+                [
+                    "V[CTRL_CLASS=RAISING]",
+                    f"PART[LINK={link}]",
+                    "S",
+                ],
+                _eqs(
+                    "(↑ XCOMP) = ↓3",
+                    "(↑ SUBJ) = (↑ XCOMP SUBJ)",
+                ),
+            ))
+
         # Transitive frames per voice, two NP orderings each, with and
         # without a trailing sa-oblique (ADJUNCT). The ng-non-pivot
         # binds to a typed ``OBJ-θ`` slot for non-AV voices (per the

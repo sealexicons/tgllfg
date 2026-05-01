@@ -130,6 +130,25 @@
   pos: VERB
   feats: {CTRL_CLASS: PSYCH}
 
+# Phase 5c §7.6 follow-on (Commit 5): raising verbs. Like the
+# psych pseudo-verbs above, they're closed-class, uninflected,
+# select an XCOMP. Unlike psych, they have no thematic SUBJ —
+# the matrix SUBJ is structure-shared with the embedded SUBJ
+# (``Mukhang kumakain ang bata`` "the child seems to be eating";
+# matrix.SUBJ === XCOMP.SUBJ === bata). The lex's PRED uses the
+# non-thematic notation ``SEEM <XCOMP> SUBJ`` (SUBJ outside
+# angle-brackets). Both surfaces are also nouns (``mukha`` "face",
+# ``baka`` "cow"); the noun reading lives in roots.yaml. The
+# grammar's wrap rule pattern (V[CTRL_CLASS=RAISING] + linker +
+# embedded S) is sufficiently distinctive that no pre-parse
+# disambiguation is needed — only one reading completes.
+- surface: mukha
+  pos: VERB
+  feats: {CTRL_CLASS: RAISING}
+- surface: baka
+  pos: VERB
+  feats: {CTRL_CLASS: RAISING}
+
 # === Second-position adverbial enclitics =================================
 # These attach to the first prosodic word in the clause; §7.3 will
 # add the clitic-placement c-structure rules. Schachter & Otanes 1972

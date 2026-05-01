@@ -14,6 +14,7 @@ from __future__ import annotations
 import pytest
 
 from tgllfg.common import LexicalEntry, MorphAnalysis
+from tgllfg.fstruct.checks import parse_pred_template
 from tgllfg.lexicon import BASE, _synthesize_verb_entry
 from tgllfg.lmt import (
     IntrinsicFeatures,
@@ -91,27 +92,51 @@ class TestBaseRoundTrip:
                         f"{lemma} ({entry.pred}): expected roles "
                         f"{expected_roles}, got {actual_roles}"
                     )
-                if result.diagnostics:
+                # Engine-emitted diagnostics are normally a smell. The
+                # one exception is raising verbs (Phase 5c §7.6
+                # follow-on, Commit 5): their PRED declares SUBJ as
+                # non-thematic (outside ``<...>``), so the engine's
+                # ``subject-condition-failed`` fires correctly — that's
+                # the engine telling us no thematic role maps to SUBJ.
+                # The non-thematic SUBJ is supplied structurally by the
+                # raising-binding equation in the grammar.
+                tmpl = parse_pred_template(entry.pred)
+                is_raising = bool(tmpl.non_thematic)
+                non_subj_diags = [
+                    d for d in result.diagnostics
+                    if not (
+                        is_raising
+                        and d.kind == "subject-condition-failed"
+                    )
+                ]
+                if non_subj_diags:
                     failures.append(
                         f"{lemma} ({entry.pred}): diagnostics "
-                        f"{[d.kind for d in result.diagnostics]}"
+                        f"{[d.kind for d in non_subj_diags]}"
                     )
         assert failures == [], "\n".join(failures)
 
     def test_every_entry_has_a_subj(self) -> None:
         # Subject Condition is structural; every PRED-bearing entry
-        # must produce exactly one SUBJ.
+        # must produce SUBJ either (a) via the engine's thematic-role
+        # mapping, or (b) as a non-thematic arg in the PRED template
+        # (raising verbs — Phase 5c §7.6 follow-on, Commit 5).
         for lemma, entries in BASE.items():
             for entry in entries:
                 frame = intrinsics_for(entry)
                 stipulated = stipulated_gfs_for(entry)
                 result = compute_mapping(frame, stipulated_gfs=stipulated)
-                subj_count = sum(
+                subj_from_mapping = sum(
                     1 for gf in result.mapping.values() if gf == "SUBJ"
                 )
-                assert subj_count == 1, (
-                    f"{lemma} ({entry.pred}): expected 1 SUBJ, got "
-                    f"{subj_count} in {result.mapping}"
+                tmpl = parse_pred_template(entry.pred)
+                subj_from_non_thematic = sum(
+                    1 for a in tmpl.non_thematic if a == "SUBJ"
+                )
+                assert subj_from_mapping + subj_from_non_thematic == 1, (
+                    f"{lemma} ({entry.pred}): expected exactly 1 SUBJ "
+                    f"source, got {subj_from_mapping} from mapping + "
+                    f"{subj_from_non_thematic} from non-thematic"
                 )
 
 
