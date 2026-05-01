@@ -168,6 +168,16 @@ _DV_TRANS_CONTROL: dict[str, tuple[bool | None, bool | None]] = {
     "COMPLEMENT": (None, None),
 }
 
+# Phase 5 §8 Commit 6: motion-verb profile with sa-marked locative
+# argument. ACTOR is the AV pivot; LOCATION is OBL-θ via the
+# [+r, -o] truth-table cell. The post-solve oblique classifier
+# rewrites ADJUNCT members with CASE=DAT into the typed OBL-LOC
+# slot.
+_AV_INTR_ACTOR_LOCATION: dict[str, tuple[bool | None, bool | None]] = {
+    "ACTOR": (False, False),
+    "LOCATION": (True, False),
+}
+
 
 BASE: dict[str, list[LexicalEntry]] = {
     # kain — eat. Anchor of the OV percolation tests; carries the
@@ -282,6 +292,28 @@ BASE: dict[str, list[LexicalEntry]] = {
             ["AGENT", "CONVEYED"],
             {"CONVEYED": "SUBJ", "AGENT": "OBJ"},
             intrinsic_classification=_IV_TR_AGENT_CONVEYED,
+        ),
+    ],
+    # lakad — walk. Phase 5 §8 Commit 6: AV motion verb that takes a
+    # sa-marked locative argument. The intransitive entry covers
+    # bare "Lumakad ang bata" (no destination); the locative entry
+    # covers "Lumakad ang bata sa palengke" and exercises the
+    # oblique classifier (sa-NP moves out of ADJUNCT into OBL-LOC).
+    # roots.yaml declares lakad as INTR with the um affix class.
+    "lakad": [
+        _entry(
+            "lakad", "AV", "WALK <SUBJ>",
+            ["ACTOR"],
+            {"ACTOR": "SUBJ"},
+            transitive=False,
+            intrinsic_classification=_AV_INTR_ACTOR,
+        ),
+        _entry(
+            "lakad", "AV", "WALK <SUBJ, OBL-LOC>",
+            ["ACTOR", "LOCATION"],
+            {"ACTOR": "SUBJ", "LOCATION": "OBL-LOC"},
+            transitive=False,
+            intrinsic_classification=_AV_INTR_ACTOR_LOCATION,
         ),
     ],
     # gawa — do, make.

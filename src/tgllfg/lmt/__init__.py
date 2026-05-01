@@ -29,6 +29,7 @@ from .common import (
     stipulated_gfs_for,
 )
 from .legacy import apply_lmt
+from .oblique_classifier import classify_oblique_slots
 from .principles import (
     ROLE_HIERARCHY,
     apply_voice_constraints,
@@ -65,6 +66,8 @@ __all__ = [
     "apply_lmt_with_check",
     "find_matrix_lex_entry",
     "lmt_check",
+    # Oblique classifier (Commit 6)
+    "classify_oblique_slots",
     # Legacy (deleted in Commit 8)
     "apply_lmt",
 ]

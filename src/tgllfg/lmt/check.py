@@ -28,6 +28,7 @@ from ..fstruct import Diagnostic
 from ..fstruct.checks import is_governable_gf
 from .common import intrinsics_for, stipulated_gfs_for
 from .legacy import apply_lmt
+from .oblique_classifier import classify_oblique_slots
 from .principles import compute_mapping
 
 
@@ -118,6 +119,11 @@ def lmt_check(
     # consistently reaches the SUBJ slot the engine predicts.
     # Commit 7 thoughtfully promotes the safe subset.
     diagnostics: list[Diagnostic] = []
+
+    # Commit 6: reclassify ADJUNCT sa-NPs into typed OBL-θ slots
+    # before the GF-set comparison, so the comparison reflects the
+    # post-classify state.
+    diagnostics.extend(classify_oblique_slots(f, result.mapping))
 
     expected_gfs = set(result.mapping.values())
     actual_gfs = _governable_gfs(f)
