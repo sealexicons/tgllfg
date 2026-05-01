@@ -155,10 +155,6 @@ list (see `docs/analysis-choices.md`):
 - **Long-distance relativization** through XCOMP / COMP (needs
   functional uncertainty in the unifier — §7.5 + §7.6 deferral).
 - **Non-pivot ay-fronting** (§7.4 deferral; §7.8 follow-up).
-- **OV / DV control complements** with non-SUBJ gap (§7.6
-  deferral).
-- **Multi-GEN-NP applicative / causative frames** (§7.7
-  deferral; Phase 5 LMT).
 - **`ipang-` instrumental** and **`ika-` reason** applicatives
   (§7.7 deferral; need homorganic-nasal sandhi).
 - **`pa-...-an` DV causative** and other less-common causative
@@ -169,11 +165,22 @@ list (see `docs/analysis-choices.md`):
   doesn't.
 - **Pronominal possessive** (`ang aklat ko`) — conflicts with §7.3
   Wackernagel clitic placement; needs context-aware placement.
-- **Pre-NP partitive quantifier** (`lahat ng bata`) — needs a QP
-  non-terminal (§7.8 deferral).
 - **Raising verbs** (`mukha`, `baka`) — §7.6 deferral; needs
   non-thematic SUBJ in PRED templates plus lexical disambiguation
   for the noun homonyms.
+
+### Recently lifted (still listed for archaeological context)
+
+- **OV / DV / IV control complements** with non-SUBJ gap — lifted
+  in Phase 5c §7.6 follow-on. The embedded actor's typed GF
+  (`OBJ-AGENT`) is now the gap-binding target for non-AV embedded
+  clauses; psych and transitive control compose with OV / DV / IV
+  embedded.
+- **Multi-GEN-NP applicative / causative frames** — lifted
+  incrementally in Phase 5b §7.7 follow-on for IV-BEN and
+  pa-OV-direct frames; remaining variants still deferred.
+- **Pre-NP partitive quantifier** (`lahat ng bata`) — lifted in
+  Phase 5b §7.8 follow-on (flat 3-child rule, no QP non-terminal).
 
 ## How to regenerate
 

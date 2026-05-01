@@ -241,6 +241,17 @@ stipulated: {COMPLEMENT: XCOMP}
 mapping: AGENT → OBJ-AGENT, PATIENT → SUBJ, COMPLEMENT → XCOMP
 ```
 
+The matrix lex's analysis is independent of the embedded clause's
+voice. Phase 5c §7.6 follow-on lifts the AV-only restriction on
+`S_XCOMP` so the embedded clause can be OV / DV / IV — e.g.,
+`pinilit ko siyang kakainin ang isda` ("I forced him to eat the
+fish", with OV embedded). The matrix wrap rule
+`(↑ SUBJ) = (↑ XCOMP REL-PRO)` is unchanged; under non-AV embedded
+the gap routes to `OBJ-AGENT` (the actor's typed GF), so the
+matrix `PATIENT/SUBJ` still controls the embedded actor. The
+Phase 5b embedded-clause LMT check then validates the embedded
+clause against its own lex's intrinsic profile.
+
 ### AV motion with sa-locative (`lumakad ang bata sa palengke`)
 
 ```
