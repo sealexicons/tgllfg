@@ -186,6 +186,42 @@ class Grammar:
             ["(↑) = ↓1"],
         ))
 
+        # --- Phase 5b §7.8 follow-on: pre-NP partitive (Q + NP[GEN]) ---
+        #
+        # ``ang lahat ng bata`` ("all of the children"). The
+        # quantifier ``lahat`` (or ``iba``) sits between the outer
+        # case marker and the inner GEN-marked complement; the
+        # complement supplies the head's PRED, the outer marker
+        # supplies CASE, and the Q rides as a ``QUANT`` atom on
+        # the resulting NP. Phase 4 §7.8 deferred this form
+        # ("Pre-NP partitive usage ... needs a QP non-terminal");
+        # the cleaner solution turned out to be a flat 3-child rule
+        # rather than a separate QP non-terminal, since the inner
+        # NP[GEN] already exists in the grammar.
+        #
+        # The equation pattern ``(↑) = ↓1`` shares the outer NP's
+        # f-structure with the DET/ADP (so CASE + MARKER come from
+        # the outer marker); ``(↑ PRED) = ↓3 PRED`` overlays the
+        # head from the inner NP; ``(↑ QUANT) = ↓2 QUANT`` lifts
+        # the quantifier atom onto the NP. The inner NP[GEN] is
+        # preserved as its own sub-projection (CASE=GEN there,
+        # CASE=NOM on the outer); only its PRED value is borrowed.
+        rules.append(Rule(
+            "NP[CASE=NOM]",
+            ["DET[CASE=NOM]", "Q", "NP[CASE=GEN]"],
+            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+        ))
+        rules.append(Rule(
+            "NP[CASE=GEN]",
+            ["ADP[CASE=GEN]", "Q", "NP[CASE=GEN]"],
+            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+        ))
+        rules.append(Rule(
+            "NP[CASE=DAT]",
+            ["ADP[CASE=DAT]", "Q", "NP[CASE=GEN]"],
+            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+        ))
+
         # --- N from NOUN (toy PRED; Phase 5 will lexicalise properly) ---
         rules.append(Rule(
             "N",

@@ -972,6 +972,10 @@ a partitive ``ng``-NP). Out of scope for this commit; the floated
 form is the more common surface pattern and exercises the
 binding mechanism.
 
+**Update (Phase 5b):** lifted in Phase 5b §7.8 follow-on. The
+implementation chose a flat 3-child rule rather than a separate
+``QP`` non-terminal — see the §7.8 follow-on entry below.
+
 ## Phase 4 §7.9: robustness — fragments, ranking, --strict
 
 **Date:** 2026-04-30. **Status:** active.
@@ -1326,10 +1330,82 @@ The Phase 5b deferral list also includes:
 
 * **Multi-OBL semantic disambiguation** for sa-NPs — out of
   scope here (this commit is GEN-only).
-* **Pre-NP partitive** (`lahat ng bata`) — the floated-quantifier
-  rule in §7.8 stays; the partitive form needs a QP non-terminal.
 * **OV/DV control complements** — separate problem (controller
   binds embedded AGENT, not embedded SUBJ).
+* **OBJ-θ in the grammar** — the Phase 4 grammar emits bare
+  `OBJ` for non-AV ng-non-pivots while the LMT engine produces
+  typed `OBJ-θ`. Aligning the two would eliminate the
+  informational `lmt-mismatch` noise but touches every per-voice
+  grammar rule.
 * **Raising verbs**, **`ipang-` / `ika-` applicatives**,
   **pronominal possessive**, **long-distance relativization** —
   all unchanged from the Phase 4 deferral inventory.
+
+## Phase 5b §7.8 follow-on: pre-NP partitive
+
+**Status:** active. Lifts the §7.8 deferral noted earlier in this
+file ("Pre-NP partitive (`lahat ng bata`) — deferred"). Sentences
+like ``Kumain ang lahat ng bata`` ("All of the children ate")
+now parse with the quantifier riding inside the NP rather than
+floated to clause-final.
+
+### Flat 3-child rule, no `QP` non-terminal
+
+The §7.8 deferral note suggested a `QP` non-terminal. The
+implementation chose a flat 3-child NP rule instead:
+
+```
+NP[CASE=NOM] → DET[CASE=NOM] Q NP[CASE=GEN]
+NP[CASE=GEN] → ADP[CASE=GEN] Q NP[CASE=GEN]
+NP[CASE=DAT] → ADP[CASE=DAT] Q NP[CASE=GEN]
+```
+
+Equations:
+
+```
+(↑) = ↓1                  -- outer marker supplies CASE / MARKER
+(↑ PRED) = ↓3 PRED        -- head supplied by inner NP[GEN]
+(↑ QUANT) = ↓2 QUANT      -- Q's QUANT atom rides on the NP
+```
+
+A separate `QP` non-terminal would have been more decomposable
+but adds a layer for no immediate gain — the flat rule reuses the
+existing `NP[CASE=GEN]` non-terminal as the partitive complement.
+
+### Quantifier surfaces as a feature on the NP
+
+The partitive's quantifier rides as a `QUANT` atom on the resulting
+NP's f-structure (matching the floated-quantifier convention,
+where the floated Q's f-structure carries `QUANT` from particles.yaml).
+Reading off "all" vs "some" from a parse means inspecting
+``np.feats["QUANT"]``.
+
+### Inner NP[GEN] is structurally separate, not the head
+
+The equations don't structure-share the outer NP with the inner
+NP[GEN] — only the inner's PRED is borrowed. The inner NP[GEN]
+keeps `CASE=GEN`, `MARKER=NG`, and any features of its own; the
+outer NP[X] gets `CASE=X`, `MARKER=ANG/NG/SA`, plus the borrowed
+PRED and a fresh `QUANT`. This avoids the structure-sharing
+conflict that `(↑) = ↓3` would create (outer's CASE would be
+forced to GEN by the inner).
+
+### Possessive vs partitive disambiguation
+
+Both surface forms `DET X NP[GEN]` and `DET Q NP[GEN]` exist:
+
+* `ang aklat ng bata` (possessive) — DET + N + NP[GEN], parsed
+  by the Phase 4 §7.8 NP-internal possessive rule. Without a Q
+  in position 2, only the possessive rule fires.
+* `ang lahat ng bata` (partitive) — DET + Q + NP[GEN], parsed by
+  the new partitive rule. The Q is gated by POS=Q.
+
+The two rules don't compete because Q vs N is an unambiguous POS
+distinction.
+
+### Floated quantifier unchanged
+
+The pre-existing `S → S Q` floated-quantifier rule (`Kumain ang
+bata lahat`) is unaffected. It operates at the S level (Q is a
+sister of the matrix clause), not within an NP. Both surfaces
+parse cleanly without competing.
