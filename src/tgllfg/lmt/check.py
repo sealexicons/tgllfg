@@ -1,22 +1,39 @@
 # tgllfg/lmt/check.py
 
-"""Phase 5 §8 Commit 5 — pipeline-facing LMT check.
+"""Phase 5 §8 Commit 5/7 — pipeline-facing LMT check.
 
 The :func:`lmt_check` function is the replacement for
 :func:`tgllfg.lmt.legacy.apply_lmt`: it runs the Bresnan–Kanerva
 engine on the lex entry's intrinsic profile and compares the
-predicted role-to-GF mapping against the parsed f-structure. Any
-disagreement surfaces as an ``lmt-mismatch`` :class:`Diagnostic`.
+predicted role-to-GF mapping against the parsed f-structure.
 
-Mismatch is **informational** in this commit (Commit 5). Commit 7
-will promote a configured subset (Subject-slot mismatches, plus
-biuniqueness violations) to blocking by re-routing them through
-``subject-condition-failed`` and ``lmt-biuniqueness-violated``.
+Diagnostic policy (Commit 7):
+
+* **Blocking** — Subject-slot mismatch (LMT predicts SUBJ but the
+  f-structure lacks one) and engine-emitted biuniqueness violations
+  (two roles mapping to the same GF in the lex profile). These
+  surface through ``subject-condition-failed`` and
+  ``lmt-biuniqueness-violated`` respectively, both already
+  blocking by absence from
+  :data:`tgllfg.fstruct.NON_BLOCKING_KINDS`.
+
+* **Informational** — non-SUBJ GF set differences (e.g., the
+  Phase 4 grammar emits bare ``OBJ`` while the engine predicts
+  ``OBJ-θ`` for non-AV ng-non-pivots). These surface as
+  ``lmt-mismatch``, kept in ``NON_BLOCKING_KINDS`` so the parse
+  survives.
+
+The engine's ``subject-condition-failed`` (no role maps to SUBJ in
+the lex profile) is intentionally **dropped** when surfacing: if
+the f-structure lacks SUBJ too, :func:`tgllfg.fstruct.lfg_well_formed`
+already emits a structural ``subject-condition-failed`` downstream;
+if the f-structure has SUBJ (lex profile says no, grammar says
+yes), the parse is structurally OK and shouldn't be suppressed.
 
 The legacy heuristic remains available via
 :func:`tgllfg.lmt.legacy.apply_lmt` for the synthesizer-fallback
-path (verbs whose lex entry can't be located post-solve) and for
-backward compatibility — the wrapper is deleted in Commit 8.
+path (verbs whose lex entry can't be located post-solve) — the
+wrapper is deleted in Commit 8.
 """
 
 from __future__ import annotations
@@ -111,13 +128,6 @@ def lmt_check(
         frame, stipulated_gfs=stipulated, pred_name=pred_name
     )
 
-    # Commit 5: surface only ``lmt-mismatch`` (informational). The
-    # engine's blocking diagnostics (``subject-condition-failed``,
-    # ``lmt-biuniqueness-violated``) are tested in isolation
-    # (Commits 2/3) but not yet routed through the pipeline — they
-    # would fire as false positives until the grammar / lex layer
-    # consistently reaches the SUBJ slot the engine predicts.
-    # Commit 7 thoughtfully promotes the safe subset.
     diagnostics: list[Diagnostic] = []
 
     # Commit 6: reclassify ADJUNCT sa-NPs into typed OBL-θ slots
@@ -127,6 +137,50 @@ def lmt_check(
 
     expected_gfs = set(result.mapping.values())
     actual_gfs = _governable_gfs(f)
+
+    # Commit 7: surface engine-emitted biuniqueness violations as
+    # blocking. ``compute_mapping`` emits ``lmt-biuniqueness-violated``
+    # when the lex profile has two roles mapping to the same GF —
+    # always a real lex contradiction, so we want the parse to
+    # surface the inconsistency rather than silently produce a
+    # misleading mapping.
+    for engine_diag in result.diagnostics:
+        if engine_diag.kind == "lmt-biuniqueness-violated":
+            diagnostics.append(engine_diag)
+        # The engine's ``subject-condition-failed`` (no role mapped
+        # to SUBJ in the lex profile) is intentionally dropped here.
+        # If the f-structure also lacks SUBJ, ``lfg_well_formed``
+        # downstream emits a structural ``subject-condition-failed``;
+        # if it has SUBJ, the parse is structurally OK and
+        # shouldn't be suppressed for a lex-profile inconsistency.
+
+    # Commit 7: SUBJ-slot mismatch is structural — promote to
+    # blocking via ``subject-condition-failed``. This fires when
+    # the LMT engine predicts SUBJ for some role but the
+    # f-structure has no SUBJ feature; the post-classify f-structure
+    # is the one being checked, so OBL-θ classification has
+    # already happened.
+    expected_has_subj = "SUBJ" in expected_gfs
+    actual_has_subj = "SUBJ" in actual_gfs
+    if expected_has_subj and not actual_has_subj:
+        diagnostics.append(Diagnostic(
+            kind="subject-condition-failed",
+            message=(
+                f"LMT predicts SUBJ for {pred_str!r} but f-structure "
+                f"has no SUBJ feature"
+            ),
+            detail={
+                "expected": sorted(expected_gfs),
+                "actual": sorted(actual_gfs),
+                "pred": pred_str,
+            },
+        ))
+
+    # Non-SUBJ GF set differences stay informational — primarily
+    # the Phase 4 grammar's bare ``OBJ`` vs the engine's typed
+    # ``OBJ-θ`` for non-AV ng-non-pivots. The parse survives so
+    # downstream callers see both the grammar's bindings and the
+    # engine's typed prediction.
     if expected_gfs != actual_gfs:
         diagnostics.append(Diagnostic(
             kind="lmt-mismatch",
