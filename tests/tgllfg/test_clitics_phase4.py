@@ -126,11 +126,12 @@ def test_pron_clitic_as_subj_av() -> None:
 
 
 def test_pron_clitic_as_obj_ov() -> None:
-    """``Kinain mo ang isda``: mo (GEN-clitic) is OBJ in OV (the
-    OBJ-uniform analysis), isda is SUBJ."""
+    """``Kinain mo ang isda``: mo (GEN-clitic) is OBJ-AGENT in OV
+    (typed under the Phase 5b OBJ-θ-in-grammar alignment), isda
+    is SUBJ."""
     _, f, _, _ = _first("Kinain mo ang isda.")
     assert f.feats.get("VOICE") == "OV"
-    assert "SUBJ" in f.feats and "OBJ" in f.feats
+    assert "SUBJ" in f.feats and "OBJ-AGENT" in f.feats
 
 
 def test_adverbial_na_in_adj() -> None:

@@ -3,18 +3,18 @@
 Exercises the path :func:`tgllfg.pipeline.parse_text` →
 :func:`tgllfg.lmt.apply_lmt_with_check`. Asserts:
 
-* AStructure carries the LMT-engine-derived mapping (not the
-  Phase 4 heuristic — non-AV ng-non-pivots become typed
-  ``OBJ-θ``).
-* ``lmt-mismatch`` diagnostic fires for the non-AV cases where the
-  Phase 4 grammar emits bare ``OBJ`` but the engine predicts
-  ``OBJ-θ``. The diagnostic is informational (in
-  :data:`tgllfg.fstruct.NON_BLOCKING_KINDS`) so the parse survives.
-* AV cases (transitive and intransitive) — and stipulated-XCOMP
-  cases (control verbs, indirect causatives) — do **not** fire
-  ``lmt-mismatch``.
-* Synthesized-fallback verbs (lemmas absent from BASE) parse via
-  the legacy heuristic path; no diagnostic emitted.
+* AStructure carries the LMT-engine-derived mapping (non-AV
+  ng-non-pivots map to typed ``OBJ-θ``).
+* The Phase 4 grammar's bare-``OBJ`` emission for non-AV
+  transitives has been aligned with the LMT engine's typed
+  prediction in Phase 5b: the f-structure now carries
+  ``OBJ-AGENT`` / ``OBJ-CAUSER`` directly. As a result,
+  ``lmt-mismatch`` no longer fires on regular transitives —
+  the diagnostic is reserved for synthetic fixtures with
+  deliberately mismatched f-structure / lex-entry pairs (see
+  ``test_lmt_check_blocking.py``).
+* AV cases, stipulated-XCOMP cases (control verbs, indirect
+  causatives), and synthesized-fallback verbs all parse cleanly.
 """
 
 from __future__ import annotations
@@ -61,46 +61,41 @@ class TestAvNoMismatch:
         assert a.mapping == {"AGENT": "SUBJ", "PATIENT": "OBJ"}
 
 
-# === OV / DV / IV — informational mismatch fires ==========================
+# === OV / DV / IV — engine and grammar agree (typed OBJ-θ) ================
 
 
-class TestNonAvMismatch:
-    """Non-AV transitives: the Phase 4 grammar emits bare ``OBJ`` for
-    the ng-non-pivot, but the LMT engine produces typed ``OBJ-θ``
-    (per Q1 upgrade decision). The mismatch is informational —
-    surfaces as a diagnostic but the parse is preserved."""
+class TestNonAvAligned:
+    """Non-AV transitives: as of the Phase 5b OBJ-θ-in-grammar
+    alignment, the f-structure carries ``OBJ-AGENT`` (or
+    ``OBJ-CAUSER`` for pa-OV-direct) directly — matching the
+    engine's typed prediction. No mismatch fires."""
 
-    def test_ov_transitive_mismatch_informational(self) -> None:
+    def test_ov_transitive_typed(self) -> None:
         _, f, a, diags = _first("Kinain ng aso ang isda.")
-        assert _has_diag(diags, "lmt-mismatch"), (
-            f"expected lmt-mismatch on OV-tr: {diags}"
+        assert not _has_diag(diags, "lmt-mismatch"), (
+            f"unexpected mismatch on OV-tr: {diags}"
         )
-        # Parse survived (informational, not blocking).
         assert f.feats.get("VOICE") == "OV"
-        # AStructure carries LMT-derived typed mapping.
         assert a.mapping == {"PATIENT": "SUBJ", "AGENT": "OBJ-AGENT"}
-        # Sanity: f-structure still has bare OBJ (the Phase 4 grammar
-        # equations emit bare OBJ; the engine's typed prediction is
-        # surfaced via the AStructure and the lmt-mismatch
-        # diagnostic, not via grammar rewriting).
-        assert "OBJ" in f.feats
-        assert "OBJ-AGENT" not in f.feats
+        # F-structure carries typed OBJ-AGENT (no bare OBJ).
+        assert "OBJ-AGENT" in f.feats
+        assert "OBJ" not in f.feats
 
-    def test_dv_transitive_mismatch_informational(self) -> None:
+    def test_dv_transitive_typed(self) -> None:
         _, f, a, diags = _first("Sinulatan ng bata ang ina.")
-        assert _has_diag(diags, "lmt-mismatch"), (
-            f"expected lmt-mismatch on DV-tr: {diags}"
-        )
+        assert not _has_diag(diags, "lmt-mismatch")
         assert f.feats.get("VOICE") == "DV"
         assert a.mapping == {"RECIPIENT": "SUBJ", "AGENT": "OBJ-AGENT"}
+        assert "OBJ-AGENT" in f.feats
+        assert "OBJ" not in f.feats
 
-    def test_iv_conveyed_mismatch_informational(self) -> None:
+    def test_iv_conveyed_typed(self) -> None:
         _, f, a, diags = _first("Itinapon ng bata ang basura.")
-        assert _has_diag(diags, "lmt-mismatch"), (
-            f"expected lmt-mismatch on IV-CONVEY: {diags}"
-        )
+        assert not _has_diag(diags, "lmt-mismatch")
         assert f.feats.get("VOICE") == "IV"
         assert a.mapping == {"CONVEYED": "SUBJ", "AGENT": "OBJ-AGENT"}
+        assert "OBJ-AGENT" in f.feats
+        assert "OBJ" not in f.feats
 
 
 # === Stipulated-XCOMP — no mismatch =======================================
@@ -170,42 +165,51 @@ class TestSynthesizerFallback:
 
 class TestMismatchDiagnosticShape:
     """The mismatch diagnostic carries useful detail for downstream
-    consumers — the SUBJ-slot promotion logic in
-    :func:`tgllfg.lmt.lmt_check` keys off these fields."""
+    consumers. After the Phase 5b OBJ-θ-in-grammar alignment, regular
+    transitive parses no longer fire the diagnostic; the synthetic
+    fixture below exercises the diagnostic via a lex entry whose
+    intrinsic profile predicts a GF set the f-structure doesn't have.
+    The is-non-blocking property is exercised in
+    ``test_lmt_check_blocking.py``."""
 
-    def test_mismatch_carries_expected_actual_pred(self) -> None:
-        _, _, _, diags = _first("Kinain ng aso ang isda.")
+    def test_mismatch_detail_fields_present(self) -> None:
+        # Synthetic: lex entry predicts SUBJ + OBJ-PATIENT but the
+        # f-structure carries SUBJ + OBJ (bare). The shape mismatch
+        # surfaces as lmt-mismatch.
+        from tgllfg.common import LexicalEntry
+        from tgllfg.lmt import lmt_check
+        lex = LexicalEntry(
+            lemma="zzz",
+            pred="ZZZ <SUBJ, OBJ-PATIENT>",
+            a_structure=["AGENT", "PATIENT"],
+            morph_constraints={},
+            gf_defaults={"AGENT": "SUBJ", "PATIENT": "OBJ-PATIENT"},
+            intrinsic_classification={
+                "AGENT": (False, False),
+                "PATIENT": (True, True),
+            },
+        )
+        f = FStructure(feats={
+            "PRED": "ZZZ <SUBJ, OBJ-PATIENT>",
+            "VOICE": "AV",
+            "SUBJ": FStructure(feats={"PRED": "S"}, id=1),
+            "OBJ": FStructure(feats={"PRED": "O"}, id=2),
+        })
+        _astr, diags = lmt_check(f, lex)
         mismatches = [d for d in diags if d.kind == "lmt-mismatch"]
         assert len(mismatches) >= 1
         diag = mismatches[0]
         assert "expected" in diag.detail
         assert "actual" in diag.detail
         assert "pred" in diag.detail
-        # OV-kain expectations.
         expected = diag.detail["expected"]
         actual = diag.detail["actual"]
         assert isinstance(expected, list)
         assert isinstance(actual, list)
-        assert "OBJ-AGENT" in expected
+        assert "OBJ-PATIENT" in expected
         assert "SUBJ" in expected
-        # OBJ-AGENT not in actual — the Phase 4 grammar emits bare OBJ;
-        # the engine's typed prediction lives only in the AStructure
-        # and the diagnostic detail.
         assert "OBJ" in actual
-        assert "OBJ-AGENT" not in actual
-
-    def test_mismatch_is_informational(self) -> None:
-        # The OV-tr parse survives despite the mismatch — that's the
-        # whole point of keeping ``lmt-mismatch`` in NON_BLOCKING_KINDS.
-        results = parse_text("Kinain ng aso ang isda.")
-        assert results, "OV-tr parse was suppressed despite informational mismatch"
-        # And is_blocking is False on the mismatch.
-        for _, _, _, diags in results:
-            for d in diags:
-                if d.kind == "lmt-mismatch":
-                    assert not d.is_blocking(), (
-                        f"lmt-mismatch should be non-blocking: {d}"
-                    )
+        assert "OBJ-PATIENT" not in actual
 
 
 # === Synthesizer-fallback path (lex_entry not in BASE) ====================

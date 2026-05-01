@@ -82,25 +82,26 @@ def test_av_tr_either_order() -> None:
 
 def test_ov_kinain() -> None:
     """Kinain ng aso ang isda → OV, SUBJ=isda (patient pivot),
-    OBJ=aso (ng-non-pivot per OBJ-uniform)."""
+    OBJ-AGENT=aso (ng-non-pivot, typed under the Phase 5b
+    OBJ-θ-in-grammar alignment)."""
     _, f, _, _ = _first("Kinain ng aso ang isda.")
     assert _voice(f) == "OV"
     assert _aspect(f) == "PFV"
-    assert _pred(f) == "EAT <SUBJ, OBJ>"
-    assert "SUBJ" in f.feats and "OBJ" in f.feats
+    assert _pred(f) == "EAT <SUBJ, OBJ-AGENT>"
+    assert "SUBJ" in f.feats and "OBJ-AGENT" in f.feats
 
 
 def test_ov_binili() -> None:
-    """Binili ng bata ang libro → OV, SUBJ=libro, OBJ=bata."""
+    """Binili ng bata ang libro → OV, SUBJ=libro, OBJ-AGENT=bata."""
     _, f, _, _ = _first("Binili ng bata ang libro.")
     assert _voice(f) == "OV"
-    assert _pred(f) == "BUY <SUBJ, OBJ>"
+    assert _pred(f) == "BUY <SUBJ, OBJ-AGENT>"
 
 
 def test_ov_binasa() -> None:
     _, f, _, _ = _first("Binasa ng bata ang libro.")
     assert _voice(f) == "OV"
-    assert _pred(f) == "READ <SUBJ, OBJ>"
+    assert _pred(f) == "READ <SUBJ, OBJ-AGENT>"
 
 
 # === DV ===================================================================
@@ -108,13 +109,13 @@ def test_ov_binasa() -> None:
 
 def test_dv_sinulatan() -> None:
     """Sinulatan ng bata ang ina → DV, SUBJ=ina (recipient pivot),
-    OBJ=bata (ng-non-pivot, per the OBJ-uniform analysis extended
-    to DV in Phase 4 §7.1)."""
+    OBJ-AGENT=bata (ng-non-pivot, typed under the Phase 5b
+    OBJ-θ-in-grammar alignment)."""
     _, f, _, _ = _first("Sinulatan ng bata ang ina.")
     assert _voice(f) == "DV"
     assert _aspect(f) == "PFV"
-    assert _pred(f) == "WRITE <SUBJ, OBJ>"
-    assert "SUBJ" in f.feats and "OBJ" in f.feats
+    assert _pred(f) == "WRITE <SUBJ, OBJ-AGENT>"
+    assert "SUBJ" in f.feats and "OBJ-AGENT" in f.feats
 
 
 # === IV ===================================================================
@@ -122,18 +123,18 @@ def test_dv_sinulatan() -> None:
 
 def test_iv_isinulat() -> None:
     """Isinulat ng bata ang liham → IV, SUBJ=liham (conveyed pivot),
-    OBJ=bata (ng-non-pivot, per the OBJ-uniform analysis extended
-    to IV in Phase 4 §7.1)."""
+    OBJ-AGENT=bata (ng-non-pivot, typed under the Phase 5b
+    OBJ-θ-in-grammar alignment)."""
     _, f, _, _ = _first("Isinulat ng bata ang liham.")
     assert _voice(f) == "IV"
-    assert _pred(f) == "WRITE <SUBJ, OBJ>"
-    assert "SUBJ" in f.feats and "OBJ" in f.feats
+    assert _pred(f) == "WRITE <SUBJ, OBJ-AGENT>"
+    assert "SUBJ" in f.feats and "OBJ-AGENT" in f.feats
 
 
 def test_iv_itinapon() -> None:
     _, f, _, _ = _first("Itinapon ng bata ang basura.")
     assert _voice(f) == "IV"
-    assert _pred(f) == "THROW <SUBJ, OBJ>"
+    assert _pred(f) == "THROW <SUBJ, OBJ-AGENT>"
 
 
 # === LMT mapping per voice ================================================

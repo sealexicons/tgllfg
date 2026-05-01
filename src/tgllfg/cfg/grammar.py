@@ -186,6 +186,42 @@ class Grammar:
             ["(↑) = ↓1"],
         ))
 
+        # --- Phase 5b §7.8 follow-on: pre-NP partitive (Q + NP[GEN]) ---
+        #
+        # ``ang lahat ng bata`` ("all of the children"). The
+        # quantifier ``lahat`` (or ``iba``) sits between the outer
+        # case marker and the inner GEN-marked complement; the
+        # complement supplies the head's PRED, the outer marker
+        # supplies CASE, and the Q rides as a ``QUANT`` atom on
+        # the resulting NP. Phase 4 §7.8 deferred this form
+        # ("Pre-NP partitive usage ... needs a QP non-terminal");
+        # the cleaner solution turned out to be a flat 3-child rule
+        # rather than a separate QP non-terminal, since the inner
+        # NP[GEN] already exists in the grammar.
+        #
+        # The equation pattern ``(↑) = ↓1`` shares the outer NP's
+        # f-structure with the DET/ADP (so CASE + MARKER come from
+        # the outer marker); ``(↑ PRED) = ↓3 PRED`` overlays the
+        # head from the inner NP; ``(↑ QUANT) = ↓2 QUANT`` lifts
+        # the quantifier atom onto the NP. The inner NP[GEN] is
+        # preserved as its own sub-projection (CASE=GEN there,
+        # CASE=NOM on the outer); only its PRED value is borrowed.
+        rules.append(Rule(
+            "NP[CASE=NOM]",
+            ["DET[CASE=NOM]", "Q", "NP[CASE=GEN]"],
+            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+        ))
+        rules.append(Rule(
+            "NP[CASE=GEN]",
+            ["ADP[CASE=GEN]", "Q", "NP[CASE=GEN]"],
+            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+        ))
+        rules.append(Rule(
+            "NP[CASE=DAT]",
+            ["ADP[CASE=DAT]", "Q", "NP[CASE=GEN]"],
+            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+        ))
+
         # --- N from NOUN (toy PRED; Phase 5 will lexicalise properly) ---
         rules.append(Rule(
             "N",
@@ -288,18 +324,32 @@ class Grammar:
             ["V[VOICE=AV]"],
             _eqs("(↑ SUBJ) = (↑ REL-PRO)"),
         ))
-        for voice in ("AV", "OV", "DV", "IV"):
-            v_cat = f"V[VOICE={voice}]"
+        # S_GAP transitive frames mirror the matrix transitive frames'
+        # OBJ-θ-in-grammar split: AV binds the ng-NP to bare OBJ
+        # (PATIENT/THEME), non-AV binds to typed OBJ-θ.
+        gap_voice_specs = [
+            ("AV", "OBJ", []),
+            ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("OV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
+            ("DV", "OBJ-AGENT", []),
+            ("IV", "OBJ-AGENT", []),
+        ]
+        for voice, obj_target, extras in gap_voice_specs:
+            feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+            v_cat = f"V[{', '.join(feat_strs)}]"
             rules.append(Rule(
                 "S_GAP",
                 [v_cat, "NP[CASE=GEN]"],
-                _eqs("(↑ OBJ) = ↓2", "(↑ SUBJ) = (↑ REL-PRO)"),
+                _eqs(
+                    f"(↑ {obj_target}) = ↓2",
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                ),
             ))
             rules.append(Rule(
                 "S_GAP",
                 [v_cat, "NP[CASE=GEN]", "NP[CASE=DAT]"],
                 _eqs(
-                    "(↑ OBJ) = ↓2",
+                    f"(↑ {obj_target}) = ↓2",
                     "↓3 ∈ (↑ ADJUNCT)",
                     "(↑ SUBJ) = (↑ REL-PRO)",
                 ),
@@ -477,10 +527,11 @@ class Grammar:
 
         # **Transitive control** (pilit OV, utos DV): NOM-marked
         # pivot is matrix SUBJ (forcee / orderee); GEN-marked agent
-        # is matrix OBJ. The pivot controls XCOMP. PRED
-        # ``FORCE <SUBJ, OBJ, XCOMP>``. Both NOM-GEN and GEN-NOM
-        # orderings are admitted, mirroring the regular transitive
-        # frames' freedom.
+        # is matrix OBJ-AGENT (typed under the Phase 5b
+        # OBJ-θ-in-grammar alignment). The pivot controls XCOMP.
+        # PRED ``FORCE <SUBJ, OBJ-AGENT, XCOMP>``. Both NOM-GEN and
+        # GEN-NOM orderings are admitted, mirroring the regular
+        # transitive frames' freedom.
         for link in ("NA", "NG"):
             # GEN-NOM order
             rules.append(Rule(
@@ -493,7 +544,7 @@ class Grammar:
                     "S_XCOMP",
                 ],
                 _eqs(
-                    "(↑ OBJ) = ↓2",
+                    "(↑ OBJ-AGENT) = ↓2",
                     "(↑ SUBJ) = ↓3",
                     "(↑ XCOMP) = ↓5",
                     "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
@@ -511,39 +562,172 @@ class Grammar:
                 ],
                 _eqs(
                     "(↑ SUBJ) = ↓2",
-                    "(↑ OBJ) = ↓3",
+                    "(↑ OBJ-AGENT) = ↓3",
                     "(↑ XCOMP) = ↓5",
                     "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
                 ),
             ))
 
         # Transitive frames per voice, two NP orderings each, with and
-        # without a trailing sa-oblique (ADJUNCT).
-        for voice in ("AV", "OV", "DV", "IV"):
-            v_cat = f"V[VOICE={voice}]"
+        # without a trailing sa-oblique (ADJUNCT). The ng-non-pivot
+        # binds to a typed ``OBJ-θ`` slot for non-AV voices (per the
+        # Phase 5b OBJ-θ-in-grammar alignment); AV keeps bare ``OBJ``
+        # because PATIENT/THEME [-r, +o] maps to bare OBJ in the BK
+        # truth table. The voice + CAUS feature filter splits plain
+        # OV (CAUS=NONE → OBJ-AGENT) from pa-OV-direct (CAUS=DIRECT
+        # → OBJ-CAUSER) so each lex entry's PRED template (with its
+        # specific role name in the typed OBJ-θ) finds a matching
+        # grammar rule.
+        voice_specs = [
+            # (voice, OBJ-target, extra V-feature constraints)
+            ("AV", "OBJ", []),
+            ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("OV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
+            ("DV", "OBJ-AGENT", []),
+            ("IV", "OBJ-AGENT", []),
+        ]
+        for voice, obj_target, extras in voice_specs:
+            feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+            v_cat = f"V[{', '.join(feat_strs)}]"
             # NOM-GEN order
             rules.append(Rule(
                 "S",
                 [v_cat, "NP[CASE=NOM]", "NP[CASE=GEN]"],
-                _eqs("(↑ SUBJ) = ↓2", "(↑ OBJ) = ↓3"),
+                _eqs("(↑ SUBJ) = ↓2", f"(↑ {obj_target}) = ↓3"),
             ))
             # GEN-NOM order
             rules.append(Rule(
                 "S",
                 [v_cat, "NP[CASE=GEN]", "NP[CASE=NOM]"],
-                _eqs("(↑ SUBJ) = ↓3", "(↑ OBJ) = ↓2"),
+                _eqs("(↑ SUBJ) = ↓3", f"(↑ {obj_target}) = ↓2"),
             ))
             # NOM-GEN-DAT
             rules.append(Rule(
                 "S",
                 [v_cat, "NP[CASE=NOM]", "NP[CASE=GEN]", "NP[CASE=DAT]"],
-                _eqs("(↑ SUBJ) = ↓2", "(↑ OBJ) = ↓3", "↓4 ∈ (↑ ADJUNCT)"),
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    f"(↑ {obj_target}) = ↓3",
+                    "↓4 ∈ (↑ ADJUNCT)",
+                ),
             ))
             # GEN-NOM-DAT
             rules.append(Rule(
                 "S",
                 [v_cat, "NP[CASE=GEN]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
-                _eqs("(↑ SUBJ) = ↓3", "(↑ OBJ) = ↓2", "↓4 ∈ (↑ ADJUNCT)"),
+                _eqs(
+                    "(↑ SUBJ) = ↓3",
+                    f"(↑ {obj_target}) = ↓2",
+                    "↓4 ∈ (↑ ADJUNCT)",
+                ),
             ))
+
+        # --- Phase 5b: multi-GEN-NP applicative frames (IV-BEN) ---
+        #
+        # Three-argument applicatives like ``Ipinaggawa niya ng silya
+        # ang kapatid`` ("he made a chair for his sibling") have two
+        # ng-marked non-pivots (AGENT + PATIENT) plus the ang-marked
+        # pivot (BENEFICIARY). The Phase 5 LMT engine produces typed
+        # ``OBJ-AGENT`` and ``OBJ-PATIENT`` for the two ng-NPs (per
+        # the [+r, +o] truth-table cell); these are distinct GFs
+        # under :func:`is_governable_gf` and don't clash by
+        # biuniqueness.
+        #
+        # Word-order convention: the first ng-NP after V is AGENT,
+        # the second is PATIENT (Schachter & Otanes 1972 §6.5;
+        # Kroeger 1993 §3.3 on post-V positioning). When the pivot
+        # ang-NP intervenes, the AGENT/PATIENT order across the
+        # ang-NP is preserved (i.e., the two ng-NPs that flank or
+        # follow the ang-NP are still AGENT-then-PATIENT in surface
+        # order).
+        #
+        # Scope: IV-BEN only in this commit. pa-OV-direct three-arg
+        # causatives use the same shape and lift trivially with new
+        # grammar rules + lex entries; deferred until commit 2 so
+        # this commit's analytical commitment can be reviewed
+        # against the IV-BEN corpus first.
+        v_iv = "V[VOICE=IV]"
+        # NOM-GEN-GEN: pivot first, AGENT, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_iv, "NP[CASE=NOM]", "NP[CASE=GEN]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-AGENT) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-NOM-GEN: AGENT, pivot, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_iv, "NP[CASE=GEN]", "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-AGENT) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-GEN-NOM: AGENT, PATIENT, pivot.
+        rules.append(Rule(
+            "S",
+            [v_iv, "NP[CASE=GEN]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓4",
+                "(↑ OBJ-AGENT) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+            ),
+        ))
+
+        # --- Phase 5b: multi-GEN-NP causative frames (pa-OV direct) ---
+        #
+        # Three-argument direct causatives like ``Pinakain niya ng
+        # kanin ang bata`` ("he fed the child rice") have two
+        # ng-marked non-pivots (CAUSER + PATIENT) plus the
+        # ang-marked pivot (CAUSEE). Same architectural shape as
+        # the IV-BEN multi-GEN rules above; the difference is the
+        # role names — CAUSER replaces AGENT, CAUSEE replaces
+        # BENEFICIARY — so the grammar binds to typed OBJ-CAUSER
+        # rather than OBJ-AGENT.
+        #
+        # Word-order convention is identical: first ng-NP after V
+        # is CAUSER (the agentive instigator), second is PATIENT
+        # (the affected entity).
+        #
+        # Rules are matched on V[VOICE=OV, CAUS=DIRECT] specifically
+        # so they don't fire for plain OV transitives (which have
+        # no third role). The non-conflict matcher requires the
+        # default ``CAUS=NONE`` on plain OV V analyses to keep
+        # them from spuriously matching.
+        v_pa_ov = "V[VOICE=OV, CAUS=DIRECT]"
+        # NOM-GEN-GEN: pivot first, CAUSER, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_pa_ov, "NP[CASE=NOM]", "NP[CASE=GEN]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-CAUSER) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-NOM-GEN: CAUSER, pivot, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_pa_ov, "NP[CASE=GEN]", "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-CAUSER) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-GEN-NOM: CAUSER, PATIENT, pivot.
+        rules.append(Rule(
+            "S",
+            [v_pa_ov, "NP[CASE=GEN]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓4",
+                "(↑ OBJ-CAUSER) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+            ),
+        ))
 
         return Grammar(rules)

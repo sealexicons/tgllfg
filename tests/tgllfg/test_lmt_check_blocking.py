@@ -270,11 +270,10 @@ class TestExistingParsesNoNewBlocking:
         from tgllfg.pipeline import parse_text
         results = parse_text("Kinain ng aso ang isda.")
         assert results, "OV-tr parse was suppressed"
-        # The mismatch diagnostic is present (informational).
+        # After the Phase 5b OBJ-θ-in-grammar alignment, no
+        # mismatch fires here — engine and grammar agree on
+        # OBJ-AGENT. No blocking diagnostics.
         diags = results[0][3]
-        mismatches = [d for d in diags if d.kind == "lmt-mismatch"]
-        assert mismatches and not any(d.is_blocking() for d in mismatches)
-        # No blocking diagnostics overall.
         assert not any(d.is_blocking() for d in diags)
 
     def test_dv_transitive_parse_survives(self) -> None:

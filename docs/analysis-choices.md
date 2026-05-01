@@ -5,17 +5,29 @@ grammar and lexicon, with citations and reasoning. Each entry has a
 date, a short statement of the decision, the diagnostics that
 support it, and the alternatives considered.
 
-## *ng*-non-pivot in transitive non-AV → OBJ
+## *ng*-non-pivot in transitive non-AV → typed OBJ-θ
 
-**Date:** 2026-04-28. **Status:** active.
+**Date:** 2026-04-28 (Phase 4); refined 2026-05-01 (Phase 5b).
+**Status:** active.
 
 In transitive non-Actor-Voice clauses (Objective Voice, Dative Voice,
 Instrumental Voice), the *ang*-NP is the pivot and unconditionally
 maps to SUBJ (Kroeger 1993, ch. 2). The remaining core argument —
-the *ng*-marked non-pivot — is analysed as **OBJ**, not as an oblique
-agent (OBL-AG). This applies symmetrically across the non-AV voices
-even though the role realised by the *ng*-NP varies (agent in OV,
-goal in DV, instrument in IV).
+the *ng*-marked non-pivot — is analysed as a **core OBJ**, not as
+an oblique agent (OBL-AG). This applies symmetrically across the
+non-AV voices even though the role realised by the *ng*-NP varies
+(agent in OV / DV / IV-CONVEY / IV-BEN, causer in pa-OV-direct).
+
+**Phase 5b refinement: typed OBJ-θ in the grammar.** Phase 4
+emitted the binding as bare `OBJ`; Phase 5 added a typed `OBJ-θ`
+prediction at the LMT engine layer (e.g., `OBJ-AGENT` for OV's
+demoted agent, `OBJ-CAUSER` for pa-OV-direct's demoted causer).
+The Phase 4 grammar was updated in Phase 5b to emit the typed
+form directly (`(↑ OBJ-AGENT) = ↓N` rather than `(↑ OBJ) = ↓N`),
+eliminating the informational `lmt-mismatch` that Phase 5 surfaced
+on every non-AV transitive parse. AV transitives keep bare `OBJ`
+because PATIENT/THEME `[-r, +o]` maps to bare `OBJ` in the BK
+truth table.
 
 ### Rationale
 
@@ -972,6 +984,10 @@ a partitive ``ng``-NP). Out of scope for this commit; the floated
 form is the more common surface pattern and exercises the
 binding mechanism.
 
+**Update (Phase 5b):** lifted in Phase 5b §7.8 follow-on. The
+implementation chose a flat 3-child rule rather than a separate
+``QP`` non-terminal — see the §7.8 follow-on entry below.
+
 ## Phase 4 §7.9: robustness — fragments, ranking, --strict
 
 **Date:** 2026-04-30. **Status:** active.
@@ -1240,3 +1256,168 @@ the parse for a lex-internal inconsistency would be wrong.
   surfaced via the AStructure and the diagnostic detail. A future
   rewrite to `(↑ OBJ-θ) = ↓N` would eliminate the
   `lmt-mismatch` noise.
+
+## Phase 5b §7.7 follow-on: multi-GEN-NP applicative frames
+
+**Status:** active. Phase 4 §7.7 deferred three-argument
+applicative / causative frames where the demoted-from-pivot
+oblique surfaces as a second `ng`-marked NP. Phase 5b lifts that
+deferral incrementally: this section records the choices for the
+IV-BEN scope; pa-OV-direct multi-GEN follows the same pattern and
+will lift in a subsequent commit.
+
+### Word-order convention: first ng-NP = AGENT, second = PATIENT
+
+Tagalog admits free order among non-pivot ng-NPs but a strong
+post-V positional preference: the agentive role sits closer to
+the verb than the patient. Schachter & Otanes 1972 §6.5 describes
+the `actor first, then goal` ordering as the unmarked Tagalog
+post-verbal pattern; Kroeger 1993 §3.3 confirms it for
+three-argument constructions.
+
+The Phase 5b grammar rules encode this positional convention
+directly:
+
+```
+S → V[VOICE=IV] NP[NOM] NP[GEN] NP[GEN]
+   ↳ (↑ SUBJ) = ↓2, (↑ OBJ-AGENT) = ↓3, (↑ OBJ-PATIENT) = ↓4
+S → V[VOICE=IV] NP[GEN] NP[NOM] NP[GEN]
+   ↳ (↑ SUBJ) = ↓3, (↑ OBJ-AGENT) = ↓2, (↑ OBJ-PATIENT) = ↓4
+S → V[VOICE=IV] NP[GEN] NP[GEN] NP[NOM]
+   ↳ (↑ SUBJ) = ↓4, (↑ OBJ-AGENT) = ↓2, (↑ OBJ-PATIENT) = ↓3
+```
+
+The pivot `ang`-NP is the BENEFICIARY (the IV-BEN promotion
+target); the two `ng`-NPs are AGENT and PATIENT in surface order.
+A sentence with the ng-NPs in the *opposite* semantic order
+(PATIENT before AGENT) would parse with reversed bindings —
+this is a known limitation that semantic disambiguation
+(animacy, definiteness, prior context) could fix. Phase 5b's
+positional binding is the placeholder.
+
+### Typed OBJ-θ slots
+
+Both ng-NPs map to typed `OBJ-θ` GFs (`OBJ-AGENT` and
+`OBJ-PATIENT`). The LMT engine produces these directly from each
+role's `[+r, +o]` intrinsic profile. The two GFs are distinct
+fully-qualified strings under
+`tgllfg.fstruct.checks.is_governable_gf`, so biuniqueness
+(LMT step 7) doesn't flag them as a clash.
+
+The lex entry's PRED template is upgraded to typed form:
+
+```
+MAKE-FOR <SUBJ, OBJ-AGENT, OBJ-PATIENT>
+```
+
+Completeness checks the f-structure has all three governables;
+coherence checks no extras. The pre-existing two-arg lex entry
+(`MAKE-FOR <SUBJ, OBJ>`, no PATIENT) coexists — sentences without
+a second ng-NP fall through to it because the three-arg's
+completeness check fails when OBJ-PATIENT is absent.
+
+### Scope
+
+The multi-GEN-NP frames lifted in Phase 5b so far:
+
+* **IV-BEN applicatives** (`gawa`, `sulat`, `bili`) — Commit 1.
+  Pivot is BENEFICIARY; non-pivot ng-NPs are AGENT and PATIENT,
+  bound positionally to `OBJ-AGENT` and `OBJ-PATIENT`.
+* **pa-OV-direct causatives** (`kain`, `basa`, `inom`) — Commit 2.
+  Pivot is CAUSEE; non-pivot ng-NPs are CAUSER and PATIENT,
+  bound to `OBJ-CAUSER` and `OBJ-PATIENT`. The grammar matches
+  `V[VOICE=OV, CAUS=DIRECT]` specifically so plain OV transitives
+  (CAUS=NONE) don't spuriously trip the multi-GEN rule.
+
+Still deferred:
+
+* **DV three-argument constructions** (rarer): would need a
+  third ng-NP for a non-RECIPIENT theme. No current Phase 4
+  BASE entry has the shape.
+* **Magpa-AV-indirect three-argument** would require the embedded
+  XCOMP to take its own arguments — the matrix only has CAUSER
+  and EVENT, so multi-GEN doesn't apply at the matrix level.
+
+The Phase 5b deferral list also includes:
+
+* **Multi-OBL semantic disambiguation** for sa-NPs — out of
+  scope here (this commit is GEN-only).
+* **OV/DV control complements** — separate problem (controller
+  binds embedded AGENT, not embedded SUBJ).
+* **OBJ-θ in the grammar** — the Phase 4 grammar emits bare
+  `OBJ` for non-AV ng-non-pivots while the LMT engine produces
+  typed `OBJ-θ`. Aligning the two would eliminate the
+  informational `lmt-mismatch` noise but touches every per-voice
+  grammar rule.
+* **Raising verbs**, **`ipang-` / `ika-` applicatives**,
+  **pronominal possessive**, **long-distance relativization** —
+  all unchanged from the Phase 4 deferral inventory.
+
+## Phase 5b §7.8 follow-on: pre-NP partitive
+
+**Status:** active. Lifts the §7.8 deferral noted earlier in this
+file ("Pre-NP partitive (`lahat ng bata`) — deferred"). Sentences
+like ``Kumain ang lahat ng bata`` ("All of the children ate")
+now parse with the quantifier riding inside the NP rather than
+floated to clause-final.
+
+### Flat 3-child rule, no `QP` non-terminal
+
+The §7.8 deferral note suggested a `QP` non-terminal. The
+implementation chose a flat 3-child NP rule instead:
+
+```
+NP[CASE=NOM] → DET[CASE=NOM] Q NP[CASE=GEN]
+NP[CASE=GEN] → ADP[CASE=GEN] Q NP[CASE=GEN]
+NP[CASE=DAT] → ADP[CASE=DAT] Q NP[CASE=GEN]
+```
+
+Equations:
+
+```
+(↑) = ↓1                  -- outer marker supplies CASE / MARKER
+(↑ PRED) = ↓3 PRED        -- head supplied by inner NP[GEN]
+(↑ QUANT) = ↓2 QUANT      -- Q's QUANT atom rides on the NP
+```
+
+A separate `QP` non-terminal would have been more decomposable
+but adds a layer for no immediate gain — the flat rule reuses the
+existing `NP[CASE=GEN]` non-terminal as the partitive complement.
+
+### Quantifier surfaces as a feature on the NP
+
+The partitive's quantifier rides as a `QUANT` atom on the resulting
+NP's f-structure (matching the floated-quantifier convention,
+where the floated Q's f-structure carries `QUANT` from particles.yaml).
+Reading off "all" vs "some" from a parse means inspecting
+``np.feats["QUANT"]``.
+
+### Inner NP[GEN] is structurally separate, not the head
+
+The equations don't structure-share the outer NP with the inner
+NP[GEN] — only the inner's PRED is borrowed. The inner NP[GEN]
+keeps `CASE=GEN`, `MARKER=NG`, and any features of its own; the
+outer NP[X] gets `CASE=X`, `MARKER=ANG/NG/SA`, plus the borrowed
+PRED and a fresh `QUANT`. This avoids the structure-sharing
+conflict that `(↑) = ↓3` would create (outer's CASE would be
+forced to GEN by the inner).
+
+### Possessive vs partitive disambiguation
+
+Both surface forms `DET X NP[GEN]` and `DET Q NP[GEN]` exist:
+
+* `ang aklat ng bata` (possessive) — DET + N + NP[GEN], parsed
+  by the Phase 4 §7.8 NP-internal possessive rule. Without a Q
+  in position 2, only the possessive rule fires.
+* `ang lahat ng bata` (partitive) — DET + Q + NP[GEN], parsed by
+  the new partitive rule. The Q is gated by POS=Q.
+
+The two rules don't compete because Q vs N is an unambiguous POS
+distinction.
+
+### Floated quantifier unchanged
+
+The pre-existing `S → S Q` floated-quantifier rule (`Kumain ang
+bata lahat`) is unaffected. It operates at the S level (Q is a
+sister of the matrix clause), not within an NP. Both surfaces
+parse cleanly without competing.

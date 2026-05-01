@@ -315,16 +315,20 @@ specific GFs that disagreed.
   Real disambiguation needs semantic context (which sa-NP is
   `BEN` vs `LOC`); deferred.
 
-* **Embedded-clause LMT.** `lmt_check` only validates the matrix
-  f-structure. Embedded XCOMP / COMP clauses have their own PRED
-  and could in principle be checked recursively; not yet wired.
+* **Embedded-clause LMT (lifted in Phase 5b).** Phase 5
+  `lmt_check` only validated the matrix f-structure. Phase 5b
+  extended :func:`apply_lmt_with_check` to recursively walk
+  ``XCOMP`` / ``COMP`` slots and run :func:`lmt_check` on each
+  embedded f-structure that has its own ``PRED``. Embedded-clause
+  diagnostics carry the f-structure path (e.g., ``XCOMP`` /
+  ``XCOMP.XCOMP``) so the user can see where they came from.
 
-* **OBJ-θ in the grammar.** The Phase 4 grammar emits bare `OBJ`
-  for non-AV ng-non-pivots; the LMT engine produces `OBJ-θ`. The
-  divergence is intentional in Phase 5 (informational
-  `lmt-mismatch` flags it). A future rewrite could change the
-  grammar's `(↑ OBJ) = ↓N` to `(↑ OBJ-θ) = ↓N` per voice/verb
-  class, eliminating the diagnostic noise.
+* **OBJ-θ in the grammar (lifted in Phase 5b).** The Phase 4
+  grammar emitted bare `OBJ` for non-AV ng-non-pivots while the
+  engine produced `OBJ-θ` — informational `lmt-mismatch` flagged
+  the divergence. Phase 5b aligned the grammar to emit typed
+  `OBJ-AGENT` / `OBJ-CAUSER` directly per voice/verb class,
+  eliminating the diagnostic noise.
 
 ## See also
 

@@ -37,7 +37,7 @@ path (verbs whose lex entry can't be located post-solve).
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 
 from ..common import AStructure, FStructure, LexicalEntry, MorphAnalysis
 from ..fstruct import Diagnostic
@@ -201,13 +201,69 @@ def lmt_check(
     return astructure, diagnostics
 
 
+def _walk_xcomp_subs(
+    f: FStructure, seen: set[int]
+) -> Iterator[tuple[FStructure, tuple[str, ...]]]:
+    """Yield ``(sub_f, path)`` for every embedded f-structure in
+    ``XCOMP`` / ``COMP`` slots that has its own ``PRED``.
+
+    The path is the sequence of feature names from the matrix to
+    the embedded f-structure (e.g., ``("XCOMP",)`` for a
+    one-deep XCOMP, ``("XCOMP", "XCOMP")`` for two-deep). ``seen``
+    deduplicates by canonical-node id so reentrant XCOMPs (control
+    SUBJ-sharing) are visited exactly once.
+    """
+    if f.id in seen:
+        return
+    seen.add(f.id)
+    for key in ("XCOMP", "COMP"):
+        sub = f.feats.get(key)
+        if not isinstance(sub, FStructure):
+            continue
+        if sub.id in seen:
+            continue
+        if "PRED" not in sub.feats:
+            continue
+        yield sub, (key,)
+        for nested, nested_path in _walk_xcomp_subs(sub, seen):
+            yield nested, (key,) + nested_path
+
+
+def _retag_diagnostics(
+    diagnostics: list[Diagnostic], path: tuple[str, ...]
+) -> list[Diagnostic]:
+    """Return copies of `diagnostics` with `path` prefixed to each
+    diagnostic's ``path`` field, so embedded-clause diagnostics
+    surface their location in the f-structure."""
+    out: list[Diagnostic] = []
+    for d in diagnostics:
+        out.append(Diagnostic(
+            kind=d.kind,
+            message=f"[{'.'.join(path)}] {d.message}",
+            path=path + d.path,
+            equation=d.equation,
+            cnode_label=d.cnode_label,
+            detail=d.detail,
+        ))
+    return out
+
+
 def apply_lmt_with_check(
     f: FStructure,
     lex_items: Sequence[Sequence[tuple[MorphAnalysis, LexicalEntry | None]]],
 ) -> tuple[AStructure, list[Diagnostic]]:
     """Pipeline-facing wrapper: locate the matrix lex entry by
-    f-structure features, run :func:`lmt_check`, fall back to the
-    legacy heuristic when no lex entry can be located.
+    f-structure features, run :func:`lmt_check` on the matrix, then
+    recursively run :func:`lmt_check` on every embedded f-structure
+    in ``XCOMP`` / ``COMP`` slots that has its own ``PRED``. Fall
+    back to the legacy heuristic when no matrix lex entry can be
+    located.
+
+    Embedded-clause diagnostics carry the f-structure path
+    (e.g., ``XCOMP``) so the user can see where the diagnostic came
+    from. The recursion walks unique f-structures only — the
+    structure-shared SUBJ between matrix and XCOMP (control verbs)
+    doesn't trigger a redundant check.
 
     The fallback path keeps the synthesizer-driven parses
     (verbs absent from :data:`BASE`) producing an :class:`AStructure`
@@ -219,4 +275,16 @@ def apply_lmt_with_check(
     le = find_matrix_lex_entry(f, lex_items)
     if le is None:
         return apply_lmt(f), []
-    return lmt_check(f, le)
+    astructure, diagnostics = lmt_check(f, le)
+
+    # Recursively check embedded XCOMP/COMP sub-f-structures. Pass
+    # an empty ``seen`` set; ``_walk_xcomp_subs`` handles the
+    # cycle-prevention itself (it adds f.id on entry).
+    for sub_f, path in _walk_xcomp_subs(f, set()):
+        sub_le = find_matrix_lex_entry(sub_f, lex_items)
+        if sub_le is None:
+            continue
+        _sub_astr, sub_diags = lmt_check(sub_f, sub_le)
+        diagnostics.extend(_retag_diagnostics(sub_diags, path))
+
+    return astructure, diagnostics

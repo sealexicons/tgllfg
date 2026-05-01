@@ -246,7 +246,9 @@ class TestDemoGrammar:
         assert v.label == "V"
         assert "(↑ VOICE) = 'OV'" in v.equations
         assert "(↑ ASPECT) = 'PFV'" in v.equations
-        assert "(↑ PRED) = 'EAT <SUBJ, OBJ>'" in v.equations
+        # PRED carries typed OBJ-AGENT after the Phase 5b
+        # OBJ-θ-in-grammar alignment.
+        assert "(↑ PRED) = 'EAT <SUBJ, OBJ-AGENT>'" in v.equations
 
 
 # === LeafCompletion accessibility =========================================
