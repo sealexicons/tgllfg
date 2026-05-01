@@ -160,6 +160,18 @@ list (see `docs/analysis-choices.md`):
 
 ### Recently lifted (still listed for archaeological context)
 
+- **Pronominal RC-actor (in-place Wackernagel)** — lifted in
+  Phase 5d Commit 10. Standard relativization with a pronominal
+  actor in the RC (`Tumakbo ang batang kinain ko`) historically
+  failed because the §7.3 Wackernagel pass hoisted `ko` from its
+  RC-actor position into the matrix V's post-V cluster. New
+  helper `_is_post_embedded_v_pron` keeps a PRON in place when it
+  follows a non-first VERB (= an embedded V), distinguishing it
+  from regular post-matrix-V cluster placement (preceding V IS
+  the first V). OV / DV / IV-RC produce a unique RC reading;
+  AV-RC produces two readings (RC-with-OBJ and head-possessor)
+  preserved as competing parses. `na` linker disambiguation after
+  PRON still deferred (`bata ko na nakita` style).
 - **IV applicative multi-GEN under control** — lifted in Phase 5d
   Commit 9. Two changes to `S_XCOMP` IV rules: (a) drop the
   APPL=CONVEY filter on the existing 2-arg rule so IV-BEN /

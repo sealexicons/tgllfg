@@ -2867,3 +2867,105 @@ treatment.
   3-arg IV S_XCOMP rule in principle but aren't pinned with
   tests in this commit.
 
+## Phase 5d Commit 10: pronominal RC-actor (in-place Wackernagel)
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 4 §7.5 admits standard relativization (``ang batang kinain
+ng aso``) via ``NP[CASE=X] → NP[CASE=X] PART[LINK=NA|NG] S_GAP``.
+The S_GAP frame for non-AV transitive (``V[VOICE=X] NP[CASE=GEN]``)
+embeds the actor as a GEN-NP after the V. When the actor is
+pronominal — ``ko`` / ``mo`` / ``niya`` — the §7.3 Wackernagel
+pass would historically hoist the pronoun into the matrix V's
+post-V cluster, leaving the OV S_GAP frame without its required
+GEN-NP and breaking the parse:
+
+```
+Tumakbo ang batang kinain ko    ("the child I-ate ran")
+   pre-reorder:  takbo ang bata -ng kain ko
+   post-reorder: takbo ko ang bata -ng kain     ← ko hoisted into matrix cluster
+   parses=0                                       ← OV S_GAP needs ng-NP after kain
+```
+
+### Third Wackernagel exception: post-embedded-V PRON
+
+Commit 10 adds :func:`tgllfg.clitics.placement._is_post_embedded_v_pron`
+alongside the existing post-noun (Phase 5c §7.8 follow-on) and
+pre-linker (Phase 5d Commit 6) checks: a PRON-clitic immediately
+preceded by a VERB token that is **not** the matrix verb (= not
+the first V) stays in place. The check distinguishes two cases:
+
+* PRON after the **matrix V** — that's the regular Wackernagel
+  cluster position; placement is a no-op (preceding V === first V).
+* PRON after a **non-first V** — the PRON belongs to that
+  embedded V's clause (RC, control complement, etc.), not to the
+  matrix V. Suppress the move so the embedded clause's grammar
+  rules can absorb it.
+
+After the fix:
+
+```
+Tumakbo ang batang kinain ko
+   pre-reorder:  takbo ang bata -ng kain ko
+   post-reorder: takbo ang bata -ng kain ko    ← ko stays after kain
+   parses=1                                     ← OV S_GAP ✓
+```
+
+### Competing readings
+
+The plan §9.1 entry flags "pronominal possessor inside relative
+clause head" — the construction can in principle have two
+readings:
+
+* **RC-actor reading** — the pronoun is the gap-filler inside
+  the RC (OV / DV / IV bind it to ``OBJ-AGENT``).
+* **Possessor reading** — the pronoun is a possessor on the head
+  NP (the existing NP-internal possessive rule).
+
+For OV / DV / IV-RC, only the RC-actor reading is structurally
+available because the non-AV S_GAP frames require a GEN-NP after
+the V. The possessor reading would need an empty S_GAP (V alone
+without a GEN-NP), which the existing rules don't admit. So the
+parse is unique.
+
+For AV-RC, both readings parse:
+
+* Reading A: AV-transitive RC where the pronoun is bare ``OBJ``
+  (``Tumakbo ang batang kumain ko`` "the child who-ate-me ran").
+* Reading B: AV-intransitive RC plus pronominal possessor on the
+  head NP (``my child who ate ran``).
+
+Tests cover both by walking the parse list and finding each
+shape. The ranker is left to its existing heuristics — pragmatic
+disambiguation between the two AV-RC readings depends on the verb
+and is not a structural concern.
+
+### What this lifts
+
+* Pronominal RC-actor in OV / DV / IV relativization
+  (``Tumakbo ang batang kinain ko``).
+* All three vowel-final GEN pronouns (ko / mo / niya).
+* Bound ``-ng`` linker (vowel-final head) and standalone ``na``
+  linker (consonant-final head).
+* RCs nested inside OBJ NPs (``Kumain ang aso ng batang kinain
+  ko``) — placement still keeps the pronoun in the embedded RC
+  because the Wackernagel logic is per-token, not per-NP.
+* AV-RC ambiguity (RC-with-OBJ vs head-possessor) preserved as
+  competing parses.
+
+### Out-of-scope (still deferred)
+
+* **`na` linker disambiguation after PRON.** ``Tumakbo ang bata
+  ko na nakita`` (possessor + RC) — the placement pass currently
+  treats the standalone ``na`` after PRON as the 2P aspectual
+  clitic and moves it to clause-end. Resolving this requires
+  extending :func:`disambiguate_homophone_clitics` to look at the
+  following token (if VERB, ``na`` is the linker). Not pursued
+  in Commit 10.
+* **Multi-pronoun RCs.** A single matrix sentence with both a
+  matrix-cluster PRON and an embedded RC-actor PRON
+  (``Nakita ko ang batang kinain niya`` "I saw the child she
+  ate"). The two pronouns are at different positions and the
+  Wackernagel logic handles them independently, but this hasn't
+  been pinned with tests.
+

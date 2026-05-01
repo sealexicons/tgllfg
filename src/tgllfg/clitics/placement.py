@@ -176,6 +176,36 @@ def _is_pre_linker_pron(
     )
 
 
+def _is_post_embedded_v_pron(
+    analyses: list[list[MorphAnalysis]], i: int, matrix_v_idx: int
+) -> bool:
+    """True if ``analyses[i]`` is a pronominal clitic immediately
+    preceded by a VERB token that is NOT the matrix verb.
+
+    Phase 5d Commit 10: in constructions with a relative clause
+    (``Tumakbo ang batang kinain ko`` "the child I-ate ran"), the
+    pronoun ``ko`` is an argument of the embedded RC verb
+    ``kinain`` (the OV-actor / OBJ-AGENT), not a clause-level
+    argument of the matrix ``tumakbo``. Without this check the
+    Wackernagel pass would hoist ``ko`` into the matrix's post-V
+    cluster, breaking the RC analysis (the OV S_GAP frame requires
+    a GEN-NP after the V).
+
+    The check distinguishes this from the regular Wackernagel case
+    where the PRON sits in the matrix V's post-V cluster: there
+    the preceding VERB token IS the matrix verb. Only suppress the
+    move when the preceding VERB is some other (embedded) V.
+    """
+    if i == 0:
+        return False
+    if not _is_pron_clitic(analyses[i]):
+        return False
+    prev_pos = {ma.pos for ma in analyses[i - 1]}
+    if "VERB" not in prev_pos:
+        return False
+    return (i - 1) != matrix_v_idx
+
+
 def disambiguate_homophone_clitics(
     analyses: list[list[MorphAnalysis]],
 ) -> list[list[MorphAnalysis]]:
@@ -311,6 +341,7 @@ def reorder_clitics(
         and _is_pron_clitic(cands)
         and not _is_post_noun_pron(analyses, i)
         and not _is_pre_linker_pron(analyses, i)
+        and not _is_post_embedded_v_pron(analyses, i, verb_idx)
     ]
     adv_indices = [
         i for i, cands in enumerate(analyses)
