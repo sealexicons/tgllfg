@@ -218,6 +218,21 @@ _AV_INTR_ACTOR_LOCATION: dict[str, tuple[bool | None, bool | None]] = {
     "LOCATION": (True, False),
 }
 
+# Phase 5c §8 follow-on (Commit 6): ditransitive AV with two
+# OBL-θ slots (RECIPIENT + LOCATION). Exercises the multi-OBL
+# semantic-disambiguation pass — when both ``sa nanay`` (animate)
+# and ``sa eskwela`` (place) appear, the classifier matches them
+# to ``OBL-RECIP`` and ``OBL-LOC`` respectively regardless of
+# surface order, by consulting the LEMMA-keyed semantic table.
+_AV_DITRANS_AGENT_THEME_RECIP_LOC: dict[
+    str, tuple[bool | None, bool | None]
+] = {
+    "AGENT": (False, False),
+    "THEME": (False, True),
+    "RECIPIENT": (True, False),
+    "LOCATION": (True, False),
+}
+
 
 BASE: dict[str, list[LexicalEntry]] = {
     # kain — eat. Anchor of the OV percolation tests; carries the
@@ -354,6 +369,26 @@ BASE: dict[str, list[LexicalEntry]] = {
             {"ACTOR": "SUBJ", "LOCATION": "OBL-LOC"},
             transitive=False,
             intrinsic_classification=_AV_INTR_ACTOR_LOCATION,
+        ),
+    ],
+    # bigay — give. Phase 5c §8 follow-on (Commit 6) ditransitive
+    # entry with two OBL-θ slots (RECIPIENT + LOCATION).
+    # ``Nagbigay ang nanay ng libro sa bata sa eskwela``
+    # ("Mother gave a book to the child at school"). Exercises
+    # multi-OBL semantic disambiguation: the classifier matches
+    # ``sa bata`` (animate) to OBL-RECIP and ``sa eskwela``
+    # (place) to OBL-LOC regardless of surface order.
+    "bigay": [
+        _entry(
+            "bigay", "AV", "GIVE <SUBJ, OBJ, OBL-RECIP, OBL-LOC>",
+            ["AGENT", "THEME", "RECIPIENT", "LOCATION"],
+            {
+                "AGENT": "SUBJ",
+                "THEME": "OBJ",
+                "RECIPIENT": "OBL-RECIP",
+                "LOCATION": "OBL-LOC",
+            },
+            intrinsic_classification=_AV_DITRANS_AGENT_THEME_RECIP_LOC,
         ),
     ],
     # gawa — do, make.

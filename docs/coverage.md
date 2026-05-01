@@ -190,6 +190,15 @@ list (see `docs/analysis-choices.md`):
   shared SUBJ. Noun homonymy (``mukha`` "face", ``baka`` "cow")
   resolves via syntactic-position constraints — no pre-parse
   disambiguation needed.
+- **Multi-OBL semantic disambiguation** — lifted in Phase 5c §8
+  follow-on Commit 6. Each NP's f-structure now carries its
+  head-noun ``LEMMA`` (percolated via N / NP rules); the
+  classifier consults small lemma → semantic-class tables
+  (PLACE, ANIMATE) and prefers semantic match over positional
+  for multi-OBL cases. ``sa bata sa eskwela`` and ``sa eskwela
+  sa bata`` produce the same f-structure (bata → OBL-RECIP,
+  eskwela → OBL-LOC). Positional remains the fallback for
+  same-class or unknown-lemma sa-NPs.
 - **Pronominal possessive** (`ang libro ko`, `ng aklat niya`,
   etc.) — lifted in Phase 5c §7.8 follow-on. Context-aware
   Wackernagel placement keeps a PRON-clitic in place when it

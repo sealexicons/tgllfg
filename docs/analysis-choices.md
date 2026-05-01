@@ -1442,6 +1442,8 @@ the parse for a lex-internal inconsistency would be wrong.
   need a second-GEN-NP slot. Phase 5b.
 * **Multi-OBL semantic disambiguation.** When two `OBL-θ` roles
   compete for two sa-NPs, positional matching is the placeholder.
+  **Update (Phase 5c):** lifted in Phase 5c §8 follow-on Commit 6
+  via lemma-keyed semantic-class lookup (see the entry below).
 * **Embedded-clause LMT.** `lmt_check` only validates the matrix
   f-structure. Embedded XCOMP/COMP clauses have their own PRED
   and could be recursively checked; not wired.
@@ -1939,3 +1941,104 @@ Bakang umuwi ang bata.                — "the child might leave"
 * **Raising under control** (a control verb embedding a raising
   matrix). The infrastructure composes, but the construction
   isn't exercised.
+
+## Phase 5c §8 follow-on: multi-OBL semantic disambiguation
+
+**Date:** 2026-05-01. **Status:** active. Lifts the §8 deferral
+"Multi-OBL semantic disambiguation": when two ``OBL-θ`` roles
+compete for two sa-NPs, the classifier now prefers a lemma-class
+match before falling back to positional order. ``Nagbigay ang
+nanay ng libro sa eskwela sa bata`` (LOC-RECIP surface order)
+gets the same f-structure as ``Nagbigay ang nanay ng libro sa
+bata sa eskwela`` (RECIP-LOC order): bata ends up in
+``OBL-RECIP``, eskwela in ``OBL-LOC``.
+
+### LEMMA percolation through the noun lex
+
+The noun analyzer was previously hardcoded to construct
+``MorphAnalysis(feats={})`` — discarding any per-root features
+that nouns might declare. Phase 5c changes this to
+``MorphAnalysis(feats={**r.feats, "LEMMA": r.citation})`` so
+every noun's MorphAnalysis carries its citation form as
+``LEMMA`` (always set), plus any extra ``feats`` declared on
+the root.
+
+The grammar's ``N → NOUN`` rule gains
+``(↑ LEMMA) = ↓1 LEMMA``; the per-case ``NP[CASE=X] → DET/ADP[…]
+N`` rules gain ``(↑ LEMMA) = ↓2 LEMMA``. As a result, every
+NP-projection's f-structure now has a ``LEMMA`` attribute
+identifying its head noun.
+
+### Lemma-keyed semantic classification
+
+The classifier consults two small tables in
+:mod:`tgllfg.lmt.oblique_classifier`:
+
+```python
+_PLACE_LEMMAS = {"palengke", "eskwela", "bahay", "simbahan",
+                 "tindahan", "parke"}
+_ANIMATE_LEMMAS = {"bata", "nanay", "tatay", "lalaki", "babae",
+                   "anak", "kapatid", "kaibigan", "tao", ...}
+```
+
+The helper ``_semantic_class(np)`` reads ``np.feats["LEMMA"]``
+and returns ``"PLACE"``, ``"ANIMATE"``, or ``None`` (unknown).
+``_gf_prefers_class(gf)`` maps ``OBL-LOC`` / ``OBL-GOAL`` →
+PLACE, ``OBL-RECIP`` / ``OBL-BEN`` → ANIMATE, others → None
+(positional only).
+
+### Greedy match with positional fallback
+
+When two or more ``OBL-θ`` roles and two or more sa-NPs are
+present, the classifier walks roles in a-structure order:
+
+1. For each role with a semantic preference: find the first
+   un-consumed sa-NP whose class matches; assign and consume.
+   If no match, defer the role to the positional pass.
+2. Positional pass: walk remaining sa-NPs in id order,
+   assigning to deferred roles in their a-structure order.
+
+This means: when classes match cleanly, semantic order wins
+regardless of surface position. When classes don't match
+(e.g., two PLACE sa-NPs vying for OBL-LOC + OBL-GOAL),
+positional fills the slots — which is the right fallback since
+without semantic distinguishability we can't do better.
+
+### Recursive multi-DAT not chosen; per-frame multi-DAT instead
+
+A natural-looking option was a recursive ``S → S NP[CASE=DAT]``
+rule that would let any clause take arbitrary trailing sa-NPs.
+This was tried but produces duplicate parses for single-sa-NP
+sentences (the recursive rule overlaps the per-frame rules).
+Phase 5c instead adds explicit ``V[VOICE=AV] NP[NOM] NP[GEN]
+NP[DAT] NP[DAT]`` (and the GEN-NOM permutation) so the new
+``GIVE`` ditransitive lex entry has a grammar slot to attach to
+without rule conflicts elsewhere.
+
+### Sample lex entry: bigay AV ditransitive
+
+```
+GIVE <SUBJ, OBJ, OBL-RECIP, OBL-LOC>
+  a_structure = [AGENT, THEME, RECIPIENT, LOCATION]
+  intrinsic   = AGENT  (False, False)   → SUBJ
+                THEME  (False, True)    → OBJ
+                RECIPIENT (True, False) → OBL-RECIP
+                LOCATION  (True, False) → OBL-LOC
+```
+
+Two OBL-θ slots; the classifier disambiguates the two trailing
+sa-NPs.
+
+### Out-of-scope (still deferred)
+
+* **Richer noun ontology.** The seed lemma tables are
+  intentionally small (a dozen entries each). Real disambiguation
+  for an open-domain corpus would consult a richer noun
+  semantics resource.
+* **Case-by-case override.** No mechanism for a lex entry to
+  override the classifier's preferences (e.g., a verb whose
+  ``OBL-RECIP`` semantically prefers PLACE rather than
+  ANIMATE — rare but possible).
+* **Three-or-more sa-NPs in one clause.** Tagalog rarely
+  sustains more than two sa-NPs at the matrix level; not
+  exercised by the corpus.

@@ -322,10 +322,15 @@ specific GFs that disagreed.
   but no Phase 4 BASE entry currently emits them and the grammar
   rules need a second-GEN-NP slot.
 
-* **Multi-OBL semantic disambiguation.** When two `OBL-θ` roles
-  compete for two sa-NPs, the classifier matches positionally.
-  Real disambiguation needs semantic context (which sa-NP is
-  `BEN` vs `LOC`); deferred.
+* **Multi-OBL semantic disambiguation (lifted in Phase 5c).**
+  Phase 5 matched positionally when two `OBL-θ` roles competed
+  for two sa-NPs. Phase 5c §8 follow-on Commit 6 augments the
+  classifier with lemma-keyed semantic-class lookup: PLACE
+  lemmas (palengke / eskwela / bahay…) prefer LOC/GOAL slots;
+  ANIMATE lemmas (bata / nanay / lalaki…) prefer RECIP/BEN
+  slots. Positional remains the fallback when no semantic
+  preference applies (e.g., OBL-INSTR slots, unknown lemmas, or
+  same-class sa-NPs).
 
 * **Embedded-clause LMT (lifted in Phase 5b).** Phase 5
   `lmt_check` only validated the matrix f-structure. Phase 5b

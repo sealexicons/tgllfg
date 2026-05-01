@@ -114,17 +114,29 @@ class Grammar:
         rules.append(Rule(
             "NP[CASE=NOM]",
             ["DET[CASE=NOM]", "N"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓2 PRED"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓2 PRED",
+                "(↑ LEMMA) = ↓2 LEMMA",
+            ],
         ))
         rules.append(Rule(
             "NP[CASE=GEN]",
             ["ADP[CASE=GEN]", "N"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓2 PRED"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓2 PRED",
+                "(↑ LEMMA) = ↓2 LEMMA",
+            ],
         ))
         rules.append(Rule(
             "NP[CASE=DAT]",
             ["ADP[CASE=DAT]", "N"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓2 PRED"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓2 PRED",
+                "(↑ LEMMA) = ↓2 LEMMA",
+            ],
         ))
 
         # --- Phase 4 §7.8: standalone demonstrative pronouns ---
@@ -223,10 +235,20 @@ class Grammar:
         ))
 
         # --- N from NOUN (toy PRED; Phase 5 will lexicalise properly) ---
+        # Phase 5c §8 follow-on (Commit 6): also expose the noun's
+        # ``LEMMA`` (always set by the noun analyzer) so the multi-OBL
+        # classifier can look up semantic class. Optional ``SEM_CLASS``
+        # rides through too when the root declares it in its
+        # ``feats`` block (PLACE / ANIMATE / etc.). Both are unified
+        # at the N-projection and propagate to the NP via the
+        # NP → DET/ADP N rule's per-feature pass-through below.
         rules.append(Rule(
             "N",
             ["NOUN"],
-            ["(↑ PRED) = 'NOUN(↑ FORM)'"],
+            [
+                "(↑ PRED) = 'NOUN(↑ FORM)'",
+                "(↑ LEMMA) = ↓1 LEMMA",
+            ],
         ))
 
         # --- Sentential rules: V-initial, flat ---
@@ -847,6 +869,48 @@ class Grammar:
                 "(↑ SUBJ) = ↓4",
                 "(↑ OBJ-CAUSER) = ↓2",
                 "(↑ OBJ-PATIENT) = ↓3",
+            ),
+        ))
+
+        # Phase 5c §8 follow-on (Commit 6): AV transitive frame
+        # with two trailing sa-NPs — exercises the multi-OBL
+        # semantic-disambiguation classifier. Both NP[CASE=DAT]
+        # land in ADJUNCT; ``classify_oblique_slots`` then moves
+        # them into typed ``OBL-RECIP`` / ``OBL-LOC`` slots based
+        # on each sa-NP's head-noun semantic class. Two NP order
+        # variants (NOM-GEN and GEN-NOM); the two sa-NPs can
+        # appear in either order — the classifier disambiguates
+        # by lemma class, not surface order.
+        rules.append(Rule(
+            "S",
+            [
+                "V[VOICE=AV]",
+                "NP[CASE=NOM]",
+                "NP[CASE=GEN]",
+                "NP[CASE=DAT]",
+                "NP[CASE=DAT]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ) = ↓3",
+                "↓4 ∈ (↑ ADJUNCT)",
+                "↓5 ∈ (↑ ADJUNCT)",
+            ),
+        ))
+        rules.append(Rule(
+            "S",
+            [
+                "V[VOICE=AV]",
+                "NP[CASE=GEN]",
+                "NP[CASE=NOM]",
+                "NP[CASE=DAT]",
+                "NP[CASE=DAT]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ) = ↓2",
+                "↓4 ∈ (↑ ADJUNCT)",
+                "↓5 ∈ (↑ ADJUNCT)",
             ),
         ))
 
