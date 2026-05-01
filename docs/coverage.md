@@ -158,10 +158,6 @@ list (see `docs/analysis-choices.md`):
 - **Long-distance relativization** through XCOMP / COMP (needs
   functional uncertainty in the unifier — §7.5 + §7.6 deferral).
 - **Non-pivot ay-fronting** (§7.4 deferral; §7.8 follow-up).
-- **Standalone demonstrative-as-modifier with linker**
-  (`ang batang ito`) — §7.8 partial coverage; the standalone
-  pronominal use parses, the post-modifier-with-linker pattern
-  doesn't.
 
 ### Recently lifted (still listed for archaeological context)
 
@@ -218,6 +214,14 @@ list (see `docs/analysis-choices.md`):
   GEN-CAUSER to ``OBJ-CAUSER``. PRED template:
   ``CAUSE-EAT-AT <SUBJ, OBJ-CAUSER>`` etc. (LOCATION /
   recipient is the pivot).
+- **Post-modifier demonstrative with linker** (``ang batang
+  ito``) — lifted in Phase 5d Commit 3. Six new grammar rules
+  (3 cases × 2 linker variants) admit ``NP[CASE=X]
+  → NP[CASE=X] PART[LINK] DET/ADP[CASE=X, DEM=YES]`` with
+  case agreement enforced at the parser level. The matrix
+  shares the head NP's f-structure via ``(↑) = ↓1`` and
+  copies the demonstrative's DEIXIS via
+  ``(↑ DEIXIS) = ↓3 DEIXIS``.
 - **Pronominal possessive** (`ang libro ko`, `ng aklat niya`,
   etc.) — lifted in Phase 5c §7.8 follow-on. Context-aware
   Wackernagel placement keeps a PRON-clitic in place when it

@@ -2223,3 +2223,69 @@ Pakakainan ng nanay ang bata.    CTPL
   reciprocal, ``magpa-...-an`` distributive, etc.). The
   §7.7 plan mentioned "pa-...-an and other less-common
   causative variants"; the others remain deferred.
+
+## Phase 5d Commit 3: post-modifier demonstrative with linker
+
+**Date:** 2026-05-01. **Status:** active. Lifts the §7.8
+deferral on "Standalone demonstrative-as-modifier with linker"
+noted in `docs/coverage.md`. Sentences like ``Kumain ang
+batang ito`` ("this child ate") now parse with the
+demonstrative's deixis percolated to the matrix NP's
+f-structure.
+
+### Six grammar rules (3 cases × 2 linker variants)
+
+```
+NP[CASE=NOM] → NP[CASE=NOM] PART[LINK=…] DET[CASE=NOM, DEM=YES]
+NP[CASE=GEN] → NP[CASE=GEN] PART[LINK=…] ADP[CASE=GEN, DEM=YES]
+NP[CASE=DAT] → NP[CASE=DAT] PART[LINK=…] ADP[CASE=DAT, DEM=YES]
+```
+
+The demonstrative agrees in case with the head NP. NOM-marked
+demonstratives are ``DET`` (``ito``, ``iyan``, ``iyon``);
+GEN-marked are ``ADP`` (``nito``, ``niyan``, ``niyon``);
+DAT-marked are ``ADP`` (``dito``, ``diyan``, ``doon``). The
+case-typed pattern in the rule's third child enforces
+agreement at the parser level — cross-case combinations
+(`ng batang ito` with NOM-dem after GEN-head) don't fire any
+post-modifier rule and the dem reading is rejected.
+
+### Equations: matrix shares head, DEIXIS percolates
+
+```
+(↑) = ↓1                  -- head NP's f-structure becomes the matrix
+(↑ DEIXIS) = ↓3 DEIXIS    -- copy deixis from the modifier
+```
+
+The PRED stays the head noun's PRED — the demonstrative
+modifies, doesn't supplant. Compare with Phase 4 §7.8's
+standalone-demonstrative rule, which uses ``(↑) = ↓1`` to
+share with the demonstrative directly (no head noun) and adds
+``(↑ PRED) = 'PRO'`` so completeness passes.
+
+### Surface variants enabled
+
+```
+ang batang ito       (NOM PROX)
+ang batang iyan      (NOM MED)
+ang batang iyon      (NOM DIST)
+ng batang nito       (GEN PROX, in OV pivot or possessor)
+ng batang niyon      (GEN DIST)
+sa palengkeng dito   (DAT PROX)
+sa palengkeng doon   (DAT DIST)
+```
+
+Multiple modifiers per clause compose freely
+(``Kumain ang batang ito ng isdang niyan`` "this child ate
+that fish").
+
+### Out-of-scope (still deferred)
+
+* **Pre-modifier demonstrative with linker** (``itong batang``
+  "this child" — modifier-first variant). Tagalog admits both
+  orders; only post-modifier is wired. Pre-modifier would need
+  parallel rules in the reverse direction.
+* **Demonstrative as modifier of a relativized head**
+  (``ang batang ito na kumain`` "this child who ate"). The
+  RC's linker would compete with the dem-modifier's linker;
+  needs ranker-policy refinement.

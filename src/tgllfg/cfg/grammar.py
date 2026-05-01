@@ -165,6 +165,57 @@ class Grammar:
             ["(↑) = ↓1", "(↑ PRED) = 'PRO'"],
         ))
 
+        # --- Phase 5d Commit 3: post-modifier demonstrative -----------
+        #
+        # ``ang batang ito`` ("this child"). The demonstrative
+        # follows the head NP via the linker (`-ng` after vowel-
+        # final hosts, `na` after consonant-final). Three case
+        # variants × two linker variants. The demonstrative agrees
+        # with the head in case: NOM-marked dems are DET (ito,
+        # iyan, iyon); GEN/DAT are ADP (nito/dito, niyan/diyan,
+        # niyon/doon). The matrix shares the head NP's f-structure
+        # via ``(↑) = ↓1``; the demonstrative's DEIXIS feature is
+        # copied via ``(↑ DEIXIS) = ↓3 DEIXIS``. PRED stays the
+        # head noun's PRED — the demonstrative modifies, doesn't
+        # supplant.
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "NP[CASE=NOM]",
+                [
+                    "NP[CASE=NOM]",
+                    f"PART[LINK={link}]",
+                    "DET[CASE=NOM, DEM=YES]",
+                ],
+                _eqs(
+                    "(↑) = ↓1",
+                    "(↑ DEIXIS) = ↓3 DEIXIS",
+                ),
+            ))
+            rules.append(Rule(
+                "NP[CASE=GEN]",
+                [
+                    "NP[CASE=GEN]",
+                    f"PART[LINK={link}]",
+                    "ADP[CASE=GEN, DEM=YES]",
+                ],
+                _eqs(
+                    "(↑) = ↓1",
+                    "(↑ DEIXIS) = ↓3 DEIXIS",
+                ),
+            ))
+            rules.append(Rule(
+                "NP[CASE=DAT]",
+                [
+                    "NP[CASE=DAT]",
+                    f"PART[LINK={link}]",
+                    "ADP[CASE=DAT, DEM=YES]",
+                ],
+                _eqs(
+                    "(↑) = ↓1",
+                    "(↑ DEIXIS) = ↓3 DEIXIS",
+                ),
+            ))
+
         # --- Phase 4 §7.8: NP-internal possessive ---
         #
         # ``ang aklat ng bata`` ("the child's book") and pronominal
