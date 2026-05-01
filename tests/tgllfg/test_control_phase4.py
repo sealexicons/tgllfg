@@ -209,18 +209,6 @@ def test_bare_control_verb_rejected() -> None:
     assert not results, "bare control verb should not parse"
 
 
-def test_non_av_embedded_rejected() -> None:
-    """``*Gusto kong kainin ang isda`` (OV embedded): under the
-    Phase 4 §7.6 scope S_XCOMP is AV-restricted, so this fails to
-    parse. (The construction is grammatical Tagalog; deferred to a
-    later commit.)"""
-    results = parse_text("Gusto kong kainin ang isda.")
-    assert not results, (
-        "OV embedded control complement is out of §7.6 scope; "
-        "parse should fail"
-    )
-
-
 def test_psych_predicate_subject_condition_satisfied() -> None:
     """Psych predicates have GEN-NP=SUBJ so the Subject Condition
     holds: PRED ``WANT <SUBJ, XCOMP>`` and matrix has SUBJ."""

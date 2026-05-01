@@ -15,38 +15,61 @@ from tgllfg.fstruct import (
 
 class TestParsePredTemplate:
     def test_zero_arg(self) -> None:
-        assert parse_pred_template("WALK") == PredTemplate("WALK", ())
+        assert parse_pred_template("WALK") == PredTemplate("WALK", (), (), ())
 
     def test_one_arg(self) -> None:
         assert parse_pred_template("WALK <SUBJ>") == PredTemplate(
-            "WALK", ("SUBJ",)
+            "WALK", ("SUBJ",), ("SUBJ",), ()
         )
 
     def test_two_args(self) -> None:
         assert parse_pred_template("EAT <SUBJ, OBJ>") == PredTemplate(
-            "EAT", ("SUBJ", "OBJ")
+            "EAT", ("SUBJ", "OBJ"), ("SUBJ", "OBJ"), ()
         )
 
     def test_typed_obl_args(self) -> None:
         # Real grammars name OBL-AG, OBL-LOC, OBJ-GOAL etc.
         assert parse_pred_template(
             "GIVE <SUBJ, OBJ, OBL-GOAL>"
-        ) == PredTemplate("GIVE", ("SUBJ", "OBJ", "OBL-GOAL"))
+        ) == PredTemplate(
+            "GIVE",
+            ("SUBJ", "OBJ", "OBL-GOAL"),
+            ("SUBJ", "OBJ", "OBL-GOAL"),
+            (),
+        )
 
     def test_whitespace_tolerated(self) -> None:
         assert parse_pred_template("  EAT   <  SUBJ ,  OBJ  >  ") == (
-            PredTemplate("EAT", ("SUBJ", "OBJ"))
+            PredTemplate("EAT", ("SUBJ", "OBJ"), ("SUBJ", "OBJ"), ())
         )
 
     def test_toy_noun_template(self) -> None:
         # The N → NOUN rule emits this placeholder; we accept it as a
         # 0-ary predicate so well-formedness skips it cleanly.
         assert parse_pred_template("NOUN(↑ FORM)") == PredTemplate(
-            "NOUN(↑ FORM)", ()
+            "NOUN(↑ FORM)", (), (), ()
         )
 
     def test_empty_arg_list(self) -> None:
-        assert parse_pred_template("HELP <>") == PredTemplate("HELP", ())
+        assert parse_pred_template("HELP <>") == PredTemplate(
+            "HELP", (), (), ()
+        )
+
+    def test_non_thematic_subj(self) -> None:
+        # Phase 5c §7.6 follow-on Commit 5: raising verbs declare a
+        # non-thematic SUBJ outside the angle brackets.
+        # ``governables`` is the union; ``thematic`` and
+        # ``non_thematic`` separate the two flavors.
+        assert parse_pred_template("SEEM <XCOMP> SUBJ") == PredTemplate(
+            "SEEM", ("XCOMP", "SUBJ"), ("XCOMP",), ("SUBJ",)
+        )
+
+    def test_multiple_non_thematic(self) -> None:
+        assert parse_pred_template(
+            "WEATHER <> SUBJ, EXPL"
+        ) == PredTemplate(
+            "WEATHER", ("SUBJ", "EXPL"), (), ("SUBJ", "EXPL")
+        )
 
     def test_missing_close_bracket_rejected(self) -> None:
         with pytest.raises(ValueError):

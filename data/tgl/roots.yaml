@@ -35,8 +35,10 @@
   transitivity: TR
   # R&B 126: -um- / -in / -an. + maka- abilitative (productive).
   # Phase 4 §7.7: pa_in (pinakain "fed", direct causative) and
-  # magpa (nagpakain "had-eat", biclausal causative).
-  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa]
+  # magpa (nagpakain "had-eat", biclausal causative). Phase 5c
+  # §7.7 follow-on: ika (ikinakain "[reason for which X] ate",
+  # reason applicative IV).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika]
 
 - citation: bili
   pos: VERB
@@ -44,8 +46,10 @@
   transitivity: TR
   # R&B 37: -um- / -in / -an / i- / ipang-. mang- distributive
   # ("mamili" — to shop). +maka- abilitative. Phase 4 §7.7: ipag
-  # (ipinagbili "sold-for", benefactive applicative IV).
-  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipag]
+  # (ipinagbili "sold-for", benefactive applicative IV). Phase 5c
+  # §7.7 follow-on: ipang (ipinambili "instrument-bought",
+  # instrumental applicative IV).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipag, ipang]
 
 - citation: inom
   pos: VERB
@@ -76,8 +80,9 @@
   pos: VERB
   gloss: sew
   transitivity: TR
-  # mang- distributive ("nanahi").
-  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka]
+  # mang- distributive ("nanahi"). Phase 5c §7.7 follow-on: ipang
+  # (ipinantahi "instrument-sewn", instrumental applicative IV).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipang]
 
 - citation: putol
   pos: VERB
@@ -244,7 +249,9 @@
   transitivity: TR
   # R&B 237: -um- / -in / i- / -an. Both -um- and mag- in AV.
   # Phase 4 §7.7: ipag (ipinagsulat "wrote-for", benefactive IV).
-  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, ipag]
+  # Phase 5c §7.7 follow-on: ika (ikinasulat "[reason for which]
+  # X wrote", reason applicative IV).
+  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, ipag, ika]
 
 - citation: bayad
   pos: VERB
@@ -1496,6 +1503,21 @@
 - citation: pera
   pos: NOUN
   gloss: money
+- citation: karayom
+  pos: NOUN
+  gloss: needle (instrument; Phase 5c §7.7 ipang- test fixture)
+- citation: gutom
+  pos: NOUN
+  gloss: hunger (Phase 5c §7.7 ika- test fixture)
+- citation: mukha
+  pos: NOUN
+  gloss: face (homophonous with the raising verb "seem"; Phase 5c §7.6 fixture)
+- citation: titser
+  pos: NOUN
+  gloss: teacher
+- citation: panulat
+  pos: NOUN
+  gloss: pen, writing instrument
 - citation: trabaho
   pos: NOUN
   gloss: work, job (homophonous with the verb)

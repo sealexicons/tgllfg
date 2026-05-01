@@ -55,6 +55,7 @@ from .sandhi import (
     cv_reduplicate,
     d_to_r_intervocalic,
     infix_after_first_consonant,
+    nasal_assim_prefix,
     nasal_substitute,
 )
 
@@ -90,6 +91,8 @@ def _apply(op: Operation, base: str, flags: set[str]) -> str:
         return op.value + base
     if op.op == "nasal_substitute":
         return nasal_substitute(base)
+    if op.op == "nasal_assim_prefix":
+        return nasal_assim_prefix(op.value, base)
     raise ValueError(f"unknown operation: {op.op!r}")
 
 
@@ -202,10 +205,19 @@ class Analyzer:
             if r.pos == "VERB":
                 self._index_verb_paradigms(r)
             elif r.pos == "NOUN":
+                # Phase 5c §8 follow-on (Commit 6): expose the noun
+                # lemma + per-root feats on the MorphAnalysis. The
+                # multi-OBL classifier consults LEMMA / SEM_CLASS to
+                # disambiguate sa-NPs (palengke → OBL-LOC,
+                # bata → OBL-BEN, etc.) when multiple OBL-θ roles
+                # compete for multiple sa-NPs. Previously feats was
+                # hardcoded empty.
+                noun_feats: dict[str, object] = {**r.feats}
+                noun_feats.setdefault("LEMMA", r.citation)
                 self._index.nouns[r.citation.lower()] = MorphAnalysis(
                     lemma=r.citation,
                     pos="NOUN",
-                    feats={},
+                    feats=noun_feats,
                 )
 
     def _index_verb_paradigms(self, root: Root) -> None:

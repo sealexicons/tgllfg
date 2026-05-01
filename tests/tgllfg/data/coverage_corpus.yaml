@@ -2191,8 +2191,8 @@
   construction: 'causative: magpa- AV biclausal + transitive XCOMP'
   expected: parse
 - text: Ipinambili ng titser ang panulat.
-  construction: 'applicative: ipang- (deferred)'
-  expected: fail
+  construction: 'applicative: ipang- (instrumental, IV-INSTR)'
+  expected: parse
 - text: Kumain ito.
   construction: 'demonstrative: standalone NOM'
   expected: parse

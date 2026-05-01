@@ -82,12 +82,15 @@ full-parse level but produces sub-span fragments — Tagalog's
 SUBJ-only restriction is a hard syntactic constraint and we
 preserve the fragments for diagnostic visibility.
 
-### applicative (46 sentences, 98%)
+### applicative (46 sentences, 100%)
 
-§7.7 `ipag-` benefactive applicative (APPL=BEN). **1 fail** is
-intentional: `Ipinambili ng titser ang panulat` (instrumental
-applicative, `ipang-`) is deferred — it requires homorganic-nasal
-sandhi that our existing `nasal_substitute` op doesn't produce.
+§7.7 `ipag-` benefactive applicative (APPL=BEN), plus the
+Phase 5c §7.7 follow-on `ipang-` instrumental applicative
+(APPL=INSTR) and `ika-` reason applicative (APPL=REASON).
+The `ipang-` cells use the new `nasal_assim_prefix` sandhi op
+(homorganic-nasal place-assimilation with consonant retention),
+distinct from the older `nasal_substitute` (drop pattern) which
+the AV distributive `mang-` continues to use.
 
 ### negation (40 sentences, 100%)
 
@@ -155,25 +158,60 @@ list (see `docs/analysis-choices.md`):
 - **Long-distance relativization** through XCOMP / COMP (needs
   functional uncertainty in the unifier — §7.5 + §7.6 deferral).
 - **Non-pivot ay-fronting** (§7.4 deferral; §7.8 follow-up).
-- **OV / DV control complements** with non-SUBJ gap (§7.6
-  deferral).
-- **Multi-GEN-NP applicative / causative frames** (§7.7
-  deferral; Phase 5 LMT).
-- **`ipang-` instrumental** and **`ika-` reason** applicatives
-  (§7.7 deferral; need homorganic-nasal sandhi).
 - **`pa-...-an` DV causative** and other less-common causative
   variants (§7.7 deferral).
 - **Standalone demonstrative-as-modifier with linker**
   (`ang batang ito`) — §7.8 partial coverage; the standalone
   pronominal use parses, the post-modifier-with-linker pattern
   doesn't.
-- **Pronominal possessive** (`ang aklat ko`) — conflicts with §7.3
-  Wackernagel clitic placement; needs context-aware placement.
-- **Pre-NP partitive quantifier** (`lahat ng bata`) — needs a QP
-  non-terminal (§7.8 deferral).
-- **Raising verbs** (`mukha`, `baka`) — §7.6 deferral; needs
-  non-thematic SUBJ in PRED templates plus lexical disambiguation
-  for the noun homonyms.
+
+### Recently lifted (still listed for archaeological context)
+
+- **OV / DV / IV control complements** with non-SUBJ gap — lifted
+  in Phase 5c §7.6 follow-on. The embedded actor's typed GF
+  (`OBJ-AGENT`) is now the gap-binding target for non-AV embedded
+  clauses; psych and transitive control compose with OV / DV / IV
+  embedded.
+- **Long-distance (nested) control** through chained XCOMPs —
+  lifted in Phase 5c §7.6 follow-on Commit 3. Six new S_XCOMP
+  rules let a control verb be the head of an embedded clause;
+  finite-depth chains compose without functional uncertainty.
+  Long-distance *relativization* (the entry above) genuinely
+  needs functional uncertainty and remains deferred.
+- **`ipang-` instrumental and `ika-` reason applicatives** —
+  lifted in Phase 5c §7.7 follow-on Commit 4. New
+  `nasal_assim_prefix` sandhi op handles homorganic-nasal place-
+  assimilation with consonant retention (`pang-` + `bili` →
+  `pambili`, distinct from the existing drop pattern of
+  `nasal_substitute`). 6 new IV cells (3 INSTR, 3 REASON) +
+  4 lex entries; new `REASON` role in the Role enum.
+- **Raising verbs** (`mukha` "seem", `baka` "might") — lifted in
+  Phase 5c §7.6 follow-on Commit 5. PRED-template format
+  extended with non-thematic args (``SEEM <XCOMP> SUBJ``); new
+  ``CTRL_CLASS=RAISING`` lex entries; matrix wrap rule
+  ``S → V[CTRL_CLASS=RAISING] PART[LINK] S`` with structure-
+  shared SUBJ. Noun homonymy (``mukha`` "face", ``baka`` "cow")
+  resolves via syntactic-position constraints — no pre-parse
+  disambiguation needed.
+- **Multi-OBL semantic disambiguation** — lifted in Phase 5c §8
+  follow-on Commit 6. Each NP's f-structure now carries its
+  head-noun ``LEMMA`` (percolated via N / NP rules); the
+  classifier consults small lemma → semantic-class tables
+  (PLACE, ANIMATE) and prefers semantic match over positional
+  for multi-OBL cases. ``sa bata sa eskwela`` and ``sa eskwela
+  sa bata`` produce the same f-structure (bata → OBL-RECIP,
+  eskwela → OBL-LOC). Positional remains the fallback for
+  same-class or unknown-lemma sa-NPs.
+- **Pronominal possessive** (`ang libro ko`, `ng aklat niya`,
+  etc.) — lifted in Phase 5c §7.8 follow-on. Context-aware
+  Wackernagel placement keeps a PRON-clitic in place when it
+  follows a NOUN; the existing NP-internal possessive rule then
+  binds it as `POSS`.
+- **Multi-GEN-NP applicative / causative frames** — lifted
+  incrementally in Phase 5b §7.7 follow-on for IV-BEN and
+  pa-OV-direct frames; remaining variants still deferred.
+- **Pre-NP partitive quantifier** (`lahat ng bata`) — lifted in
+  Phase 5b §7.8 follow-on (flat 3-child rule, no QP non-terminal).
 
 ## How to regenerate
 

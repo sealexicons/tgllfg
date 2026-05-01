@@ -41,7 +41,7 @@ from collections.abc import Iterator, Sequence
 
 from ..common import AStructure, FStructure, LexicalEntry, MorphAnalysis
 from ..fstruct import Diagnostic
-from ..fstruct.checks import is_governable_gf
+from ..fstruct.checks import is_governable_gf, parse_pred_template
 from .common import intrinsics_for, stipulated_gfs_for
 from .legacy import apply_lmt
 from .oblique_classifier import classify_oblique_slots
@@ -135,6 +135,18 @@ def lmt_check(
     diagnostics.extend(classify_oblique_slots(f, result.mapping))
 
     expected_gfs = set(result.mapping.values())
+    # Phase 5c §7.6 follow-on (Commit 5): raising verbs declare
+    # non-thematic GFs in their PRED template (outside ``<...>``).
+    # The BK engine only maps thematic roles, so the engine's
+    # mapping doesn't include the non-thematic SUBJ. Add it here
+    # so the comparison treats the f-structure's SUBJ as expected
+    # (it IS expected — required by the lex's PRED — just not
+    # via thematic-role mapping).
+    try:
+        tmpl = parse_pred_template(pred_str)
+        expected_gfs.update(tmpl.non_thematic)
+    except ValueError:
+        pass
     actual_gfs = _governable_gfs(f)
 
     # Surface engine-emitted biuniqueness violations as blocking.

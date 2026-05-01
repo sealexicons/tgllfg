@@ -233,6 +233,43 @@ def nasal_substitute(base: str) -> str:
     return base
 
 
+def nasal_assim_prefix(prefix: str, base: str) -> str:
+    """Prepend ``prefix`` (which must end in the orthographic ``ng``
+    digraph) to ``base``, place-assimilating the prefix's final
+    nasal to the base's first consonant **without** dropping that
+    consonant.
+
+    Distinguished from :func:`nasal_substitute`, which DROPS the
+    base's first consonant (the historical mang-/nang-/pang- AV
+    distributive pattern: ``mang-`` + ``bili`` → ``mamili``). The
+    instrumental applicative ``ipang-`` and analogous formations
+    retain the consonant: ``pang-`` + ``bili`` → ``pambili``
+    (later → ``ipinambili``). The two patterns coexist on the
+    same root in modern Tagalog with different meanings.
+
+    Examples (with ``prefix="pang"``):
+
+    * ``bili``  → ``pambili``   (ng → m, b retained)
+    * ``tahi``  → ``pantahi``   (ng → n, t retained)
+    * ``kuha``  → ``pangkuha``  (ng → ng [vacuous], k retained)
+    * ``ulan``  → ``pangulan``  (vowel-initial, no assimilation)
+    * ``lakad`` → ``panglakad`` (sonorant-initial, no assimilation)
+
+    The prefix MUST end in ``"ng"`` (digraph for /ŋ/); the function
+    treats the last two characters as the assimilation site.
+    """
+    if not prefix.endswith("ng"):
+        raise ValueError(
+            f"nasal_assim_prefix requires an ng-final prefix; got {prefix!r}"
+        )
+    if not base:
+        return prefix
+    initial = base[0].lower()
+    head = prefix[:-2]  # drop the final "ng"
+    nasal = _NASAL_SUBSTITUTION.get(initial, "ng")
+    return head + nasal + base
+
+
 __all__ = [
     "SONORANTS",
     "VOWELS",
@@ -243,5 +280,6 @@ __all__ = [
     "infix_after_first_consonant",
     "is_sonorant_initial",
     "is_vowel",
+    "nasal_assim_prefix",
     "nasal_substitute",
 ]

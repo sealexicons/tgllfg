@@ -137,6 +137,17 @@ _IV_BEN_AGENT_BENEFICIARY: dict[str, tuple[bool | None, bool | None]] = {
     "AGENT": (True, True),
     "BENEFICIARY": (False, False),
 }
+# Phase 5c §7.7 follow-on: ipang- instrumental and ika- reason
+# applicatives. The pivot rotates to INSTRUMENT / REASON; AGENT
+# demotes to typed OBJ-AGENT. Same intrinsic shape as IV-BEN.
+_IV_INSTR_AGENT_INSTRUMENT: dict[str, tuple[bool | None, bool | None]] = {
+    "AGENT": (True, True),
+    "INSTRUMENT": (False, False),
+}
+_IV_REASON_AGENT_REASON: dict[str, tuple[bool | None, bool | None]] = {
+    "AGENT": (True, True),
+    "REASON": (False, False),
+}
 # Phase 5b: three-arg IV-BEN with explicit PATIENT in addition to
 # AGENT and BENEFICIARY. Both AGENT and PATIENT are [+r, +o] →
 # typed OBJ-θ (OBJ-AGENT and OBJ-PATIENT, distinct GFs).
@@ -188,6 +199,15 @@ _DV_TRANS_CONTROL: dict[str, tuple[bool | None, bool | None]] = {
     "RECIPIENT": (False, False),
     "COMPLEMENT": (None, None),
 }
+# Phase 5c §7.6 follow-on (Commit 5): raising verbs declare a
+# non-thematic SUBJ outside the angle-bracketed PRED template
+# (``SEEM <XCOMP> SUBJ``), so the only thematic role is
+# COMPLEMENT (the proposition). The matrix's SUBJ is filled by
+# structure-sharing with the embedded XCOMP.SUBJ via the grammar's
+# raising binding, NOT by mapping a thematic role.
+_RAISING: dict[str, tuple[bool | None, bool | None]] = {
+    "COMPLEMENT": (None, None),
+}
 
 # Phase 5 §8: motion-verb profile with sa-marked locative argument.
 # ACTOR is the AV pivot; LOCATION is OBL-θ via the [+r, -o]
@@ -195,6 +215,21 @@ _DV_TRANS_CONTROL: dict[str, tuple[bool | None, bool | None]] = {
 # ADJUNCT members with CASE=DAT into the typed OBL-LOC slot.
 _AV_INTR_ACTOR_LOCATION: dict[str, tuple[bool | None, bool | None]] = {
     "ACTOR": (False, False),
+    "LOCATION": (True, False),
+}
+
+# Phase 5c §8 follow-on (Commit 6): ditransitive AV with two
+# OBL-θ slots (RECIPIENT + LOCATION). Exercises the multi-OBL
+# semantic-disambiguation pass — when both ``sa nanay`` (animate)
+# and ``sa eskwela`` (place) appear, the classifier matches them
+# to ``OBL-RECIP`` and ``OBL-LOC`` respectively regardless of
+# surface order, by consulting the LEMMA-keyed semantic table.
+_AV_DITRANS_AGENT_THEME_RECIP_LOC: dict[
+    str, tuple[bool | None, bool | None]
+] = {
+    "AGENT": (False, False),
+    "THEME": (False, True),
+    "RECIPIENT": (True, False),
     "LOCATION": (True, False),
 }
 
@@ -336,6 +371,26 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_AV_INTR_ACTOR_LOCATION,
         ),
     ],
+    # bigay — give. Phase 5c §8 follow-on (Commit 6) ditransitive
+    # entry with two OBL-θ slots (RECIPIENT + LOCATION).
+    # ``Nagbigay ang nanay ng libro sa bata sa eskwela``
+    # ("Mother gave a book to the child at school"). Exercises
+    # multi-OBL semantic disambiguation: the classifier matches
+    # ``sa bata`` (animate) to OBL-RECIP and ``sa eskwela``
+    # (place) to OBL-LOC regardless of surface order.
+    "bigay": [
+        _entry(
+            "bigay", "AV", "GIVE <SUBJ, OBJ, OBL-RECIP, OBL-LOC>",
+            ["AGENT", "THEME", "RECIPIENT", "LOCATION"],
+            {
+                "AGENT": "SUBJ",
+                "THEME": "OBJ",
+                "RECIPIENT": "OBL-RECIP",
+                "LOCATION": "OBL-LOC",
+            },
+            intrinsic_classification=_AV_DITRANS_AGENT_THEME_RECIP_LOC,
+        ),
+    ],
     # gawa — do, make.
     "gawa": [
         _entry(
@@ -459,6 +514,36 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_DV_TRANS_CONTROL,
         ),
     ],
+    # Phase 5c §7.6 follow-on (Commit 5): raising verbs.
+    # ``mukha`` "seem", ``baka`` "might". Closed-class, uninflected
+    # pseudo-verbs seeded under ``particles.yaml`` with
+    # ``CTRL_CLASS=RAISING``. PRED uses the non-thematic notation
+    # ``<XCOMP> SUBJ``: COMPLEMENT is the only thematic role; SUBJ
+    # is structurally required (shared with embedded XCOMP.SUBJ via
+    # the grammar's raising binding) but bears no theta role on
+    # the matrix. Both surfaces are also nouns (``mukha`` "face",
+    # ``baka`` "cow"); the grammar's wrap-rule pattern resolves
+    # the homonymy at parse time.
+    "mukha": [
+        LexicalEntry(
+            lemma="mukha",
+            pred="SEEM <XCOMP> SUBJ",
+            a_structure=["COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "RAISING"},
+            gf_defaults={"COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_RAISING,
+        ),
+    ],
+    "baka": [
+        LexicalEntry(
+            lemma="baka",
+            pred="MIGHT <XCOMP> SUBJ",
+            a_structure=["COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "RAISING"},
+            gf_defaults={"COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_RAISING,
+        ),
+    ],
 }
 
 
@@ -543,6 +628,50 @@ BASE["bili"].append(LexicalEntry(
         "PATIENT": "OBJ-PATIENT",
     },
     intrinsic_classification=_IV_BEN_AGENT_PATIENT_BENEFICIARY,
+))
+
+# Phase 5c §7.7 follow-on: instrumental applicatives (ipang-).
+# SUBJ = INSTRUMENT (the thing used); OBJ-AGENT = the actor.
+# The patient (what was bought / sewn) is omitted from the 2-arg
+# PRED, mirroring the existing IV-BEN choice — multi-GEN-NP
+# extensions can be added if corpus pressure warrants.
+BASE["bili"].append(LexicalEntry(
+    lemma="bili",
+    pred="BUY-WITH <SUBJ, OBJ-AGENT>",
+    a_structure=["AGENT", "INSTRUMENT"],
+    morph_constraints={"VOICE": "IV", "APPL": "INSTR"},
+    gf_defaults={"INSTRUMENT": "SUBJ", "AGENT": "OBJ-AGENT"},
+    intrinsic_classification=_IV_INSTR_AGENT_INSTRUMENT,
+))
+BASE.setdefault("tahi", []).append(LexicalEntry(
+    lemma="tahi",
+    pred="SEW-WITH <SUBJ, OBJ-AGENT>",
+    a_structure=["AGENT", "INSTRUMENT"],
+    morph_constraints={"VOICE": "IV", "APPL": "INSTR"},
+    gf_defaults={"INSTRUMENT": "SUBJ", "AGENT": "OBJ-AGENT"},
+    intrinsic_classification=_IV_INSTR_AGENT_INSTRUMENT,
+))
+
+# Phase 5c §7.7 follow-on: reason applicatives (ika-).
+# SUBJ = REASON (the cause / motivation); OBJ-AGENT = the actor.
+# Tagalog ika- is most natural with stative bases (ikinatuwa
+# "[reason for being] glad"), but extends to dynamic verbs in
+# motivational readings (ikinakain "[reason for which X] ate").
+BASE["kain"].append(LexicalEntry(
+    lemma="kain",
+    pred="EAT-FOR-REASON <SUBJ, OBJ-AGENT>",
+    a_structure=["AGENT", "REASON"],
+    morph_constraints={"VOICE": "IV", "APPL": "REASON"},
+    gf_defaults={"REASON": "SUBJ", "AGENT": "OBJ-AGENT"},
+    intrinsic_classification=_IV_REASON_AGENT_REASON,
+))
+BASE["sulat"].append(LexicalEntry(
+    lemma="sulat",
+    pred="WRITE-FOR-REASON <SUBJ, OBJ-AGENT>",
+    a_structure=["AGENT", "REASON"],
+    morph_constraints={"VOICE": "IV", "APPL": "REASON"},
+    gf_defaults={"REASON": "SUBJ", "AGENT": "OBJ-AGENT"},
+    intrinsic_classification=_IV_REASON_AGENT_REASON,
 ))
 
 # Direct (monoclausal) causatives (pa-...-in OV): SUBJ = causee

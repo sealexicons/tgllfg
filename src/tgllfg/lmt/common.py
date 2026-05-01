@@ -88,6 +88,11 @@ class Role(Enum):
     CAUSEE = "CAUSEE"
     EVENT = "EVENT"
     COMPLEMENT = "COMPLEMENT"
+    # Phase 5c §7.7 follow-on: pivot of the ika- reason applicative
+    # (``ikinasulat ang gutom`` "hunger is what X wrote because of").
+    # Patterns like INSTRUMENT — non-volitional, secondary-topic
+    # capable. Default intrinsic is ``(r=None, o=False)``.
+    REASON = "REASON"
 
     @property
     def gf_suffix(self) -> str:
@@ -233,6 +238,7 @@ _DEFAULT_INTRINSICS: dict[Role, IntrinsicFeatures] = {
     Role.GOAL:         IntrinsicFeatures(o=False),
     Role.INSTRUMENT:   IntrinsicFeatures(o=False),
     Role.LOCATION:     IntrinsicFeatures(o=False),
+    Role.REASON:       IntrinsicFeatures(o=False),
     # Unrestricted intrinsic ([-r]) — patient-like roles default to
     # the lex's natural OBJ candidate.
     Role.PATIENT:      IntrinsicFeatures(r=False),

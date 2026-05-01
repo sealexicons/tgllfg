@@ -762,16 +762,204 @@ out of scope:
 Both pieces are tractable but additive — defer until the lex
 infrastructure for non-thematic args is needed elsewhere.
 
+**Update (Phase 5c):** lifted in Phase 5c §7.6 follow-on
+Commit 5 (see the entry below).
+
 ### Out-of-scope (will revisit)
 
 - **OV / DV control complements** (non-SUBJ-gap inside XCOMP).
+  **Update (Phase 5c):** lifted in Phase 5c §7.6 follow-on (see
+  the entry below).
 - **Long-distance control** through nested XCOMP (functional
-  uncertainty in the unifier).
+  uncertainty in the unifier). **Update (Phase 5c):** finite-depth
+  nested control lifted in Phase 5c §7.6 follow-on Commit 3 (see
+  the entry below) — finite chains don't need functional
+  uncertainty, just explicit S_XCOMP variants where a control
+  verb is itself the head.
 - **Embedded-clause complementizer choice**: complement could be
   introduced by ``na`` instead of ``-ng`` after vowel-final
   pronoun hosts; the current implementation accepts both via the
   per-link wrap-rule pair, but we don't enforce a single canonical
   choice per construction.
+
+## Phase 5c §7.6 follow-on: non-AV control complements
+
+**Date:** 2026-04-30. **Status:** active. Phase 4 §7.6 restricted
+``S_XCOMP`` to AV; the canonical "controlled = actor" pattern
+trivially identifies the actor with SUBJ under AV. Phase 5c lifts
+the restriction so the actor's *typed* GF (``OBJ-AGENT`` under
+non-AV, per the Phase 5b OBJ-θ-in-grammar alignment) is the
+gap-binding target.
+
+### Three new ``S_XCOMP`` variants
+
+```
+S_XCOMP → V[VOICE=OV, CAUS=NONE] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+
+S_XCOMP → V[VOICE=DV] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+
+S_XCOMP → V[VOICE=IV, APPL=CONVEY] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+```
+
+The matrix wrap rules don't change — ``(↑ SUBJ) = (↑ XCOMP REL-PRO)``
+binds the matrix controller to the embedded REL-PRO regardless of
+the embedded voice. Composing the two equations gives
+``matrix.SUBJ = matrix.XCOMP.OBJ-AGENT`` for non-AV embedded
+clauses, mirroring the AV identity ``matrix.SUBJ = matrix.XCOMP.SUBJ``.
+
+### Why ``OBJ-AGENT`` is the controllee
+
+In Tagalog non-AV clauses, the actor is realised as the GEN-marked
+ng-non-pivot. Under Phase 5b's OBJ-θ-in-grammar alignment that
+slot is typed ``OBJ-AGENT`` (verbs whose actor role is AGENT) or
+``OBJ-CAUSER`` (verbs of direct causation). The embedded clauses
+admitted by these new rules are non-causative non-AV verbs
+(``CAUS=NONE`` / ``APPL=CONVEY``), so ``OBJ-AGENT`` is the right
+target. ``OBJ-CAUSER`` for pa-OV embedded under control is a
+narrower follow-on if ever wanted; deferred until corpus pressure
+warrants it (the construction "I forced him to feed-cause the
+child" is rare and cumbersome even in fluent speech).
+
+### Aspect independence preserved
+
+Embedded aspect is fully independent of matrix: PFV (``kinain``),
+IPFV (``kinakain``), and CTPL (``kakainin``) all parse under
+psych or transitive control. The CTPL form is the canonical
+"infinitive-like" form in fluent speech (Schachter & Otanes 1972
+§5.16); the current grammar admits all three.
+
+### Inner negation composes
+
+The recursive ``S_XCOMP → PART[POLARITY=NEG] S_XCOMP`` rule is
+voice-agnostic, so ``Gusto kong hindi kakainin ang isda`` ("I
+don't want to eat the fish") parses with the embedded OV clause
+carrying ``POLARITY=NEG``.
+
+### Phase 5b embedded-clause LMT check stays clean
+
+The new construction surfaces no spurious ``lmt-mismatch``
+diagnostics: the embedded lex entry's intrinsic profile (e.g.,
+``EAT <SUBJ, OBJ-AGENT>`` for OV ``kain``) predicts ``{SUBJ,
+OBJ-AGENT}``, and the grammar emits exactly that pair under the
+new rules. Engine and grammar agree at every embedded level.
+
+### Out-of-scope (still deferred)
+
+- **pa-OV (CAUS=DIRECT) embedded under control** — would route
+  REL-PRO to ``OBJ-CAUSER``. Rare and not exercised by corpus.
+- **IV-BEN multi-GEN embedded under control** — interaction
+  between control and Phase 5b multi-GEN frames. Two-GEN slots
+  inside a controlled clause aren't seeded; deferred.
+- **Embedded-clause complementizer choice** (``na`` vs ``-ng``):
+  unchanged from Phase 4 §7.6.
+
+## Phase 5c §7.6 follow-on: long-distance (nested) control
+
+**Date:** 2026-05-01. **Status:** active. The Phase 4 §7.6
+deferral list flagged "Long-distance control through nested
+XCOMP" and tied it to "functional uncertainty in the unifier."
+That framing was overcautious: *finite-depth* nested control —
+chains where a control verb is the head of another control
+verb's XCOMP — is a finite enumeration of grammar rules, not an
+unbounded path expression. Phase 5c Commit 3 lifts the deferral
+without touching the unifier.
+
+### Six new ``S_XCOMP`` variants
+
+Three control classes (PSYCH / INTRANS / TRANS), each with both
+linker variants (NA / NG):
+
+```
+S_XCOMP → V[CTRL_CLASS=PSYCH]  PART[LINK=…] S_XCOMP
+S_XCOMP → V[CTRL_CLASS=INTRANS] PART[LINK=…] S_XCOMP
+S_XCOMP → V[CTRL_CLASS=TRANS]   NP[CASE=GEN] PART[LINK=…] S_XCOMP
+```
+
+Each rule binds its own SUBJ to its own REL-PRO (the gap),
+chains its XCOMP slot to the inner clause, and propagates the
+controller from its SUBJ to the inner XCOMP's REL-PRO. Composing
+these equations across depth N gives a single f-node shared
+across SUBJ slots at every AV level. No functional uncertainty
+is needed because the depth is fixed by the surface tokens.
+
+The SUBJ-NP that the matrix wrap rules require (PSYCH's GEN
+experiencer, INTRANS's NOM agent, TRANS's NOM forcee) is absent
+when the verb is nested — that NP is the gap. The TRANS rule's
+GEN-NP forcer remains overt because it's the controller, not
+the controllee.
+
+### Composition with Phase 5c Commit 1's non-AV embedded
+
+When the innermost S_XCOMP is non-AV (Phase 5c Commit 1), the
+embedded actor is OBJ-AGENT, not SUBJ. The nested control rules
+keep chaining at SUBJ level until the OV / DV / IV variant is
+reached; at that level the controller routes to OBJ-AGENT via
+Commit 1's rules. Sentence:
+
+```
+Gusto kong pumayag na kakainin ang isda.
+```
+
+f-structure chain: ``matrix.SUBJ === XCOMP.SUBJ ===
+XCOMP.XCOMP.OBJ-AGENT``. The innermost SUBJ is the OV pivot
+(``ang isda``, the patient) — a different f-node, distinct from
+the chain-shared controller.
+
+### Disambiguator extension for ``na`` after a control verb
+
+The placement pass's ``disambiguate_homophone_clitics`` left-
+context rule is extended: when ``na`` directly follows a verb
+with ``CTRL_CLASS != NONE``, treat it as the linker (not the
+aspectual ALREADY clitic). Without this, ``Gusto kong pumayag na
+kumain`` would have ``na`` (after ``pumayag``, an INTRANS
+control verb) read as the aspectual clitic and moved to clause-
+end, stripping the linker and breaking the nested wrap rule.
+
+The check generalises the existing rule for "PRON preceded by a
+control verb" (`Kaya namin na kumain`, Phase 4 §7.10): both
+patterns have a control verb in the immediate left context that
+needs a linker for its XCOMP.
+
+### Negation composes at any level
+
+The recursive ``S_XCOMP → PART[POLARITY=NEG] S_XCOMP`` rule is
+voice- and depth-agnostic, so negation works at the outer,
+middle, or innermost level:
+
+```
+Hindi gusto kong pumayag na kumain.   (outer NEG on matrix)
+Gusto kong hindi pumayag na kumain.   (middle NEG on AGREE)
+Gusto kong pumayag na hindi kumain.   (inner NEG on EAT)
+```
+
+### Phase 5b embedded-clause LMT walker descends to all levels
+
+The recursive ``apply_lmt_with_check`` walker visits every
+XCOMP/COMP that has its own PRED. With nested control producing
+2-, 3-, and 4-deep chains, the walker now exercises depths it
+couldn't reach before. All levels validate cleanly: each control
+verb's intrinsic profile predicts ``{SUBJ, XCOMP}`` (PSYCH /
+INTRANS) or ``{SUBJ, OBJ-AGENT, XCOMP}`` (TRANS), matching the
+grammar's emitted GFs at every depth.
+
+### Out-of-scope (still deferred)
+
+* **Truly unbounded control chains** (more than ~5 deep): the
+  parser explores them, but the test corpus exercises 4-deep at
+  most. If future corpus pressure shows runaway parser cost on
+  arbitrarily deep chains, a chart-pruning heuristic — not
+  functional uncertainty — would be the right response.
+* **Long-distance relativization** through nested XCOMP/COMP
+  (§7.5 + §7.6 cross-cutting deferral). That construction
+  genuinely needs functional uncertainty (a relativization gap
+  inside an XCOMP at unbounded depth) — distinct from the
+  control case.
 
 ## Phase 4 §7.7: applicatives + pa-causatives
 
@@ -826,6 +1014,9 @@ than prepending an assimilated nasal, so it doesn't produce
 ``ipinambili`` (instrument-bought) from ``bili``. Either a new
 phonological op or per-base-class cell duplication is needed.
 Deferred until Phase 5 corpus pressure warrants the extra work.
+
+**Update (Phase 5c):** lifted in Phase 5c §7.7 follow-on Commit 4
+(see the entry below).
 
 ### Direct (monoclausal) causative ``pa-...-in`` (CAUS=DIRECT)
 
@@ -953,6 +1144,9 @@ context-aware placement (e.g. "don't move ``ko`` when it follows
 a noun head"), the pronominal possessive surfaces as an agent /
 SUBJ clitic instead. Out of scope for this commit; revisit when
 context-aware placement is wired up.
+
+**Update (Phase 5c):** lifted in Phase 5c §7.8 follow-on (see
+the entry below).
 
 ### Quantifier float
 
@@ -1248,6 +1442,8 @@ the parse for a lex-internal inconsistency would be wrong.
   need a second-GEN-NP slot. Phase 5b.
 * **Multi-OBL semantic disambiguation.** When two `OBL-θ` roles
   compete for two sa-NPs, positional matching is the placeholder.
+  **Update (Phase 5c):** lifted in Phase 5c §8 follow-on Commit 6
+  via lemma-keyed semantic-class lookup (see the entry below).
 * **Embedded-clause LMT.** `lmt_check` only validates the matrix
   f-structure. Embedded XCOMP/COMP clauses have their own PRED
   and could be recursively checked; not wired.
@@ -1421,3 +1617,428 @@ The pre-existing `S → S Q` floated-quantifier rule (`Kumain ang
 bata lahat`) is unaffected. It operates at the S level (Q is a
 sister of the matrix clause), not within an NP. Both surfaces
 parse cleanly without competing.
+
+## Phase 5c §7.8 follow-on: pronominal possessive
+
+**Date:** 2026-05-01. **Status:** active. Lifts the §7.8 deferral
+noted earlier in this file ("Pronominal possessive — deferred").
+Sentences like ``Kumain ang bata ng libro ko`` ("The child ate my
+book") now parse with `ko` bound as the OBJ's `POSS`, rather
+than being hoisted into the post-V cluster as a clause-level
+clitic.
+
+### Single-line fix in the Wackernagel pass
+
+The Phase 4 §7.3 placement pass moved every PRON token with
+`is_clitic=True` into the post-V cluster regardless of left
+context. Phase 5c adds a small context-aware exception: when a
+PRON-clitic immediately follows a NOUN-reading token, it stays in
+place. The fix lives in `src/tgllfg/clitics/placement.py` as a
+new helper `_is_post_noun_pron(analyses, i)` consulted when
+collecting `pron_indices` in `reorder_clitics`.
+
+The grammar's existing NP-internal possessive rule
+(`NP[CASE=X] → NP[CASE=X] NP[CASE=GEN]`, plus the standing
+`NP[CASE=GEN] → PRON[CASE=GEN]`) does the rest: with the pronoun
+left in its post-noun position, it parses as an `NP[GEN]`
+modifier and rides into the head's f-structure as `POSS`.
+
+### Why "after a NOUN" is the right boundary
+
+The same surface form (`ko`, `mo`, `niya`, `namin`, `ninyo`,
+`nila`) serves both as a clause-level clitic argument and as an
+NP-internal possessor. The disambiguating signal is left context:
+
+* After a VERB (`Kinain mo ang isda`): `mo` is the OBJ-AGENT
+  clitic — moved to the post-V cluster (unchanged behaviour).
+* After a PART (`Hindi mo kinain ang isda`): pre-V clitic, also
+  moved to the post-V cluster (unchanged behaviour).
+* After a NOUN (`ang isda ko`): possessive — left in place
+  (the new behaviour).
+
+The check mirrors the existing `disambiguate_homophone_clitics`
+left-context pattern (`"NOUN" in prev_pos or "N" in prev_pos`),
+which already disambiguates `na` between linker and aspectual
+clitic by left context.
+
+### One-clitic-moves-one-stays composes
+
+`Kinain mo ang isda ko` exercises both decisions in one
+sentence: `mo` is post-V (moves into cluster, indeed it's the
+OBJ-AGENT of the OV verb), `ko` is post-NOUN `isda` (stays as
+possessor). The placement pass evaluates each clitic
+independently against its own left context, so the two outcomes
+compose without interference. NEG (`Hindi kumain ang bata ng
+libro ko`) and adverbial enclitics (`Kumain na ang bata ng libro
+ko`) behave the same way: their movement is independent of the
+post-noun pronoun's stay-in-place.
+
+### Structural ambiguity is resolved by parse ranking
+
+`Kumain ang bata ng libro ko` is structurally ambiguous: `ng
+libro` could attach as OBJ (with `ko` as its possessor) or as
+possessor of the SUBJ `bata` (with `ko` then attaching at a
+deeper level). The parser produces both readings and Phase 4 §7.9
+ranking picks one. The tests assert that **at least one** parse
+has the desired structure (OBJ-with-pronominal-possessor),
+mirroring how Phase 4 §7.8 tests for `ng`-NP possessive
+ambiguity already work.
+
+### Out-of-scope (still deferred)
+
+* **Pronominal possessor inside a relative clause head.** A noun
+  followed by a linker + RC (`aklat na binasa`) followed by a
+  pronoun would compete with the RC's own SUBJ-binding; the
+  parser would need to decide whether `ko` belongs to the head
+  noun or the relative clause. Not exercised by the current
+  corpus.
+* **Possessive linker variant** (`aklat kong binasa` —
+  pronoun + linker `-ng` to introduce a relative clause). This
+  is a distinct construction needing its own grammar rule;
+  deferred.
+
+## Phase 5c §7.7 follow-on: ipang- instrumental and ika- reason
+
+**Date:** 2026-05-01. **Status:** active. Lifts the §7.7 deferral
+("ipang- instrumental and ika- reason — deferred") noted earlier
+in this file. Sentences like ``Ipinambili ng nanay ang pera``
+("money is what mother bought-with") and ``Ikinasulat ng bata
+ang gutom`` ("hunger is the reason the child wrote") now parse.
+
+### New sandhi op: ``nasal_assim_prefix``
+
+The Phase 4 deferral note correctly identified the missing piece:
+``nasal_substitute`` (the existing op for ``mang-`` / ``nang-`` /
+``pang-`` AV distributives) DROPS the base's first consonant
+(``bili`` → ``mili``, then ``mang-`` head + ``mili`` →
+``mamili`` "be a buyer"). The instrumental applicative ``ipang-``
+needs the RETAIN pattern: ``pang-`` + ``bili`` → ``pambili`` →
+``pinambili`` → ``ipinambili``.
+
+Phase 5c adds ``nasal_assim_prefix(prefix, base)`` to
+:mod:`tgllfg.morph.sandhi`. It requires an ``ng``-final prefix
+and prepends it to the base, place-assimilating the prefix's
+final nasal to the base's first consonant per the standard
+table:
+
+| Base initial | Assimilated prefix end |
+|---|---|
+| `b`, `p` | `m` (bilabial) |
+| `t`, `d`, `s` | `n` (alveolar) |
+| `k`, `g` | `ng` (velar — vacuous) |
+| vowel / sonorant | `ng` (no assimilation site) |
+
+The base's initial consonant is **retained**, distinguishing this
+op from ``nasal_substitute`` (drop). Both patterns coexist on the
+same root in modern Tagalog with different meanings: ``mamili``
+"be a buyer" (``mang-`` AV, drop) vs ``ipinambili`` "instrument-
+bought" (``ipang-`` IV-INSTR, retain).
+
+### Three IV-INSTR cells (ipang-, APPL=INSTR)
+
+Operations follow the ipag- shape with ``nasal_assim_prefix("pang")``
+in place of ``prefix("pag")``:
+
+```
+PFV:  nasal_assim_prefix("pang") → infix("in") → prefix("i")
+IPFV: cv_redup → nasal_assim_prefix("pang") → infix("in") → prefix("i")
+CTPL: cv_redup → nasal_assim_prefix("pang") → prefix("i")
+```
+
+Surface forms for ``bili``: ``ipinambili`` (PFV), ``ipinambibili``
+(IPFV), ``ipambibili`` (CTPL). For ``tahi``: ``ipinantahi``,
+``ipinantatahi``, ``ipantatahi``.
+
+### Three IV-REASON cells (ika-, APPL=REASON)
+
+The ``ka-`` prefix has no nasal sandhi; cells are parametrically
+identical to ipag- with ``"ka"`` substituted for ``"pag"``:
+
+```
+PFV:  prefix("ka") → infix("in") → prefix("i")
+IPFV: cv_redup → prefix("ka") → infix("in") → prefix("i")
+CTPL: cv_redup → prefix("ka") → prefix("i")
+```
+
+Surface forms for ``kain``: ``ikinakain`` (PFV), ``ikinakakain``
+(IPFV), ``ikakakain`` (CTPL). For ``sulat``: ``ikinasulat`` etc.
+
+### Lex entries: 2-arg pivot-rotation profile
+
+Mirrors the existing IV-BEN choice. The pivot rotates to
+``INSTRUMENT`` (ipang-) or ``REASON`` (ika-); the agent demotes
+to ``OBJ-AGENT``. The patient (what was bought / sewn / eaten /
+written) is omitted from the 2-arg PRED — multi-GEN-NP
+extensions can be added if corpus pressure warrants, mirroring
+Phase 5b §7.7 follow-on for IV-BEN.
+
+```
+BUY-WITH        <SUBJ, OBJ-AGENT>   bili IV-INSTR
+SEW-WITH        <SUBJ, OBJ-AGENT>   tahi IV-INSTR
+EAT-FOR-REASON  <SUBJ, OBJ-AGENT>   kain IV-REASON
+WRITE-FOR-REASON <SUBJ, OBJ-AGENT>  sulat IV-REASON
+```
+
+Intrinsic profiles: ``AGENT [+r, +o]`` (demoted to OBJ-AGENT) +
+``INSTRUMENT [-r, -o]`` or ``REASON [-r, -o]`` (the pivot).
+
+### New ``REASON`` role in :class:`tgllfg.lmt.Role`
+
+Added to the Tagalog augmentation section of the Role enum, with
+default intrinsic ``(r=None, o=False)`` mirroring ``INSTRUMENT``.
+Inserted into ``ROLE_HIERARCHY`` between ``INSTRUMENT`` and
+``STIMULUS``.
+
+### Surface ambiguity preserved
+
+``ikinakain`` is genuinely homophonous in Tagalog: it's both the
+IPFV of bare ``i-`` (CONVEY reading) and the PFV of ``ika-``
+(REASON reading). The morph analyzer produces both analyses; the
+parser explores both and the matching lex entry is selected per
+parse. ``Ikinakain ng bata ang gutom`` admits both readings; the
+test asserts the REASON parse is among the n-best (mirroring how
+Commit 2's pronominal-possessive tests handle structural
+ambiguity).
+
+### Existing nouns added: ``karayom``, ``gutom``
+
+Two seed nouns were added to ``data/tgl/roots.yaml`` to give the
+new applicatives natural test fixtures: ``karayom`` "needle"
+(instrument) and ``gutom`` "hunger" (canonical reason).
+
+### Out-of-scope (still deferred)
+
+* **Multi-GEN-NP IV-INSTR / IV-REASON frames.** Three-argument
+  variants where AGENT, PATIENT, and INSTRUMENT/REASON are all
+  GEN/NOM-marked at once (parallel to Phase 5b §7.7 multi-GEN
+  IV-BEN). Not seeded; the 2-arg shape covers the common cases.
+* **Other ipang- senses.** ``pang-`` also forms purpose nominals
+  (``pambili`` "for buying / shopping") and abilitative-like
+  derivations. Only the instrumental applicative IV reading is
+  seeded here.
+* **AV instrumental ``mang-`` retain readings.** Some bases
+  admit a retain-pattern AV variant alongside the drop variant
+  (``mambili`` retain vs ``mamili`` drop). The drop pattern is
+  the documented default; retain readings would need per-base
+  flagging. Deferred.
+
+## Phase 5c §7.6 follow-on: raising verbs
+
+**Date:** 2026-05-01. **Status:** active. Lifts the §7.6
+"Raising deferred" item: ``mukha`` "seem" and ``baka`` "might"
+now parse with structure-shared SUBJ between matrix and
+embedded XCOMP.
+
+### Three pieces
+
+**(a) PRED-template extension for non-thematic args.**
+:class:`tgllfg.fstruct.checks.PredTemplate` gains separate
+``thematic`` and ``non_thematic`` tuples; ``governables``
+remains the canonical union (used by completeness / coherence).
+The parser :func:`parse_pred_template` recognises trailing
+non-thematic args after the closing ``>``:
+
+```
+SEEM <XCOMP> SUBJ      → thematic=("XCOMP",) non_thematic=("SUBJ",)
+EAT <SUBJ, OBJ>        → thematic=("SUBJ","OBJ") non_thematic=()  (existing case)
+RAIN <> SUBJ           → thematic=() non_thematic=("SUBJ",)        (0-thematic future-proofing)
+```
+
+The completeness check (:func:`_check_completeness`) iterates
+over ``governables`` so non-thematic args are required just like
+thematic ones. The coherence check (:func:`_check_coherence`)
+allows them by membership in the same union. Subject Condition
+fires unchanged (still requires SUBJ if any args).
+
+**(b) ``CTRL_CLASS=RAISING`` lex entries.** ``mukha`` and
+``baka`` are seeded under :file:`data/tgl/particles.yaml` as
+closed-class, uninflected pseudo-verbs (mirroring the §7.6
+psych control entries). Lex entries in :data:`tgllfg.lexicon.BASE`:
+
+```
+SEEM <XCOMP> SUBJ      mukha   a_structure=[COMPLEMENT]
+MIGHT <XCOMP> SUBJ     baka    a_structure=[COMPLEMENT]
+```
+
+Only one thematic role (COMPLEMENT, the proposition) — SUBJ is
+non-thematic and bears no theta role. The matching intrinsic
+profile ``_RAISING`` has the single COMPLEMENT entry with
+``(None, None)`` (XCOMP-stipulated, off the truth table).
+
+**(c) Grammar wrap rule.** A new pattern in
+:file:`src/tgllfg/cfg/grammar.py`:
+
+```
+S → V[CTRL_CLASS=RAISING] PART[LINK=…] S
+   (↑ XCOMP) = ↓3
+   (↑ SUBJ) = (↑ XCOMP SUBJ)
+```
+
+The right-hand S is a complete embedded clause (with its own
+SUBJ — distinct from the control case where the embedded clause
+has a SUBJ-gap inside ``S_XCOMP``). The raising binding
+``(↑ SUBJ) = (↑ XCOMP SUBJ)`` lifts the embedded SUBJ to the
+matrix.
+
+### Disambiguation by syntactic position
+
+Both surfaces are also nouns (``mukha`` "face", ``baka`` "cow",
+the latter pre-existing in :file:`data/tgl/roots.yaml`; ``mukha``
+added alongside Commit 5). The morph analyzer returns both
+candidates per token. The grammar's wrap-rule pattern is
+distinctive: it requires a ``V[CTRL_CLASS=RAISING]`` token in
+clause-initial position followed by a linker plus an embedded
+S. The noun reading has no syntactic place to fit when this
+pattern matches; conversely, when the surface appears mid-clause
+(``Kumain ang baka`` "the cow ate"), the verb reading has no
+wrap rule to apply to and the noun reading wins. No pre-parse
+disambiguation is needed.
+
+### LMT bridge: non-thematic SUBJ added to expected GFs
+
+:func:`tgllfg.lmt.lmt_check` now consults the lex entry's PRED
+template and unions the non-thematic args into ``expected_gfs``
+before the actual-vs-expected comparison. The BK engine maps
+only thematic roles, so without this addition raising verbs would
+fire a spurious ``lmt-mismatch`` (engine produces ``{XCOMP}``
+but f-structure has ``{XCOMP, SUBJ}``).
+
+### Coexistence with control
+
+Raising and control structures share the matrix wrap-rule shape
+(matrix V + linker + embedded clause) but differ in two ways:
+
+1. The embedded clause: control uses ``S_XCOMP`` (SUBJ-gap);
+   raising uses full ``S`` (overt SUBJ).
+2. The matrix SUBJ: control's matrix SUBJ comes from a thematic
+   role (mapped via LMT); raising's matrix SUBJ is non-thematic
+   and structure-shared with embedded SUBJ.
+
+The grammar uses ``CTRL_CLASS`` as the discriminating feature so
+control and raising rules don't accidentally cross-fire.
+
+### Sentences enabled
+
+```
+Mukhang kumakain ang bata.            — "the child seems to be eating"
+Mukhang kumain ang bata.               (PFV embedded)
+Mukhang kinakain ng aso ang isda.     — OV embedded; matrix.SUBJ = isda
+Mukhang kumakain ang bata ng isda.    — embedded AV transitive with OBJ
+Mukhang hindi kumakain ang bata.      — inner negation in XCOMP
+Bakang umuwi ang bata.                — "the child might leave"
+```
+
+### Out-of-scope (still deferred)
+
+* **Raising chains** (raising matrix embedding another raising
+  matrix — ``Mukhang bakang umuwi ang bata``). The wrap rule's
+  right-hand S admits any complete clause, so this should
+  technically work; not exercised by the corpus and not
+  separately tested.
+* **Other raising verbs.** Tagalog has a small closed class —
+  ``parang``, ``tila``, ``yata`` are also raising-like. Only
+  ``mukha`` and ``baka`` are seeded.
+* **Raising under control** (a control verb embedding a raising
+  matrix). The infrastructure composes, but the construction
+  isn't exercised.
+
+## Phase 5c §8 follow-on: multi-OBL semantic disambiguation
+
+**Date:** 2026-05-01. **Status:** active. Lifts the §8 deferral
+"Multi-OBL semantic disambiguation": when two ``OBL-θ`` roles
+compete for two sa-NPs, the classifier now prefers a lemma-class
+match before falling back to positional order. ``Nagbigay ang
+nanay ng libro sa eskwela sa bata`` (LOC-RECIP surface order)
+gets the same f-structure as ``Nagbigay ang nanay ng libro sa
+bata sa eskwela`` (RECIP-LOC order): bata ends up in
+``OBL-RECIP``, eskwela in ``OBL-LOC``.
+
+### LEMMA percolation through the noun lex
+
+The noun analyzer was previously hardcoded to construct
+``MorphAnalysis(feats={})`` — discarding any per-root features
+that nouns might declare. Phase 5c changes this to
+``MorphAnalysis(feats={**r.feats, "LEMMA": r.citation})`` so
+every noun's MorphAnalysis carries its citation form as
+``LEMMA`` (always set), plus any extra ``feats`` declared on
+the root.
+
+The grammar's ``N → NOUN`` rule gains
+``(↑ LEMMA) = ↓1 LEMMA``; the per-case ``NP[CASE=X] → DET/ADP[…]
+N`` rules gain ``(↑ LEMMA) = ↓2 LEMMA``. As a result, every
+NP-projection's f-structure now has a ``LEMMA`` attribute
+identifying its head noun.
+
+### Lemma-keyed semantic classification
+
+The classifier consults two small tables in
+:mod:`tgllfg.lmt.oblique_classifier`:
+
+```python
+_PLACE_LEMMAS = {"palengke", "eskwela", "bahay", "simbahan",
+                 "tindahan", "parke"}
+_ANIMATE_LEMMAS = {"bata", "nanay", "tatay", "lalaki", "babae",
+                   "anak", "kapatid", "kaibigan", "tao", ...}
+```
+
+The helper ``_semantic_class(np)`` reads ``np.feats["LEMMA"]``
+and returns ``"PLACE"``, ``"ANIMATE"``, or ``None`` (unknown).
+``_gf_prefers_class(gf)`` maps ``OBL-LOC`` / ``OBL-GOAL`` →
+PLACE, ``OBL-RECIP`` / ``OBL-BEN`` → ANIMATE, others → None
+(positional only).
+
+### Greedy match with positional fallback
+
+When two or more ``OBL-θ`` roles and two or more sa-NPs are
+present, the classifier walks roles in a-structure order:
+
+1. For each role with a semantic preference: find the first
+   un-consumed sa-NP whose class matches; assign and consume.
+   If no match, defer the role to the positional pass.
+2. Positional pass: walk remaining sa-NPs in id order,
+   assigning to deferred roles in their a-structure order.
+
+This means: when classes match cleanly, semantic order wins
+regardless of surface position. When classes don't match
+(e.g., two PLACE sa-NPs vying for OBL-LOC + OBL-GOAL),
+positional fills the slots — which is the right fallback since
+without semantic distinguishability we can't do better.
+
+### Recursive multi-DAT not chosen; per-frame multi-DAT instead
+
+A natural-looking option was a recursive ``S → S NP[CASE=DAT]``
+rule that would let any clause take arbitrary trailing sa-NPs.
+This was tried but produces duplicate parses for single-sa-NP
+sentences (the recursive rule overlaps the per-frame rules).
+Phase 5c instead adds explicit ``V[VOICE=AV] NP[NOM] NP[GEN]
+NP[DAT] NP[DAT]`` (and the GEN-NOM permutation) so the new
+``GIVE`` ditransitive lex entry has a grammar slot to attach to
+without rule conflicts elsewhere.
+
+### Sample lex entry: bigay AV ditransitive
+
+```
+GIVE <SUBJ, OBJ, OBL-RECIP, OBL-LOC>
+  a_structure = [AGENT, THEME, RECIPIENT, LOCATION]
+  intrinsic   = AGENT  (False, False)   → SUBJ
+                THEME  (False, True)    → OBJ
+                RECIPIENT (True, False) → OBL-RECIP
+                LOCATION  (True, False) → OBL-LOC
+```
+
+Two OBL-θ slots; the classifier disambiguates the two trailing
+sa-NPs.
+
+### Out-of-scope (still deferred)
+
+* **Richer noun ontology.** The seed lemma tables are
+  intentionally small (a dozen entries each). Real disambiguation
+  for an open-domain corpus would consult a richer noun
+  semantics resource.
+* **Case-by-case override.** No mechanism for a lex entry to
+  override the classifier's preferences (e.g., a verb whose
+  ``OBL-RECIP`` semantically prefers PLACE rather than
+  ANIMATE — rare but possible).
+* **Three-or-more sa-NPs in one clause.** Tagalog rarely
+  sustains more than two sa-NPs at the matrix level; not
+  exercised by the corpus.

@@ -114,17 +114,29 @@ class Grammar:
         rules.append(Rule(
             "NP[CASE=NOM]",
             ["DET[CASE=NOM]", "N"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓2 PRED"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓2 PRED",
+                "(↑ LEMMA) = ↓2 LEMMA",
+            ],
         ))
         rules.append(Rule(
             "NP[CASE=GEN]",
             ["ADP[CASE=GEN]", "N"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓2 PRED"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓2 PRED",
+                "(↑ LEMMA) = ↓2 LEMMA",
+            ],
         ))
         rules.append(Rule(
             "NP[CASE=DAT]",
             ["ADP[CASE=DAT]", "N"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓2 PRED"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓2 PRED",
+                "(↑ LEMMA) = ↓2 LEMMA",
+            ],
         ))
 
         # --- Phase 4 §7.8: standalone demonstrative pronouns ---
@@ -223,10 +235,20 @@ class Grammar:
         ))
 
         # --- N from NOUN (toy PRED; Phase 5 will lexicalise properly) ---
+        # Phase 5c §8 follow-on (Commit 6): also expose the noun's
+        # ``LEMMA`` (always set by the noun analyzer) so the multi-OBL
+        # classifier can look up semantic class. Optional ``SEM_CLASS``
+        # rides through too when the root declares it in its
+        # ``feats`` block (PLACE / ANIMATE / etc.). Both are unified
+        # at the N-projection and propagate to the NP via the
+        # NP → DET/ADP N rule's per-feature pass-through below.
         rules.append(Rule(
             "N",
             ["NOUN"],
-            ["(↑ PRED) = 'NOUN(↑ FORM)'"],
+            [
+                "(↑ PRED) = 'NOUN(↑ FORM)'",
+                "(↑ LEMMA) = ↓1 LEMMA",
+            ],
         ))
 
         # --- Sentential rules: V-initial, flat ---
@@ -367,15 +389,16 @@ class Grammar:
 
         # --- Phase 4 §7.6: control complement (S_XCOMP) ---
         #
-        # ``S_XCOMP`` is the AV-restricted SUBJ-gapped clause that
-        # serves as the XCOMP of a control verb. The voice-restriction
-        # encodes Tagalog's canonical "controlled = actor" pattern:
-        # under AV the actor is the pivot/SUBJ, so binding the gap
-        # to REL-PRO (= matrix's controller) targets the actor.
-        # OV / DV control complements (where the controller binds the
-        # embedded agent / OBJ) are out of scope for this commit.
+        # ``S_XCOMP`` is the SUBJ-gapped clause that serves as the
+        # XCOMP of a control verb. The original Phase 4 frames are
+        # AV-only: the controllee is the actor, which is SUBJ in AV.
+        # Phase 5c §7.6 follow-on adds non-AV variants where the
+        # controllee is the actor's *typed* GF — ``OBJ-AGENT`` under
+        # the Phase 5b OBJ-θ-in-grammar alignment. The matrix wrap
+        # rule's ``(↑ SUBJ) = (↑ XCOMP REL-PRO)`` is unchanged; only
+        # the embedded clause's REL-PRO routing differs per voice.
         #
-        # The frames mirror S_GAP but with voice fixed to AV:
+        # AV frames: REL-PRO routes to SUBJ.
         rules.append(Rule(
             "S_XCOMP",
             ["V[VOICE=AV]"],
@@ -395,6 +418,101 @@ class Grammar:
                 "(↑ SUBJ) = (↑ REL-PRO)",
             ),
         ))
+        # Phase 5c §7.6 follow-on: non-AV embedded clauses, where
+        # REL-PRO routes to ``OBJ-AGENT`` (the actor's typed GF in
+        # OV / DV / IV). The patient / recipient / theme NOM-pivot
+        # is overt; the actor is the gap. CAUS=NONE on OV
+        # discriminates against pa-OV (CAUS=DIRECT) where the typed
+        # slot would be ``OBJ-CAUSER``; APPL=CONVEY on IV
+        # discriminates against IV-BEN multi-GEN frames.
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=OV, CAUS=NONE]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=DV]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=IV, APPL=CONVEY]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+        # Phase 5c §7.6 follow-on (Commit 3): nested control
+        # complements (long-distance control). When a control verb
+        # is itself embedded inside another control verb's XCOMP,
+        # its SUBJ is the gap (= the outer controller), so the
+        # NOM- or GEN-marked SUBJ NP that the matrix wrap rule
+        # would supply is absent. The OBJ-AGENT in TRANS remains
+        # overt — it's the controller (forcer/orderer), not the
+        # controllee. Each nested S_XCOMP rule:
+        #   - binds its own SUBJ to its own REL-PRO (it is the gap);
+        #   - chains its XCOMP slot to the inner S_XCOMP;
+        #   - propagates the controller from its SUBJ to the inner
+        #     XCOMP's REL-PRO.
+        # Composing these equations across depth-N gives a single
+        # f-node shared across SUBJ slots at every level — finite-
+        # depth control without functional uncertainty.
+        for link in ("NA", "NG"):
+            # PSYCH nested: V[CTRL_CLASS=PSYCH] PART S_XCOMP
+            rules.append(Rule(
+                "S_XCOMP",
+                [
+                    "V[CTRL_CLASS=PSYCH]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                    "(↑ XCOMP) = ↓3",
+                    "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                ),
+            ))
+            # INTRANS nested: V[CTRL_CLASS=INTRANS] PART S_XCOMP
+            rules.append(Rule(
+                "S_XCOMP",
+                [
+                    "V[CTRL_CLASS=INTRANS]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                    "(↑ XCOMP) = ↓3",
+                    "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                ),
+            ))
+            # TRANS nested: V[CTRL_CLASS=TRANS] NP[CASE=GEN] PART
+            # S_XCOMP. The GEN-NP is the forcer / orderer, mapped
+            # to OBJ-AGENT (the typed slot since Phase 5b
+            # OBJ-θ-in-grammar). The NOM-marked forcee that the
+            # matrix wrap rule would supply is the gap.
+            rules.append(Rule(
+                "S_XCOMP",
+                [
+                    "V[CTRL_CLASS=TRANS]",
+                    "NP[CASE=GEN]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ OBJ-AGENT) = ↓2",
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                    "(↑ XCOMP) = ↓4",
+                    "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                ),
+            ))
         # Inner negation under control: ``Gusto kong hindi kumain``
         # — the embedded clause is negated. Mirrors the S / S_GAP
         # negation rule shape.
@@ -568,6 +686,30 @@ class Grammar:
                 ),
             ))
 
+        # Phase 5c §7.6 follow-on (Commit 5): raising verbs.
+        # ``Mukhang kumakain ang bata`` "the child seems to be
+        # eating". The matrix has no thematic SUBJ; its SUBJ is
+        # structure-shared with the embedded clause's SUBJ. Surface
+        # shape: V[CTRL_CLASS=RAISING] + linker + full embedded S
+        # (the embedded clause is a complete clause with its own
+        # SUBJ — distinct from the control case where the embedded
+        # clause has a SUBJ-gap). The raising binding equation
+        # ``(↑ SUBJ) = (↑ XCOMP SUBJ)`` lifts the embedded SUBJ to
+        # the matrix.
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "S",
+                [
+                    "V[CTRL_CLASS=RAISING]",
+                    f"PART[LINK={link}]",
+                    "S",
+                ],
+                _eqs(
+                    "(↑ XCOMP) = ↓3",
+                    "(↑ SUBJ) = (↑ XCOMP SUBJ)",
+                ),
+            ))
+
         # Transitive frames per voice, two NP orderings each, with and
         # without a trailing sa-oblique (ADJUNCT). The ng-non-pivot
         # binds to a typed ``OBJ-θ`` slot for non-AV voices (per the
@@ -727,6 +869,48 @@ class Grammar:
                 "(↑ SUBJ) = ↓4",
                 "(↑ OBJ-CAUSER) = ↓2",
                 "(↑ OBJ-PATIENT) = ↓3",
+            ),
+        ))
+
+        # Phase 5c §8 follow-on (Commit 6): AV transitive frame
+        # with two trailing sa-NPs — exercises the multi-OBL
+        # semantic-disambiguation classifier. Both NP[CASE=DAT]
+        # land in ADJUNCT; ``classify_oblique_slots`` then moves
+        # them into typed ``OBL-RECIP`` / ``OBL-LOC`` slots based
+        # on each sa-NP's head-noun semantic class. Two NP order
+        # variants (NOM-GEN and GEN-NOM); the two sa-NPs can
+        # appear in either order — the classifier disambiguates
+        # by lemma class, not surface order.
+        rules.append(Rule(
+            "S",
+            [
+                "V[VOICE=AV]",
+                "NP[CASE=NOM]",
+                "NP[CASE=GEN]",
+                "NP[CASE=DAT]",
+                "NP[CASE=DAT]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ) = ↓3",
+                "↓4 ∈ (↑ ADJUNCT)",
+                "↓5 ∈ (↑ ADJUNCT)",
+            ),
+        ))
+        rules.append(Rule(
+            "S",
+            [
+                "V[VOICE=AV]",
+                "NP[CASE=GEN]",
+                "NP[CASE=NOM]",
+                "NP[CASE=DAT]",
+                "NP[CASE=DAT]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ) = ↓2",
+                "↓4 ∈ (↑ ADJUNCT)",
+                "↓5 ∈ (↑ ADJUNCT)",
             ),
         ))
 

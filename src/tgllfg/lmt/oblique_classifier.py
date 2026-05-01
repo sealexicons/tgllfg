@@ -27,11 +27,15 @@ to emit ``OBL-X`` directly would require duplicating each rule per
 verb-class and fight the non-conflict matcher. Post-solve mutation
 contains the blast radius.
 
-Multi-OBL ambiguity (multiple OBL-θ roles competing for multiple
-sa-NPs) is out of scope — the classifier matches ``OBL-θ`` roles
-to sa-NPs in stable order (a-structure for roles,
-:class:`FStructure` ``id`` for sa-NPs) and surfaces an
-``lmt-mismatch`` diagnostic if the counts don't line up.
+Multi-OBL semantic disambiguation (Phase 5c §8 follow-on, Commit 6)
+augments the original positional matching with a noun-class lookup:
+when multiple OBL-θ roles compete for multiple sa-NPs, each sa-NP's
+``LEMMA`` is consulted against small lemma → semantic-class tables
+(``_PLACE_LEMMAS``, ``_ANIMATE_LEMMAS``) to bias the assignment —
+``palengke`` / ``eskwela`` prefer ``OBL-LOC`` / ``OBL-GOAL`` slots;
+``bata`` / ``nanay`` prefer ``OBL-RECIP`` / ``OBL-BEN``. Positional
+order is the fallback when no semantic preference applies, or when
+both sa-NPs have the same class.
 """
 
 from __future__ import annotations
@@ -58,6 +62,52 @@ def _sa_np_candidates(adjunct: frozenset) -> list[FStructure]:
             out.append(member)
     out.sort(key=lambda m: m.id)
     return out
+
+
+# Phase 5c §8 follow-on (Commit 6): small lemma → semantic class
+# tables consulted for multi-OBL disambiguation. PLACE lemmas
+# attract LOC / GOAL slots; ANIMATE lemmas attract RECIP / BEN
+# slots. Both sets are deliberately small — a real corpus-driven
+# classifier would consult a richer noun ontology, but the
+# project's seed lexicon doesn't yet carry that information.
+# Listed lemmas come from :file:`data/tgl/roots.yaml`.
+_PLACE_LEMMAS: frozenset[str] = frozenset({
+    "palengke", "eskwela", "bahay", "simbahan", "tindahan",
+    "parke",
+})
+_ANIMATE_LEMMAS: frozenset[str] = frozenset({
+    "bata", "nanay", "tatay", "lalaki", "babae", "anak",
+    "kapatid", "kaibigan", "tao", "aso", "pusa", "ibon",
+    "isda", "kabayo", "baboy", "manok", "baka", "kambing",
+    "pamilya",
+})
+
+
+def _semantic_class(np: FStructure) -> str | None:
+    """Return ``"PLACE"`` / ``"ANIMATE"`` / ``None`` for an
+    NP f-structure, based on its head-noun ``LEMMA`` (percolated
+    by the Phase 5c grammar's NP / N rules)."""
+    lemma = np.feats.get("LEMMA")
+    if not isinstance(lemma, str):
+        return None
+    if lemma in _PLACE_LEMMAS:
+        return "PLACE"
+    if lemma in _ANIMATE_LEMMAS:
+        return "ANIMATE"
+    return None
+
+
+def _gf_prefers_class(gf: str) -> str | None:
+    """Return the semantic class an ``OBL-θ`` slot prefers, or
+    ``None`` for slots without a clear preference. ``OBL-LOC`` /
+    ``OBL-GOAL`` prefer PLACE; ``OBL-RECIP`` / ``OBL-BEN`` prefer
+    ANIMATE; ``OBL-INSTR`` and unknown suffixes return ``None``
+    (positional matching)."""
+    if gf in ("OBL-LOC", "OBL-GOAL"):
+        return "PLACE"
+    if gf in ("OBL-RECIP", "OBL-BEN"):
+        return "ANIMATE"
+    return None
 
 
 def classify_oblique_slots(
@@ -104,17 +154,62 @@ def classify_oblique_slots(
 
     diagnostics: list[Diagnostic] = []
 
+    # Phase 5c §8 follow-on (Commit 6): when multiple OBL-θ roles
+    # compete for multiple sa-NPs, prefer semantic matching first
+    # (PLACE lemma → LOC/GOAL slot; ANIMATE lemma → RECIP/BEN
+    # slot), then fall back to positional. Pure positional remains
+    # the only choice for single-OBL or when no semantic
+    # preference applies.
     consumed_sa: list[int] = []
-    for i, target_gf in enumerate(obl_targets):
-        if i >= len(sa_candidates):
-            break
+    pending_targets = list(enumerate(obl_targets))
+
+    if len(obl_targets) >= 2 and len(sa_candidates) >= 2:
+        sa_classes = [_semantic_class(np) for np in sa_candidates]
+        # Greedy: walk targets in order; for each target with a
+        # semantic preference, find the first un-consumed sa-NP
+        # whose class matches. If found, consume it; otherwise
+        # leave the target for the positional pass.
+        deferred: list[tuple[int, str]] = []
+        for ti, target_gf in pending_targets:
+            if target_gf in f.feats:
+                # Pre-existing slot from some other path; skip
+                # without consuming an sa-NP. (Defensive — no
+                # current path writes OBL-X before this pass.)
+                continue
+            preferred_class = _gf_prefers_class(target_gf)
+            if preferred_class is None:
+                deferred.append((ti, target_gf))
+                continue
+            match_idx: int | None = None
+            for ci, cls in enumerate(sa_classes):
+                if ci in consumed_sa:
+                    continue
+                if cls == preferred_class:
+                    match_idx = ci
+                    break
+            if match_idx is None:
+                deferred.append((ti, target_gf))
+                continue
+            f.feats[target_gf] = sa_candidates[match_idx]
+            consumed_sa.append(match_idx)
+        pending_targets = deferred
+
+    # Positional pass for remaining targets / single-OBL case:
+    # walk un-consumed sa-NPs in id order, assigning them to the
+    # remaining targets in their original a-structure order.
+    # Pre-filled targets are skipped (their sa-NP stays in
+    # ADJUNCT).
+    remaining_sa = [i for i in range(len(sa_candidates)) if i not in consumed_sa]
+    sa_iter = iter(remaining_sa)
+    for ti, target_gf in pending_targets:
         if target_gf in f.feats:
-            # Pre-existing slot from some other path; don't overwrite.
-            # (No path currently writes OBL-X before this classifier
-            # runs — defensive.)
             continue
-        f.feats[target_gf] = sa_candidates[i]
-        consumed_sa.append(i)
+        try:
+            si = next(sa_iter)
+        except StopIteration:
+            break
+        f.feats[target_gf] = sa_candidates[si]
+        consumed_sa.append(si)
 
     # Reassemble ADJUNCT: non-sa members + leftover sa-NPs.
     leftover_sa = [

@@ -8,19 +8,23 @@ Algorithm
 2. Collect every other token whose primary analysis carries
    ``is_clitic=True`` (any analysis among its candidates). These are
    pronominal clitics (``PRON``) and adverbial enclitics (``PART``).
-3. Remove the clitics from their original positions, leaving a
-   cluster-free skeleton.
-4. Insert all clitics immediately after the V token, sorted by
-   the priority loaded from ``data/tgl/clitic_order.yaml``. Clitics
-   not in the priority table sort after the listed ones (priority =
-   ``DEFAULT_PRIORITY``).
+   **Exception** (Phase 5c §7.8 follow-on): a pronominal clitic
+   immediately following a NOUN is the possessor of that noun
+   (``ang libro ko``), not a clause-level clitic. Such tokens are
+   left in place so the grammar's NP-internal possessive rule
+   binds them as ``POSS``.
+3. Remove the remaining clitics from their original positions,
+   leaving a cluster-free skeleton.
+4. Insert all moved clitics immediately after the V token, sorted
+   by the priority loaded from ``data/tgl/clitic_order.yaml``.
+   Clitics not in the priority table sort after the listed ones
+   (priority = ``DEFAULT_PRIORITY``).
 
 Tokens that are not clitics keep their original relative order.
 Words preceding the verb (e.g. the negation particle ``hindi``) are
-unaffected — they remain ahead of the verb. The single exception is
-that any clitic appearing before the verb is hoisted out and lands
-in the post-V cluster, which is the desired Wackernagel surface
-form.
+unaffected — they remain ahead of the verb. Any non-possessor
+clitic appearing before the verb is hoisted out and lands in the
+post-V cluster, which is the desired Wackernagel surface form.
 
 If the input sentence has no verb, no reordering is performed —
 the placement module is a verb-anchored 2P implementation; verbless
@@ -115,6 +119,30 @@ def _is_adv_clitic(cands: list[MorphAnalysis]) -> bool:
     )
 
 
+def _is_post_noun_pron(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is a pronominal clitic immediately
+    preceded by a NOUN-reading token.
+
+    Phase 5c §7.8 follow-on: in the pronominal possessive form
+    (``ang libro ko`` / ``ang aklat mo`` / etc.) the GEN pronoun
+    is the possessor of the head noun, NOT a clause-level
+    argument. The §7.3 Wackernagel pass would otherwise hoist
+    the pronoun out of its post-N possessive position into the
+    post-V cluster, where the grammar reads it as an OBJ /
+    OBJ-AGENT clitic instead. Suppressing the move here keeps
+    the pronoun in place so the existing
+    ``NP[CASE=X] → NP[CASE=X] NP[CASE=GEN]`` possessive rule fires.
+    """
+    if i == 0:
+        return False
+    if not _is_pron_clitic(analyses[i]):
+        return False
+    prev_pos = {ma.pos for ma in analyses[i - 1]}
+    return "NOUN" in prev_pos or "N" in prev_pos
+
+
 def disambiguate_homophone_clitics(
     analyses: list[list[MorphAnalysis]],
 ) -> list[list[MorphAnalysis]]:
@@ -159,11 +187,26 @@ def disambiguate_homophone_clitics(
         if "NOUN" in prev_pos or "N" in prev_pos:
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif "VERB" in prev_pos or "PRON" in prev_pos:
-            # Look two tokens back: if a control verb (CTRL_CLASS !=
-            # NONE) precedes the PRON, treat ``na`` as the linker
-            # rather than the clitic. This handles the
-            # ``Kaya namin na kumain`` pattern (psych control with
-            # consonant-final pronominal experiencer).
+            # Two left-context exceptions where ``na`` should be
+            # the linker rather than the aspectual clitic:
+            #
+            # 1. Control verb directly followed by ``na`` (Phase 5c
+            #    §7.6 follow-on, Commit 3): a control verb's lex
+            #    requires an XCOMP introduced by a linker, so
+            #    ``na`` after ``pumayag`` / ``gusto`` etc. is the
+            #    linker — never the aspectual ``ALREADY``. Without
+            #    this, nested-control sentences like
+            #    ``Gusto kong pumayag na kumain`` lose the linker
+            #    and don't parse.
+            # 2. PRON preceded by a control verb (Phase 4 §7.10):
+            #    ``Kaya namin na kumain`` — psych control with
+            #    consonant-final pronominal experiencer; the
+            #    following ``na`` is the linker introducing XCOMP.
+            is_ctrl_verb = "VERB" in prev_pos and any(
+                ma.pos == "VERB"
+                and ma.feats.get("CTRL_CLASS") not in (None, "NONE")
+                for ma in analyses[i - 1]
+            )
             prev_prev = analyses[i - 2] if i >= 2 else None
             is_ctrl_pron_seq = (
                 "PRON" in prev_pos
@@ -174,7 +217,7 @@ def disambiguate_homophone_clitics(
                     for ma in prev_prev
                 )
             )
-            if is_ctrl_pron_seq:
+            if is_ctrl_verb or is_ctrl_pron_seq:
                 out.append([
                     ma for ma in cands if ma.feats.get("is_clitic") is not True
                 ])
@@ -231,7 +274,9 @@ def reorder_clitics(
 
     pron_indices = [
         i for i, cands in enumerate(analyses)
-        if i != verb_idx and _is_pron_clitic(cands)
+        if i != verb_idx
+        and _is_pron_clitic(cands)
+        and not _is_post_noun_pron(analyses, i)
     ]
     adv_indices = [
         i for i, cands in enumerate(analyses)

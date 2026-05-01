@@ -67,6 +67,7 @@ ROLE_HIERARCHY: tuple[Role, ...] = (
     Role.EXPERIENCER,
     Role.GOAL,
     Role.INSTRUMENT,
+    Role.REASON,
     Role.STIMULUS,
     # Patient-like (lower) — themes and patients of various flavors.
     Role.THEME,

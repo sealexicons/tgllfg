@@ -37,15 +37,33 @@ from .graph import Diagnostic
 
 @dataclass(frozen=True)
 class PredTemplate:
-    """Decomposition of a PRED string. ``name`` is the predicate name
-    (everything before the angle-bracketed argument list). ``governables``
-    is the tuple of governable GFs the predicate selects, in order."""
+    """Decomposition of a PRED string.
+
+    ``name`` is the predicate name (everything before the optional
+    angle-bracketed argument list). ``thematic`` is the tuple of
+    governable GFs corresponding to thematic roles — args INSIDE
+    ``<...>``. ``non_thematic`` is the tuple of governable GFs
+    selected by the predicate but bearing no thematic role —
+    args OUTSIDE ``<...>`` (Phase 5c §7.6 follow-on Commit 5,
+    raising verbs).
+
+    ``governables`` is the canonical union ``thematic +
+    non_thematic`` and is what completeness / coherence checks
+    use, since both are syntactically required arguments. The
+    distinction matters for the LMT engine, which only maps
+    thematic roles via the BK truth table.
+    """
     name: str
     governables: tuple[str, ...]
+    thematic: tuple[str, ...] = ()
+    non_thematic: tuple[str, ...] = ()
 
 
 def parse_pred_template(s: str) -> PredTemplate:
-    """Parse a PRED string of the form ``NAME`` or ``NAME <a, b, ...>``.
+    """Parse a PRED string of the form ``NAME``, ``NAME <a, b, ...>``,
+    or (Phase 5c) ``NAME <a, b, ...> c, d, ...`` for raising verbs
+    where the trailing args after ``>`` are non-thematic (selected
+    structurally but bearing no thematic role).
 
     Permissive on the name component: anything up to the optional
     angle-bracket section is taken as the name, including the
@@ -55,21 +73,31 @@ def parse_pred_template(s: str) -> PredTemplate:
     """
     s = s.strip()
     if "<" not in s:
-        return PredTemplate(s, ())
+        return PredTemplate(s, (), (), ())
     idx = s.index("<")
     name = s[:idx].strip()
     rest = s[idx + 1:]
-    if not rest.endswith(">"):
+    if ">" not in rest:
         raise ValueError(
             f"malformed PRED template (missing closing '>'): {s!r}"
         )
-    body = rest[:-1].strip()
-    if not body:
-        return PredTemplate(name, ())
-    args = tuple(a.strip() for a in body.split(","))
-    if any(not a for a in args):
-        raise ValueError(f"malformed PRED template (empty arg): {s!r}")
-    return PredTemplate(name, args)
+    end = rest.index(">")
+    body = rest[:end].strip()
+    tail = rest[end + 1:].strip()
+    thematic: tuple[str, ...] = ()
+    if body:
+        thematic = tuple(a.strip() for a in body.split(","))
+        if any(not a for a in thematic):
+            raise ValueError(f"malformed PRED template (empty arg): {s!r}")
+    non_thematic: tuple[str, ...] = ()
+    if tail:
+        non_thematic = tuple(a.strip() for a in tail.split(","))
+        if any(not a for a in non_thematic):
+            raise ValueError(
+                f"malformed PRED template (empty non-thematic arg): {s!r}"
+            )
+    governables = thematic + non_thematic
+    return PredTemplate(name, governables, thematic, non_thematic)
 
 
 # === Governable GFs =======================================================

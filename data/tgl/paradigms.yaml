@@ -346,10 +346,10 @@
 # === Phase 4 §7.7: applicatives + causatives ============================
 #
 # Applicative IV variants beyond the bare ``i-`` (CONVEY) reading:
-# ``ipag-`` benefactive (APPL=BEN) is added here. ``ipang-``
-# instrumental (APPL=INSTR) and ``ika-`` reason (APPL=REASON)
-# require homorganic-nasal sandhi and additional infrastructure;
-# deferred (see docs/analysis-choices.md "Phase 4 §7.7").
+# ``ipag-`` benefactive (APPL=BEN) is added here.
+# Phase 5c §7.7 follow-on (Commit 4) adds ``ipang-`` instrumental
+# (APPL=INSTR) and ``ika-`` reason (APPL=REASON) using the new
+# ``nasal_assim_prefix`` op for ipang-.
 #
 # Causatives use the ``pa-`` prefix in two configurations:
 #   - **Monoclausal direct causative** (``pa_in`` OV): ``pinakain``
@@ -401,6 +401,102 @@
     - {op: prefix, value: "pag"}
     - {op: prefix, value: "i"}
   notes: ipaggagawa, ipagsusulat
+
+# --- ipang- instrumental applicative (APPL=INSTR) -----------------------
+#
+# The pang- prefix's final ng place-assimilates to the base's
+# initial consonant without dropping it (Phase 5c §7.7 follow-on,
+# Commit 4): pang- + bili → pambili, pang- + tahi → pantahi.
+# Distinguished from the AV distributive ``mang-`` on the same
+# root, which DROPS the consonant (mang- + bili → mamili "be a
+# buyer"); both patterns coexist in modern Tagalog with different
+# meanings. Operations mirror ipag- with nasal_assim_prefix("pang")
+# in place of prefix("pag"). Surface forms for bili: ipinambili
+# (PFV), ipinambibili (IPFV), ipambibili (CTPL).
+
+- voice: IV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  affix_class: ipang
+  feats: {APPL: INSTR}
+  operations:
+    - {op: nasal_assim_prefix, value: "pang"}
+    - {op: infix, value: in}
+    - {op: prefix, value: "i"}
+  notes: ipinambili (← pang+bili → pambili → pinambili → ipinambili), ipinantahi
+
+- voice: IV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  affix_class: ipang
+  feats: {APPL: INSTR}
+  operations:
+    - {op: cv_redup}
+    - {op: nasal_assim_prefix, value: "pang"}
+    - {op: infix, value: in}
+    - {op: prefix, value: "i"}
+  notes: ipinambibili (← cv_redup of bili → bibili → pambibili → pinambibili → ipinambibili)
+
+- voice: IV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: ipang
+  feats: {APPL: INSTR}
+  operations:
+    - {op: cv_redup}
+    - {op: nasal_assim_prefix, value: "pang"}
+    - {op: prefix, value: "i"}
+  notes: ipambibili (CTPL — cv-redup + pang-assim + i-)
+
+# --- ika- reason applicative (APPL=REASON) ------------------------------
+#
+# The ka- prefix has no homorganic-nasal sandhi, so the cells are
+# parametrically identical to ipag- (substituting "ka" for "pag").
+# Reason readings: ikinakain "[reason for which X] ate";
+# ikinasulat "[reason for which X] wrote". The base remains intact;
+# the -in- realis infix sits between the prefix's "k" and "a".
+# Surface forms for kain: ikinakain (PFV), ikinakakain (IPFV),
+# ikakakain (CTPL).
+
+- voice: IV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  affix_class: ika
+  feats: {APPL: REASON}
+  operations:
+    - {op: prefix, value: "ka"}
+    - {op: infix, value: in}
+    - {op: prefix, value: "i"}
+  notes: ikinakain (← ka+kain → kakain → kinakain → ikinakain), ikinasulat
+
+- voice: IV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  affix_class: ika
+  feats: {APPL: REASON}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ka"}
+    - {op: infix, value: in}
+    - {op: prefix, value: "i"}
+  notes: ikinakakain (← cv_redup of kain → kakain → kakakain → kinakakain → ikinakakain)
+
+- voice: IV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: ika
+  feats: {APPL: REASON}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ka"}
+    - {op: prefix, value: "i"}
+  notes: ikakakain (CTPL — cv-redup + ka- prefix + i-)
 
 # --- pa-...-in monoclausal direct causative (CAUS=DIRECT, OV) -----------
 - voice: OV
