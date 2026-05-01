@@ -222,6 +222,13 @@ list (see `docs/analysis-choices.md`):
   shares the head NP's f-structure via ``(↑) = ↓1`` and
   copies the demonstrative's DEIXIS via
   ``(↑ DEIXIS) = ↓3 DEIXIS``.
+- **Multi-GEN-NP IV-INSTR / IV-REASON 3-arg frames** —
+  lifted in Phase 5d Commit 4. Lex-only commit: four new
+  3-arg lex entries (bili / tahi IV-INSTR; kain / sulat
+  IV-REASON) plus two intrinsic profiles. The Phase 5b
+  multi-GEN-NP grammar rules (voice-restricted to IV
+  without APPL constraint) already admit these constructions;
+  only lex was missing.
 - **Pronominal possessive** (`ang libro ko`, `ng aklat niya`,
   etc.) — lifted in Phase 5c §7.8 follow-on. Context-aware
   Wackernagel placement keeps a PRON-clitic in place when it

@@ -2289,3 +2289,103 @@ that fish").
   (``ang batang ito na kumain`` "this child who ate"). The
   RC's linker would compete with the dem-modifier's linker;
   needs ranker-policy refinement.
+
+## Phase 5d Commit 4: multi-GEN-NP IV-INSTR / IV-REASON
+
+**Date:** 2026-05-01. **Status:** active. Lifts the §7.7
+follow-on Out-of-scope item "Multi-GEN-NP IV-INSTR / IV-REASON
+frames" left after Phase 5c Commit 4. Three-argument IV-INSTR /
+IV-REASON sentences with overt PATIENT alongside AGENT and
+INSTRUMENT/REASON now parse with typed OBJ-AGENT and
+OBJ-PATIENT slots.
+
+### Lex-only commit (no grammar change)
+
+The Phase 5b multi-GEN-NP rules in :file:`cfg/grammar.py` are
+voice-restricted to ``V[VOICE=IV]`` without an APPL constraint:
+
+```
+S → V[VOICE=IV] NP[CASE=NOM] NP[CASE=GEN] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-AGENT) = ↓3
+   (↑ OBJ-PATIENT) = ↓4
+```
+
+(Plus two permutations: GEN-NOM-GEN and GEN-GEN-NOM.) These
+rules fire for IV-INSTR (``APPL=INSTR``) and IV-REASON
+(``APPL=REASON``) verbs alongside IV-BEN (``APPL=BEN``) — no
+new grammar rules needed. Phase 5d Commit 4 is a lex-only
+extension: four new 3-arg lex entries plus two new intrinsic
+profiles.
+
+### Two new intrinsic profiles
+
+```python
+_IV_INSTR_AGENT_PATIENT_INSTRUMENT = {
+    "AGENT":      (True, True),    # → OBJ-AGENT
+    "PATIENT":    (True, True),    # → OBJ-PATIENT
+    "INSTRUMENT": (False, False),  # → SUBJ (pivot)
+}
+_IV_REASON_AGENT_PATIENT_REASON = {
+    "AGENT":   (True, True),
+    "PATIENT": (True, True),
+    "REASON":  (False, False),
+}
+```
+
+Both AGENT and PATIENT are [+r, +o] → typed OBJ-θ, parallel to
+Phase 5b's IV-BEN three-arg pattern.
+
+### Four new lex entries
+
+```
+bili IV-INSTR  : BUY-WITH        <SUBJ, OBJ-AGENT, OBJ-PATIENT>
+tahi IV-INSTR  : SEW-WITH        <SUBJ, OBJ-AGENT, OBJ-PATIENT>
+kain IV-REASON : EAT-FOR-REASON  <SUBJ, OBJ-AGENT, OBJ-PATIENT>
+sulat IV-REASON: WRITE-FOR-REASON <SUBJ, OBJ-AGENT, OBJ-PATIENT>
+```
+
+The 2-arg variants from Phase 5c Commit 4 are unchanged; both
+forms coexist in BASE. The lex entry that matches a given parse
+is determined by NP count:
+
+* 2 NPs (1 ng-NP + 1 ang-NP) → 2-arg PRED
+* 3 NPs (2 ng-NPs + 1 ang-NP) → 3-arg PRED via multi-GEN
+
+### Sentences enabled
+
+```
+Ipinambili ng nanay ng isda ang pera.
+  "money is what mother bought (fish) with"
+  AGENT=nanay, PATIENT=isda, INSTRUMENT=pera (pivot)
+
+Ipinantahi ng nanay ng isda ang karayom.
+  "needle is what mother sewed (fish) with"
+
+Ikinakain ng bata ng isda ang gutom.
+  "hunger is the reason the child ate fish"
+
+Ikinasulat ng bata ng isda ang gutom.
+  "hunger is the reason the child wrote (about) fish"
+```
+
+### Structural ambiguity (expected)
+
+Each 3-NP sentence admits at least one structural ambiguity:
+``ng nanay ng isda`` could be parsed as a possessive ("mother's
+fish") via the existing NP-internal possessive rule, with the
+whole construct as a single GEN-NP filling OBJ-AGENT in the
+2-arg lex. Both parses surface in the n-best output. The tests
+assert AT LEAST ONE parse has the multi-GEN-binding structure,
+mirroring Phase 5b's IV-BEN ambiguity handling.
+
+### Out-of-scope (still deferred)
+
+* **DV three-argument constructions.** Phase 5b's
+  multi-GEN rules are IV-only. DV multi-GEN
+  (``Sinulatan ng nanay ng letra ang anak``
+  "mother wrote (a letter) to the child") would need
+  parallel DV multi-GEN rules. Not exercised by corpus.
+* **Multi-GEN-NP under embedded control.** Crosses with
+  Phase 5c Commits 1 / 3; tracked separately as a §9.1 item
+  (Phase 5d Commit 9 in the proposed ordering).

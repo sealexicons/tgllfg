@@ -158,6 +158,24 @@ _IV_BEN_AGENT_PATIENT_BENEFICIARY: dict[
     "PATIENT": (True, True),
     "BENEFICIARY": (False, False),
 }
+# Phase 5d Commit 4: three-arg IV-INSTR / IV-REASON variants
+# parallel to Phase 5b's three-arg IV-BEN. Both AGENT and
+# PATIENT demote to typed OBJ-θ; INSTRUMENT / REASON takes the
+# pivot SUBJ slot.
+_IV_INSTR_AGENT_PATIENT_INSTRUMENT: dict[
+    str, tuple[bool | None, bool | None]
+] = {
+    "AGENT": (True, True),
+    "PATIENT": (True, True),
+    "INSTRUMENT": (False, False),
+}
+_IV_REASON_AGENT_PATIENT_REASON: dict[
+    str, tuple[bool | None, bool | None]
+] = {
+    "AGENT": (True, True),
+    "PATIENT": (True, True),
+    "REASON": (False, False),
+}
 _OV_CAUS_DIRECT: dict[str, tuple[bool | None, bool | None]] = {
     "CAUSER": (True, True),
     "CAUSEE": (False, False),
@@ -704,6 +722,70 @@ BASE["sulat"].append(LexicalEntry(
     morph_constraints={"VOICE": "IV", "APPL": "REASON"},
     gf_defaults={"REASON": "SUBJ", "AGENT": "OBJ-AGENT"},
     intrinsic_classification=_IV_REASON_AGENT_REASON,
+))
+
+# Phase 5d Commit 4: three-arg IV-INSTR / IV-REASON variants
+# parallel to Phase 5b's three-arg IV-BEN. Both AGENT and
+# PATIENT demote to typed OBJ-θ slots (OBJ-AGENT, OBJ-PATIENT)
+# by the LMT engine; the multi-GEN-NP grammar rules in
+# cfg/grammar.py (Phase 5b, voice-restricted to V[VOICE=IV]
+# without APPL constraint) bind them positionally — first
+# ng-NP after V → AGENT, second → PATIENT.
+#
+# Sample sentences:
+#   Ipinambili ng nanay ng isda ang pera.
+#     "money is what mother bought-with for fish"
+#   Ipinantahi ng nanay ng damit ang karayom.
+#     "needle is what mother sewed-with for the dress"
+#   Ikinasulat ng bata ng letra ang gutom.
+#     "hunger is the reason the child wrote a letter"
+BASE["bili"].append(LexicalEntry(
+    lemma="bili",
+    pred="BUY-WITH <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+    a_structure=["AGENT", "PATIENT", "INSTRUMENT"],
+    morph_constraints={"VOICE": "IV", "APPL": "INSTR"},
+    gf_defaults={
+        "INSTRUMENT": "SUBJ",
+        "AGENT": "OBJ-AGENT",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_IV_INSTR_AGENT_PATIENT_INSTRUMENT,
+))
+BASE["tahi"].append(LexicalEntry(
+    lemma="tahi",
+    pred="SEW-WITH <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+    a_structure=["AGENT", "PATIENT", "INSTRUMENT"],
+    morph_constraints={"VOICE": "IV", "APPL": "INSTR"},
+    gf_defaults={
+        "INSTRUMENT": "SUBJ",
+        "AGENT": "OBJ-AGENT",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_IV_INSTR_AGENT_PATIENT_INSTRUMENT,
+))
+BASE["kain"].append(LexicalEntry(
+    lemma="kain",
+    pred="EAT-FOR-REASON <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+    a_structure=["AGENT", "PATIENT", "REASON"],
+    morph_constraints={"VOICE": "IV", "APPL": "REASON"},
+    gf_defaults={
+        "REASON": "SUBJ",
+        "AGENT": "OBJ-AGENT",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_IV_REASON_AGENT_PATIENT_REASON,
+))
+BASE["sulat"].append(LexicalEntry(
+    lemma="sulat",
+    pred="WRITE-FOR-REASON <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+    a_structure=["AGENT", "PATIENT", "REASON"],
+    morph_constraints={"VOICE": "IV", "APPL": "REASON"},
+    gf_defaults={
+        "REASON": "SUBJ",
+        "AGENT": "OBJ-AGENT",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_IV_REASON_AGENT_PATIENT_REASON,
 ))
 
 # Direct (monoclausal) causatives (pa-...-in OV): SUBJ = causee
