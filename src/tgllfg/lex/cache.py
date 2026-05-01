@@ -4,10 +4,6 @@ The parser must not depend on SQLAlchemy. ``LexCache`` is the typed,
 read-only view it sees; ``build_cache(session)`` materializes one from
 a live async SQLAlchemy session by issuing a small fixed set of
 ``SELECT *`` queries (no per-token round-trips at parse time).
-
-Mapping from ``LexCache`` to the legacy ``MorphData`` shape consumed
-by the existing analyzer lives in Commit 5; this commit only delivers
-the cache and its builder.
 """
 
 from __future__ import annotations

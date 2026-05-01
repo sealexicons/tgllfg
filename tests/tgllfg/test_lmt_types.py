@@ -235,9 +235,9 @@ class TestTypedGfHelpers:
 
 
 def test_legacy_apply_lmt_still_re_exported() -> None:
-    """Commits 1–4 keep the Phase 4 heuristic available so
-    :mod:`tgllfg.pipeline` keeps working until commit 5 swaps the
-    call site. Commit 8 deletes the wrapper and this test."""
+    """The Phase 4 heuristic is preserved in :mod:`tgllfg.lmt.legacy`
+    and re-exported as :func:`tgllfg.lmt.apply_lmt` for the
+    synthesizer-fallback path in :func:`apply_lmt_with_check`."""
     from tgllfg.lmt import apply_lmt
 
     assert callable(apply_lmt)

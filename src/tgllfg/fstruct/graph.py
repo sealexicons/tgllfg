@@ -95,11 +95,13 @@ DiagKind = Literal[
     "subject-condition-failed",
     # LMT (Phase 5 §8): emitted by the LMT engine when its derived
     # role-to-GF mapping disagrees with the parsed f-structure, or
-    # when biuniqueness fails. ``lmt-mismatch`` is informational by
-    # default (commit 5); commit 7 promotes a configured subset
-    # (Subject-slot mismatches plus biuniqueness violations) to
-    # blocking by surfacing them through ``subject-condition-failed``
-    # and ``lmt-biuniqueness-violated`` instead.
+    # when biuniqueness fails. ``lmt-mismatch`` is informational
+    # (the Phase 4 grammar still emits bare ``OBJ`` for non-AV
+    # ng-non-pivots while the engine produces ``OBJ-θ``);
+    # Subject-slot mismatches and biuniqueness violations are
+    # promoted to blocking by surfacing them through
+    # ``subject-condition-failed`` and ``lmt-biuniqueness-violated``
+    # instead.
     "lmt-mismatch",
     "lmt-biuniqueness-violated",
     # Informational only — do not block a parse from being returned.
@@ -111,12 +113,6 @@ DiagKind = Literal[
 # Diagnostic kinds that are informational rather than fatal: parses
 # carrying only these may still be returned by the pipeline. Add
 # new informational kinds here to keep the policy in one place.
-#
-# Phase 5 §8 Commit 5: ``lmt-mismatch`` is informational while the
-# Phase 4 grammar still emits bare ``OBJ`` for non-AV ng-non-pivots
-# and the LMT engine produces ``OBJ-θ``. Commit 7 may add a
-# blocking variant for the Subject-slot subset (re-routed through
-# ``subject-condition-failed``).
 NON_BLOCKING_KINDS: frozenset[str] = frozenset({
     "deferred", "unsupported", "lmt-mismatch",
 })

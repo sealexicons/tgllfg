@@ -1,10 +1,10 @@
-"""Phase 5 §8 Commit 6 — sa-NP → typed OBL-θ end-to-end through the parser.
+"""Phase 5 §8 — sa-NP → typed OBL-θ end-to-end through the parser.
 
-Pipeline-level tests for the oblique classifier. Adds the `lakad`
-motion verb to BASE in two AV variants — intransitive (no
-destination) and locative (sa-NP destination as ``OBL-LOC``) — so
-``Lumakad ang bata sa palengke`` exercises the full chain:
-parse → solve → ``classify_oblique_slots`` → ``lfg_well_formed``.
+Pipeline-level tests for the oblique classifier. The `lakad` motion
+verb in BASE has two AV variants — intransitive (no destination)
+and locative (sa-NP destination as ``OBL-LOC``) — so ``Lumakad ang
+bata sa palengke`` exercises the full chain: parse → solve →
+``classify_oblique_slots`` → ``lfg_well_formed``.
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 # tgllfg/lmt/oblique_classifier.py
 
-"""Phase 5 §8 Commit 6 — sa-NP → typed OBL-θ classification.
+"""Phase 5 §8 — sa-NP → typed OBL-θ classification.
 
 Phase 4 §7.1 leaves all *sa*-marked NPs (``NP[CASE=DAT]``) in the
 matrix f-structure's ``ADJUNCT`` set, regardless of whether they are
@@ -28,8 +28,8 @@ verb-class and fight the non-conflict matcher. Post-solve mutation
 contains the blast radius.
 
 Multi-OBL ambiguity (multiple OBL-θ roles competing for multiple
-sa-NPs) is out of scope for this commit — the classifier matches
-``OBL-θ`` roles to sa-NPs in stable order (a-structure for roles,
+sa-NPs) is out of scope — the classifier matches ``OBL-θ`` roles
+to sa-NPs in stable order (a-structure for roles,
 :class:`FStructure` ``id`` for sa-NPs) and surfaces an
 ``lmt-mismatch`` diagnostic if the counts don't line up.
 """

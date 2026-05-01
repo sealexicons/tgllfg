@@ -15,6 +15,7 @@ group.
 |----------|------------------------------------------|----------------------------------------------------------------------------------------------------|
 | ADJ      | Adjunct                                  | Set-valued, non-governable f-structure attribute. Synonym of ADJUNCT in the code.                  |
 | ADJUNCT  | Adjunct                                  | Long form used in equations (`↓ ∈ (↑ ADJUNCT)`).                                                   |
+| ANTECEDENT | Quantifier antecedent                  | Phase 4 §7.8 — binding feature on a floated quantifier; `(↓ ANTECEDENT) = (↑ SUBJ)` links *lahat* to the SUBJ. |
 | AVM      | Attribute-Value Matrix                   | The shape of an f-structure.                                                                       |
 | a-structure | Argument structure                    | The thematic-role list a verb projects (e.g. `[AGENT, PATIENT]`).                                  |
 | CFG      | Context-Free Grammar                     | The c-structure layer of LFG; productions live in `src/tgllfg/cfg/grammar.py`.                     |
@@ -23,17 +24,24 @@ group.
 | f-structure | Functional structure                  | AVM produced by unification; carries grammatical functions.                                        |
 | FOCUS    | Focus                                    | Discourse function; non-governable in the LFG sense.                                               |
 | GF       | Grammatical Function                     | SUBJ, OBJ, OBL-θ, ADJ, etc. (Distinct from "Goal Focus" in S&O — disambiguated by context.)        |
+| [±r, ±o] | Bresnan–Kanerva intrinsic features       | The feature pair that drives LMT mapping. `r` = restricted (cannot be SUBJ); `o` = objective (object-like). Truth table in `docs/lmt.md`. |
 | LEX-ASTRUCT | Lexical a-structure                   | F-structure attribute carrying the verb's role list, used by LMT.                                  |
 | LFG      | Lexical-Functional Grammar               | The formalism the parser implements.                                                               |
-| LMT      | Lexical Mapping Theory                   | Maps thematic roles to GFs via [±r, ±o] features. Phase 5 deliverable.                             |
+| LINK     | Linker                                   | Phase 4 §7.5 — `na` / `-ng` allomorphs that join a head NP to its relative clause or modifier.     |
+| LMT      | Lexical Mapping Theory                   | Maps thematic roles to GFs via [±r, ±o] features. Implemented in Phase 5 §8 — see `docs/lmt.md`.   |
 | OBJ      | Object                                   | Governable GF; second core argument in transitives.                                                |
 | OBJ-θ    | Typed object                             | OBJ-GOAL, OBJ-RECIPIENT, etc. Generic prefix `OBJ-` is recognised as governable.                   |
 | OBL      | Oblique                                  | Governable GF prefix; OBL-LOC, OBL-GOAL, OBL-BEN.                                                  |
 | OBL-AG   | Oblique agent                            | Demoted-agent analysis used in older "passive" treatments of non-AV. Rejected; see §1 of this doc. |
-| OBL-BEN  | Benefactive oblique                      | Phase 5 LMT will assign from sa-NP based on intrinsic classification.                              |
-| OBL-GOAL | Goal oblique                             | Phase 5 LMT.                                                                                       |
-| OBL-LOC  | Locative oblique                         | Phase 5 LMT.                                                                                       |
+| OBL-BEN  | Benefactive oblique                      | Typed OBL-θ; assigned by the LMT engine when a sa-NP role's intrinsics are `[+r, -o]` and the role is `BENEFICIARY`. |
+| OBL-GOAL | Goal oblique                             | Typed OBL-θ; LMT engine assigns it for `GOAL` roles with `[+r, -o]` intrinsics.                    |
+| OBL-INSTR | Instrumental oblique                    | Typed OBL-θ; LMT engine assigns it for `INSTRUMENT` roles. No current Phase 4 BASE entry emits one. |
+| OBL-LOC  | Locative oblique                         | Typed OBL-θ; LMT engine assigns it for `LOCATION` roles. Used by motion verbs (e.g. `lakad`).      |
+| OBL-RECIP | Recipient oblique                       | Typed OBL-θ; LMT engine assigns it for `RECIPIENT` roles in non-DV voices.                         |
+| OBL-θ    | Typed oblique                            | Generic prefix `OBL-` is recognised as governable; specific suffixes follow `Role.gf_suffix` (LOC, BEN, INSTR, RECIP, GOAL, …). |
 | PRED     | Predicate                                | F-structure attribute holding the predicate template (e.g. `EAT <SUBJ, OBJ>`).                     |
+| Q        | Quantifier                               | POS for floated quantifiers (`lahat`, `iba`); Phase 4 §7.8.                                        |
+| QUANT    | Quantifier feature                       | F-structure attribute on a floated quantifier (e.g. *lahat*); Phase 4 §7.8.                        |
 | REL-PRO  | Relative pronoun                         | Constraining-equation target for SUBJ-only relativization (Phase 4 §7.5).                          |
 | SUBJ     | Subject                                  | Governable GF; corresponds to the *ang*-NP pivot in Tagalog.                                       |
 | TOPIC    | Topic                                    | Non-governable discourse function; targeted by *ay*-inversion (Phase 4 §7.4).                      |
@@ -90,6 +98,7 @@ group.
 | CLUSV    | Clusivity                  | INCL / EXCL on first-person plural pronouns.                                                       |
 | DAT      | Dative case                | *sa*-marker (`sa`, `kay`).                                                                         |
 | DEIXIS   | Deixis                     | PROX / MED / DIST on demonstratives.                                                               |
+| DEM      | Demonstrative flag         | `YES` / `NO` (Phase 4 §7.8) — gates the standalone-NP rule for demonstratives like *ito* / *iyan*. |
 | DET      | Determiner                 | POS for *ang* / *ng* (when functioning as common-noun marker), demonstratives.                     |
 | DIST     | Distal                     | *iyon* / *yon*.                                                                                    |
 | EXCL     | Exclusive (clusivity)      | `kami` (1pl-excl).                                                                                 |
@@ -101,6 +110,7 @@ group.
 | NUM      | Number                     | SG / PL.                                                                                           |
 | PERS     | Person                     | 1 / 2 / 3.                                                                                         |
 | PL       | Plural                     |                                                                                                    |
+| POSS     | Possessor                  | F-structure attribute holding the possessor NP (Phase 4 §7.8 NP-internal possessive `bata ng nanay`). |
 | PROX     | Proximal                   | *ito* / *ire*.                                                                                     |
 | SG       | Singular                   |                                                                                                    |
 
@@ -110,14 +120,20 @@ group.
 |-------------|--------------------------|-----------------------------------------------------------------------------------------------|
 | ACTOR       | Actor                    | AV intransitive (e.g. *kumain ang aso*). Generic role name when AGENT/PATIENT distinction isn't needed. |
 | AGENT       | Agent                    | The volitional doer in transitive predicates.                                                 |
-| BEN         | Beneficiary              | Phase 5 LMT.                                                                                  |
+| BEN         | Beneficiary              | Pivot in `ipag-` IV-BEN applicative (e.g. *ipinaggawa*); typed `OBL-BEN` otherwise.           |
+| CAUSEE      | Causee                   | The forced participant in `pa-` direct (monoclausal) causatives; pivot in *pinakain ang bata*. Surfaces as embedded SUBJ in `magpa-` indirect causatives. |
+| CAUSER      | Causer                   | The instigator in causatives. SUBJ in `magpa-` indirect (matrix); `OBJ-CAUSER` (typed OBJ-θ) in `pa-` direct. |
+| COMPLEMENT  | Open-complement target   | The XCOMP-bound argument of control verbs (gusto, payag, pilit, utos). Off the [±r, ±o] truth table. |
 | CONVEYED    | Conveyed                 | The object conveyed in IV (e.g. *liham* in *isinulat ang liham*).                             |
-| GOAL        | Goal                     | The endpoint / recipient in DV. Phase 4 anchor role for DV.                                   |
-| INSTR       | Instrument               | Phase 5 LMT.                                                                                  |
-| LOC         | Location                 | Phase 5 LMT.                                                                                  |
+| EVENT       | Caused event             | XCOMP-bound argument of `magpa-` indirect causatives. Off the [±r, ±o] truth table.           |
+| EXPERIENCER | Experiencer              | Mental subject of psych control verbs (gusto, ayaw, kaya). GEN-marked but maps to SUBJ — see `docs/lmt.md`. |
+| GOAL        | Goal                     | The endpoint / recipient in DV. Used by the synthesizer fallback for DV; Phase 4 BASE entries use RECIPIENT instead. |
+| INSTR       | Instrument               | The instrument argument; typed `OBL-INSTR`. No current Phase 4 BASE entry emits one.          |
+| LOC         | Location                 | The location argument; typed `OBL-LOC` for motion verbs (e.g. `lakad`).                       |
 | PATIENT     | Patient                  | The undergoer in transitive predicates; pivot in OV.                                          |
-| REASON      | Reason / cause           | Phase 5 LMT.                                                                                  |
-| RECIPIENT   | Recipient                | DV pivot (alternate role label depending on the verb).                                        |
+| REASON      | Reason / cause           | Phase 5 LMT — would be typed `OBL-REASON`. No current Phase 4 BASE entry emits one (pending `ika-` reason applicative). |
+| RECIPIENT   | Recipient                | DV pivot for verbs like *sulat* (e.g. *sinulatan ang ina*). Alternate label for GOAL.         |
+| STIMULUS    | Stimulus                 | Plan §8.1 role for the cause of a mental state. No current Phase 4 BASE entry emits one.      |
 | THEME       | Theme                    | Generic patient-like role used for semantic underspecification.                               |
 
 ### Argument-structure secondary features
@@ -126,6 +142,7 @@ group.
 |----------|------------------------------------|----------------------------------------------|--------------------------------------------------|
 | APPL     | Applicative                        | `INSTR`, `BEN`, `REASON`, `CONVEY`, `∅`      | Subset of voice that an applicative selects.     |
 | CAUS     | Causative                          | `DIRECT`, `INDIRECT`, `∅`                    | `pa-` direct vs biclausal indirect.              |
+| CTRL_CLASS | Control class                    | `PSYCH`, `INTRANS`, `TRANS`, `NONE`          | Phase 4 §7.6 — discriminates control-verb subtypes for the SUBJ-binding equation. |
 
 ### Affix-class labels (`roots.yaml` `affix_class:`)
 
@@ -227,7 +244,10 @@ appear in the bottom section.
 | Coherence check                        | `src/tgllfg/fstruct/checks.py:_check_coherence` | Kaplan & Bresnan 1982 §4; Bresnan 2001 ch. 4.   |
 | Subject condition                      | `src/tgllfg/fstruct/checks.py:_check_subject_condition` | Bresnan 2001 ch. 5.                       |
 | Governable GF inventory                | `src/tgllfg/fstruct/checks.py:_BARE_GOVERNABLE` | Bresnan 2001 ch. 4.                             |
-| Lexical Mapping Theory (Phase 4 heuristic) | `src/tgllfg/lmt.py:apply_lmt`              | Bresnan & Kanerva 1989 (target form, Phase 5).  |
+| Bresnan–Kanerva LMT engine             | `src/tgllfg/lmt/principles.py`                 | Bresnan & Kanerva 1989; plan §8.2.              |
+| sa-NP → typed OBL-θ classifier         | `src/tgllfg/lmt/oblique_classifier.py`         | Plan §8 (post-solve mutation rationale in `docs/analysis-choices.md`). |
+| Pipeline LMT integration               | `src/tgllfg/lmt/check.py`                      | Plan §8.2 (diagnostic policy in `docs/lmt.md`). |
+| LMT defensive fallback (Phase 4 heuristic) | `src/tgllfg/lmt/legacy.py:apply_lmt`       | Voice-aware role-to-GF mapping; preserved for the no-lex-entry edge case. |
 
 ### Morphology and phonology
 

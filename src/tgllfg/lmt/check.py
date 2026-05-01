@@ -1,13 +1,13 @@
 # tgllfg/lmt/check.py
 
-"""Phase 5 §8 Commit 5/7 — pipeline-facing LMT check.
+"""Phase 5 §8 — pipeline-facing LMT check.
 
 The :func:`lmt_check` function is the replacement for
 :func:`tgllfg.lmt.legacy.apply_lmt`: it runs the Bresnan–Kanerva
 engine on the lex entry's intrinsic profile and compares the
 predicted role-to-GF mapping against the parsed f-structure.
 
-Diagnostic policy (Commit 7):
+Diagnostic policy:
 
 * **Blocking** — Subject-slot mismatch (LMT predicts SUBJ but the
   f-structure lacks one) and engine-emitted biuniqueness violations
@@ -32,8 +32,7 @@ yes), the parse is structurally OK and shouldn't be suppressed.
 
 The legacy heuristic remains available via
 :func:`tgllfg.lmt.legacy.apply_lmt` for the synthesizer-fallback
-path (verbs whose lex entry can't be located post-solve) — the
-wrapper is deleted in Commit 8.
+path (verbs whose lex entry can't be located post-solve).
 """
 
 from __future__ import annotations
@@ -130,20 +129,20 @@ def lmt_check(
 
     diagnostics: list[Diagnostic] = []
 
-    # Commit 6: reclassify ADJUNCT sa-NPs into typed OBL-θ slots
-    # before the GF-set comparison, so the comparison reflects the
-    # post-classify state.
+    # Reclassify ADJUNCT sa-NPs into typed OBL-θ slots before the
+    # GF-set comparison so the comparison reflects the post-classify
+    # state.
     diagnostics.extend(classify_oblique_slots(f, result.mapping))
 
     expected_gfs = set(result.mapping.values())
     actual_gfs = _governable_gfs(f)
 
-    # Commit 7: surface engine-emitted biuniqueness violations as
-    # blocking. ``compute_mapping`` emits ``lmt-biuniqueness-violated``
-    # when the lex profile has two roles mapping to the same GF —
-    # always a real lex contradiction, so we want the parse to
-    # surface the inconsistency rather than silently produce a
-    # misleading mapping.
+    # Surface engine-emitted biuniqueness violations as blocking.
+    # ``compute_mapping`` emits ``lmt-biuniqueness-violated`` when
+    # the lex profile has two roles mapping to the same GF — always
+    # a real lex contradiction, so the parse should surface the
+    # inconsistency rather than silently produce a misleading
+    # mapping.
     for engine_diag in result.diagnostics:
         if engine_diag.kind == "lmt-biuniqueness-violated":
             diagnostics.append(engine_diag)
@@ -154,12 +153,11 @@ def lmt_check(
         # if it has SUBJ, the parse is structurally OK and
         # shouldn't be suppressed for a lex-profile inconsistency.
 
-    # Commit 7: SUBJ-slot mismatch is structural — promote to
-    # blocking via ``subject-condition-failed``. This fires when
-    # the LMT engine predicts SUBJ for some role but the
-    # f-structure has no SUBJ feature; the post-classify f-structure
-    # is the one being checked, so OBL-θ classification has
-    # already happened.
+    # SUBJ-slot mismatch is structural — promote to blocking via
+    # ``subject-condition-failed``. Fires when the LMT engine
+    # predicts SUBJ for some role but the f-structure has no SUBJ
+    # feature; the post-classify f-structure is the one being
+    # checked, so OBL-θ classification has already happened.
     expected_has_subj = "SUBJ" in expected_gfs
     actual_has_subj = "SUBJ" in actual_gfs
     if expected_has_subj and not actual_has_subj:

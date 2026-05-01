@@ -1,4 +1,4 @@
-"""Phase 5 §8 Commit 5 — end-to-end LMT pipeline integration.
+"""Phase 5 §8 — end-to-end LMT pipeline integration.
 
 Exercises the path :func:`tgllfg.pipeline.parse_text` →
 :func:`tgllfg.lmt.apply_lmt_with_check`. Asserts:
@@ -79,8 +79,10 @@ class TestNonAvMismatch:
         assert f.feats.get("VOICE") == "OV"
         # AStructure carries LMT-derived typed mapping.
         assert a.mapping == {"PATIENT": "SUBJ", "AGENT": "OBJ-AGENT"}
-        # Sanity: f-structure still has bare OBJ (grammar unchanged
-        # in Commit 5).
+        # Sanity: f-structure still has bare OBJ (the Phase 4 grammar
+        # equations emit bare OBJ; the engine's typed prediction is
+        # surfaced via the AStructure and the lmt-mismatch
+        # diagnostic, not via grammar rewriting).
         assert "OBJ" in f.feats
         assert "OBJ-AGENT" not in f.feats
 
@@ -168,8 +170,8 @@ class TestSynthesizerFallback:
 
 class TestMismatchDiagnosticShape:
     """The mismatch diagnostic carries useful detail for downstream
-    consumers (Commit 7 will gate blocking promotion off these
-    fields)."""
+    consumers — the SUBJ-slot promotion logic in
+    :func:`tgllfg.lmt.lmt_check` keys off these fields."""
 
     def test_mismatch_carries_expected_actual_pred(self) -> None:
         _, _, _, diags = _first("Kinain ng aso ang isda.")
@@ -186,13 +188,15 @@ class TestMismatchDiagnosticShape:
         assert isinstance(actual, list)
         assert "OBJ-AGENT" in expected
         assert "SUBJ" in expected
-        # OBJ-AGENT not in actual (grammar unchanged in Commit 5).
+        # OBJ-AGENT not in actual — the Phase 4 grammar emits bare OBJ;
+        # the engine's typed prediction lives only in the AStructure
+        # and the diagnostic detail.
         assert "OBJ" in actual
         assert "OBJ-AGENT" not in actual
 
     def test_mismatch_is_informational(self) -> None:
-        # The whole point of Commit 5: the parse survives despite
-        # the mismatch.
+        # The OV-tr parse survives despite the mismatch — that's the
+        # whole point of keeping ``lmt-mismatch`` in NON_BLOCKING_KINDS.
         results = parse_text("Kinain ng aso ang isda.")
         assert results, "OV-tr parse was suppressed despite informational mismatch"
         # And is_blocking is False on the mismatch.

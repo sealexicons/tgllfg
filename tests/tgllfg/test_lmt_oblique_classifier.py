@@ -1,4 +1,4 @@
-"""Phase 5 §8 Commit 6 — sa-NP → typed OBL-θ classifier.
+"""Phase 5 §8 — sa-NP → typed OBL-θ classifier.
 
 Isolation tests that exercise
 :func:`tgllfg.lmt.classify_oblique_slots` over synthetic

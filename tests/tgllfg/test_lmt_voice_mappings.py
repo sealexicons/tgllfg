@@ -3,14 +3,12 @@
 Regression net for the LMT engine. Each test corresponds to a
 Phase 4 anchor pattern from :mod:`tgllfg.lexicon` and asserts that
 :func:`tgllfg.lmt.compute_mapping` produces the expected role-to-GF
-mapping for the per-voice ``[±r, ±o]`` profile that Commit 4 will
-attach to the corresponding lex entry.
+mapping for the per-voice ``[±r, ±o]`` profile attached to the
+corresponding lex entry.
 
 The Phase 4 ``gf_defaults`` mappings are listed alongside each case
 for traceability; the LMT mappings differ for non-AV ``ng``-non-pivots
-(``OBJ`` → ``OBJ-θ`` per Question #1's "upgrade" decision). Commit 4
-updates the lex entries to match; Commit 5 wires the engine into the
-pipeline.
+(``OBJ`` → ``OBJ-θ`` per the Phase 5 upgrade decision).
 
 If a test here fails after touching :mod:`tgllfg.lmt.principles`,
 treat the failure as load-bearing — it means the per-voice pivot
@@ -348,15 +346,15 @@ class TestMultiGenFramesDeferred:
         assert result.diagnostics == ()
 
 
-# === sa-NP OBL-θ classification (commit 6 preview) ========================
+# === sa-NP OBL-θ classification ===========================================
 
 
 class TestObliqueThetaClassification:
-    """Commit 6 will reclassify ADJUNCT members (sa-NPs) into typed
-    OBL-θ slots based on the verb's a-structure. The LMT engine
-    already produces OBL-θ outputs from the [+r, -o] truth-table
-    entry; these tests document the expected outputs that Commit 6's
-    classifier will consume."""
+    """:mod:`tgllfg.lmt.oblique_classifier` reclassifies ADJUNCT
+    members (sa-NPs) into typed OBL-θ slots based on the verb's
+    a-structure. The LMT engine produces OBL-θ outputs from the
+    [+r, -o] truth-table entry; these tests document the expected
+    engine outputs that the post-solve classifier consumes."""
 
     def test_iv_convey_with_oblique_recipient(self) -> None:
         # ibinigay niya sa kanya ang pera — "he gave the money to her".
@@ -376,8 +374,8 @@ class TestObliqueThetaClassification:
 
     def test_av_motion_with_oblique_location(self) -> None:
         # lumakad siya sa palengke — "she walked to the market".
-        # AV-intransitive motion verb; the sa-NP is LOCATION, classified
-        # as OBL-LOC by Commit 6's post-solve classifier.
+        # AV-intransitive motion verb; the sa-NP is LOCATION,
+        # classified as OBL-LOC by the post-solve classifier.
         result = compute_mapping([
             _ic(Role.ACTOR, r=False, o=False),
             _ic(Role.LOCATION, r=True, o=False),

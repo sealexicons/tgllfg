@@ -6,15 +6,15 @@ Each step of the canonical Bresnan & Kanerva (1989) procedure is one
 pure function so the engine is testable in isolation. The orchestrator
 :func:`compute_mapping` chains them; tests in
 ``tests/tgllfg/test_lmt_principles.py`` exercise each function against
-textbook cases and the per-voice corpus lands in Commit 3.
+textbook cases.
 
 Tagalog voice morphology is handled by storing per-voice intrinsic
-profiles directly on the lex entry (Commit 4): each voice-affixed verb
-form is a separate ``lex_entry`` row, so its
-``intrinsic_classification`` JSONB already encodes which role is the
-pivot. The engine therefore consumes pre-attached intrinsics —
-``apply_voice_constraints`` exists for completeness, but the
-runtime caller typically passes ``voice_constraints=None``.
+profiles directly on the lex entry: each voice-affixed verb form is a
+separate ``lex_entry`` row, so its ``intrinsic_classification`` JSONB
+already encodes which role is the pivot. The engine therefore
+consumes pre-attached intrinsics — ``apply_voice_constraints`` exists
+for completeness, but the runtime caller typically passes
+``voice_constraints=None``.
 
 XCOMP-bearing roles (COMPLEMENT, EVENT) are not in the
 ``[±r, ±o]`` truth table — they are open complements stipulated
@@ -46,8 +46,7 @@ __all__ = [
     "check_biuniqueness",
     "check_subject_condition",
     "compute_mapping",
-    # Re-exported for backward compatibility — the canonical home is
-    # tgllfg.lmt.common as of Commit 4.
+    # Re-exported from tgllfg.lmt.common.
     "default_intrinsics",
     "fill_defaults",
     "non_subject_mapping",
@@ -152,7 +151,7 @@ def fill_defaults(
       (``+r``, restricted).
 
     Lex entries that already supply complete per-voice profiles
-    short-circuit this function (the Tagalog default after Commit 4).
+    short-circuit this function (the Tagalog default).
     """
     new_frame = list(role_frame)
     has_minus_o = any(ic.intrinsics.o is False for ic in new_frame)
@@ -335,8 +334,8 @@ def compute_mapping(
 ) -> MappingResult:
     """Compose the seven-step BK procedure.
 
-    Step 1 (lex entry intrinsics) happens at the call site (Commit 4:
-    the lexicon attaches per-voice intrinsics to lex entries). This
+    Step 1 (lex entry intrinsics) happens at the call site — the
+    lexicon attaches per-voice intrinsics to lex entries. This
     function takes those intrinsics as ``role_frame`` and runs steps
     2 through 7.
 

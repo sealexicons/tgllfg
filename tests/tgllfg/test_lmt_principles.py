@@ -4,8 +4,8 @@ Unit tests for each principle as a standalone function plus
 orchestrator smoke tests for :func:`compute_mapping`. The full
 per-voice corpus (AV/OV/DV/IV transitives, intransitives, BEN
 applicatives, causatives, psych control) lives in
-``test_lmt_voice_mappings.py`` (Commit 3); this file is the
-isolation-level safety net for each principle.
+``test_lmt_voice_mappings.py``; this file is the isolation-level
+safety net for each principle.
 """
 
 from __future__ import annotations
@@ -82,9 +82,9 @@ class TestRoleHierarchy:
 
 
 class TestDefaultIntrinsics:
-    """The B&K 1989 canonical intrinsic table. Used by Commit 4's
-    lex-entry bootstrap to fill empty ``intrinsic_classification``
-    JSONB; the runtime engine doesn't consult it directly."""
+    """The B&K 1989 canonical intrinsic table. Used by the lex-entry
+    bootstrap to fill empty ``intrinsic_classification`` JSONB; the
+    runtime engine doesn't consult it directly."""
 
     @pytest.mark.parametrize("role", [
         Role.AGENT, Role.ACTOR, Role.CAUSER,
@@ -354,7 +354,7 @@ class TestCheckBiuniqueness:
 class TestComputeMapping:
     """Smoke tests for the orchestrator. The per-voice corpus
     (AV/OV/DV/IV/applicatives/causatives) lives in
-    ``test_lmt_voice_mappings.py`` (Commit 3)."""
+    ``test_lmt_voice_mappings.py``."""
 
     def test_av_transitive_profile(self) -> None:
         # AV-kain: AGENT [-r, -o] (pivot), PATIENT [-r, +o] (OBJ).

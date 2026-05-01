@@ -1086,3 +1086,157 @@ enough handle for v1 debugging.
   Would require changing the parser's prediction strategy.
 - **Path-rendering on diagnostics**: ``cnode_label`` placeholder
   remains TODO.
+
+## Phase 5 §8: Lexical Mapping Theory
+
+**Status:** active. The `tgllfg.lmt` package replaces the Phase 4
+voice-aware heuristic with a Bresnan & Kanerva 1989 `[±r, ±o]`
+engine. End-user docs live in `docs/lmt.md`; this section records
+the analytical decisions taken during implementation.
+
+### `OBJ-θ` upgrade for non-AV ng-non-pivots
+
+The Phase 4 §7.1 OBJ-uniform analysis maps the *ng*-non-pivot in
+OV / DV / IV transitives to bare `OBJ` (see "*ng*-non-pivot in
+transitive non-AV → OBJ" earlier in this file). Phase 5 retains
+that surface analysis in the **grammar** (the `(↑ OBJ) = ↓N`
+equations are unchanged) but the **LMT engine** produces typed
+`OBJ-θ` (e.g., `OBJ-AGENT` for OV's demoted ng-AGENT).
+
+The divergence is intentional. The LMT engine reads the lex
+entry's per-role `[±r, ±o]` profile; for OV-AGENT that profile is
+`[+r, +o]`, which the truth table maps to `OBJ-θ`. To produce bare
+`OBJ` instead, the OV-AGENT profile would have to be `[-r, +o]` —
+but that would also make AGENT SUBJ-eligible, and step 4 would
+pick AGENT for SUBJ instead of PATIENT. The pivot-respecting
+profile demands `[+r, +o]` for non-pivot ng-NPs, which produces
+`OBJ-θ`.
+
+The disagreement between the engine's `OBJ-θ` and the grammar's
+bare `OBJ` surfaces as informational `lmt-mismatch`. A future
+rewrite could change the grammar to emit `(↑ OBJ-θ) = ↓N` per
+voice/verb class and align the two sides; for now the AStructure
+carries the typed prediction while the f-structure carries the
+bare-OBJ binding.
+
+### Per-voice intrinsic profiles, not voice-merge
+
+Plan §8.2 step 2 says "voice morphology supplies additional
+[±r, ±o] constraints — for Tagalog, the voice affix marks the
+argument promoted to SUBJ." A clean reading would be:
+
+* Lex entry has one voice-independent profile per role (e.g.,
+  `kain` always has `AGENT [-o]`, `PATIENT [-r]`).
+* Voice morphology adds the SUBJ-promotion stamp at parse time.
+
+We tried this. It doesn't work for Tagalog: with one
+voice-independent profile, step 4 picks the same SUBJ regardless
+of voice, because the (`r`, `o`) features are the same. The voice
+constraint would have to be powerful enough to flip patient roles
+between `[-r]` (OV pivot) and `[+r]` (AV non-pivot) — which is
+the same as just storing per-voice profiles directly.
+
+Phase 3 already gives every voice-affixed verb form its own
+`lex_entry` row (`kumain` AV-tr, `kinain` OV-tr, etc.). Phase 5
+attaches the per-voice intrinsic profile to those rows. The
+runtime engine consumes the profile as-is and treats step 2 as a
+no-op. `apply_voice_constraints` is preserved as a hook in case
+future voice systems need it.
+
+### Role inventory augmentation
+
+Plan §8.1 lists 10 textbook roles (AGENT, PATIENT, THEME, GOAL,
+RECIPIENT, BENEFICIARY, INSTRUMENT, LOCATION, EXPERIENCER,
+STIMULUS). Phase 4 §7 added `ACTOR` (intransitive AV pivot),
+`CONVEYED` (IV-pivot for transferred entities), `CAUSER` /
+`CAUSEE` / `EVENT` (causative frames), and `COMPLEMENT`
+(open-complement target for control verbs). Phase 5 keeps these
+as augmentation rather than folding them into the textbook
+inventory:
+
+* `ACTOR` is needed because the synthesizer fallback emits
+  `[ACTOR]` when transitivity is unspecified; folding to AGENT
+  would lose the "voice-independent intransitive" signal.
+* `CONVEYED` behaves like `THEME` in the truth table, but voice-
+  marked differently in IV — keeping the role distinct lets each
+  lex entry document which thematic flavor it expects.
+* `CAUSER` / `CAUSEE` / `EVENT` participate in causative frames
+  whose mapping diverges from monoclausal transitives; they
+  carry distinct intrinsic-classification profiles.
+* `COMPLEMENT` is XCOMP-bound and never appears in the truth
+  table — keeping it distinct simplifies the stipulated-GF
+  bypass.
+
+Each augmentation carries its own row in
+`tgllfg.lmt.common._DEFAULT_INTRINSICS` so the bootstrap path
+produces correct defaults.
+
+### Sa-NP OBL-θ classification — post-solve mutation
+
+§7.1 deferred the question of how sa-NPs become typed
+`OBL-LOC` / `OBL-GOAL` / `OBL-BEN` / `OBL-INSTR` slots. Phase 5
+implements this as a post-solve mutation in
+`tgllfg.lmt.oblique_classifier`:
+
+1. The grammar continues to bind every `NP[CASE=DAT]` into
+   `(↑ ADJUNCT)` via the existing equations.
+2. After `solve()` returns the f-structure, the LMT engine
+   produces a mapping; for each role mapped to `OBL-θ`, the
+   classifier moves a sa-NP member of `ADJUNCT` into the typed
+   slot.
+3. `lfg_well_formed` then runs on the post-classify f-structure;
+   completeness/coherence checks see the typed slots.
+
+Why not rewrite the grammar instead: §7.5 relativization, §7.3
+clitic placement, §7.4 ay-inversion, and §7.8 quantifier float
+all consume the parser's c-tree and the same
+`↓N ∈ (↑ ADJUNCT)` equations. Rewriting to emit `OBL-X` directly
+would require duplicating each rule per verb-class and fighting
+the non-conflict matcher. Post-solve mutation contains the blast
+radius.
+
+Multi-OBL semantic disambiguation (which sa-NP is `BEN` vs `LOC`
+in a 3-arg sentence) is out of scope. The classifier matches in
+stable order — a-structure for roles, `FStructure.id` for sa-NPs
+— and emits an informational `lmt-mismatch` on cardinality
+mismatch.
+
+### Diagnostic promotion policy
+
+The engine emits diagnostics from steps 6 and 7. The pipeline
+filters them:
+
+| Engine source | Surfaced? | Routing |
+|---|---|---|
+| Step 6 `subject-condition-failed` (lex profile has no SUBJ candidate) | dropped | The structural `lfg_well_formed` downstream catches the case where the f-structure also lacks SUBJ. If the f-structure has SUBJ, the parse is structurally OK and shouldn't be suppressed for an internal lex inconsistency. |
+| Step 7 `lmt-biuniqueness-violated` (two roles → same GF) | yes | Always a real lex contradiction; surfaced as-is (blocking by absence from `NON_BLOCKING_KINDS`). |
+
+`lmt_check` adds two more diagnostic emitters of its own:
+
+| Condition | Routing |
+|---|---|
+| Engine predicts SUBJ for some role but the f-structure lacks SUBJ | **Blocking** (`subject-condition-failed`) |
+| GF-set difference excluding SUBJ slot (the OBJ ⇄ OBJ-θ noise) | Informational (`lmt-mismatch`) |
+
+The reverse SUBJ disagreement (f-structure has SUBJ but engine
+didn't predict one) means a buggy lex profile but a valid parse
+— stays informational via the general `lmt-mismatch`. Blocking
+the parse for a lex-internal inconsistency would be wrong.
+
+### Out-of-scope (deferred)
+
+* **Multi-GEN-NP applicative / causative frames.** A 3-arg
+  `ipinaggawa niya ng silya ang kapatid` profile cleanly
+  produces `OBJ-AGENT`, `OBJ-PATIENT`, `SUBJ` from the engine,
+  but no Phase 4 BASE entry emits them and the grammar rules
+  need a second-GEN-NP slot. Phase 5b.
+* **Multi-OBL semantic disambiguation.** When two `OBL-θ` roles
+  compete for two sa-NPs, positional matching is the placeholder.
+* **Embedded-clause LMT.** `lmt_check` only validates the matrix
+  f-structure. Embedded XCOMP/COMP clauses have their own PRED
+  and could be recursively checked; not wired.
+* **`OBJ-θ` in the grammar.** The Phase 4 grammar emits bare `OBJ`
+  for non-AV ng-non-pivots; the engine's typed `OBJ-θ` is
+  surfaced via the AStructure and the diagnostic detail. A future
+  rewrite to `(↑ OBJ-θ) = ↓N` would eliminate the
+  `lmt-mismatch` noise.

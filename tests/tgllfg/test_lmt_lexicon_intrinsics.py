@@ -1,4 +1,4 @@
-"""Phase 5 §8 Commit 4 — lex-entry intrinsic profiles + LMT bridges.
+"""Phase 5 §8 — lex-entry intrinsic profiles + LMT bridges.
 
 Exercises the bridges between :mod:`tgllfg.lexicon` and the LMT
 engine: every BASE entry carries an ``intrinsic_classification``,

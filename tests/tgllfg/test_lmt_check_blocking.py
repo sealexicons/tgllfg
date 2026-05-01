@@ -1,4 +1,4 @@
-"""Phase 5 §8 Commit 7 — blocking diagnostics from lmt_check.
+"""Phase 5 §8 — blocking diagnostics from lmt_check.
 
 Phase 5 promotes two classes of LMT disagreement to blocking:
 
@@ -263,8 +263,8 @@ class TestEngineSubjConditionDropped:
 
 class TestExistingParsesNoNewBlocking:
     """End-to-end smoke check: parse the OV/DV/IV cases that
-    already produce informational lmt-mismatch and confirm Commit 7
-    didn't accidentally promote them to blocking."""
+    produce informational lmt-mismatch and confirm the SUBJ-slot
+    promotion logic doesn't accidentally block them."""
 
     def test_ov_transitive_parse_survives(self) -> None:
         from tgllfg.pipeline import parse_text
@@ -299,9 +299,9 @@ class TestExistingParsesNoNewBlocking:
         )
 
     def test_motion_locative_parse_survives(self) -> None:
-        # Phase 5 §8 Commit 6's lakad locative — the OBL-LOC parse
-        # should still survive Commit 7's promotion logic (no SUBJ
-        # mismatch, no biuniqueness violation).
+        # The lakad locative parse with OBL-LOC has no SUBJ mismatch
+        # and no biuniqueness violation, so the promotion logic
+        # doesn't suppress it.
         from tgllfg.pipeline import parse_text
         results = parse_text("Lumakad ang bata sa palengke.")
         # Find the OBL-LOC parse.

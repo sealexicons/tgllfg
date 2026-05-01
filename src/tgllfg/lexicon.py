@@ -87,12 +87,13 @@ def _entry(
 # (typed OBJ-θ via the BK truth table) and non-pivot sa-NPs are
 # ``[+r, -o]`` (typed OBL-θ).
 #
-# Multi-GEN-NP frames (3-arg applicatives / causatives) and OBL-X
-# frames (sa-marked recipients/locations on motion / ditransitive
-# verbs) are documented in ``tests/tgllfg/test_lmt_voice_mappings.py``
-# but not realized in the BASE entries — Phase 5b (the §7.7
-# multi-GEN-NP deferral) and Commit 6 (the OBL-X reclassification
-# pass) bring them online.
+# Multi-GEN-NP frames (3-arg applicatives / causatives) are
+# documented in ``tests/tgllfg/test_lmt_voice_mappings.py`` but not
+# realized in the BASE entries — Phase 5b (the §7.7 multi-GEN-NP
+# deferral) brings them online. The OBL-X reclassification pass
+# (sa-marked recipients/locations on motion / ditransitive verbs)
+# is implemented in :mod:`tgllfg.lmt.oblique_classifier`; ``lakad``
+# below is its first BASE consumer.
 
 # Plain-voice transitive profiles. Same shape regardless of which
 # patient-like role is named (PATIENT vs THEME).
@@ -168,11 +169,10 @@ _DV_TRANS_CONTROL: dict[str, tuple[bool | None, bool | None]] = {
     "COMPLEMENT": (None, None),
 }
 
-# Phase 5 §8 Commit 6: motion-verb profile with sa-marked locative
-# argument. ACTOR is the AV pivot; LOCATION is OBL-θ via the
-# [+r, -o] truth-table cell. The post-solve oblique classifier
-# rewrites ADJUNCT members with CASE=DAT into the typed OBL-LOC
-# slot.
+# Phase 5 §8: motion-verb profile with sa-marked locative argument.
+# ACTOR is the AV pivot; LOCATION is OBL-θ via the [+r, -o]
+# truth-table cell. The post-solve oblique classifier rewrites
+# ADJUNCT members with CASE=DAT into the typed OBL-LOC slot.
 _AV_INTR_ACTOR_LOCATION: dict[str, tuple[bool | None, bool | None]] = {
     "ACTOR": (False, False),
     "LOCATION": (True, False),
@@ -294,12 +294,12 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_IV_TR_AGENT_CONVEYED,
         ),
     ],
-    # lakad — walk. Phase 5 §8 Commit 6: AV motion verb that takes a
-    # sa-marked locative argument. The intransitive entry covers
-    # bare "Lumakad ang bata" (no destination); the locative entry
-    # covers "Lumakad ang bata sa palengke" and exercises the
-    # oblique classifier (sa-NP moves out of ADJUNCT into OBL-LOC).
-    # roots.yaml declares lakad as INTR with the um affix class.
+    # lakad — walk. Phase 5 §8 AV motion verb that takes a sa-marked
+    # locative argument. The intransitive entry covers bare "Lumakad
+    # ang bata" (no destination); the locative entry covers "Lumakad
+    # ang bata sa palengke" and exercises the oblique classifier
+    # (sa-NP moves out of ADJUNCT into OBL-LOC). roots.yaml declares
+    # lakad as INTR with the um affix class.
     "lakad": [
         _entry(
             "lakad", "AV", "WALK <SUBJ>",

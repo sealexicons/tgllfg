@@ -4,7 +4,7 @@ These verify only that the testcontainer can be started, that an async
 SQLAlchemy session round-trips a trivial query, and that the two
 extensions the §6.2 schema requires (``pg_trgm`` for fuzzy lemma lookup,
 ``pgcrypto`` for ``gen_random_uuid()``) are loadable in this image.
-Schema creation lands in Commit 2 (the Alembic baseline).
+Schema creation lives in the Alembic baseline migration.
 """
 
 from __future__ import annotations
