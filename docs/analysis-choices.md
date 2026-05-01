@@ -2689,3 +2689,97 @@ another raising-S_XCOMP (chain-under-control case).
   ``V[CTRL_CLASS=TRANS] NP[GEN] NP[NOM] PART[LINK] S_XCOMP`` plus
   the new raising-S_XCOMP, but corpus exposure is low.
 
+## Phase 5d Commit 8: pa-OV / pa-DV (CAUS=DIRECT) under control
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5c §7.6 follow-on Commit 1 added non-AV ``S_XCOMP`` rules
+that route ``REL-PRO`` to ``OBJ-AGENT`` for OV / DV / IV embedded
+clauses. Those rules deliberately required ``CAUS=NONE`` to keep
+them out of the actor-extraction path for monoclausal direct
+causatives, where the typed actor slot is ``OBJ-CAUSER`` rather
+than ``OBJ-AGENT``. Phase 5d Commit 8 fills in the parallel
+``CAUS=DIRECT`` variants.
+
+### The pa-causative shape under control
+
+In a monoclausal direct causative (Phase 4 §7.7 + Phase 5d Commit 2):
+
+* ``OBJ-CAUSER`` — the agent / instigator (who causes the event).
+* ``OBJ-PATIENT`` — the patient (in the 3-arg pa-OV form;
+  optional in the 2-arg form and absent in pa-DV).
+* ``SUBJ`` — the causee (pa-OV) or location/recipient (pa-DV).
+
+Under control, the matrix verb's controller binds the embedded
+``OBJ-CAUSER`` (the caused-event actor):
+
+```
+Gusto niyang pakakainin ang bata.   "She wants to feed the child."
+   gusto.SUBJ === XCOMP.OBJ-CAUSER  (id-equal)
+   gusto.SUBJ.LEMMA = niya
+   XCOMP.PRED      = CAUSE-EAT <SUBJ, OBJ-CAUSER>
+   XCOMP.SUBJ      = bata           (the causee)
+```
+
+### Four new S_XCOMP rules
+
+```
+S_XCOMP → V[VOICE=OV, CAUS=DIRECT] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)             — 2-arg pa-OV
+
+S_XCOMP → V[VOICE=OV, CAUS=DIRECT] NP[CASE=NOM] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-PATIENT) = ↓3
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)             — 3-arg pa-OV (NOM-GEN)
+
+S_XCOMP → V[VOICE=OV, CAUS=DIRECT] NP[CASE=GEN] NP[CASE=NOM]
+   (↑ SUBJ) = ↓3
+   (↑ OBJ-PATIENT) = ↓2
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)             — 3-arg pa-OV (GEN-NOM)
+
+S_XCOMP → V[VOICE=DV, CAUS=DIRECT] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)             — 2-arg pa-DV
+```
+
+The ``V[VOICE=X, CAUS=DIRECT]`` filter mirrors the existing top-
+level pa-causative rules' filter (Phase 5b multi-GEN frames at
+line 1255, voice_specs at line 1130) so the same lex entries fire
+in both contexts.
+
+### Embedded form selection
+
+The embedded verb appears in the **CTPL** (contemplative) aspect,
+not perfective: ``pakakainin`` (cv-redup + pa- + -in) per the
+Phase 4 §7.7 paradigms.yaml ``pa_in`` cells. The matrix verb's
+control wrap rule supplies the linker (``-ng`` after vowel-final
+matrix V).
+
+### What this lifts
+
+* pa-OV under PSYCH control: ``Gusto niyang pakakainin ang bata``
+  ("she wants to feed the child"); 3-arg variants with overt
+  patient.
+* pa-OV under INTRANS control: ``Pumayag siyang pakakainin ang
+  bata``.
+* pa-OV under TRANS control: ``Pinilit ng nanay ang batang
+  pakakainin ang aso`` ("mom forced the child to feed the dog");
+  the forcee (matrix.SUBJ) is the controller, NOT the forcer
+  (matrix.OBJ-AGENT).
+* pa-DV under PSYCH and INTRANS control.
+* SUBJ control identity: the embedded ``OBJ-CAUSER`` is the same
+  Python f-structure as the matrix controller — verified by
+  Python-id equality in tests.
+
+### Out-of-scope (still deferred)
+
+* **3-arg pa-DV under control.** The Phase 5d Commit 2 pa-...-an
+  cells are 2-arg only (``CAUSE-EAT-AT <SUBJ, OBJ-CAUSER>``); a
+  3-arg pa-DV with overt patient would need a new lex profile,
+  not just a new S_XCOMP rule.
+* **Nested pa-causatives under control.** A pa-OV control
+  complement embedding another control structure should compose
+  via the existing nested-S_XCOMP rules (Phase 5c Commit 3) but
+  hasn't been pinned with tests in this commit.
+

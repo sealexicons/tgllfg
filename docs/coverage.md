@@ -160,6 +160,15 @@ list (see `docs/analysis-choices.md`):
 
 ### Recently lifted (still listed for archaeological context)
 
+- **pa-OV / pa-DV (CAUS=DIRECT) under control** — lifted in
+  Phase 5d Commit 8. Four new `S_XCOMP` rules route REL-PRO to
+  the typed `OBJ-CAUSER` slot (the actor in monoclausal direct
+  causatives) instead of `OBJ-AGENT`. Covers PSYCH / INTRANS /
+  TRANS control with both 2-arg and 3-arg pa-OV (NOM-GEN and
+  GEN-NOM orders), plus 2-arg pa-DV. Embedded form is the CTPL
+  aspect (`pakakainin`, `pakakainan`) per Phase 4 §7.7 paradigms.
+  3-arg pa-DV under control still deferred (lex profile is 2-arg
+  only).
 - **Raising chains + raising under control** — lifted in Phase 5d
   Commit 7. Raising chains (mukha-baka, parang-tila, etc.) already
   composed at the `S` level via the existing recursive raising

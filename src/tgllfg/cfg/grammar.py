@@ -698,6 +698,66 @@ class Grammar:
                 "(↑ OBJ-AGENT) = (↑ REL-PRO)",
             ),
         ))
+        # Phase 5d Commit 8: pa-OV / pa-DV (CAUS=DIRECT) embedded
+        # under control. In monoclausal direct causatives the actor
+        # is the typed ``OBJ-CAUSER`` slot (not ``OBJ-AGENT``), so
+        # under control the controllee is OBJ-CAUSER. The Phase 5c
+        # non-AV S_XCOMP rules above explicitly require ``CAUS=NONE``
+        # to keep them out of the actor-extraction path; this block
+        # adds the parallel ``CAUS=DIRECT`` variants that route
+        # REL-PRO to OBJ-CAUSER.
+        #
+        # Two-argument pa-OV (causee + gap-causer) — the patient is
+        # absent on the surface (lex entry's a-structure permits
+        # this).
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=OV, CAUS=DIRECT]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        # Three-argument pa-OV (causee + patient + gap-causer);
+        # NP-order is free post-V so both orders.
+        rules.append(Rule(
+            "S_XCOMP",
+            [
+                "V[VOICE=OV, CAUS=DIRECT]",
+                "NP[CASE=NOM]",
+                "NP[CASE=GEN]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_XCOMP",
+            [
+                "V[VOICE=OV, CAUS=DIRECT]",
+                "NP[CASE=GEN]",
+                "NP[CASE=NOM]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓2",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        # Two-argument pa-DV (location/recipient pivot + gap-causer)
+        # — Phase 5d Commit 2's pa-...-an cells. Pivot is the
+        # location (ang nanay = "to mom"), causer is gap. The
+        # patient is absent from the embedded clause's surface.
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=DV, CAUS=DIRECT]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
         # Phase 5c §7.6 follow-on (Commit 3): nested control
         # complements (long-distance control). When a control verb
         # is itself embedded inside another control verb's XCOMP,
