@@ -157,15 +157,73 @@ list (see `docs/analysis-choices.md`):
 
 - **Long-distance relativization** through XCOMP / COMP (needs
   functional uncertainty in the unifier — §7.5 + §7.6 deferral).
-- **Non-pivot ay-fronting** (§7.4 deferral; §7.8 follow-up).
-- **`pa-...-an` DV causative** and other less-common causative
-  variants (§7.7 deferral).
-- **Standalone demonstrative-as-modifier with linker**
-  (`ang batang ito`) — §7.8 partial coverage; the standalone
-  pronominal use parses, the post-modifier-with-linker pattern
-  doesn't.
 
 ### Recently lifted (still listed for archaeological context)
+
+- **Pronominal RC-actor (in-place Wackernagel)** — lifted in
+  Phase 5d Commit 10. Standard relativization with a pronominal
+  actor in the RC (`Tumakbo ang batang kinain ko`) historically
+  failed because the §7.3 Wackernagel pass hoisted `ko` from its
+  RC-actor position into the matrix V's post-V cluster. New
+  helper `_is_post_embedded_v_pron` keeps a PRON in place when it
+  follows a non-first VERB (= an embedded V), distinguishing it
+  from regular post-matrix-V cluster placement (preceding V IS
+  the first V). OV / DV / IV-RC produce a unique RC reading;
+  AV-RC produces two readings (RC-with-OBJ and head-possessor)
+  preserved as competing parses. `na` linker disambiguation after
+  PRON still deferred (`bata ko na nakita` style).
+- **IV applicative multi-GEN under control** — lifted in Phase 5d
+  Commit 9. Two changes to `S_XCOMP` IV rules: (a) drop the
+  APPL=CONVEY filter on the existing 2-arg rule so IV-BEN /
+  IV-INSTR / IV-REASON / IV-CONVEY all fire (the controllee is
+  uniformly OBJ-AGENT under Phase 5b OBJ-θ-in-grammar);
+  (b) add 3-arg variants `V[VOICE=IV] NP[CASE=NOM] NP[CASE=GEN]`
+  in both NP orders for multi-GEN-NP applicatives under control.
+  Phase 5b's 3-arg multi-GEN composes with the matrix control
+  wrap rule's `(↑ SUBJ) = (↑ XCOMP REL-PRO)` to make the matrix
+  controller bind the embedded OBJ-AGENT (the gap). IV-REASON
+  CTPL paradigm gap still deferred (CTPL form analyses as
+  IV-CONVEY; tests use PFV).
+- **pa-OV / pa-DV (CAUS=DIRECT) under control** — lifted in
+  Phase 5d Commit 8. Four new `S_XCOMP` rules route REL-PRO to
+  the typed `OBJ-CAUSER` slot (the actor in monoclausal direct
+  causatives) instead of `OBJ-AGENT`. Covers PSYCH / INTRANS /
+  TRANS control with both 2-arg and 3-arg pa-OV (NOM-GEN and
+  GEN-NOM orders), plus 2-arg pa-DV. Embedded form is the CTPL
+  aspect (`pakakainin`, `pakakainan`) per Phase 4 §7.7 paradigms.
+  3-arg pa-DV under control still deferred (lex profile is 2-arg
+  only).
+- **Raising chains + raising under control** — lifted in Phase 5d
+  Commit 7. Raising chains (mukha-baka, parang-tila, etc.) already
+  composed at the `S` level via the existing recursive raising
+  rules; this commit pins the behaviour with explicit tests.
+  Raising under control adds `S_XCOMP`-level raising variants so a
+  control verb's complement can be a raising matrix
+  (`Gusto kong mukhang kumakain`); the chain composes naturally to
+  4-level XCOMP nesting (`Gusto kong mukhang bakang kumakain`)
+  with all SUBJ slots structurally identical.
+- **Possessive-linker RC variant** (`aklat kong binasa`) — lifted
+  in Phase 5d Commit 6. The pronominal actor of a non-AV RC is
+  hoisted out and surfaces as a possessor of the head NP, joined
+  by the bound `-ng` linker. Three additive pieces: a Wackernagel
+  pre-linker check (`_is_pre_linker_pron`) keeps the split PRON
+  adjacent to its `-ng`; new gap-category `S_GAP_NA` for
+  SUBJ-gapped non-AV V with no overt GEN-actor; new wrap rule
+  `NP → NP PRON[GEN] PART[LINK=NG] S_GAP_NA` with dual-binding
+  equations making POSS and the RC's OBJ-AGENT the same
+  f-structure (id-identity). Vowel-final pronouns only (ko / mo /
+  niya); consonant-final pronouns with standalone `na` linker
+  remain deferred.
+- **Non-pivot ay-fronting** (OBJ-θ in any voice + DAT-marked
+  obliques) — lifted in Phase 5d Commit 5. Three new gap-category
+  non-terminals (`S_GAP_OBJ`, `S_GAP_OBJ_AGENT`, `S_GAP_OBL`)
+  parallel `S_GAP` with their own REL-PRO bindings; three new
+  wrap rules per fronted case (GEN-AV, GEN-non-AV, DAT). The
+  inner V's voice / features select the right gap-category
+  alongside the fronted NP's case marker. AdvP / PP fronting
+  remains deferred (no AdvP / PP categorial inventory yet); IV
+  applicatives admitted without APPL constraint so CONVEY /
+  INSTR / REASON all support actor-fronting.
 
 - **OV / DV / IV control complements** with non-SUBJ gap — lifted
   in Phase 5c §7.6 follow-on. The embedded actor's typed GF
@@ -202,6 +260,39 @@ list (see `docs/analysis-choices.md`):
   sa bata`` produce the same f-structure (bata → OBL-RECIP,
   eskwela → OBL-LOC). Positional remains the fallback for
   same-class or unknown-lemma sa-NPs.
+- **Bare-raising verbs** (``parang`` "seems like", ``tila``
+  "apparently") — lifted in Phase 5d Commit 1. New
+  ``CTRL_CLASS=RAISING_BARE`` value distinguishes them from
+  the linker-taking ``mukha`` / ``baka``; new wrap rule
+  ``S → V[CTRL_CLASS=RAISING_BARE] S`` admits the no-linker
+  form. The CTRL_CLASS split prevents cross-firing on
+  ``mukhang`` / ``bakang`` sentences via the parser's
+  non-conflict feature matcher. ``yata`` continues as a
+  Wackernagel 2P clitic, not a raising verb.
+- **`pa-...-an` DV causative** — lifted in Phase 5d Commit 2.
+  Three new DV cells under affix-class ``pa_an`` (parallel to
+  the existing ``pa_in`` OV cells with ``-an`` suffix) plus
+  lex entries for ``kain`` / ``inom`` / ``basa``. The
+  voice_specs entry for plain DV gained an explicit CAUS=NONE
+  constraint; a new DV CAUS=DIRECT entry routes the
+  GEN-CAUSER to ``OBJ-CAUSER``. PRED template:
+  ``CAUSE-EAT-AT <SUBJ, OBJ-CAUSER>`` etc. (LOCATION /
+  recipient is the pivot).
+- **Post-modifier demonstrative with linker** (``ang batang
+  ito``) — lifted in Phase 5d Commit 3. Six new grammar rules
+  (3 cases × 2 linker variants) admit ``NP[CASE=X]
+  → NP[CASE=X] PART[LINK] DET/ADP[CASE=X, DEM=YES]`` with
+  case agreement enforced at the parser level. The matrix
+  shares the head NP's f-structure via ``(↑) = ↓1`` and
+  copies the demonstrative's DEIXIS via
+  ``(↑ DEIXIS) = ↓3 DEIXIS``.
+- **Multi-GEN-NP IV-INSTR / IV-REASON 3-arg frames** —
+  lifted in Phase 5d Commit 4. Lex-only commit: four new
+  3-arg lex entries (bili / tahi IV-INSTR; kain / sulat
+  IV-REASON) plus two intrinsic profiles. The Phase 5b
+  multi-GEN-NP grammar rules (voice-restricted to IV
+  without APPL constraint) already admit these constructions;
+  only lex was missing.
 - **Pronominal possessive** (`ang libro ko`, `ng aklat niya`,
   etc.) — lifted in Phase 5c §7.8 follow-on. Context-aware
   Wackernagel placement keeps a PRON-clitic in place when it

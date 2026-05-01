@@ -37,8 +37,9 @@
   # Phase 4 §7.7: pa_in (pinakain "fed", direct causative) and
   # magpa (nagpakain "had-eat", biclausal causative). Phase 5c
   # §7.7 follow-on: ika (ikinakain "[reason for which X] ate",
-  # reason applicative IV).
-  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika]
+  # reason applicative IV). Phase 5d Commit 2: pa_an
+  # (pinakainan "fed-at"; locative-pivot causative DV).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an]
 
 - citation: bili
   pos: VERB
@@ -57,8 +58,10 @@
   transitivity: TR
   # R&B 117: -um- / -in / -an.
   # Phase 4 §7.7: pa_in (pininom "made-drink") and magpa
-  # (nagpainom "had-drink", biclausal causative).
-  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa]
+  # (nagpainom "had-drink", biclausal causative). Phase 5d
+  # Commit 2: pa_an (pinainuman "drunk-at"; locative-pivot
+  # causative DV).
+  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an]
 
 - citation: basa
   pos: VERB
@@ -66,8 +69,10 @@
   transitivity: TR
   # R&B 24: -um- / -in / -an.
   # Phase 4 §7.7: pa_in (pinabasa "made-read") and magpa
-  # (nagpabasa "had-read", biclausal causative).
-  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa]
+  # (nagpabasa "had-read", biclausal causative). Phase 5d
+  # Commit 2: pa_an (pinabasahan "read-at"; locative-pivot
+  # causative DV).
+  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an]
 
 - citation: kuha
   pos: VERB

@@ -165,6 +165,57 @@ class Grammar:
             ["(↑) = ↓1", "(↑ PRED) = 'PRO'"],
         ))
 
+        # --- Phase 5d Commit 3: post-modifier demonstrative -----------
+        #
+        # ``ang batang ito`` ("this child"). The demonstrative
+        # follows the head NP via the linker (`-ng` after vowel-
+        # final hosts, `na` after consonant-final). Three case
+        # variants × two linker variants. The demonstrative agrees
+        # with the head in case: NOM-marked dems are DET (ito,
+        # iyan, iyon); GEN/DAT are ADP (nito/dito, niyan/diyan,
+        # niyon/doon). The matrix shares the head NP's f-structure
+        # via ``(↑) = ↓1``; the demonstrative's DEIXIS feature is
+        # copied via ``(↑ DEIXIS) = ↓3 DEIXIS``. PRED stays the
+        # head noun's PRED — the demonstrative modifies, doesn't
+        # supplant.
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "NP[CASE=NOM]",
+                [
+                    "NP[CASE=NOM]",
+                    f"PART[LINK={link}]",
+                    "DET[CASE=NOM, DEM=YES]",
+                ],
+                _eqs(
+                    "(↑) = ↓1",
+                    "(↑ DEIXIS) = ↓3 DEIXIS",
+                ),
+            ))
+            rules.append(Rule(
+                "NP[CASE=GEN]",
+                [
+                    "NP[CASE=GEN]",
+                    f"PART[LINK={link}]",
+                    "ADP[CASE=GEN, DEM=YES]",
+                ],
+                _eqs(
+                    "(↑) = ↓1",
+                    "(↑ DEIXIS) = ↓3 DEIXIS",
+                ),
+            ))
+            rules.append(Rule(
+                "NP[CASE=DAT]",
+                [
+                    "NP[CASE=DAT]",
+                    f"PART[LINK={link}]",
+                    "ADP[CASE=DAT, DEM=YES]",
+                ],
+                _eqs(
+                    "(↑) = ↓1",
+                    "(↑ DEIXIS) = ↓3 DEIXIS",
+                ),
+            ))
+
         # --- Phase 4 §7.8: NP-internal possessive ---
         #
         # ``ang aklat ng bata`` ("the child's book") and pronominal
@@ -387,6 +438,204 @@ class Grammar:
             ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
         ))
 
+        # --- Phase 5d Commit 5: non-pivot ay-fronting gap-categories ---
+        #
+        # Phase 4 §7.4 admitted only SUBJ-pivot ay-fronting via
+        # ``S_GAP``. S&O §6 and Kroeger 1993 describe topicalization-
+        # style ay-fronting of non-pivot phrases (OBJ-θ in any voice
+        # plus DAT-marked obliques). Three new gap-category non-
+        # terminals parallel ``S_GAP``, each with its own REL-PRO
+        # binding to a different GF in the inner clause:
+        #
+        #   * ``S_GAP_OBJ``       — AV with bare OBJ extracted.
+        #   * ``S_GAP_OBJ_AGENT`` — non-AV with typed OBJ-AGENT
+        #     (the actor) extracted; the inner SUBJ pivot is overt.
+        #   * ``S_GAP_OBL``       — any voice with a DAT-marked
+        #     ADJUNCT member extracted.
+        #
+        # Like ``S_GAP``, none of these are top-level start symbols;
+        # they are reachable only via the corresponding wrap rules
+        # added below the existing ay-inversion rule, so an unbound
+        # REL-PRO never escapes to the matrix.
+
+        # === S_GAP_OBJ: AV with OBJ extracted ===
+        # Inner SUBJ overt; OBJ is the gap. Two frames cover plain
+        # AV-transitive and AV-transitive-with-DAT-adjunct shapes.
+        rules.append(Rule(
+            "S_GAP_OBJ",
+            ["V[VOICE=AV]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_GAP_OBJ",
+            ["V[VOICE=AV]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "↓3 ∈ (↑ ADJUNCT)",
+                "(↑ OBJ) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_GAP_OBJ",
+            ["PART[POLARITY=NEG]", "S_GAP_OBJ"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
+        # === S_GAP_OBJ_AGENT: non-AV with OBJ-AGENT extracted ===
+        # Inner NOM pivot overt; the GEN-marked actor is the gap,
+        # bound to ``OBJ-AGENT`` (the typed slot under Phase 5b's
+        # OBJ-θ-in-grammar alignment). The voice-specific extras
+        # (CAUS=NONE on OV / DV) discriminate against pa-OV / pa-DV
+        # (CAUS=DIRECT) where the typed slot would be ``OBJ-CAUSER``;
+        # IV is admitted without an APPL constraint so any IV
+        # applicative (-CONVEY / -INSTR / -REASON) can have its
+        # actor fronted.
+        nonav_obj_agent_specs = [
+            ("OV", [("CAUS", "NONE")]),
+            ("DV", [("CAUS", "NONE")]),
+            ("IV", []),
+        ]
+        for voice, extras in nonav_obj_agent_specs:
+            feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+            v_cat = f"V[{', '.join(feat_strs)}]"
+            rules.append(Rule(
+                "S_GAP_OBJ_AGENT",
+                [v_cat, "NP[CASE=NOM]"],
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+                ),
+            ))
+            rules.append(Rule(
+                "S_GAP_OBJ_AGENT",
+                [v_cat, "NP[CASE=NOM]", "NP[CASE=DAT]"],
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    "↓3 ∈ (↑ ADJUNCT)",
+                    "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+                ),
+            ))
+        rules.append(Rule(
+            "S_GAP_OBJ_AGENT",
+            ["PART[POLARITY=NEG]", "S_GAP_OBJ_AGENT"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
+        # === S_GAP_OBL: any voice with DAT-marked OBL extracted ===
+        # The fronted DAT-NP joins ``ADJUNCT`` via set membership
+        # (``(↑ REL-PRO) ∈ (↑ ADJUNCT)``); remaining core arguments
+        # stay overt. Both NP orders are admitted to mirror the
+        # regular S frames' free post-V order.
+        # AV intransitive (DAT was the only adjunct).
+        rules.append(Rule(
+            "S_GAP_OBL",
+            ["V[VOICE=AV]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ REL-PRO) ∈ (↑ ADJUNCT)",
+            ),
+        ))
+        # AV transitive (OBJ retained; DAT extracted).
+        rules.append(Rule(
+            "S_GAP_OBL",
+            ["V[VOICE=AV]", "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ) = ↓3",
+                "(↑ REL-PRO) ∈ (↑ ADJUNCT)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_GAP_OBL",
+            ["V[VOICE=AV]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ) = ↓2",
+                "(↑ REL-PRO) ∈ (↑ ADJUNCT)",
+            ),
+        ))
+        # Non-AV transitive (OBJ-AGENT retained; DAT extracted) per
+        # voice spec, both NP orders.
+        nonav_obl_specs = [
+            ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("DV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("IV", "OBJ-AGENT", []),
+        ]
+        for voice, obj_target, extras in nonav_obl_specs:
+            feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+            v_cat = f"V[{', '.join(feat_strs)}]"
+            rules.append(Rule(
+                "S_GAP_OBL",
+                [v_cat, "NP[CASE=NOM]", "NP[CASE=GEN]"],
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    f"(↑ {obj_target}) = ↓3",
+                    "(↑ REL-PRO) ∈ (↑ ADJUNCT)",
+                ),
+            ))
+            rules.append(Rule(
+                "S_GAP_OBL",
+                [v_cat, "NP[CASE=GEN]", "NP[CASE=NOM]"],
+                _eqs(
+                    "(↑ SUBJ) = ↓3",
+                    f"(↑ {obj_target}) = ↓2",
+                    "(↑ REL-PRO) ∈ (↑ ADJUNCT)",
+                ),
+            ))
+        rules.append(Rule(
+            "S_GAP_OBL",
+            ["PART[POLARITY=NEG]", "S_GAP_OBL"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
+        # --- Phase 5d Commit 6: possessive-linker RC gap-category ---
+        #
+        # Construction: ``aklat kong binasa`` ("the book that I read").
+        # The pronominal actor of the RC's non-AV verb is hoisted out
+        # of the RC and surfaces as a possessor of the head NP, joined
+        # by the bound linker ``-ng``. Distinct from standard
+        # relativization (``aklat na binasa ko``) where the actor
+        # stays inside the RC as a GEN-NP.
+        #
+        # ``S_GAP_NA`` (no-overt-actor) is a SUBJ-gapped non-AV V
+        # frame that takes no GEN-NP. The actor (``OBJ-AGENT`` under
+        # Phase 5b OBJ-θ-in-grammar) is supplied externally by the
+        # wrap rule via ``(↓N OBJ-AGENT) = pronoun``. Voice / feature
+        # constraints follow the existing S_GAP pattern: OV / DV
+        # require ``CAUS=NONE`` to keep pa-OV / pa-DV out of the
+        # actor-extraction path; IV is admitted without an APPL
+        # constraint so any applicative variant can host the
+        # construction.
+        nonav_na_specs = [
+            ("OV", [("CAUS", "NONE")]),
+            ("DV", [("CAUS", "NONE")]),
+            ("IV", []),
+        ]
+        for voice, extras in nonav_na_specs:
+            feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+            v_cat = f"V[{', '.join(feat_strs)}]"
+            rules.append(Rule(
+                "S_GAP_NA",
+                [v_cat],
+                _eqs("(↑ SUBJ) = (↑ REL-PRO)"),
+            ))
+            rules.append(Rule(
+                "S_GAP_NA",
+                [v_cat, "NP[CASE=DAT]"],
+                _eqs(
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                    "↓2 ∈ (↑ ADJUNCT)",
+                ),
+            ))
+        rules.append(Rule(
+            "S_GAP_NA",
+            ["PART[POLARITY=NEG]", "S_GAP_NA"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
         # --- Phase 4 §7.6: control complement (S_XCOMP) ---
         #
         # ``S_XCOMP`` is the SUBJ-gapped clause that serves as the
@@ -423,8 +672,11 @@ class Grammar:
         # OV / DV / IV). The patient / recipient / theme NOM-pivot
         # is overt; the actor is the gap. CAUS=NONE on OV
         # discriminates against pa-OV (CAUS=DIRECT) where the typed
-        # slot would be ``OBJ-CAUSER``; APPL=CONVEY on IV
-        # discriminates against IV-BEN multi-GEN frames.
+        # slot would be ``OBJ-CAUSER``. IV is admitted without an
+        # APPL constraint (Phase 5d Commit 9) so any applicative —
+        # CONVEY (bare i-) / BEN (ipag-) / INSTR (ipang-) /
+        # REASON (ika-) — fires; the actor is OBJ-AGENT in all
+        # variants.
         rules.append(Rule(
             "S_XCOMP",
             ["V[VOICE=OV, CAUS=NONE]", "NP[CASE=NOM]"],
@@ -443,10 +695,98 @@ class Grammar:
         ))
         rules.append(Rule(
             "S_XCOMP",
-            ["V[VOICE=IV, APPL=CONVEY]", "NP[CASE=NOM]"],
+            ["V[VOICE=IV]", "NP[CASE=NOM]"],
             _eqs(
                 "(↑ SUBJ) = ↓2",
                 "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+        # Phase 5d Commit 9: IV multi-GEN (3-arg) under control.
+        # Phase 5b admitted top-level multi-GEN-NP IV-BEN frames
+        # (``Ipinaggawa ng nanay ng silya ang kapatid``) with three
+        # NPs: pivot (BENEFICIARY) + AGENT + PATIENT. Under control,
+        # the actor (OBJ-AGENT, the agent slot) is the gap; the
+        # surface form has SUBJ pivot + GEN-PATIENT and the
+        # GEN-AGENT is suppressed. Both NP orders admitted.
+        # Generalises across IV-BEN / IV-INSTR / IV-REASON because
+        # the existing top-level multi-GEN rules at
+        # ``v_iv = "V[VOICE=IV]"`` (no APPL filter) already do.
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=IV]", "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=IV]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓2",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+        # Phase 5d Commit 8: pa-OV / pa-DV (CAUS=DIRECT) embedded
+        # under control. In monoclausal direct causatives the actor
+        # is the typed ``OBJ-CAUSER`` slot (not ``OBJ-AGENT``), so
+        # under control the controllee is OBJ-CAUSER. The Phase 5c
+        # non-AV S_XCOMP rules above explicitly require ``CAUS=NONE``
+        # to keep them out of the actor-extraction path; this block
+        # adds the parallel ``CAUS=DIRECT`` variants that route
+        # REL-PRO to OBJ-CAUSER.
+        #
+        # Two-argument pa-OV (causee + gap-causer) — the patient is
+        # absent on the surface (lex entry's a-structure permits
+        # this).
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=OV, CAUS=DIRECT]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        # Three-argument pa-OV (causee + patient + gap-causer);
+        # NP-order is free post-V so both orders.
+        rules.append(Rule(
+            "S_XCOMP",
+            [
+                "V[VOICE=OV, CAUS=DIRECT]",
+                "NP[CASE=NOM]",
+                "NP[CASE=GEN]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_XCOMP",
+            [
+                "V[VOICE=OV, CAUS=DIRECT]",
+                "NP[CASE=GEN]",
+                "NP[CASE=NOM]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓2",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        # Two-argument pa-DV (location/recipient pivot + gap-causer)
+        # — Phase 5d Commit 2's pa-...-an cells. Pivot is the
+        # location (ang nanay = "to mom"), causer is gap. The
+        # patient is absent from the embedded clause's surface.
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=DV, CAUS=DIRECT]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
             ),
         ))
         # Phase 5c §7.6 follow-on (Commit 3): nested control
@@ -522,6 +862,55 @@ class Grammar:
             ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
         ))
 
+        # --- Phase 5d Commit 7: raising inside a control complement ---
+        #
+        # ``Gusto kong mukhang kumakain`` ("I want to seem to be
+        # eating"): a control verb's XCOMP is itself a raising
+        # structure. The Phase 5c §7.6 follow-on (Commit 5) raising
+        # rules sit at the ``S`` level; control complements are at
+        # the ``S_XCOMP`` level (SUBJ-gapped). This block adds the
+        # ``S_XCOMP``-level raising variants so the matrix control
+        # wrap rule's ``(↑ SUBJ) = (↑ XCOMP REL-PRO)`` propagates the
+        # controller through the raising chain into the embedded
+        # action's SUBJ.
+        #
+        # Equations compose three identifications at this S_XCOMP
+        # level:
+        #
+        #   * ``(↑ XCOMP) = ↓N`` — the inner clause is the raising
+        #     verb's XCOMP.
+        #   * ``(↑ SUBJ) = (↑ XCOMP SUBJ)`` — raising structure-share.
+        #   * ``(↑ SUBJ) = (↑ REL-PRO)`` — S_XCOMP convention so the
+        #     matrix control rule's REL-PRO routing fires.
+        #
+        # Together: outer.SUBJ = THIS.REL-PRO = THIS.SUBJ
+        # = THIS.XCOMP.SUBJ = innermost-action.SUBJ. Recursing
+        # through ``S_XCOMP`` lets raising chains compose under
+        # control (``Gusto kong mukhang bakang kumakain``).
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "S_XCOMP",
+                [
+                    "V[CTRL_CLASS=RAISING]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ XCOMP) = ↓3",
+                    "(↑ SUBJ) = (↑ XCOMP SUBJ)",
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                ),
+            ))
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[CTRL_CLASS=RAISING_BARE]", "S_XCOMP"],
+            _eqs(
+                "(↑ XCOMP) = ↓2",
+                "(↑ SUBJ) = (↑ XCOMP SUBJ)",
+                "(↑ SUBJ) = (↑ REL-PRO)",
+            ),
+        ))
+
         # --- Phase 4 §7.4: ay-inversion ---
         #
         # ``Si Maria ay kumain ng isda``: the topic phrase moves to
@@ -547,6 +936,58 @@ class Grammar:
                 "(↑ TOPIC) = ↓1",
                 "(↓3 REL-PRO) = ↓1",
                 "(↓3 REL-PRO) =c (↓3 SUBJ)",
+            ],
+        ))
+
+        # --- Phase 5d Commit 5: non-pivot ay-fronting wrap rules ---
+        #
+        # The fronted NP's case marker disambiguates which gap-
+        # category the inner clause uses; the V's voice + features
+        # then select the right S_GAP_X frame. The wrap-rule pattern
+        # mirrors the SUBJ-fronting rule above: matrix and inner
+        # clause share an f-structure, the fronted NP becomes
+        # ``TOPIC`` and ``REL-PRO``, and a constraining equation
+        # pins the fronted GF in the inner clause (vacuous given
+        # each S_GAP_X's binding equation, but kept for symmetry
+        # and structural documentation).
+
+        # Non-pivot OBJ-fronting (AV, GEN-marked topic):
+        # ``Ng isda ay kumain si Maria.``
+        rules.append(Rule(
+            "S",
+            ["NP[CASE=GEN]", "PART[LINK=AY]", "S_GAP_OBJ"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "(↓3 REL-PRO) = ↓1",
+                "(↓3 REL-PRO) =c (↓3 OBJ)",
+            ],
+        ))
+
+        # Non-pivot OBJ-AGENT-fronting (non-AV, GEN-marked topic):
+        # ``Ni Maria ay kinain ang isda.``
+        rules.append(Rule(
+            "S",
+            ["NP[CASE=GEN]", "PART[LINK=AY]", "S_GAP_OBJ_AGENT"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "(↓3 REL-PRO) = ↓1",
+                "(↓3 REL-PRO) =c (↓3 OBJ-AGENT)",
+            ],
+        ))
+
+        # Non-pivot OBL-fronting (any voice, DAT-marked topic):
+        # ``Sa bahay ay kumain si Maria.`` The fronted phrase joins
+        # ADJUNCT via S_GAP_OBL's set-membership equation; no scalar
+        # constraining equation since ADJUNCT is a set, not a GF.
+        rules.append(Rule(
+            "S",
+            ["NP[CASE=DAT]", "PART[LINK=AY]", "S_GAP_OBL"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "(↓3 REL-PRO) = ↓1",
             ],
         ))
 
@@ -590,6 +1031,42 @@ class Grammar:
                         "(↓3 REL-PRO) =c (↓3 SUBJ)",
                     ],
                 ))
+
+        # --- Phase 5d Commit 6: possessive-linker RC wrap rule ---
+        #
+        # ``aklat kong binasa`` ("the book that I read"): a
+        # construction parallel to relativization where the
+        # pronominal actor of the RC's non-AV verb surfaces as a
+        # possessor of the head NP, joined by the bound ``-ng``
+        # linker. The pre-parse Wackernagel pass keeps PRON in
+        # place when followed by ``PART[LINK=NG]`` (see
+        # ``_is_pre_linker_pron``), so the four tokens (head NP,
+        # PRON, ``-ng``, V) reach the parser in surface order.
+        #
+        # The pronoun plays a dual role: it is the head NP's
+        # ``POSS`` AND the RC's ``OBJ-AGENT``. The wrap rule binds
+        # both via ``(↑ POSS) = ↓2`` and ``(↓4 OBJ-AGENT) = ↓2``.
+        # REL-PRO sharing follows the standard relativization
+        # pattern — anaphoric (PRED + CASE atomic-path copies, not
+        # full identity) so the unifier's occurs-check stays happy.
+        #
+        # Three head-case variants (NOM / GEN / DAT) covering the
+        # construction in any NP position.
+        for case in ("NOM", "GEN", "DAT"):
+            np_cat = f"NP[CASE={case}]"
+            rules.append(Rule(
+                np_cat,
+                [np_cat, "PRON[CASE=GEN]", "PART[LINK=NG]", "S_GAP_NA"],
+                [
+                    "(↑) = ↓1",
+                    "(↑ POSS) = ↓2",
+                    "↓4 ∈ (↑ ADJ)",
+                    "(↓4 OBJ-AGENT) = ↓2",
+                    "(↓4 REL-PRO PRED) = (↓1 PRED)",
+                    "(↓4 REL-PRO CASE) = (↓1 CASE)",
+                    "(↓4 REL-PRO) =c (↓4 SUBJ)",
+                ],
+            ))
 
         # --- Phase 4 §7.6: control wrap rules ---
         #
@@ -709,6 +1186,27 @@ class Grammar:
                     "(↑ SUBJ) = (↑ XCOMP SUBJ)",
                 ),
             ))
+        # Phase 5d Commit 1: no-linker raising. ``parang`` and
+        # ``tila`` are evidential raising verbs that don't take a
+        # following linker (``Parang kumain ang bata``, ``Tila
+        # umuulan``). They carry CTRL_CLASS=RAISING_BARE — a
+        # distinct value from mukha / baka's CTRL_CLASS=RAISING —
+        # so the bare wrap rule below doesn't cross-fire on
+        # mukhang / bakang sentences (the existing
+        # PART[POLARITY=NEG] negation rule's non-conflict matcher
+        # would otherwise let the linker `-ng` slip into a bare-
+        # raising parse alongside the linked-raising parse,
+        # producing a duplicate). The bare rule's binding mirrors
+        # the linked rule's: matrix.SUBJ structure-shares with
+        # embedded.SUBJ.
+        rules.append(Rule(
+            "S",
+            ["V[CTRL_CLASS=RAISING_BARE]", "S"],
+            _eqs(
+                "(↑ XCOMP) = ↓2",
+                "(↑ SUBJ) = (↑ XCOMP SUBJ)",
+            ),
+        ))
 
         # Transitive frames per voice, two NP orderings each, with and
         # without a trailing sa-oblique (ADJUNCT). The ng-non-pivot
@@ -725,7 +1223,12 @@ class Grammar:
             ("AV", "OBJ", []),
             ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
             ("OV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
-            ("DV", "OBJ-AGENT", []),
+            # Phase 5d Commit 2: explicit CAUS=NONE on DV plain
+            # mirrors the OV split, preventing cross-firing on the
+            # new DV CAUS=DIRECT pa-...-an forms (where the GEN-NP
+            # is the CAUSER, not the AGENT).
+            ("DV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("DV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
             ("IV", "OBJ-AGENT", []),
         ]
         for voice, obj_target, extras in voice_specs:

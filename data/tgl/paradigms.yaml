@@ -534,6 +534,54 @@
     - {op: suffix, value: in}
   notes: "pakakainin, pababasahin (CTPL — cv-redup + pa- prefix + -in suffix)"
 
+# --- pa-...-an monoclausal direct causative, locative pivot (CAUS=DIRECT, DV) ---
+#
+# Phase 5d Commit 2: parallel to pa-...-in (OV) but with the
+# DV `-an` suffix. The pivot is the location / recipient of
+# the caused event rather than the causee. Surface forms
+# mirror the pa_in pattern with `an` substituted for `in`:
+#
+#   PFV   pinakainan   ← pa+kain → pinakain → pinakainan
+#   IPFV  pinakakainan ← cv_redup of kain + pa+ + -in- + -an
+#   CTPL  pakakainan   ← cv_redup + pa- + -an (no -in- infix)
+
+- voice: DV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  affix_class: pa_an
+  feats: {CAUS: DIRECT}
+  operations:
+    - {op: prefix, value: "pa"}
+    - {op: infix, value: in}
+    - {op: suffix, value: an}
+  notes: "pinakainan, pinabasahan (PFV; location/recipient = SUBJ via NOM, causer = OBJ via GEN)"
+
+- voice: DV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  affix_class: pa_an
+  feats: {CAUS: DIRECT}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pa"}
+    - {op: infix, value: in}
+    - {op: suffix, value: an}
+  notes: "pinakakainan, pinababasahan (IPFV)"
+
+- voice: DV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: pa_an
+  feats: {CAUS: DIRECT}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pa"}
+    - {op: suffix, value: an}
+  notes: "pakakainan, pababasahan (CTPL — cv-redup + pa- prefix + -an suffix; no -in- infix)"
+
 # --- magpa- biclausal indirect causative (CAUS=INDIRECT, AV) -----------
 #
 # These verb forms compose with the §7.6 control machinery: the

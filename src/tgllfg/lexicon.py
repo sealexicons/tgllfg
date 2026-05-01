@@ -158,9 +158,34 @@ _IV_BEN_AGENT_PATIENT_BENEFICIARY: dict[
     "PATIENT": (True, True),
     "BENEFICIARY": (False, False),
 }
+# Phase 5d Commit 4: three-arg IV-INSTR / IV-REASON variants
+# parallel to Phase 5b's three-arg IV-BEN. Both AGENT and
+# PATIENT demote to typed OBJ-θ; INSTRUMENT / REASON takes the
+# pivot SUBJ slot.
+_IV_INSTR_AGENT_PATIENT_INSTRUMENT: dict[
+    str, tuple[bool | None, bool | None]
+] = {
+    "AGENT": (True, True),
+    "PATIENT": (True, True),
+    "INSTRUMENT": (False, False),
+}
+_IV_REASON_AGENT_PATIENT_REASON: dict[
+    str, tuple[bool | None, bool | None]
+] = {
+    "AGENT": (True, True),
+    "PATIENT": (True, True),
+    "REASON": (False, False),
+}
 _OV_CAUS_DIRECT: dict[str, tuple[bool | None, bool | None]] = {
     "CAUSER": (True, True),
     "CAUSEE": (False, False),
+}
+# Phase 5d Commit 2: pa-...-an DV causative — pivot is the
+# location / recipient of the caused event rather than the
+# causee. CAUSER demotes to OBJ-CAUSER; LOCATION takes SUBJ.
+_DV_CAUS_DIRECT: dict[str, tuple[bool | None, bool | None]] = {
+    "CAUSER": (True, True),
+    "LOCATION": (False, False),
 }
 # Phase 5b: three-arg pa-OV-direct with explicit PATIENT alongside
 # CAUSER and CAUSEE-pivot. Both CAUSER and PATIENT are [+r, +o] →
@@ -544,6 +569,31 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_RAISING,
         ),
     ],
+    # Phase 5d Commit 1: parang / tila — evidential raising verbs
+    # that differ from mukha / baka only in linker behaviour
+    # (no `-ng` between V and embedded S in standard usage). The
+    # grammar's new no-linker raising wrap rule covers both
+    # forms; lex entries mirror the existing _RAISING profile.
+    "parang": [
+        LexicalEntry(
+            lemma="parang",
+            pred="SEEMS-LIKE <XCOMP> SUBJ",
+            a_structure=["COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "RAISING_BARE"},
+            gf_defaults={"COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_RAISING,
+        ),
+    ],
+    "tila": [
+        LexicalEntry(
+            lemma="tila",
+            pred="APPARENTLY <XCOMP> SUBJ",
+            a_structure=["COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "RAISING_BARE"},
+            gf_defaults={"COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_RAISING,
+        ),
+    ],
 }
 
 
@@ -674,6 +724,70 @@ BASE["sulat"].append(LexicalEntry(
     intrinsic_classification=_IV_REASON_AGENT_REASON,
 ))
 
+# Phase 5d Commit 4: three-arg IV-INSTR / IV-REASON variants
+# parallel to Phase 5b's three-arg IV-BEN. Both AGENT and
+# PATIENT demote to typed OBJ-θ slots (OBJ-AGENT, OBJ-PATIENT)
+# by the LMT engine; the multi-GEN-NP grammar rules in
+# cfg/grammar.py (Phase 5b, voice-restricted to V[VOICE=IV]
+# without APPL constraint) bind them positionally — first
+# ng-NP after V → AGENT, second → PATIENT.
+#
+# Sample sentences:
+#   Ipinambili ng nanay ng isda ang pera.
+#     "money is what mother bought-with for fish"
+#   Ipinantahi ng nanay ng damit ang karayom.
+#     "needle is what mother sewed-with for the dress"
+#   Ikinasulat ng bata ng letra ang gutom.
+#     "hunger is the reason the child wrote a letter"
+BASE["bili"].append(LexicalEntry(
+    lemma="bili",
+    pred="BUY-WITH <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+    a_structure=["AGENT", "PATIENT", "INSTRUMENT"],
+    morph_constraints={"VOICE": "IV", "APPL": "INSTR"},
+    gf_defaults={
+        "INSTRUMENT": "SUBJ",
+        "AGENT": "OBJ-AGENT",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_IV_INSTR_AGENT_PATIENT_INSTRUMENT,
+))
+BASE["tahi"].append(LexicalEntry(
+    lemma="tahi",
+    pred="SEW-WITH <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+    a_structure=["AGENT", "PATIENT", "INSTRUMENT"],
+    morph_constraints={"VOICE": "IV", "APPL": "INSTR"},
+    gf_defaults={
+        "INSTRUMENT": "SUBJ",
+        "AGENT": "OBJ-AGENT",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_IV_INSTR_AGENT_PATIENT_INSTRUMENT,
+))
+BASE["kain"].append(LexicalEntry(
+    lemma="kain",
+    pred="EAT-FOR-REASON <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+    a_structure=["AGENT", "PATIENT", "REASON"],
+    morph_constraints={"VOICE": "IV", "APPL": "REASON"},
+    gf_defaults={
+        "REASON": "SUBJ",
+        "AGENT": "OBJ-AGENT",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_IV_REASON_AGENT_PATIENT_REASON,
+))
+BASE["sulat"].append(LexicalEntry(
+    lemma="sulat",
+    pred="WRITE-FOR-REASON <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+    a_structure=["AGENT", "PATIENT", "REASON"],
+    morph_constraints={"VOICE": "IV", "APPL": "REASON"},
+    gf_defaults={
+        "REASON": "SUBJ",
+        "AGENT": "OBJ-AGENT",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_IV_REASON_AGENT_PATIENT_REASON,
+))
+
 # Direct (monoclausal) causatives (pa-...-in OV): SUBJ = causee
 # (the pivot, NOM-marked), OBJ = causer (GEN-marked agent of
 # causing). Single-clause; the embedded eventuality is folded into
@@ -743,6 +857,44 @@ BASE["inom"].append(LexicalEntry(
         "PATIENT": "OBJ-PATIENT",
     },
     intrinsic_classification=_OV_CAUS_DIRECT_THREE_ARG,
+))
+
+# Phase 5d Commit 2: pa-...-an DV causatives. Pivot is the
+# location / recipient of the caused event; CAUSER demotes to
+# OBJ-CAUSER. Two-arg PRED ``<SUBJ, OBJ-CAUSER>`` mirrors the
+# pa-OV 2-arg shape; multi-arg variants are out of scope for
+# this commit. Sentences:
+#
+#   Pinakainan ng nanay ang bata.    "mother fed-at the child"
+#   Pinabasahan ng nanay ang bata.   "mother read-at the child"
+#   Pinainuman ng nanay ang bata.    "mother drink-at the child"
+#
+# The pivot reading skews "recipient" for these animate-pivot
+# tests; the role label is LOCATION because Tagalog's DV
+# subsumes locative + recipient + dative under one voice.
+BASE["kain"].append(LexicalEntry(
+    lemma="kain",
+    pred="CAUSE-EAT-AT <SUBJ, OBJ-CAUSER>",
+    a_structure=["CAUSER", "LOCATION"],
+    morph_constraints={"VOICE": "DV", "CAUS": "DIRECT"},
+    gf_defaults={"LOCATION": "SUBJ", "CAUSER": "OBJ-CAUSER"},
+    intrinsic_classification=_DV_CAUS_DIRECT,
+))
+BASE["basa"].append(LexicalEntry(
+    lemma="basa",
+    pred="CAUSE-READ-AT <SUBJ, OBJ-CAUSER>",
+    a_structure=["CAUSER", "LOCATION"],
+    morph_constraints={"VOICE": "DV", "CAUS": "DIRECT"},
+    gf_defaults={"LOCATION": "SUBJ", "CAUSER": "OBJ-CAUSER"},
+    intrinsic_classification=_DV_CAUS_DIRECT,
+))
+BASE["inom"].append(LexicalEntry(
+    lemma="inom",
+    pred="CAUSE-DRINK-AT <SUBJ, OBJ-CAUSER>",
+    a_structure=["CAUSER", "LOCATION"],
+    morph_constraints={"VOICE": "DV", "CAUS": "DIRECT"},
+    gf_defaults={"LOCATION": "SUBJ", "CAUSER": "OBJ-CAUSER"},
+    intrinsic_classification=_DV_CAUS_DIRECT,
 ))
 
 # Indirect (biclausal) causatives (magpa- AV): SUBJ = causer,

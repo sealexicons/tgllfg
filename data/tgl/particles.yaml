@@ -149,6 +149,22 @@
   pos: VERB
   feats: {CTRL_CLASS: RAISING}
 
+# Phase 5d Commit 1: additional evidential raising verbs. These
+# syntactically pattern with mukha / baka but differ in linker
+# behaviour — `parang` and `tila` typically appear WITHOUT a
+# following linker (`Parang umuulan`, `Tila kumain ang bata`),
+# whereas mukha takes the bound `-ng` linker (`Mukhang umuulan`).
+# A second matrix wrap rule in cfg/grammar.py admits the no-linker
+# form for V[CTRL_CLASS=RAISING]. `yata` "supposedly" is also
+# evidential but is a Wackernagel 2P clitic in Tagalog (already
+# seeded as PART[is_clitic=true] below) — not a raising verb.
+- surface: parang
+  pos: VERB
+  feats: {CTRL_CLASS: RAISING_BARE}
+- surface: tila
+  pos: VERB
+  feats: {CTRL_CLASS: RAISING_BARE}
+
 # === Second-position adverbial enclitics =================================
 # These attach to the first prosodic word in the clause; §7.3 will
 # add the clitic-placement c-structure rules. Schachter & Otanes 1972
