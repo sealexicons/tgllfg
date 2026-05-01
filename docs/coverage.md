@@ -157,9 +157,19 @@ list (see `docs/analysis-choices.md`):
 
 - **Long-distance relativization** through XCOMP / COMP (needs
   functional uncertainty in the unifier — §7.5 + §7.6 deferral).
-- **Non-pivot ay-fronting** (§7.4 deferral; §7.8 follow-up).
 
 ### Recently lifted (still listed for archaeological context)
+
+- **Non-pivot ay-fronting** (OBJ-θ in any voice + DAT-marked
+  obliques) — lifted in Phase 5d Commit 5. Three new gap-category
+  non-terminals (`S_GAP_OBJ`, `S_GAP_OBJ_AGENT`, `S_GAP_OBL`)
+  parallel `S_GAP` with their own REL-PRO bindings; three new
+  wrap rules per fronted case (GEN-AV, GEN-non-AV, DAT). The
+  inner V's voice / features select the right gap-category
+  alongside the fronted NP's case marker. AdvP / PP fronting
+  remains deferred (no AdvP / PP categorial inventory yet); IV
+  applicatives admitted without APPL constraint so CONVEY /
+  INSTR / REASON all support actor-fronting.
 
 - **OV / DV / IV control complements** with non-SUBJ gap — lifted
   in Phase 5c §7.6 follow-on. The embedded actor's typed GF

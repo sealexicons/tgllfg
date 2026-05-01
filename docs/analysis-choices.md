@@ -2389,3 +2389,112 @@ mirroring Phase 5b's IV-BEN ambiguity handling.
 * **Multi-GEN-NP under embedded control.** Crosses with
   Phase 5c Commits 1 / 3; tracked separately as a §9.1 item
   (Phase 5d Commit 9 in the proposed ordering).
+
+## Phase 5d Commit 5: non-pivot ay-fronting
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 4 §7.4 admitted only SUBJ-pivot ay-fronting via the wrap rule
+``S → NP[CASE=NOM] PART[LINK=AY] S_GAP``. The §7.4 "Out-of-scope"
+section explicitly listed non-pivot ay-fronting (``Kanya ay binili
+ang aklat``, ``Sa bahay ay kumain si Maria``) as deferred to §7.8.
+Phase 5d Commit 5 lifts that deferral.
+
+S&O 1972 §6 and Kroeger 1993 describe topicalization-style
+ay-fronting of:
+
+* **OBJ-θ in any voice** (the ``ng``-marked non-pivot in AV, or
+  the ``ng``-marked actor in non-AV).
+* **DAT-marked obliques** (locatives, recipients,
+  beneficiaries — the ``sa``-NP).
+
+The fronted phrase carries its case marker into clause-initial
+position; the inner clause has a gap at the position the phrase
+came from.
+
+### Three new gap-category non-terminals
+
+The Phase 4 design used a single ``S_GAP`` non-terminal whose
+binding equation is ``(↑ SUBJ) = (↑ REL-PRO)``. To extend to
+non-SUBJ extraction we add three new non-terminals paralleling
+``S_GAP``, each with its own binding to a different inner-clause GF
+(or set, for OBL):
+
+```
+S_GAP_OBJ → V[VOICE=AV] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ) = (↑ REL-PRO)
+
+S_GAP_OBJ_AGENT → V[VOICE=OV, CAUS=NONE] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+   (DV / IV variants parallel)
+
+S_GAP_OBL → V[VOICE=AV] NP[CASE=NOM] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ) = ↓3
+   (↑ REL-PRO) ∈ (↑ ADJUNCT)
+   (with-DAT and non-AV variants parallel)
+```
+
+Each gap-category also has a ``PART[POLARITY=NEG]`` recursion to
+allow ``Ng isda ay hindi kumain si Maria`` and similar negated
+fronted constructions.
+
+The voice / feature constraints on each frame's V token follow the
+existing ``S_GAP`` pattern: OV / DV require ``CAUS=NONE`` to keep
+pa-OV / pa-DV (CAUS=DIRECT) out of the actor-extraction path, where
+the typed OBJ-θ slot would be ``OBJ-CAUSER`` rather than
+``OBJ-AGENT``. IV is admitted without an APPL constraint so any
+applicative variant (CONVEY / INSTR / REASON) can have its actor
+fronted.
+
+### Three new wrap rules
+
+```
+S → NP[CASE=GEN] PART[LINK=AY] S_GAP_OBJ
+S → NP[CASE=GEN] PART[LINK=AY] S_GAP_OBJ_AGENT
+S → NP[CASE=DAT] PART[LINK=AY] S_GAP_OBL
+```
+
+Each wrap rule mirrors the existing SUBJ-fronting rule's shape:
+``(↑) = ↓3`` shares the matrix and inner f-structures, ``(↑ TOPIC)
+= ↓1`` overlays the topic, and ``(↓3 REL-PRO) = ↓1`` makes the
+fronted NP fill REL-PRO. The case-marker contrast on the fronted
+NP (NOM vs GEN vs DAT) plus the inner V's voice / features
+disambiguate which gap-category the parser uses, with no spurious
+cross-firing.
+
+The OBJ and OBJ-AGENT wrap rules carry constraining equations
+``(↓3 REL-PRO) =c (↓3 OBJ)`` / ``(↓3 REL-PRO) =c (↓3 OBJ-AGENT)``
+mirroring the SUBJ-fronting rule's vacuous-but-symmetry-preserving
+constraint. The OBL wrap rule omits the constraining equation
+because ADJUNCT is a set, not a scalar GF.
+
+### What this lifts
+
+* AV OBJ-fronting: ``Ng isda ay kumain si Maria`` (eat-AV with
+  OBJ topicalized).
+* Non-AV OBJ-AGENT-fronting: ``Ni Maria ay kinain ang isda``
+  (eat-OV with actor topicalized); ditto for DV (``Ng bata ay
+  kinainan ang nanay``) and IV (CONVEY / INSTR / REASON variants).
+* DAT OBL-fronting: ``Sa bahay ay kumain si Maria``,
+  ``Sa bahay ay kinain ni Maria ang isda``.
+* Negation under fronting (each gap-category recurses through
+  ``PART[POLARITY=NEG]``).
+
+### Out-of-scope (still deferred)
+
+* **Multi-GEN-NP ay-fronting.** Phase 5b multi-GEN constructions
+  (IV-BEN three-arg, pa-OV-direct three-arg) have two GEN-NPs
+  filling typed OBJ-AGENT and OBJ-PATIENT positionally. Fronting
+  one of the two would require a different gap shape — the
+  remaining GEN-NP's binding is no longer purely positional. Not
+  exercised by corpus.
+* **AdvP / PP fronting.** ``Kahapon ay tumakbo si Maria``
+  (temporal AdvP), ``Para sa bata ay binili niya ang aklat``
+  (PP). Out of scope until the categorial inventory expands
+  (§7.8 / Phase 6).
+* **Pa-OV (CAUS=DIRECT) actor-fronting.** Would need a parallel
+  ``S_GAP_OBJ_CAUSER`` non-terminal. Skipped to keep the commit
+  small; trivially additive when needed.

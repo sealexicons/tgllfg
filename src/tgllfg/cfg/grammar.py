@@ -438,6 +438,159 @@ class Grammar:
             ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
         ))
 
+        # --- Phase 5d Commit 5: non-pivot ay-fronting gap-categories ---
+        #
+        # Phase 4 §7.4 admitted only SUBJ-pivot ay-fronting via
+        # ``S_GAP``. S&O §6 and Kroeger 1993 describe topicalization-
+        # style ay-fronting of non-pivot phrases (OBJ-θ in any voice
+        # plus DAT-marked obliques). Three new gap-category non-
+        # terminals parallel ``S_GAP``, each with its own REL-PRO
+        # binding to a different GF in the inner clause:
+        #
+        #   * ``S_GAP_OBJ``       — AV with bare OBJ extracted.
+        #   * ``S_GAP_OBJ_AGENT`` — non-AV with typed OBJ-AGENT
+        #     (the actor) extracted; the inner SUBJ pivot is overt.
+        #   * ``S_GAP_OBL``       — any voice with a DAT-marked
+        #     ADJUNCT member extracted.
+        #
+        # Like ``S_GAP``, none of these are top-level start symbols;
+        # they are reachable only via the corresponding wrap rules
+        # added below the existing ay-inversion rule, so an unbound
+        # REL-PRO never escapes to the matrix.
+
+        # === S_GAP_OBJ: AV with OBJ extracted ===
+        # Inner SUBJ overt; OBJ is the gap. Two frames cover plain
+        # AV-transitive and AV-transitive-with-DAT-adjunct shapes.
+        rules.append(Rule(
+            "S_GAP_OBJ",
+            ["V[VOICE=AV]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_GAP_OBJ",
+            ["V[VOICE=AV]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "↓3 ∈ (↑ ADJUNCT)",
+                "(↑ OBJ) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_GAP_OBJ",
+            ["PART[POLARITY=NEG]", "S_GAP_OBJ"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
+        # === S_GAP_OBJ_AGENT: non-AV with OBJ-AGENT extracted ===
+        # Inner NOM pivot overt; the GEN-marked actor is the gap,
+        # bound to ``OBJ-AGENT`` (the typed slot under Phase 5b's
+        # OBJ-θ-in-grammar alignment). The voice-specific extras
+        # (CAUS=NONE on OV / DV) discriminate against pa-OV / pa-DV
+        # (CAUS=DIRECT) where the typed slot would be ``OBJ-CAUSER``;
+        # IV is admitted without an APPL constraint so any IV
+        # applicative (-CONVEY / -INSTR / -REASON) can have its
+        # actor fronted.
+        nonav_obj_agent_specs = [
+            ("OV", [("CAUS", "NONE")]),
+            ("DV", [("CAUS", "NONE")]),
+            ("IV", []),
+        ]
+        for voice, extras in nonav_obj_agent_specs:
+            feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+            v_cat = f"V[{', '.join(feat_strs)}]"
+            rules.append(Rule(
+                "S_GAP_OBJ_AGENT",
+                [v_cat, "NP[CASE=NOM]"],
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+                ),
+            ))
+            rules.append(Rule(
+                "S_GAP_OBJ_AGENT",
+                [v_cat, "NP[CASE=NOM]", "NP[CASE=DAT]"],
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    "↓3 ∈ (↑ ADJUNCT)",
+                    "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+                ),
+            ))
+        rules.append(Rule(
+            "S_GAP_OBJ_AGENT",
+            ["PART[POLARITY=NEG]", "S_GAP_OBJ_AGENT"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
+        # === S_GAP_OBL: any voice with DAT-marked OBL extracted ===
+        # The fronted DAT-NP joins ``ADJUNCT`` via set membership
+        # (``(↑ REL-PRO) ∈ (↑ ADJUNCT)``); remaining core arguments
+        # stay overt. Both NP orders are admitted to mirror the
+        # regular S frames' free post-V order.
+        # AV intransitive (DAT was the only adjunct).
+        rules.append(Rule(
+            "S_GAP_OBL",
+            ["V[VOICE=AV]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ REL-PRO) ∈ (↑ ADJUNCT)",
+            ),
+        ))
+        # AV transitive (OBJ retained; DAT extracted).
+        rules.append(Rule(
+            "S_GAP_OBL",
+            ["V[VOICE=AV]", "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ) = ↓3",
+                "(↑ REL-PRO) ∈ (↑ ADJUNCT)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_GAP_OBL",
+            ["V[VOICE=AV]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ) = ↓2",
+                "(↑ REL-PRO) ∈ (↑ ADJUNCT)",
+            ),
+        ))
+        # Non-AV transitive (OBJ-AGENT retained; DAT extracted) per
+        # voice spec, both NP orders.
+        nonav_obl_specs = [
+            ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("DV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("IV", "OBJ-AGENT", []),
+        ]
+        for voice, obj_target, extras in nonav_obl_specs:
+            feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+            v_cat = f"V[{', '.join(feat_strs)}]"
+            rules.append(Rule(
+                "S_GAP_OBL",
+                [v_cat, "NP[CASE=NOM]", "NP[CASE=GEN]"],
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    f"(↑ {obj_target}) = ↓3",
+                    "(↑ REL-PRO) ∈ (↑ ADJUNCT)",
+                ),
+            ))
+            rules.append(Rule(
+                "S_GAP_OBL",
+                [v_cat, "NP[CASE=GEN]", "NP[CASE=NOM]"],
+                _eqs(
+                    "(↑ SUBJ) = ↓3",
+                    f"(↑ {obj_target}) = ↓2",
+                    "(↑ REL-PRO) ∈ (↑ ADJUNCT)",
+                ),
+            ))
+        rules.append(Rule(
+            "S_GAP_OBL",
+            ["PART[POLARITY=NEG]", "S_GAP_OBL"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
         # --- Phase 4 §7.6: control complement (S_XCOMP) ---
         #
         # ``S_XCOMP`` is the SUBJ-gapped clause that serves as the
@@ -598,6 +751,58 @@ class Grammar:
                 "(↑ TOPIC) = ↓1",
                 "(↓3 REL-PRO) = ↓1",
                 "(↓3 REL-PRO) =c (↓3 SUBJ)",
+            ],
+        ))
+
+        # --- Phase 5d Commit 5: non-pivot ay-fronting wrap rules ---
+        #
+        # The fronted NP's case marker disambiguates which gap-
+        # category the inner clause uses; the V's voice + features
+        # then select the right S_GAP_X frame. The wrap-rule pattern
+        # mirrors the SUBJ-fronting rule above: matrix and inner
+        # clause share an f-structure, the fronted NP becomes
+        # ``TOPIC`` and ``REL-PRO``, and a constraining equation
+        # pins the fronted GF in the inner clause (vacuous given
+        # each S_GAP_X's binding equation, but kept for symmetry
+        # and structural documentation).
+
+        # Non-pivot OBJ-fronting (AV, GEN-marked topic):
+        # ``Ng isda ay kumain si Maria.``
+        rules.append(Rule(
+            "S",
+            ["NP[CASE=GEN]", "PART[LINK=AY]", "S_GAP_OBJ"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "(↓3 REL-PRO) = ↓1",
+                "(↓3 REL-PRO) =c (↓3 OBJ)",
+            ],
+        ))
+
+        # Non-pivot OBJ-AGENT-fronting (non-AV, GEN-marked topic):
+        # ``Ni Maria ay kinain ang isda.``
+        rules.append(Rule(
+            "S",
+            ["NP[CASE=GEN]", "PART[LINK=AY]", "S_GAP_OBJ_AGENT"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "(↓3 REL-PRO) = ↓1",
+                "(↓3 REL-PRO) =c (↓3 OBJ-AGENT)",
+            ],
+        ))
+
+        # Non-pivot OBL-fronting (any voice, DAT-marked topic):
+        # ``Sa bahay ay kumain si Maria.`` The fronted phrase joins
+        # ADJUNCT via S_GAP_OBL's set-membership equation; no scalar
+        # constraining equation since ADJUNCT is a set, not a GF.
+        rules.append(Rule(
+            "S",
+            ["NP[CASE=DAT]", "PART[LINK=AY]", "S_GAP_OBL"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "(↓3 REL-PRO) = ↓1",
             ],
         ))
 
