@@ -602,4 +602,56 @@ class Grammar:
             ),
         ))
 
+        # --- Phase 5b: multi-GEN-NP causative frames (pa-OV direct) ---
+        #
+        # Three-argument direct causatives like ``Pinakain niya ng
+        # kanin ang bata`` ("he fed the child rice") have two
+        # ng-marked non-pivots (CAUSER + PATIENT) plus the
+        # ang-marked pivot (CAUSEE). Same architectural shape as
+        # the IV-BEN multi-GEN rules above; the difference is the
+        # role names — CAUSER replaces AGENT, CAUSEE replaces
+        # BENEFICIARY — so the grammar binds to typed OBJ-CAUSER
+        # rather than OBJ-AGENT.
+        #
+        # Word-order convention is identical: first ng-NP after V
+        # is CAUSER (the agentive instigator), second is PATIENT
+        # (the affected entity).
+        #
+        # Rules are matched on V[VOICE=OV, CAUS=DIRECT] specifically
+        # so they don't fire for plain OV transitives (which have
+        # no third role). The non-conflict matcher requires the
+        # default ``CAUS=NONE`` on plain OV V analyses to keep
+        # them from spuriously matching.
+        v_pa_ov = "V[VOICE=OV, CAUS=DIRECT]"
+        # NOM-GEN-GEN: pivot first, CAUSER, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_pa_ov, "NP[CASE=NOM]", "NP[CASE=GEN]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-CAUSER) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-NOM-GEN: CAUSER, pivot, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_pa_ov, "NP[CASE=GEN]", "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-CAUSER) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-GEN-NOM: CAUSER, PATIENT, pivot.
+        rules.append(Rule(
+            "S",
+            [v_pa_ov, "NP[CASE=GEN]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓4",
+                "(↑ OBJ-CAUSER) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+            ),
+        ))
+
         return Grammar(rules)

@@ -1302,14 +1302,19 @@ completeness check fails when OBJ-PATIENT is absent.
 
 ### Scope
 
-IV-BEN three-argument applicatives only in this commit (verbs:
-`gawa`, `sulat`, `bili`). The same shape applies to:
+The multi-GEN-NP frames lifted in Phase 5b so far:
 
-* **pa-OV-direct three-argument causatives** (e.g.,
-  `Pinakain niya ng kanin ang bata` — "He fed the child rice"):
-  CAUSER + PATIENT + CAUSEE. Same rule structure with `V[VOICE=OV]`
-  and `[CAUSER, PATIENT, CAUSEE]` profiles. Lifts in the next
-  Phase 5b commit.
+* **IV-BEN applicatives** (`gawa`, `sulat`, `bili`) — Commit 1.
+  Pivot is BENEFICIARY; non-pivot ng-NPs are AGENT and PATIENT,
+  bound positionally to `OBJ-AGENT` and `OBJ-PATIENT`.
+* **pa-OV-direct causatives** (`kain`, `basa`, `inom`) — Commit 2.
+  Pivot is CAUSEE; non-pivot ng-NPs are CAUSER and PATIENT,
+  bound to `OBJ-CAUSER` and `OBJ-PATIENT`. The grammar matches
+  `V[VOICE=OV, CAUS=DIRECT]` specifically so plain OV transitives
+  (CAUS=NONE) don't spuriously trip the multi-GEN rule.
+
+Still deferred:
+
 * **DV three-argument constructions** (rarer): would need a
   third ng-NP for a non-RECIPIENT theme. No current Phase 4
   BASE entry has the shape.
