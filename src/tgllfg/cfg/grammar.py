@@ -672,8 +672,11 @@ class Grammar:
         # OV / DV / IV). The patient / recipient / theme NOM-pivot
         # is overt; the actor is the gap. CAUS=NONE on OV
         # discriminates against pa-OV (CAUS=DIRECT) where the typed
-        # slot would be ``OBJ-CAUSER``; APPL=CONVEY on IV
-        # discriminates against IV-BEN multi-GEN frames.
+        # slot would be ``OBJ-CAUSER``. IV is admitted without an
+        # APPL constraint (Phase 5d Commit 9) so any applicative —
+        # CONVEY (bare i-) / BEN (ipag-) / INSTR (ipang-) /
+        # REASON (ika-) — fires; the actor is OBJ-AGENT in all
+        # variants.
         rules.append(Rule(
             "S_XCOMP",
             ["V[VOICE=OV, CAUS=NONE]", "NP[CASE=NOM]"],
@@ -692,9 +695,37 @@ class Grammar:
         ))
         rules.append(Rule(
             "S_XCOMP",
-            ["V[VOICE=IV, APPL=CONVEY]", "NP[CASE=NOM]"],
+            ["V[VOICE=IV]", "NP[CASE=NOM]"],
             _eqs(
                 "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+        # Phase 5d Commit 9: IV multi-GEN (3-arg) under control.
+        # Phase 5b admitted top-level multi-GEN-NP IV-BEN frames
+        # (``Ipinaggawa ng nanay ng silya ang kapatid``) with three
+        # NPs: pivot (BENEFICIARY) + AGENT + PATIENT. Under control,
+        # the actor (OBJ-AGENT, the agent slot) is the gap; the
+        # surface form has SUBJ pivot + GEN-PATIENT and the
+        # GEN-AGENT is suppressed. Both NP orders admitted.
+        # Generalises across IV-BEN / IV-INSTR / IV-REASON because
+        # the existing top-level multi-GEN rules at
+        # ``v_iv = "V[VOICE=IV]"`` (no APPL filter) already do.
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=IV]", "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[VOICE=IV]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓2",
                 "(↑ OBJ-AGENT) = (↑ REL-PRO)",
             ),
         ))

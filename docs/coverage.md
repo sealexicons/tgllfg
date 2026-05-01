@@ -160,6 +160,18 @@ list (see `docs/analysis-choices.md`):
 
 ### Recently lifted (still listed for archaeological context)
 
+- **IV applicative multi-GEN under control** — lifted in Phase 5d
+  Commit 9. Two changes to `S_XCOMP` IV rules: (a) drop the
+  APPL=CONVEY filter on the existing 2-arg rule so IV-BEN /
+  IV-INSTR / IV-REASON / IV-CONVEY all fire (the controllee is
+  uniformly OBJ-AGENT under Phase 5b OBJ-θ-in-grammar);
+  (b) add 3-arg variants `V[VOICE=IV] NP[CASE=NOM] NP[CASE=GEN]`
+  in both NP orders for multi-GEN-NP applicatives under control.
+  Phase 5b's 3-arg multi-GEN composes with the matrix control
+  wrap rule's `(↑ SUBJ) = (↑ XCOMP REL-PRO)` to make the matrix
+  controller bind the embedded OBJ-AGENT (the gap). IV-REASON
+  CTPL paradigm gap still deferred (CTPL form analyses as
+  IV-CONVEY; tests use PFV).
 - **pa-OV / pa-DV (CAUS=DIRECT) under control** — lifted in
   Phase 5d Commit 8. Four new `S_XCOMP` rules route REL-PRO to
   the typed `OBJ-CAUSER` slot (the actor in monoclausal direct

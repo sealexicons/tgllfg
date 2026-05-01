@@ -2783,3 +2783,87 @@ matrix V).
   via the existing nested-S_XCOMP rules (Phase 5c Commit 3) but
   hasn't been pinned with tests in this commit.
 
+## Phase 5d Commit 9: IV applicative multi-GEN under control
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5b §7.7 follow-on lifted top-level multi-GEN-NP applicative
+frames for IV-BEN; Phase 5c §7.7 / 5d Commit 4 added IV-INSTR /
+IV-REASON 2-arg + 3-arg lex. All three live at the ``S`` level.
+The Phase 5c §7.6 follow-on Commit 1 control complement
+(``S_XCOMP``) IV variant had two limitations Commit 9 fixes:
+
+### A. Drop APPL=CONVEY filter
+
+The original 2-arg IV S_XCOMP rule was
+
+```
+S_XCOMP → V[VOICE=IV, APPL=CONVEY] NP[CASE=NOM]
+```
+
+The ``APPL=CONVEY`` filter only matched the bare ``i-`` reading
+(conveyance, e.g. ``ibibili`` "buy as conveyance"). The IV-BEN
+(``ipag-``), IV-INSTR (``ipang-``), IV-REASON (``ika-``)
+applicatives carry ``APPL=BEN`` / ``INSTR`` / ``REASON``
+respectively, so the rule never fired for them. Commit 9 drops
+the APPL filter:
+
+```
+S_XCOMP → V[VOICE=IV] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+```
+
+The actor binds to ``OBJ-AGENT`` uniformly across all four IV
+applicatives (Phase 5b OBJ-θ-in-grammar alignment), so a single
+rule suffices. ``V[VOICE=IV]`` (no APPL) parallels the existing
+top-level voice_specs / S_GAP entries which never had an APPL
+filter.
+
+### B. Add 3-arg IV under control
+
+Phase 5b multi-GEN frames have three NPs at the top level
+(pivot + AGENT + PATIENT). Under control the AGENT is the gap,
+leaving SUBJ + GEN-PATIENT — a new shape Commit 9 admits in two
+NP orders:
+
+```
+S_XCOMP → V[VOICE=IV] NP[CASE=NOM] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-PATIENT) = ↓3
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+
+S_XCOMP → V[VOICE=IV] NP[CASE=GEN] NP[CASE=NOM]
+   (↑ SUBJ) = ↓3
+   (↑ OBJ-PATIENT) = ↓2
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+```
+
+Free post-V order parallels the top-level multi-GEN frames'
+treatment.
+
+### What this lifts
+
+* IV-BEN under PSYCH / INTRANS / TRANS control: 2-arg
+  (``Gusto kong ipaggagawa ang kapatid``) and 3-arg (``Gusto kong
+  ipaggagawa ng silya ang kapatid``).
+* IV-INSTR under control: 2-arg + 3-arg.
+* IV-REASON 3-arg under PSYCH control (PFV form ``ikinakain``;
+  the CTPL form ``ikakain`` resolves as IV-CONVEY in the current
+  paradigms).
+* SUBJ control identity verified by Python-id equality between
+  matrix controller and embedded ``OBJ-AGENT``.
+
+### Out-of-scope (still deferred)
+
+* **IV-REASON CTPL paradigm gap.** The CTPL form ``ikakain``
+  analyses as IV-CONVEY rather than IV-REASON in the current
+  morph paradigms. Tests use the PFV form ``ikinakain`` to
+  exercise IV-REASON 3-arg under control. Resolving the paradigm
+  ambiguity would need a paradigms.yaml or analyzer change beyond
+  Commit 9's scope.
+* **IV multi-GEN under nested (long-distance) control.** The
+  Phase 5c Commit 3 nested-S_XCOMP rules compose with the new
+  3-arg IV S_XCOMP rule in principle but aren't pinned with
+  tests in this commit.
+
