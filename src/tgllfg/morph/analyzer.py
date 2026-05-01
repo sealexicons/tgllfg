@@ -55,6 +55,7 @@ from .sandhi import (
     cv_reduplicate,
     d_to_r_intervocalic,
     infix_after_first_consonant,
+    nasal_assim_prefix,
     nasal_substitute,
 )
 
@@ -90,6 +91,8 @@ def _apply(op: Operation, base: str, flags: set[str]) -> str:
         return op.value + base
     if op.op == "nasal_substitute":
         return nasal_substitute(base)
+    if op.op == "nasal_assim_prefix":
+        return nasal_assim_prefix(op.value, base)
     raise ValueError(f"unknown operation: {op.op!r}")
 
 

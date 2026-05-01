@@ -155,8 +155,6 @@ list (see `docs/analysis-choices.md`):
 - **Long-distance relativization** through XCOMP / COMP (needs
   functional uncertainty in the unifier — §7.5 + §7.6 deferral).
 - **Non-pivot ay-fronting** (§7.4 deferral; §7.8 follow-up).
-- **`ipang-` instrumental** and **`ika-` reason** applicatives
-  (§7.7 deferral; need homorganic-nasal sandhi).
 - **`pa-...-an` DV causative** and other less-common causative
   variants (§7.7 deferral).
 - **Standalone demonstrative-as-modifier with linker**
@@ -180,6 +178,13 @@ list (see `docs/analysis-choices.md`):
   finite-depth chains compose without functional uncertainty.
   Long-distance *relativization* (the entry above) genuinely
   needs functional uncertainty and remains deferred.
+- **`ipang-` instrumental and `ika-` reason applicatives** —
+  lifted in Phase 5c §7.7 follow-on Commit 4. New
+  `nasal_assim_prefix` sandhi op handles homorganic-nasal place-
+  assimilation with consonant retention (`pang-` + `bili` →
+  `pambili`, distinct from the existing drop pattern of
+  `nasal_substitute`). 6 new IV cells (3 INSTR, 3 REASON) +
+  4 lex entries; new `REASON` role in the Role enum.
 - **Pronominal possessive** (`ang libro ko`, `ng aklat niya`,
   etc.) — lifted in Phase 5c §7.8 follow-on. Context-aware
   Wackernagel placement keeps a PRON-clitic in place when it

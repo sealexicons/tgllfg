@@ -137,6 +137,17 @@ _IV_BEN_AGENT_BENEFICIARY: dict[str, tuple[bool | None, bool | None]] = {
     "AGENT": (True, True),
     "BENEFICIARY": (False, False),
 }
+# Phase 5c §7.7 follow-on: ipang- instrumental and ika- reason
+# applicatives. The pivot rotates to INSTRUMENT / REASON; AGENT
+# demotes to typed OBJ-AGENT. Same intrinsic shape as IV-BEN.
+_IV_INSTR_AGENT_INSTRUMENT: dict[str, tuple[bool | None, bool | None]] = {
+    "AGENT": (True, True),
+    "INSTRUMENT": (False, False),
+}
+_IV_REASON_AGENT_REASON: dict[str, tuple[bool | None, bool | None]] = {
+    "AGENT": (True, True),
+    "REASON": (False, False),
+}
 # Phase 5b: three-arg IV-BEN with explicit PATIENT in addition to
 # AGENT and BENEFICIARY. Both AGENT and PATIENT are [+r, +o] →
 # typed OBJ-θ (OBJ-AGENT and OBJ-PATIENT, distinct GFs).
@@ -543,6 +554,50 @@ BASE["bili"].append(LexicalEntry(
         "PATIENT": "OBJ-PATIENT",
     },
     intrinsic_classification=_IV_BEN_AGENT_PATIENT_BENEFICIARY,
+))
+
+# Phase 5c §7.7 follow-on: instrumental applicatives (ipang-).
+# SUBJ = INSTRUMENT (the thing used); OBJ-AGENT = the actor.
+# The patient (what was bought / sewn) is omitted from the 2-arg
+# PRED, mirroring the existing IV-BEN choice — multi-GEN-NP
+# extensions can be added if corpus pressure warrants.
+BASE["bili"].append(LexicalEntry(
+    lemma="bili",
+    pred="BUY-WITH <SUBJ, OBJ-AGENT>",
+    a_structure=["AGENT", "INSTRUMENT"],
+    morph_constraints={"VOICE": "IV", "APPL": "INSTR"},
+    gf_defaults={"INSTRUMENT": "SUBJ", "AGENT": "OBJ-AGENT"},
+    intrinsic_classification=_IV_INSTR_AGENT_INSTRUMENT,
+))
+BASE.setdefault("tahi", []).append(LexicalEntry(
+    lemma="tahi",
+    pred="SEW-WITH <SUBJ, OBJ-AGENT>",
+    a_structure=["AGENT", "INSTRUMENT"],
+    morph_constraints={"VOICE": "IV", "APPL": "INSTR"},
+    gf_defaults={"INSTRUMENT": "SUBJ", "AGENT": "OBJ-AGENT"},
+    intrinsic_classification=_IV_INSTR_AGENT_INSTRUMENT,
+))
+
+# Phase 5c §7.7 follow-on: reason applicatives (ika-).
+# SUBJ = REASON (the cause / motivation); OBJ-AGENT = the actor.
+# Tagalog ika- is most natural with stative bases (ikinatuwa
+# "[reason for being] glad"), but extends to dynamic verbs in
+# motivational readings (ikinakain "[reason for which X] ate").
+BASE["kain"].append(LexicalEntry(
+    lemma="kain",
+    pred="EAT-FOR-REASON <SUBJ, OBJ-AGENT>",
+    a_structure=["AGENT", "REASON"],
+    morph_constraints={"VOICE": "IV", "APPL": "REASON"},
+    gf_defaults={"REASON": "SUBJ", "AGENT": "OBJ-AGENT"},
+    intrinsic_classification=_IV_REASON_AGENT_REASON,
+))
+BASE["sulat"].append(LexicalEntry(
+    lemma="sulat",
+    pred="WRITE-FOR-REASON <SUBJ, OBJ-AGENT>",
+    a_structure=["AGENT", "REASON"],
+    morph_constraints={"VOICE": "IV", "APPL": "REASON"},
+    gf_defaults={"REASON": "SUBJ", "AGENT": "OBJ-AGENT"},
+    intrinsic_classification=_IV_REASON_AGENT_REASON,
 ))
 
 # Direct (monoclausal) causatives (pa-...-in OV): SUBJ = causee

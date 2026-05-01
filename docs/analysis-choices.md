@@ -1012,6 +1012,9 @@ than prepending an assimilated nasal, so it doesn't produce
 phonological op or per-base-class cell duplication is needed.
 Deferred until Phase 5 corpus pressure warrants the extra work.
 
+**Update (Phase 5c):** lifted in Phase 5c §7.7 follow-on Commit 4
+(see the entry below).
+
 ### Direct (monoclausal) causative ``pa-...-in`` (CAUS=DIRECT)
 
 Three new OV cells under ``affix_class: pa_in``:
@@ -1688,3 +1691,128 @@ ambiguity already work.
   pronoun + linker `-ng` to introduce a relative clause). This
   is a distinct construction needing its own grammar rule;
   deferred.
+
+## Phase 5c §7.7 follow-on: ipang- instrumental and ika- reason
+
+**Date:** 2026-05-01. **Status:** active. Lifts the §7.7 deferral
+("ipang- instrumental and ika- reason — deferred") noted earlier
+in this file. Sentences like ``Ipinambili ng nanay ang pera``
+("money is what mother bought-with") and ``Ikinasulat ng bata
+ang gutom`` ("hunger is the reason the child wrote") now parse.
+
+### New sandhi op: ``nasal_assim_prefix``
+
+The Phase 4 deferral note correctly identified the missing piece:
+``nasal_substitute`` (the existing op for ``mang-`` / ``nang-`` /
+``pang-`` AV distributives) DROPS the base's first consonant
+(``bili`` → ``mili``, then ``mang-`` head + ``mili`` →
+``mamili`` "be a buyer"). The instrumental applicative ``ipang-``
+needs the RETAIN pattern: ``pang-`` + ``bili`` → ``pambili`` →
+``pinambili`` → ``ipinambili``.
+
+Phase 5c adds ``nasal_assim_prefix(prefix, base)`` to
+:mod:`tgllfg.morph.sandhi`. It requires an ``ng``-final prefix
+and prepends it to the base, place-assimilating the prefix's
+final nasal to the base's first consonant per the standard
+table:
+
+| Base initial | Assimilated prefix end |
+|---|---|
+| `b`, `p` | `m` (bilabial) |
+| `t`, `d`, `s` | `n` (alveolar) |
+| `k`, `g` | `ng` (velar — vacuous) |
+| vowel / sonorant | `ng` (no assimilation site) |
+
+The base's initial consonant is **retained**, distinguishing this
+op from ``nasal_substitute`` (drop). Both patterns coexist on the
+same root in modern Tagalog with different meanings: ``mamili``
+"be a buyer" (``mang-`` AV, drop) vs ``ipinambili`` "instrument-
+bought" (``ipang-`` IV-INSTR, retain).
+
+### Three IV-INSTR cells (ipang-, APPL=INSTR)
+
+Operations follow the ipag- shape with ``nasal_assim_prefix("pang")``
+in place of ``prefix("pag")``:
+
+```
+PFV:  nasal_assim_prefix("pang") → infix("in") → prefix("i")
+IPFV: cv_redup → nasal_assim_prefix("pang") → infix("in") → prefix("i")
+CTPL: cv_redup → nasal_assim_prefix("pang") → prefix("i")
+```
+
+Surface forms for ``bili``: ``ipinambili`` (PFV), ``ipinambibili``
+(IPFV), ``ipambibili`` (CTPL). For ``tahi``: ``ipinantahi``,
+``ipinantatahi``, ``ipantatahi``.
+
+### Three IV-REASON cells (ika-, APPL=REASON)
+
+The ``ka-`` prefix has no nasal sandhi; cells are parametrically
+identical to ipag- with ``"ka"`` substituted for ``"pag"``:
+
+```
+PFV:  prefix("ka") → infix("in") → prefix("i")
+IPFV: cv_redup → prefix("ka") → infix("in") → prefix("i")
+CTPL: cv_redup → prefix("ka") → prefix("i")
+```
+
+Surface forms for ``kain``: ``ikinakain`` (PFV), ``ikinakakain``
+(IPFV), ``ikakakain`` (CTPL). For ``sulat``: ``ikinasulat`` etc.
+
+### Lex entries: 2-arg pivot-rotation profile
+
+Mirrors the existing IV-BEN choice. The pivot rotates to
+``INSTRUMENT`` (ipang-) or ``REASON`` (ika-); the agent demotes
+to ``OBJ-AGENT``. The patient (what was bought / sewn / eaten /
+written) is omitted from the 2-arg PRED — multi-GEN-NP
+extensions can be added if corpus pressure warrants, mirroring
+Phase 5b §7.7 follow-on for IV-BEN.
+
+```
+BUY-WITH        <SUBJ, OBJ-AGENT>   bili IV-INSTR
+SEW-WITH        <SUBJ, OBJ-AGENT>   tahi IV-INSTR
+EAT-FOR-REASON  <SUBJ, OBJ-AGENT>   kain IV-REASON
+WRITE-FOR-REASON <SUBJ, OBJ-AGENT>  sulat IV-REASON
+```
+
+Intrinsic profiles: ``AGENT [+r, +o]`` (demoted to OBJ-AGENT) +
+``INSTRUMENT [-r, -o]`` or ``REASON [-r, -o]`` (the pivot).
+
+### New ``REASON`` role in :class:`tgllfg.lmt.Role`
+
+Added to the Tagalog augmentation section of the Role enum, with
+default intrinsic ``(r=None, o=False)`` mirroring ``INSTRUMENT``.
+Inserted into ``ROLE_HIERARCHY`` between ``INSTRUMENT`` and
+``STIMULUS``.
+
+### Surface ambiguity preserved
+
+``ikinakain`` is genuinely homophonous in Tagalog: it's both the
+IPFV of bare ``i-`` (CONVEY reading) and the PFV of ``ika-``
+(REASON reading). The morph analyzer produces both analyses; the
+parser explores both and the matching lex entry is selected per
+parse. ``Ikinakain ng bata ang gutom`` admits both readings; the
+test asserts the REASON parse is among the n-best (mirroring how
+Commit 2's pronominal-possessive tests handle structural
+ambiguity).
+
+### Existing nouns added: ``karayom``, ``gutom``
+
+Two seed nouns were added to ``data/tgl/roots.yaml`` to give the
+new applicatives natural test fixtures: ``karayom`` "needle"
+(instrument) and ``gutom`` "hunger" (canonical reason).
+
+### Out-of-scope (still deferred)
+
+* **Multi-GEN-NP IV-INSTR / IV-REASON frames.** Three-argument
+  variants where AGENT, PATIENT, and INSTRUMENT/REASON are all
+  GEN/NOM-marked at once (parallel to Phase 5b §7.7 multi-GEN
+  IV-BEN). Not seeded; the 2-arg shape covers the common cases.
+* **Other ipang- senses.** ``pang-`` also forms purpose nominals
+  (``pambili`` "for buying / shopping") and abilitative-like
+  derivations. Only the instrumental applicative IV reading is
+  seeded here.
+* **AV instrumental ``mang-`` retain readings.** Some bases
+  admit a retain-pattern AV variant alongside the drop variant
+  (``mambili`` retain vs ``mamili`` drop). The drop pattern is
+  the documented default; retain readings would need per-base
+  flagging. Deferred.

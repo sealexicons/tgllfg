@@ -48,6 +48,7 @@ The role inventory unions the plan §8.1 core (`AGENT`, `PATIENT`,
 | `CAUSER` / `CAUSEE` | §7.7 causative frames. `CAUSER` is agent-like, `CAUSEE` patient-like in monoclausal `pa-` direct causatives; in biclausal `magpa-` the causee surfaces as the embedded XCOMP's SUBJ. |
 | `EVENT` | The caused event in `magpa-` indirect causatives; XCOMP-bound (off the truth table). |
 | `COMPLEMENT` | Open-complement target for §7.6 control verbs (`gusto`, `payag`, `pilit`, `utos`); XCOMP-bound. |
+| `REASON` | Pivot of the `ika-` reason applicative (Phase 5c §7.7 follow-on, Commit 4). Patterns like `INSTRUMENT` — non-volitional, secondary-topic capable; default intrinsic `(r=None, o=False)`. |
 
 `Role.gf_suffix` returns the short tag used in typed-GF strings —
 `LOC` (LOCATION), `BEN` (BENEFICIARY), `INSTR` (INSTRUMENT), `RECIP`

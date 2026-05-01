@@ -70,6 +70,20 @@ class Operation:
                              prefix head (``na-``/``ma-``/``pa-``)
                              is supplied by a subsequent ``prefix``
                              op.
+    * ``nasal_assim_prefix`` — prepend ``value`` (an ng-final
+                             prefix like ``"pang"``), place-
+                             assimilating its final nasal to the
+                             base's first consonant **without**
+                             dropping that consonant. Used by the
+                             instrumental applicative ``ipang-``
+                             (Phase 5c §7.7 follow-on): ``pang`` +
+                             ``bili`` → ``pambili`` (later →
+                             ``ipinambili``). Distinguished from
+                             ``nasal_substitute`` (drop pattern),
+                             which the AV distributive ``mang-``
+                             still uses on the same root with a
+                             different meaning (``mamili`` "be a
+                             buyer / shop").
     """
     op: str
     value: str = ""
