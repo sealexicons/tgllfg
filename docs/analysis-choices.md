@@ -768,7 +768,11 @@ infrastructure for non-thematic args is needed elsewhere.
   **Update (Phase 5c):** lifted in Phase 5c §7.6 follow-on (see
   the entry below).
 - **Long-distance control** through nested XCOMP (functional
-  uncertainty in the unifier).
+  uncertainty in the unifier). **Update (Phase 5c):** finite-depth
+  nested control lifted in Phase 5c §7.6 follow-on Commit 3 (see
+  the entry below) — finite chains don't need functional
+  uncertainty, just explicit S_XCOMP variants where a control
+  verb is itself the head.
 - **Embedded-clause complementizer choice**: complement could be
   introduced by ``na`` instead of ``-ng`` after vowel-final
   pronoun hosts; the current implementation accepts both via the
@@ -851,6 +855,108 @@ new rules. Engine and grammar agree at every embedded level.
   inside a controlled clause aren't seeded; deferred.
 - **Embedded-clause complementizer choice** (``na`` vs ``-ng``):
   unchanged from Phase 4 §7.6.
+
+## Phase 5c §7.6 follow-on: long-distance (nested) control
+
+**Date:** 2026-05-01. **Status:** active. The Phase 4 §7.6
+deferral list flagged "Long-distance control through nested
+XCOMP" and tied it to "functional uncertainty in the unifier."
+That framing was overcautious: *finite-depth* nested control —
+chains where a control verb is the head of another control
+verb's XCOMP — is a finite enumeration of grammar rules, not an
+unbounded path expression. Phase 5c Commit 3 lifts the deferral
+without touching the unifier.
+
+### Six new ``S_XCOMP`` variants
+
+Three control classes (PSYCH / INTRANS / TRANS), each with both
+linker variants (NA / NG):
+
+```
+S_XCOMP → V[CTRL_CLASS=PSYCH]  PART[LINK=…] S_XCOMP
+S_XCOMP → V[CTRL_CLASS=INTRANS] PART[LINK=…] S_XCOMP
+S_XCOMP → V[CTRL_CLASS=TRANS]   NP[CASE=GEN] PART[LINK=…] S_XCOMP
+```
+
+Each rule binds its own SUBJ to its own REL-PRO (the gap),
+chains its XCOMP slot to the inner clause, and propagates the
+controller from its SUBJ to the inner XCOMP's REL-PRO. Composing
+these equations across depth N gives a single f-node shared
+across SUBJ slots at every AV level. No functional uncertainty
+is needed because the depth is fixed by the surface tokens.
+
+The SUBJ-NP that the matrix wrap rules require (PSYCH's GEN
+experiencer, INTRANS's NOM agent, TRANS's NOM forcee) is absent
+when the verb is nested — that NP is the gap. The TRANS rule's
+GEN-NP forcer remains overt because it's the controller, not
+the controllee.
+
+### Composition with Phase 5c Commit 1's non-AV embedded
+
+When the innermost S_XCOMP is non-AV (Phase 5c Commit 1), the
+embedded actor is OBJ-AGENT, not SUBJ. The nested control rules
+keep chaining at SUBJ level until the OV / DV / IV variant is
+reached; at that level the controller routes to OBJ-AGENT via
+Commit 1's rules. Sentence:
+
+```
+Gusto kong pumayag na kakainin ang isda.
+```
+
+f-structure chain: ``matrix.SUBJ === XCOMP.SUBJ ===
+XCOMP.XCOMP.OBJ-AGENT``. The innermost SUBJ is the OV pivot
+(``ang isda``, the patient) — a different f-node, distinct from
+the chain-shared controller.
+
+### Disambiguator extension for ``na`` after a control verb
+
+The placement pass's ``disambiguate_homophone_clitics`` left-
+context rule is extended: when ``na`` directly follows a verb
+with ``CTRL_CLASS != NONE``, treat it as the linker (not the
+aspectual ALREADY clitic). Without this, ``Gusto kong pumayag na
+kumain`` would have ``na`` (after ``pumayag``, an INTRANS
+control verb) read as the aspectual clitic and moved to clause-
+end, stripping the linker and breaking the nested wrap rule.
+
+The check generalises the existing rule for "PRON preceded by a
+control verb" (`Kaya namin na kumain`, Phase 4 §7.10): both
+patterns have a control verb in the immediate left context that
+needs a linker for its XCOMP.
+
+### Negation composes at any level
+
+The recursive ``S_XCOMP → PART[POLARITY=NEG] S_XCOMP`` rule is
+voice- and depth-agnostic, so negation works at the outer,
+middle, or innermost level:
+
+```
+Hindi gusto kong pumayag na kumain.   (outer NEG on matrix)
+Gusto kong hindi pumayag na kumain.   (middle NEG on AGREE)
+Gusto kong pumayag na hindi kumain.   (inner NEG on EAT)
+```
+
+### Phase 5b embedded-clause LMT walker descends to all levels
+
+The recursive ``apply_lmt_with_check`` walker visits every
+XCOMP/COMP that has its own PRED. With nested control producing
+2-, 3-, and 4-deep chains, the walker now exercises depths it
+couldn't reach before. All levels validate cleanly: each control
+verb's intrinsic profile predicts ``{SUBJ, XCOMP}`` (PSYCH /
+INTRANS) or ``{SUBJ, OBJ-AGENT, XCOMP}`` (TRANS), matching the
+grammar's emitted GFs at every depth.
+
+### Out-of-scope (still deferred)
+
+* **Truly unbounded control chains** (more than ~5 deep): the
+  parser explores them, but the test corpus exercises 4-deep at
+  most. If future corpus pressure shows runaway parser cost on
+  arbitrarily deep chains, a chart-pruning heuristic — not
+  functional uncertainty — would be the right response.
+* **Long-distance relativization** through nested XCOMP/COMP
+  (§7.5 + §7.6 cross-cutting deferral). That construction
+  genuinely needs functional uncertainty (a relativization gap
+  inside an XCOMP at unbounded depth) — distinct from the
+  control case.
 
 ## Phase 4 §7.7: applicatives + pa-causatives
 

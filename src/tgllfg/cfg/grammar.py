@@ -427,6 +427,70 @@ class Grammar:
                 "(↑ OBJ-AGENT) = (↑ REL-PRO)",
             ),
         ))
+        # Phase 5c §7.6 follow-on (Commit 3): nested control
+        # complements (long-distance control). When a control verb
+        # is itself embedded inside another control verb's XCOMP,
+        # its SUBJ is the gap (= the outer controller), so the
+        # NOM- or GEN-marked SUBJ NP that the matrix wrap rule
+        # would supply is absent. The OBJ-AGENT in TRANS remains
+        # overt — it's the controller (forcer/orderer), not the
+        # controllee. Each nested S_XCOMP rule:
+        #   - binds its own SUBJ to its own REL-PRO (it is the gap);
+        #   - chains its XCOMP slot to the inner S_XCOMP;
+        #   - propagates the controller from its SUBJ to the inner
+        #     XCOMP's REL-PRO.
+        # Composing these equations across depth-N gives a single
+        # f-node shared across SUBJ slots at every level — finite-
+        # depth control without functional uncertainty.
+        for link in ("NA", "NG"):
+            # PSYCH nested: V[CTRL_CLASS=PSYCH] PART S_XCOMP
+            rules.append(Rule(
+                "S_XCOMP",
+                [
+                    "V[CTRL_CLASS=PSYCH]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                    "(↑ XCOMP) = ↓3",
+                    "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                ),
+            ))
+            # INTRANS nested: V[CTRL_CLASS=INTRANS] PART S_XCOMP
+            rules.append(Rule(
+                "S_XCOMP",
+                [
+                    "V[CTRL_CLASS=INTRANS]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                    "(↑ XCOMP) = ↓3",
+                    "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                ),
+            ))
+            # TRANS nested: V[CTRL_CLASS=TRANS] NP[CASE=GEN] PART
+            # S_XCOMP. The GEN-NP is the forcer / orderer, mapped
+            # to OBJ-AGENT (the typed slot since Phase 5b
+            # OBJ-θ-in-grammar). The NOM-marked forcee that the
+            # matrix wrap rule would supply is the gap.
+            rules.append(Rule(
+                "S_XCOMP",
+                [
+                    "V[CTRL_CLASS=TRANS]",
+                    "NP[CASE=GEN]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ OBJ-AGENT) = ↓2",
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                    "(↑ XCOMP) = ↓4",
+                    "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                ),
+            ))
         # Inner negation under control: ``Gusto kong hindi kumain``
         # — the embedded clause is negated. Mirrors the S / S_GAP
         # negation rule shape.

@@ -174,6 +174,12 @@ list (see `docs/analysis-choices.md`):
   (`OBJ-AGENT`) is now the gap-binding target for non-AV embedded
   clauses; psych and transitive control compose with OV / DV / IV
   embedded.
+- **Long-distance (nested) control** through chained XCOMPs —
+  lifted in Phase 5c §7.6 follow-on Commit 3. Six new S_XCOMP
+  rules let a control verb be the head of an embedded clause;
+  finite-depth chains compose without functional uncertainty.
+  Long-distance *relativization* (the entry above) genuinely
+  needs functional uncertainty and remains deferred.
 - **Pronominal possessive** (`ang libro ko`, `ng aklat niya`,
   etc.) — lifted in Phase 5c §7.8 follow-on. Context-aware
   Wackernagel placement keeps a PRON-clitic in place when it

@@ -187,11 +187,26 @@ def disambiguate_homophone_clitics(
         if "NOUN" in prev_pos or "N" in prev_pos:
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif "VERB" in prev_pos or "PRON" in prev_pos:
-            # Look two tokens back: if a control verb (CTRL_CLASS !=
-            # NONE) precedes the PRON, treat ``na`` as the linker
-            # rather than the clitic. This handles the
-            # ``Kaya namin na kumain`` pattern (psych control with
-            # consonant-final pronominal experiencer).
+            # Two left-context exceptions where ``na`` should be
+            # the linker rather than the aspectual clitic:
+            #
+            # 1. Control verb directly followed by ``na`` (Phase 5c
+            #    §7.6 follow-on, Commit 3): a control verb's lex
+            #    requires an XCOMP introduced by a linker, so
+            #    ``na`` after ``pumayag`` / ``gusto`` etc. is the
+            #    linker — never the aspectual ``ALREADY``. Without
+            #    this, nested-control sentences like
+            #    ``Gusto kong pumayag na kumain`` lose the linker
+            #    and don't parse.
+            # 2. PRON preceded by a control verb (Phase 4 §7.10):
+            #    ``Kaya namin na kumain`` — psych control with
+            #    consonant-final pronominal experiencer; the
+            #    following ``na`` is the linker introducing XCOMP.
+            is_ctrl_verb = "VERB" in prev_pos and any(
+                ma.pos == "VERB"
+                and ma.feats.get("CTRL_CLASS") not in (None, "NONE")
+                for ma in analyses[i - 1]
+            )
             prev_prev = analyses[i - 2] if i >= 2 else None
             is_ctrl_pron_seq = (
                 "PRON" in prev_pos
@@ -202,7 +217,7 @@ def disambiguate_homophone_clitics(
                     for ma in prev_prev
                 )
             )
-            if is_ctrl_pron_seq:
+            if is_ctrl_verb or is_ctrl_pron_seq:
                 out.append([
                     ma for ma in cands if ma.feats.get("is_clitic") is not True
                 ])
