@@ -158,8 +158,6 @@ list (see `docs/analysis-choices.md`):
 - **Long-distance relativization** through XCOMP / COMP (needs
   functional uncertainty in the unifier — §7.5 + §7.6 deferral).
 - **Non-pivot ay-fronting** (§7.4 deferral; §7.8 follow-up).
-- **`pa-...-an` DV causative** and other less-common causative
-  variants (§7.7 deferral).
 - **Standalone demonstrative-as-modifier with linker**
   (`ang batang ito`) — §7.8 partial coverage; the standalone
   pronominal use parses, the post-modifier-with-linker pattern
@@ -211,6 +209,15 @@ list (see `docs/analysis-choices.md`):
   ``mukhang`` / ``bakang`` sentences via the parser's
   non-conflict feature matcher. ``yata`` continues as a
   Wackernagel 2P clitic, not a raising verb.
+- **`pa-...-an` DV causative** — lifted in Phase 5d Commit 2.
+  Three new DV cells under affix-class ``pa_an`` (parallel to
+  the existing ``pa_in`` OV cells with ``-an`` suffix) plus
+  lex entries for ``kain`` / ``inom`` / ``basa``. The
+  voice_specs entry for plain DV gained an explicit CAUS=NONE
+  constraint; a new DV CAUS=DIRECT entry routes the
+  GEN-CAUSER to ``OBJ-CAUSER``. PRED template:
+  ``CAUSE-EAT-AT <SUBJ, OBJ-CAUSER>`` etc. (LOCATION /
+  recipient is the pivot).
 - **Pronominal possessive** (`ang libro ko`, `ng aklat niya`,
   etc.) — lifted in Phase 5c §7.8 follow-on. Context-aware
   Wackernagel placement keeps a PRON-clitic in place when it

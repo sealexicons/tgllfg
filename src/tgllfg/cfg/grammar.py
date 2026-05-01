@@ -746,7 +746,12 @@ class Grammar:
             ("AV", "OBJ", []),
             ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
             ("OV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
-            ("DV", "OBJ-AGENT", []),
+            # Phase 5d Commit 2: explicit CAUS=NONE on DV plain
+            # mirrors the OV split, preventing cross-firing on the
+            # new DV CAUS=DIRECT pa-...-an forms (where the GEN-NP
+            # is the CAUSER, not the AGENT).
+            ("DV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("DV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
             ("IV", "OBJ-AGENT", []),
         ]
         for voice, obj_target, extras in voice_specs:

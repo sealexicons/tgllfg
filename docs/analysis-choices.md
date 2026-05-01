@@ -2126,3 +2126,100 @@ duplicate analyses and break the §7.3 clitic-placement pass.
   umuulan`` vs ``Parang ng umuulan`` — the latter is
   non-standard but attested). Single-form-per-verb is the
   current commitment.
+
+## Phase 5d Commit 2: pa-...-an DV causative
+
+**Date:** 2026-05-01. **Status:** active. Lifts the §7.7
+deferral of "``pa-...-an`` DV causative and other less-common
+causative variants" (the half left after Phase 5c Commit 4
+lifted ``ipang-`` / ``ika-``). Surface forms like
+``pinakainan`` "fed-at" / "fed-to" now parse with a typed
+``CAUSE-EAT-AT <SUBJ, OBJ-CAUSER>`` PRED.
+
+### Three pa_an DV cells
+
+Parametrically identical to the existing pa-...-in OV cells
+with ``-an`` substituted for ``-in`` in the suffix slot:
+
+```
+PFV   pa-…-an  prefix("pa") → infix("in") → suffix("an")
+                ⇒ pinakainan, pinabasahan, pinainuman
+IPFV  pa-…-an  cv_redup → prefix("pa") → infix("in") → suffix("an")
+                ⇒ pinakakainan, pinababasahan, pinaiinuman
+CTPL  pa-…-an  cv_redup → prefix("pa") → suffix("an")  (no -in- infix)
+                ⇒ pakakainan, pababasahan, paiinuman
+```
+
+The existing sandhi (vowel-hiatus h-epenthesis on
+``basa+an → basahan``; high-vowel-style alternation on
+``inom+an → inuman``) cascades through unchanged.
+
+### Voice rule split: DV gets a CAUS=DIRECT variant
+
+The existing voice_specs entry for plain DV (``("DV",
+"OBJ-AGENT", [])``) had no CAUS constraint, which would let it
+cross-fire on the new DV CAUS=DIRECT forms. Phase 5d Commit 2
+gives DV the same CAUS-discriminated split that OV already
+had:
+
+```python
+voice_specs = [
+    ("AV", "OBJ", []),
+    ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
+    ("OV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
+    ("DV", "OBJ-AGENT", [("CAUS", "NONE")]),    # plain DV (was no constraint)
+    ("DV", "OBJ-CAUSER", [("CAUS", "DIRECT")]), # NEW: pa-DV
+    ("IV", "OBJ-AGENT", []),
+]
+```
+
+The plain-DV constraint addition prevents pa-DV forms from
+spuriously firing the OBJ-AGENT-binding plain-DV rule. Existing
+plain-DV tests (``Sinulatan ng bata ang nanay``) continue to
+parse against the now-constrained rule.
+
+### Lex entries: 2-arg pivot-rotation profile
+
+```
+kain DV CAUS=DIRECT : CAUSE-EAT-AT   <SUBJ, OBJ-CAUSER>
+basa DV CAUS=DIRECT : CAUSE-READ-AT  <SUBJ, OBJ-CAUSER>
+inom DV CAUS=DIRECT : CAUSE-DRINK-AT <SUBJ, OBJ-CAUSER>
+```
+
+Intrinsic profile ``_DV_CAUS_DIRECT``:
+- ``CAUSER (True, True)`` → ``OBJ-CAUSER`` (typed [+r, +o])
+- ``LOCATION (False, False)`` → ``SUBJ`` (the pivot, [-r, -o])
+
+The role label is ``LOCATION`` because Tagalog's DV subsumes
+locative + recipient + dative under one voice. For ``Pinakainan
+ng nanay ang bata``, the pivot ``bata`` is read as a recipient
+rather than a strict location — both fit under DV's umbrella.
+
+### Multi-arg variants out of scope
+
+Three-argument pa-DV with explicit PATIENT (parallel to
+Phase 5b's pa-OV-direct three-arg) is not seeded; the 2-arg
+shape covers the canonical recipient-pivot reading. The
+infrastructure (multi-GEN-NP grammar rules) exists if a future
+corpus requires it.
+
+### Sentences enabled
+
+```
+Pinakainan ng nanay ang bata.    "mother fed the child"
+Pinabasahan ng nanay ang bata.   "mother read [aloud] to the child"
+Pinainuman ng nanay ang bata.    "mother gave the child a drink"
+Pinakakainan ng nanay ang bata.  IPFV
+Pakakainan ng nanay ang bata.    CTPL
+```
+
+### Out-of-scope (still deferred)
+
+* **Three-argument pa-DV** (with overt PATIENT alongside
+  CAUSER and LOCATION/RECIPIENT). Multi-GEN-NP DV variants
+  parallel Phase 5b's pa-OV-direct three-arg pattern; not
+  exercised by the current corpus.
+* **Other less-common causative variants** (``ka-...-an``
+  reciprocal, ``magpa-...-an`` distributive, etc.). The
+  §7.7 plan mentioned "pa-...-an and other less-common
+  causative variants"; the others remain deferred.
