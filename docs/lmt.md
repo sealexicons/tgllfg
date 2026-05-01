@@ -293,9 +293,15 @@ verb-class and fighting the non-conflict matcher. Post-solve
 mutation contains the blast radius.
 
 Multi-OBL ambiguity (multiple `OBL-θ` roles competing for
-multiple sa-NPs) is out of scope. The classifier matches in stable
-order — a-structure for roles, `FStructure.id` for sa-NPs — and
-emits an `lmt-mismatch` diagnostic on cardinality mismatch.
+multiple sa-NPs) was the original Phase 5 placeholder for
+positional matching. Phase 5c §8 follow-on Commit 6 lifted that:
+the classifier now consults each sa-NP's head-noun `LEMMA`
+(percolated through the grammar's N / NP rules) against small
+lemma → semantic-class tables (PLACE, ANIMATE) and prefers a
+semantic match before falling back to positional. PLACE lemmas
+attract `OBL-LOC` / `OBL-GOAL` slots; ANIMATE lemmas attract
+`OBL-RECIP` / `OBL-BEN` slots. Cardinality mismatches still
+surface as `lmt-mismatch` diagnostics.
 
 ## Diagnostic policy
 
@@ -312,15 +318,15 @@ specific GFs that disagreed.
 
 ## Open issues / Phase 5b stretch
 
-* **Multi-GEN-NP applicative / causative frames.** A 3-arg
-  `ipinaggawa niya ng silya ang kapatid niya` ("he made a chair
-  for his sibling") would have `AGENT [+r, +o]`, `PATIENT [+r,
-  +o]`, `BENEFICIARY [-r, -o]` — two distinct OBJ-θ slots
-  (`OBJ-AGENT`, `OBJ-PATIENT`). The LMT engine handles such
-  profiles cleanly (see the deferred tests in
-  `tests/tgllfg/test_lmt_voice_mappings.py::TestMultiGenFramesDeferred`),
-  but no Phase 4 BASE entry currently emits them and the grammar
-  rules need a second-GEN-NP slot.
+* **Multi-GEN-NP applicative / causative frames (lifted in
+  Phase 5b).** Phase 5 left these out — a 3-arg `ipinaggawa niya
+  ng silya ang kapatid niya` ("he made a chair for his sibling")
+  has `AGENT [+r, +o]`, `PATIENT [+r, +o]`, `BENEFICIARY [-r,
+  -o]` (two distinct OBJ-θ slots: `OBJ-AGENT`, `OBJ-PATIENT`).
+  Phase 5b §7.7 follow-on lifted both IV-BEN multi-GEN and
+  pa-OV-direct multi-GEN at the grammar + lex layer; the engine
+  had handled the profiles all along (see
+  `tests/tgllfg/test_lmt_voice_mappings.py::TestMultiGenFrames`).
 
 * **Multi-OBL semantic disambiguation (lifted in Phase 5c).**
   Phase 5 matched positionally when two `OBL-θ` roles competed

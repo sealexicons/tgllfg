@@ -82,12 +82,15 @@ full-parse level but produces sub-span fragments — Tagalog's
 SUBJ-only restriction is a hard syntactic constraint and we
 preserve the fragments for diagnostic visibility.
 
-### applicative (46 sentences, 98%)
+### applicative (46 sentences, 100%)
 
-§7.7 `ipag-` benefactive applicative (APPL=BEN). **1 fail** is
-intentional: `Ipinambili ng titser ang panulat` (instrumental
-applicative, `ipang-`) is deferred — it requires homorganic-nasal
-sandhi that our existing `nasal_substitute` op doesn't produce.
+§7.7 `ipag-` benefactive applicative (APPL=BEN), plus the
+Phase 5c §7.7 follow-on `ipang-` instrumental applicative
+(APPL=INSTR) and `ika-` reason applicative (APPL=REASON).
+The `ipang-` cells use the new `nasal_assim_prefix` sandhi op
+(homorganic-nasal place-assimilation with consonant retention),
+distinct from the older `nasal_substitute` (drop pattern) which
+the AV distributive `mang-` continues to use.
 
 ### negation (40 sentences, 100%)
 

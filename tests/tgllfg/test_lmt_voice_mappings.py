@@ -302,16 +302,17 @@ class TestTransitiveControl:
         assert result.diagnostics == ()
 
 
-# === Multi-GEN-NP frames (Phase 5b stretch — not yet supported) ===========
+# === Multi-GEN-NP frames (engine-side mappings) ===========================
 
 
-class TestMultiGenFramesDeferred:
-    """Phase 4 §7.7 deferred multi-GEN-NP applicative / causative
-    frames (e.g., ipag-BEN with patient still in play, or pa-CAUS
-    with causer + causee + patient). The LMT engine handles the
-    profile if a lex entry supplies it; the deferral is at the
-    grammar/lex layer, not the engine. These tests document the
-    expected mapping if/when Phase 5b adds the frames.
+class TestMultiGenFrames:
+    """Multi-GEN-NP applicative / causative frames (ipag-BEN with
+    patient still in play, pa-CAUS with causer + causee + patient).
+    Phase 4 §7.7 deferred them; Phase 5b lifted both shapes via
+    grammar + lex additions (IV-BEN multi-GEN, pa-OV-direct
+    multi-GEN). These tests assert the LMT engine's mapping for
+    those profiles — the engine has handled them all along; the
+    earlier deferral was at the grammar/lex layer.
     """
 
     def test_iv_ben_three_arg_multi_gen(self) -> None:
