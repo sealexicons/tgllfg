@@ -2042,3 +2042,87 @@ sa-NPs.
 * **Three-or-more sa-NPs in one clause.** Tagalog rarely
   sustains more than two sa-NPs at the matrix level; not
   exercised by the corpus.
+
+## Phase 5d Commit 1: parang / tila — bare-raising verbs
+
+**Date:** 2026-05-01. **Status:** active. Extends the §7.6
+raising work with two more evidential raising verbs that don't
+take a linker between V and the embedded clause.
+
+### Linker-taking vs bare-raising split
+
+Phase 5c Commit 5's raising verbs (``mukha``, ``baka``) take a
+bound `-ng` linker (``Mukhang kumakain ang bata`` —
+``mukha + -ng + S``). Phase 5d's two new verbs are surface-
+adjacent to the embedded S without any linker:
+
+```
+Parang kumakain ang bata.   "the child seems to be eating"
+Tila kumakain ang bata.     "the child apparently is eating"
+```
+
+The standard Tagalog form has no `-ng` after ``parang`` or
+``tila``; some dialect / register variation exists, but the
+linker-less pattern is the dominant usage.
+
+### CTRL_CLASS split prevents cross-firing
+
+The naive approach — keep ``CTRL_CLASS=RAISING`` for all four
+verbs and add a no-linker wrap rule alongside the existing
+linked rule — produces a duplicate parse on ``mukhang`` /
+``bakang`` sentences. Root cause: the ``S → PART[POLARITY=NEG]
+S`` negation rule's ``PART[POLARITY=NEG]`` constraint matches
+the linker `-ng` (which has ``LINK=NG`` but no ``POLARITY``)
+under the parser's non-conflict feature matcher. With both a
+linked and a bare raising rule, both derivations succeed and
+produce identical f-structures.
+
+To prevent the cross-firing, ``parang`` and ``tila`` carry
+``CTRL_CLASS=RAISING_BARE`` instead of ``CTRL_CLASS=RAISING``.
+The new wrap rule constrains the V to ``RAISING_BARE``
+specifically:
+
+```
+S → V[CTRL_CLASS=RAISING_BARE] S
+   (↑ XCOMP) = ↓2
+   (↑ SUBJ) = (↑ XCOMP SUBJ)
+```
+
+The existing ``CTRL_CLASS=RAISING`` linked rule is unchanged.
+``mukha`` / ``baka`` keep ``RAISING``; ``parang`` / ``tila``
+get ``RAISING_BARE``. No cross-firing, no duplicate parses.
+
+### Lex entries
+
+```
+parang : SEEMS-LIKE  <XCOMP> SUBJ   CTRL_CLASS=RAISING_BARE
+tila   : APPARENTLY  <XCOMP> SUBJ   CTRL_CLASS=RAISING_BARE
+```
+
+Same intrinsic profile as ``mukha`` / ``baka``
+(``_RAISING`` — only COMPLEMENT thematic role; SUBJ
+non-thematic via the PRED template's post-`>` arg).
+
+### ``yata`` is NOT a raising verb here
+
+The third deferred raising-like word, ``yata`` "supposedly", was
+called out in the Phase 5c §7.6 deferral list. It is not added
+as a raising verb in Phase 5d: ``yata`` is already analyzed as
+a Wackernagel 2P clitic (``EPISTEMIC=PRESUMABLY``,
+``is_clitic=true``, ``CLITIC_CLASS=2P``). Its surface
+distribution patterns with enclitic adverbs, not with
+clause-initial verbs. Treating it as a raising verb would
+duplicate analyses and break the §7.3 clitic-placement pass.
+
+### Out-of-scope (still deferred)
+
+* **Comparative ``parang``** ("X is like Y"). The existing
+  raising entry covers the evidential reading
+  (``parang + clause``). The comparative reading
+  (``parang + NP``) is structurally distinct and needs a
+  separate grammar rule. Deferred until corpus pressure shows
+  comparative coverage matters.
+* **Linker-optional ``parang``** dialect form (``Parang
+  umuulan`` vs ``Parang ng umuulan`` — the latter is
+  non-standard but attested). Single-form-per-verb is the
+  current commitment.

@@ -709,6 +709,27 @@ class Grammar:
                     "(↑ SUBJ) = (↑ XCOMP SUBJ)",
                 ),
             ))
+        # Phase 5d Commit 1: no-linker raising. ``parang`` and
+        # ``tila`` are evidential raising verbs that don't take a
+        # following linker (``Parang kumain ang bata``, ``Tila
+        # umuulan``). They carry CTRL_CLASS=RAISING_BARE — a
+        # distinct value from mukha / baka's CTRL_CLASS=RAISING —
+        # so the bare wrap rule below doesn't cross-fire on
+        # mukhang / bakang sentences (the existing
+        # PART[POLARITY=NEG] negation rule's non-conflict matcher
+        # would otherwise let the linker `-ng` slip into a bare-
+        # raising parse alongside the linked-raising parse,
+        # producing a duplicate). The bare rule's binding mirrors
+        # the linked rule's: matrix.SUBJ structure-shares with
+        # embedded.SUBJ.
+        rules.append(Rule(
+            "S",
+            ["V[CTRL_CLASS=RAISING_BARE]", "S"],
+            _eqs(
+                "(↑ XCOMP) = ↓2",
+                "(↑ SUBJ) = (↑ XCOMP SUBJ)",
+            ),
+        ))
 
         # Transitive frames per voice, two NP orderings each, with and
         # without a trailing sa-oblique (ADJUNCT). The ng-non-pivot

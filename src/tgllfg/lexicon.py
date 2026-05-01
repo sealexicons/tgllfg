@@ -544,6 +544,31 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_RAISING,
         ),
     ],
+    # Phase 5d Commit 1: parang / tila — evidential raising verbs
+    # that differ from mukha / baka only in linker behaviour
+    # (no `-ng` between V and embedded S in standard usage). The
+    # grammar's new no-linker raising wrap rule covers both
+    # forms; lex entries mirror the existing _RAISING profile.
+    "parang": [
+        LexicalEntry(
+            lemma="parang",
+            pred="SEEMS-LIKE <XCOMP> SUBJ",
+            a_structure=["COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "RAISING_BARE"},
+            gf_defaults={"COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_RAISING,
+        ),
+    ],
+    "tila": [
+        LexicalEntry(
+            lemma="tila",
+            pred="APPARENTLY <XCOMP> SUBJ",
+            a_structure=["COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "RAISING_BARE"},
+            gf_defaults={"COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_RAISING,
+        ),
+    ],
 }
 
 

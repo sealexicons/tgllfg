@@ -202,6 +202,15 @@ list (see `docs/analysis-choices.md`):
   sa bata`` produce the same f-structure (bata → OBL-RECIP,
   eskwela → OBL-LOC). Positional remains the fallback for
   same-class or unknown-lemma sa-NPs.
+- **Bare-raising verbs** (``parang`` "seems like", ``tila``
+  "apparently") — lifted in Phase 5d Commit 1. New
+  ``CTRL_CLASS=RAISING_BARE`` value distinguishes them from
+  the linker-taking ``mukha`` / ``baka``; new wrap rule
+  ``S → V[CTRL_CLASS=RAISING_BARE] S`` admits the no-linker
+  form. The CTRL_CLASS split prevents cross-firing on
+  ``mukhang`` / ``bakang`` sentences via the parser's
+  non-conflict feature matcher. ``yata`` continues as a
+  Wackernagel 2P clitic, not a raising verb.
 - **Pronominal possessive** (`ang libro ko`, `ng aklat niya`,
   etc.) — lifted in Phase 5c §7.8 follow-on. Context-aware
   Wackernagel placement keeps a PRON-clitic in place when it
