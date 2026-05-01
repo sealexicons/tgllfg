@@ -108,14 +108,16 @@ def test_huwag_negative_polarity() -> None:
 
 
 def test_negation_preserves_voice_features() -> None:
-    """Negation lifts SUBJ/OBJ/VOICE/ASPECT/PRED from the inner clause."""
+    """Negation lifts SUBJ/OBJ-AGENT/VOICE/ASPECT/PRED from the
+    inner clause. (OV ng-non-pivot is OBJ-AGENT under the Phase 5b
+    OBJ-θ-in-grammar alignment.)"""
     fs = _all_fstructures("Hindi kinain ng aso ang isda.")
     matches = [f for f in fs if f.feats.get("POLARITY") == "NEG"]
     assert matches
     f = matches[0]
     assert f.feats.get("VOICE") == "OV"
     assert f.feats.get("ASPECT") == "PFV"
-    assert "SUBJ" in f.feats and "OBJ" in f.feats
+    assert "SUBJ" in f.feats and "OBJ-AGENT" in f.feats
 
 
 def test_affirmative_no_polarity() -> None:

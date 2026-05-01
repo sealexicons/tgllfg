@@ -138,10 +138,11 @@ class TestTwoArgPaInStillParses:
         # which completeness rejects without a third NP).
         results = _parses("Pinakain niya ang bata.")
         assert results, "no parse for two-arg pa-OV-direct"
-        # Find at least one parse with the 2-arg PRED.
+        # Find at least one parse with the 2-arg PRED (typed
+        # OBJ-CAUSER after the Phase 5b OBJ-θ-in-grammar alignment).
         two_arg = next(
             (p for p in results
-             if p[1].feats.get("PRED") == "CAUSE-EAT <SUBJ, OBJ>"),
+             if p[1].feats.get("PRED") == "CAUSE-EAT <SUBJ, OBJ-CAUSER>"),
             None,
         )
         assert two_arg is not None

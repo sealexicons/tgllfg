@@ -504,7 +504,8 @@ class TestDemoStillPasses:
         _, f, _, _ = results[0]
         assert f.feats["VOICE"] == "OV"
         assert f.feats["ASPECT"] == "PFV"
-        assert "SUBJ" in f.feats and "OBJ" in f.feats
+        # OBJ-AGENT after the Phase 5b OBJ-θ-in-grammar alignment.
+        assert "SUBJ" in f.feats and "OBJ-AGENT" in f.feats
 
 
 # === Nasal substitution sandhi ===========================================

@@ -5,17 +5,29 @@ grammar and lexicon, with citations and reasoning. Each entry has a
 date, a short statement of the decision, the diagnostics that
 support it, and the alternatives considered.
 
-## *ng*-non-pivot in transitive non-AV → OBJ
+## *ng*-non-pivot in transitive non-AV → typed OBJ-θ
 
-**Date:** 2026-04-28. **Status:** active.
+**Date:** 2026-04-28 (Phase 4); refined 2026-05-01 (Phase 5b).
+**Status:** active.
 
 In transitive non-Actor-Voice clauses (Objective Voice, Dative Voice,
 Instrumental Voice), the *ang*-NP is the pivot and unconditionally
 maps to SUBJ (Kroeger 1993, ch. 2). The remaining core argument —
-the *ng*-marked non-pivot — is analysed as **OBJ**, not as an oblique
-agent (OBL-AG). This applies symmetrically across the non-AV voices
-even though the role realised by the *ng*-NP varies (agent in OV,
-goal in DV, instrument in IV).
+the *ng*-marked non-pivot — is analysed as a **core OBJ**, not as
+an oblique agent (OBL-AG). This applies symmetrically across the
+non-AV voices even though the role realised by the *ng*-NP varies
+(agent in OV / DV / IV-CONVEY / IV-BEN, causer in pa-OV-direct).
+
+**Phase 5b refinement: typed OBJ-θ in the grammar.** Phase 4
+emitted the binding as bare `OBJ`; Phase 5 added a typed `OBJ-θ`
+prediction at the LMT engine layer (e.g., `OBJ-AGENT` for OV's
+demoted agent, `OBJ-CAUSER` for pa-OV-direct's demoted causer).
+The Phase 4 grammar was updated in Phase 5b to emit the typed
+form directly (`(↑ OBJ-AGENT) = ↓N` rather than `(↑ OBJ) = ↓N`),
+eliminating the informational `lmt-mismatch` that Phase 5 surfaced
+on every non-AV transitive parse. AV transitives keep bare `OBJ`
+because PATIENT/THEME `[-r, +o]` maps to bare `OBJ` in the BK
+truth table.
 
 ### Rationale
 

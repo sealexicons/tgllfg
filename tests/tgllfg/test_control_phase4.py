@@ -116,13 +116,14 @@ def test_pumayag_intransitive() -> None:
 def test_pinilit_ov() -> None:
     """``Pinilit ng nanay ang batang kumain ng isda``: OV transitive
     matrix; pivot ``bata`` (forcee) is matrix SUBJ; ``nanay`` (forcer)
-    is matrix OBJ."""
+    is matrix OBJ-AGENT (typed under the Phase 5b
+    OBJ-θ-in-grammar alignment)."""
     f = _first("Pinilit ng nanay ang batang kumain ng isda.")
-    assert f.feats.get("PRED") == "FORCE <SUBJ, OBJ, XCOMP>"
+    assert f.feats.get("PRED") == "FORCE <SUBJ, OBJ-AGENT, XCOMP>"
     assert f.feats.get("VOICE") == "OV"
     subj = _subj(f)
     assert subj.feats.get("CASE") == "NOM"
-    obj = f.feats.get("OBJ")
+    obj = f.feats.get("OBJ-AGENT")
     assert isinstance(obj, FStructure)
     assert obj.feats.get("CASE") == "GEN"
 
@@ -131,7 +132,7 @@ def test_inutusan_dv() -> None:
     """``Inutusan ng nanay si Maria na umuwi``: DV transitive matrix;
     pivot ``Maria`` (orderee) is SUBJ."""
     f = _first("Inutusan ng nanay si Maria na umuwi.")
-    assert f.feats.get("PRED") == "ORDER <SUBJ, OBJ, XCOMP>"
+    assert f.feats.get("PRED") == "ORDER <SUBJ, OBJ-AGENT, XCOMP>"
     assert f.feats.get("VOICE") == "DV"
     assert _xcomp(f).feats.get("PRED") == "UWI <SUBJ>"
 

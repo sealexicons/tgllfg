@@ -114,10 +114,11 @@ def test_non_applicative_verb_appl_none() -> None:
 
 
 def test_benefactive_applicative_parse() -> None:
-    """``Ipinaggawa ng nanay ang anak`` — agent=ng (OBJ),
-    beneficiary=ang (SUBJ); PRED carries the BEN reading."""
+    """``Ipinaggawa ng nanay ang anak`` — agent=ng (OBJ-AGENT under
+    Phase 5b OBJ-θ-in-grammar alignment), beneficiary=ang (SUBJ);
+    PRED carries the BEN reading."""
     f = _first("Ipinaggawa ng nanay ang anak.")
-    assert f.feats.get("PRED") == "MAKE-FOR <SUBJ, OBJ>"
+    assert f.feats.get("PRED") == "MAKE-FOR <SUBJ, OBJ-AGENT>"
     assert f.feats.get("VOICE") == "IV"
 
 
@@ -125,23 +126,23 @@ def test_benefactive_applicative_ipfv() -> None:
     """IPFV form of the benefactive parses; ASPECT propagates."""
     f = _first("Ipinaggagawa ng nanay ang anak.")
     assert f.feats.get("ASPECT") == "IPFV"
-    assert f.feats.get("PRED") == "MAKE-FOR <SUBJ, OBJ>"
+    assert f.feats.get("PRED") == "MAKE-FOR <SUBJ, OBJ-AGENT>"
 
 
 def test_benefactive_with_other_anchors() -> None:
     """sulat-BEN works the same way: ipinagsulat parses."""
     f = _first("Ipinagsulat ng bata ang nanay.")
-    assert f.feats.get("PRED") == "WRITE-FOR <SUBJ, OBJ>"
+    assert f.feats.get("PRED") == "WRITE-FOR <SUBJ, OBJ-AGENT>"
 
 
 # === Monoclausal causative parsing =========================================
 
 
 def test_direct_causative_parse() -> None:
-    """``Pinakain ng nanay ang bata`` — causer=ng (OBJ),
-    causee=ang (SUBJ)."""
+    """``Pinakain ng nanay ang bata`` — causer=ng (OBJ-CAUSER under
+    Phase 5b OBJ-θ-in-grammar alignment), causee=ang (SUBJ)."""
     f = _first("Pinakain ng nanay ang bata.")
-    assert f.feats.get("PRED") == "CAUSE-EAT <SUBJ, OBJ>"
+    assert f.feats.get("PRED") == "CAUSE-EAT <SUBJ, OBJ-CAUSER>"
     assert f.feats.get("VOICE") == "OV"
 
 
@@ -153,7 +154,7 @@ def test_direct_causative_ipfv() -> None:
 
 def test_direct_causative_basa() -> None:
     f = _first("Pinabasa ng nanay ang bata.")
-    assert f.feats.get("PRED") == "CAUSE-READ <SUBJ, OBJ>"
+    assert f.feats.get("PRED") == "CAUSE-READ <SUBJ, OBJ-CAUSER>"
 
 
 # === Biclausal causative re-uses §7.6 control ===========================

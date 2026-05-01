@@ -133,11 +133,11 @@ class TestTwoArgIvBenStillParses:
         # which completeness rejects without a third NP).
         results = _parses("Ipinaggawa niya ako.")
         assert results, "no parse for two-arg IV-BEN"
-        # The first parse should have the 2-arg PRED.
-        # Find at least one parse with the 2-arg PRED.
+        # Find at least one parse with the 2-arg PRED (typed
+        # OBJ-AGENT after the Phase 5b OBJ-θ-in-grammar alignment).
         two_arg = next(
             (p for p in results
-             if p[1].feats.get("PRED") == "MAKE-FOR <SUBJ, OBJ>"),
+             if p[1].feats.get("PRED") == "MAKE-FOR <SUBJ, OBJ-AGENT>"),
             None,
         )
         assert two_arg is not None

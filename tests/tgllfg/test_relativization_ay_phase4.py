@@ -149,10 +149,11 @@ def test_ay_inversion_transitive_av() -> None:
 
 def test_ay_inversion_transitive_ov() -> None:
     """``Ang isda ay kinain ng bata`` — OV transitive with pivot
-    (theme) SUBJ fronted. The agent ``ng``-NP is OBJ."""
+    (theme) SUBJ fronted. The agent ``ng``-NP is OBJ-AGENT (typed
+    under the Phase 5b OBJ-θ-in-grammar alignment)."""
     f = _first("Ang isda ay kinain ng bata.")
     assert f.feats.get("VOICE") == "OV"
-    assert f.feats.get("PRED") == "EAT <SUBJ, OBJ>"
+    assert f.feats.get("PRED") == "EAT <SUBJ, OBJ-AGENT>"
     assert "TOPIC" in f.feats
 
 
@@ -267,11 +268,12 @@ def test_rel_head_features_share_with_rc_subj() -> None:
 
 def test_rel_in_object_position() -> None:
     """``Kinain ng batang tumakbo ang isda``: relativization works
-    on a ``ng``-NP head (the ``bata`` is OBJ in OV; relativized
-    clause ``tumakbo`` modifies the OBJ)."""
+    on a ``ng``-NP head (the ``bata`` is OBJ-AGENT in OV under the
+    Phase 5b OBJ-θ-in-grammar alignment; relativized clause
+    ``tumakbo`` modifies the OBJ-AGENT)."""
     f = _first("Kinain ng batang tumakbo ang isda.")
-    obj = f.feats.get("OBJ")
+    obj = f.feats.get("OBJ-AGENT")
     assert isinstance(obj, FStructure)
     members = _members(obj.feats.get("ADJ"))
     rcs = [m for m in members if m.feats.get("PRED") == "TAKBO <SUBJ>"]
-    assert rcs, f"no RC in OBJ ADJ; members={[m.feats for m in members]}"
+    assert rcs, f"no RC in OBJ-AGENT ADJ; members={[m.feats for m in members]}"

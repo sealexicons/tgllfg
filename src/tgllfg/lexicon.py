@@ -223,11 +223,11 @@ BASE: dict[str, list[LexicalEntry]] = {
             {"AGENT": "SUBJ", "PATIENT": "OBJ"},
             intrinsic_classification=_AV_TR_AGENT_PATIENT,
         ),
-        # OV transitive: patient pivot, agent as ng-NP=OBJ.
+        # OV transitive: patient pivot, agent as ng-NP=OBJ-AGENT.
         _entry(
-            "kain", "OV", "EAT <SUBJ, OBJ>",
+            "kain", "OV", "EAT <SUBJ, OBJ-AGENT>",
             ["AGENT", "PATIENT"],
-            {"PATIENT": "SUBJ", "AGENT": "OBJ"},
+            {"PATIENT": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_OV_TR_AGENT_PATIENT,
         ),
     ],
@@ -248,9 +248,9 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_AV_TR_AGENT_THEME,
         ),
         _entry(
-            "bili", "OV", "BUY <SUBJ, OBJ>",
+            "bili", "OV", "BUY <SUBJ, OBJ-AGENT>",
             ["AGENT", "THEME"],
-            {"THEME": "SUBJ", "AGENT": "OBJ"},
+            {"THEME": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_OV_TR_AGENT_THEME,
         ),
     ],
@@ -270,9 +270,9 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_AV_TR_AGENT_THEME,
         ),
         _entry(
-            "basa", "OV", "READ <SUBJ, OBJ>",
+            "basa", "OV", "READ <SUBJ, OBJ-AGENT>",
             ["AGENT", "THEME"],
-            {"THEME": "SUBJ", "AGENT": "OBJ"},
+            {"THEME": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_OV_TR_AGENT_THEME,
         ),
     ],
@@ -296,21 +296,21 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_AV_TR_AGENT_THEME,
         ),
         _entry(
-            "sulat", "OV", "WRITE <SUBJ, OBJ>",
+            "sulat", "OV", "WRITE <SUBJ, OBJ-AGENT>",
             ["AGENT", "THEME"],
-            {"THEME": "SUBJ", "AGENT": "OBJ"},
+            {"THEME": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_OV_TR_AGENT_THEME,
         ),
         _entry(
-            "sulat", "DV", "WRITE <SUBJ, OBJ>",
+            "sulat", "DV", "WRITE <SUBJ, OBJ-AGENT>",
             ["AGENT", "RECIPIENT"],
-            {"RECIPIENT": "SUBJ", "AGENT": "OBJ"},
+            {"RECIPIENT": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_DV_TR_AGENT_RECIPIENT,
         ),
         _entry(
-            "sulat", "IV", "WRITE <SUBJ, OBJ>",
+            "sulat", "IV", "WRITE <SUBJ, OBJ-AGENT>",
             ["AGENT", "CONVEYED"],
-            {"CONVEYED": "SUBJ", "AGENT": "OBJ"},
+            {"CONVEYED": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_IV_TR_AGENT_CONVEYED,
         ),
     ],
@@ -345,9 +345,9 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_AV_TR_AGENT_PATIENT,
         ),
         _entry(
-            "gawa", "OV", "MAKE <SUBJ, OBJ>",
+            "gawa", "OV", "MAKE <SUBJ, OBJ-AGENT>",
             ["AGENT", "PATIENT"],
-            {"PATIENT": "SUBJ", "AGENT": "OBJ"},
+            {"PATIENT": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_OV_TR_AGENT_PATIENT,
         ),
     ],
@@ -363,15 +363,15 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_AV_TR_AGENT_THEME,
         ),
         _entry(
-            "tapon", "OV", "THROW <SUBJ, OBJ>",
+            "tapon", "OV", "THROW <SUBJ, OBJ-AGENT>",
             ["AGENT", "THEME"],
-            {"THEME": "SUBJ", "AGENT": "OBJ"},
+            {"THEME": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_OV_TR_AGENT_THEME,
         ),
         _entry(
-            "tapon", "IV", "THROW <SUBJ, OBJ>",
+            "tapon", "IV", "THROW <SUBJ, OBJ-AGENT>",
             ["AGENT", "CONVEYED"],
-            {"CONVEYED": "SUBJ", "AGENT": "OBJ"},
+            {"CONVEYED": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_IV_TR_AGENT_CONVEYED,
         ),
     ],
@@ -434,12 +434,12 @@ BASE: dict[str, list[LexicalEntry]] = {
     "pilit": [
         LexicalEntry(
             lemma="pilit",
-            pred="FORCE <SUBJ, OBJ, XCOMP>",
+            pred="FORCE <SUBJ, OBJ-AGENT, XCOMP>",
             a_structure=["AGENT", "PATIENT", "COMPLEMENT"],
             morph_constraints={"VOICE": "OV", "CTRL_CLASS": "TRANS"},
             gf_defaults={
                 "PATIENT": "SUBJ",
-                "AGENT": "OBJ",
+                "AGENT": "OBJ-AGENT",
                 "COMPLEMENT": "XCOMP",
             },
             intrinsic_classification=_OV_TRANS_CONTROL,
@@ -448,12 +448,12 @@ BASE: dict[str, list[LexicalEntry]] = {
     "utos": [
         LexicalEntry(
             lemma="utos",
-            pred="ORDER <SUBJ, OBJ, XCOMP>",
+            pred="ORDER <SUBJ, OBJ-AGENT, XCOMP>",
             a_structure=["AGENT", "RECIPIENT", "COMPLEMENT"],
             morph_constraints={"VOICE": "DV", "CTRL_CLASS": "TRANS"},
             gf_defaults={
                 "RECIPIENT": "SUBJ",
-                "AGENT": "OBJ",
+                "AGENT": "OBJ-AGENT",
                 "COMPLEMENT": "XCOMP",
             },
             intrinsic_classification=_DV_TRANS_CONTROL,
@@ -480,26 +480,26 @@ BASE: dict[str, list[LexicalEntry]] = {
 # (the GEN-marked actor of the doing).
 BASE["gawa"].append(LexicalEntry(
     lemma="gawa",
-    pred="MAKE-FOR <SUBJ, OBJ>",
+    pred="MAKE-FOR <SUBJ, OBJ-AGENT>",
     a_structure=["AGENT", "BENEFICIARY"],
     morph_constraints={"VOICE": "IV", "APPL": "BEN"},
-    gf_defaults={"BENEFICIARY": "SUBJ", "AGENT": "OBJ"},
+    gf_defaults={"BENEFICIARY": "SUBJ", "AGENT": "OBJ-AGENT"},
     intrinsic_classification=_IV_BEN_AGENT_BENEFICIARY,
 ))
 BASE["sulat"].append(LexicalEntry(
     lemma="sulat",
-    pred="WRITE-FOR <SUBJ, OBJ>",
+    pred="WRITE-FOR <SUBJ, OBJ-AGENT>",
     a_structure=["AGENT", "BENEFICIARY"],
     morph_constraints={"VOICE": "IV", "APPL": "BEN"},
-    gf_defaults={"BENEFICIARY": "SUBJ", "AGENT": "OBJ"},
+    gf_defaults={"BENEFICIARY": "SUBJ", "AGENT": "OBJ-AGENT"},
     intrinsic_classification=_IV_BEN_AGENT_BENEFICIARY,
 ))
 BASE["bili"].append(LexicalEntry(
     lemma="bili",
-    pred="BUY-FOR <SUBJ, OBJ>",
+    pred="BUY-FOR <SUBJ, OBJ-AGENT>",
     a_structure=["AGENT", "BENEFICIARY"],
     morph_constraints={"VOICE": "IV", "APPL": "BEN"},
-    gf_defaults={"BENEFICIARY": "SUBJ", "AGENT": "OBJ"},
+    gf_defaults={"BENEFICIARY": "SUBJ", "AGENT": "OBJ-AGENT"},
     intrinsic_classification=_IV_BEN_AGENT_BENEFICIARY,
 ))
 
@@ -551,26 +551,26 @@ BASE["bili"].append(LexicalEntry(
 # the matrix's PRED.
 BASE["kain"].append(LexicalEntry(
     lemma="kain",
-    pred="CAUSE-EAT <SUBJ, OBJ>",
+    pred="CAUSE-EAT <SUBJ, OBJ-CAUSER>",
     a_structure=["CAUSER", "CAUSEE"],
     morph_constraints={"VOICE": "OV", "CAUS": "DIRECT"},
-    gf_defaults={"CAUSEE": "SUBJ", "CAUSER": "OBJ"},
+    gf_defaults={"CAUSEE": "SUBJ", "CAUSER": "OBJ-CAUSER"},
     intrinsic_classification=_OV_CAUS_DIRECT,
 ))
 BASE["basa"].append(LexicalEntry(
     lemma="basa",
-    pred="CAUSE-READ <SUBJ, OBJ>",
+    pred="CAUSE-READ <SUBJ, OBJ-CAUSER>",
     a_structure=["CAUSER", "CAUSEE"],
     morph_constraints={"VOICE": "OV", "CAUS": "DIRECT"},
-    gf_defaults={"CAUSEE": "SUBJ", "CAUSER": "OBJ"},
+    gf_defaults={"CAUSEE": "SUBJ", "CAUSER": "OBJ-CAUSER"},
     intrinsic_classification=_OV_CAUS_DIRECT,
 ))
 BASE.setdefault("inom", []).append(LexicalEntry(
     lemma="inom",
-    pred="CAUSE-DRINK <SUBJ, OBJ>",
+    pred="CAUSE-DRINK <SUBJ, OBJ-CAUSER>",
     a_structure=["CAUSER", "CAUSEE"],
     morph_constraints={"VOICE": "OV", "CAUS": "DIRECT"},
-    gf_defaults={"CAUSEE": "SUBJ", "CAUSER": "OBJ"},
+    gf_defaults={"CAUSEE": "SUBJ", "CAUSER": "OBJ-CAUSER"},
     intrinsic_classification=_OV_CAUS_DIRECT,
 ))
 
@@ -691,37 +691,39 @@ def _synthesize_verb_entry(ma: MorphAnalysis) -> LexicalEntry:
             intrinsic_classification=_AV_INTR_ACTOR,
         )
 
-    pred = f"{pred_name} <SUBJ, OBJ>"
+    # AV keeps bare OBJ; non-AV uses typed OBJ-AGENT per the
+    # Phase 5b OBJ-θ-in-grammar alignment.
     if voice == "AV":
         return LexicalEntry(
-            lemma=ma.lemma, pred=pred,
+            lemma=ma.lemma, pred=f"{pred_name} <SUBJ, OBJ>",
             a_structure=["AGENT", "PATIENT"],
             morph_constraints={},
             gf_defaults={"AGENT": "SUBJ", "PATIENT": "OBJ"},
             intrinsic_classification=_AV_TR_AGENT_PATIENT,
         )
+    pred_non_av = f"{pred_name} <SUBJ, OBJ-AGENT>"
     if voice == "DV":
         return LexicalEntry(
-            lemma=ma.lemma, pred=pred,
+            lemma=ma.lemma, pred=pred_non_av,
             a_structure=["AGENT", "GOAL"],
             morph_constraints={},
-            gf_defaults={"GOAL": "SUBJ", "AGENT": "OBJ"},
+            gf_defaults={"GOAL": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_SYNTH_DV_PROFILE,
         )
     if voice == "IV":
         return LexicalEntry(
-            lemma=ma.lemma, pred=pred,
+            lemma=ma.lemma, pred=pred_non_av,
             a_structure=["AGENT", "CONVEYED"],
             morph_constraints={},
-            gf_defaults={"CONVEYED": "SUBJ", "AGENT": "OBJ"},
+            gf_defaults={"CONVEYED": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_IV_TR_AGENT_CONVEYED,
         )
     # OV or unknown voice: patient pivot (the OV-shaped fallback).
     return LexicalEntry(
-        lemma=ma.lemma, pred=pred,
+        lemma=ma.lemma, pred=pred_non_av,
         a_structure=["AGENT", "PATIENT"],
         morph_constraints={},
-        gf_defaults={"PATIENT": "SUBJ", "AGENT": "OBJ"},
+        gf_defaults={"PATIENT": "SUBJ", "AGENT": "OBJ-AGENT"},
         intrinsic_classification=_OV_TR_AGENT_PATIENT,
     )
 

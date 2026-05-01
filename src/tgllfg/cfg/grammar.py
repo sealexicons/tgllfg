@@ -324,18 +324,32 @@ class Grammar:
             ["V[VOICE=AV]"],
             _eqs("(↑ SUBJ) = (↑ REL-PRO)"),
         ))
-        for voice in ("AV", "OV", "DV", "IV"):
-            v_cat = f"V[VOICE={voice}]"
+        # S_GAP transitive frames mirror the matrix transitive frames'
+        # OBJ-θ-in-grammar split: AV binds the ng-NP to bare OBJ
+        # (PATIENT/THEME), non-AV binds to typed OBJ-θ.
+        gap_voice_specs = [
+            ("AV", "OBJ", []),
+            ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("OV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
+            ("DV", "OBJ-AGENT", []),
+            ("IV", "OBJ-AGENT", []),
+        ]
+        for voice, obj_target, extras in gap_voice_specs:
+            feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+            v_cat = f"V[{', '.join(feat_strs)}]"
             rules.append(Rule(
                 "S_GAP",
                 [v_cat, "NP[CASE=GEN]"],
-                _eqs("(↑ OBJ) = ↓2", "(↑ SUBJ) = (↑ REL-PRO)"),
+                _eqs(
+                    f"(↑ {obj_target}) = ↓2",
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                ),
             ))
             rules.append(Rule(
                 "S_GAP",
                 [v_cat, "NP[CASE=GEN]", "NP[CASE=DAT]"],
                 _eqs(
-                    "(↑ OBJ) = ↓2",
+                    f"(↑ {obj_target}) = ↓2",
                     "↓3 ∈ (↑ ADJUNCT)",
                     "(↑ SUBJ) = (↑ REL-PRO)",
                 ),
@@ -513,10 +527,11 @@ class Grammar:
 
         # **Transitive control** (pilit OV, utos DV): NOM-marked
         # pivot is matrix SUBJ (forcee / orderee); GEN-marked agent
-        # is matrix OBJ. The pivot controls XCOMP. PRED
-        # ``FORCE <SUBJ, OBJ, XCOMP>``. Both NOM-GEN and GEN-NOM
-        # orderings are admitted, mirroring the regular transitive
-        # frames' freedom.
+        # is matrix OBJ-AGENT (typed under the Phase 5b
+        # OBJ-θ-in-grammar alignment). The pivot controls XCOMP.
+        # PRED ``FORCE <SUBJ, OBJ-AGENT, XCOMP>``. Both NOM-GEN and
+        # GEN-NOM orderings are admitted, mirroring the regular
+        # transitive frames' freedom.
         for link in ("NA", "NG"):
             # GEN-NOM order
             rules.append(Rule(
@@ -529,7 +544,7 @@ class Grammar:
                     "S_XCOMP",
                 ],
                 _eqs(
-                    "(↑ OBJ) = ↓2",
+                    "(↑ OBJ-AGENT) = ↓2",
                     "(↑ SUBJ) = ↓3",
                     "(↑ XCOMP) = ↓5",
                     "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
@@ -547,39 +562,64 @@ class Grammar:
                 ],
                 _eqs(
                     "(↑ SUBJ) = ↓2",
-                    "(↑ OBJ) = ↓3",
+                    "(↑ OBJ-AGENT) = ↓3",
                     "(↑ XCOMP) = ↓5",
                     "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
                 ),
             ))
 
         # Transitive frames per voice, two NP orderings each, with and
-        # without a trailing sa-oblique (ADJUNCT).
-        for voice in ("AV", "OV", "DV", "IV"):
-            v_cat = f"V[VOICE={voice}]"
+        # without a trailing sa-oblique (ADJUNCT). The ng-non-pivot
+        # binds to a typed ``OBJ-θ`` slot for non-AV voices (per the
+        # Phase 5b OBJ-θ-in-grammar alignment); AV keeps bare ``OBJ``
+        # because PATIENT/THEME [-r, +o] maps to bare OBJ in the BK
+        # truth table. The voice + CAUS feature filter splits plain
+        # OV (CAUS=NONE → OBJ-AGENT) from pa-OV-direct (CAUS=DIRECT
+        # → OBJ-CAUSER) so each lex entry's PRED template (with its
+        # specific role name in the typed OBJ-θ) finds a matching
+        # grammar rule.
+        voice_specs = [
+            # (voice, OBJ-target, extra V-feature constraints)
+            ("AV", "OBJ", []),
+            ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("OV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
+            ("DV", "OBJ-AGENT", []),
+            ("IV", "OBJ-AGENT", []),
+        ]
+        for voice, obj_target, extras in voice_specs:
+            feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+            v_cat = f"V[{', '.join(feat_strs)}]"
             # NOM-GEN order
             rules.append(Rule(
                 "S",
                 [v_cat, "NP[CASE=NOM]", "NP[CASE=GEN]"],
-                _eqs("(↑ SUBJ) = ↓2", "(↑ OBJ) = ↓3"),
+                _eqs("(↑ SUBJ) = ↓2", f"(↑ {obj_target}) = ↓3"),
             ))
             # GEN-NOM order
             rules.append(Rule(
                 "S",
                 [v_cat, "NP[CASE=GEN]", "NP[CASE=NOM]"],
-                _eqs("(↑ SUBJ) = ↓3", "(↑ OBJ) = ↓2"),
+                _eqs("(↑ SUBJ) = ↓3", f"(↑ {obj_target}) = ↓2"),
             ))
             # NOM-GEN-DAT
             rules.append(Rule(
                 "S",
                 [v_cat, "NP[CASE=NOM]", "NP[CASE=GEN]", "NP[CASE=DAT]"],
-                _eqs("(↑ SUBJ) = ↓2", "(↑ OBJ) = ↓3", "↓4 ∈ (↑ ADJUNCT)"),
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    f"(↑ {obj_target}) = ↓3",
+                    "↓4 ∈ (↑ ADJUNCT)",
+                ),
             ))
             # GEN-NOM-DAT
             rules.append(Rule(
                 "S",
                 [v_cat, "NP[CASE=GEN]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
-                _eqs("(↑ SUBJ) = ↓3", "(↑ OBJ) = ↓2", "↓4 ∈ (↑ ADJUNCT)"),
+                _eqs(
+                    "(↑ SUBJ) = ↓3",
+                    f"(↑ {obj_target}) = ↓2",
+                    "↓4 ∈ (↑ ADJUNCT)",
+                ),
             ))
 
         # --- Phase 5b: multi-GEN-NP applicative frames (IV-BEN) ---

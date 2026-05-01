@@ -319,12 +319,12 @@ specific GFs that disagreed.
   f-structure. Embedded XCOMP / COMP clauses have their own PRED
   and could in principle be checked recursively; not yet wired.
 
-* **OBJ-θ in the grammar.** The Phase 4 grammar emits bare `OBJ`
-  for non-AV ng-non-pivots; the LMT engine produces `OBJ-θ`. The
-  divergence is intentional in Phase 5 (informational
-  `lmt-mismatch` flags it). A future rewrite could change the
-  grammar's `(↑ OBJ) = ↓N` to `(↑ OBJ-θ) = ↓N` per voice/verb
-  class, eliminating the diagnostic noise.
+* **OBJ-θ in the grammar (lifted in Phase 5b).** The Phase 4
+  grammar emitted bare `OBJ` for non-AV ng-non-pivots while the
+  engine produced `OBJ-θ` — informational `lmt-mismatch` flagged
+  the divergence. Phase 5b aligned the grammar to emit typed
+  `OBJ-AGENT` / `OBJ-CAUSER` directly per voice/verb class,
+  eliminating the diagnostic noise.
 
 ## See also
 

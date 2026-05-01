@@ -68,17 +68,15 @@ class TestNomPartitive:
 
 class TestGenPartitive:
     """The partitive can also fill non-pivot ng-NP slots. In OV,
-    ``ng lahat ng bata`` is the AGENT (mapped to OBJ in the
-    current bare-OBJ grammar; the lmt-mismatch on OV/non-AV
-    transitives is the existing Phase 5 informational diagnostic).
-    """
+    ``ng lahat ng bata`` is the AGENT — typed ``OBJ-AGENT`` in the
+    f-structure under the Phase 5b OBJ-θ-in-grammar alignment."""
 
     def test_lahat_ng_bata_as_ov_non_pivot(self) -> None:
         # "Kinain ng lahat ng bata ang isda" — "All of the children
         # ate the fish." The AGENT slot (ng-non-pivot in OV) gets
         # the partitive structure.
         _, f, _, _ = _first("Kinain ng lahat ng bata ang isda.")
-        obj = f.feats.get("OBJ")
+        obj = f.feats.get("OBJ-AGENT")
         assert isinstance(obj, FStructure)
         assert obj.feats.get("CASE") == "GEN"
         assert obj.feats.get("MARKER") == "NG"

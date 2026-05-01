@@ -73,14 +73,15 @@ def test_standalone_demonstrative_subj_dist() -> None:
 
 def test_standalone_demonstrative_obj() -> None:
     """``Kinain iyan ng aso``: ``iyan`` (NOM-marked demonstrative,
-    MED) is the OV pivot SUBJ; ``ng aso`` is OBJ. The pivot
+    MED) is the OV pivot SUBJ; ``ng aso`` is OBJ-AGENT (typed in
+    the Phase 5b OBJ-θ-in-grammar alignment). The pivot
     demonstrative is the relativized-out / topicalized argument
     in OV."""
     f = _first("Kinain iyan ng aso.")
     subj = f.feats.get("SUBJ")
     assert isinstance(subj, FStructure)
     assert subj.feats.get("DEIXIS") == "MED"
-    assert "OBJ" in f.feats
+    assert "OBJ-AGENT" in f.feats
 
 
 def test_standalone_demonstrative_genitive() -> None:
