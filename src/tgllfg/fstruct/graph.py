@@ -93,6 +93,17 @@ DiagKind = Literal[
     "completeness-failed",
     "coherence-failed",
     "subject-condition-failed",
+    # LMT (Phase 5 §8): emitted by the LMT engine when its derived
+    # role-to-GF mapping disagrees with the parsed f-structure, or
+    # when biuniqueness fails. ``lmt-mismatch`` is informational
+    # (the Phase 4 grammar still emits bare ``OBJ`` for non-AV
+    # ng-non-pivots while the engine produces ``OBJ-θ``);
+    # Subject-slot mismatches and biuniqueness violations are
+    # promoted to blocking by surfacing them through
+    # ``subject-condition-failed`` and ``lmt-biuniqueness-violated``
+    # instead.
+    "lmt-mismatch",
+    "lmt-biuniqueness-violated",
     # Informational only — do not block a parse from being returned.
     "deferred",
     "unsupported",
@@ -102,7 +113,9 @@ DiagKind = Literal[
 # Diagnostic kinds that are informational rather than fatal: parses
 # carrying only these may still be returned by the pipeline. Add
 # new informational kinds here to keep the policy in one place.
-NON_BLOCKING_KINDS: frozenset[str] = frozenset({"deferred", "unsupported"})
+NON_BLOCKING_KINDS: frozenset[str] = frozenset({
+    "deferred", "unsupported", "lmt-mismatch",
+})
 
 
 @dataclass(frozen=True)

@@ -1,16 +1,21 @@
-# tgllfg/lmt.py
+# tgllfg/lmt/legacy.py
 
-"""Phase 4 voice-aware role-to-GF heuristic.
+"""Phase 4 voice-aware role-to-GF heuristic — defensive fallback.
 
-This is the §4.2-vintage LMT — a hand-coded mapping per voice rather
-than the Bresnan–Kanerva [±r, ±o] feature system. Phase 5 replaces
-this with a real LMT that derives the mapping from the verb's
-intrinsic role classification plus voice morphology.
+The §4.2-vintage LMT: a hand-coded role-to-GF mapping per voice,
+read off ``f.feats["VOICE"]``. The Phase 5 Bresnan–Kanerva engine
+(``tgllfg.lmt.principles``) supersedes this for normal parse output,
+but ``apply_lmt(f)`` is preserved as the fallback used by
+:func:`tgllfg.lmt.check.apply_lmt_with_check` when
+:func:`find_matrix_lex_entry` can't locate a lex entry — e.g.,
+synthetic test fixtures that construct an :class:`FStructure`
+directly and pass empty ``lex_items``, or library callers outside
+the parse pipeline.
 
-The mapping reads ``f.feats["VOICE"]`` to pick the correct
-role-to-GF assignment. For non-AV voices the *ng*-non-pivot is OBJ
-(``docs/analysis-choices.md`` "ng-non-pivot in transitive non-AV →
-OBJ"). The role labels here are placeholders chosen by voice:
+For non-AV voices the *ng*-non-pivot is bare OBJ (matching the
+Phase 4 grammar's f-structure binding rather than the Phase 5
+engine's typed ``OBJ-θ`` upgrade). The role labels are
+voice-determined defaults:
 
 * AV — ``[AGENT, PATIENT]``: AGENT → SUBJ, PATIENT → OBJ.
 * OV — ``[AGENT, PATIENT]``: PATIENT → SUBJ, AGENT → OBJ.
@@ -22,7 +27,7 @@ Intransitive (no OBJ) — ``[ACTOR]``: ACTOR → SUBJ.
 
 from __future__ import annotations
 
-from .common import AStructure, FStructure
+from ..common import AStructure, FStructure
 
 
 def apply_lmt(f: FStructure) -> AStructure:

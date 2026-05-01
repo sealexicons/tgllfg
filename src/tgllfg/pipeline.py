@@ -34,7 +34,7 @@ from .clitics import reorder_clitics
 from .common import AStructure, CNode, FStructure
 from .fstruct import Diagnostic, lfg_well_formed, solve
 from .lexicon import lookup_lexicon
-from .lmt import apply_lmt
+from .lmt import apply_lmt_with_check
 from .morph import analyze_tokens
 from .parse import parse_with_annotations
 from .text import split_enclitics, split_linker_ng, tokenize
@@ -125,9 +125,9 @@ def parse_text_with_fragments(
     candidates: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
     for ctree in forest.iter_trees():
         result = solve(ctree)
-        a = apply_lmt(result.fstructure)
+        a, lmt_diags = apply_lmt_with_check(result.fstructure, lex_items)
         _, wf_diags = lfg_well_formed(result.fstructure, ctree)
-        diagnostics = list(result.diagnostics) + wf_diags
+        diagnostics = list(result.diagnostics) + wf_diags + lmt_diags
         if any(d.is_blocking() for d in diagnostics):
             continue
         candidates.append((ctree, result.fstructure, a, diagnostics))
@@ -145,13 +145,13 @@ def parse_text_with_fragments(
             break
         try:
             result = solve(frag_ctree)
-            a = apply_lmt(result.fstructure)
+            a, lmt_diags = apply_lmt_with_check(result.fstructure, lex_items)
             _, wf_diags = lfg_well_formed(result.fstructure, frag_ctree)
         except Exception:  # noqa: BLE001
             # Fragment solve can fail for malformed sub-trees; skip
             # those rather than crashing the pipeline.
             continue
-        diagnostics = list(result.diagnostics) + wf_diags
+        diagnostics = list(result.diagnostics) + wf_diags + lmt_diags
         fragments.append(Fragment(
             span=span,
             ctree=frag_ctree,

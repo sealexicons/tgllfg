@@ -140,25 +140,32 @@ def test_iv_itinapon() -> None:
 
 
 def test_lmt_av_maps_agent_to_subj() -> None:
-    """Phase 4 voice-aware LMT: AV transitive maps AGENT→SUBJ,
-    PATIENT→OBJ."""
+    """AV transitive maps AGENT→SUBJ, PATIENT→OBJ. AV is the one
+    voice where the LMT engine and the Phase 4 heuristic agree
+    exactly (AGENT and PATIENT both [-r], so PATIENT [-r, +o] →
+    bare OBJ in the BK truth table)."""
     _, _, a, _ = _first("Kumain ang aso ng isda.")
     assert a.mapping == {"AGENT": "SUBJ", "PATIENT": "OBJ"}
 
 
 def test_lmt_ov_maps_patient_to_subj() -> None:
-    """OV transitive maps PATIENT→SUBJ, AGENT→OBJ."""
+    """OV transitive: PATIENT→SUBJ; AGENT→OBJ-AGENT under Phase 5
+    (the LMT engine produces typed OBJ-θ for the ng-non-pivot per
+    the Q1 upgrade decision)."""
     _, _, a, _ = _first("Kinain ng aso ang isda.")
-    assert a.mapping == {"PATIENT": "SUBJ", "AGENT": "OBJ"}
+    assert a.mapping == {"PATIENT": "SUBJ", "AGENT": "OBJ-AGENT"}
 
 
-def test_lmt_dv_maps_goal_to_subj() -> None:
-    """DV transitive maps GOAL→SUBJ, AGENT→OBJ."""
+def test_lmt_dv_maps_recipient_to_subj() -> None:
+    """DV transitive (sulat): RECIPIENT→SUBJ; AGENT→OBJ-AGENT.
+    Phase 5 reads the role from the lex entry's a_structure
+    (RECIPIENT for sulat) rather than the legacy heuristic's
+    hard-coded GOAL."""
     _, _, a, _ = _first("Sinulatan ng bata ang ina.")
-    assert a.mapping == {"GOAL": "SUBJ", "AGENT": "OBJ"}
+    assert a.mapping == {"RECIPIENT": "SUBJ", "AGENT": "OBJ-AGENT"}
 
 
 def test_lmt_iv_maps_conveyed_to_subj() -> None:
-    """IV transitive maps CONVEYED→SUBJ, AGENT→OBJ."""
+    """IV transitive: CONVEYED→SUBJ; AGENT→OBJ-AGENT under Phase 5."""
     _, _, a, _ = _first("Isinulat ng bata ang liham.")
-    assert a.mapping == {"CONVEYED": "SUBJ", "AGENT": "OBJ"}
+    assert a.mapping == {"CONVEYED": "SUBJ", "AGENT": "OBJ-AGENT"}

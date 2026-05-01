@@ -4,14 +4,12 @@ Reads the existing ``data/tgl/`` YAML files (the same source the
 in-process morphology engine consumes) and upserts them into the
 Postgres-backed schema. Idempotent: re-running produces zero diffs.
 
-Scope: this commit seeds the data classes that map cleanly between
-the YAML shape and §6.2 — ``language``, ``lemma``, ``affix``,
-``sandhi_rule``, ``particle``, ``pronoun``, plus a ``data_version``
-row in ``lex_metadata``. The richer ``lex_entry`` /
-``paradigm`` / ``paradigm_slot`` / ``voice_alias`` mappings, which
-require deriving ``pred_template`` and structured argument frames
-from a-structure semantics, land in Commit 5 alongside the parser
-wiring.
+Seeded tables: ``language``, ``lemma``, ``affix``, ``sandhi_rule``,
+``particle``, ``pronoun``, plus a ``data_version`` row in
+``lex_metadata``. The richer ``lex_entry`` / ``paradigm`` /
+``paradigm_slot`` / ``voice_alias`` mappings (which require deriving
+``pred_template`` and structured argument frames from a-structure
+semantics) are populated alongside the parser wiring.
 
 Idempotency strategy:
 
@@ -24,8 +22,7 @@ Idempotency strategy:
   natural unique keys in §6.2 (homophones are first-class for
   particles), so for these the seed truncates the language's rows
   and re-inserts. YAML is the source of truth for these tables; the
-  ``lex import`` CLI (Commit 6) is the path for additive data with
-  citations.
+  ``lex import`` CLI is the path for additive data with citations.
 """
 
 from __future__ import annotations

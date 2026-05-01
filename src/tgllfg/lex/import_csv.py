@@ -1,11 +1,11 @@
 """CSV ingestion for additive lemma data with citation tracking.
 
-Where ``seed_database`` (Commit 4 / 5a) loads the project-owned YAML
-into the lexicon, ``import_lemmas_csv`` is the path for *external*
-lemma data — public-domain wordlists, OCR'd dictionaries, and so on —
+Where ``seed_database`` loads the project-owned YAML into the
+lexicon, ``import_lemmas_csv`` is the path for *external* lemma
+data — public-domain wordlists, OCR'd dictionaries, and so on —
 where each row carries a citation back to its source. Per plan §6.3
-these imports are tracked in the ``source`` table so a lemma's origin
-is queryable.
+these imports are tracked in the ``source`` table so a lemma's
+origin is queryable.
 
 CSV format (one row per lemma; header required):
 
