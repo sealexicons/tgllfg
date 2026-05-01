@@ -163,8 +163,6 @@ list (see `docs/analysis-choices.md`):
   (`ang batang ito`) — §7.8 partial coverage; the standalone
   pronominal use parses, the post-modifier-with-linker pattern
   doesn't.
-- **Pronominal possessive** (`ang aklat ko`) — conflicts with §7.3
-  Wackernagel clitic placement; needs context-aware placement.
 - **Raising verbs** (`mukha`, `baka`) — §7.6 deferral; needs
   non-thematic SUBJ in PRED templates plus lexical disambiguation
   for the noun homonyms.
@@ -176,6 +174,11 @@ list (see `docs/analysis-choices.md`):
   (`OBJ-AGENT`) is now the gap-binding target for non-AV embedded
   clauses; psych and transitive control compose with OV / DV / IV
   embedded.
+- **Pronominal possessive** (`ang libro ko`, `ng aklat niya`,
+  etc.) — lifted in Phase 5c §7.8 follow-on. Context-aware
+  Wackernagel placement keeps a PRON-clitic in place when it
+  follows a NOUN; the existing NP-internal possessive rule then
+  binds it as `POSS`.
 - **Multi-GEN-NP applicative / causative frames** — lifted
   incrementally in Phase 5b §7.7 follow-on for IV-BEN and
   pa-OV-direct frames; remaining variants still deferred.

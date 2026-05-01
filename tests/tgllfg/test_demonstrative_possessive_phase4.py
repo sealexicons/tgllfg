@@ -10,10 +10,11 @@ Three constructions added in this commit:
   optional DEIXIS) percolate into the NP's f-structure.
 * **Possessives**: a per-case ``NP[CASE=X] → NP[CASE=X] NP[CASE=GEN]``
   rule attaches a GEN-NP possessor with ``(↑ POSS) = ↓2``. The
-  pronominal possessive form (``ang aklat ko``) is **not** covered
-  in this commit because the §7.3 clitic-placement pass moves the
-  pronominal clitic to post-V — a future commit will need
-  context-aware placement to keep possessive ``ko`` in place.
+  pronominal possessive form (``ang aklat ko``) was deferred in
+  Phase 4 because the §7.3 clitic-placement pass moved the
+  pronominal clitic to post-V; lifted in Phase 5c §7.8 follow-on
+  via context-aware placement (see
+  ``tests/tgllfg/test_pronominal_possessive.py``).
 * **Quantifier float** (``lahat`` / ``iba``): a clause-level
   ``S → S Q`` rule attaches the floated quantifier as a matrix
   ADJ member, with a binding equation ``(↓2 ANTECEDENT) = (↑ SUBJ)``

@@ -8,19 +8,23 @@ Algorithm
 2. Collect every other token whose primary analysis carries
    ``is_clitic=True`` (any analysis among its candidates). These are
    pronominal clitics (``PRON``) and adverbial enclitics (``PART``).
-3. Remove the clitics from their original positions, leaving a
-   cluster-free skeleton.
-4. Insert all clitics immediately after the V token, sorted by
-   the priority loaded from ``data/tgl/clitic_order.yaml``. Clitics
-   not in the priority table sort after the listed ones (priority =
-   ``DEFAULT_PRIORITY``).
+   **Exception** (Phase 5c §7.8 follow-on): a pronominal clitic
+   immediately following a NOUN is the possessor of that noun
+   (``ang libro ko``), not a clause-level clitic. Such tokens are
+   left in place so the grammar's NP-internal possessive rule
+   binds them as ``POSS``.
+3. Remove the remaining clitics from their original positions,
+   leaving a cluster-free skeleton.
+4. Insert all moved clitics immediately after the V token, sorted
+   by the priority loaded from ``data/tgl/clitic_order.yaml``.
+   Clitics not in the priority table sort after the listed ones
+   (priority = ``DEFAULT_PRIORITY``).
 
 Tokens that are not clitics keep their original relative order.
 Words preceding the verb (e.g. the negation particle ``hindi``) are
-unaffected — they remain ahead of the verb. The single exception is
-that any clitic appearing before the verb is hoisted out and lands
-in the post-V cluster, which is the desired Wackernagel surface
-form.
+unaffected — they remain ahead of the verb. Any non-possessor
+clitic appearing before the verb is hoisted out and lands in the
+post-V cluster, which is the desired Wackernagel surface form.
 
 If the input sentence has no verb, no reordering is performed —
 the placement module is a verb-anchored 2P implementation; verbless
@@ -113,6 +117,30 @@ def _is_adv_clitic(cands: list[MorphAnalysis]) -> bool:
     return any(
         ma.feats.get("is_clitic") is True and ma.pos == "PART" for ma in cands
     )
+
+
+def _is_post_noun_pron(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is a pronominal clitic immediately
+    preceded by a NOUN-reading token.
+
+    Phase 5c §7.8 follow-on: in the pronominal possessive form
+    (``ang libro ko`` / ``ang aklat mo`` / etc.) the GEN pronoun
+    is the possessor of the head noun, NOT a clause-level
+    argument. The §7.3 Wackernagel pass would otherwise hoist
+    the pronoun out of its post-N possessive position into the
+    post-V cluster, where the grammar reads it as an OBJ /
+    OBJ-AGENT clitic instead. Suppressing the move here keeps
+    the pronoun in place so the existing
+    ``NP[CASE=X] → NP[CASE=X] NP[CASE=GEN]`` possessive rule fires.
+    """
+    if i == 0:
+        return False
+    if not _is_pron_clitic(analyses[i]):
+        return False
+    prev_pos = {ma.pos for ma in analyses[i - 1]}
+    return "NOUN" in prev_pos or "N" in prev_pos
 
 
 def disambiguate_homophone_clitics(
@@ -231,7 +259,9 @@ def reorder_clitics(
 
     pron_indices = [
         i for i, cands in enumerate(analyses)
-        if i != verb_idx and _is_pron_clitic(cands)
+        if i != verb_idx
+        and _is_pron_clitic(cands)
+        and not _is_post_noun_pron(analyses, i)
     ]
     adv_indices = [
         i for i, cands in enumerate(analyses)

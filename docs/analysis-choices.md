@@ -1033,6 +1033,9 @@ a noun head"), the pronominal possessive surfaces as an agent /
 SUBJ clitic instead. Out of scope for this commit; revisit when
 context-aware placement is wired up.
 
+**Update (Phase 5c):** lifted in Phase 5c §7.8 follow-on (see
+the entry below).
+
 ### Quantifier float
 
 Two quantifiers are seeded as ``Q`` (a new POS):
@@ -1500,3 +1503,82 @@ The pre-existing `S → S Q` floated-quantifier rule (`Kumain ang
 bata lahat`) is unaffected. It operates at the S level (Q is a
 sister of the matrix clause), not within an NP. Both surfaces
 parse cleanly without competing.
+
+## Phase 5c §7.8 follow-on: pronominal possessive
+
+**Date:** 2026-05-01. **Status:** active. Lifts the §7.8 deferral
+noted earlier in this file ("Pronominal possessive — deferred").
+Sentences like ``Kumain ang bata ng libro ko`` ("The child ate my
+book") now parse with `ko` bound as the OBJ's `POSS`, rather
+than being hoisted into the post-V cluster as a clause-level
+clitic.
+
+### Single-line fix in the Wackernagel pass
+
+The Phase 4 §7.3 placement pass moved every PRON token with
+`is_clitic=True` into the post-V cluster regardless of left
+context. Phase 5c adds a small context-aware exception: when a
+PRON-clitic immediately follows a NOUN-reading token, it stays in
+place. The fix lives in `src/tgllfg/clitics/placement.py` as a
+new helper `_is_post_noun_pron(analyses, i)` consulted when
+collecting `pron_indices` in `reorder_clitics`.
+
+The grammar's existing NP-internal possessive rule
+(`NP[CASE=X] → NP[CASE=X] NP[CASE=GEN]`, plus the standing
+`NP[CASE=GEN] → PRON[CASE=GEN]`) does the rest: with the pronoun
+left in its post-noun position, it parses as an `NP[GEN]`
+modifier and rides into the head's f-structure as `POSS`.
+
+### Why "after a NOUN" is the right boundary
+
+The same surface form (`ko`, `mo`, `niya`, `namin`, `ninyo`,
+`nila`) serves both as a clause-level clitic argument and as an
+NP-internal possessor. The disambiguating signal is left context:
+
+* After a VERB (`Kinain mo ang isda`): `mo` is the OBJ-AGENT
+  clitic — moved to the post-V cluster (unchanged behaviour).
+* After a PART (`Hindi mo kinain ang isda`): pre-V clitic, also
+  moved to the post-V cluster (unchanged behaviour).
+* After a NOUN (`ang isda ko`): possessive — left in place
+  (the new behaviour).
+
+The check mirrors the existing `disambiguate_homophone_clitics`
+left-context pattern (`"NOUN" in prev_pos or "N" in prev_pos`),
+which already disambiguates `na` between linker and aspectual
+clitic by left context.
+
+### One-clitic-moves-one-stays composes
+
+`Kinain mo ang isda ko` exercises both decisions in one
+sentence: `mo` is post-V (moves into cluster, indeed it's the
+OBJ-AGENT of the OV verb), `ko` is post-NOUN `isda` (stays as
+possessor). The placement pass evaluates each clitic
+independently against its own left context, so the two outcomes
+compose without interference. NEG (`Hindi kumain ang bata ng
+libro ko`) and adverbial enclitics (`Kumain na ang bata ng libro
+ko`) behave the same way: their movement is independent of the
+post-noun pronoun's stay-in-place.
+
+### Structural ambiguity is resolved by parse ranking
+
+`Kumain ang bata ng libro ko` is structurally ambiguous: `ng
+libro` could attach as OBJ (with `ko` as its possessor) or as
+possessor of the SUBJ `bata` (with `ko` then attaching at a
+deeper level). The parser produces both readings and Phase 4 §7.9
+ranking picks one. The tests assert that **at least one** parse
+has the desired structure (OBJ-with-pronominal-possessor),
+mirroring how Phase 4 §7.8 tests for `ng`-NP possessive
+ambiguity already work.
+
+### Out-of-scope (still deferred)
+
+* **Pronominal possessor inside a relative clause head.** A noun
+  followed by a linker + RC (`aklat na binasa`) followed by a
+  pronoun would compete with the RC's own SUBJ-binding; the
+  parser would need to decide whether `ko` belongs to the head
+  noun or the relative clause. Not exercised by the current
+  corpus.
+* **Possessive linker variant** (`aklat kong binasa` —
+  pronoun + linker `-ng` to introduce a relative clause). This
+  is a distinct construction needing its own grammar rule;
+  deferred.
