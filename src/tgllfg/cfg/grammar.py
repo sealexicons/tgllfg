@@ -591,6 +591,51 @@ class Grammar:
             ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
         ))
 
+        # --- Phase 5d Commit 6: possessive-linker RC gap-category ---
+        #
+        # Construction: ``aklat kong binasa`` ("the book that I read").
+        # The pronominal actor of the RC's non-AV verb is hoisted out
+        # of the RC and surfaces as a possessor of the head NP, joined
+        # by the bound linker ``-ng``. Distinct from standard
+        # relativization (``aklat na binasa ko``) where the actor
+        # stays inside the RC as a GEN-NP.
+        #
+        # ``S_GAP_NA`` (no-overt-actor) is a SUBJ-gapped non-AV V
+        # frame that takes no GEN-NP. The actor (``OBJ-AGENT`` under
+        # Phase 5b OBJ-θ-in-grammar) is supplied externally by the
+        # wrap rule via ``(↓N OBJ-AGENT) = pronoun``. Voice / feature
+        # constraints follow the existing S_GAP pattern: OV / DV
+        # require ``CAUS=NONE`` to keep pa-OV / pa-DV out of the
+        # actor-extraction path; IV is admitted without an APPL
+        # constraint so any applicative variant can host the
+        # construction.
+        nonav_na_specs = [
+            ("OV", [("CAUS", "NONE")]),
+            ("DV", [("CAUS", "NONE")]),
+            ("IV", []),
+        ]
+        for voice, extras in nonav_na_specs:
+            feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+            v_cat = f"V[{', '.join(feat_strs)}]"
+            rules.append(Rule(
+                "S_GAP_NA",
+                [v_cat],
+                _eqs("(↑ SUBJ) = (↑ REL-PRO)"),
+            ))
+            rules.append(Rule(
+                "S_GAP_NA",
+                [v_cat, "NP[CASE=DAT]"],
+                _eqs(
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                    "↓2 ∈ (↑ ADJUNCT)",
+                ),
+            ))
+        rules.append(Rule(
+            "S_GAP_NA",
+            ["PART[POLARITY=NEG]", "S_GAP_NA"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
         # --- Phase 4 §7.6: control complement (S_XCOMP) ---
         #
         # ``S_XCOMP`` is the SUBJ-gapped clause that serves as the
@@ -846,6 +891,42 @@ class Grammar:
                         "(↓3 REL-PRO) =c (↓3 SUBJ)",
                     ],
                 ))
+
+        # --- Phase 5d Commit 6: possessive-linker RC wrap rule ---
+        #
+        # ``aklat kong binasa`` ("the book that I read"): a
+        # construction parallel to relativization where the
+        # pronominal actor of the RC's non-AV verb surfaces as a
+        # possessor of the head NP, joined by the bound ``-ng``
+        # linker. The pre-parse Wackernagel pass keeps PRON in
+        # place when followed by ``PART[LINK=NG]`` (see
+        # ``_is_pre_linker_pron``), so the four tokens (head NP,
+        # PRON, ``-ng``, V) reach the parser in surface order.
+        #
+        # The pronoun plays a dual role: it is the head NP's
+        # ``POSS`` AND the RC's ``OBJ-AGENT``. The wrap rule binds
+        # both via ``(↑ POSS) = ↓2`` and ``(↓4 OBJ-AGENT) = ↓2``.
+        # REL-PRO sharing follows the standard relativization
+        # pattern — anaphoric (PRED + CASE atomic-path copies, not
+        # full identity) so the unifier's occurs-check stays happy.
+        #
+        # Three head-case variants (NOM / GEN / DAT) covering the
+        # construction in any NP position.
+        for case in ("NOM", "GEN", "DAT"):
+            np_cat = f"NP[CASE={case}]"
+            rules.append(Rule(
+                np_cat,
+                [np_cat, "PRON[CASE=GEN]", "PART[LINK=NG]", "S_GAP_NA"],
+                [
+                    "(↑) = ↓1",
+                    "(↑ POSS) = ↓2",
+                    "↓4 ∈ (↑ ADJ)",
+                    "(↓4 OBJ-AGENT) = ↓2",
+                    "(↓4 REL-PRO PRED) = (↓1 PRED)",
+                    "(↓4 REL-PRO CASE) = (↓1 CASE)",
+                    "(↓4 REL-PRO) =c (↓4 SUBJ)",
+                ],
+            ))
 
         # --- Phase 4 §7.6: control wrap rules ---
         #

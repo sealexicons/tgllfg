@@ -2498,3 +2498,106 @@ because ADJUNCT is a set, not a scalar GF.
 * **Pa-OV (CAUS=DIRECT) actor-fronting.** Would need a parallel
   ``S_GAP_OBJ_CAUSER`` non-terminal. Skipped to keep the commit
   small; trivially additive when needed.
+
+## Phase 5d Commit 6: possessive-linker RC variant
+
+**Date:** 2026-05-01. **Status:** active.
+
+The Phase 4 §7.5 relativization rule
+(``NP[CASE=X] → NP[CASE=X] PART[LINK=NA|NG] S_GAP``) handles the
+canonical form ``aklat na binasa ko`` ("the book that I read"),
+where the actor stays inside the RC as a GEN-NP. Tagalog has a
+stylistic variant where the pronominal actor is hoisted out of the
+RC and surfaces as a possessor of the head NP, joined by the bound
+``-ng`` linker:
+
+```
+aklat   ko       -ng        binasa
+head    POSS     LINK=NG    RC-V (no overt actor)
+        = RC's OBJ-AGENT
+```
+
+The pronoun plays a dual role: head-NP possessor *and* RC actor.
+Phase 5d Commit 6 admits this form with three additive pieces.
+
+### Pre-parse: keep PRON adjacent to its bound linker
+
+:func:`tgllfg.text.split_linker_ng` separates ``kong`` / ``mong``
+/ ``niyang`` into ``ko`` / ``mo`` / ``niya`` (PRON) plus a
+synthetic ``-ng`` (PART). The §7.3 Wackernagel pass would
+otherwise hoist the PRON into the post-V cluster, leaving the
+``-ng`` linker orphaned. A new helper
+:func:`tgllfg.clitics.placement._is_pre_linker_pron` detects a
+PRON-clitic immediately followed by a ``LINK=NG`` PART and skips
+the move — alongside the existing
+:func:`_is_post_noun_pron` check from Phase 5c §7.8.
+
+### Grammar: S_GAP_NA (no-overt-actor)
+
+A new gap-category for SUBJ-gapped non-AV verbs without an overt
+GEN-NP actor:
+
+```
+S_GAP_NA → V[VOICE=OV, CAUS=NONE]                  (1)
+S_GAP_NA → V[VOICE=OV, CAUS=NONE] NP[CASE=DAT]     (1+adjunct)
+S_GAP_NA → V[VOICE=DV, CAUS=NONE]                  (parallel)
+S_GAP_NA → V[VOICE=IV]                             (parallel)
+S_GAP_NA → PART[POLARITY=NEG] S_GAP_NA             (negation)
+```
+
+Each frame binds ``(↑ SUBJ) = (↑ REL-PRO)`` like the original
+``S_GAP``. The actor (``OBJ-AGENT``) is left unbound at this level
+— the wrap rule supplies it externally.
+
+The voice / feature constraints follow ``S_GAP``: OV / DV require
+``CAUS=NONE`` to keep pa-OV / pa-DV out of the actor-extraction
+path; IV is admitted without an APPL constraint so any IV
+applicative can host the construction.
+
+### Grammar: possessive-linker wrap rule
+
+```
+NP[CASE=X] → NP[CASE=X] PRON[CASE=GEN] PART[LINK=NG] S_GAP_NA
+   (↑) = ↓1
+   (↑ POSS) = ↓2
+   ↓4 ∈ (↑ ADJ)
+   (↓4 OBJ-AGENT) = ↓2
+   (↓4 REL-PRO PRED) = (↓1 PRED)
+   (↓4 REL-PRO CASE) = (↓1 CASE)
+   (↓4 REL-PRO) =c (↓4 SUBJ)
+```
+
+The dual-binding equations ``(↑ POSS) = ↓2`` and ``(↓4 OBJ-AGENT)
+= ↓2`` make the head NP's possessor *the same f-structure* as the
+RC's actor — id-identity, not just feature-equality. REL-PRO
+sharing follows the standard relativization pattern (anaphoric:
+PRED + CASE atomic-path copies).
+
+Three head-case variants (NOM / GEN / DAT) cover the construction
+in any NP position. PRON-only (not GEN-NP-only) restricts the
+match to pronominal possessors — non-pronominal genitives fall
+through to the standard relativization analysis.
+
+### What this lifts
+
+* ``Lumakad ang bata kong kinain.`` — possessive-linker RC in SUBJ
+  position with 1SG ``ko``.
+* ``Kumain ang bata ng libro kong binasa.`` — possessive-linker RC
+  in OBJ position.
+* All three vowel-final GEN pronouns: ``ko`` (1SG), ``mo`` (2SG),
+  ``niya`` (3SG).
+* OV / IV verbs in the RC; DV variants follow the same shape.
+* Negation under the construction
+  (``Lumakad ang bata kong hindi kinain.``).
+
+### Out-of-scope (still deferred)
+
+* **Consonant-final pronouns** with the standalone ``na`` linker
+  (``aklat namin na binasa`` "the book that we read", with 1PL.EXCL
+  ``namin``). The current commit handles only ``-ng`` (vowel-final
+  PRON + bound linker). A parallel rule with ``PART[LINK=NA]``
+  would be additive.
+* **Non-pronominal possessors with linker** (``aklat ng batang
+  binasa`` analogue). Surface-ambiguous with the existing standard
+  relativization plus possessive parses; not pursued in this
+  commit.

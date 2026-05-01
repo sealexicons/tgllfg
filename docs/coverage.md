@@ -160,6 +160,18 @@ list (see `docs/analysis-choices.md`):
 
 ### Recently lifted (still listed for archaeological context)
 
+- **Possessive-linker RC variant** (`aklat kong binasa`) — lifted
+  in Phase 5d Commit 6. The pronominal actor of a non-AV RC is
+  hoisted out and surfaces as a possessor of the head NP, joined
+  by the bound `-ng` linker. Three additive pieces: a Wackernagel
+  pre-linker check (`_is_pre_linker_pron`) keeps the split PRON
+  adjacent to its `-ng`; new gap-category `S_GAP_NA` for
+  SUBJ-gapped non-AV V with no overt GEN-actor; new wrap rule
+  `NP → NP PRON[GEN] PART[LINK=NG] S_GAP_NA` with dual-binding
+  equations making POSS and the RC's OBJ-AGENT the same
+  f-structure (id-identity). Vowel-final pronouns only (ko / mo /
+  niya); consonant-final pronouns with standalone `na` linker
+  remain deferred.
 - **Non-pivot ay-fronting** (OBJ-θ in any voice + DAT-marked
   obliques) — lifted in Phase 5d Commit 5. Three new gap-category
   non-terminals (`S_GAP_OBJ`, `S_GAP_OBJ_AGENT`, `S_GAP_OBL`)
