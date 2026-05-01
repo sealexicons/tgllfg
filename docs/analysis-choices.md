@@ -2601,3 +2601,91 @@ through to the standard relativization analysis.
   binasa`` analogue). Surface-ambiguous with the existing standard
   relativization plus possessive parses; not pursued in this
   commit.
+
+## Phase 5d Commit 7: raising chains + raising under control
+
+**Date:** 2026-05-01. **Status:** active.
+
+Two related constructions that compose existing infrastructure
+rather than introducing new analytical commitments. The Phase 5c
+§7.6 follow-on Commit 5 introduced raising verbs at the ``S`` level
+(``S → V[CTRL_CLASS=RAISING] PART[LINK] S`` and the bare-RAISING
+variant); Phase 5d Commit 1 added two more bare-raising lex entries
+(parang / tila). With those rules in place:
+
+### Raising chains compose for free
+
+A raising matrix can embed another raising clause because the
+existing rules accept any ``S`` as the embedded clause — including
+another raising-S. SUBJ structure-shares through every layer via
+the ``(↑ SUBJ) = (↑ XCOMP SUBJ)`` equation:
+
+```
+Mukhang bakang kumakain ang bata.   "It seems the child might be eating."
+=  S[SEEM]
+     XCOMP = S[MIGHT]
+                XCOMP = S[EAT]
+                          SUBJ = bata
+                MIGHT.SUBJ === bata
+     SEEM.SUBJ === MIGHT.SUBJ === bata
+```
+
+All four chain shapes work uniformly: linked-linked
+(mukha + baka), linked-bare (mukha + parang), bare-linked
+(parang + mukha), bare-bare (parang + tila). No grammar change
+needed — Commit 7 only adds tests that pin the behaviour.
+
+### Raising under control needs new S_XCOMP variants
+
+Control verbs require an ``S_XCOMP`` complement (SUBJ-gapped). The
+Phase 5c raising rules sit at ``S`` only, so a sentence like
+``Gusto kong mukhang kumakain`` ("I want to seem to be eating") had
+0 parses — there was no ``S_XCOMP`` rule that could host the
+mukhang+inner-clause shape.
+
+Commit 7 adds ``S_XCOMP``-level raising rules paralleling the
+``S`` ones:
+
+```
+S_XCOMP → V[CTRL_CLASS=RAISING] PART[LINK=NA|NG] S_XCOMP
+   (↑ XCOMP) = ↓3
+   (↑ SUBJ) = (↑ XCOMP SUBJ)        — raising structure-share
+   (↑ SUBJ) = (↑ REL-PRO)           — S_XCOMP convention
+
+S_XCOMP → V[CTRL_CLASS=RAISING_BARE] S_XCOMP
+   (↑ XCOMP) = ↓2
+   (↑ SUBJ) = (↑ XCOMP SUBJ)
+   (↑ SUBJ) = (↑ REL-PRO)
+```
+
+The three identifications at this level — ``XCOMP``, raising
+structure-share, and ``REL-PRO`` = ``SUBJ`` — compose so that the
+matrix control wrap rule's ``(↑ SUBJ) = (↑ XCOMP REL-PRO)``
+propagates the controller through the raising chain into the
+innermost action's SUBJ. The chain composes naturally because
+``S_XCOMP`` recurses through itself: a raising-S_XCOMP can embed
+another raising-S_XCOMP (chain-under-control case).
+
+### What this lifts
+
+* Raising chains: 5 variants (linked-linked, linked-bare,
+  bare-linked, bare-bare; both NA and NG linker variants where
+  applicable).
+* Raising under control: PSYCH (gusto / ayaw / kaya) and INTRANS
+  (pumayag) with both linked and bare raising matrices.
+* Raising chains under control: 4-level XCOMP (``Gusto kong
+  mukhang bakang kumakain``) with all four SUBJ slots structurally
+  identical (Python-id equality verified by tests).
+
+### Out-of-scope (still deferred)
+
+* **Control under raising.** A raising verb embedding a control
+  matrix (``Mukhang gusto ng batang kumain`` "It seems the child
+  wants to eat"). Composes via the existing ``S → V[RAISING] PART
+  S`` rule with ``S`` being a control-S; needs no new rule but
+  hasn't been pinned with tests in this commit.
+* **TRANS control + raising.** ``Pinilit ng nanay ang batang
+  mukhang umuwi`` is structurally available via
+  ``V[CTRL_CLASS=TRANS] NP[GEN] NP[NOM] PART[LINK] S_XCOMP`` plus
+  the new raising-S_XCOMP, but corpus exposure is low.
+

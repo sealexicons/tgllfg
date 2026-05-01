@@ -160,6 +160,15 @@ list (see `docs/analysis-choices.md`):
 
 ### Recently lifted (still listed for archaeological context)
 
+- **Raising chains + raising under control** — lifted in Phase 5d
+  Commit 7. Raising chains (mukha-baka, parang-tila, etc.) already
+  composed at the `S` level via the existing recursive raising
+  rules; this commit pins the behaviour with explicit tests.
+  Raising under control adds `S_XCOMP`-level raising variants so a
+  control verb's complement can be a raising matrix
+  (`Gusto kong mukhang kumakain`); the chain composes naturally to
+  4-level XCOMP nesting (`Gusto kong mukhang bakang kumakain`)
+  with all SUBJ slots structurally identical.
 - **Possessive-linker RC variant** (`aklat kong binasa`) — lifted
   in Phase 5d Commit 6. The pronominal actor of a non-AV RC is
   hoisted out and surfaces as a possessor of the head NP, joined

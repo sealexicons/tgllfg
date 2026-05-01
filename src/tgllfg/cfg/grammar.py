@@ -771,6 +771,55 @@ class Grammar:
             ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
         ))
 
+        # --- Phase 5d Commit 7: raising inside a control complement ---
+        #
+        # ``Gusto kong mukhang kumakain`` ("I want to seem to be
+        # eating"): a control verb's XCOMP is itself a raising
+        # structure. The Phase 5c §7.6 follow-on (Commit 5) raising
+        # rules sit at the ``S`` level; control complements are at
+        # the ``S_XCOMP`` level (SUBJ-gapped). This block adds the
+        # ``S_XCOMP``-level raising variants so the matrix control
+        # wrap rule's ``(↑ SUBJ) = (↑ XCOMP REL-PRO)`` propagates the
+        # controller through the raising chain into the embedded
+        # action's SUBJ.
+        #
+        # Equations compose three identifications at this S_XCOMP
+        # level:
+        #
+        #   * ``(↑ XCOMP) = ↓N`` — the inner clause is the raising
+        #     verb's XCOMP.
+        #   * ``(↑ SUBJ) = (↑ XCOMP SUBJ)`` — raising structure-share.
+        #   * ``(↑ SUBJ) = (↑ REL-PRO)`` — S_XCOMP convention so the
+        #     matrix control rule's REL-PRO routing fires.
+        #
+        # Together: outer.SUBJ = THIS.REL-PRO = THIS.SUBJ
+        # = THIS.XCOMP.SUBJ = innermost-action.SUBJ. Recursing
+        # through ``S_XCOMP`` lets raising chains compose under
+        # control (``Gusto kong mukhang bakang kumakain``).
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "S_XCOMP",
+                [
+                    "V[CTRL_CLASS=RAISING]",
+                    f"PART[LINK={link}]",
+                    "S_XCOMP",
+                ],
+                _eqs(
+                    "(↑ XCOMP) = ↓3",
+                    "(↑ SUBJ) = (↑ XCOMP SUBJ)",
+                    "(↑ SUBJ) = (↑ REL-PRO)",
+                ),
+            ))
+        rules.append(Rule(
+            "S_XCOMP",
+            ["V[CTRL_CLASS=RAISING_BARE]", "S_XCOMP"],
+            _eqs(
+                "(↑ XCOMP) = ↓2",
+                "(↑ SUBJ) = (↑ XCOMP SUBJ)",
+                "(↑ SUBJ) = (↑ REL-PRO)",
+            ),
+        ))
+
         # --- Phase 4 §7.4: ay-inversion ---
         #
         # ``Si Maria ay kumain ng isda``: the topic phrase moves to
