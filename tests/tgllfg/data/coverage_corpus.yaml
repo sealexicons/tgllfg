@@ -1432,6 +1432,30 @@
 - text: Ng nanay ay hindi pinakain ang bata.
   construction: 'ay-inversion: pa-OV actor-fronting + NEG'
   expected: parse
+- text: Ng nanay ay ipinaggawa ang kapatid ng silya.
+  construction: 'ay-inversion: IV-BEN 3-arg AGENT-fronted'
+  expected: parse
+- text: Ng nanay ay ipinambili ang pera ng isda.
+  construction: 'ay-inversion: IV-INSTR 3-arg AGENT-fronted'
+  expected: parse
+- text: Ng bata ay ikinasulat ang gutom ng isda.
+  construction: 'ay-inversion: IV-REASON 3-arg AGENT-fronted'
+  expected: parse
+- text: Ng silya ay ipinaggawa ang kapatid ng nanay.
+  construction: 'ay-inversion: IV-BEN 3-arg PATIENT-fronted'
+  expected: parse
+- text: Ng isda ay ipinambili ang pera ng nanay.
+  construction: 'ay-inversion: IV-INSTR 3-arg PATIENT-fronted'
+  expected: parse
+- text: Ng kanin ay pinakain ng nanay ang bata.
+  construction: 'ay-inversion: pa-OV 3-arg PATIENT-fronted'
+  expected: parse
+- text: Ng libro ay pinabasa ng nanay ang bata.
+  construction: 'ay-inversion: pa-OV 3-arg PATIENT-fronted (basa)'
+  expected: parse
+- text: Ng nanay ay hindi ipinaggawa ang kapatid ng silya.
+  construction: 'ay-inversion: IV-BEN 3-arg AGENT-fronted + NEG'
+  expected: parse
 - text: Tumakbo ang batang nakakain ng aso.
   construction: 'relativization: -ng linker, AV RC'
   expected: parse

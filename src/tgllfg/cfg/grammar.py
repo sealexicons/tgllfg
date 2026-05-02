@@ -704,6 +704,106 @@ class Grammar:
             ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
         ))
 
+        # --- Phase 5e Commit 2: multi-GEN-NP ay-fronting ---
+        #
+        # Phase 5b multi-GEN-NP frames (IV-BEN / IV-INSTR / IV-REASON
+        # 3-arg, pa-OV-direct 3-arg) bind two GEN-marked non-pivots
+        # to typed ``OBJ-θ`` slots positionally:
+        #
+        #   * IV (any APPL): first GEN → OBJ-AGENT, second → OBJ-PATIENT.
+        #   * pa-OV CAUS=DIRECT: first GEN → OBJ-CAUSER, second → OBJ-PATIENT.
+        #
+        # Fronting one of the two GEN-NPs leaves the inner clause
+        # with one NOM (pivot) plus one retained GEN-NP. The remaining
+        # GEN-NP's binding can no longer be purely positional — it
+        # depends on which role was extracted.
+        #
+        # Phase 5d Commit 5 handled the 2-arg cases (no second GEN
+        # in the inner clause) only. Phase 5e Commit 1 added the 3-arg
+        # pa-OV ``S_GAP_OBJ_CAUSER`` with OBJ-PATIENT retained
+        # (CAUSER fronted). Phase 5e Commit 2 fills in the remaining
+        # 3-arg multi-GEN extractions:
+        #
+        #   * 3-arg IV with OBJ-AGENT extracted (OBJ-PATIENT retained).
+        #     New ``S_GAP_OBJ_AGENT`` IV-3arg variants.
+        #   * 3-arg multi-GEN with OBJ-PATIENT extracted, in either
+        #     IV (OBJ-AGENT retained) or pa-OV-direct (OBJ-CAUSER
+        #     retained). New ``S_GAP_OBJ_PATIENT`` non-terminal.
+        #
+        # When two readings exist for the same surface (e.g.,
+        # ``Ng nanay ay ipinaggawa ang kapatid ng silya`` could be
+        # AGENT-front + PATIENT-retained OR PATIENT-front +
+        # AGENT-retained), both parses surface and the existing
+        # ranker plus animacy/lexical semantics resolves; tests
+        # accept the natural reading among the n-best.
+
+        # === S_GAP_OBJ_AGENT IV 3-arg variants ===
+        # The 2-arg IV S_GAP_OBJ_AGENT rule from Phase 5d Commit 5
+        # only matches V[VOICE=IV] NP[NOM] (no second GEN). The
+        # 3-arg variant adds a retained OBJ-PATIENT GEN-NP in either
+        # post-V order; the gap remains OBJ-AGENT.
+        rules.append(Rule(
+            "S_GAP_OBJ_AGENT",
+            ["V[VOICE=IV]", "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_GAP_OBJ_AGENT",
+            ["V[VOICE=IV]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓2",
+                "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            ),
+        ))
+
+        # === S_GAP_OBJ_PATIENT: any 3-arg multi-GEN frame with
+        # OBJ-PATIENT extracted ===
+        # Two voice/feature combinations are admitted, mirroring the
+        # top-level multi-GEN-NP rules:
+        #
+        #   * V[VOICE=IV] (any APPL): retained GEN-NP is OBJ-AGENT.
+        #   * V[VOICE=OV, CAUS=DIRECT]: retained GEN-NP is OBJ-CAUSER.
+        #
+        # Both NP orders are admitted per voice; PART[POLARITY=NEG]
+        # recursion at the bottom handles inner negation.
+        patient_gap_specs = [
+            # (voice features, retained-GEN-NP target GF)
+            ("V[VOICE=IV]", "OBJ-AGENT"),
+            ("V[VOICE=OV, CAUS=DIRECT]", "OBJ-CAUSER"),
+        ]
+        for v_cat, retained_gf in patient_gap_specs:
+            # NOM-GEN order: retained GEN follows pivot.
+            rules.append(Rule(
+                "S_GAP_OBJ_PATIENT",
+                [v_cat, "NP[CASE=NOM]", "NP[CASE=GEN]"],
+                _eqs(
+                    "(↑ SUBJ) = ↓2",
+                    f"(↑ {retained_gf}) = ↓3",
+                    "(↑ OBJ-PATIENT) = (↑ REL-PRO)",
+                ),
+            ))
+            # GEN-NOM order: retained GEN before pivot.
+            rules.append(Rule(
+                "S_GAP_OBJ_PATIENT",
+                [v_cat, "NP[CASE=GEN]", "NP[CASE=NOM]"],
+                _eqs(
+                    "(↑ SUBJ) = ↓3",
+                    f"(↑ {retained_gf}) = ↓2",
+                    "(↑ OBJ-PATIENT) = (↑ REL-PRO)",
+                ),
+            ))
+        # Negation recursion.
+        rules.append(Rule(
+            "S_GAP_OBJ_PATIENT",
+            ["PART[POLARITY=NEG]", "S_GAP_OBJ_PATIENT"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
         # --- Phase 5d Commit 6: possessive-linker RC gap-category ---
         #
         # Construction: ``aklat kong binasa`` ("the book that I read").
@@ -1119,6 +1219,29 @@ class Grammar:
                 "(↑ TOPIC) = ↓1",
                 "(↓3 REL-PRO) = ↓1",
                 "(↓3 REL-PRO) =c (↓3 OBJ-CAUSER)",
+            ],
+        ))
+
+        # Phase 5e Commit 2: multi-GEN-NP ay-fronting — OBJ-PATIENT-
+        # extracted variant. The fronted GEN-NP is the PATIENT;
+        # the inner clause is a 3-arg multi-GEN frame
+        # (S_GAP_OBJ_PATIENT) where the retained GEN-NP binds to
+        # OBJ-AGENT (under IV) or OBJ-CAUSER (under pa-OV-direct).
+        # Coexists with the OBJ_AGENT and OBJ_CAUSER wrap rules:
+        # for a 3-arg multi-GEN inner clause, multiple gap-categories
+        # match (e.g., AGENT-front + PATIENT-retained, OR PATIENT-
+        # front + AGENT-retained); the resulting parses surface in
+        # n-best and the ranker plus lexical semantics picks. The
+        # constraining equation pins which fronted GF this wrap rule
+        # represents.
+        rules.append(Rule(
+            "S",
+            ["NP[CASE=GEN]", "PART[LINK=AY]", "S_GAP_OBJ_PATIENT"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "(↓3 REL-PRO) = ↓1",
+                "(↓3 REL-PRO) =c (↓3 OBJ-PATIENT)",
             ],
         ))
 

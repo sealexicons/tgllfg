@@ -352,6 +352,39 @@ def _ay_inversion_corpus() -> list[dict[str, Any]]:
     _add(out, "ng nanay ay hindi pinakain ang bata",
          "ay-inversion: pa-OV actor-fronting + NEG",
          "parse")
+
+    # Phase 5e Commit 2: multi-GEN-NP ay-fronting. Fronts one of
+    # the two GEN-NPs in a Phase 5b 3-arg multi-GEN frame; the
+    # other GEN-NP is retained in the inner clause along with the
+    # NOM pivot.
+    # IV 3-arg with OBJ-AGENT extracted (PATIENT retained).
+    _add(out, "ng nanay ay ipinaggawa ang kapatid ng silya",
+         "ay-inversion: IV-BEN 3-arg AGENT-fronted",
+         "parse")
+    _add(out, "ng nanay ay ipinambili ang pera ng isda",
+         "ay-inversion: IV-INSTR 3-arg AGENT-fronted",
+         "parse")
+    _add(out, "ng bata ay ikinasulat ang gutom ng isda",
+         "ay-inversion: IV-REASON 3-arg AGENT-fronted",
+         "parse")
+    # IV 3-arg with OBJ-PATIENT extracted (AGENT retained).
+    _add(out, "ng silya ay ipinaggawa ang kapatid ng nanay",
+         "ay-inversion: IV-BEN 3-arg PATIENT-fronted",
+         "parse")
+    _add(out, "ng isda ay ipinambili ang pera ng nanay",
+         "ay-inversion: IV-INSTR 3-arg PATIENT-fronted",
+         "parse")
+    # pa-OV-direct 3-arg with OBJ-PATIENT extracted (CAUSER retained).
+    _add(out, "ng kanin ay pinakain ng nanay ang bata",
+         "ay-inversion: pa-OV 3-arg PATIENT-fronted",
+         "parse")
+    _add(out, "ng libro ay pinabasa ng nanay ang bata",
+         "ay-inversion: pa-OV 3-arg PATIENT-fronted (basa)",
+         "parse")
+    # Negation under multi-GEN ay-fronting.
+    _add(out, "ng nanay ay hindi ipinaggawa ang kapatid ng silya",
+         "ay-inversion: IV-BEN 3-arg AGENT-fronted + NEG",
+         "parse")
     return out
 
 

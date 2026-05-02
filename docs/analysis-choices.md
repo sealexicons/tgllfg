@@ -3068,3 +3068,137 @@ its S_GAP_OBJ_CAUSER frame is a one-line addition.
   matching ``S_XCOMP_GAP_OBJ_CAUSER`` or similar. Composition
   not exercised by corpus.
 
+## Phase 5e Commit 2: multi-GEN-NP ay-fronting
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5b multi-GEN-NP frames bind two GEN-marked non-pivots
+positionally to typed ``OBJ-θ`` slots: in IV (any APPL) the first
+ng-NP is ``OBJ-AGENT`` and the second is ``OBJ-PATIENT``; in
+pa-OV-direct it's ``OBJ-CAUSER`` and ``OBJ-PATIENT``. Phase 5d
+Commit 5 added ay-fronting only for non-3-arg shapes (no second
+GEN). Phase 5e Commit 1 added 3-arg pa-OV with the CAUSER fronted
+(``S_GAP_OBJ_CAUSER`` 3-arg). Phase 5e Commit 2 fills in the
+remaining 3-arg multi-GEN extractions:
+
+* 3-arg IV with OBJ-AGENT extracted (OBJ-PATIENT retained):
+  ``Ng nanay ay ipinaggawa ang kapatid ng silya``.
+* 3-arg multi-GEN with OBJ-PATIENT extracted (in either IV with
+  OBJ-AGENT retained, or pa-OV-direct with OBJ-CAUSER retained):
+  ``Ng silya ay ipinaggawa ang kapatid ng nanay``,
+  ``Ng kanin ay pinakain ng nanay ang bata``.
+
+### S_GAP_OBJ_AGENT IV 3-arg additions
+
+The Phase 5d Commit 5 ``S_GAP_OBJ_AGENT`` rules covered only
+2-arg shapes (V plus a single NOM pivot, optionally with a DAT
+adjunct). Two IV-only 3-arg variants are added:
+
+```
+S_GAP_OBJ_AGENT → V[VOICE=IV] NP[CASE=NOM] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-PATIENT) = ↓3
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+S_GAP_OBJ_AGENT → V[VOICE=IV] NP[CASE=GEN] NP[CASE=NOM]
+   (↑ SUBJ) = ↓3
+   (↑ OBJ-PATIENT) = ↓2
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+```
+
+The voice is restricted to IV because only IV multi-GEN frames
+have a non-CAUSER second GEN-NP. The 2-arg rules are unchanged.
+
+### S_GAP_OBJ_PATIENT — new gap-category
+
+A single new non-terminal handles PATIENT-extraction across
+both 3-arg multi-GEN voice families. The retained-GEN binding
+is voice-conditioned:
+
+```
+S_GAP_OBJ_PATIENT → V[VOICE=IV] NP[CASE=NOM] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-AGENT) = ↓3
+   (↑ OBJ-PATIENT) = (↑ REL-PRO)
+S_GAP_OBJ_PATIENT → V[VOICE=IV] NP[CASE=GEN] NP[CASE=NOM]
+   (↑ SUBJ) = ↓3
+   (↑ OBJ-AGENT) = ↓2
+   (↑ OBJ-PATIENT) = (↑ REL-PRO)
+S_GAP_OBJ_PATIENT → V[VOICE=OV, CAUS=DIRECT] NP[CASE=NOM] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-CAUSER) = ↓3
+   (↑ OBJ-PATIENT) = (↑ REL-PRO)
+S_GAP_OBJ_PATIENT → V[VOICE=OV, CAUS=DIRECT] NP[CASE=GEN] NP[CASE=NOM]
+   (↑ SUBJ) = ↓3
+   (↑ OBJ-CAUSER) = ↓2
+   (↑ OBJ-PATIENT) = (↑ REL-PRO)
+S_GAP_OBJ_PATIENT → PART[POLARITY=NEG] S_GAP_OBJ_PATIENT
+   (↑) = ↓2  (↑ POLARITY) = 'NEG'
+```
+
+The wrap rule:
+
+```
+S → NP[CASE=GEN] PART[LINK=AY] S_GAP_OBJ_PATIENT
+   (↑) = ↓3
+   (↑ TOPIC) = ↓1
+   (↓3 REL-PRO) = ↓1
+   (↓3 REL-PRO) =c (↓3 OBJ-PATIENT)
+```
+
+### Structural ambiguity: both readings parse
+
+For an inner-clause shape like ``ipinaggawa ang kapatid ng silya``
+(IV-BEN with one retained GEN), two gap-categories match the
+same shape:
+
+* ``S_GAP_OBJ_AGENT`` 3-arg: gap = OBJ-AGENT, retained = OBJ-PATIENT.
+* ``S_GAP_OBJ_PATIENT`` IV: gap = OBJ-PATIENT, retained = OBJ-AGENT.
+
+Both rules fire and both wrap rules above succeed (with their
+respective constraining equations). The result is two parses for
+the same surface, distinguished by which fronted-NP role binds:
+
+* ``Ng nanay ay ipinaggawa ang kapatid ng silya`` admits both
+  AGENT-fronted (TOPIC=nanay=AGENT, silya=PATIENT) and
+  PATIENT-fronted (TOPIC=nanay=PATIENT, silya=AGENT) readings.
+  Animacy makes the first natural; the second is structurally
+  available.
+
+This mirrors Tagalog's tolerance for the corresponding role
+ambiguity in non-fronted multi-GEN frames (the Phase 5b
+positional convention is just the unmarked default; lexical
+semantics resolves the actual binding). Tests pin the natural
+reading via a TOPIC-PRED-GF triple filter.
+
+### Discrimination by voice + CAUS
+
+The two voice/feature combinations on ``S_GAP_OBJ_PATIENT`` are
+mutually exclusive (IV vs OV-CAUS=DIRECT), so a single inner
+clause never matches both branches of ``S_GAP_OBJ_PATIENT`` —
+the f-structure is unambiguous about *which* GF the retained
+GEN-NP fills (OBJ-AGENT under IV, OBJ-CAUSER under pa-OV-direct).
+Cross-voice contamination is structurally impossible.
+
+### What this lifts
+
+* IV-BEN / IV-INSTR / IV-REASON 3-arg with AGENT fronted
+  (``Ng nanay ay ipinaggawa ang kapatid ng silya``,
+  ``Ng nanay ay ipinambili ang pera ng isda``,
+  ``Ng bata ay ikinasulat ang gutom ng isda``).
+* IV 3-arg with PATIENT fronted
+  (``Ng silya ay ipinaggawa ang kapatid ng nanay``).
+* pa-OV-direct 3-arg with PATIENT fronted
+  (``Ng kanin ay pinakain ng nanay ang bata``).
+* Both inner NP orders (NOM-GEN and GEN-NOM after the V).
+* Inner negation under fronting.
+
+### Out-of-scope (still deferred)
+
+* **DV 3-arg multi-GEN ay-fronting.** Blocked on Group D's "DV
+  three-argument constructions" item — DV multi-GEN rules
+  themselves don't yet exist. Lifts as a follow-on once that
+  Group D commit lands.
+* **3-arg multi-GEN ay-fronting under embedded control.**
+  Crosses with Phase 5d Commits 7 / 8 / 9; not exercised by the
+  current corpus.
+
