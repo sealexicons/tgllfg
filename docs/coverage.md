@@ -168,9 +168,24 @@ list (see `docs/analysis-choices.md`):
 
 - **Long-distance relativization** through XCOMP / COMP (needs
   functional uncertainty in the unifier — §7.5 + §7.6 deferral).
+- **Resumptive pronouns in RCs.** Reclassified to genuinely
+  v1-out-of-scope in Phase 5e Commit 7 — Tagalog uses voice
+  alternation, not resumptive pronouns, as the canonical
+  strategy for non-SUBJ relativization (Kroeger 1993 §5; S&O
+  1972 §5.16). The construction is not corpus-attested in a
+  stable form; revisit if a resumptive-rich corpus emerges.
+  See plan §16 and the analysis-choices.md "Phase 5e Commit 7"
+  entry.
 
 ### Recently lifted (still listed for archaeological context)
 
+- **Resumptive pronouns in RCs (reclassification)** — Phase 5e
+  Commit 7 documentation-only commit. Originally listed as a
+  Phase 5e Group B candidate (rare in modern Tagalog);
+  investigation showed Tagalog uses voice alternation, not
+  resumptive pronouns, as the canonical non-SUBJ
+  relativization strategy. Reclassified to plan §16
+  v1-out-of-scope. No grammar / lex / morph changes.
 - **`na` linker disambiguation after PRON** — lifted in
   Phase 5e Commit 6. The placement-pass disambiguator
   (``disambiguate_homophone_clitics``) gains a third

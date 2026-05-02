@@ -3597,3 +3597,91 @@ deferred to a separate commit.
   handle this without disambiguation issues; not exercised
   here.
 
+## Phase 5e Commit 7: resumptive pronouns in RCs (reclassification)
+
+**Date:** 2026-05-01. **Status:** active. Documentation-only
+commit; no grammar / lex / morph changes.
+
+The Phase 4 §7.5 "Out-of-scope" note flagged "Resumptive
+pronouns in RCs (rare in modern Tagalog)" as deferred, and
+plan §10.1 Group B carried it forward as a Phase 5e candidate.
+On investigation, the construction does not have a stable,
+corpus-attested syntactic shape in modern written Tagalog, and
+attempting to implement it without that grounding would mean
+guessing at form. Phase 5e Commit 7 reclassifies the item to
+plan §16 (genuinely v1-out-of-scope) and pins the rationale
+here.
+
+### Why Tagalog doesn't really use resumptive RCs
+
+Resumptive pronouns are a cross-linguistic strategy where a
+pronoun fills the relativized position instead of leaving a
+gap (English colloquial: "the man who I saw him"). Tagalog has
+two structural alternatives that obviate the resumptive option:
+
+1. **Voice alternation** is the canonical strategy for
+   non-SUBJ relativization. The SUBJ-only restriction (Kroeger
+   1993 §5; Schachter & Otanes 1972 §5.16) means only the
+   ang-NP can be relativized, but voice alternation lets the
+   speaker pick which thematic role becomes the ang-NP. To
+   relativize the agent of a "patient-pivot" event, switch to
+   AV and the agent becomes the SUBJ:
+   ``Ang batang kumain ng isda.`` "The child who ate the fish."
+   (AV; bata is SUBJ=actor.) The OV form
+   ``*Ang batang kinain ang isda.`` "The child who-ate the fish"
+   (with bata as the agent of OV) is rejected by the SUBJ-only
+   restriction and is the construction a resumptive pronoun
+   would otherwise repair.
+2. **Restructuring with a relative clause that itself is the
+   matrix** (focus / cleft constructions) — ``Ang bata ang
+   kumain ng isda.`` "It's the child who ate the fish."
+
+Both strategies are productive, well-documented, and present
+in the corpus. Resumptive pronouns aren't.
+
+### What the corpus shows
+
+The Phase 4 §7.10 reference corpus (818 sentences originally,
+now 859 with the Phase 5e additions) contains zero
+unambiguously-resumptive RC examples. The seeded R&G 1981
+fixtures (20 sentences) and the classic / S&O / Kroeger
+fixtures (12 sentences) likewise don't include any. The
+deferral note's "rare in modern Tagalog" flag accurately
+captures this.
+
+### What it would take to lift
+
+A meaningful implementation would need:
+
+1. A corpus showing the construction at non-trivial frequency.
+2. Agreement on its syntactic shape — typically:
+   ``NP[CASE=X] → NP[CASE=X] PART[LINK] S_RES`` where
+   ``S_RES`` is a *non-gapped* clause containing a coreferent
+   pronoun that's functionally identified with the head.
+3. Decision on how to identify the coreferent pronoun: by
+   pragmatic / discourse-anaphora resolution (out of scope
+   per §16 sentence-level tooling) or by an explicit
+   ``REL-PRO`` binding equation that's lex-licensed.
+
+None of these conditions hold. Reclassifying to §16 is the
+honest call.
+
+### Where it lives now
+
+* Plan §10.1 Group B has a parenthetical noting the
+  reclassification and a pointer to §10.2 / §16.
+* Plan §10.2 ("Items not enumerated above") gains the
+  resumptive item alongside the other genuinely-out-of-scope
+  Phase 5e items (unbounded control chains, 3+ sa-NPs,
+  non-restrictive RCs).
+* Plan §16 gains a new bullet articulating the why.
+* This `docs/analysis-choices.md` section pins the rationale
+  with citations.
+
+### Out-of-scope (still deferred)
+
+The reclassification doesn't itself defer anything new —
+resumptive pronouns were already deferred at §7.5 and §10.1.
+The change is administrative: moving an item from
+"additive Phase 5e candidate" to "v1-out-of-scope".
+
