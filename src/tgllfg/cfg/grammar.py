@@ -1245,6 +1245,85 @@ class Grammar:
             ],
         ))
 
+        # --- Phase 5e Commit 3: AdvP / PP categorial inventory + fronting ---
+        #
+        # Phase 4 §7.4's ``Out-of-scope`` list flagged AdvP / PP
+        # ay-fronting as "deferred until the categorial inventory
+        # expands". This commit lifts the deferral with the smallest
+        # categorial expansion that unblocks the construction:
+        #
+        #   * Two new POS values (``ADV``, ``PREP``) seeded in
+        #     ``data/tgl/particles.yaml`` for a handful of temporal
+        #     adverbs (``kahapon`` / ``ngayon`` / ``bukas`` /
+        #     ``mamaya``) and compound prepositions (``para`` /
+        #     ``tungkol`` / ``mula`` / ``dahil``).
+        #   * Two new non-terminals: ``AdvP`` (single-word) and
+        #     ``PP`` (PREP + sa-NP).
+        #   * Two new ay-fronting wrap rules.
+        #
+        # The non-fronted placement of AdvP / PP (clause-final or as
+        # an unmarked sentential adjunct) is **not** added in this
+        # commit — the scoped goal is ay-fronting only. Adding bare
+        # placement would interact with the Phase 4 §7.3 Wackernagel
+        # cluster and the Phase 4 §7.8 quantifier-float rule and is
+        # deferred to a separate commit.
+
+        # AdvP: a single ADV word lifts to AdvP. ADV is a closed-
+        # class POS so a flat single-child rule is sufficient; the
+        # AdvP's f-structure inherits the ADV's atomic features
+        # (LEMMA, ADV_TYPE, DEIXIS_TIME, ...).
+        rules.append(Rule(
+            "AdvP",
+            ["ADV"],
+            _eqs("(↑) = ↓1"),
+        ))
+
+        # PP: PREP + NP[CASE=DAT]. The compound prepositions in
+        # particles.yaml all subcategorise for a sa-NP complement
+        # (``para sa bata``, ``tungkol sa nanay``, ``mula sa
+        # Maynila``, ``dahil sa gutom``). The PP's f-structure
+        # inherits PREP_TYPE from the head and exposes the
+        # complement NP as ``OBJ`` for downstream consumers
+        # (analogous to how a clause's V exposes its NP arguments).
+        rules.append(Rule(
+            "PP",
+            ["PREP", "NP[CASE=DAT]"],
+            _eqs(
+                "(↑) = ↓1",
+                "(↑ OBJ) = ↓2",
+            ),
+        ))
+
+        # ay-fronting an AdvP. The fronted phrase is BOTH the matrix
+        # TOPIC and a member of the matrix's ADJ set (sentential
+        # adjunct semantics). The inner clause is a complete S
+        # (no gap) — AdvP isn't an argument of any voice/aspect
+        # frame, so there's nothing to extract from the inner
+        # clause's GF inventory.
+        rules.append(Rule(
+            "S",
+            ["AdvP", "PART[LINK=AY]", "S"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "↓1 ∈ (↑ ADJ)",
+            ],
+        ))
+
+        # ay-fronting a PP. Same shape as AdvP fronting: matrix
+        # TOPIC + ADJ membership. The PP's internal structure (PREP
+        # head + sa-NP complement) is independent of the
+        # ay-construction.
+        rules.append(Rule(
+            "S",
+            ["PP", "PART[LINK=AY]", "S"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "↓1 ∈ (↑ ADJ)",
+            ],
+        ))
+
         # --- Phase 4 §7.5: relativization ---
         #
         # ``ang batang kumain ng isda`` ("the child that ate fish"):

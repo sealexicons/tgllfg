@@ -1456,6 +1456,36 @@
 - text: Ng nanay ay hindi ipinaggawa ang kapatid ng silya.
   construction: 'ay-inversion: IV-BEN 3-arg AGENT-fronted + NEG'
   expected: parse
+- text: Kahapon ay tumakbo si Maria.
+  construction: 'ay-inversion: AdvP fronted (kahapon)'
+  expected: parse
+- text: Ngayon ay tumakbo si Maria.
+  construction: 'ay-inversion: AdvP fronted (ngayon)'
+  expected: parse
+- text: Bukas ay tumakbo si Maria.
+  construction: 'ay-inversion: AdvP fronted (bukas)'
+  expected: parse
+- text: Mamaya ay tumakbo si Maria.
+  construction: 'ay-inversion: AdvP fronted (mamaya)'
+  expected: parse
+- text: Kahapon ay hindi tumakbo si Maria.
+  construction: 'ay-inversion: AdvP fronted + NEG'
+  expected: parse
+- text: Kahapon ay kumain ang aso ng isda.
+  construction: 'ay-inversion: AdvP fronted + transitive inner'
+  expected: parse
+- text: Para sa bata ay binili niya ang libro.
+  construction: 'ay-inversion: PP fronted (para)'
+  expected: parse
+- text: Tungkol sa nanay ay sumulat ang bata.
+  construction: 'ay-inversion: PP fronted (tungkol)'
+  expected: parse
+- text: Mula sa bahay ay tumakbo si Maria.
+  construction: 'ay-inversion: PP fronted (mula)'
+  expected: parse
+- text: Dahil sa gutom ay kumain ang bata.
+  construction: 'ay-inversion: PP fronted (dahil)'
+  expected: parse
 - text: Tumakbo ang batang nakakain ng aso.
   construction: 'relativization: -ng linker, AV RC'
   expected: parse

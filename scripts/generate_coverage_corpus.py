@@ -385,6 +385,36 @@ def _ay_inversion_corpus() -> list[dict[str, Any]]:
     _add(out, "ng nanay ay hindi ipinaggawa ang kapatid ng silya",
          "ay-inversion: IV-BEN 3-arg AGENT-fronted + NEG",
          "parse")
+
+    # Phase 5e Commit 3: AdvP / PP ay-fronting. Lifts the §7.4
+    # "Out-of-scope" item that required a categorial-inventory
+    # expansion (ADV / PREP POS, AdvP / PP non-terminals).
+    # Temporal AdvP fronting.
+    for adv in ("kahapon", "ngayon", "bukas", "mamaya"):
+        _add(out, f"{adv} ay tumakbo si Maria",
+             f"ay-inversion: AdvP fronted ({adv})",
+             "parse")
+    # AdvP with negated inner clause.
+    _add(out, "kahapon ay hindi tumakbo si Maria",
+         "ay-inversion: AdvP fronted + NEG",
+         "parse")
+    # AdvP with transitive inner.
+    _add(out, "kahapon ay kumain ang aso ng isda",
+         "ay-inversion: AdvP fronted + transitive inner",
+         "parse")
+    # PP fronting: para / tungkol / mula / dahil.
+    _add(out, "para sa bata ay binili niya ang libro",
+         "ay-inversion: PP fronted (para)",
+         "parse")
+    _add(out, "tungkol sa nanay ay sumulat ang bata",
+         "ay-inversion: PP fronted (tungkol)",
+         "parse")
+    _add(out, "mula sa bahay ay tumakbo si Maria",
+         "ay-inversion: PP fronted (mula)",
+         "parse")
+    _add(out, "dahil sa gutom ay kumain ang bata",
+         "ay-inversion: PP fronted (dahil)",
+         "parse")
     return out
 
 

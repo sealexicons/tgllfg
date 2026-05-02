@@ -3202,3 +3202,144 @@ Cross-voice contamination is structurally impossible.
   Crosses with Phase 5d Commits 7 / 8 / 9; not exercised by the
   current corpus.
 
+## Phase 5e Commit 3: AdvP / PP ay-fronting
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 4 §7.4's "Out-of-scope" list flagged ``Kahapon ay tumakbo
+si Maria`` (temporal AdvP) and ``Para sa bata ay binili niya ang
+aklat`` (PP) as deferred until "the categorial inventory expands".
+Phase 5e Commit 3 lifts the deferral with the smallest categorial
+expansion sufficient to host the construction.
+
+### Two new POS values
+
+In :file:`data/tgl/particles.yaml`:
+
+* ``ADV`` — closed-class temporal adverbs. Seeded with four
+  entries: ``kahapon`` "yesterday" (DEIXIS_TIME=PAST), ``ngayon``
+  "now/today" (PRES), ``bukas`` "tomorrow" (FUT), ``mamaya``
+  "later" (FUT). Each carries ``ADV_TYPE=TIME`` for grammar-rule
+  matching.
+* ``PREP`` — compound preposition heads that subcategorise for a
+  sa-NP complement. Seeded with four entries: ``para``
+  (PREP_TYPE=BENEFICIARY), ``tungkol`` (TOPIC), ``mula`` (SOURCE),
+  ``dahil`` (REASON). Each PREP carries ``LEMMA`` (set
+  automatically by the analyzer for ADV / PREP particles, mirroring
+  the noun-LEMMA pattern from Phase 5c §8 follow-on Commit 6) so
+  the head's lemma percolates through ``AdvP → ADV`` and
+  ``PP → PREP NP[CASE=DAT]`` to the matrix TOPIC.
+
+### Two new non-terminals
+
+```
+AdvP → ADV
+   (↑) = ↓1
+
+PP → PREP NP[CASE=DAT]
+   (↑) = ↓1
+   (↑ OBJ) = ↓2
+```
+
+The AdvP rule is a single-child lift — closed-class single-word
+adverbs don't need internal structure. The PP rule heads with the
+PREP and exposes the sa-NP complement as ``OBJ`` (analogous to
+how a clause's V exposes its arguments). The PP's f-structure
+inherits ``PREP_TYPE`` and ``LEMMA`` from its head.
+
+### Two new ay-fronting wrap rules
+
+```
+S → AdvP PART[LINK=AY] S
+   (↑) = ↓3
+   (↑ TOPIC) = ↓1
+   ↓1 ∈ (↑ ADJ)
+
+S → PP PART[LINK=AY] S
+   (↑) = ↓3
+   (↑ TOPIC) = ↓1
+   ↓1 ∈ (↑ ADJ)
+```
+
+Both rules:
+
+* Make the inner S the matrix's f-structure (``(↑) = ↓3``).
+* Set the matrix's ``TOPIC`` to the fronted phrase.
+* Add the fronted phrase to the matrix's ``ADJ`` set, preserving
+  adjunct semantics alongside the topic-marking.
+
+The inner S is a complete clause with no gap — AdvP / PP are
+sentential modifiers, not arguments of any voice/aspect frame,
+so there's nothing to extract from the inner clause's GF
+inventory. This contrasts with the NP ay-fronting rules
+(``S → NP[CASE=*] PART[LINK=AY] S_GAP_*``) which do require a
+gap-category for the extracted argument.
+
+### Why ADJ instead of ADJUNCT
+
+Two non-governable set-valued attributes coexist in the f-structure:
+
+* ``ADJUNCT`` holds DAT-NPs (sa-NPs) as collected by the parser's
+  ``↓N ∈ (↑ ADJUNCT)`` equations. The Phase 5 LMT
+  ``oblique_classifier`` post-processes this set into typed
+  ``OBL-θ`` slots (LOC / RECIP / etc.).
+* ``ADJ`` holds quantifier-floats (Phase 4 §7.8), 2P clitic
+  particles (Phase 4 §7.3), and now AdvP / PP fronted topics.
+  The classifier doesn't touch ADJ.
+
+Putting AdvP / PP in ``ADJ`` keeps them out of the
+oblique-classifier's purview (they're not sa-NPs); they're
+modifier-class adjuncts, not GF-typed obliques.
+
+### Discrimination against existing fronting rules
+
+The new wrap rules use ``AdvP`` and ``PP`` non-terminals as
+their first child, distinct from the existing ``NP[CASE=NOM/GEN/DAT]``
+fronts. The parser's matcher selects the rule based on the
+non-terminal type plus child features, so cross-firing is
+structurally impossible:
+
+* ``Kahapon ay tumakbo si Maria`` — only the AdvP wrap rule
+  matches (``kahapon`` as ADV); the NP-fronting rules require an
+  NP, which a bare adverb without a DET cannot form.
+* ``Para sa bata ay binili niya ang libro`` — both the PP wrap
+  rule (``para`` as PREP heading a PP) and the DAT-NP wrap rule
+  (``sa bata`` as a fronted DAT-NP, ignoring ``para``) could
+  fire. The existing DAT-NP rule requires a single ``NP[CASE=DAT]``
+  not preceded by anything; the surface has ``para sa bata``
+  which contains an extra PREP token, so the DAT-NP-only rule
+  doesn't extend across it. The PP wrap rule wins.
+
+### What this lifts
+
+* Temporal-AdvP ay-fronting:
+  ``Kahapon ay tumakbo si Maria.``
+  ``Ngayon ay kumakain ang bata.``
+  ``Bukas ay tutulog si Maria.``
+  ``Mamaya ay tutulog si Maria.``
+* PP ay-fronting across all four seeded prepositions:
+  ``Para sa bata ay binili niya ang libro.``
+  ``Tungkol sa nanay ay sumulat ang bata.``
+  ``Mula sa bahay ay tumakbo si Maria.``
+  ``Dahil sa gutom ay kumain ang bata.``
+* Inner-clause negation under both forms.
+* Inner-clause transitive frames (AV and OV).
+
+### Out-of-scope (still deferred)
+
+* **Non-fronted AdvP / PP placement.** Clause-final or
+  unmarked-sentential-adjunct placement of AdvP / PP
+  (``Tumakbo si Maria kahapon``, ``Binili niya ang libro
+  para sa bata``) — keeps AdvP / PP out of the matrix's
+  post-V argument frames. Adding bare placement would interact
+  with §7.3 Wackernagel-cluster placement and §7.8 quantifier-
+  float and is left as a separate commit. The bare-AdvP /
+  bare-PP usage is more frequent than the ay-fronted form, so
+  this is a real gap; landing it as a separate commit keeps the
+  scope reviewable.
+* **Multi-word AdvPs.** ``kahapon ng umaga`` "yesterday morning"
+  needs an ``AdvP → ADV NP[CASE=GEN]`` rule.
+* **AdvP / PP modifying inner NPs.** ``ang aklat para sa bata``
+  ("the book for the child") embeds the PP inside an NP rather
+  than at the clausal level. Different attachment site.
+
