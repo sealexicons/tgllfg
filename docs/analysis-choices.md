@@ -2969,3 +2969,102 @@ and is not a structural concern.
   Wackernagel logic handles them independently, but this hasn't
   been pinned with tests.
 
+## Phase 5e Commit 1: pa-OV / pa-DV (CAUS=DIRECT) actor-fronting
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5d Commit 5 added three gap-category non-terminals
+(``S_GAP_OBJ``, ``S_GAP_OBJ_AGENT``, ``S_GAP_OBL``) plus three
+matching ay-fronting wrap rules, lifting the §7.4 deferral on
+non-pivot ay-fronting for OBJ-θ and DAT-marked obliques. The
+``S_GAP_OBJ_AGENT`` non-terminal admits non-AV transitive
+fronting only when the V carries ``CAUS=NONE``. The constraint
+deliberately excluded pa-OV / pa-DV (CAUS=DIRECT) — under
+monoclausal direct causation the actor's typed GF is
+``OBJ-CAUSER`` rather than ``OBJ-AGENT``, so a different gap
+category is needed. Phase 5e Commit 1 fills in the parallel
+extraction path.
+
+### One new gap-category, one new wrap rule
+
+```
+S_GAP_OBJ_CAUSER → V[VOICE=OV, CAUS=DIRECT] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)
+S_GAP_OBJ_CAUSER → V[VOICE=OV, CAUS=DIRECT] NP[CASE=NOM] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-PATIENT) = ↓3
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)
+S_GAP_OBJ_CAUSER → V[VOICE=OV, CAUS=DIRECT] NP[CASE=GEN] NP[CASE=NOM]
+   (↑ SUBJ) = ↓3
+   (↑ OBJ-PATIENT) = ↓2
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)
+S_GAP_OBJ_CAUSER → V[VOICE=DV, CAUS=DIRECT] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)
+(plus +DAT-adjunct variants for pa-OV-2arg and pa-DV; recursive
+ PART[POLARITY=NEG] for inner negation)
+
+S → NP[CASE=GEN] PART[LINK=AY] S_GAP_OBJ_CAUSER
+   (↑) = ↓3
+   (↑ TOPIC) = ↓1
+   (↓3 REL-PRO) = ↓1
+   (↓3 REL-PRO) =c (↓3 OBJ-CAUSER)
+```
+
+The fronted GEN-NP is the ``CAUSER`` (demoted from actor under
+pa-causation). The 3-arg pa-OV variants leave both the NOM
+pivot (``CAUSEE``) and the GEN ``OBJ-PATIENT`` overt inside the
+inner clause, mirroring Phase 5d Commit 8's S_XCOMP pattern and
+the top-level Phase 5b multi-GEN-NP frame ordering.
+
+### Disambiguation against S_GAP_OBJ_AGENT
+
+The two gap-categories ``S_GAP_OBJ_AGENT`` (Commit 5) and the
+new ``S_GAP_OBJ_CAUSER`` both attach to the same wrap-rule
+shape ``NP[CASE=GEN] PART[LINK=AY] S_GAP_*``. The parser
+explores both, but the inner V's CAUS feature picks a unique
+winner: CAUS=DIRECT routes only to ``S_GAP_OBJ_CAUSER``;
+CAUS=NONE routes only to ``S_GAP_OBJ_AGENT``. The parser's
+non-conflict feature matcher means each gap-category's V
+filter must be **explicit** about CAUS to avoid cross-firing
+on a missing-feature catch-all; both gap-categories already
+carry their CAUS constraint, so no new sentinel is needed.
+
+### Why pa-DV stays 2-arg
+
+Phase 5d Commit 2 introduced pa-DV (``pa-...-an``) with the
+2-arg PRED ``CAUSE-EAT-AT <SUBJ, OBJ-CAUSER>`` only — a 3-arg
+pa-DV variant with overt patient is enumerated as a separate
+deferral in plan §10.1 Group D ("Three-argument top-level
+pa-DV"). Phase 5e Commit 1 doesn't add a 3-arg pa-DV gap-
+category for the same reason: there's no lex profile for it
+to attach to. When the 3-arg pa-DV lex lands (Group D commit),
+its S_GAP_OBJ_CAUSER frame is a one-line addition.
+
+### What this lifts
+
+* 2-arg pa-OV actor-fronting:
+  ``Ng nanay ay pinakain ang bata.``
+* 3-arg pa-OV actor-fronting (both NP orders):
+  ``Ng nanay ay pinakain ang bata ng kanin.``
+  ``Ng nanay ay pinakain ng kanin ang bata.``
+* 2-arg pa-DV actor-fronting:
+  ``Ng nanay ay pinakainan ang bata.``
+* All three pa-OV anchor verbs (kain / basa / inom) and three
+  pa-DV anchor verbs (kain / basa / inom).
+* IPFV aspect on the embedded V (``pinakakain``).
+* Inner negation under fronting
+  (``Ng nanay ay hindi pinakain ang bata.``).
+
+### Out-of-scope (still deferred)
+
+* **3-arg pa-DV actor-fronting.** Blocked on the 3-arg pa-DV
+  lex profile; lifts as a follow-on once that lands (plan §10.1
+  Group D).
+* **Pa-OV / pa-DV actor-fronting under embedded control.** The
+  Phase 5d Commit 8 S_XCOMP pa-causative rules embed under
+  control, but the *fronted* form under control would need a
+  matching ``S_XCOMP_GAP_OBJ_CAUSER`` or similar. Composition
+  not exercised by corpus.
+

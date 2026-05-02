@@ -312,8 +312,8 @@ def _clitic_corpus() -> list[dict[str, Any]]:
 
 
 def _ay_inversion_corpus() -> list[dict[str, Any]]:
-    """§7.4: ay-inversion. Limited to pivot SUBJ fronting (per the
-    implementation; non-pivot deferred)."""
+    """§7.4: ay-inversion. Pivot SUBJ fronting (Phase 4 §7.4) plus
+    pa-causative actor-fronting (Phase 5e Commit 1)."""
     out: list[dict[str, Any]] = []
     for lemma in ("kain", "bili", "basa"):
         for asp in ("PFV", "IPFV"):
@@ -331,6 +331,27 @@ def _ay_inversion_corpus() -> list[dict[str, Any]]:
         _add(out, f"{nom} ay hindi {_VERB_FORMS['kain']['AV']['PFV']}",
              "ay-inversion: with NEG",
              "parse")
+
+    # Phase 5e Commit 1: pa-OV / pa-DV (CAUS=DIRECT) actor-fronting.
+    # The fronted GEN-NP is the CAUSER; the inner SUBJ pivot
+    # (CAUSEE for pa-OV, LOCATION/RECIPIENT for pa-DV) stays overt.
+    for caus_form in ("pinakain", "pinabasa", "pinainom"):
+        _add(out, f"ng nanay ay {caus_form} ang bata",
+             f"ay-inversion: pa-OV actor-fronting ({caus_form})",
+             "parse")
+    # 3-arg pa-OV with overt PATIENT.
+    _add(out, "ng nanay ay pinakain ang bata ng kanin",
+         "ay-inversion: 3-arg pa-OV actor-fronting",
+         "parse")
+    # pa-DV (pa-...-an) actor-fronting.
+    for dv_form in ("pinakainan", "pinabasahan", "pinainuman"):
+        _add(out, f"ng nanay ay {dv_form} ang bata",
+             f"ay-inversion: pa-DV actor-fronting ({dv_form})",
+             "parse")
+    # Inner negation under pa-causative actor-fronting.
+    _add(out, "ng nanay ay hindi pinakain ang bata",
+         "ay-inversion: pa-OV actor-fronting + NEG",
+         "parse")
     return out
 
 
@@ -456,9 +477,11 @@ def _applicative_causative_corpus() -> list[dict[str, Any]]:
             _add(out, f"{caus_form} {nom} na kumain ng isda",
                  "causative: magpa- AV biclausal + transitive XCOMP",
                  "parse")
-    # Out-of-scope: ipang- (deferred — homorganic nasal sandhi)
+    # ipang- instrumental applicative (Phase 5c §7.7 follow-on
+    # Commit 4 lifted the deferral via the new ``nasal_assim_prefix``
+    # sandhi op).
     for s in ("ipinambili ng titser ang panulat",):
-        _add(out, s, "applicative: ipang- (deferred)", "fail")
+        _add(out, s, "applicative: ipang- (instrumental, IV-INSTR)", "parse")
     return out
 
 

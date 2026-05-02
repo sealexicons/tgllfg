@@ -1408,6 +1408,30 @@
 - text: Ang nanay ay hindi nakakain.
   construction: 'ay-inversion: with NEG'
   expected: parse
+- text: Ng nanay ay pinakain ang bata.
+  construction: 'ay-inversion: pa-OV actor-fronting (pinakain)'
+  expected: parse
+- text: Ng nanay ay pinabasa ang bata.
+  construction: 'ay-inversion: pa-OV actor-fronting (pinabasa)'
+  expected: parse
+- text: Ng nanay ay pinainom ang bata.
+  construction: 'ay-inversion: pa-OV actor-fronting (pinainom)'
+  expected: parse
+- text: Ng nanay ay pinakain ang bata ng kanin.
+  construction: 'ay-inversion: 3-arg pa-OV actor-fronting'
+  expected: parse
+- text: Ng nanay ay pinakainan ang bata.
+  construction: 'ay-inversion: pa-DV actor-fronting (pinakainan)'
+  expected: parse
+- text: Ng nanay ay pinabasahan ang bata.
+  construction: 'ay-inversion: pa-DV actor-fronting (pinabasahan)'
+  expected: parse
+- text: Ng nanay ay pinainuman ang bata.
+  construction: 'ay-inversion: pa-DV actor-fronting (pinainuman)'
+  expected: parse
+- text: Ng nanay ay hindi pinakain ang bata.
+  construction: 'ay-inversion: pa-OV actor-fronting + NEG'
+  expected: parse
 - text: Tumakbo ang batang nakakain ng aso.
   construction: 'relativization: -ng linker, AV RC'
   expected: parse

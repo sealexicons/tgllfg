@@ -591,6 +591,119 @@ class Grammar:
             ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
         ))
 
+        # --- Phase 5e Commit 1: pa-OV / pa-DV (CAUS=DIRECT) actor-fronting ---
+        #
+        # Phase 5d Commit 5's ``S_GAP_OBJ_AGENT`` admits non-AV
+        # actor-fronting only when the V carries ``CAUS=NONE`` — the
+        # constraint deliberately excludes pa-OV / pa-DV (CAUS=DIRECT)
+        # because in monoclausal direct causatives the actor's typed
+        # GF is ``OBJ-CAUSER``, not ``OBJ-AGENT``. Phase 5e Commit 1
+        # fills in the parallel ``OBJ-CAUSER`` extraction path:
+        #
+        #   ``Ng nanay ay pinakain ang bata.``
+        #     "It was mother who fed the child."
+        #   ``Ng nanay ay pinakain ang bata ng kanin.``
+        #     "It was mother who fed the child rice." (3-arg pa-OV)
+        #   ``Ng nanay ay pinakainan ang bata.``
+        #     "It was mother who fed [the food to] the child." (pa-DV)
+        #
+        # The fronted GEN-NP is the CAUSER (demoted from actor under
+        # pa-causation); the inner clause's NOM pivot is the CAUSEE
+        # (pa-OV) or LOCATION/RECIPIENT (pa-DV) and stays overt.
+        # Wrap-rule disambiguation works the same as the Commit 5
+        # cases: the parser explores every ``NP[CASE=GEN] PART[LINK=AY]
+        # S_GAP_*`` wrap rule, and only the one whose inner gap-
+        # category matches the V's voice + CAUS features produces a
+        # valid parse.
+
+        # === S_GAP_OBJ_CAUSER: pa-OV / pa-DV (CAUS=DIRECT) with
+        # OBJ-CAUSER extracted ===
+        # 2-arg pa-OV (causee pivot + gap-causer); the patient is
+        # absent on the surface (lex 2-arg PRED `<SUBJ, OBJ-CAUSER>`).
+        rules.append(Rule(
+            "S_GAP_OBJ_CAUSER",
+            ["V[VOICE=OV, CAUS=DIRECT]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        # 2-arg pa-OV with a DAT adjunct retained.
+        rules.append(Rule(
+            "S_GAP_OBJ_CAUSER",
+            [
+                "V[VOICE=OV, CAUS=DIRECT]",
+                "NP[CASE=NOM]",
+                "NP[CASE=DAT]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "↓3 ∈ (↑ ADJUNCT)",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        # 3-arg pa-OV (causee + patient retained, gap-causer); both
+        # NP orders mirror the top-level multi-GEN-NP and the
+        # Phase 5d Commit 8 S_XCOMP rules.
+        rules.append(Rule(
+            "S_GAP_OBJ_CAUSER",
+            [
+                "V[VOICE=OV, CAUS=DIRECT]",
+                "NP[CASE=NOM]",
+                "NP[CASE=GEN]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_GAP_OBJ_CAUSER",
+            [
+                "V[VOICE=OV, CAUS=DIRECT]",
+                "NP[CASE=GEN]",
+                "NP[CASE=NOM]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓2",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        # 2-arg pa-DV (location/recipient pivot + gap-causer); the
+        # Phase 5d Commit 2 ``pa-...-an`` lex profile is 2-arg only,
+        # so no 3-arg pa-DV variant here. (Group D's "3-arg top-level
+        # pa-DV" item would add the 3-arg lex first, then the
+        # corresponding S_GAP_OBJ_CAUSER frame.)
+        rules.append(Rule(
+            "S_GAP_OBJ_CAUSER",
+            ["V[VOICE=DV, CAUS=DIRECT]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_GAP_OBJ_CAUSER",
+            [
+                "V[VOICE=DV, CAUS=DIRECT]",
+                "NP[CASE=NOM]",
+                "NP[CASE=DAT]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "↓3 ∈ (↑ ADJUNCT)",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        # Negation recursion mirrors the other gap categories.
+        rules.append(Rule(
+            "S_GAP_OBJ_CAUSER",
+            ["PART[POLARITY=NEG]", "S_GAP_OBJ_CAUSER"],
+            ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
+        ))
+
         # --- Phase 5d Commit 6: possessive-linker RC gap-category ---
         #
         # Construction: ``aklat kong binasa`` ("the book that I read").
@@ -988,6 +1101,24 @@ class Grammar:
                 "(↑) = ↓3",
                 "(↑ TOPIC) = ↓1",
                 "(↓3 REL-PRO) = ↓1",
+            ],
+        ))
+
+        # Phase 5e Commit 1: pa-OV / pa-DV (CAUS=DIRECT) actor-fronting.
+        # The fronted GEN-NP is the CAUSER (demoted from actor under
+        # pa-causation); the inner clause is a pa-causative S_GAP_OBJ_CAUSER
+        # which routes REL-PRO to the typed ``OBJ-CAUSER`` slot.
+        # Disambiguation against S_GAP_OBJ_AGENT happens via the inner
+        # V's CAUS feature (DIRECT vs NONE), so both wrap rules can
+        # coexist without cross-firing.
+        rules.append(Rule(
+            "S",
+            ["NP[CASE=GEN]", "PART[LINK=AY]", "S_GAP_OBJ_CAUSER"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "(↓3 REL-PRO) = ↓1",
+                "(↓3 REL-PRO) =c (↓3 OBJ-CAUSER)",
             ],
         ))
 
