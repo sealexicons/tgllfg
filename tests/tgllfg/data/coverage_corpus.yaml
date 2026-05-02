@@ -2529,6 +2529,36 @@
 - text: Kumain itong batang ito.
   construction: 'demonstrative: pre + post-mod stacking'
   expected: parse
+- text: Tumakbo ang batang ito na kumain.
+  construction: 'demonstrative: post-mod ito on RC''d head (PROX)'
+  expected: parse
+- text: Tumakbo ang batang iyan na kumain.
+  construction: 'demonstrative: post-mod iyan on RC''d head (MED)'
+  expected: parse
+- text: Tumakbo ang batang iyon na kumain.
+  construction: 'demonstrative: post-mod iyon on RC''d head (DIST)'
+  expected: parse
+- text: Natulog ang batang ito na kumain.
+  construction: 'demonstrative: post-mod ito on RC''d head (PROX)'
+  expected: parse
+- text: Natulog ang batang iyan na kumain.
+  construction: 'demonstrative: post-mod iyan on RC''d head (MED)'
+  expected: parse
+- text: Natulog ang batang iyon na kumain.
+  construction: 'demonstrative: post-mod iyon on RC''d head (DIST)'
+  expected: parse
+- text: Tumakbo ang batang ito na kumain ng isda.
+  construction: 'demonstrative: post-mod dem on RC''d head, transitive RC'
+  expected: parse
+- text: Tumakbo ang lalaki na ito na kumain.
+  construction: 'demonstrative: post-mod (na linker) on RC''d head'
+  expected: parse
+- text: Kinain ng batang nito na kumain ang isda.
+  construction: 'demonstrative: GEN post-mod dem on RC''d OV-actor head'
+  expected: parse
+- text: Tumakbo itong batang kumain.
+  construction: 'demonstrative: pre-mod + RC composition'
+  expected: parse
 - text: Kumain ang aso ng isda ng nanay.
   construction: 'possessive: ng-NP modifier on OBJ'
   expected: parse

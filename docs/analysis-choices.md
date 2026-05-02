@@ -3609,7 +3609,7 @@ On investigation, the construction does not have a stable,
 corpus-attested syntactic shape in modern written Tagalog, and
 attempting to implement it without that grounding would mean
 guessing at form. Phase 5e Commit 7 reclassifies the item to
-plan §16 (genuinely v1-out-of-scope) and pins the rationale
+plan §18 (genuinely v1-out-of-scope) and pins the rationale
 here.
 
 ### Why Tagalog doesn't really use resumptive RCs
@@ -3660,21 +3660,21 @@ A meaningful implementation would need:
    pronoun that's functionally identified with the head.
 3. Decision on how to identify the coreferent pronoun: by
    pragmatic / discourse-anaphora resolution (out of scope
-   per §16 sentence-level tooling) or by an explicit
+   per §18 sentence-level tooling) or by an explicit
    ``REL-PRO`` binding equation that's lex-licensed.
 
-None of these conditions hold. Reclassifying to §16 is the
+None of these conditions hold. Reclassifying to §18 is the
 honest call.
 
 ### Where it lives now
 
 * Plan §10.1 Group B has a parenthetical noting the
-  reclassification and a pointer to §10.2 / §16.
+  reclassification and a pointer to §10.2 / §18.
 * Plan §10.2 ("Items not enumerated above") gains the
   resumptive item alongside the other genuinely-out-of-scope
   Phase 5e items (unbounded control chains, 3+ sa-NPs,
   non-restrictive RCs).
-* Plan §16 gains a new bullet articulating the why.
+* Plan §18 gains a new bullet articulating the why.
 * This `docs/analysis-choices.md` section pins the rationale
   with citations.
 
@@ -4166,7 +4166,7 @@ the f-structure under the parser's "string feats only" rule.
 * **`ka-...-an` re-classification.** The plan §10.1 Group D
   claim that ``ka-...-an`` is a reciprocal causative is
   retracted in this commit. The form is documented as a
-  noun-derivation pattern in §16-style territory, but a future
+  noun-derivation pattern in §18-style territory, but a future
   commit could survey actual ``ka-...-an`` verbal uses (some
   reflexive-like derivations exist in S&O 1972 §5.28); not
   pursued now.
@@ -4227,7 +4227,7 @@ or ``magsi-`` (collective).
 
 ### Where ``magpa-...-an`` lives now
 
-§16 (genuinely v1-out-of-scope), with the explanation pinned
+§18 (genuinely v1-out-of-scope), with the explanation pinned
 above. Revisit only if a corpus emerges where the construction
 appears with non-trivial frequency.
 
@@ -4241,7 +4241,7 @@ Documentation only:
 * Plan §10.2 ("Items not enumerated above") gains the
   ``magpa-...-an`` bullet alongside the other reclassified
   items (resumptive pronouns, etc.).
-* Plan §16 gains a ``magpa-...-an`` bullet with the why.
+* Plan §18 gains a ``magpa-...-an`` bullet with the why.
 * This `docs/analysis-choices.md` section pins the rationale.
 * `docs/coverage.md` "What's intentionally not covered" gains
   an entry.
@@ -4420,11 +4420,11 @@ Both paths are deferred to v1+ when corpus pressure justifies.
 ### Where it lives now
 
 * Plan §10.1 Group D parenthetical noting the reclassification
-  and pointer to §10.2 / §16.
+  and pointer to §10.2 / §18.
 * Plan §10.2 ("Items not enumerated above") gains the
   ``pang-``-purpose-nominals item (sixth item; the plan now
   flags this re-categorisation explicitly).
-* Plan §16 gains a bullet articulating the rationale and the
+* Plan §18 gains a bullet articulating the rationale and the
   two implementation paths.
 * This `docs/analysis-choices.md` section pins the rationale.
 
@@ -4564,4 +4564,148 @@ with the ``na``-disambiguation pass in a way that needs the
 fifth left-context branch. Bundling pre+post into one commit
 would have obscured both interactions; splitting them keeps
 each commit's contract self-contained.
+
+## Phase 5e Commit 17: demonstrative on a relativized head
+
+**Date:** 2026-05-02. **Status:** active. Lifts the §7.8 / §7.5
+deferral on "Demonstrative as modifier of a relativized head"
+noted as out-of-scope under Phase 5d Commit 3. Sentences like
+``Tumakbo ang batang ito na kumain`` ("the child who ate ran")
+now parse with the post-mod dem and the RC composing through
+the existing Phase 5d Commit 3 + Phase 4 §7.5 rules. No new
+grammar rules are added.
+
+### Plan note vs. actual diagnosis
+
+The Phase 5d Commit 3 deferral note read:
+
+> The RC's linker would compete with the dem-modifier's linker;
+> needs ranker-policy refinement.
+
+Investigation showed the deferral note was inaccurate — the
+construction wasn't being mis-ranked, it was failing to parse
+at all. The root cause turned out to be a latent bug in the
+Phase 5e Commit 16 disambiguator branch for ``na`` after a
+demonstrative DET / ADP, not anything to do with rule
+competition.
+
+### The bug: boolean DEM compared as a string
+
+Phase 5e Commit 16 added a fifth branch to
+``disambiguate_homophone_clitics`` (in
+``src/tgllfg/clitics/placement.py``) intended to keep the
+standalone ``na`` as a linker when preceded by a
+demonstrative DET / ADP. The branch read:
+
+```python
+elif prev is not None and any(
+    ma.pos in ("DET", "ADP") and ma.feats.get("DEM") == "YES"
+    for ma in prev
+):
+    out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+```
+
+The ``DEM`` feature is set in ``data/tgl/particles.yaml`` as
+
+```yaml
+- surface: ito
+  pos: DET
+  feats: {CASE: NOM, DEIXIS: PROX, DEM: YES}
+```
+
+PyYAML 1.1-style boolean parsing renders ``YES`` as the Python
+boolean ``True`` (not the string ``"YES"``). The string
+comparison ``== "YES"`` against ``True`` always returned
+False, so the branch never fired. Phase 5e Commit 16's
+MED / DIST cases (``Kumain iyan na bata``,
+``Kumain iyon na bata``) still parsed only because the
+clitic-pass moved the standalone ``na`` to clause-final as the
+aspectual ``ALREADY`` enclitic and the bare-NP rule absorbed
+the demonstrative DET as a determiner with DEIXIS percolating
+to the matrix NP — the f-structure DEIXIS came out right but
+the analytical structure was the fallback, not the new
+pre-modifier-dem rule.
+
+### Phase 5e Commit 17 fix
+
+The corrected branch compares against the boolean directly:
+
+```python
+elif prev is not None and any(
+    ma.pos in ("DET", "ADP") and ma.feats.get("DEM") is True
+    for ma in prev
+):
+    out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+```
+
+With the branch finally firing, the standalone ``na`` after a
+demonstrative is forced to the linker reading. Two
+constructions are unblocked:
+
+1. **The Phase 5e Commit 16 MED / DIST pre-modifier dem cases**
+   now use the proper ``NP[CASE=NOM] → DET[CASE=NOM, DEM=YES]
+   PART[LINK=NA] N`` rule (the Commit 16 grammar addition that
+   was supposed to apply but didn't because of this disambiguator
+   bug). The fallback path through the bare-NP rule no longer
+   fires for this surface — the ``na`` stays in place rather
+   than being moved to clause-final as ``ALREADY``.
+2. **The dem-on-RC construction** (``ang batang ito na
+   kumain``) parses by composing the existing Phase 5d Commit 3
+   post-mod-dem rule with the Phase 4 §7.5 RC rule. The post-mod
+   dem produces an NP[CASE=NOM] with DEIXIS percolated; the RC
+   rule wraps that NP with the ``na`` linker and the SUBJ-gapped
+   inner clause. No new grammar rule is needed — only the
+   disambiguator fix unblocks the surface order the parser
+   needed to see.
+
+### Surface variants enabled
+
+```
+ang batang ito na kumain          (NOM PROX, head-NG-dem-NA-RC)
+ang batang iyan na kumain         (NOM MED)
+ang batang iyon na kumain         (NOM DIST)
+ang lalaki na ito na kumain       (head-NA-dem-NA-RC, two NAs)
+ang batang ito na kumain ng isda  (transitive RC)
+ng batang nito na kumain          (GEN-headed, OV-actor)
+```
+
+The RC body can carry any voice / aspect / argument frame the
+existing Phase 4 §7.5 wrap rule supports — the dem on the head
+NP is independent of the RC's internal shape.
+
+### Why no new grammar rule is needed
+
+The Phase 5d Commit 3 post-mod-dem rule produces
+``NP[CASE=NOM]`` with DEIXIS percolated; the matrix's
+f-structure is shared with the head NP's via ``(↑) = ↓1``. The
+Phase 4 §7.5 RC wrap rule takes any ``NP[CASE=NOM]`` (or any
+case) as the head, regardless of whether the head has DEIXIS or
+not. The two rules compose by stacking:
+
+```
+NP[CASE=NOM]
+├── NP[CASE=NOM]            (post-mod-dem-d head)
+│   ├── NP[CASE=NOM]        (bare ``ang bata``)
+│   ├── PART[LINK=NG]       (bound linker)
+│   └── DET[CASE=NOM, DEM=YES]  (``ito``)
+├── PART[LINK=NA]           (RC linker)
+└── S_GAP                   (``kumain``)
+```
+
+The disambiguator fix is the only change needed; the rules
+were already in place.
+
+### Out-of-scope (still deferred)
+
+* **Pre-modifier dem on a relativized head**
+  (``itong batang kumain`` "this child who ate"). Already
+  works via the Phase 5e Commit 16 pre-mod-dem rule + Phase 4
+  §7.5 RC rule — pinned by a regression test in this commit.
+  Not a new construction; included as a regression check.
+* **Dem on a relativized head where the RC itself contains a
+  dem-modified NP**, e.g., ``ang batang ito na kumain ng
+  isdang iyon`` "this child who ate that fish". Composes
+  recursively; covered by existing rules. Not pinned in this
+  commit (the recursive case is ordinary composition with no
+  new analytical content).
 

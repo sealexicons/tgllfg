@@ -250,17 +250,31 @@ def disambiguate_homophone_clitics(
         if "NOUN" in prev_pos or "N" in prev_pos:
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif prev is not None and any(
-            ma.pos in ("DET", "ADP") and ma.feats.get("DEM") == "YES"
+            ma.pos in ("DET", "ADP") and ma.feats.get("DEM") is True
             for ma in prev
         ):
-            # Phase 5e Commit 16: demonstrative DET/ADP followed by
-            # ``na`` is the linker for pre-modifier dem (``iyan na
-            # bata`` / ``iyon na bata`` / ``niyan na isda``). The
-            # dem replaces the case marker as the determiner; the
-            # following ``na`` introduces the head N — never the
-            # aspectual ``ALREADY``. (PROX dems take the bound
-            # ``-ng`` linker, which is unambiguously a linker, so
-            # this branch only matters for MED / DIST.)
+            # Phase 5e Commit 16 (corrected in Commit 17):
+            # demonstrative DET/ADP followed by ``na`` is the linker
+            # for pre-modifier dem (``iyan na bata`` / ``iyon na
+            # bata`` / ``niyan na isda``) and for the dem-on-RC
+            # construction (``batang ito na kumain``). The dem
+            # carries CASE/MARKER/DEIXIS; the following ``na``
+            # introduces the head N or the relative-clause body —
+            # never the aspectual ``ALREADY``. PROX dems take the
+            # bound ``-ng`` linker, which is unambiguously a linker
+            # (no clitic homophone), so this branch matters only for
+            # the MED / DIST surface forms.
+            #
+            # Note on the boolean check: morph entries set
+            # ``DEM: YES`` in particles.yaml, which YAML parses as
+            # the Python boolean ``True``. The Phase 5e Commit 16
+            # version of this branch compared against the literal
+            # string ``"YES"`` and silently never fired; the parses
+            # that appeared to work in the MED / DIST cases were
+            # actually fallbacks (clitic-pass moved the ``na`` to
+            # clause-final and the bare-NP rule absorbed
+            # ``DET[DEM=YES] N`` directly). The corrected check
+            # uses ``is True`` so the branch fires as designed.
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif "VERB" in prev_pos or "PRON" in prev_pos:
             # Three left-context exceptions where ``na`` should be

@@ -805,6 +805,31 @@ def _demonstrative_possessive_corpus() -> list[dict[str, Any]]:
     _add(out, "kumain itong batang ito",
          "demonstrative: pre + post-mod stacking",
          "parse")
+    # Phase 5e Commit 17: dem on a relativized head. The
+    # post-mod-dem rule (Phase 5d Commit 3) and the §7.5 RC rule
+    # already compose; this commit lifted the latent disambiguator
+    # bug that prevented the standalone ``na`` from staying in
+    # place between the dem and the RC. NOM-headed dem-on-RC.
+    for verb in ("tumakbo", "natulog"):
+        for dem in ("ito", "iyan", "iyon"):
+            _add(out, f"{verb} ang batang {dem} na kumain",
+                 f"demonstrative: post-mod {dem} on RC'd head "
+                 f"({'PROX' if dem == 'ito' else 'MED' if dem == 'iyan' else 'DIST'})",
+                 "parse")
+    _add(out, "tumakbo ang batang ito na kumain ng isda",
+         "demonstrative: post-mod dem on RC'd head, transitive RC",
+         "parse")
+    _add(out, "tumakbo ang lalaki na ito na kumain",
+         "demonstrative: post-mod (na linker) on RC'd head",
+         "parse")
+    # GEN-headed (in OV-actor position).
+    _add(out, "kinain ng batang nito na kumain ang isda",
+         "demonstrative: GEN post-mod dem on RC'd OV-actor head",
+         "parse")
+    # Pre-mod + RC (Phase 5e Commit 16 + Phase 4 §7.5; pin in corpus).
+    _add(out, "tumakbo itong batang kumain",
+         "demonstrative: pre-mod + RC composition",
+         "parse")
     # Possessive: ng-NP modifier
     for verb in ("kumain", "bumili"):
         for nom in _NOM_NPS[:3]:
