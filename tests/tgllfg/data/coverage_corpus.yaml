@@ -1650,6 +1650,18 @@
   construction: 'relativization: OBJ-rel rejected (SUBJ-only)'
   expected: fragment
   notes: Tagalog SUBJ-only restriction; full parse fails, sub-spans surface as fragments
+- text: Nakita ko ang batang kinain niya.
+  construction: 'relativization: multi-pronoun RC (matrix + embedded)'
+  expected: parse
+- text: Nakita mo ang batang kinain niya.
+  construction: 'relativization: multi-pronoun RC (matrix + embedded)'
+  expected: parse
+- text: Nakita niya ang batang kinain ko.
+  construction: 'relativization: multi-pronoun RC (matrix + embedded)'
+  expected: parse
+- text: Nakita ko ang batang hindi kinain niya.
+  construction: 'relativization: multi-pronoun RC + inner NEG'
+  expected: parse
 - text: Gusto kong kumain.
   construction: 'control: psych gusto'
   expected: parse

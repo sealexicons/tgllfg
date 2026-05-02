@@ -448,6 +448,23 @@ def _relativization_corpus() -> list[dict[str, Any]]:
              "relativization: OBJ-rel rejected (SUBJ-only)",
              "fragment",
              notes="Tagalog SUBJ-only restriction; full parse fails, sub-spans surface as fragments")
+
+    # Phase 5e Commit 4: multi-pronoun RC composition. Phase 5d
+    # Commit 10's `_is_post_embedded_v_pron` Wackernagel exception
+    # plus existing relativization compose to handle a matrix-
+    # cluster PRON and an embedded RC-actor PRON in one sentence.
+    for matrix_pron, rc_pron in [
+        ("ko", "niya"),    # 1sg-GEN matrix + 3sg-GEN RC
+        ("mo", "niya"),    # 2sg-GEN matrix + 3sg-GEN RC
+        ("niya", "ko"),    # 3sg-GEN matrix + 1sg-GEN RC
+    ]:
+        _add(out, f"nakita {matrix_pron} ang batang kinain {rc_pron}",
+             "relativization: multi-pronoun RC (matrix + embedded)",
+             "parse")
+    # Inner-NEG inside the RC.
+    _add(out, "nakita ko ang batang hindi kinain niya",
+         "relativization: multi-pronoun RC + inner NEG",
+         "parse")
     return out
 
 

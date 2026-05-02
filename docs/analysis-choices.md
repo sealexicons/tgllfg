@@ -3343,3 +3343,77 @@ structurally impossible:
   ("the book for the child") embeds the PP inside an NP rather
   than at the clausal level. Different attachment site.
 
+## Phase 5e Commit 4: multi-pronoun RC composition pinning
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5d Commit 10's deferral list flagged "Multi-pronoun RCs" —
+a single matrix sentence with both a matrix-cluster PRON and an
+embedded RC-actor PRON, e.g. ``Nakita ko ang batang kinain niya``
+("I saw the child she ate"). The Wackernagel logic from
+Commit 10 (specifically
+:func:`tgllfg.clitics.placement._is_post_embedded_v_pron`)
+already handled the two pronouns independently per-token: the
+post-matrix-V PRON (``ko``) goes into the matrix V's cluster,
+the post-embedded-V PRON (``niya``) stays in place as the RC's
+actor. The construction was structurally available but not
+pinned with tests.
+
+This commit is **test-only** — no grammar / placement / lex
+changes. It pins the composition with explicit assertions:
+
+* Both PRONs end up in distinct f-structure slots (different
+  ``FStructure.id``s).
+* The matrix-cluster PRON binds to the matrix V's appropriate
+  role (matrix.OBJ in the synthesized AV-NVOL ``nakita`` case;
+  matrix.SUBJ in AV-tr cases).
+* The embedded RC-actor PRON binds inside the RC (the RC is an
+  ADJ member of its head NP; the PRON fills the RC's
+  OBJ-AGENT) — not at the matrix level.
+* Negation under either the matrix or the RC composes
+  independently.
+
+### Identification by structural position, not LEMMA / PERS
+
+Pronouns in Tagalog don't carry a grammar-visible LEMMA (the
+analyzer doesn't add one for the PRON path), and PERS rides on
+``feats`` as an integer which the pipeline's lex-equation
+derivation drops (only string-valued feats become lex
+equations). The two PRONs in a multi-pronoun RC are therefore
+**indistinguishable at the f-structure level** beyond:
+
+* Their structural position (matrix slot vs ADJ-RC slot).
+* Their CASE / NUM features (which are string-valued and
+  percolate).
+
+Tests rely on structural position plus CASE / NUM. This is
+sufficient for "composition pinning" but doesn't directly
+distinguish 1sg vs 2sg vs 3sg. Adding string-valued PERS to the
+analyzer is a small follow-up that would let downstream
+consumers identify pronouns by person; out of scope for this
+commit.
+
+### What this lifts
+
+Three matrix-PRON / RC-PRON orderings explicitly tested:
+
+* ``Nakita ko ang batang kinain niya.`` (1sg + 3sg)
+* ``Nakita mo ang batang kinain niya.`` (2sg + 3sg)
+* ``Nakita niya ang batang kinain ko.`` (3sg + 1sg)
+
+Plus AV-matrix variant
+(``Kumain ako ng batang kinain niya.``) and inner-NEG
+composition (``Nakita ko ang batang hindi kinain niya.``).
+
+### Out-of-scope (still deferred)
+
+* **3+ pronouns in a single sentence.** Matrix + RC1 + RC2 with
+  three distinct PRONs (``Nakita ko ang batang kinain mo ng
+  isdang nahuli niya``) — the recursion is structurally
+  available but combinatorially explodes the parse forest;
+  stress-test deferred until corpus pressure justifies.
+* **PERS exposure as string-valued feat.** Would let tests and
+  downstream consumers distinguish 1sg / 2sg / 3sg pronouns at
+  the f-structure level. Trivial analyzer addition; deferred
+  to a separate engineering follow-up.
+
