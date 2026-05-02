@@ -663,6 +663,23 @@ def _control_corpus() -> list[dict[str, Any]]:
     _add(out, "ng kanin ay pinakainan ng nanay ang bata",
          "ay-inversion: 3-arg pa-DV PATIENT-fronted",
          "parse")
+
+    # Phase 5e Commit 11: 3-arg plain DV (CAUS=NONE) ditransitives.
+    # New intrinsic profile + sulat DV 3-arg lex entry + 3
+    # multi-GEN-NP grammar rules.
+    _add(out, "sinulatan ng nanay ng liham ang anak",
+         "causative: 3-arg DV plain (GEN-GEN-NOM, sulat)",
+         "parse")
+    _add(out, "sinulatan ang anak ng nanay ng liham",
+         "causative: 3-arg DV plain (NOM-GEN-GEN, sulat)",
+         "parse")
+    _add(out, "sinulatan ng nanay ang anak ng liham",
+         "causative: 3-arg DV plain (GEN-NOM-GEN, sulat)",
+         "parse")
+    # IPFV aspect:
+    _add(out, "sinusulatan ng nanay ng liham ang anak",
+         "causative: 3-arg DV plain IPFV",
+         "parse")
     return out
 
 

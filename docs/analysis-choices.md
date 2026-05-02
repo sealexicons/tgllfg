@@ -3964,3 +3964,99 @@ though it isn't separately pinned with tests in this commit.
   reciprocal, ``magpa-...-an`` distributive) — separate Phase
   5e Group D items. Not lifted by this commit.
 
+## Phase 5e Commit 11: 3-argument plain DV (CAUS=NONE)
+
+**Date:** 2026-05-02. **Status:** active.
+
+Phase 5b's multi-GEN-NP rules were IV-only; Phase 5d Commit 4
+added IV-INSTR / IV-REASON 3-arg variants; Phase 5e Commit 10
+added pa-DV (CAUS=DIRECT) 3-arg. The remaining gap was **plain
+DV (CAUS=NONE) ditransitives** like ``Sinulatan ng nanay ng
+liham ang anak`` "Mother wrote a letter to the child", where
+the AGENT and PATIENT are GEN-marked non-pivots and the
+RECIPIENT is the NOM-marked DV pivot. Phase 5e Commit 11 fills
+this in.
+
+### New intrinsic profile
+
+```python
+_DV_TR_AGENT_PATIENT_RECIPIENT_THREE_ARG = {
+    "AGENT":     (True, True),    # → OBJ-AGENT
+    "PATIENT":   (True, True),    # → OBJ-PATIENT
+    "RECIPIENT": (False, False),  # → SUBJ (the DV pivot)
+}
+```
+
+Mirrors ``_DV_CAUS_DIRECT_THREE_ARG`` from Phase 5e Commit 10
+but with AGENT instead of CAUSER and RECIPIENT instead of
+LOCATION. Both choices are role-naming conventions; under the
+LMT engine they map to the same typed OBJ-θ slots.
+
+### New BASE entry
+
+```
+WRITE-TO <SUBJ, OBJ-AGENT, OBJ-PATIENT>   sulat DV CAUS=NONE 3-arg
+```
+
+The "-TO" PRED suffix mirrors the pa-DV "-AT" convention so the
+3-arg variant is distinguishable from the existing 2-arg
+``WRITE <SUBJ, OBJ-AGENT>`` form (whose PRED stays bare for
+backward compatibility with existing tests). Both lex profiles
+coexist; lex lookup chooses based on NP count.
+
+### Three top-level multi-GEN-NP grammar rules
+
+Parallel to the Phase 5b pa-OV-direct and Phase 5e Commit 10
+pa-DV rules, with ``V[VOICE=DV, CAUS=NONE]`` matching plain
+(non-causative) DV:
+
+```
+S → V[VOICE=DV, CAUS=NONE] NP[CASE=NOM] NP[CASE=GEN] NP[CASE=GEN]
+   ↳ SUBJ=NOM (RECIPIENT), OBJ-AGENT=1st GEN, OBJ-PATIENT=2nd GEN
+S → V[VOICE=DV, CAUS=NONE] NP[CASE=GEN] NP[CASE=NOM] NP[CASE=GEN]
+S → V[VOICE=DV, CAUS=NONE] NP[CASE=GEN] NP[CASE=GEN] NP[CASE=NOM]
+```
+
+The first ng-NP is AGENT, the second is PATIENT — same Phase 5b
+positional convention.
+
+### Why only sulat for now
+
+DV ditransitives are a relatively narrow construction in
+Tagalog. ``sulat`` (write) is the canonical example because the
+RECIPIENT pivot is animate (``ang anak``) and the PATIENT
+(``ng liham``) is a typical written object. Other DV verbs
+(``kain``, ``inom``, ``basa``) admit 2-arg DV readings (place
+pivot or recipient pivot) but rarely surface with overt
+PATIENT in the GEN slot — those constructions tend to use the
+pa-DV form (the Phase 5e Commit 10 pattern) instead. Adding
+3-arg plain-DV entries for the other anchors would be lex-only
+and is deferred until corpus pressure justifies.
+
+### Sentences enabled
+
+* ``Sinulatan ng nanay ng liham ang anak.`` (GEN-GEN-NOM)
+* ``Sinulatan ang anak ng nanay ng liham.`` (NOM-GEN-GEN)
+* ``Sinulatan ng nanay ang anak ng liham.`` (GEN-NOM-GEN)
+* IPFV aspect (``Sinusulatan ng nanay ng liham ang anak``)
+* Negation under matrix (``Hindi sinulatan ng nanay ng liham
+  ang anak``)
+
+### Coexistence with the 2-arg reading
+
+When the surface includes the GEN-GEN cluster, the parser
+admits both the 3-arg reading (with overt OBJ-PATIENT) and a
+2-arg reading where ``ng nanay ng liham`` is parsed as a
+possessive ``mother's letter`` filling OBJ-AGENT. Both are
+linguistically valid; the n-best list contains both. Tests
+assert the 3-arg reading is among the parses.
+
+### Out-of-scope (still deferred)
+
+* **Plain DV 3-arg under control / ay-fronting.** The
+  multi-arg-under-control patterns from Phase 5e Commits 9 and
+  10 don't yet have plain-DV variants. Adding them mirrors the
+  pa-OV / pa-DV approach.
+* **3-arg plain DV for other anchor verbs.** Lex-only
+  extensions; deferred until corpus pressure justifies.
+

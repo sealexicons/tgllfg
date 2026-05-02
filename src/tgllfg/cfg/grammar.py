@@ -1810,6 +1810,53 @@ class Grammar:
             ),
         ))
 
+        # --- Phase 5e Commit 11: multi-GEN-NP plain DV (CAUS=NONE) ---
+        #
+        # Three-argument DV ditransitives like
+        # ``Sinulatan ng nanay ng letra ang anak`` ("Mother wrote a
+        # letter to the child") have two ng-marked non-pivots
+        # (AGENT + PATIENT) plus the ang-marked pivot (RECIPIENT —
+        # DV's broad voice category covers location / recipient /
+        # dative; for animate pivots like ``ang anak`` the reading
+        # is recipient).
+        #
+        # Same structural shape as the Phase 5b multi-GEN-NP pa-OV
+        # and Phase 5e Commit 10 multi-GEN-NP pa-DV rules above,
+        # with CAUS=NONE matching plain (non-causative) DV.
+        # First ng-NP is AGENT; second is PATIENT — same Phase 5b
+        # positional convention.
+        v_dv_plain = "V[VOICE=DV, CAUS=NONE]"
+        # NOM-GEN-GEN: pivot first, AGENT, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_dv_plain, "NP[CASE=NOM]", "NP[CASE=GEN]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-AGENT) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-NOM-GEN: AGENT, pivot, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_dv_plain, "NP[CASE=GEN]", "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-AGENT) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-GEN-NOM: AGENT, PATIENT, pivot.
+        rules.append(Rule(
+            "S",
+            [v_dv_plain, "NP[CASE=GEN]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓4",
+                "(↑ OBJ-AGENT) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+            ),
+        ))
+
         # --- Phase 5e Commit 10: multi-GEN-NP causative frames (pa-DV direct) ---
         #
         # Three-argument direct DV causatives like

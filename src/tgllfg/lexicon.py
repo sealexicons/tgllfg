@@ -209,6 +209,21 @@ _DV_CAUS_DIRECT_THREE_ARG: dict[
     "PATIENT": (True, True),
     "LOCATION": (False, False),
 }
+# Phase 5e Commit 11: three-arg plain DV (CAUS=NONE) with
+# explicit PATIENT alongside AGENT and RECIPIENT-pivot. Mirrors
+# the 3-arg pa-DV profile but with AGENT instead of CAUSER and
+# RECIPIENT instead of LOCATION (semantically the same — DV's
+# broad voice category covers location / recipient / dative —
+# but role-named for non-causative DV ditransitives like
+# ``Sinulatan ng nanay ng letra ang anak`` "Mother wrote a
+# letter to the child").
+_DV_TR_AGENT_PATIENT_RECIPIENT_THREE_ARG: dict[
+    str, tuple[bool | None, bool | None]
+] = {
+    "AGENT": (True, True),
+    "PATIENT": (True, True),
+    "RECIPIENT": (False, False),
+}
 # Indirect (biclausal) causative: CAUSER pivot, EVENT stipulated as
 # XCOMP via gf_defaults — the LMT bridge ``stipulated_gfs_for`` picks
 # it up. The EVENT role itself has no [±r, ±o] (off the truth table).
@@ -378,6 +393,24 @@ BASE: dict[str, list[LexicalEntry]] = {
             ["AGENT", "RECIPIENT"],
             {"RECIPIENT": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_DV_TR_AGENT_RECIPIENT,
+        ),
+        # Phase 5e Commit 11: three-argument plain DV with explicit
+        # PATIENT/THEME alongside AGENT and RECIPIENT-pivot.
+        # ``Sinulatan ng nanay ng letra ang anak``
+        # "Mother wrote a letter to the child."
+        # The "-TO" PRED suffix mirrors the pa-DV "-AT" convention
+        # for distinguishing 3-arg DV from the 2-arg form (whose
+        # PRED stays bare ``WRITE`` for compatibility with existing
+        # tests).
+        _entry(
+            "sulat", "DV", "WRITE-TO <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+            ["AGENT", "PATIENT", "RECIPIENT"],
+            {
+                "RECIPIENT": "SUBJ",
+                "AGENT": "OBJ-AGENT",
+                "PATIENT": "OBJ-PATIENT",
+            },
+            intrinsic_classification=_DV_TR_AGENT_PATIENT_RECIPIENT_THREE_ARG,
         ),
         _entry(
             "sulat", "IV", "WRITE <SUBJ, OBJ-AGENT>",

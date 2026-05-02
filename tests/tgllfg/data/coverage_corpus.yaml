@@ -2028,6 +2028,18 @@
 - text: Ng kanin ay pinakainan ng nanay ang bata.
   construction: 'ay-inversion: 3-arg pa-DV PATIENT-fronted'
   expected: parse
+- text: Sinulatan ng nanay ng liham ang anak.
+  construction: 'causative: 3-arg DV plain (GEN-GEN-NOM, sulat)'
+  expected: parse
+- text: Sinulatan ang anak ng nanay ng liham.
+  construction: 'causative: 3-arg DV plain (NOM-GEN-GEN, sulat)'
+  expected: parse
+- text: Sinulatan ng nanay ang anak ng liham.
+  construction: 'causative: 3-arg DV plain (GEN-NOM-GEN, sulat)'
+  expected: parse
+- text: Sinusulatan ng nanay ng liham ang anak.
+  construction: 'causative: 3-arg DV plain IPFV'
+  expected: parse
 - text: Ipinaggawa ng aso ang aso.
   construction: 'applicative: ipag- benefactive (gawa)'
   expected: parse
