@@ -630,6 +630,39 @@ def _control_corpus() -> list[dict[str, Any]]:
     _add(out, "gusto kong hindi pumayag na pakakainin ang bata",
          "control: nested pa-OV + middle NEG",
          "parse")
+
+    # Phase 5e Commit 10: 3-arg pa-DV (with overt PATIENT). New
+    # lex profile + multi-GEN top-level rules + S_XCOMP rules
+    # under control + S_GAP_OBJ_CAUSER / S_GAP_OBJ_PATIENT
+    # extensions for ay-fronting.
+    # Top-level 3-arg pa-DV across the three NP-order permutations:
+    _add(out, "pinakainan ng nanay ng kanin ang bata",
+         "causative: 3-arg pa-DV (GEN-GEN-NOM)",
+         "parse")
+    _add(out, "pinakainan ng nanay ang bata ng kanin",
+         "causative: 3-arg pa-DV (GEN-NOM-GEN)",
+         "parse")
+    _add(out, "pinakainan ang bata ng nanay ng kanin",
+         "causative: 3-arg pa-DV (NOM-GEN-GEN)",
+         "parse")
+    # Other anchor verbs:
+    _add(out, "pinabasahan ng nanay ng libro ang bata",
+         "causative: 3-arg pa-DV (basa)",
+         "parse")
+    # 3-arg pa-DV under control:
+    _add(out, "gusto kong pakakainan ang bata ng kanin",
+         "control: 3-arg pa-DV under psych control",
+         "parse")
+    _add(out, "pumayag akong pakakainan ang bata ng kanin",
+         "control: 3-arg pa-DV under intrans control",
+         "parse")
+    # 3-arg pa-DV ay-fronting:
+    _add(out, "ng nanay ay pinakainan ang bata ng kanin",
+         "ay-inversion: 3-arg pa-DV CAUSER-fronted",
+         "parse")
+    _add(out, "ng kanin ay pinakainan ng nanay ang bata",
+         "ay-inversion: 3-arg pa-DV PATIENT-fronted",
+         "parse")
     return out
 
 

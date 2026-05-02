@@ -3857,3 +3857,110 @@ pass cleanly.
   composing pa-OV / IV-3arg innermost with 4+ levels of control
   hasn't been pinned.
 
+## Phase 5e Commit 10: 3-arg pa-DV (with overt PATIENT)
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5d Commit 2 introduced pa-DV (``pa-...-an``) at the matrix
+level with a 2-arg PRED ``CAUSE-X-AT <SUBJ, OBJ-CAUSER>`` —
+mirroring the pa-OV 2-arg shape but with the pa-DV pivot
+(LOCATION / recipient / dative) at SUBJ. Phase 5d Commit 8 added
+pa-DV under control at 2-arg. The 3-arg pa-DV variant (with
+overt PATIENT) was deferred in both commits because the lex
+profile didn't admit a third argument and a new intrinsic
+profile was needed.
+
+Phase 5e Commit 10 fills in the pa-DV symmetry to match Phase
+5b's pa-OV-direct 3-arg coverage:
+
+### New intrinsic profile
+
+```python
+_DV_CAUS_DIRECT_THREE_ARG = {
+    "CAUSER":   (True, True),     # → OBJ-CAUSER
+    "PATIENT":  (True, True),     # → OBJ-PATIENT
+    "LOCATION": (False, False),   # → SUBJ (the pivot)
+}
+```
+
+Mirrors ``_OV_CAUS_DIRECT_THREE_ARG`` but with LOCATION at
+SUBJ instead of CAUSEE. The role label is LOCATION because
+Tagalog's DV broadly subsumes locative + recipient + dative
+under one voice; for animate-pivot tests like ``ang bata`` the
+reading is recipient.
+
+### Three new BASE entries (kain / basa / inom DV CAUS=DIRECT 3-arg)
+
+```
+CAUSE-EAT-AT   <SUBJ, OBJ-CAUSER, OBJ-PATIENT>   kain DV CAUS=DIRECT
+CAUSE-READ-AT  <SUBJ, OBJ-CAUSER, OBJ-PATIENT>   basa DV CAUS=DIRECT
+CAUSE-DRINK-AT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>   inom DV CAUS=DIRECT
+```
+
+Both 2-arg and 3-arg entries coexist for each verb; lex lookup
+chooses based on NP count.
+
+### New top-level multi-GEN-NP pa-DV grammar rules
+
+Three permutations parallel to the Phase 5b multi-GEN-NP pa-OV
+rules:
+
+```
+S → V[VOICE=DV, CAUS=DIRECT] NP[CASE=NOM] NP[CASE=GEN] NP[CASE=GEN]
+   ↳ SUBJ=NOM (LOCATION), OBJ-CAUSER=1st GEN, OBJ-PATIENT=2nd GEN
+S → V[VOICE=DV, CAUS=DIRECT] NP[CASE=GEN] NP[CASE=NOM] NP[CASE=GEN]
+S → V[VOICE=DV, CAUS=DIRECT] NP[CASE=GEN] NP[CASE=GEN] NP[CASE=NOM]
+```
+
+The first ng-NP is CAUSER (the agentive instigator), the second
+is PATIENT, per the Phase 5b positional convention.
+
+### S_XCOMP additions for 3-arg pa-DV under control
+
+```
+S_XCOMP → V[VOICE=DV, CAUS=DIRECT] NP[CASE=NOM] NP[CASE=GEN]
+   ↳ SUBJ=NOM, OBJ-PATIENT=GEN, OBJ-CAUSER=REL-PRO (gap)
+S_XCOMP → V[VOICE=DV, CAUS=DIRECT] NP[CASE=GEN] NP[CASE=NOM]
+```
+
+Mirrors the pa-OV variants in Phase 5d Commit 8.
+
+### S_GAP_OBJ_CAUSER and S_GAP_OBJ_PATIENT additions for ay-fronting
+
+* ``S_GAP_OBJ_CAUSER`` gains 3-arg pa-DV variants (NOM-GEN /
+  GEN-NOM with retained OBJ-PATIENT) — lifts the deferral
+  flagged in Phase 5e Commit 1.
+* ``S_GAP_OBJ_PATIENT``'s ``patient_gap_specs`` gains
+  ``("V[VOICE=DV, CAUS=DIRECT]", "OBJ-CAUSER")`` — lets pa-DV
+  3-arg PATIENT-fronting use the same gap-category as IV /
+  pa-OV.
+
+### Sentences enabled
+
+* Top-level 3-arg pa-DV across all three NP-order permutations:
+  ``Pinakainan ng nanay ng kanin ang bata.`` "Mother fed rice
+  to the child."
+* 3-arg pa-DV under control:
+  ``Gusto kong pakakainan ang bata ng kanin.`` "I want to feed
+  rice to the child."
+* 3-arg pa-DV ay-fronting (CAUSER-fronted, PATIENT retained):
+  ``Ng nanay ay pinakainan ang bata ng kanin.``
+* 3-arg pa-DV ay-fronting (PATIENT-fronted, CAUSER retained):
+  ``Ng kanin ay pinakainan ng nanay ang bata.``
+
+### Composition with embedded control
+
+Single-level pa-DV under control works (PSYCH and INTRANS
+classes). Nested pa-DV under control composes via the same
+Phase 5c §7.6 Commit 3 nested-S_XCOMP rules that pa-OV uses,
+though it isn't separately pinned with tests in this commit.
+
+### Out-of-scope (still deferred)
+
+* **Nested 3-arg pa-DV under multi-level control** — like the
+  pa-OV nested cases pinned in Phase 5e Commit 9, but with
+  3-arg pa-DV innermost. Should compose; not pinned.
+* **Other less-common DV causative variants** (``ka-...-an``
+  reciprocal, ``magpa-...-an`` distributive) — separate Phase
+  5e Group D items. Not lifted by this commit.
+

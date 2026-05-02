@@ -672,10 +672,8 @@ class Grammar:
             ),
         ))
         # 2-arg pa-DV (location/recipient pivot + gap-causer); the
-        # Phase 5d Commit 2 ``pa-...-an`` lex profile is 2-arg only,
-        # so no 3-arg pa-DV variant here. (Group D's "3-arg top-level
-        # pa-DV" item would add the 3-arg lex first, then the
-        # corresponding S_GAP_OBJ_CAUSER frame.)
+        # Phase 5d Commit 2 ``pa-...-an`` lex profile starts at
+        # 2-arg. Phase 5e Commit 10 adds the 3-arg variants below.
         rules.append(Rule(
             "S_GAP_OBJ_CAUSER",
             ["V[VOICE=DV, CAUS=DIRECT]", "NP[CASE=NOM]"],
@@ -694,6 +692,35 @@ class Grammar:
             _eqs(
                 "(↑ SUBJ) = ↓2",
                 "↓3 ∈ (↑ ADJUNCT)",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        # Phase 5e Commit 10: 3-arg pa-DV ay-fronting (CAUSER
+        # extracted, OBJ-PATIENT retained as overt GEN-NP). Both
+        # NP orders, mirroring the 3-arg pa-OV variants above.
+        rules.append(Rule(
+            "S_GAP_OBJ_CAUSER",
+            [
+                "V[VOICE=DV, CAUS=DIRECT]",
+                "NP[CASE=NOM]",
+                "NP[CASE=GEN]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_GAP_OBJ_CAUSER",
+            [
+                "V[VOICE=DV, CAUS=DIRECT]",
+                "NP[CASE=GEN]",
+                "NP[CASE=NOM]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓2",
                 "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
             ),
         ))
@@ -771,10 +798,13 @@ class Grammar:
         #
         # Both NP orders are admitted per voice; PART[POLARITY=NEG]
         # recursion at the bottom handles inner negation.
+        # Phase 5e Commit 10 adds pa-DV (CAUS=DIRECT) once the
+        # 3-arg pa-DV lex profile lands, so DV mirrors OV here.
         patient_gap_specs = [
             # (voice features, retained-GEN-NP target GF)
             ("V[VOICE=IV]", "OBJ-AGENT"),
             ("V[VOICE=OV, CAUS=DIRECT]", "OBJ-CAUSER"),
+            ("V[VOICE=DV, CAUS=DIRECT]", "OBJ-CAUSER"),
         ]
         for v_cat, retained_gf in patient_gap_specs:
             # NOM-GEN order: retained GEN follows pivot.
@@ -999,6 +1029,36 @@ class Grammar:
             ["V[VOICE=DV, CAUS=DIRECT]", "NP[CASE=NOM]"],
             _eqs(
                 "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        # Phase 5e Commit 10: three-argument pa-DV under control.
+        # Mirrors the three-argument pa-OV S_XCOMP rules above, but
+        # with the pa-DV pivot (LOCATION) at NOM and an overt
+        # OBJ-PATIENT GEN-NP retained. Both NP orders.
+        rules.append(Rule(
+            "S_XCOMP",
+            [
+                "V[VOICE=DV, CAUS=DIRECT]",
+                "NP[CASE=NOM]",
+                "NP[CASE=GEN]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+                "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            ),
+        ))
+        rules.append(Rule(
+            "S_XCOMP",
+            [
+                "V[VOICE=DV, CAUS=DIRECT]",
+                "NP[CASE=GEN]",
+                "NP[CASE=NOM]",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓2",
                 "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
             ),
         ))
@@ -1743,6 +1803,54 @@ class Grammar:
         rules.append(Rule(
             "S",
             [v_pa_ov, "NP[CASE=GEN]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓4",
+                "(↑ OBJ-CAUSER) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓3",
+            ),
+        ))
+
+        # --- Phase 5e Commit 10: multi-GEN-NP causative frames (pa-DV direct) ---
+        #
+        # Three-argument direct DV causatives like
+        # ``Pinakainan ng nanay ng kanin ang bata`` ("Mother fed
+        # rice to the child") have two ng-marked non-pivots
+        # (CAUSER + PATIENT) plus the ang-marked pivot (LOCATION /
+        # recipient / dative — the role label that DV's broad
+        # voice category covers). Same structural shape as the
+        # Phase 5b multi-GEN-NP pa-OV-direct rules above; the
+        # difference is the SUBJ-mapped role (LOCATION instead of
+        # CAUSEE) and the lex profile.
+        #
+        # Word-order convention is identical to pa-OV: first ng-NP
+        # after V is CAUSER (the agentive instigator), second is
+        # PATIENT (the affected entity). The pivot ang-NP can
+        # intervene at any of the three permutations.
+        v_pa_dv = "V[VOICE=DV, CAUS=DIRECT]"
+        # NOM-GEN-GEN: pivot first, CAUSER, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_pa_dv, "NP[CASE=NOM]", "NP[CASE=GEN]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-CAUSER) = ↓3",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-NOM-GEN: CAUSER, pivot, PATIENT.
+        rules.append(Rule(
+            "S",
+            [v_pa_dv, "NP[CASE=GEN]", "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                "(↑ OBJ-CAUSER) = ↓2",
+                "(↑ OBJ-PATIENT) = ↓4",
+            ),
+        ))
+        # GEN-GEN-NOM: CAUSER, PATIENT, pivot.
+        rules.append(Rule(
+            "S",
+            [v_pa_dv, "NP[CASE=GEN]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
             _eqs(
                 "(↑ SUBJ) = ↓4",
                 "(↑ OBJ-CAUSER) = ↓2",

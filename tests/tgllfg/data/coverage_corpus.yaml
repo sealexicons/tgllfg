@@ -2004,6 +2004,30 @@
 - text: Gusto kong hindi pumayag na pakakainin ang bata.
   construction: 'control: nested pa-OV + middle NEG'
   expected: parse
+- text: Pinakainan ng nanay ng kanin ang bata.
+  construction: 'causative: 3-arg pa-DV (GEN-GEN-NOM)'
+  expected: parse
+- text: Pinakainan ng nanay ang bata ng kanin.
+  construction: 'causative: 3-arg pa-DV (GEN-NOM-GEN)'
+  expected: parse
+- text: Pinakainan ang bata ng nanay ng kanin.
+  construction: 'causative: 3-arg pa-DV (NOM-GEN-GEN)'
+  expected: parse
+- text: Pinabasahan ng nanay ng libro ang bata.
+  construction: 'causative: 3-arg pa-DV (basa)'
+  expected: parse
+- text: Gusto kong pakakainan ang bata ng kanin.
+  construction: 'control: 3-arg pa-DV under psych control'
+  expected: parse
+- text: Pumayag akong pakakainan ang bata ng kanin.
+  construction: 'control: 3-arg pa-DV under intrans control'
+  expected: parse
+- text: Ng nanay ay pinakainan ang bata ng kanin.
+  construction: 'ay-inversion: 3-arg pa-DV CAUSER-fronted'
+  expected: parse
+- text: Ng kanin ay pinakainan ng nanay ang bata.
+  construction: 'ay-inversion: 3-arg pa-DV PATIENT-fronted'
+  expected: parse
 - text: Ipinaggawa ng aso ang aso.
   construction: 'applicative: ipag- benefactive (gawa)'
   expected: parse

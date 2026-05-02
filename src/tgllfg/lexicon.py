@@ -197,6 +197,18 @@ _OV_CAUS_DIRECT_THREE_ARG: dict[
     "PATIENT": (True, True),
     "CAUSEE": (False, False),
 }
+# Phase 5e Commit 10: three-arg pa-DV (pa-...-an) with explicit
+# PATIENT alongside CAUSER and LOCATION-pivot. Mirrors the 3-arg
+# pa-OV profile but with LOCATION (the recipient / locative) as
+# the SUBJ-mapped role rather than CAUSEE. Both CAUSER and PATIENT
+# are [+r, +o] → typed OBJ-θ.
+_DV_CAUS_DIRECT_THREE_ARG: dict[
+    str, tuple[bool | None, bool | None]
+] = {
+    "CAUSER": (True, True),
+    "PATIENT": (True, True),
+    "LOCATION": (False, False),
+}
 # Indirect (biclausal) causative: CAUSER pivot, EVENT stipulated as
 # XCOMP via gf_defaults — the LMT bridge ``stipulated_gfs_for`` picks
 # it up. The EVENT role itself has no [±r, ±o] (off the truth table).
@@ -895,6 +907,55 @@ BASE["inom"].append(LexicalEntry(
     morph_constraints={"VOICE": "DV", "CAUS": "DIRECT"},
     gf_defaults={"LOCATION": "SUBJ", "CAUSER": "OBJ-CAUSER"},
     intrinsic_classification=_DV_CAUS_DIRECT,
+))
+
+# Phase 5e Commit 10: three-arg pa-DV (pa-...-an) with explicit
+# PATIENT. Mirrors the Phase 5b 3-arg pa-OV pattern but with the
+# pa-DV pivot (LOCATION / recipient / dative) at SUBJ. Both CAUSER
+# and PATIENT demote to typed OBJ-θ slots (OBJ-CAUSER,
+# OBJ-PATIENT). The grammar binds them positionally via the new
+# top-level multi-GEN-NP pa-DV rules and via the matching
+# S_XCOMP rules under control.
+#
+#   Pinakainan ng nanay ng kanin ang bata.
+#     "Mother fed-rice-to the child."
+#   Pinabasahan ng nanay ng aklat ang bata.
+#     "Mother read-the-book-to the child."
+BASE["kain"].append(LexicalEntry(
+    lemma="kain",
+    pred="CAUSE-EAT-AT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>",
+    a_structure=["CAUSER", "PATIENT", "LOCATION"],
+    morph_constraints={"VOICE": "DV", "CAUS": "DIRECT"},
+    gf_defaults={
+        "LOCATION": "SUBJ",
+        "CAUSER": "OBJ-CAUSER",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_DV_CAUS_DIRECT_THREE_ARG,
+))
+BASE["basa"].append(LexicalEntry(
+    lemma="basa",
+    pred="CAUSE-READ-AT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>",
+    a_structure=["CAUSER", "PATIENT", "LOCATION"],
+    morph_constraints={"VOICE": "DV", "CAUS": "DIRECT"},
+    gf_defaults={
+        "LOCATION": "SUBJ",
+        "CAUSER": "OBJ-CAUSER",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_DV_CAUS_DIRECT_THREE_ARG,
+))
+BASE["inom"].append(LexicalEntry(
+    lemma="inom",
+    pred="CAUSE-DRINK-AT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>",
+    a_structure=["CAUSER", "PATIENT", "LOCATION"],
+    morph_constraints={"VOICE": "DV", "CAUS": "DIRECT"},
+    gf_defaults={
+        "LOCATION": "SUBJ",
+        "CAUSER": "OBJ-CAUSER",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_DV_CAUS_DIRECT_THREE_ARG,
 ))
 
 # Indirect (biclausal) causatives (magpa- AV): SUBJ = causer,
