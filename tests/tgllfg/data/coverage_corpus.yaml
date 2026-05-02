@@ -1695,6 +1695,46 @@
 - text: Tumakbo ang bata ko na hindi kumain.
   construction: 'relativization: post-poss-PRON na linker + NEG-skip'
   expected: parse
+- text: Lumakad ang bata namin na binasa.
+  construction: 'relativization: poss-linker RC, consonant-final PRON (na)'
+  expected: parse
+- text: Lumakad ang bata natin na binasa.
+  construction: 'relativization: poss-linker RC, consonant-final PRON (na)'
+  expected: parse
+- text: Lumakad ang bata ninyo na binasa.
+  construction: 'relativization: poss-linker RC, consonant-final PRON (na)'
+  expected: parse
+- text: Lumakad ang bata nila na binasa.
+  construction: 'relativization: poss-linker RC, consonant-final PRON (na)'
+  expected: parse
+- text: Kumain ang bata ng libro namin na binasa.
+  construction: 'relativization: poss-linker RC in OBJ position (consonant-final PRON)'
+  expected: parse
+- text: Lumakad ang bata namin na hindi binasa.
+  construction: 'relativization: poss-linker RC + inner NEG (consonant-final PRON)'
+  expected: parse
+- text: Lumakad ang bata ko na kinain.
+  construction: 'relativization: poss-linker RC, vowel-final PRON + standalone na'
+  expected: parse
+- text: Lumakad ang bata mo na kinain.
+  construction: 'relativization: poss-linker RC, vowel-final PRON + standalone na'
+  expected: parse
+- text: Lumakad ang bata niya na kinain.
+  construction: 'relativization: poss-linker RC, vowel-final PRON + standalone na'
+  expected: parse
+- text: Lumakad ang kapatid namin na binasa.
+  construction: 'relativization: poss-linker RC, consonant-final head + consonant-final
+    PRON'
+  expected: parse
+- text: Lumakad ang bata namin na binasahan.
+  construction: 'relativization: poss-linker RC, DV variant (binasahan)'
+  expected: parse
+- text: Lumakad ang bata namin na ipinaggawa.
+  construction: 'relativization: poss-linker RC, IV bare (ipinaggawa)'
+  expected: parse
+- text: Lumakad ang bata namin na ipinagsulat sa kapatid.
+  construction: 'relativization: poss-linker RC, IV + DAT adjunct (ipinagsulat)'
+  expected: parse
 - text: Gusto kong kumain.
   construction: 'control: psych gusto'
   expected: parse

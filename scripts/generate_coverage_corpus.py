@@ -507,6 +507,48 @@ def _relativization_corpus() -> list[dict[str, Any]]:
     _add(out, "tumakbo ang bata ko na hindi kumain",
          "relativization: post-poss-PRON na linker + NEG-skip",
          "parse")
+
+    # Phase 5e Commit 18: possessive-linker RC with consonant-final
+    # PRON. The four consonant-final GEN pronouns (``natin`` /
+    # ``namin`` / ``ninyo`` / ``nila``) cannot fuse with the bound
+    # ``-ng`` linker; they take the standalone ``na`` linker
+    # instead. The wrap rule's dual binding (POSS = OBJ-AGENT) is
+    # the same as Phase 5d Commit 6's ``-ng`` form. Vowel-final
+    # PRON + standalone ``na`` (``aklat ko na kinain``) also lifts
+    # via the same LINK=NA branch.
+    for pron in ("namin", "natin", "ninyo", "nila"):
+        _add(out, f"lumakad ang bata {pron} na binasa",
+             "relativization: poss-linker RC, consonant-final PRON (na)",
+             "parse")
+    _add(out, "kumain ang bata ng libro namin na binasa",
+         "relativization: poss-linker RC in OBJ position (consonant-final PRON)",
+         "parse")
+    _add(out, "lumakad ang bata namin na hindi binasa",
+         "relativization: poss-linker RC + inner NEG (consonant-final PRON)",
+         "parse")
+    # Vowel-final PRON + standalone ``na`` (alongside the existing
+    # fused ``-ng`` form).
+    for pron in ("ko", "mo", "niya"):
+        _add(out, f"lumakad ang bata {pron} na kinain",
+             "relativization: poss-linker RC, vowel-final PRON + standalone na",
+             "parse")
+    # Consonant-final HEAD NP — the most-motivating surface, since
+    # neither head nor PRON can take the bound ``-ng`` linker.
+    _add(out, "lumakad ang kapatid namin na binasa",
+         "relativization: poss-linker RC, consonant-final head + consonant-final PRON",
+         "parse")
+    # Non-AV voice variants — Phase 5d Commit 6 supports OV / DV / IV
+    # via S_GAP_NA but only OV was exercised. Pin DV (``binasahan``)
+    # and IV (``ipinaggawa`` bare; ``ipinagsulat`` with DAT adjunct).
+    _add(out, "lumakad ang bata namin na binasahan",
+         "relativization: poss-linker RC, DV variant (binasahan)",
+         "parse")
+    _add(out, "lumakad ang bata namin na ipinaggawa",
+         "relativization: poss-linker RC, IV bare (ipinaggawa)",
+         "parse")
+    _add(out, "lumakad ang bata namin na ipinagsulat sa kapatid",
+         "relativization: poss-linker RC, IV + DAT adjunct (ipinagsulat)",
+         "parse")
     return out
 
 

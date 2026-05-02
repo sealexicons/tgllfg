@@ -286,11 +286,28 @@ class Grammar:
         # ng bata`` ("the child's family's book") — but the binding
         # is left-associative: each layer of POSS sits above the
         # previous head NP.
+        #
+        # **Constraint**: ``¬ (↑ POSS-EXTRACTED)`` blocks this rule
+        # from firing on an NP whose POSS slot was already filled by
+        # the Phase 5d Commit 6 / Phase 5e Commit 18 dual-binding
+        # wrap rule (``aklat ko na kinain``), where the pronominal
+        # actor of an embedded RC was hoisted out as POSS. Without
+        # the guard, surfaces like ``Tumakbo ang bata ko na kinain
+        # ng aso`` produce a spurious parse where this rule fires on
+        # ``[bata ko na kinain] ng aso``, unifying ``ko`` and
+        # ``aso`` into a hybrid POSS=OBJ-AGENT fstruct (``ko`` has
+        # no LEMMA so ``aso``'s LEMMA wins; ``aso`` has no NUM so
+        # ``ko``'s NUM=SG wins; CASE=GEN matches). The wrap rule
+        # marks its output with POSS-EXTRACTED=YES; the constraint
+        # rejects the NP-poss extension on such NPs. Legitimate
+        # iterated possessives are right-associative (the inner
+        # NP-poss application doesn't set POSS-EXTRACTED), so
+        # ``aklat ng bata ng pamilya`` is unaffected.
         for case in ("NOM", "GEN", "DAT"):
             rules.append(Rule(
                 f"NP[CASE={case}]",
                 [f"NP[CASE={case}]", "NP[CASE=GEN]"],
-                ["(↑) = ↓1", "(↑ POSS) = ↓2"],
+                ["(↑) = ↓1", "(↑ POSS) = ↓2", "¬ (↑ POSS-EXTRACTED)"],
             ))
 
         # Pronominal NPs: case carried on PRON itself.
@@ -1528,41 +1545,70 @@ class Grammar:
                     ],
                 ))
 
-        # --- Phase 5d Commit 6: possessive-linker RC wrap rule ---
+        # --- Phase 5d Commit 6 + Phase 5e Commit 18: possessive-linker
+        # RC wrap rule ---
         #
         # ``aklat kong binasa`` ("the book that I read"): a
         # construction parallel to relativization where the
         # pronominal actor of the RC's non-AV verb surfaces as a
-        # possessor of the head NP, joined by the bound ``-ng``
-        # linker. The pre-parse Wackernagel pass keeps PRON in
-        # place when followed by ``PART[LINK=NG]`` (see
-        # ``_is_pre_linker_pron``), so the four tokens (head NP,
-        # PRON, ``-ng``, V) reach the parser in surface order.
+        # possessor of the head NP, joined by a linker.
         #
-        # The pronoun plays a dual role: it is the head NP's
-        # ``POSS`` AND the RC's ``OBJ-AGENT``. The wrap rule binds
-        # both via ``(↑ POSS) = ↓2`` and ``(↓4 OBJ-AGENT) = ↓2``.
-        # REL-PRO sharing follows the standard relativization
-        # pattern — anaphoric (PRED + CASE atomic-path copies, not
-        # full identity) so the unifier's occurs-check stays happy.
+        # **Two surface variants of the same construction:**
         #
-        # Three head-case variants (NOM / GEN / DAT) covering the
-        # construction in any NP position.
+        # * ``LINK=NG`` (vowel-final PRON, fused ``Vng`` form):
+        #   ``aklat kong binasa`` — ``kong`` tokenizes as one word
+        #   and is split by ``split_linker_ng`` into ``ko`` +
+        #   ``-ng``. The Wackernagel pass keeps PRON adjacent to
+        #   its bound linker via ``_is_pre_linker_pron`` (Phase 5d
+        #   Commit 6). Vowel-final GEN pronouns: ``ko`` / ``mo`` /
+        #   ``niya``.
+        # * ``LINK=NA`` (consonant-final PRON, standalone ``na``):
+        #   ``aklat namin na binasa`` (Phase 5e Commit 18). The
+        #   PRON tokenizes as a separate word and stays in place
+        #   via the existing ``_is_post_noun_pron`` exception; the
+        #   following ``na`` is disambiguated to the linker reading
+        #   by the post-NOUN-PRON-then-VERB branch in
+        #   ``disambiguate_homophone_clitics`` (Phase 5e Commit 6).
+        #   Consonant-final GEN pronouns: ``namin`` / ``natin`` /
+        #   ``ninyo`` / ``nila``. (The vowel-final pronouns also
+        #   admit the standalone-``na`` form: ``aklat ko na binasa``
+        #   parses via the same rule — both linkers carry the same
+        #   f-equations, mirroring the standard relativization
+        #   wrap above.)
+        #
+        # The pronoun plays a dual role in both variants: it is the
+        # head NP's ``POSS`` AND the RC's ``OBJ-AGENT``. The wrap
+        # rule binds both via ``(↑ POSS) = ↓2`` and
+        # ``(↓4 OBJ-AGENT) = ↓2``. REL-PRO sharing follows the
+        # standard relativization pattern — anaphoric (PRED + CASE
+        # atomic-path copies, not full identity) so the unifier's
+        # occurs-check stays happy.
+        #
+        # Six wrap rules: 3 head cases × 2 linker variants. The
+        # output NP is marked ``POSS-EXTRACTED=YES`` so the standard
+        # NP-poss rule cannot fire on it again — without this guard,
+        # a trailing GEN-NP (e.g., ``ng aso`` in ``bata ko na kinain
+        # ng aso``) would unify with the already-bound POSS=PRON,
+        # producing a spurious hybrid POSS=OBJ-AGENT (PRON merged
+        # with NOUN). See the §7.8 NP-poss rule above for the full
+        # comment on the guard.
         for case in ("NOM", "GEN", "DAT"):
             np_cat = f"NP[CASE={case}]"
-            rules.append(Rule(
-                np_cat,
-                [np_cat, "PRON[CASE=GEN]", "PART[LINK=NG]", "S_GAP_NA"],
-                [
-                    "(↑) = ↓1",
-                    "(↑ POSS) = ↓2",
-                    "↓4 ∈ (↑ ADJ)",
-                    "(↓4 OBJ-AGENT) = ↓2",
-                    "(↓4 REL-PRO PRED) = (↓1 PRED)",
-                    "(↓4 REL-PRO CASE) = (↓1 CASE)",
-                    "(↓4 REL-PRO) =c (↓4 SUBJ)",
-                ],
-            ))
+            for link in ("NA", "NG"):
+                rules.append(Rule(
+                    np_cat,
+                    [np_cat, "PRON[CASE=GEN]", f"PART[LINK={link}]", "S_GAP_NA"],
+                    [
+                        "(↑) = ↓1",
+                        "(↑ POSS) = ↓2",
+                        "(↑ POSS-EXTRACTED) = 'YES'",
+                        "↓4 ∈ (↑ ADJ)",
+                        "(↓4 OBJ-AGENT) = ↓2",
+                        "(↓4 REL-PRO PRED) = (↓1 PRED)",
+                        "(↓4 REL-PRO CASE) = (↓1 CASE)",
+                        "(↓4 REL-PRO) =c (↓4 SUBJ)",
+                    ],
+                ))
 
         # --- Phase 4 §7.6: control wrap rules ---
         #

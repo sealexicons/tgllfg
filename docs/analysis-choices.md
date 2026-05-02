@@ -4709,3 +4709,233 @@ were already in place.
   commit (the recursive case is ordinary composition with no
   new analytical content).
 
+## Phase 5e Commit 18: possessive-linker RC with consonant-final PRON
+
+**Date:** 2026-05-02. **Status:** active. Extends Phase 5d
+Commit 6's possessive-linker RC construction (``aklat kong
+binasa`` "the book that I read") to the four consonant-final
+GEN pronouns ``natin`` (1pl-INCL), ``namin`` (1pl-EXCL),
+``ninyo`` (2pl), and ``nila`` (3pl).
+
+### The construction
+
+Phase 5d Commit 6 lifted the dual-binding form where a
+pronominal RC actor is hoisted out of a non-AV RC and surfaces
+as a possessor of the head NP, joined by a linker. Commit 6
+covered only the three vowel-final GEN pronouns ``ko`` /
+``mo`` / ``niya``, which fuse with the bound linker into a
+single ``Vng`` orthographic word (``kong`` / ``mong`` /
+``niyang``) and are split back apart by
+:func:`tgllfg.text.split_linker_ng`.
+
+The four consonant-final GEN pronouns end in ``n`` and so
+cannot fuse with the bound ``-ng`` linker (Tagalog
+phonotactics: ``-ng`` only attaches to vowel-final hosts).
+Their analogous form uses the **standalone ``na`` linker**
+instead:
+
+```
+aklat namin na binasa     "the book that we (excl) read"
+aklat natin na binasa     "the book that we (incl) read"
+aklat ninyo na binasa     "the book that you (pl) read"
+aklat nila na binasa      "the book that they read"
+```
+
+The vowel-final pronouns also admit the standalone-``na``
+form alongside the fused ``-ng`` form:
+
+```
+aklat ko na kinain       (= aklat kong kinain)
+aklat mo na kinain       (= aklat mong kinain)
+aklat niya na kinain     (= aklat niyang kinain)
+```
+
+Both linker variants carry the same f-equations.
+
+### Enabling pieces already in place
+
+Two of the three required pieces were already present from
+prior commits and need no modification for Commit 18:
+
+1. **Wackernagel placement keeps the consonant-final PRON in
+   place** via the existing ``_is_post_noun_pron`` exception
+   (Phase 5c §7.8 lift, lines 124–143 of
+   ``src/tgllfg/clitics/placement.py``). The ``-ng``-linker
+   variant needed a separate ``_is_pre_linker_pron`` exception
+   (Phase 5d Commit 6) because the Vng-fused form was split
+   back apart by ``split_linker_ng`` and the resulting PRON sat
+   between two non-NOUN tokens. The standalone-``na`` form
+   surfaces as a literal post-NOUN PRON, so the older
+   ``_is_post_noun_pron`` rule applies directly.
+
+2. **The post-PRON ``na`` is preserved as the linker** (rather
+   than hoisted as the 2P aspectual ``ALREADY`` clitic) by the
+   third left-context exception in
+   ``disambiguate_homophone_clitics`` (Phase 5e Commit 6, lines
+   305–325 of the same file). The branch fires whenever a
+   PRON-after-NOUN is followed by a VERB (or NEG + VERB). It
+   was originally added for the NP-internal possessive + RC
+   case (``bata ko na nakita`` — head NOUN + possessor PRON +
+   linker + standard RC), but the same pattern catches the
+   Commit 18 dual-binding case.
+
+### The change: extend the wrap rule
+
+The only required change for Commit 18 is one extra iteration
+in the wrap-rule loop in ``src/tgllfg/cfg/grammar.py``:
+
+```python
+for case in ("NOM", "GEN", "DAT"):
+    np_cat = f"NP[CASE={case}]"
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            np_cat,
+            [np_cat, "PRON[CASE=GEN]", f"PART[LINK={link}]", "S_GAP_NA"],
+            [
+                "(↑) = ↓1",
+                "(↑ POSS) = ↓2",
+                "↓4 ∈ (↑ ADJ)",
+                "(↓4 OBJ-AGENT) = ↓2",
+                "(↓4 REL-PRO PRED) = (↓1 PRED)",
+                "(↓4 REL-PRO CASE) = (↓1 CASE)",
+                "(↓4 REL-PRO) =c (↓4 SUBJ)",
+            ],
+        ))
+```
+
+This mirrors the standard relativization wrap rule a few lines
+above (``NP → NP PART[LINK=NA|NG] S_GAP``), which has long
+admitted both linker variants in parallel. The dual-binding
+``(↑ POSS) = ↓2`` and ``(↓4 OBJ-AGENT) = ↓2`` is unchanged.
+
+### Why no rule competition with the standard RC wrap
+
+The standard relativization wrap rule (``NP[CASE=X] → NP[CASE=X]
+PART[LINK=X] S_GAP``) admits both linker variants and could in
+principle compete with the Commit 18 wrap rule on surfaces like
+``aklat namin na binasa``. It does not, for two reasons:
+
+1. The standard wrap rule consumes 3 daughters (NP + linker +
+   ``S_GAP``); the Commit 18 wrap rule consumes 4 daughters (NP
+   + PRON + linker + ``S_GAP_NA``). The PRON token is part of
+   the head NP under the standard rule (consumed by
+   ``NP → NP PRON`` for pronominal possessor), but is consumed
+   separately under the Commit 18 rule. These are different
+   tree shapes, and the parser explores both.
+
+2. ``S_GAP`` requires the actor slot to be filled by an overt
+   GEN-NP (or to be the gap itself); ``S_GAP_NA`` explicitly
+   has no overt GEN-NP, with the actor (``OBJ-AGENT``) supplied
+   externally by the wrap rule. For surfaces without an overt
+   GEN-NP after the V, only ``S_GAP_NA`` succeeds. For surfaces
+   *with* an overt GEN-NP after the V (``aklat na binasa nila``
+   "the book that they read", standard relativization with the
+   actor staying inside the RC), only ``S_GAP`` succeeds.
+
+The two analyses surface in different clusters of constructions
+and don't generate spurious parses for either.
+
+### Surface variants enabled
+
+```
+lumakad ang bata namin na binasa    (1pl-EXCL, SUBJ position)
+lumakad ang bata natin na binasa    (1pl-INCL)
+lumakad ang bata ninyo na binasa    (2pl)
+lumakad ang bata nila na binasa     (3pl)
+kumain ang bata ng libro nila na binasa   (OBJ position)
+lumakad ang bata namin na hindi binasa    (RC under inner NEG)
+lumakad ang bata ko na kinain       (vowel-final PRON + standalone na)
+lumakad ang kapatid namin na binasa (consonant-final HEAD + PRON)
+lumakad ang bata namin na binasahan (DV variant)
+lumakad ang bata namin na ipinaggawa (IV bare)
+lumakad ang bata namin na ipinagsulat sa kapatid (IV + DAT)
+```
+
+The id-equality between ``POSS`` and the RC's ``OBJ-AGENT``
+(the dual-binding signature) is asserted by
+``test_poss_and_obj_agent_share_node`` in
+``tests/tgllfg/test_possessive_linker_rc_consonant_pron.py``.
+
+### Non-AV voice coverage
+
+Phase 5d Commit 6's grammar code admitted OV / DV / IV in
+``S_GAP_NA`` but its tests only exercised OV. Commit 18 also
+pins DV and IV with consonant-final pronouns:
+
+* **OV** — ``binasa`` / ``kinain`` (most common; the canonical
+  patient-pivot case where the actor is extracted as POSS).
+* **DV** — ``binasahan`` (DV PFV of ``basa`` is the only DV
+  form with full analyzer coverage in the seed lexicon; other
+  DV PFVs like ``binigyan`` / ``binilhan`` / ``kinanan`` are
+  ``_UNK`` to the morph analyzer and would parse only after a
+  paradigm-cell expansion).
+* **IV** — ``ipinaggawa`` (BEN bare), ``ipinagsulat`` (BEN
+  with DAT adjunct ``sa kapatid``). The S_GAP_NA IV frames
+  are ``[v_cat]`` (bare) and ``[v_cat, NP[CASE=DAT]]`` (DAT
+  adjunct only — no overt GEN-NP, since the actor is the gap).
+
+### POSS-EXTRACTED guard (also fixes a pre-existing Commit 6 spurious parse)
+
+Phase 5d Commit 6 had a latent issue that surfaced cleanly only
+once Commit 18's testing was thorough: when the surface combined
+the dual-binding wrap rule with an overt GEN-NP after the verb
+(e.g., ``Tumakbo ang bata kong kinain ng aso`` "the child of-mine
+whom the dog ate ran"), the chart parser produced an extra
+"hybrid" parse where the standard NP-internal possessive rule
+fired on the wrap-rule output:
+
+```
+[bata ko na kinain]_NP[POSS=ko]  +  ng aso  →
+    NP[POSS = unify(ko, aso)]
+```
+
+The unification succeeded because ``ko`` (PRON) had no LEMMA /
+MARKER and ``aso`` (NOUN) had no PERS / NUM — they're feature-
+compatible. The dual binding ``(↑ POSS) = ↓2`` and ``(↓4
+OBJ-AGENT) = ↓2`` then made OBJ-AGENT also point to this
+hybrid fstruct, so the RC's actor became a strange merger of
+``ko``'s pronominal features and ``aso``'s nominal lemma.
+Existing tests passed because they used ``_find_…`` helpers
+that scanned the n-best list for any parse with the desired
+shape — the spurious hybrid was just noise alongside the
+intended parses.
+
+Commit 18 fixes this in three pieces:
+
+1. **The wrap rule marks its output**: a new equation
+   ``(↑ POSS-EXTRACTED) = 'YES'`` added to the wrap rule's
+   equations records that the POSS slot was filled by actor
+   extraction (not by an external GEN-NP modifier).
+
+2. **The §7.8 NP-internal possessive rule guards against it**:
+   a constraining equation ``¬ (↑ POSS-EXTRACTED)`` rejects
+   the rule when applied to an NP whose POSS slot was already
+   filled by extraction.
+
+3. **Right-associative iterated possessives are unaffected**:
+   the standard NP-poss rule does NOT set POSS-EXTRACTED, so
+   stacking it (``aklat ng bata ng pamilya`` → libro.POSS=bata,
+   bata.POSS=pamilya) continues to work.
+
+The guard applies symmetrically to both linker variants — it
+also removes the same hybrid parse from Phase 5d Commit 6's
+``-ng`` form (``bata kong kinain ng aso``). After the fix:
+
+```
+'Tumakbo ang bata ko na kinain ng aso.'   3 parses → 2 parses
+'Tumakbo ang bata kong kinain ng aso.'    3 parses → 2 parses
+```
+
+The 2 remaining parses are the intended one (POSS=PRON,
+OBJ-AGENT=NOUN, distinct fstructs) and a separate analysis
+where the RC's actor is gapped differently — both linguistically
+sensible. Pinned by ``TestPossessiveExtractedGuard`` in the
+Commit 18 test file.
+
+### Out-of-scope (deferred to Phase 5e Commit 19)
+
+* **Non-pronominal possessors with linker**, e.g.,
+  ``aklat ng batang binasa`` analogue. Surface-ambiguous with
+  relativization + possessive parses. Group E Commit 19 will
+  address this separately. Refs: plan §10.1 Group E item 4.
+
