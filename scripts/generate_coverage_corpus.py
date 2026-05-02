@@ -597,6 +597,39 @@ def _control_corpus() -> list[dict[str, Any]]:
     _add(out, "mukhang gusto ng batang hindi kumain",
          "control: control under raising + inner NEG",
          "parse")
+
+    # Phase 5e Commit 9: nested-control composition with multi-arg
+    # innermost. Phase 5c §7.6 Commit 3 nested-S_XCOMP rules
+    # compose with Phase 5d Commit 8 (pa-OV under control) and
+    # Commit 9 (IV multi-GEN under control); this adds explicit
+    # corpus coverage.
+    # Nested pa-OV under control:
+    _add(out, "gusto kong pumayag na pakakainin ang bata",
+         "control: nested pa-OV under control (psych+intrans)",
+         "parse")
+    _add(out, "gusto kong pumayag na pakakainin ang bata ng kanin",
+         "control: nested 3-arg pa-OV under control",
+         "parse")
+    _add(out, "pumayag akong gustong pakakainin ang bata",
+         "control: nested pa-OV under control (intrans+psych)",
+         "parse")
+    _add(out, "gusto kong gustong pakakainin ang bata",
+         "control: nested pa-OV under psych+psych",
+         "parse")
+    # IV multi-GEN under nested control:
+    _add(out, "gusto kong pumayag na ipaggagawa ang silya ng nanay",
+         "control: nested IV-BEN 3-arg under control",
+         "parse")
+    _add(out, "gusto kong pumayag na ipaggagawa ang kapatid",
+         "control: nested IV-BEN 2-arg under control",
+         "parse")
+    # Negation in nested compositions:
+    _add(out, "gusto kong pumayag na hindi pakakainin ang bata",
+         "control: nested pa-OV + innermost NEG",
+         "parse")
+    _add(out, "gusto kong hindi pumayag na pakakainin ang bata",
+         "control: nested pa-OV + middle NEG",
+         "parse")
     return out
 
 

@@ -3774,3 +3774,86 @@ TRANS-control wrap rule's
   raising-S to admit a SUBJ-gap variant. Not exercised by the
   current corpus and not pursued in this commit.
 
+## Phase 5e Commit 9: nested-control composition with multi-arg embedded clauses
+
+**Date:** 2026-05-01. **Status:** active. Test-only commit; no
+grammar / lex / morph changes.
+
+Phase 5d Commits 8 and 9's deferral lists flagged two
+compositions as available structurally but not pinned with
+tests:
+
+* **Nested pa-causatives under control.** Phase 5c §7.6 Commit
+  3 added nested-S_XCOMP rules — a control verb's XCOMP is
+  itself another control verb whose XCOMP is the action.
+  Phase 5d Commit 8 added pa-OV (CAUS=DIRECT) S_XCOMP rules
+  (the embedded actor's typed slot is ``OBJ-CAUSER``). Stacked,
+  they produce 3-level controller chains where the innermost
+  is a pa-OV.
+* **IV multi-GEN under nested control.** Phase 5d Commit 9
+  added 3-arg IV S_XCOMP rules (gap = OBJ-AGENT,
+  retained = OBJ-PATIENT). When stacked under the Commit 3
+  nested-control infrastructure, the controller chains to the
+  embedded ``OBJ-AGENT`` while ``OBJ-PATIENT`` stays overt as a
+  GEN-NP.
+
+### Composition shapes
+
+**Nested pa-OV under control** (3 levels, gap routes to
+OBJ-CAUSER):
+
+```
+Gusto kong pumayag na pakakainin ang bata.
+S[WANT, PSYCH]
+  SUBJ = ko (GEN experiencer)
+  XCOMP = S_XCOMP[AGREE, INTRANS]
+            SUBJ = ko (REL-PRO bound)
+            XCOMP = S_XCOMP[CAUSE-EAT, pa-OV]
+                      SUBJ = bata (the causee)
+                      OBJ-CAUSER = ko (REL-PRO bound; the gap)
+```
+
+Three slots — matrix.SUBJ, XCOMP.SUBJ, XCOMP.XCOMP.OBJ-CAUSER —
+share one f-node id via Python-id equality. The pa-OV's pivot
+(``ang bata`` = causee) is a separate f-node.
+
+The 3-arg variant ``Gusto kong pumayag na pakakainin ang bata
+ng kanin`` adds an overt ``OBJ-PATIENT = kanin`` while
+preserving the OBJ-CAUSER gap binding.
+
+**IV multi-GEN under nested control** (3 levels, gap routes to
+OBJ-AGENT):
+
+```
+Gusto kong pumayag na ipaggagawa ang silya ng nanay.
+S[WANT, PSYCH]
+  SUBJ = ko
+  XCOMP = S_XCOMP[AGREE, INTRANS]
+            SUBJ = ko
+            XCOMP = S_XCOMP[MAKE-FOR, IV-BEN 3-arg]
+                      SUBJ = silya (the BEN pivot)
+                      OBJ-PATIENT = nanay (overt GEN)
+                      OBJ-AGENT = ko (REL-PRO bound; the gap)
+```
+
+Both compositions reuse existing rules — no engine, grammar, or
+lex changes. The Phase 5b ``apply_lmt_with_check`` recursive
+walker validates each embedded f-structure against its own
+intrinsic profile, so all three levels of LMT-coherence checks
+pass cleanly.
+
+### Out-of-scope (still deferred)
+
+* **Pa-DV under nested control.** Phase 5d Commit 2 introduced
+  pa-DV (``pa-...-an``) at S level, and Phase 5d Commit 8 added
+  pa-DV under single-level control. Pa-DV under *nested* control
+  (e.g., ``Gusto kong pumayag na pakakainan ang bata``) should
+  compose via the existing rules but isn't pinned here. Adding
+  it would mirror the pa-OV pattern.
+* **3-arg pa-DV** — separate Phase 5e Commit 10 item.
+  Currently the lex profile is 2-arg only, so 3-arg pa-DV under
+  nested control is doubly blocked.
+* **4+ levels of nesting.** Phase 5c Commit 3 covers 4 levels;
+  composing pa-OV / IV-3arg innermost with 4+ levels of control
+  hasn't been pinned.
+

@@ -1980,6 +1980,30 @@
 - text: Mukhang gusto ng batang hindi kumain.
   construction: 'control: control under raising + inner NEG'
   expected: parse
+- text: Gusto kong pumayag na pakakainin ang bata.
+  construction: 'control: nested pa-OV under control (psych+intrans)'
+  expected: parse
+- text: Gusto kong pumayag na pakakainin ang bata ng kanin.
+  construction: 'control: nested 3-arg pa-OV under control'
+  expected: parse
+- text: Pumayag akong gustong pakakainin ang bata.
+  construction: 'control: nested pa-OV under control (intrans+psych)'
+  expected: parse
+- text: Gusto kong gustong pakakainin ang bata.
+  construction: 'control: nested pa-OV under psych+psych'
+  expected: parse
+- text: Gusto kong pumayag na ipaggagawa ang silya ng nanay.
+  construction: 'control: nested IV-BEN 3-arg under control'
+  expected: parse
+- text: Gusto kong pumayag na ipaggagawa ang kapatid.
+  construction: 'control: nested IV-BEN 2-arg under control'
+  expected: parse
+- text: Gusto kong pumayag na hindi pakakainin ang bata.
+  construction: 'control: nested pa-OV + innermost NEG'
+  expected: parse
+- text: Gusto kong hindi pumayag na pakakainin ang bata.
+  construction: 'control: nested pa-OV + middle NEG'
+  expected: parse
 - text: Ipinaggawa ng aso ang aso.
   construction: 'applicative: ipag- benefactive (gawa)'
   expected: parse
