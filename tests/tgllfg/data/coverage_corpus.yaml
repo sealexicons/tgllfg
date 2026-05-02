@@ -1677,6 +1677,24 @@
 - text: Tumakbo ang hindi kumain ng isda.
   construction: 'relativization: headless RC + inner NEG'
   expected: parse
+- text: Tumakbo ang bata ko na kumain.
+  construction: 'relativization: post-poss-PRON na linker (1sg)'
+  expected: parse
+- text: Tumakbo ang bata mo na kumain.
+  construction: 'relativization: post-poss-PRON na linker (2sg)'
+  expected: parse
+- text: Tumakbo ang bata niya na kumain.
+  construction: 'relativization: post-poss-PRON na linker (3sg)'
+  expected: parse
+- text: Tumakbo ang bata ko na kumain ng isda.
+  construction: 'relativization: post-poss-PRON na linker + transitive RC'
+  expected: parse
+- text: Tumakbo ang bata ko na kinain ng aso.
+  construction: 'relativization: post-poss-PRON na linker + OV RC'
+  expected: parse
+- text: Tumakbo ang bata ko na hindi kumain.
+  construction: 'relativization: post-poss-PRON na linker + NEG-skip'
+  expected: parse
 - text: Gusto kong kumain.
   construction: 'control: psych gusto'
   expected: parse

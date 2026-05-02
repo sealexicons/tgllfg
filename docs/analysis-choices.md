@@ -3505,3 +3505,95 @@ are linguistically valid and both surface in n-best output).
   (a possessive structure where the possessor is itself a
   headless RC) might admit interesting parses; not exercised.
 
+## Phase 5e Commit 6: ``na`` linker disambiguation after PRON
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5d Commit 10's deferral list flagged ``Tumakbo ang bata ko
+na nakita`` (NP-internal possessor + linker + RC). The
+:func:`tgllfg.clitics.placement.disambiguate_homophone_clitics`
+pass historically treated post-PRON ``na`` as the 2P aspectual
+clitic ``ALREADY`` (CLITIC_CLASS=2P) and moved it to clause-end,
+breaking the linker / RC parse.
+
+This commit adds a third left-context exception in the
+disambiguator (alongside the two existing control-verb cases),
+plus a small look-ahead helper.
+
+### The new exception
+
+``disambiguate_homophone_clitics`` already had two left-context
+exceptions where post-VERB / post-PRON ``na`` is the linker:
+
+1. ``V[CTRL_CLASS!=NONE]`` directly preceding (Phase 5c §7.6
+   follow-on Commit 3) — ``Gusto na kumain``.
+2. PRON preceding, the PRON's prev being ``V[CTRL_CLASS!=NONE]``
+   (Phase 4 §7.10) — ``Kaya namin na kumain``.
+
+Phase 5e Commit 6 adds a third:
+
+3. PRON preceding, the PRON's prev being NOUN (i.e., the PRON
+   is an NP-internal possessor), AND the next content token
+   after ``na`` is a VERB (or NEG + VERB).
+
+### Look-ahead through PART[POLARITY=NEG]
+
+A small helper :func:`_next_content_is_verb` looks at the next
+position; if it's a ``PART[POLARITY=NEG]`` token (``hindi`` /
+``huwag``) and not a VERB, it skips one position and looks
+again. Returns True only if the first non-NEG content token is
+a VERB. This makes ``Tumakbo ang bata ko na hindi kumain`` work
+(NEG-RC under the new disambiguation).
+
+### Why look at both sides?
+
+The trigger condition is **bilateral**: NOUN before PRON before
+``na`` before VERB. The simpler "PRON before ``na`` before VERB"
+pattern would fire in too many cases — for instance,
+``Kumain mo na ang isda`` has post-V PRON ``mo`` followed by
+``na`` followed by DET ``ang`` (not VERB), so that case is
+unaffected. But ``Kumain mo na nakita`` would
+spuriously trigger if we only looked right (V + PRON + na + V),
+even though the natural reading there is the 2P clitic ``mo na``
+followed by an awkward second clause. Requiring NOUN preceding
+the PRON narrows the trigger to the genuine NP-internal-
+possessive pattern, which is the only context where ``na`` after
+a post-noun PRON unambiguously introduces an RC.
+
+### Synthesizer-fallback caveat
+
+The deferral note's example ``Tumakbo ang bata ko na nakita``
+uses ``nakita`` (kita NVOL form). ``kita`` is TR-only in the
+seed lexicon, so the synthesizer fallback emits only
+``KITA <SUBJ, OBJ>`` — the bare RC ``nakita`` (no overt OBJ)
+fails completeness. The disambiguation fix from this commit is
+correct, but the corpus tests for the construction use verbs
+that have hand-authored AV-intransitive BASE entries
+(``kain``, ``bili``, etc.) or are intrinsically intransitive
+(``takbo``, ``tulog``). Adding bare-AV-intr synthesizer
+fallback for TR verbs is the same engineering follow-up flagged
+in Phase 5e Commit 5 (headless / free relatives) and is
+deferred to a separate commit.
+
+### What this lifts
+
+* ``Tumakbo ang bata ko na kumain.`` "My child who ate ran."
+* ``Tumakbo ang bata mo na kumain.`` (2sg-GEN possessor)
+* ``Tumakbo ang bata niya na kumain.`` (3sg-GEN possessor)
+* ``Tumakbo ang bata ko na kumain ng isda.`` (transitive RC).
+* ``Tumakbo ang bata ko na kinain ng aso.`` (OV RC).
+* ``Tumakbo ang bata ko na hindi kumain.`` (NEG-RC under
+  the construction).
+
+### Out-of-scope (still deferred)
+
+* **Bare-AV-intr synthesizer fallback.** As above — needed to
+  lift the original ``Tumakbo ang bata ko na nakita`` example
+  where the RC's V is a TR verb without a hand-authored
+  intransitive entry.
+* **Other possessive markers + na linker.** ``aklat ng bata na
+  nakita`` (non-pronominal possessor) — the existing
+  NP-internal possessive plus relativization rules already
+  handle this without disambiguation issues; not exercised
+  here.
+

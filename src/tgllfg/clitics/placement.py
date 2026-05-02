@@ -250,7 +250,7 @@ def disambiguate_homophone_clitics(
         if "NOUN" in prev_pos or "N" in prev_pos:
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif "VERB" in prev_pos or "PRON" in prev_pos:
-            # Two left-context exceptions where ``na`` should be
+            # Three left-context exceptions where ``na`` should be
             # the linker rather than the aspectual clitic:
             #
             # 1. Control verb directly followed by ``na`` (Phase 5c
@@ -265,6 +265,16 @@ def disambiguate_homophone_clitics(
             #    ``Kaya namin na kumain`` — psych control with
             #    consonant-final pronominal experiencer; the
             #    following ``na`` is the linker introducing XCOMP.
+            # 3. PRON preceded by a NOUN (NP-internal possessive)
+            #    + ``na`` + VERB (Phase 5e Commit 6, lifting Phase
+            #    5d Commit 10's deferral): ``bata ko na nakita``
+            #    "child of-mine which-saw" — the PRON is the head
+            #    NP's possessor, the ``na`` is the linker
+            #    introducing the RC. Look at BOTH sides:
+            #    PRON-after-NOUN preceding AND VERB (or NEG+VERB)
+            #    following. The look-ahead skips
+            #    PART[POLARITY=NEG] so ``bata ko na hindi kinain``
+            #    works too.
             is_ctrl_verb = "VERB" in prev_pos and any(
                 ma.pos == "VERB"
                 and ma.feats.get("CTRL_CLASS") not in (None, "NONE")
@@ -280,7 +290,17 @@ def disambiguate_homophone_clitics(
                     for ma in prev_prev
                 )
             )
-            if is_ctrl_verb or is_ctrl_pron_seq:
+            is_post_noun_pron_with_v_following = (
+                "PRON" in prev_pos
+                and prev_prev is not None
+                and any(ma.pos in ("NOUN", "N") for ma in prev_prev)
+                and _next_content_is_verb(analyses, i)
+            )
+            if (
+                is_ctrl_verb
+                or is_ctrl_pron_seq
+                or is_post_noun_pron_with_v_following
+            ):
                 out.append([
                     ma for ma in cands if ma.feats.get("is_clitic") is not True
                 ])
@@ -291,6 +311,35 @@ def disambiguate_homophone_clitics(
         else:
             out.append(cands)
     return out
+
+
+def _next_content_is_verb(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """Look ahead from position ``i + 1``, skipping
+    ``PART[POLARITY=NEG]`` tokens (negation typically precedes the V
+    it negates), and return True if the first non-NEG content token
+    is a VERB.
+
+    Used by :func:`disambiguate_homophone_clitics` to decide whether
+    ``na`` after a post-noun PRON is the linker (introducing an RC
+    / clausal complement) rather than the 2P aspectual clitic.
+    """
+    look = i + 1
+    while look < len(analyses):
+        cands = analyses[look]
+        poss = {ma.pos for ma in cands}
+        is_neg_part = any(
+            ma.pos == "PART" and ma.feats.get("POLARITY") == "NEG"
+            for ma in cands
+        )
+        if "VERB" in poss:
+            return True
+        if is_neg_part and "VERB" not in poss:
+            look += 1
+            continue
+        return False
+    return False
 
 
 def reorder_clitics(

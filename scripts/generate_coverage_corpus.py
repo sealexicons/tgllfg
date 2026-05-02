@@ -484,6 +484,29 @@ def _relativization_corpus() -> list[dict[str, Any]]:
     _add(out, "tumakbo ang hindi kumain ng isda",
          "relativization: headless RC + inner NEG",
          "parse")
+
+    # Phase 5e Commit 6: ``na`` linker disambiguation after PRON.
+    # The PRON ``ko`` / ``mo`` / ``niya`` is the NP-internal
+    # possessor of the head NOUN; the standalone ``na`` is the
+    # linker introducing the RC, not the 2P aspectual clitic.
+    _add(out, "tumakbo ang bata ko na kumain",
+         "relativization: post-poss-PRON na linker (1sg)",
+         "parse")
+    _add(out, "tumakbo ang bata mo na kumain",
+         "relativization: post-poss-PRON na linker (2sg)",
+         "parse")
+    _add(out, "tumakbo ang bata niya na kumain",
+         "relativization: post-poss-PRON na linker (3sg)",
+         "parse")
+    _add(out, "tumakbo ang bata ko na kumain ng isda",
+         "relativization: post-poss-PRON na linker + transitive RC",
+         "parse")
+    _add(out, "tumakbo ang bata ko na kinain ng aso",
+         "relativization: post-poss-PRON na linker + OV RC",
+         "parse")
+    _add(out, "tumakbo ang bata ko na hindi kumain",
+         "relativization: post-poss-PRON na linker + NEG-skip",
+         "parse")
     return out
 
 
