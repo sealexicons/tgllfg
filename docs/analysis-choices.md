@@ -4344,3 +4344,95 @@ distinguishes them.
   reuse the existing AV-intr infrastructure and should
   compose, but aren't pinned in this commit.
 
+## Phase 5e Commit 15: other ``ipang-`` senses (reclassification)
+
+**Date:** 2026-05-02. **Status:** active. Documentation-only
+commit; no grammar / lex / morph / corpus / test changes.
+
+The Phase 5e §10.1 Group D plan note flagged "Other ``ipang-``
+senses" — specifically the purpose-nominal use of ``pang-``
+(``pambili`` "for buying / shopping", ``pansulat`` "writing
+instrument", ``pangkain`` "food"). These were listed as
+additive lex entries that could land as separate noun lex
+entries once corpus pressure surfaced specific tokens.
+
+Phase 5e Commit 15 makes the deferral explicit: Phase 5c
+§7.7 Commit 4 lifted the **verbal** ``ipang-`` IV-INSTR use of
+the same ``pang-`` morpheme, but the **noun-deriving** uses
+remain deferred.
+
+### Why this isn't a Phase 5e implementation item
+
+Three architectural / corpus considerations:
+
+1. **They are nouns, not verbs.** The construction uses
+   ``pang-`` to derive nouns from verbal roots
+   (``bili`` → ``pambili``, ``sulat`` → ``pansulat``). The
+   resulting forms function as NP heads or modifiers, not as
+   clause heads. Implementing them as a productive paradigm
+   would mean adding **nominal**-deriving morphology alongside
+   the existing verbal paradigms — a meaningful extension to
+   the morph engine.
+2. **No corpus fixtures.** Neither the Phase 4 §7.10 reference
+   corpus, the seeded R&G 1981 fixtures, nor the classic /
+   S&O / Kroeger fixtures contain ``pambili``-like forms in
+   testable contexts. Adding speculative noun entries without
+   fixtures would bloat the seed without anchoring the
+   construction's syntactic distribution.
+3. **The lex-only approach is narrow.** The plan note's
+   "additional senses can land as separate lex entries"
+   suggests the path of least resistance: hand-author
+   ``pambili`` etc. as nouns in ``data/tgl/roots.yaml``.
+   That's feasible and could be done one token at a time when
+   a corpus surfaces specific cases — but it doesn't merit a
+   Phase 5e item by itself.
+
+### What ``ipang-`` already covers
+
+Phase 5c §7.7 Commit 4 lifted the verbal ``ipang-`` IV-INSTR
+applicative (``ipinambili`` "instrument-bought";
+``ipinantahi`` "needle-sewed"). This is the productive
+**verbal** use of ``pang-`` (``i-`` + ``pang-`` + V).
+Phase 5e Commit 14 added the AV ``mang-`` retain pattern
+(``nambili`` "engaging in buying"), which uses the same
+``nasal_assim_prefix`` morphological op.
+
+The remaining ``pang-`` uses (purpose nominals) fall outside
+the verbal paradigm because they don't carry voice / aspect /
+mood inflection — they're zero-inflected derived nouns.
+
+### What it would take to lift
+
+* **Lex-only path** (when corpus pressure surfaces tokens):
+  add each form as a NOUN entry in ``data/tgl/roots.yaml``,
+  e.g., ``- citation: pambili, pos: NOUN, gloss: shopping
+  money / for buying``. The existing N rules and NP-formation
+  rules absorb them.
+* **Productive-derivation path** (more ambitious): a new
+  ``pang_n`` morphological class deriving NOUN from VERB
+  roots, parallel to (but distinct from) the verbal
+  ``ipang`` / ``mang_retain`` classes. This requires deciding
+  the derived-noun's lex profile: PRED, SEM_CLASS, possible
+  argument-frame inheritance from the source verb, etc.
+
+Both paths are deferred to v1+ when corpus pressure justifies.
+
+### Where it lives now
+
+* Plan §10.1 Group D parenthetical noting the reclassification
+  and pointer to §10.2 / §16.
+* Plan §10.2 ("Items not enumerated above") gains the
+  ``pang-``-purpose-nominals item (sixth item; the plan now
+  flags this re-categorisation explicitly).
+* Plan §16 gains a bullet articulating the rationale and the
+  two implementation paths.
+* This `docs/analysis-choices.md` section pins the rationale.
+
+### Out-of-scope (still deferred)
+
+The reclassification doesn't itself defer anything new — the
+Phase 5c §7.7 follow-on already noted these as deferred. The
+change is administrative: moving the item from "additive Phase
+5e candidate" to "v1-out-of-scope as named, with two
+implementation paths spelled out".
+

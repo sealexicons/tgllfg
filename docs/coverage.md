@@ -199,9 +199,30 @@ list (see `docs/analysis-choices.md`):
   is also attested as a collective-distributive (S&O 1972
   §5.27) but not exercised by the corpus. See plan §16 and
   the analysis-choices.md "Phase 5e Commit 13" entry.
+- **Other ``ipang-`` senses (purpose nominals).** Reclassified
+  in Phase 5e Commit 15 (originally a Group D entry).
+  ``pang-`` derives purpose nominals (``pambili`` "for
+  buying", ``pansulat`` "writing instrument") from verbal
+  roots — but these are nouns, not verbs, and the seed corpus
+  doesn't exercise them. The verbal ``ipang-`` IV-INSTR
+  applicative is already covered by Phase 5c §7.7 Commit 4;
+  noun-deriving uses remain deferred. See plan §16 and the
+  analysis-choices.md "Phase 5e Commit 15" entry.
 
 ### Recently lifted (still listed for archaeological context)
 
+- **Other ``ipang-`` senses (reclassification)** — Phase 5e
+  Commit 15 documentation-only commit. Originally listed as a
+  Phase 5e Group D candidate ("additional senses can land as
+  separate lex entries"). Investigation showed ``pang-``
+  purpose nominals (``pambili``, ``pansulat``, ``pangkain``)
+  are noun-deriving forms, not verbal voice / applicative
+  variants. The verbal ``ipang-`` IV-INSTR use is already
+  handled by Phase 5c §7.7 Commit 4; noun-deriving uses are
+  reclassified to plan §16 v1-out-of-scope (lex-only path or
+  productive-derivation path both deferred until corpus
+  pressure surfaces specific tokens). No grammar / lex /
+  morph / corpus changes.
 - **AV mang- retain readings** — lifted in Phase 5e Commit 14.
   Schachter & Otanes 1972 §5.27 + Ramos 1971 paradigm tables
   document a retain-pattern variant of the ``mang-``
