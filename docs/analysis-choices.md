@@ -4255,3 +4255,92 @@ change is administrative: moving an item from
 "additive Phase 5e candidate" to "v1-out-of-scope-as-named"
 and pointing to the actually-attested distributive markers.
 
+## Phase 5e Commit 14: AV mang- retain readings
+
+**Date:** 2026-05-02. **Status:** active.
+
+Schachter & Otanes 1972 §5.27 + Ramos 1971 paradigm tables
+note that some bases admit a retain-pattern variant of the
+``mang-`` distributive AV alongside the default drop pattern.
+The retain pattern keeps the base's first consonant and adds a
+homorganic nasal — exactly the same ``nasal_assim_prefix`` op
+that Phase 5c §7.7 introduced for the ``ipang-`` IV-INSTR /
+``ika-`` IV-REASON applicatives.
+
+The two patterns can carry slightly different semantics
+("habitual buyer / shopper" vs "engaging in the buying
+activity") or be dialectal variants. Phase 5c §7.7 follow-on
+flagged this as deferred; Phase 5e Commit 14 lifts it.
+
+### Two patterns, same lex PRED
+
+Both surface forms route to the same ``BUY <SUBJ>`` lex entry
+because the existing AV-intransitive lex doesn't constrain on
+the surface pattern. Roughly:
+
+```
+drop:   mang- + bili → mami → mamili / namili / namimili / mamimili
+retain: mang- + bili → namb → nambili / nambibili / mambibili
+                                                   (no “mambili” form;
+                                                    cv-redup is required
+                                                    for IPFV / CTPL)
+```
+
+### Three new paradigm cells
+
+In ``data/tgl/paradigms.yaml``, a new ``mang_retain`` affix
+class with PFV / IPFV / CTPL cells:
+
+```
+PFV:  nasal_assim_prefix("nang")                  → nambili
+IPFV: cv_redup → nasal_assim_prefix("nang")       → nambibili
+CTPL: cv_redup → nasal_assim_prefix("mang")       → mambibili
+```
+
+The cells use ``nasal_assim_prefix`` (retain) where the
+existing ``mang`` cells use ``nasal_substitute`` (drop). PFV
+prefix is ``"nang"`` (realis); CTPL prefix is ``"mang"``
+(irrealis).
+
+### Per-base flagging
+
+The new ``mang_retain`` affix class is per-base. Currently only
+``bili`` carries ``mang_retain`` in its
+``affix_class`` list (``data/tgl/roots.yaml``); other roots
+that admit the retain pattern (e.g., ``tahi``, ``patay``) can
+opt in by adding ``mang_retain`` to their list. Roots without
+the flag don't generate retain-pattern surfaces:
+
+```
+nambili    parses (bili HAS mang_retain in affix_class)
+nankain    _UNK   (kain has neither mang nor mang_retain)
+```
+
+### Why route both forms to the same PRED
+
+The semantic difference between drop and retain forms is
+subtle and varies by source. Some sources treat them as
+dialectal variants of the same predicate; others assign
+slightly different aspectual readings (drop = habitual /
+professional; retain = activity-engaged). Without
+corpus-grounded distributional evidence to pin a stable
+contrast, conflating both forms under ``BUY <SUBJ>`` is
+the safer default. A future commit could add per-form
+aspectual or pragmatic features if a corpus emerges that
+distinguishes them.
+
+### Out-of-scope (still deferred)
+
+* **Other retain-pattern bases.** Currently only ``bili``.
+  Other roots historically attested with retain-pattern
+  variants (``tahi`` → ``nantahi``, ``patay`` → ``namatay``)
+  could opt in via affix-class registration; not pursued here.
+* **Per-form aspectual feats.** If corpus pressure reveals a
+  systematic semantic contrast between drop and retain
+  surfaces, a feature like ``MANG_PATTERN=DROP|RETAIN`` could
+  ride on the morph analysis and route to distinct lex PREDs.
+* **Retain pattern under control / ay-fronting.** The retain
+  form is AV-intransitive; control / fronting compositions
+  reuse the existing AV-intr infrastructure and should
+  compose, but aren't pinned in this commit.
+

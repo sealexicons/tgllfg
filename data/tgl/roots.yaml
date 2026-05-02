@@ -53,8 +53,9 @@
   # §7.7 follow-on: ipang (ipinambili "instrument-bought",
   # instrumental applicative IV).
   # Phase 5e Commit 12: mag_an (nagbilihan "exchanged in trade",
-  # reciprocal / social).
-  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipag, ipang, mag_an]
+  # reciprocal / social). Phase 5e Commit 14: mang_retain
+  # (mambili — retain-pattern AV variant alongside mamili).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipag, ipang, mag_an, mang_retain]
 
 - citation: inom
   pos: VERB

@@ -2055,6 +2055,15 @@
 - text: Hindi nagkainan sila.
   construction: 'causative: mag-...-an reciprocal + NEG'
   expected: parse
+- text: Nambili ang nanay.
+  construction: 'voice/aspect: mang- retain (bili PFV)'
+  expected: parse
+- text: Nambibili ang nanay.
+  construction: 'voice/aspect: mang- retain (bili IPFV)'
+  expected: parse
+- text: Mambibili ang nanay.
+  construction: 'voice/aspect: mang- retain (bili CTPL)'
+  expected: parse
 - text: Ipinaggawa ng aso ang aso.
   construction: 'applicative: ipag- benefactive (gawa)'
   expected: parse

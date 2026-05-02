@@ -700,6 +700,20 @@ def _control_corpus() -> list[dict[str, Any]]:
     _add(out, "hindi nagkainan sila",
          "causative: mag-...-an reciprocal + NEG",
          "parse")
+
+    # Phase 5e Commit 14: AV mang- retain pattern. Per-base
+    # affix class mang_retain admits the retain-consonant
+    # variant alongside the default drop pattern. Both forms
+    # parse to the same lex PRED (BUY <SUBJ>).
+    _add(out, "nambili ang nanay",
+         "voice/aspect: mang- retain (bili PFV)",
+         "parse")
+    _add(out, "nambibili ang nanay",
+         "voice/aspect: mang- retain (bili IPFV)",
+         "parse")
+    _add(out, "mambibili ang nanay",
+         "voice/aspect: mang- retain (bili CTPL)",
+         "parse")
     return out
 
 

@@ -125,6 +125,53 @@
     - {op: prefix, value: "ma"}
   notes: mamimili (← mang+CV-redup of post-subst base)
 
+# === AV — mang- retain pattern (Phase 5e Commit 14) =====================
+#
+# Schachter & Otanes 1972 §5.27 + Ramos 1971 paradigm tables note
+# that some bases admit a retain-pattern variant of the mang-
+# distributive alongside the default drop pattern. The retain
+# pattern keeps the base's first consonant and adds a homorganic
+# nasal (the same ``nasal_assim_prefix`` op introduced for the
+# Phase 5c §7.7 ipang- IV-INSTR / ika- IV-REASON applicatives):
+#
+#   mang- + bili → drop:   mami → mamili    (existing mang class)
+#   mang- + bili → retain: namb → nambili → namb-i-bili → mambili (Phase 5e)
+#
+# The two forms can carry slightly different semantics
+# ("habitual buyer" vs "engaging in buying activity") or be
+# dialectal variants. Per-base flagging via the new ``mang_retain``
+# affix class lets bases opt into the retain pattern alongside
+# the default drop pattern. The lex entries (BUY <SUBJ> etc.) are
+# unchanged — both surface forms route to the same PRED.
+- voice: AV
+  aspect: PFV
+  mood: IND
+  transitivity: ''
+  affix_class: mang_retain
+  operations:
+    - {op: nasal_assim_prefix, value: "nang"}
+  notes: nambili (← nang+bili, retain pattern). nantahi.
+
+- voice: AV
+  aspect: IPFV
+  mood: IND
+  transitivity: ''
+  affix_class: mang_retain
+  operations:
+    - {op: cv_redup}
+    - {op: nasal_assim_prefix, value: "nang"}
+  notes: nambibili (← nang+CV-redup of bili → nang+bibili → nambibili)
+
+- voice: AV
+  aspect: CTPL
+  mood: IND
+  transitivity: ''
+  affix_class: mang_retain
+  operations:
+    - {op: cv_redup}
+    - {op: nasal_assim_prefix, value: "mang"}
+  notes: mambibili (← mang+CV-redup of bili)
+
 # === AV — Actor Voice (maka- abilitative class) ==========================
 #
 # MOOD = ABIL distinguishes abilitative readings ("be able to ...").
