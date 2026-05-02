@@ -776,6 +776,35 @@ def _demonstrative_possessive_corpus() -> list[dict[str, Any]]:
                 _add(out, f"{verb} {nom} {dem_g}",
                      "demonstrative: GEN demonstrative as OBJ",
                      "parse")
+    # Phase 5e Commit 16: pre-modifier demonstrative with linker
+    # (``itong bata`` "this child"). The dem precedes the head N
+    # via the linker — bound ``-ng`` on PROX (vowel-final dem),
+    # standalone ``na`` on MED / DIST (consonant-final dem).
+    # Three cases × three deixis × representative bases.
+    # PROX (bound ``-ng``).
+    for verb in ("kumain", "tumakbo", "natulog"):
+        for dem_n, n in (("itong", "bata"), ("itong", "babae")):
+            _add(out, f"{verb} {dem_n} {n}",
+                 "demonstrative: pre-modifier NOM PROX (-ng linker)",
+                 "parse")
+    # MED / DIST (standalone ``na``).
+    for verb in ("kumain", "tumakbo"):
+        for dem in ("iyan", "iyon"):
+            _add(out, f"{verb} {dem} na bata",
+                 f"demonstrative: pre-modifier NOM "
+                 f"{'MED' if dem == 'iyan' else 'DIST'} (na linker)",
+                 "parse")
+    # GEN pre-mod (OV — pre-mod dem is OBJ-AGENT).
+    _add(out, "kinain nitong bata ang isda",
+         "demonstrative: pre-modifier GEN PROX (-ng linker)",
+         "parse")
+    _add(out, "kinain niyon na bata ang isda",
+         "demonstrative: pre-modifier GEN DIST (na linker)",
+         "parse")
+    # Pre + post stacking on same N (R&B 1986 examples).
+    _add(out, "kumain itong batang ito",
+         "demonstrative: pre + post-mod stacking",
+         "parse")
     # Possessive: ng-NP modifier
     for verb in ("kumain", "bumili"):
         for nom in _NOM_NPS[:3]:

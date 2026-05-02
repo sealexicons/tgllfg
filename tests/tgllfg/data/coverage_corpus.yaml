@@ -2490,6 +2490,45 @@
 - text: Bumasa ang bata niyon.
   construction: 'demonstrative: GEN demonstrative as OBJ'
   expected: parse
+- text: Kumain itong bata.
+  construction: 'demonstrative: pre-modifier NOM PROX (-ng linker)'
+  expected: parse
+- text: Kumain itong babae.
+  construction: 'demonstrative: pre-modifier NOM PROX (-ng linker)'
+  expected: parse
+- text: Tumakbo itong bata.
+  construction: 'demonstrative: pre-modifier NOM PROX (-ng linker)'
+  expected: parse
+- text: Tumakbo itong babae.
+  construction: 'demonstrative: pre-modifier NOM PROX (-ng linker)'
+  expected: parse
+- text: Natulog itong bata.
+  construction: 'demonstrative: pre-modifier NOM PROX (-ng linker)'
+  expected: parse
+- text: Natulog itong babae.
+  construction: 'demonstrative: pre-modifier NOM PROX (-ng linker)'
+  expected: parse
+- text: Kumain iyan na bata.
+  construction: 'demonstrative: pre-modifier NOM MED (na linker)'
+  expected: parse
+- text: Kumain iyon na bata.
+  construction: 'demonstrative: pre-modifier NOM DIST (na linker)'
+  expected: parse
+- text: Tumakbo iyan na bata.
+  construction: 'demonstrative: pre-modifier NOM MED (na linker)'
+  expected: parse
+- text: Tumakbo iyon na bata.
+  construction: 'demonstrative: pre-modifier NOM DIST (na linker)'
+  expected: parse
+- text: Kinain nitong bata ang isda.
+  construction: 'demonstrative: pre-modifier GEN PROX (-ng linker)'
+  expected: parse
+- text: Kinain niyon na bata ang isda.
+  construction: 'demonstrative: pre-modifier GEN DIST (na linker)'
+  expected: parse
+- text: Kumain itong batang ito.
+  construction: 'demonstrative: pre + post-mod stacking'
+  expected: parse
 - text: Kumain ang aso ng isda ng nanay.
   construction: 'possessive: ng-NP modifier on OBJ'
   expected: parse

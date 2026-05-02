@@ -4436,3 +4436,132 @@ change is administrative: moving the item from "additive Phase
 5e candidate" to "v1-out-of-scope as named, with two
 implementation paths spelled out".
 
+## Phase 5e Commit 16: pre-modifier demonstrative with linker
+
+**Date:** 2026-05-02. **Status:** active. Lifts the §7.8
+deferral on "Pre-modifier demonstrative with linker" noted as
+out-of-scope under Phase 5d Commit 3. Sentences like
+``Kumain itong bata`` ("this child ate") and
+``Kinain nitong bata ang isda`` ("this child ate the fish")
+now parse with the demonstrative serving as the determiner
+(replacing ``ang`` / ``ng`` / ``sa``) followed by the linker
+and the head N.
+
+### Six grammar rules (3 cases × 2 linker variants)
+
+```
+NP[CASE=NOM] → DET[CASE=NOM, DEM=YES] PART[LINK=…] N
+NP[CASE=GEN] → ADP[CASE=GEN, DEM=YES] PART[LINK=…] N
+NP[CASE=DAT] → ADP[CASE=DAT, DEM=YES] PART[LINK=…] N
+```
+
+PROX dems (``ito`` / ``nito`` / ``dito``) are vowel-final and
+take the bound ``-ng`` linker — ``itong`` is split by
+``split_linker_ng`` into ``ito`` + ``-ng``. MED dems (``iyan``
+/ ``niyan`` / ``diyan``) and DIST dems (``iyon`` / ``niyon`` /
+``doon``) are consonant-final and take the standalone ``na``
+linker. The case-typed pattern in the rule's first child
+enforces case agreement at the parser level.
+
+### Equations: matrix shares dem, PRED projects from N
+
+```
+(↑) = ↓1                  -- DET/ADP carries CASE/MARKER/DEIXIS
+(↑ PRED) = ↓3 PRED         -- N supplies PRED
+(↑ LEMMA) = ↓3 LEMMA
+```
+
+Unlike the post-modifier rule (where the head NP carries its
+own case marker like ``ang`` and the dem only contributes
+DEIXIS), the pre-modifier dem **replaces** the case marker —
+the dem itself is the determiner. The head's PRED + LEMMA
+project from the bare N (no inner DET); the dem's CASE,
+MARKER, DEIXIS, DEM percolate to the matrix NP via the share
+equation. This is structurally the mirror of Phase 5d Commit 3.
+
+### Fifth left-context exception in `disambiguate_homophone_clitics`
+
+The standalone ``na`` is homophonous between the LINK=NA
+linker and the ASPECT_PART=ALREADY 2P enclitic. The Phase 4 /
+5c / 5d disambiguator branched on prev-token POS:
+
+* prev=NOUN/N → linker (already in place);
+* prev=VERB/PRON → clitic (with three sub-exceptions);
+* otherwise → keep both readings (placement decides).
+
+For pre-modifier dems with MED / DIST (``iyan na bata`` /
+``iyon na bata``), prev-token=DET/ADP and DEM=YES. Without an
+explicit branch, the "otherwise" case kept both readings, but
+``_is_clitic_token`` then sees the clitic reading and the
+Wackernagel pass hoists ``na`` into the post-V cluster — the
+linker reading dies before the new grammar rule can fire.
+
+Phase 5e Commit 16 adds a fifth branch between the NOUN and
+VERB/PRON arms:
+
+```python
+elif any(
+    ma.pos in ("DET", "ADP") and ma.feats.get("DEM") == "YES"
+    for ma in prev
+):
+    out.append([
+        ma for ma in cands
+        if ma.feats.get("is_clitic") is not True
+    ])
+```
+
+When ``na`` follows a DEM-DET (``iyan`` / ``iyon``) or
+DEM-ADP (``niyan`` / ``niyon`` / ``diyan`` / ``doon``), the
+linker reading wins. The branch is guarded by ``DEM=YES`` so
+plain DET / ADP entries (``ang``, ``ng``, ``sa``, ``si``,
+``ni``, ``kay``) don't fire — those rarely precede ``na`` in
+isolation, but the explicit guard keeps the branch tight.
+
+PROX dems (``ito`` / ``nito`` / ``dito``) take the bound
+``-ng`` linker, which has no clitic homophone, so this
+disambiguator branch only matters for MED / DIST.
+
+### Surface variants enabled
+
+```
+itong bata           (NOM PROX, vowel-final dem + bound -ng)
+iyan na bata         (NOM MED,  consonant-final dem + na)
+iyon na bata         (NOM DIST, consonant-final dem + na)
+nitong bata          (GEN PROX, in OV-actor or possessor)
+niyan na bata        (GEN MED)
+niyon na bata        (GEN DIST)
+ditong palengke      (DAT PROX, in OBL-LOC or ADJUNCT)
+diyan na palengke    (DAT MED)
+doon na palengke     (DAT DIST)
+```
+
+Pre + post-modifier stacking on the same N (``itong batang
+ito``) composes as expected — both rules fire and DEIXIS=PROX
+is set consistently. R&B 1986 cites this stacked form as
+common in spoken Tagalog.
+
+### Out-of-scope (still deferred)
+
+* **Demonstrative as modifier of a relativized head**
+  (``ang batang ito na kumain`` "this child who ate"). The
+  RC's linker would compete with the dem-modifier's linker;
+  needs ranker-policy refinement. Phase 5e Commit 17.
+* **Pre-modifier dem with N-internal modifiers between dem and
+  head** (``itong matalinong bata`` "this intelligent child"
+  with adjective). The current rule consumes a bare N; it
+  doesn't recurse into adjective-modified N projections
+  because §7.8 doesn't yet wire NP-internal adjective
+  modification. Out of scope here — bundle with the future
+  ADJ-modifier item if one is added.
+
+### Why this lands as a pre-modifier-only commit
+
+Both pre- and post-modifier dem-with-linker forms are
+attested. Phase 5d Commit 3 implemented post-modifier; the
+pre-modifier mirror is structurally simpler (dem replaces
+case marker rather than coexisting with it) but interacts
+with the ``na``-disambiguation pass in a way that needs the
+fifth left-context branch. Bundling pre+post into one commit
+would have obscured both interactions; splitting them keeps
+each commit's contract self-contained.
+

@@ -249,6 +249,19 @@ def disambiguate_homophone_clitics(
         )
         if "NOUN" in prev_pos or "N" in prev_pos:
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+        elif prev is not None and any(
+            ma.pos in ("DET", "ADP") and ma.feats.get("DEM") == "YES"
+            for ma in prev
+        ):
+            # Phase 5e Commit 16: demonstrative DET/ADP followed by
+            # ``na`` is the linker for pre-modifier dem (``iyan na
+            # bata`` / ``iyon na bata`` / ``niyan na isda``). The
+            # dem replaces the case marker as the determiner; the
+            # following ``na`` introduces the head N — never the
+            # aspectual ``ALREADY``. (PROX dems take the bound
+            # ``-ng`` linker, which is unambiguously a linker, so
+            # this branch only matters for MED / DIST.)
+            out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif "VERB" in prev_pos or "PRON" in prev_pos:
             # Three left-context exceptions where ``na`` should be
             # the linker rather than the aspectual clitic:

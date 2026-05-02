@@ -216,6 +216,67 @@ class Grammar:
                 ),
             ))
 
+        # --- Phase 5e Commit 16: pre-modifier demonstrative -----------
+        #
+        # ``itong bata`` ("this child"). The demonstrative
+        # precedes the head N via the linker. PROX dems
+        # (``ito`` / ``nito`` / ``dito``) are vowel-final and
+        # take the bound ``-ng`` linker (``itong`` is split by
+        # ``split_linker_ng`` into ``ito`` + ``-ng``); MED dems
+        # (``iyan`` / ``niyan`` / ``diyan``) and DIST dems
+        # (``iyon`` / ``niyon`` / ``doon``) are consonant-final
+        # and take the standalone ``na`` linker. Three cases ×
+        # two linker variants = six rules.
+        #
+        # Unlike the post-modifier rule (where the head NP
+        # carries its own case marker like ``ang``), the pre-
+        # modifier dem replaces the case marker — the dem itself
+        # is the determiner. The matrix shares the dem's
+        # f-structure via ``(↑) = ↓1`` (CASE / MARKER / DEIXIS
+        # percolate); the head's PRED + LEMMA project from N via
+        # ``(↑ PRED) = ↓3 PRED`` and ``(↑ LEMMA) = ↓3 LEMMA``.
+        # This is structurally the mirror of Phase 5d Commit 3.
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "NP[CASE=NOM]",
+                [
+                    "DET[CASE=NOM, DEM=YES]",
+                    f"PART[LINK={link}]",
+                    "N",
+                ],
+                [
+                    "(↑) = ↓1",
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                ],
+            ))
+            rules.append(Rule(
+                "NP[CASE=GEN]",
+                [
+                    "ADP[CASE=GEN, DEM=YES]",
+                    f"PART[LINK={link}]",
+                    "N",
+                ],
+                [
+                    "(↑) = ↓1",
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                ],
+            ))
+            rules.append(Rule(
+                "NP[CASE=DAT]",
+                [
+                    "ADP[CASE=DAT, DEM=YES]",
+                    f"PART[LINK={link}]",
+                    "N",
+                ],
+                [
+                    "(↑) = ↓1",
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                ],
+            ))
+
         # --- Phase 4 §7.8: NP-internal possessive ---
         #
         # ``ang aklat ng bata`` ("the child's book") and pronominal
