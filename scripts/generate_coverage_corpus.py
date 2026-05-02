@@ -561,6 +561,42 @@ def _control_corpus() -> list[dict[str, Any]]:
         _add(out, f"{psych} kong hindi kumain",
              f"control: inner NEG + {psych}",
              "parse")
+
+    # Phase 5e Commit 8: control / raising composition pinning.
+    # Existing Phase 5c §7.6 follow-on Commit 5 (raising at S level)
+    # plus Phase 5d Commit 7 (raising at S_XCOMP level) compose
+    # naturally; this adds explicit corpus coverage.
+    # Control under raising — RAISING (linker form):
+    _add(out, "mukhang gusto ng batang kumain",
+         "control: control under mukha-raising (psych)",
+         "parse")
+    _add(out, "mukhang pumayag ang batang kumain",
+         "control: control under mukha-raising (intrans)",
+         "parse")
+    _add(out, "bakang gusto ng batang kumain",
+         "control: control under baka-raising (psych)",
+         "parse")
+    # Control under raising — RAISING_BARE (no linker):
+    _add(out, "parang gusto ng batang kumain",
+         "control: control under parang-raising (bare)",
+         "parse")
+    _add(out, "tila gusto ng batang kumain",
+         "control: control under tila-raising (bare)",
+         "parse")
+    # TRANS control + raising in XCOMP:
+    _add(out, "pinilit ng nanay ang batang mukhang umuwi",
+         "control: TRANS + raising in XCOMP (mukha)",
+         "parse")
+    _add(out, "pinilit ng nanay ang batang parang umuwi",
+         "control: TRANS + raising in XCOMP (parang)",
+         "parse")
+    # Negation composition:
+    _add(out, "mukhang hindi gusto ng batang kumain",
+         "control: control under raising + middle NEG",
+         "parse")
+    _add(out, "mukhang gusto ng batang hindi kumain",
+         "control: control under raising + inner NEG",
+         "parse")
     return out
 
 

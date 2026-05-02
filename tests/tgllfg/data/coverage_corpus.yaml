@@ -1953,6 +1953,33 @@
 - text: Ayaw kong hindi kumain.
   construction: 'control: inner NEG + ayaw'
   expected: parse
+- text: Mukhang gusto ng batang kumain.
+  construction: 'control: control under mukha-raising (psych)'
+  expected: parse
+- text: Mukhang pumayag ang batang kumain.
+  construction: 'control: control under mukha-raising (intrans)'
+  expected: parse
+- text: Bakang gusto ng batang kumain.
+  construction: 'control: control under baka-raising (psych)'
+  expected: parse
+- text: Parang gusto ng batang kumain.
+  construction: 'control: control under parang-raising (bare)'
+  expected: parse
+- text: Tila gusto ng batang kumain.
+  construction: 'control: control under tila-raising (bare)'
+  expected: parse
+- text: Pinilit ng nanay ang batang mukhang umuwi.
+  construction: 'control: TRANS + raising in XCOMP (mukha)'
+  expected: parse
+- text: Pinilit ng nanay ang batang parang umuwi.
+  construction: 'control: TRANS + raising in XCOMP (parang)'
+  expected: parse
+- text: Mukhang hindi gusto ng batang kumain.
+  construction: 'control: control under raising + middle NEG'
+  expected: parse
+- text: Mukhang gusto ng batang hindi kumain.
+  construction: 'control: control under raising + inner NEG'
+  expected: parse
 - text: Ipinaggawa ng aso ang aso.
   construction: 'applicative: ipag- benefactive (gawa)'
   expected: parse

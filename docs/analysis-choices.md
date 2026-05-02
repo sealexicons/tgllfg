@@ -3685,3 +3685,92 @@ resumptive pronouns were already deferred at §7.5 and §10.1.
 The change is administrative: moving an item from
 "additive Phase 5e candidate" to "v1-out-of-scope".
 
+## Phase 5e Commit 8: control / raising composition pinning
+
+**Date:** 2026-05-01. **Status:** active. Test-only commit; no
+grammar / lex / morph changes.
+
+Phase 5d Commit 7's deferral list flagged two raising / control
+compositions as available structurally but not pinned with
+tests:
+
+* **Control under raising** — a raising matrix embedding a
+  control clause as its non-gap S complement. The Phase 5c §7.6
+  Commit 5 raising rule
+  ``S → V[CTRL_CLASS=RAISING] PART[LINK] S`` admits any
+  complete S as the inner clause, including a control-S.
+* **TRANS control + raising** — a TRANS control verb
+  (``pinilit``) whose XCOMP is itself a raising-S_XCOMP. The
+  Phase 5d Commit 7 ``S_XCOMP``-level raising rules made this
+  composition available; this commit pins it.
+
+### Composition shapes
+
+**Control under raising:**
+
+```
+Mukhang gusto ng batang kumain.
+S[SEEM]
+  XCOMP = S[WANT, PSYCH-control]
+            SUBJ = bata (GEN-experiencer)
+            XCOMP = S_XCOMP[EAT]
+                      SUBJ = bata (REL-PRO bound)
+  SUBJ = bata (raising structure-share)
+```
+
+All three SUBJ slots (mukha.SUBJ, gusto.SUBJ, kumain.SUBJ) end
+up sharing one f-node id — verified by Python-id equality in
+tests. The raising binding equation
+``(↑ SUBJ) = (↑ XCOMP SUBJ)`` lifts gusto's SUBJ to mukha's
+SUBJ, and gusto's existing control equation
+``(↑ SUBJ) = (↑ XCOMP REL-PRO)`` chains into kain.
+
+**TRANS control + raising:**
+
+```
+Pinilit ng nanay ang batang mukhang umuwi.
+S[FORCE]
+  OBJ-AGENT = nanay
+  SUBJ = bata
+  XCOMP = S_XCOMP[SEEM, raising]
+            SUBJ = bata (raising shares)
+            XCOMP = S_XCOMP[UWI]
+                      SUBJ = bata (REL-PRO bound)
+```
+
+Three SUBJ slots again share one f-node id. The Phase 5d
+Commit 7 ``S_XCOMP`` raising rule (with its own
+``(↑ SUBJ) = (↑ REL-PRO)`` plus
+``(↑ SUBJ) = (↑ XCOMP SUBJ)``) composes seamlessly with the
+TRANS-control wrap rule's
+``(↑ SUBJ) = (↑ XCOMP REL-PRO)``.
+
+### What this lifts (pins, really)
+
+* Control under linked raising (mukha / baka):
+  ``Mukhang gusto ng batang kumain.``,
+  ``Bakang gusto ng batang kumain.``,
+  ``Mukhang pumayag ang batang kumain.``
+* Control under bare raising (parang / tila):
+  ``Parang gusto ng batang kumain.``,
+  ``Tila gusto ng batang kumain.``
+* TRANS control + raising in XCOMP:
+  ``Pinilit ng nanay ang batang mukhang umuwi.``,
+  ``Pinilit ng nanay ang batang parang umuwi.``
+* Negation at the middle level
+  (``Mukhang hindi gusto ng batang kumain``) and at the
+  innermost level
+  (``Mukhang gusto ng batang hindi kumain``).
+
+### Out-of-scope (still deferred)
+
+* **Psych control over a raising-S at the S level**
+  (``Gusto kong mukhang kumain ang aso``). The structure puts a
+  raising-S inside an ``S_XCOMP`` slot; the outermost layer is
+  ``gusto``'s control wrap rule expecting an ``S_XCOMP``, but
+  the raising rule expects its inner clause to be a complete
+  ``S`` (with overt SUBJ). Resolving the conflict needs either
+  a new control-over-raising-S wrap rule shape or the inner
+  raising-S to admit a SUBJ-gap variant. Not exercised by the
+  current corpus and not pursued in this commit.
+
