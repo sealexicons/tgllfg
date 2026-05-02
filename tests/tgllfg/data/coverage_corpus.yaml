@@ -1735,6 +1735,28 @@
 - text: Lumakad ang bata namin na ipinagsulat sa kapatid.
   construction: 'relativization: poss-linker RC, IV + DAT adjunct (ipinagsulat)'
   expected: parse
+- text: Lumakad ang libro ng batang binasa.
+  construction: 'relativization: poss-linker RC, common-noun possessor (NG)'
+  expected: parse
+- text: Lumakad ang libro ng asong kinain.
+  construction: 'relativization: poss-linker RC, common-noun possessor (different
+    head)'
+  expected: parse
+- text: Lumakad ang libro ni juan na binasa.
+  construction: 'relativization: poss-linker RC, proper-noun possessor (NI)'
+  expected: parse
+- text: Lumakad ang libro ni maria na binasa.
+  construction: 'relativization: poss-linker RC, proper-noun possessor (NI)'
+  expected: parse
+- text: Kumain ang aso ng libro ng batang binasa.
+  construction: 'relativization: poss-linker RC, NOUN possessor in OBJ position'
+  expected: parse
+- text: Lumakad ang libro ng batang hindi binasa.
+  construction: 'relativization: poss-linker RC + inner NEG (NOUN possessor)'
+  expected: parse
+- text: Lumakad ang libro ng batang ipinaggawa.
+  construction: 'relativization: poss-linker RC, NOUN possessor + IV variant'
+  expected: parse
 - text: Gusto kong kumain.
   construction: 'control: psych gusto'
   expected: parse

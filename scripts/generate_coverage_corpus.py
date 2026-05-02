@@ -549,6 +549,33 @@ def _relativization_corpus() -> list[dict[str, Any]]:
     _add(out, "lumakad ang bata namin na ipinagsulat sa kapatid",
          "relativization: poss-linker RC, IV + DAT adjunct (ipinagsulat)",
          "parse")
+
+    # Phase 5e Commit 19: possessive-linker RC with non-pronominal
+    # possessor — common nouns (``ng batang binasa``) and proper
+    # nouns (``ni Juan na binasa``). Same dual-binding shape as
+    # Commit 18, generalized by widening the wrap rule's second
+    # daughter from ``PRON[CASE=GEN]`` to ``NP[CASE=GEN]``.
+    _add(out, "lumakad ang libro ng batang binasa",
+         "relativization: poss-linker RC, common-noun possessor (NG)",
+         "parse")
+    _add(out, "lumakad ang libro ng asong kinain",
+         "relativization: poss-linker RC, common-noun possessor (different head)",
+         "parse")
+    _add(out, "lumakad ang libro ni juan na binasa",
+         "relativization: poss-linker RC, proper-noun possessor (NI)",
+         "parse")
+    _add(out, "lumakad ang libro ni maria na binasa",
+         "relativization: poss-linker RC, proper-noun possessor (NI)",
+         "parse")
+    _add(out, "kumain ang aso ng libro ng batang binasa",
+         "relativization: poss-linker RC, NOUN possessor in OBJ position",
+         "parse")
+    _add(out, "lumakad ang libro ng batang hindi binasa",
+         "relativization: poss-linker RC + inner NEG (NOUN possessor)",
+         "parse")
+    _add(out, "lumakad ang libro ng batang ipinaggawa",
+         "relativization: poss-linker RC, NOUN possessor + IV variant",
+         "parse")
     return out
 
 

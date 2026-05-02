@@ -1545,63 +1545,92 @@ class Grammar:
                     ],
                 ))
 
-        # --- Phase 5d Commit 6 + Phase 5e Commit 18: possessive-linker
-        # RC wrap rule ---
+        # --- Phase 5d Commit 6 + Phase 5e Commits 18 & 19:
+        # possessive-linker RC wrap rule ---
         #
         # ``aklat kong binasa`` ("the book that I read"): a
         # construction parallel to relativization where the
-        # pronominal actor of the RC's non-AV verb surfaces as a
-        # possessor of the head NP, joined by a linker.
+        # actor of the RC's non-AV verb surfaces as a possessor
+        # of the head NP, joined by a linker.
         #
-        # **Two surface variants of the same construction:**
+        # **Three lifts of the same construction shape:**
         #
-        # * ``LINK=NG`` (vowel-final PRON, fused ``Vng`` form):
-        #   ``aklat kong binasa`` — ``kong`` tokenizes as one word
-        #   and is split by ``split_linker_ng`` into ``ko`` +
-        #   ``-ng``. The Wackernagel pass keeps PRON adjacent to
-        #   its bound linker via ``_is_pre_linker_pron`` (Phase 5d
-        #   Commit 6). Vowel-final GEN pronouns: ``ko`` / ``mo`` /
-        #   ``niya``.
-        # * ``LINK=NA`` (consonant-final PRON, standalone ``na``):
-        #   ``aklat namin na binasa`` (Phase 5e Commit 18). The
-        #   PRON tokenizes as a separate word and stays in place
-        #   via the existing ``_is_post_noun_pron`` exception; the
-        #   following ``na`` is disambiguated to the linker reading
-        #   by the post-NOUN-PRON-then-VERB branch in
-        #   ``disambiguate_homophone_clitics`` (Phase 5e Commit 6).
-        #   Consonant-final GEN pronouns: ``namin`` / ``natin`` /
-        #   ``ninyo`` / ``nila``. (The vowel-final pronouns also
-        #   admit the standalone-``na`` form: ``aklat ko na binasa``
-        #   parses via the same rule — both linkers carry the same
-        #   f-equations, mirroring the standard relativization
-        #   wrap above.)
+        # * **Phase 5d Commit 6** — vowel-final PRON + bound
+        #   ``-ng`` linker (``aklat kong binasa``, fused ``Vng``
+        #   form split by ``split_linker_ng``).
+        # * **Phase 5e Commit 18** — consonant-final PRON +
+        #   standalone ``na`` linker (``aklat namin na binasa``);
+        #   plus the LINK=NA variant for vowel-final PRON
+        #   (``aklat ko na binasa``).
+        # * **Phase 5e Commit 19** — non-pronominal (NOUN /
+        #   proper-noun) possessor (``aklat ng batang binasa``,
+        #   ``aklat ni Juan na binasa``). Unified with the PRON
+        #   case by widening the second daughter from
+        #   ``PRON[CASE=GEN]`` to ``NP[CASE=GEN]`` — the
+        #   ``NP[CASE=GEN] → PRON[CASE=GEN]`` rule already in the
+        #   grammar makes this a strict generalization that
+        #   subsumes the PRON case.
         #
-        # The pronoun plays a dual role in both variants: it is the
-        # head NP's ``POSS`` AND the RC's ``OBJ-AGENT``. The wrap
-        # rule binds both via ``(↑ POSS) = ↓2`` and
-        # ``(↓4 OBJ-AGENT) = ↓2``. REL-PRO sharing follows the
-        # standard relativization pattern — anaphoric (PRED + CASE
-        # atomic-path copies, not full identity) so the unifier's
-        # occurs-check stays happy.
+        # **Wackernagel placement** — already in place from prior
+        # commits and reused unchanged:
         #
-        # Six wrap rules: 3 head cases × 2 linker variants. The
-        # output NP is marked ``POSS-EXTRACTED=YES`` so the standard
-        # NP-poss rule cannot fire on it again — without this guard,
-        # a trailing GEN-NP (e.g., ``ng aso`` in ``bata ko na kinain
-        # ng aso``) would unify with the already-bound POSS=PRON,
-        # producing a spurious hybrid POSS=OBJ-AGENT (PRON merged
-        # with NOUN). See the §7.8 NP-poss rule above for the full
-        # comment on the guard.
+        # * Vowel-final PRON + ``-ng``: PRON kept adjacent to its
+        #   split-out bound linker by ``_is_pre_linker_pron``
+        #   (Phase 5d Commit 6).
+        # * Consonant-final PRON + ``na``: PRON kept in place by
+        #   the older ``_is_post_noun_pron`` exception (Phase 5c
+        #   §7.8 lift).
+        # * NOUN possessor: NOUNs aren't clitic-pass-eligible, so
+        #   they sit in surface order without help.
+        #
+        # **``na`` linker disambiguation** — the post-PRON ``na``
+        # is preserved as the linker (rather than hoisted as the
+        # 2P aspectual ``ALREADY``) by the third left-context
+        # exception in ``disambiguate_homophone_clitics`` (Phase
+        # 5e Commit 6). Doesn't apply to the NOUN case because
+        # the NOUN-then-``na`` sequence is already preserved by
+        # the first branch (``na`` after NOUN → linker reading).
+        #
+        # The possessor plays a dual role: it is the head NP's
+        # ``POSS`` AND the RC's ``OBJ-AGENT``. The wrap rule binds
+        # both via ``(↑ POSS) = ↓2`` and ``(↓4 OBJ-AGENT) = ↓2``.
+        # REL-PRO sharing follows the standard relativization
+        # pattern — anaphoric (PRED + CASE atomic-path copies, not
+        # full identity) so the unifier's occurs-check stays happy.
+        #
+        # Six wrap rules: 3 head cases × 2 linker variants.
+        #
+        # **Constraints**:
+        #
+        # * ``(↑ LEMMA)`` (existential) requires the head NP to be
+        #   NOUN-headed (NOUNs / proper nouns carry LEMMA in their
+        #   f-structure; PRONs and headless-RC NPs do not). Without
+        #   this guard, the widened ``NP[CASE=GEN]`` second-daughter
+        #   slot (Phase 5e Commit 19) would let the rule fire on
+        #   surfaces like ``Kumain ako ng batang kinain niya``,
+        #   wrongly treating ``ako`` (PRON-NOM) as the possessable
+        #   head NP and ``ng bata`` as its dual-bound possessor.
+        #   The construction ``possessor + linker + RC`` only makes
+        #   sense with a NOUN head; pronouns aren't possessable in
+        #   this shape.
+        # * The output NP is marked ``POSS-EXTRACTED=YES`` so the
+        #   standard NP-poss rule cannot fire on it again — without
+        #   this guard, a trailing GEN-NP (e.g., ``ng aso`` in ``bata
+        #   ko na kinain ng aso``) would unify with the already-bound
+        #   POSS, producing a spurious hybrid POSS=OBJ-AGENT. See
+        #   the §7.8 NP-poss rule above for the full comment on the
+        #   guard.
         for case in ("NOM", "GEN", "DAT"):
             np_cat = f"NP[CASE={case}]"
             for link in ("NA", "NG"):
                 rules.append(Rule(
                     np_cat,
-                    [np_cat, "PRON[CASE=GEN]", f"PART[LINK={link}]", "S_GAP_NA"],
+                    [np_cat, "NP[CASE=GEN]", f"PART[LINK={link}]", "S_GAP_NA"],
                     [
                         "(↑) = ↓1",
                         "(↑ POSS) = ↓2",
                         "(↑ POSS-EXTRACTED) = 'YES'",
+                        "(↓1 LEMMA)",
                         "↓4 ∈ (↑ ADJ)",
                         "(↓4 OBJ-AGENT) = ↓2",
                         "(↓4 REL-PRO PRED) = (↓1 PRED)",

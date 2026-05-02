@@ -4932,10 +4932,135 @@ where the RC's actor is gapped differently — both linguistically
 sensible. Pinned by ``TestPossessiveExtractedGuard`` in the
 Commit 18 test file.
 
-### Out-of-scope (deferred to Phase 5e Commit 19)
+### Lifted in Phase 5e Commit 19
 
-* **Non-pronominal possessors with linker**, e.g.,
-  ``aklat ng batang binasa`` analogue. Surface-ambiguous with
-  relativization + possessive parses. Group E Commit 19 will
-  address this separately. Refs: plan §10.1 Group E item 4.
+* **Non-pronominal possessors with linker** (``aklat ng batang
+  binasa``, ``aklat ni Juan na binasa``). See the next entry.
+
+## Phase 5e Commit 19: possessive-linker RC with non-pronominal possessor
+
+**Date:** 2026-05-02. **Status:** active. Extends Phase 5d
+Commit 6 + Phase 5e Commit 18's pronominal possessive-linker RC
+construction to **non-pronominal possessors** — common nouns and
+proper names. The grammar change is a one-token widening of the
+wrap rule's second daughter from ``PRON[CASE=GEN]`` to
+``NP[CASE=GEN]``, plus a head-NP existential constraint to keep
+the rule from spuriously firing on PRON-headed NPs.
+
+### The construction
+
+The dual-binding shape introduced in Commit 6 (PRON possessor)
+extends naturally to NOUN / proper-noun possessors:
+
+```
+aklat ng batang binasa     "the book that the child read"
+aklat ng asong kinain      "the book that the dog ate"
+aklat ni Juan na binasa    "the book that Juan read"
+aklat ni Maria na binasa   "the book that Maria read"
+```
+
+In each case the GEN-marked possessor (``ng bata``, ``ng aso``,
+``ni Juan``, ``ni Maria``) is BOTH the head NP's POSS AND the
+embedded RC's OBJ-AGENT — exactly the same dual binding as the
+pronominal cases. The linker variant (``-ng`` bound vs ``na``
+standalone) follows the host's phonotactics.
+
+### The grammar change: one-token widening
+
+The Commit 18 wrap rule was:
+
+```python
+NP[CASE=X] → NP[CASE=X] PRON[CASE=GEN] PART[LINK=L] S_GAP_NA
+```
+
+Widened to:
+
+```python
+NP[CASE=X] → NP[CASE=X] NP[CASE=GEN] PART[LINK=L] S_GAP_NA
+```
+
+The Phase 4 §7.8 grammar already has ``NP[CASE=GEN] →
+PRON[CASE=GEN]`` as a unit rule, so widening from
+``PRON[CASE=GEN]`` to ``NP[CASE=GEN]`` is a strict
+generalization that subsumes the PRON case. Pronominal
+possessors continue to parse via the PRON-to-NP unit rule; NOUN
+and proper-noun possessors now also parse directly.
+
+### The head-LEMMA constraint
+
+A new existential constraint ``(↓1 LEMMA)`` is added to the wrap
+rule's equations. It fires only when the head NP carries LEMMA in
+its f-structure. NOUNs and proper nouns do; PRONs and
+headless-RC NPs do not.
+
+**Why the constraint is needed**: without it, the widened
+``NP[CASE=GEN]`` slot lets the rule fire on surfaces where it
+shouldn't. E.g., ``Kumain ako ng batang kinain niya`` ("I ate the
+child that he ate") had a spurious extra parse where ``ako``
+(PRON-NOM, no LEMMA) was bound as the head NP and ``ng bata`` was
+its dual-bound possessor + RC actor. The intended analysis is
+``ako = SUBJ`` and ``ng batang kinain niya = OBJ`` (with internal
+standard RC). The constraint blocks the spurious head-binding by
+requiring the head NP to be NOUN / proper-noun (LEMMA-bearing).
+
+The constraint is also semantically motivated: the construction
+"X with possessor Y where Y is also the actor" only makes sense
+with X being a possessable thing, which in Tagalog means a NOUN or
+proper noun — pronouns aren't possessable in this shape.
+
+### Surface variants enabled
+
+```
+lumakad ang libro ng batang binasa     (common-noun possessor, NG marker, -ng linker)
+lumakad ang libro ng asong kinain      (different head + different verb)
+lumakad ang libro ni Juan na binasa    (proper-noun possessor, NI marker, na linker)
+kumain ang aso ng libro ng batang binasa   (OBJ-position case)
+lumakad ang libro ng batang hindi binasa   (RC under inner NEG)
+lumakad ang libro ng batang ipinaggawa     (IV variant)
+```
+
+The id-equality between ``POSS`` and the RC's ``OBJ-AGENT``
+(the dual-binding signature) is asserted by
+``test_poss_and_obj_agent_share_node`` in
+``tests/tgllfg/test_possessive_linker_rc_noun.py``.
+
+### Composition with prior commits unchanged
+
+The widening preserves all earlier behavior:
+
+* **Pronominal cases** (Commit 6 / Commit 18) — unchanged. Pinned
+  by ``test_pronominal_commit_6_still_works`` and
+  ``test_pronominal_commit_18_still_works``.
+* **Standard NP-poss + standard relativization** (``libro na
+  binasa ng bata``) — unchanged. The wrap rule requires
+  ``PART[LINK=L] + S_GAP_NA``, which doesn't fit a surface where
+  the actor stays inside the RC; the standard ``S_GAP`` path is
+  used instead. Pinned by
+  ``test_standard_relativization_with_overt_actor``.
+* **Right-associative iterated possessives** (``libro ng bata ng
+  pamilya``) — unchanged. The POSS-EXTRACTED guard from Commit 18
+  only blocks NP-poss extension on wrap-rule outputs; legitimate
+  iterated chains formed by repeated NP-poss applications are
+  not marked as POSS-EXTRACTED. Pinned by
+  ``test_iterated_npposs_unaffected``.
+
+### Rule competition (none)
+
+Three sources of structural ambiguity to consider, all resolved:
+
+1. **NOUN possessor + RC vs standard NP-poss + standard RC**.
+   For ``libro ng batang binasa``, the standard NP-poss + RC
+   path requires ``binasa`` (OV) to fit ``S_GAP``, which needs an
+   overt GEN actor. Without an actor inside the RC, ``S_GAP``
+   fails. Only the new wrap rule succeeds. No competition.
+2. **Recursive NP[GEN] possessor**. ``libro ng bata ng pamilya
+   na binasa`` (the family-of-the-child read the book) could in
+   principle match the wrap rule with the recursive ``ng bata ng
+   pamilya`` as the dual-bound possessor. The grammar admits
+   this; semantics is "the family is the actor and possessor".
+   The intended right-associative reading is preserved; the
+   recursive-possessor reading is also produced for chart
+   completeness.
+3. **PRON-headed NP as the head**. The ``(↓1 LEMMA)`` constraint
+   blocks this — see "The head-LEMMA constraint" above.
 
