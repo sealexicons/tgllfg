@@ -465,6 +465,25 @@ def _relativization_corpus() -> list[dict[str, Any]]:
     _add(out, "nakita ko ang batang hindi kinain niya",
          "relativization: multi-pronoun RC + inner NEG",
          "parse")
+
+    # Phase 5e Commit 5: headless / free relatives. ``ang/ng/sa`` +
+    # S_GAP forms an NP without an overt head noun; the headless
+    # head's PRED is 'PRO' and the gapped clause sits in ADJ.
+    _add(out, "tumakbo ang tumakbo",
+         "relativization: headless RC (AV-INTR matrix + AV-INTR RC)",
+         "parse")
+    _add(out, "tumakbo ang kumain ng isda",
+         "relativization: headless RC (AV-tr RC)",
+         "parse")
+    _add(out, "tumakbo ang kinain ng aso",
+         "relativization: headless RC (OV-tr RC, patient pivot)",
+         "parse")
+    _add(out, "nakita ko ang tumakbo",
+         "relativization: headless RC in OBJ position",
+         "parse")
+    _add(out, "tumakbo ang hindi kumain ng isda",
+         "relativization: headless RC + inner NEG",
+         "parse")
     return out
 
 

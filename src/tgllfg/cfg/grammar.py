@@ -1324,6 +1324,48 @@ class Grammar:
             ],
         ))
 
+        # --- Phase 5e Commit 5: headless / free relatives ---
+        #
+        # ``ang kumain`` "the one who ate"; ``ang kumain ng isda``
+        # "the one who ate fish"; ``ang kinain ng aso`` "the one
+        # eaten by the dog". A relative clause used directly as an
+        # NP, with no overt head noun. The "head" is a phonologically
+        # null PRO interpreted as the gap-filler (REL-PRO).
+        #
+        # Structure: ``DET[CASE=X, DEM=NO] S_GAP``. The bare case
+        # marker (``ang`` / ``ng`` / ``sa`` / ``si`` / ``ni`` /
+        # ``kay``) plus a SUBJ-gapped inner clause forms the headless
+        # NP. The DEM=NO constraint prevents the rule from firing on
+        # demonstratives (``ito`` / ``iyan`` / ``iyon`` etc., which
+        # carry DEM=YES); demonstrative NPs use the standalone-
+        # demonstrative rule above, not headless RCs.
+        #
+        # Equations parallel the standalone-demonstrative rule
+        # (PRED='PRO' for the implicit head) and the head-initial
+        # relativization rule (S_GAP attaches as ADJ; REL-PRO PRED
+        # and CASE are anaphorically shared from the head).
+        for case in ("NOM", "GEN", "DAT"):
+            # NOM uses DET (ang / si); GEN / DAT use ADP
+            # (ng / sa / ni / kay).
+            head_cat = (
+                f"DET[CASE={case}, DEM=NO]"
+                if case == "NOM"
+                else f"ADP[CASE={case}, DEM=NO]"
+            )
+            rules.append(Rule(
+                f"NP[CASE={case}]",
+                [head_cat, "S_GAP"],
+                [
+                    "(↑ PRED) = 'PRO'",
+                    f"(↑ CASE) = '{case}'",
+                    "(↑ MARKER) = ↓1 MARKER",
+                    "↓2 ∈ (↑ ADJ)",
+                    "(↓2 REL-PRO PRED) = 'PRO'",
+                    f"(↓2 REL-PRO CASE) = '{case}'",
+                    "(↓2 REL-PRO) =c (↓2 SUBJ)",
+                ],
+            ))
+
         # --- Phase 4 §7.5: relativization ---
         #
         # ``ang batang kumain ng isda`` ("the child that ate fish"):

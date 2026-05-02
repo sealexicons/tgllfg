@@ -3417,3 +3417,91 @@ composition (``Nakita ko ang batang hindi kinain niya.``).
   the f-structure level. Trivial analyzer addition; deferred
   to a separate engineering follow-up.
 
+## Phase 5e Commit 5: headless / free relatives
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 4 §7.5's "Out-of-scope" list flagged headless / free
+relatives (``ang kumain`` "the one who ate") as deferred. A
+headless RC is a relative clause used directly as an NP, with
+no overt head noun — the "head" is interpreted as a
+phonologically null PRO that's identified with the gap-filler
+(REL-PRO).
+
+### Three additive grammar rules
+
+```
+NP[CASE=NOM] → DET[CASE=NOM, DEM=NO] S_GAP
+NP[CASE=GEN] → ADP[CASE=GEN, DEM=NO] S_GAP
+NP[CASE=DAT] → ADP[CASE=DAT, DEM=NO] S_GAP
+
+   (↑ PRED) = 'PRO'
+   (↑ CASE) = '<case>'
+   (↑ MARKER) = ↓1 MARKER
+   ↓2 ∈ (↑ ADJ)
+   (↓2 REL-PRO PRED) = 'PRO'
+   (↓2 REL-PRO CASE) = '<case>'
+   (↓2 REL-PRO) =c (↓2 SUBJ)
+```
+
+Each rule is a single-line addition mirroring the Phase 4 §7.8
+standalone-demonstrative analysis (PRED='PRO' for the implicit
+head) plus the §7.5 head-initial-relativization equation
+pattern (S_GAP attaches as ADJ; REL-PRO inherits PRED='PRO' and
+CASE).
+
+### DEM=NO discrimination prevents cross-firing
+
+The new rules constrain ``DEM=NO`` on the determiner so they
+don't fire on standalone demonstratives (``ito`` / ``iyan`` /
+``iyon`` carry ``DEM=YES``). The Phase 4 §7.8 standalone-
+demonstrative rule continues to handle ``Kumain iyon.`` ("That
+one ate."); the headless-RC rule handles ``Tumakbo ang
+tumakbo.`` ("The one who ran ran."). The two never compete on
+the same surface because their initial-determiner POS×DEM
+combinations are disjoint.
+
+### Synthesizer-fallback limitation: AV-tr RC needs overt OBJ
+
+The synthesizer-fallback path (Phase 4 §7.2,
+:func:`_synthesize_verb_entry`) emits exactly ONE entry per
+voice for verbs not in BASE: AV-tr produces ``<SUBJ, OBJ>`` (no
+intransitive variant). So ``ang umiinom`` (a headless RC where
+the inner V is ``inom`` AV-IPFV, with no BASE entry) needs an
+overt OBJ to satisfy completeness — ``ang umiinom ng tubig`` is
+fine, but bare ``ang umiinom`` is not. Hand-authored AV-intr
+entries (``kain``, ``bili``) admit the bare form
+(``ang kumain``); intrinsically intransitive verbs
+(``takbo``, ``tulog``) also admit the bare form. The limitation
+is a synthesizer scope issue, not a headless-RC issue.
+
+### What this lifts
+
+* AV-INTR-RC: ``Tumakbo ang tumakbo.``, ``Tumakbo ang natulog.``
+* AV-tr-RC with overt OBJ: ``Tumakbo ang kumain ng isda.``,
+  ``Kumain ang kumain ng isda.``
+* OV-tr-RC (patient pivot): ``Tumakbo ang kinain ng aso.``
+* Headless RC in non-SUBJ position:
+  ``Nakita ko ang tumakbo.`` (OBJ-position headless RC).
+* Inner negation under headless RC:
+  ``Tumakbo ang hindi kumain ng isda.``
+
+The construction composes with the existing Phase 4 §7.8 NP-
+internal possessive (``ang kumain ng bata`` could mean either
+"the one who ate the child" with `ng bata` as OBJ, OR "the
+child's-eating(-thing)" with `ng bata` as POSS — both readings
+are linguistically valid and both surface in n-best output).
+
+### Out-of-scope (still deferred)
+
+* **Headless RC with synthesized AV-intransitive verb.** Verbs
+  with TR=TR but no hand-authored intransitive AV BASE entry
+  (e.g., ``inom`` AV without overt OBJ) don't form a valid
+  bare headless RC because completeness fails. A synthesizer
+  enhancement that emits both ``<SUBJ>`` and ``<SUBJ, OBJ>``
+  variants for TR-marked AV verbs would lift this; deferred
+  as an engineering follow-up.
+* **Headless RC modifying another NP.** ``ang aklat ng kumain``
+  (a possessive structure where the possessor is itself a
+  headless RC) might admit interesting parses; not exercised.
+
