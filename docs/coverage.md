@@ -191,9 +191,26 @@ list (see `docs/analysis-choices.md`):
   stable form; revisit if a resumptive-rich corpus emerges.
   See plan §16 and the analysis-choices.md "Phase 5e Commit 7"
   entry.
+- **``magpa-...-an`` distributive.** Reclassified in Phase 5e
+  Commit 13 (originally a Group D speculative entry). The
+  attested AV-distributive marker in Tagalog is the existing
+  ``mang-`` AV affix class (already implemented). ``magsi-``
+  is also attested as a collective-distributive (S&O 1972
+  §5.27) but not exercised by the corpus. See plan §16 and
+  the analysis-choices.md "Phase 5e Commit 13" entry.
 
 ### Recently lifted (still listed for archaeological context)
 
+- **``magpa-...-an`` distributive (reclassification)** —
+  Phase 5e Commit 13 documentation-only commit. Originally
+  listed as a Phase 5e Group D candidate ("distributive
+  causative variant"); investigation showed it has no clear
+  attestation in S&O 1972, Ramos 1971, or R&B 1986. Tagalog
+  AV-distributive is the existing ``mang-`` affix class (already
+  implemented); ``magsi-`` is a separate attested collective-
+  distributive form not exercised by the corpus. Reclassified
+  to plan §16 v1-out-of-scope. No grammar / lex / morph / corpus
+  changes.
 - **mag-...-an reciprocal / social** — lifted in Phase 5e
   Commit 12. The plan §10.1 Group D originally flagged
   ``ka-...-an`` as the "reciprocal causative", but

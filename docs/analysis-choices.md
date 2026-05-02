@@ -4171,3 +4171,87 @@ the f-structure under the parser's "string feats only" rule.
   reflexive-like derivations exist in S&O 1972 §5.28); not
   pursued now.
 
+## Phase 5e Commit 13: ``magpa-...-an`` distributive (reclassification)
+
+**Date:** 2026-05-02. **Status:** active. Documentation-only
+commit; no grammar / lex / morph / corpus / test changes.
+
+The Phase 5e §10.1 Group D plan note paired ``ka-...-an``
+reciprocal with ``magpa-...-an`` distributive as "causative
+variants" parallel to ``pa-...-in`` and ``pa-...-an``.
+Phase 5e Commit 12 already retired the ``ka-...-an`` claim
+(the attested reciprocal pattern is ``mag-...-an``).
+Phase 5e Commit 13 retires the ``magpa-...-an`` claim along
+the same lines.
+
+### Why this isn't a real form
+
+Investigation against the available sources:
+
+* **S&O 1972 §5.27** documents the Tagalog reciprocal as
+  ``mag-...-an``; the distributive (the marker for "everyone
+  / each one does X") is the existing ``mang-`` AV prefix
+  (Ramos 1971 dictionary classifies it as AV-distributive in
+  every paradigm table) and the ``magsi-`` collective form
+  (less productive; S&O 1972 §5.27).
+* **Ramos 1971 dictionary** organises every voice's paradigm
+  as Indicative + Distributive, with the Distributive column
+  always labelled ``MANG-`` — never ``magpa-...-an``.
+* **R&B 1986 paradigm tables** mention the productive forms
+  for each verb's affix-class membership; ``magpa-...-an``
+  doesn't appear as a separate paradigm row.
+
+The plan note appears to have been written by analogy with
+the ``pa-...-in`` / ``pa-...-an`` causative pair without
+external attestation. Tagalog distributive is a separable
+construction from causative, marked by ``mang-`` (productive)
+or ``magsi-`` (collective).
+
+### Where Tagalog distributive lives now
+
+* **``mang-``**: already implemented as the ``mang`` affix
+  class (Phase 2C scale-up; documented in Phase 4 §7.7's
+  applicative work). ``namili`` "shopped / went buying";
+  ``namamasyal`` "stroll around". The morph analyzer
+  generates these correctly via the existing ``nasal_substitute``
+  sandhi op.
+* **``magsi-``**: attested in S&O 1972 §5.27 but not
+  exercised by the Phase 4 §7.10 corpus, the seeded R&G 1981
+  fixtures, or the classic / S&O / Kroeger fixtures.
+  Implementation would mirror Phase 5e Commit 12's
+  ``mag_an`` shape (new affix class with PFV/IPFV/CTPL cells)
+  but with ``prefix("nagsi")`` / ``prefix("magsi")`` and no
+  suffix. Deferred until corpus pressure justifies — adding
+  it now would over-engineer a marginal construction without
+  test fixtures to anchor it.
+
+### Where ``magpa-...-an`` lives now
+
+§16 (genuinely v1-out-of-scope), with the explanation pinned
+above. Revisit only if a corpus emerges where the construction
+appears with non-trivial frequency.
+
+### What this commit changes
+
+Documentation only:
+
+* Plan §10.1 Group D's ``magpa-...-an`` bullet is collapsed
+  into a single re-classification note alongside the
+  Commit 12 ``ka-...-an`` retraction.
+* Plan §10.2 ("Items not enumerated above") gains the
+  ``magpa-...-an`` bullet alongside the other reclassified
+  items (resumptive pronouns, etc.).
+* Plan §16 gains a ``magpa-...-an`` bullet with the why.
+* This `docs/analysis-choices.md` section pins the rationale.
+* `docs/coverage.md` "What's intentionally not covered" gains
+  an entry.
+
+### Out-of-scope (still deferred)
+
+The reclassification doesn't itself defer anything new —
+``magpa-...-an`` was already deferred via the Phase 5d
+Commit 2 "other less-common causative variants" note. The
+change is administrative: moving an item from
+"additive Phase 5e candidate" to "v1-out-of-scope-as-named"
+and pointing to the actually-attested distributive markers.
+
