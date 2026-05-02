@@ -310,6 +310,23 @@ BASE: dict[str, list[LexicalEntry]] = {
             {"AGENT": "SUBJ", "PATIENT": "OBJ"},
             intrinsic_classification=_AV_TR_AGENT_PATIENT,
         ),
+        # Phase 5e Commit 12: mag-...-an reciprocal / social.
+        # ``Nagkainan sila.`` "They ate together / [ate at each
+        # other]." Single thematic role (the reciprocally-acting
+        # group); MOOD=SOC discriminates from plain AV.
+        LexicalEntry(
+            lemma="kain",
+            pred="EAT-TOGETHER <SUBJ>",
+            a_structure=["ACTOR"],
+            morph_constraints={
+                "VOICE": "AV",
+                "MOOD": "SOC",
+                "CAUS": "NONE",
+                "APPL": "NONE",
+            },
+            gf_defaults={"ACTOR": "SUBJ"},
+            intrinsic_classification=_AV_INTR_ACTOR,
+        ),
         # OV transitive: patient pivot, agent as ng-NP=OBJ-AGENT.
         _entry(
             "kain", "OV", "EAT <SUBJ, OBJ-AGENT>",
@@ -333,6 +350,23 @@ BASE: dict[str, list[LexicalEntry]] = {
             ["AGENT", "THEME"],
             {"AGENT": "SUBJ", "THEME": "OBJ"},
             intrinsic_classification=_AV_TR_AGENT_THEME,
+        ),
+        # Phase 5e Commit 12: mag-...-an reciprocal / social.
+        # ``Nagbilihan sila.`` "They exchanged in trade / sold to
+        # each other." bili's intrinsic-AGENT profile (vs kain's
+        # intrinsic-ACTOR) is preserved here.
+        LexicalEntry(
+            lemma="bili",
+            pred="BUY-EXCHANGE <SUBJ>",
+            a_structure=["AGENT"],
+            morph_constraints={
+                "VOICE": "AV",
+                "MOOD": "SOC",
+                "CAUS": "NONE",
+                "APPL": "NONE",
+            },
+            gf_defaults={"AGENT": "SUBJ"},
+            intrinsic_classification=_AV_INTR_AGENT,
         ),
         _entry(
             "bili", "OV", "BUY <SUBJ, OBJ-AGENT>",

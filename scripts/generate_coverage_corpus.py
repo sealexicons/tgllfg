@@ -680,6 +680,26 @@ def _control_corpus() -> list[dict[str, Any]]:
     _add(out, "sinusulatan ng nanay ng liham ang anak",
          "causative: 3-arg DV plain IPFV",
          "parse")
+
+    # Phase 5e Commit 12: mag-...-an reciprocal / social.
+    # New affix class with PFV / IPFV / CTPL cells; the lex's
+    # MOOD=SOC discriminator distinguishes the reciprocal PRED
+    # ("EAT-TOGETHER") from the plain AV reading ("EAT").
+    _add(out, "nagkainan sila",
+         "causative: mag-...-an reciprocal (kain PFV)",
+         "parse")
+    _add(out, "nagkakainan sila",
+         "causative: mag-...-an reciprocal (kain IPFV)",
+         "parse")
+    _add(out, "magkakainan sila",
+         "causative: mag-...-an reciprocal (kain CTPL)",
+         "parse")
+    _add(out, "nagbilihan sila",
+         "causative: mag-...-an reciprocal (bili PFV)",
+         "parse")
+    _add(out, "hindi nagkainan sila",
+         "causative: mag-...-an reciprocal + NEG",
+         "parse")
     return out
 
 

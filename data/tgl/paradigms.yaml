@@ -622,3 +622,58 @@
     - {op: cv_redup}
     - {op: prefix, value: "mag"}
   notes: magpapakain
+
+# --- mag-...-an reciprocal / social (Phase 5e Commit 12) ----------------
+#
+# Schachter & Otanes 1972 §5.27 documents the ``mag-...-an`` pattern
+# as the canonical Tagalog reciprocal / social form: an action
+# performed cooperatively or mutually by a plural SUBJ. Examples:
+# ``nag-iyak-an`` "cried together / cried at each other";
+# ``nag-bigay-an`` "exchanged"; ``nag-kain-an`` "ate together".
+#
+# Phase 5e Commit 12 lifts this from the Phase 4 §7.2 SOC-as-
+# inventory-only deferral. The plan §10.1 Group D originally
+# flagged ``ka-...-an`` as the "reciprocal causative" affix, but
+# investigation against S&O 1972 + Ramos 1971 + R&B 1986 confirmed
+# that the well-attested reciprocal pattern is ``mag-...-an``
+# (``ka-...-an`` is more typically a noun-deriving pattern in
+# Tagalog and isn't a verbal voice/applicative). The implementation
+# uses the attested form rather than the speculative one.
+#
+# Cell-level feat ``MOOD=SOC`` lifts the SOC mood from inventory-
+# only status. Lex entries select these cells via
+# ``morph_constraints={"MOOD": "SOC"}``.
+- voice: AV
+  aspect: PFV
+  mood: SOC
+  transitivity: ''
+  affix_class: mag_an
+  feats: {MOOD: SOC, RECP: YES}
+  operations:
+    - {op: suffix, value: an}
+    - {op: prefix, value: "nag"}
+  notes: nagkainan, nagbigayan (mag- → nag- realis + -an reciprocal)
+
+- voice: AV
+  aspect: IPFV
+  mood: SOC
+  transitivity: ''
+  affix_class: mag_an
+  feats: {MOOD: SOC, RECP: YES}
+  operations:
+    - {op: cv_redup}
+    - {op: suffix, value: an}
+    - {op: prefix, value: "nag"}
+  notes: nagkakainan, nagbibigayan
+
+- voice: AV
+  aspect: CTPL
+  mood: SOC
+  transitivity: ''
+  affix_class: mag_an
+  feats: {MOOD: SOC, RECP: YES}
+  operations:
+    - {op: cv_redup}
+    - {op: suffix, value: an}
+    - {op: prefix, value: "mag"}
+  notes: magkakainan, magbibigayan

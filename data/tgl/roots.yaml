@@ -39,7 +39,9 @@
   # §7.7 follow-on: ika (ikinakain "[reason for which X] ate",
   # reason applicative IV). Phase 5d Commit 2: pa_an
   # (pinakainan "fed-at"; locative-pivot causative DV).
-  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an]
+  # Phase 5e Commit 12: mag_an (nagkainan "ate together",
+  # reciprocal / social).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an, mag_an]
 
 - citation: bili
   pos: VERB
@@ -50,7 +52,9 @@
   # (ipinagbili "sold-for", benefactive applicative IV). Phase 5c
   # §7.7 follow-on: ipang (ipinambili "instrument-bought",
   # instrumental applicative IV).
-  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipag, ipang]
+  # Phase 5e Commit 12: mag_an (nagbilihan "exchanged in trade",
+  # reciprocal / social).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipag, ipang, mag_an]
 
 - citation: inom
   pos: VERB

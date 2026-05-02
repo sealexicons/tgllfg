@@ -4060,3 +4060,114 @@ assert the 3-arg reading is among the parses.
 * **3-arg plain DV for other anchor verbs.** Lex-only
   extensions; deferred until corpus pressure justifies.
 
+## Phase 5e Commit 12: mag-...-an reciprocal / social
+
+**Date:** 2026-05-02. **Status:** active.
+
+Plan §10.1 Group D originally flagged ``ka-...-an`` as the
+"reciprocal causative" affix. Investigation against
+Schachter & Otanes 1972 §5.27, Ramos 1971, and R&B 1986
+confirmed that the **well-attested reciprocal pattern is
+``mag-...-an``**, not ``ka-...-an``. Tagalog ``ka-...-an`` is
+more typically a noun-deriving pattern (``kahirapan``
+"poverty", ``kasamahan`` "companionship") and isn't a verbal
+voice/applicative. Phase 5e Commit 12 implements the attested
+form (``mag-...-an``) under that name; the speculative
+``ka-...-an`` is dropped from the deferral list.
+
+### Construction
+
+S&O 1972 §5.27 documents ``mag-...-an`` as the canonical
+reciprocal / social form: an action performed cooperatively or
+mutually by a plural SUBJ. The construction is a member of the
+broader "social mood" inventory that Phase 4 §7.2 left as
+inventory-only; this commit lifts it.
+
+Examples:
+
+* ``Nagkainan sila.`` "They ate together."
+* ``Nagkakainan sila.`` IPFV.
+* ``Magkakainan sila.`` CTPL.
+* ``Nagbilihan sila.`` "They exchanged in trade."
+
+### Implementation
+
+**New affix class ``mag_an``** with three paradigm cells in
+``data/tgl/paradigms.yaml``. Each cell carries
+``feats: {MOOD: SOC, RECP: YES}``:
+
+```
+PFV:  prefix("nag")  → suffix("an")            → nagkainan
+IPFV: cv_redup → prefix("nag")  → suffix("an") → nagkakainan
+CTPL: cv_redup → prefix("mag")  → suffix("an") → magkakainan
+```
+
+**Lex entries** for ``kain`` and ``bili`` reciprocal:
+
+```
+EAT-TOGETHER  <SUBJ>   kain  AV MOOD=SOC
+BUY-EXCHANGE  <SUBJ>   bili  AV MOOD=SOC
+```
+
+**Affix-class registration**: ``mag_an`` added to ``kain``'s
+and ``bili``'s ``affix_class`` lists in ``data/tgl/roots.yaml``.
+
+### Discrimination via MOOD=SOC
+
+The reciprocal lex's ``morph_constraints={..., "MOOD": "SOC"}``
+ensures it only matches reciprocal MorphAnalyses (which carry
+``MOOD=SOC``). Plain AV-intr lex entries (no MOOD constraint)
+match BOTH plain and reciprocal MorphAnalyses under the
+parser's non-conflict matcher. This produces a known
+ambiguity: ``Nagkainan sila`` admits two parses — one with the
+bare ``EAT <SUBJ>`` PRED, one with ``EAT-TOGETHER <SUBJ>``.
+Both are well-formed; the natural reading depends on context
+and lexical semantics, and tests assert the reciprocal reading
+is among the n-best rather than asserting it's the only one.
+
+This mirrors the Phase 5d / Phase 5e ambiguity pattern (e.g.,
+multi-GEN-NP frame ambiguity, raising-vs-noun on
+``mukha`` / ``baka``): both readings are linguistically valid;
+ranker plus pragmatic disambiguation pick.
+
+### Why MOOD=SOC and not a new VOICE feature
+
+Three options were considered for the reciprocal feature:
+
+1. New ``VOICE`` value (e.g., ``RECP``) — rejected: voice in
+   Tagalog is a 4-way system (AV/OV/DV/IV) and adding a fifth
+   would break the LMT engine's voice-aware mapping.
+2. New top-level feature (``RECP=YES``) — partial: works as a
+   discriminator but adds a feature with limited scope.
+3. ``MOOD=SOC`` — chosen. The Phase 4 §7.2 inventory already
+   listed SOC ("social") mood; reciprocal fits squarely under
+   the social-mood semantic umbrella. Lifting it from
+   inventory-only matches the original §7.2 plan-text intent.
+
+Both ``MOOD=SOC`` and ``RECP=YES`` (boolean) are emitted on the
+MorphAnalysis. Only ``MOOD=SOC`` (string-valued) propagates to
+the f-structure under the parser's "string feats only" rule.
+``RECP`` is informational at the morph level.
+
+### Out-of-scope (still deferred)
+
+* **Reciprocal with overt NP arguments.**
+  ``Nagkainan sila ng isda`` "They ate fish together" admits
+  the reciprocal SUBJ + an OBJ. The current lex profile is
+  intransitive; transitive reciprocal (with a GEN-NP OBJ)
+  would need a 2-arg lex profile.
+* **Reciprocal under control / ay-fronting / nesting.** The
+  reciprocal interacts with the existing control / fronting
+  infrastructure but isn't pinned in this commit.
+* **Other reciprocal anchor verbs.** Currently only ``kain``
+  and ``bili``. ``basa`` reciprocal (``nagbasahan`` "read
+  together / read at each other") would be a one-line
+  addition.
+* **`ka-...-an` re-classification.** The plan §10.1 Group D
+  claim that ``ka-...-an`` is a reciprocal causative is
+  retracted in this commit. The form is documented as a
+  noun-derivation pattern in §16-style territory, but a future
+  commit could survey actual ``ka-...-an`` verbal uses (some
+  reflexive-like derivations exist in S&O 1972 §5.28); not
+  pursued now.
+
