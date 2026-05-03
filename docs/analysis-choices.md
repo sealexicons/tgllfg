@@ -5637,3 +5637,141 @@ even after this commit. Adding ``ika`` to ``bili``'s affix
 class is a separate lex-data follow-up (R&B 1986 doesn't list
 IV-REASON for ``bili``, so we don't pre-emptively add it).
 
+## Phase 5e Commit 25: huwag MOOD=IMP lifted to matrix via CLAUSE-MOOD
+
+**Date:** 2026-05-02. **Status:** active. Lifts the Phase 4
+§7.2 limitation where the negation rule's ``(↑) = ↓2``
+propagated the inner verb's MOOD=IND, conflicting with the
+imperative-particle's MOOD=IMP. The §7.2 docs flagged two
+resolution paths: selective GF projection or feature
+architecture distinguishing predicate-mood from clausal-mood.
+Phase 5e Commit 25 takes the **feature-architecture** path.
+
+### The limitation
+
+Before this commit, ``huwag`` (PART[POLARITY=NEG, MOOD=IMP])
+behaved syntactically identically to ``hindi`` (PART[POLARITY=
+NEG]) — the matrix's MOOD stayed at IND (inherited from the
+inner verb via ``(↑) = ↓2``), with only POLARITY=NEG marking
+the negation. The huwag particle's lex-emitted MOOD=IMP sat
+on the particle's own f-structure and never reached the
+matrix.
+
+### The fix: a CLAUSE-MOOD feature
+
+A new feature ``CLAUSE-MOOD`` is introduced for sentential /
+speech-act mood, distinct from the verb's morphological
+``MOOD``:
+
+* ``MOOD`` (existing) — the verb's morphological mood. IND
+  (default for indicative verb forms), ABIL (maka-
+  abilitative), NVOL (ma- non-volitional), SOC (Phase 5e
+  Commit 21 hortative and Phase 5e Commit 12 reciprocal).
+  Always projected from the verb's lex equations.
+* ``CLAUSE-MOOD`` (new) — the sentential / speech-act mood.
+  Set to IMP for negative imperatives via ``huwag``. Unset
+  for declaratives (the absence is the IND default; we don't
+  ceremoniously set CLAUSE-MOOD=IND on every clause).
+
+This corresponds to the LFG-canonical distinction between
+predicate-mood and clausal-mood (see Bresnan 2001 §3.5):
+verbal morphology projects predicate-mood; particles and
+clausal markers contribute clausal-mood.
+
+### Grammar change: split into two NEG rules
+
+The existing single rule ``S → PART[POLARITY=NEG] S`` is split:
+
+```python
+# Hindi rule (declarative NEG): restrict to particles WITHOUT MOOD.
+rules.append(Rule(
+    "S",
+    ["PART[POLARITY=NEG]", "S"],
+    [
+        "(↑) = ↓2",
+        "(↑ POLARITY) = 'NEG'",
+        "¬ (↓1 MOOD)",
+    ],
+))
+
+# Huwag rule (imperative NEG): require MOOD=IMP on the particle,
+# lift to CLAUSE-MOOD on matrix.
+rules.append(Rule(
+    "S",
+    ["PART[MOOD=IMP, POLARITY=NEG]", "S"],
+    [
+        "(↑) = ↓2",
+        "(↑ POLARITY) = 'NEG'",
+        "(↑ CLAUSE-MOOD) = 'IMP'",
+        "(↓1 MOOD) =c 'IMP'",
+    ],
+))
+```
+
+The hindi rule's ``¬ (↓1 MOOD)`` constraint excludes huwag
+(which has MOOD=IMP). The huwag rule's ``(↓1 MOOD) =c 'IMP'``
+constraint excludes hindi — this constraining equation is
+needed because the category-pattern matcher
+(``compile.py::matches``) is non-conflict (matches if no
+disagreement, doesn't require all expected features present),
+so ``PART[MOOD=IMP, POLARITY=NEG]`` would also match a
+candidate without MOOD by absorption.
+
+### Why feature architecture, not selective projection
+
+The plan's other option, selective GF projection — enumerate
+the GFs to copy from the inner clause via ``(↑ X) = (↓2 X)``
+while excluding MOOD, then set ``(↑ MOOD) = 'IMP'`` —
+technically works. It's rejected here for two reasons:
+
+1. **Phantom GF slots.** The unifier's defining-equation
+   semantics use ``_resolve_for_write`` (get-or-create)
+   on both LHS and RHS designators. So ``(↑ OBJ-PATIENT) =
+   (↓2 OBJ-PATIENT)`` for an intransitive inner clause where
+   OBJ-PATIENT is undefined would CREATE both ↑.OBJ-PATIENT
+   and ↓2.OBJ-PATIENT as fresh empty fstructs and unify them.
+   This pollutes the inner clause's f-structure with phantom
+   GF slots that didn't exist before. Tests that assert "OBJ
+   is None" would still pass (the empty fstruct isn't
+   semantically meaningful), but it's bookkeeping noise.
+
+2. **Better separation of concerns.** CLAUSE-MOOD as a
+   distinct feature lets future commits add other clausal
+   mood values (DECL for declarative speech-act, INT for
+   interrogative, etc.) without touching the verb-MOOD
+   projection. The architecture stays clean.
+
+### Surface coverage
+
+```
+Huwag kumain ang bata.        → CLAUSE-MOOD=IMP, POLARITY=NEG, MOOD=IND
+Huwag kumain ng isda ang bata.→ CLAUSE-MOOD=IMP, POLARITY=NEG, MOOD=IND
+Huwag pa kumain ang bata.     → CLAUSE-MOOD=IMP + adv enclitic (`pa` YET)
+Hindi kumain ang bata.        → POLARITY=NEG, MOOD=IND, no CLAUSE-MOOD (unchanged)
+Kumain ang bata.              → MOOD=IND, no POLARITY/CLAUSE-MOOD (unchanged)
+```
+
+### Out-of-scope (deferred)
+
+* **The control-style imperative** ``Huwag kang kumain.`` (with
+  addressee + linker + verb). This is the canonical surface
+  for direct imperatives ("Don't (you sg) eat") but requires
+  a different wrap rule shape — analogous to a control verb
+  taking SUBJ + linker + S_XCOMP. Phase 5e Commit 25 only
+  covers the matrix-NEG style ``Huwag kumain ang bata.``;
+  the PRON-LINK form is deferred to a separate commit (or
+  Phase 5g+ when adjective predication and verbless clause
+  shapes mature).
+* **Lifting hindi to CLAUSE-MOOD=DECL.** We intentionally
+  leave CLAUSE-MOOD unset for declaratives. Adding
+  CLAUSE-MOOD=DECL to every clause would be ceremony with no
+  current consumer. If a future commit needs to distinguish
+  declarative from interrogative or other speech-act moods,
+  this is a one-line addition.
+* **The huwag clitic interaction with SOC** (``Huwag tayong
+  kumain.`` "Let's not eat" — combines NEG-IMP with SOC). The
+  IMP / SOC interaction is a paradigm and clausal-mood
+  composition question that's separate from the lift here.
+  Tracked in plan §10.1 Group F (already lifted at the SOC
+  end via Commit 21; the huwag side is distinct).
+
