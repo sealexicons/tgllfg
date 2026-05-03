@@ -6222,7 +6222,158 @@ Per Phase 5f §11.2 negative-fixture convention:
   requires NOM-NP, not GEN-NP. The rule's second daughter
   pattern is ``NP[CASE=NOM]``, not ``NP[CASE=GEN]``.
 
-### Side change: `synonyms` lex field + ``aklat`` noun
+## Phase 5f Commit 5: multiplicative ratios
+
+**Date:** 2026-05-03. **Status:** active. Lex (NOUN + ADV)
+plus one new grammar rule. Refs: plan §11.1 Group A item 5;
+S&O 1972 §4.5; Phase 5e Commit 3 (AdvP deferral that this
+commit partially closes).
+
+### Lex change
+
+* **Frequency NOUNs** (``data/tgl/roots.yaml``):
+  ``beses`` and ``ulit`` (both with ``SEM_CLASS: FREQUENCY``;
+  bidirectional synonyms). Used in periphrastic frequency
+  expressions (``dalawang beses`` "twice", ``tatlong ulit``
+  "three times") via the existing Phase 5f Commit 1
+  cardinal-NP-modifier rule on the head N.
+* **Multiplier NOUNs**: ``doble`` and ``triple`` (both with
+  ``SEM_CLASS: MULTIPLIER``). Spanish-borrowed; lex-only —
+  surface in technical / commercial register.
+* **maka-cardinal ADVs** (``data/tgl/particles.yaml``): 10
+  hand-authored entries (``makaisa`` ... ``makasampu``) with
+  ``pos: ADV``, ``ADV_TYPE: FREQUENCY``, and
+  ``MULTIPLIER_VALUE: "<N>"``. Same hand-authored-lex strategy
+  as the compound cardinals from Commit 3 — productive
+  morphology (``maka-`` + cardinal stem) is real but a
+  hand-authored inventory of high-frequency forms is
+  sufficient for v1. The ``makaisa`` form is grammatically
+  well-formed but semantically rare; ``minsan`` "once /
+  sometimes" or the periphrastic ``nang isang beses`` are
+  more common in modern usage.
+
+### Grammar change
+
+One new rule (``src/tgllfg/cfg/grammar.py``):
+
+```
+S → S AdvP
+Equations:
+  (↑) = ↓1                          # share matrix with inner S
+  ↓2 ∈ (↑ ADJUNCT)                  # AdvP joins ADJUNCT set
+  (↓2 ADV_TYPE) =c 'FREQUENCY'      # constraining: FREQUENCY only
+```
+
+Closes part of the Phase 5e Commit 3 deferral on bare AdvP
+placement — scoped here to ``ADV_TYPE=FREQUENCY`` only via the
+constraining equation. The deferral note explicitly cited
+"interactions with the Wackernagel cluster and quantifier-
+float" as the reason for keeping bare placement deferred;
+FREQUENCY adverbs don't trigger those interactions (they're
+clausal modifiers, not noun-phrase or verb-phrase scoped),
+so this scoped lift is safe. The TIME / SPATIAL / MANNER
+deferral remains in force — those need separate analytical
+work.
+
+### Periphrastic ``[CARDINAL]ng beses`` — partially supported
+
+The lex side (``beses`` / ``ulit`` as NOUN with
+SEM_CLASS=FREQUENCY) is in place, and ``dalawang beses`` /
+``tatlong ulit`` parse correctly as cardinal-modified NPs via
+the Phase 5f Commit 1 cardinal-NP-modifier rule. **But** the
+adverbial-frequency reading of bare ``dalawang beses``
+(``Tumakbo ako dalawang beses`` "I ran twice") is not yet
+supported as a clause-final ADJUNCT. The N parses fine
+(cardinal-modified NOUN); what's missing is a rule attaching
+a SEM_CLASS=FREQUENCY N to the matrix S as ADJUNCT, parallel
+to the maka- ADV rule landed in this commit.
+
+The natural Tagalog forms for "X did Y N times" are:
+
+* ``Tumakbo ako dalawang beses.`` — bare frequency-N
+  clause-final.
+* ``Dalawang beses akong tumakbo.`` — frequency-N
+  topicalized (composes with existing ay-fronting machinery
+  once the bare-frequency-N is recognised).
+
+The form ``Tumakbo ako ng dalawang beses`` (with the
+case-marker ``ng``) is marginal / dispreferred — the
+``ng``-marked reading currently parses as a possessor on the
+SUBJ pronoun, which is the structurally available analysis but
+not the intended frequency reading.
+
+**Important:** ``nang [CARDINAL] beses`` is NOT the standard
+periphrastic frequency form. The narrative idiom
+``Nang isang beses, pumunta kami sa Maynila`` "Once, we went
+to Manila" exists and survives in storytelling register, but
+it's a temporal-framing construction (parallel to ``Nang araw
+na iyon`` "On that day"), not a productive frequency adverbial:
+``*nang dalawang beses``, ``*nang tatlong beses`` are
+unnatural. Encoding ``nang isang beses`` properly requires a
+narrow lexical idiom, not a generative ``nang + NUM + beses``
+rule (which would overgenerate). Deferred to a follow-on
+commit.
+
+The proper bare-frequency-N adjunct support is a small
+follow-on that needs:
+
+1. SEM_CLASS percolation through the cardinal-NP-modifier
+   rules so cardinal-modified ``beses`` carries
+   ``SEM_CLASS=FREQUENCY`` to the matrix N (currently only
+   PRED + LEMMA + NUM + CARDINAL_VALUE percolate; adding
+   SEM_CLASS hits the empty-f-structure issue documented in
+   Commit 1's two-track design).
+2. A new rule ``S → S N`` constraining on
+   ``(↓2 SEM_CLASS) =c 'FREQUENCY'``, parallel to the maka-
+   ADV rule in this commit.
+
+Both deferred to a follow-on commit. (S&O 1972 §4.5; user-
+provided linguistic note 2026-05-03.)
+
+### Composition
+
+* maka- frequency adverb in clause-final position:
+  ``Kumain ako makalawa``, ``Tumakbo siya makasampu``.
+* maka- with full NOM-NP SUBJ: ``Kumain ang bata makatlo``.
+* maka- with NEG: ``Hindi tumakbo si Juan makalawa``.
+* maka- recursive (S → S AdvP fires on its own output):
+  ``Tumakbo ako makalawa makatlo`` parses (semantically
+  odd but syntactically allowed; not blocked).
+
+### Negative fixtures
+
+Per Phase 5f §11.2 negative-fixture convention:
+
+* ``*Tumakbo ako kahapon.`` — TIME adverbs (kahapon —
+  ``ADV_TYPE=TIME``) still do NOT compose as bare clause-final
+  adjuncts. The constraining equation
+  ``(↓2 ADV_TYPE) =c 'FREQUENCY'`` restricts the new rule to
+  FREQUENCY only; the TIME deferral stays.
+
+### Out of scope for this commit
+
+* Bare-frequency-N as clause-final ADJUNCT
+  (``Tumakbo ako dalawang beses``) — see "Periphrastic" above.
+* Topicalized frequency-N (``Dalawang beses akong tumakbo``)
+  — depends on the bare-frequency-N rule landing first.
+* The narrative idiom ``Nang isang beses, ...`` — narrow
+  lexical idiom, separate follow-on; do NOT generalize to
+  ``nang + NUM + beses``.
+* Pre-verbal ``maka-`` with linker (``makalawang nakakain``):
+  the cited S&O example uses pre-verbal placement with
+  linker, but clause-final placement is the more common and
+  simpler case; pre-verbal is deferred.
+* Bare AdvP attachment for non-FREQUENCY adverb types — kept
+  deferred per the Phase 5e Commit 3 note.
+* Productive ``maka-`` morphology paradigm — the hand-authored
+  10-entry inventory covers v1 needs; productive treatment
+  is a follow-on if needed.
+* Spanish-borrowed ``doble`` / ``triple`` adverbial use —
+  surface in technical register (``Doble ang singil`` "the
+  charge is doubled") but the predicative reading isn't
+  exercised here. Lex-only addition for now.
+
+### Side change (Commit 4): `synonyms` lex field + ``aklat`` noun
 
 This commit adds a ``synonyms: list[str]`` field to the ``Root``
 dataclass and YAML loader so synonymous lex citations can be

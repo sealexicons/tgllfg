@@ -458,3 +458,58 @@
 - surface: sanlibo
   pos: NUM
   feats: {CARDINAL: "YES", CARDINAL_VALUE: "1000", NUM: PL}
+
+# === Phase 5f Commit 5: maka- multiplicative adverbials 1-10 =============
+# Productive ``maka-`` + cardinal stem yields a frequency / multi-
+# plicative adverb (``makalawa`` "twice", ``makatlo`` "thrice",
+# ``makaapat`` "four times"). Hand-authored lex following the same
+# coverage strategy as the compound cardinals in Commit 3 — the
+# productive maka- + cardinal morphology is real but a hand-authored
+# inventory of high-frequency forms is sufficient for v1.
+#
+# ADV_TYPE=FREQUENCY routes these adverbs through the new
+# Phase 5f Commit 5 sentential-ADJUNCT rule (``S → S AdvP[FREQ]``);
+# MULTIPLIER_VALUE records the count for downstream consumers.
+# The ``makaisa`` form is grammatically well-formed but semantically
+# rare in modern usage — ``minsan`` "once / sometimes" is the more
+# common form for "once". (The narrative idiom ``Nang isang beses``
+# also means "once" but is a temporal-framing construction, not a
+# productive frequency adverbial — ``*nang dalawang beses`` etc. are
+# unnatural.) Included here for paradigm completeness.
+#
+# Periphrastic frequency (``dalawang beses``, ``tatlong ulit``) uses
+# the existing Phase 5f Commit 1 cardinal-NP-modifier rule on the
+# new ``beses`` / ``ulit`` NOUN entries (data/tgl/roots.yaml) — but
+# the adverbial / adjunct attachment of bare ``dalawang beses`` is
+# a deferred follow-on (see analysis-choices.md Phase 5f Commit 5
+# Periphrastic section).
+- surface: makaisa
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "1"}
+- surface: makalawa
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "2"}
+- surface: makatlo
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "3"}
+- surface: makaapat
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "4"}
+- surface: makalima
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "5"}
+- surface: makaanim
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "6"}
+- surface: makapito
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "7"}
+- surface: makawalo
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "8"}
+- surface: makasiyam
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "9"}
+- surface: makasampu
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "10"}

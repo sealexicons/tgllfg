@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 1026 | 99.4% |
+| **parse**    | 1038 | 99.4% |
 | **fragment** |    4 |  0.4% |
 | **fail**     |    2 |  0.2% |
-| **TOTAL**    | 1032 |       |
+| **TOTAL**    | 1044 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -40,6 +40,7 @@ out-of-scope items documented below.
 | cardinal-spanish   |    13 |        0 |    0 |    13 | 100% |
 | cardinal-compound  |    24 |        0 |    0 |    24 | 100% |
 | cardinal-predicative |  11 |        0 |    0 |    11 | 100% |
+| cardinal-multiplicative |  12 |     0 |    0 |    12 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -259,6 +260,23 @@ comparative parang rules. The single rule fires on simple
 (Commit 3) cardinals alike. Composes with negation
 (``Hindi tatlo ang anak ko``) via the existing Phase 4 §7.4
 matrix NEG rule.
+
+### cardinal-multiplicative (12 sentences, 100%)
+
+Phase 5f Commit 5: multiplicative ratios. Native ``maka-`` +
+cardinal stem yields a frequency adverb (``makalawa`` "twice",
+``makatlo`` "thrice", ``makaapat`` "four times"); 10 lex
+entries (``makaisa`` ... ``makasampu``) as ADV with
+``ADV_TYPE=FREQUENCY`` and ``MULTIPLIER_VALUE``. One new
+grammar rule ``S → S AdvP`` with constraining equation
+``(↓2 ADV_TYPE) =c 'FREQUENCY'`` attaches FREQUENCY adverbs as
+clause-final ADJUNCTs (closing part of the Phase 5e Commit 3
+deferral on bare AdvP placement, scoped to FREQUENCY only).
+Periphrastic ``[CARDINAL]ng beses`` / ``[CARDINAL]ng ulit`` is
+in lex (``beses`` / ``ulit`` NOUN with SEM_CLASS=FREQUENCY)
+but the adverbial reading is deferred — needs ``nang`` lex
+plus a sentential GEN-NP-as-frequency rule. Spanish-borrowed
+``doble`` / ``triple`` lex-only.
 
 ### classic (12 sentences, 100%)
 

@@ -1289,6 +1289,29 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
     _add(out, "hindi tatlo ang anak ko",
          "cardinal-predicative: NEG composition with predicative cardinal",
          "parse")
+    # Phase 5f Commit 5: maka- multiplicative adverbials.
+    maka_cards = [
+        ("makaisa",   "1"),
+        ("makalawa",  "2"),
+        ("makatlo",   "3"),
+        ("makaapat",  "4"),
+        ("makalima",  "5"),
+        ("makaanim",  "6"),
+        ("makapito",  "7"),
+        ("makawalo",  "8"),
+        ("makasiyam", "9"),
+        ("makasampu", "10"),
+    ]
+    for surface, _ in maka_cards:
+        _add(out, f"tumakbo ako {surface}",
+             "cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY adjunct",
+             "parse")
+    _add(out, "kumain ang bata makatlo",
+         "cardinal-multiplicative: maka-cardinal with full NOM-NP SUBJ",
+         "parse")
+    _add(out, "hindi tumakbo si juan makalawa",
+         "cardinal-multiplicative: NEG composition with maka-cardinal",
+         "parse")
     return out
 
 

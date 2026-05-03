@@ -1472,6 +1472,34 @@
 - citation: papel
   pos: NOUN
   gloss: paper
+
+# === Phase 5f Commit 5: frequency / multiplier nouns =====================
+# Used in periphrastic multiplicative ratios (``dalawang beses``
+# "twice", ``tatlong ulit`` "three times") via the existing Phase 5f
+# Commit 1 cardinal-NP-modifier rules. SEM_CLASS=FREQUENCY marks
+# them for the LMT classifier. (S&O 1972 §4.5.)
+- citation: beses
+  pos: NOUN
+  gloss: times (occurrences)
+  feats: {SEM_CLASS: FREQUENCY}
+  synonyms: [ulit]
+- citation: ulit
+  pos: NOUN
+  gloss: times (repetitions)
+  feats: {SEM_CLASS: FREQUENCY}
+  synonyms: [beses]
+# Spanish-borrowed multipliers — surface in technical / commercial
+# register (``doble ang singil`` "the charge is doubled"). Lex-only
+# in this commit; treated as NOUN with SEM_CLASS=MULTIPLIER so the
+# existing NP machinery handles their distribution.
+- citation: doble
+  pos: NOUN
+  gloss: double
+  feats: {SEM_CLASS: MULTIPLIER}
+- citation: triple
+  pos: NOUN
+  gloss: triple
+  feats: {SEM_CLASS: MULTIPLIER}
 - citation: lapis
   pos: NOUN
   gloss: pencil

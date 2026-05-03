@@ -2990,6 +2990,52 @@
 - text: Hindi tatlo ang anak ko.
   construction: 'cardinal-predicative: NEG composition with predicative cardinal'
   expected: parse
+- text: Tumakbo ako makaisa.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makalawa.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makatlo.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makaapat.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makalima.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makaanim.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makapito.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makawalo.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makasiyam.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makasampu.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Kumain ang bata makatlo.
+  construction: 'cardinal-multiplicative: maka-cardinal with full NOM-NP SUBJ'
+  expected: parse
+- text: Hindi tumakbo si juan makalawa.
+  construction: 'cardinal-multiplicative: NEG composition with maka-cardinal'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

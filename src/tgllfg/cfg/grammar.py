@@ -2073,6 +2073,35 @@ class Grammar:
             ],
         ))
 
+        # --- Phase 5f Commit 5: clause-final FREQUENCY AdvP ---------
+        #
+        # ``Kumain ako makalawa.`` "I ate twice."
+        # ``Tumakbo siya makasampu.`` "He ran ten times."
+        #
+        # Closes part of the Phase 5e Commit 3 deferral on bare AdvP
+        # placement — scoped here to FREQUENCY adverbs only via the
+        # constraining equation ``(↓2 ADV_TYPE) =c 'FREQUENCY'``.
+        # The TIME / location / manner deferrals stay in force because
+        # those adverb types interact with the Wackernagel cluster
+        # and quantifier-float in ways that require separate
+        # analytical work; FREQUENCY adverbs are clausal modifiers
+        # with no such interaction.
+        #
+        # The AdvP attaches as a member of the matrix's ADJUNCT set
+        # (parallel to how the existing intransitive-V S rules treat
+        # GEN-NP adjuncts). The constraining equation prevents the
+        # rule from firing on TIME / SPATIAL / MANNER AdvPs (which
+        # would over-cover and trigger the deferred interactions).
+        rules.append(Rule(
+            "S",
+            ["S", "AdvP"],
+            [
+                "(↑) = ↓1",
+                "↓2 ∈ (↑ ADJUNCT)",
+                "(↓2 ADV_TYPE) =c 'FREQUENCY'",
+            ],
+        ))
+
         # --- Phase 5b: multi-GEN-NP applicative frames (IV-BEN) ---
         #
         # Three-argument applicatives like ``Ipinaggawa niya ng silya
