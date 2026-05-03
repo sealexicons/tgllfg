@@ -5339,3 +5339,92 @@ the morph level and the construction works canonically with
   seed picks just ``kape`` for the canonical example; expanding
   is a small lex-data follow-up driven by corpus pressure.
 
+## Phase 5e Commit 22: verbless clitic placement
+
+**Date:** 2026-05-02. **Status:** active. Lifts the Phase 4 §7.3
+verbless-fragment deferral. The Wackernagel placement pass was
+verb-anchored: when no VERB token appeared in the input, the
+pass returned the analyses unchanged. This left verbless
+predicate constructions like ``Maganda na ka`` "You're beautiful
+already" or ``Hindi ka maganda`` "You're not beautiful" without
+proper clitic placement — even though the cluster ordering rules
+themselves don't depend on the anchor being a verb.
+
+### The change: fallback anchor lookup
+
+A new helper ``_find_verbless_anchor`` in
+``src/tgllfg/clitics/placement.py`` returns the first token
+that's:
+
+* Not a clitic (PRON-clitic or PART-2P-clitic).
+* Not ``PART[POLARITY=NEG]`` (``hindi``, ``huwag``).
+* Not punctuation.
+
+When no VERB exists, this anchor takes the verb's place in the
+cluster machinery. The PRON post-anchor cluster, the adv
+enclitic clause-end placement, and the existing post-NOUN /
+pre-linker / post-embedded-V exceptions all carry over
+unchanged.
+
+When a VERB is present, the verb-anchor wins (existing
+behavior). The fallback only fires for genuinely verbless
+inputs.
+
+### Anchor selection rationale
+
+The anchor is the first **predicate-like** token. Tagalog
+verbless predicates can be:
+
+* **Adjective predicates** — ``Maganda ka.`` "You're
+  beautiful" (the predicate-adj construction is Phase 5g; the
+  placement-pass change here covers the cluster shape so it's
+  ready when 5g lands).
+* **Noun predicates** — ``Bata ka.`` "You're a child"
+  (equational with NOUN predicate).
+* **Locative predicates** — ``Dito ka.`` "You're here" (ADP
+  locative dem as predicate).
+* **PP / quantifier predicates** — also covered.
+
+Pre-anchor tokens ``hindi`` / ``huwag`` (NEG-PART) are skipped
+during anchor lookup, mirroring the verb-anchored behavior
+(NEG sits pre-V; the V is the anchor).
+
+### Interaction with the §7.5 ``na``-disambiguator
+
+The Phase 5e Commit 6 ``na``-disambiguator treats post-NOUN
+``na`` as the linker rather than the adv enclitic
+(``Tumakbo ang bata ko na nakita`` — ``na`` introduces the RC,
+not ALREADY). This applies to verbless inputs too — ``Bata na
+ka.`` parses with ``na`` as a linker, leaving only ``ka`` as the
+PRON-clitic to cluster.
+
+For unambiguous adv-enclitic cases (``Maganda na ka.`` —
+``maganda`` is ADJ-_UNK so the disambiguator's NOUN branch
+doesn't fire), ``na`` keeps its is_clitic reading and is pulled
+to clause-end as expected.
+
+### Surface variants enabled
+
+```
+Maganda na ka.        → maganda ka . na     (PRON cluster + adv at end)
+Maganda ba ka.        → maganda ka . ba     (interrogative ba)
+Maganda na ka ba.     → maganda ka . na ba  (PRON + 2 advs)
+Hindi ka maganda.     → hindi maganda ka .  (NEG + pre-anchor PRON hoist)
+Hindi na ka maganda.  → hindi maganda ka . na   (NEG + adv + pre-anchor PRON)
+```
+
+Tests pin the cluster shape at the placement layer
+(``tests/tgllfg/test_verbless_clitic_placement.py``). End-to-end
+parse coverage of these surfaces is gated on Phase 5g
+(adjectives) — most verbless predicate constructions need the
+predicative-adj clause type to land. The placement-pass change
+is intentionally ahead of 5g so the cluster ordering is correct
+when 5g composes.
+
+### No corpus change
+
+This commit is a placement-pass-only change. Corpus parse
+coverage is unchanged (the verbless surfaces still don't parse
+at the grammar level until Phase 5g lands). The 19 new tests
+pin behavior at the unit level only.
+

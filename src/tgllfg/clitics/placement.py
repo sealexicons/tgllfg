@@ -3,8 +3,15 @@
 Algorithm
 ---------
 
-1. Scan the morph-analyzed token sequence for the first verb token
-   ("V token"). This is the host on the Tagalog V-initial reading.
+1. Scan the morph-analyzed token sequence for the **placement
+   anchor** — by default the first verb token ("V token"). When no
+   verb is present (Phase 5e Commit 22 lift of the Phase 4 §7.3
+   verbless-fragment deferral), fall back to the first non-clitic,
+   non-punctuation, non-``PART[POLARITY=NEG]`` token. This covers
+   verbless predicate constructions like ``Maganda na ka``
+   "You are beautiful already" (adj-pred + adv enclitic + 2sg-NOM
+   clitic), where ``maganda`` serves as the predicate anchor and
+   the cluster is built post-anchor exactly as in the verbed case.
 2. Collect every other token whose primary analysis carries
    ``is_clitic=True`` (any analysis among its candidates). These are
    pronominal clitics (``PRON``) and adverbial enclitics (``PART``).
@@ -15,20 +22,20 @@ Algorithm
    binds them as ``POSS``.
 3. Remove the remaining clitics from their original positions,
    leaving a cluster-free skeleton.
-4. Insert all moved clitics immediately after the V token, sorted
+4. Insert all moved clitics immediately after the anchor, sorted
    by the priority loaded from ``data/tgl/clitic_order.yaml``.
    Clitics not in the priority table sort after the listed ones
    (priority = ``DEFAULT_PRIORITY``).
 
 Tokens that are not clitics keep their original relative order.
-Words preceding the verb (e.g. the negation particle ``hindi``) are
-unaffected — they remain ahead of the verb. Any non-possessor
-clitic appearing before the verb is hoisted out and lands in the
-post-V cluster, which is the desired Wackernagel surface form.
+Words preceding the anchor (e.g. the negation particle ``hindi``)
+are unaffected — they remain ahead of the anchor. Any non-possessor
+clitic appearing before the anchor is hoisted out and lands in the
+post-anchor cluster, which is the desired Wackernagel surface form.
 
-If the input sentence has no verb, no reordering is performed —
-the placement module is a verb-anchored 2P implementation; verbless
-fragments fall through unchanged.
+If the input sentence has neither a verb nor any other anchor
+candidate (e.g., the input is empty, all clitics, or only
+punctuation), no reordering is performed.
 """
 
 from __future__ import annotations
@@ -96,6 +103,45 @@ def _is_clitic_token(cands: list[MorphAnalysis]) -> bool:
 
 def _is_verb_token(cands: list[MorphAnalysis]) -> bool:
     return any(ma.pos == "VERB" for ma in cands)
+
+
+def _is_neg_part(cands: list[MorphAnalysis]) -> bool:
+    """``PART[POLARITY=NEG]`` — ``hindi`` / ``huwag``. These sit
+    pre-predicate and don't serve as the placement anchor."""
+    return any(
+        ma.pos == "PART" and ma.feats.get("POLARITY") == "NEG"
+        for ma in cands
+    )
+
+
+def _is_punct_token(cands: list[MorphAnalysis]) -> bool:
+    return any(ma.pos == "PUNCT" for ma in cands)
+
+
+def _find_verbless_anchor(
+    analyses: list[list[MorphAnalysis]],
+) -> int | None:
+    """Phase 5e Commit 22: find the placement anchor for verbless
+    inputs. The anchor is the first token that's not a clitic, not
+    ``PART[POLARITY=NEG]``, and not punctuation. This covers
+    NOUN/ADJ/ADP predicate heads (``Maganda na ka``,
+    ``Bata ka``, ``Dito siya``) and lets the same cluster machinery
+    used for verbed clauses apply uniformly.
+
+    Returns ``None`` if no anchor is found (input is empty, all
+    clitics, or only punctuation / NEG particles). Caller falls
+    back to no-op."""
+    for i, cands in enumerate(analyses):
+        if not cands:
+            continue
+        if _is_clitic_token(cands):
+            continue
+        if _is_neg_part(cands):
+            continue
+        if _is_punct_token(cands):
+            continue
+        return i
+    return None
 
 
 def _surface_for_priority(cands: list[MorphAnalysis]) -> str:
@@ -403,25 +449,33 @@ def reorder_clitics(
 
     analyses = disambiguate_homophone_clitics(analyses)
 
+    # Phase 5e Commit 22: anchor selection. The first VERB takes
+    # precedence (verbed clauses). If no VERB exists, fall back to
+    # the first non-clitic, non-NEG-PART, non-punct token (verbless
+    # predicate constructions like ``Maganda na ka``). If neither
+    # exists, no reordering.
     verb_idx: int | None = None
     for i, cands in enumerate(analyses):
         if _is_verb_token(cands):
             verb_idx = i
             break
-    if verb_idx is None:
+    anchor_idx: int | None = (
+        verb_idx if verb_idx is not None else _find_verbless_anchor(analyses)
+    )
+    if anchor_idx is None:
         return analyses
 
     pron_indices = [
         i for i, cands in enumerate(analyses)
-        if i != verb_idx
+        if i != anchor_idx
         and _is_pron_clitic(cands)
         and not _is_post_noun_pron(analyses, i)
         and not _is_pre_linker_pron(analyses, i)
-        and not _is_post_embedded_v_pron(analyses, i, verb_idx)
+        and not _is_post_embedded_v_pron(analyses, i, anchor_idx)
     ]
     adv_indices = [
         i for i, cands in enumerate(analyses)
-        if i != verb_idx and _is_adv_clitic(cands)
+        if i != anchor_idx and _is_adv_clitic(cands)
     ]
     if not pron_indices and not adv_indices:
         return analyses
@@ -453,7 +507,7 @@ def reorder_clitics(
         if i in clitic_set:
             continue
         result.append(cands)
-        if i == verb_idx:
+        if i == anchor_idx:
             for j in pron_indices:
                 result.append(_filter_pron(analyses[j]))
     for j in adv_indices:
