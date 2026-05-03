@@ -524,3 +524,60 @@
 - surface: punto
   pos: PART
   feats: {DECIMAL_SEP: "YES"}
+
+# === Phase 5f Commit 7: ordinals 1st-10th ================================
+# Hand-authored single-token lex for the high-frequency ordinals.
+# Same syntactic distribution as cardinals (NP-internal modifier
+# via the linker, ``ang ikalawang anak`` "the second child"), but
+# with ``ORDINAL=YES`` and ``ORDINAL_VALUE`` features instead of
+# CARDINAL=YES / CARDINAL_VALUE. The Phase 5f Commit 7 ordinal-
+# NP-modifier rules (src/tgllfg/cfg/grammar.py) parallel the
+# Commit 1 cardinal rules.
+#
+# ``una`` (1st) is suppletive — not ``*ikaisa``. ``ikalawa`` and
+# ``ikatlo`` show stem truncation (``ika-`` + ``dalawa`` →
+# ikalawa, not *ikadalawa; ``ika-`` + ``tatlo`` → ikatlo, not
+# *ikatatlo). Other ordinals are regular ``ika-`` + cardinal stem.
+# ``pangalawa`` is a high-frequency colloquial alternative to
+# ``ikalawa`` (S&O 1972 §4.4 footnote); other ``pang-`` ordinal
+# variants are productive but irregular and not hand-authored
+# in this commit.
+#
+# NUM is omitted: ordinals don't dictate noun number agreement —
+# ``ang unang aklat ko`` (1st book, SG) and ``ang unang mga aklat
+# ko`` (first books, PL with ``mga``) are both grammatical. The
+# matrix NP's NUM comes from the head noun / mga marker, not the
+# ordinal.
+- surface: una
+  pos: NUM
+  feats: {ORDINAL: "YES", ORDINAL_VALUE: "1"}
+- surface: ikalawa
+  pos: NUM
+  feats: {ORDINAL: "YES", ORDINAL_VALUE: "2"}
+- surface: pangalawa
+  pos: NUM
+  feats: {ORDINAL: "YES", ORDINAL_VALUE: "2"}
+- surface: ikatlo
+  pos: NUM
+  feats: {ORDINAL: "YES", ORDINAL_VALUE: "3"}
+- surface: ikaapat
+  pos: NUM
+  feats: {ORDINAL: "YES", ORDINAL_VALUE: "4"}
+- surface: ikalima
+  pos: NUM
+  feats: {ORDINAL: "YES", ORDINAL_VALUE: "5"}
+- surface: ikaanim
+  pos: NUM
+  feats: {ORDINAL: "YES", ORDINAL_VALUE: "6"}
+- surface: ikapito
+  pos: NUM
+  feats: {ORDINAL: "YES", ORDINAL_VALUE: "7"}
+- surface: ikawalo
+  pos: NUM
+  feats: {ORDINAL: "YES", ORDINAL_VALUE: "8"}
+- surface: ikasiyam
+  pos: NUM
+  feats: {ORDINAL: "YES", ORDINAL_VALUE: "9"}
+- surface: ikasampu
+  pos: NUM
+  feats: {ORDINAL: "YES", ORDINAL_VALUE: "10"}

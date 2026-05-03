@@ -3066,6 +3066,45 @@
 - text: Bumili ako ng singkong porsiyento.
   construction: 'cardinal-percent: 5% percentage as cardinal-modified OBJ NP'
   expected: parse
+- text: Bumili ako ng unang aklat.
+  construction: 'ordinal: NUM[ORDINAL=YES] + linker + N as OBJ'
+  expected: parse
+- text: Bumili ako ng ikalawang aklat.
+  construction: 'ordinal: NUM[ORDINAL=YES] + linker + N as OBJ'
+  expected: parse
+- text: Bumili ako ng pangalawang aklat.
+  construction: 'ordinal: NUM[ORDINAL=YES] + linker + N as OBJ'
+  expected: parse
+- text: Bumili ako ng ikatlong aklat.
+  construction: 'ordinal: NUM[ORDINAL=YES] + linker + N as OBJ'
+  expected: parse
+- text: Bumili ako ng ikaapat na aklat.
+  construction: 'ordinal: NUM[ORDINAL=YES] + linker + N as OBJ'
+  expected: parse
+- text: Bumili ako ng ikalimang aklat.
+  construction: 'ordinal: NUM[ORDINAL=YES] + linker + N as OBJ'
+  expected: parse
+- text: Bumili ako ng ikaanim na aklat.
+  construction: 'ordinal: NUM[ORDINAL=YES] + linker + N as OBJ'
+  expected: parse
+- text: Bumili ako ng ikapitong aklat.
+  construction: 'ordinal: NUM[ORDINAL=YES] + linker + N as OBJ'
+  expected: parse
+- text: Bumili ako ng ikawalong aklat.
+  construction: 'ordinal: NUM[ORDINAL=YES] + linker + N as OBJ'
+  expected: parse
+- text: Bumili ako ng ikasiyam na aklat.
+  construction: 'ordinal: NUM[ORDINAL=YES] + linker + N as OBJ'
+  expected: parse
+- text: Bumili ako ng ikasampung aklat.
+  construction: 'ordinal: NUM[ORDINAL=YES] + linker + N as OBJ'
+  expected: parse
+- text: Tumakbo ang unang aso.
+  construction: 'ordinal: ORDINAL + linker + N as SUBJ'
+  expected: parse
+- text: Pumunta ako sa ikatlong kuwarto.
+  construction: 'ordinal: ORDINAL + linker + N as DAT adjunct'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

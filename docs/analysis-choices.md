@@ -6475,6 +6475,131 @@ modified-NP-as-OBJ path.
   not standard usage; rule recursion would technically allow
   it but no test fixtures verify it.
 
+## Phase 5f Commit 7: ordinals 1st-10th
+
+**Date:** 2026-05-03. **Status:** active. Lex (11 entries) plus
+6 NP-level ordinal-modifier rules plus constraining-equation
+additions to the cardinal rules (Commits 1 + 5/6) plus
+disambiguator extension. Refs: plan §11.1 Group B (ordinals);
+S&O 1972 §4.4; Phase 5f Commit 1 (parallel rule structure).
+
+### Lex change
+
+11 ordinal entries added to ``data/tgl/particles.yaml`` with
+``pos: NUM``, ``ORDINAL: "YES"``, and ``ORDINAL_VALUE``:
+
+* ``una`` (1st, suppletive — not ``*ikaisa``).
+* ``ikalawa`` (2nd, with stem truncation: ``ika-`` + ``lawa``,
+  not ``*ikadalawa``).
+* ``pangalawa`` (2nd alternative, high-frequency colloquial
+  variant; S&O 1972 §4.4 footnote).
+* ``ikatlo`` (3rd, similar stem truncation: ``ika-`` + ``tlo``).
+* ``ikaapat`` (4th), ``ikalima`` (5th), ``ikaanim`` (6th),
+  ``ikapito`` (7th), ``ikawalo`` (8th), ``ikasiyam`` (9th),
+  ``ikasampu`` (10th).
+
+### Why hand-authored, not productive ``ika-`` morphology
+
+Same reasoning as the Commit 3 compound cardinals: the
+hand-authored inventory of 1st-10th covers v1 needs; productive
+morphology requires sandhi rules (the ``ikalawa`` / ``ikatlo``
+truncations) and a discriminator from the existing IV-CONVEY
+``ika-`` paradigm (which produces verbs, not numerals). Both
+are deferred follow-ons.
+
+### Why NUM is omitted from ordinal lex
+
+Ordinal value is independent of noun number agreement:
+
+* ``ang unang aklat ko`` "my first book" (singular).
+* ``ang unang mga aklat ko`` "my first books" (plural,
+  with ``mga`` marker).
+
+Both are grammatical. The matrix NP's NUM is determined by the
+head noun (or ``mga`` plural marker), not the ordinal. So the
+ordinal lex entries omit NUM, and the ordinal-NP-modifier rule
+omits the NUM-projection equation that the cardinal rule has.
+
+### Grammar change
+
+6 new ordinal NP-modifier rules (parallel to the Commit 1
+cardinal NP-modifier rules):
+
+```
+NP[CASE=X] → DET/ADP[CASE=X] NUM[ORDINAL=YES] PART[LINK=Y] N
+Equations:
+  (↑) = ↓1
+  (↑ PRED) = ↓4 PRED
+  (↑ LEMMA) = ↓4 LEMMA
+  (↑ ORDINAL_VALUE) = ↓2 ORDINAL_VALUE
+  ¬ (↓4 ORDINAL_VALUE)
+  (↓2 ORDINAL) =c 'YES'
+```
+
+The constraining equation ``(↓2 ORDINAL) =c 'YES'`` is critical
+for cardinal/ordinal disjointness: without it, the non-conflict
+pattern matcher would accept CARDINAL=YES NUMs (since they
+don't share the ORDINAL key) and create empty ORDINAL_VALUE
+fstructs on the matrix NP. Same fix-pattern as Commit 6's
+PART[DECIMAL_SEP=YES] constraint.
+
+### Side change: cardinal rules get ``(↓2 CARDINAL) =c 'YES'``
+
+The Commit 1 cardinal NP-modifier rules and N-level rule were
+under-constrained — they fired on ANY NUM by non-conflict
+matching, including ORDINAL=YES NUMs added in this commit.
+Without a fix, ``ang unang aklat`` would have produced a
+spurious cardinal parse (with empty NUM and CARDINAL_VALUE
+fstructs on the OBJ NP) alongside the correct ordinal parse.
+Adding ``(↓2 CARDINAL) =c 'YES'`` to the cardinal NP-modifier
+rules and ``(↓1 CARDINAL) =c 'YES'`` to the N-level cardinal
+rule restores the cardinal/ordinal disjointness.
+
+### Side change: disambiguator extension
+
+The Phase 5f Commit 1 ``disambiguate_homophone_clitics`` branch
+that recognised ``na`` after a ``NUM[CARDINAL=YES]`` is the
+linker (not the ALREADY enclitic) is extended to also cover
+``NUM[ORDINAL=YES]``: consonant-final ordinals (``ikaapat``,
+``ikaanim``, ``ikasiyam``) need the same standalone-``na``-as-
+linker treatment as the cardinals (``apat``, ``anim``,
+``siyam``).
+
+### Composition
+
+* OBJ position (``Bumili ako ng unang aklat`` "I bought the
+  first book"): all 11 ordinals exercised across the sweep.
+* SUBJ position (``Tumakbo ang unang aso`` "the first dog
+  ran").
+* DAT position (``Pumunta ako sa ikatlong kuwarto`` "I went
+  to the third room").
+* Alternative ``pangalawa`` form parses with the same
+  ORDINAL_VALUE=2 as ``ikalawa``.
+
+### Negative fixtures
+
+Per Phase 5f §11.2 negative-fixture convention:
+
+* ``*Bumili ako ng una aklat.`` — missing linker.
+* ``*Bumili ako ng unang ikalawang aklat.`` — chained
+  ordinals, blocked by ``¬ (↓4 ORDINAL_VALUE)``.
+
+### Out of scope for this commit
+
+* Productive ``ika-`` morphology paradigm (with ``ikalawa`` /
+  ``ikatlo`` truncation sandhi).
+* Productive ``pang-`` ordinal morphology (the alternative
+  variant — only ``pangalawa`` lex'd here).
+* Predicative ordinal (``Ikalawa ang anak ko`` "My child is
+  the second [one]") — needs a parallel S rule to the
+  predicative cardinal rule (Commit 4); deferred.
+* Mixed ordinal + cardinal (``ang unang dalawang aklat`` "the
+  first two books") — needs an ordinal-of-cardinal stacking
+  rule; deferred.
+* Higher ordinals (11th+, hundredth, thousandth) — uses
+  ``ika-`` + compound cardinal; deferred to a follow-on
+  alongside compound-cardinal coordination.
+
 ### Side change (Commit 4): `synonyms` lex field + ``aklat`` noun
 
 This commit adds a ``synonyms: list[str]`` field to the ``Root``

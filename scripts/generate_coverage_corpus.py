@@ -1338,6 +1338,27 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
     _add(out, "bumili ako ng singkong porsiyento",
          "cardinal-percent: 5% percentage as cardinal-modified OBJ NP",
          "parse")
+    # Phase 5f Commit 7: ordinals 1st-10th.
+    ordinals = [
+        ("una",        "unang"),
+        ("ikalawa",    "ikalawang"),
+        ("pangalawa",  "pangalawang"),
+        ("ikatlo",     "ikatlong"),
+        ("ikaapat",    "ikaapat na"),
+        ("ikalima",    "ikalimang"),
+        ("ikaanim",    "ikaanim na"),
+        ("ikapito",    "ikapitong"),
+        ("ikawalo",    "ikawalong"),
+        ("ikasiyam",   "ikasiyam na"),
+        ("ikasampu",   "ikasampung"),
+    ]
+    for _, surface in ordinals:
+        _add(out, f"bumili ako ng {surface} aklat",
+             "ordinal: NUM[ORDINAL=YES] + linker + N as OBJ", "parse")
+    _add(out, "tumakbo ang unang aso",
+         "ordinal: ORDINAL + linker + N as SUBJ", "parse")
+    _add(out, "pumunta ako sa ikatlong kuwarto",
+         "ordinal: ORDINAL + linker + N as DAT adjunct", "parse")
     return out
 
 
