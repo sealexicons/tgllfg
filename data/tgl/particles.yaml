@@ -581,3 +581,41 @@
 - surface: ikasampu
   pos: NUM
   feats: {ORDINAL: "YES", ORDINAL_VALUE: "10"}
+
+# === Phase 5f Commit 9: arithmetic operators (Group D) ===================
+# Word-form arithmetic: ``Dalawa dagdag tatlo ay lima`` "2+3=5",
+# ``Sampu bawas tatlo ay pito`` "10-3=7", ``Dalawa beses tatlo ay
+# anim`` "2*3=6", ``Anim hati sa dalawa ay tatlo`` "6/2=3". The
+# operators are PART tokens with an ``OP`` feature; the Phase 5f
+# Commit 9 arithmetic S rules consume them.
+#
+# ``dagdag`` and ``bawas`` already exist as VERB roots (in
+# data/tgl/roots.yaml) for the verbal "add to" / "subtract"
+# meanings; the bare uninflected forms are _UNK from the verbal
+# pipeline (no paradigm cell emits a bare form), so adding them
+# here as PART introduces no ambiguity in their typical verbal
+# uses (which always carry a voice/aspect prefix or infix).
+#
+# ``beses`` already exists as a NOUN with SEM_CLASS=FREQUENCY
+# (Phase 5f Commit 5, used in periphrastic frequency phrases via
+# the cardinal-NP-modifier rule). The PART entry coexists; the
+# NOUN reading fires in NP positions, the PART reading fires in
+# arithmetic-operator positions. Same coexistence pattern as
+# ``na`` (LINK vs ASPECT_PART).
+#
+# Symbol-form arithmetic (``2 + 3 = 5``) is a tokenizer expansion
+# track and is §18 out-of-scope; this commit covers only the
+# word-form register. (R&B 1986 §3 glances at this register;
+# S&O 1972 doesn't cover it.)
+- surface: dagdag
+  pos: PART
+  feats: {OP: PLUS}
+- surface: bawas
+  pos: PART
+  feats: {OP: MINUS}
+- surface: beses
+  pos: PART
+  feats: {OP: TIMES}
+- surface: hati
+  pos: PART
+  feats: {OP: DIVIDE}
