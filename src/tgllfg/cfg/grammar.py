@@ -325,6 +325,14 @@ class Grammar:
                         "(↑ NUM) = ↓2 NUM",
                         "(↑ CARDINAL_VALUE) = ↓2 CARDINAL_VALUE",
                         "¬ (↓4 CARDINAL_VALUE)",
+                        # Constraining: enforce the daughter is actually
+                        # CARDINAL=YES, not just any NUM. Without this,
+                        # ORDINAL=YES NUMs (Phase 5f Commit 7) match by
+                        # non-conflict (no shared CARDINAL key) and
+                        # produce empty CARDINAL_VALUE fstructs on the
+                        # matrix NP. Same fix-pattern as Commit 6's
+                        # PART[DECIMAL_SEP=YES] constraint.
+                        "(↓2 CARDINAL) =c 'YES'",
                     ],
                 ))
         # An N-level companion rule for bare cardinal-N use
@@ -354,8 +362,55 @@ class Grammar:
                     "(↑ NUM) = ↓1 NUM",
                     "(↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE",
                     "¬ (↓3 CARDINAL_VALUE)",
+                    "(↓1 CARDINAL) =c 'YES'",
                 ],
             ))
+
+        # --- Phase 5f Commit 7: ordinal NP-internal modifier ---------
+        #
+        # ``ang unang anak`` ("the first child"), ``ng ikalawang
+        # libro`` ("of the second book"), ``sa ikaapat na bahay``
+        # ("at the fourth house"). Structurally parallel to the
+        # Commit 1 cardinal-NP-modifier rules: 6 NP-level rules
+        # (3 cases × 2 linker variants). The ordinal contributes
+        # ``ORDINAL_VALUE`` to the matrix NP; PRED and LEMMA
+        # percolate from the head N. Unlike cardinals, ordinals do
+        # NOT contribute ``NUM`` — ordinal value is independent of
+        # noun number agreement (``ang unang aklat`` 1st-SG;
+        # ``ang unang mga aklat`` 1st-PL with mga marker).
+        #
+        # The constraint ``¬ (↓4 ORDINAL_VALUE)`` blocks chained
+        # ordinals (``*ang unang ikalawang aklat``) parallel to
+        # the cardinal chained-blocking. Mixed ordinal + cardinal
+        # (``ang unang dalawang aklat`` "the first two books") is
+        # likewise blocked at NP level by the rule shape — the
+        # head daughter is bare N, not a cardinal-modified N.
+        # That construction is grammatically valid in Tagalog but
+        # requires an ordinal-of-cardinal stacking rule; deferred.
+        for case, marker in _cardinal_case_marker.items():
+            for link in ("NA", "NG"):
+                rules.append(Rule(
+                    f"NP[CASE={case}]",
+                    [
+                        marker,
+                        "NUM[ORDINAL=YES]",
+                        f"PART[LINK={link}]",
+                        "N",
+                    ],
+                    [
+                        "(↑) = ↓1",
+                        "(↑ PRED) = ↓4 PRED",
+                        "(↑ LEMMA) = ↓4 LEMMA",
+                        "(↑ ORDINAL_VALUE) = ↓2 ORDINAL_VALUE",
+                        "¬ (↓4 ORDINAL_VALUE)",
+                        # Constraining: enforce daughter is actually
+                        # ORDINAL=YES (parallel to the cardinal rule's
+                        # ``(↓2 CARDINAL) =c 'YES'`` — the non-conflict
+                        # matcher would otherwise match CARDINAL=YES
+                        # NUMs and create empty ORDINAL_VALUE fstructs).
+                        "(↓2 ORDINAL) =c 'YES'",
+                    ],
+                ))
 
         # --- Phase 4 §7.8: NP-internal possessive ---
         #

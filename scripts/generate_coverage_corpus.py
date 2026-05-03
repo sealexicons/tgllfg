@@ -1338,6 +1338,47 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
     _add(out, "bumili ako ng singkong porsiyento",
          "cardinal-percent: 5% percentage as cardinal-modified OBJ NP",
          "parse")
+    # Phase 5f Commit 7: ordinals 1st-10th.
+    ordinals = [
+        ("una",        "unang"),
+        ("ikalawa",    "ikalawang"),
+        ("pangalawa",  "pangalawang"),
+        ("ikatlo",     "ikatlong"),
+        ("ikaapat",    "ikaapat na"),
+        ("ikalima",    "ikalimang"),
+        ("ikaanim",    "ikaanim na"),
+        ("ikapito",    "ikapitong"),
+        ("ikawalo",    "ikawalong"),
+        ("ikasiyam",   "ikasiyam na"),
+        ("ikasampu",   "ikasampung"),
+    ]
+    for _, surface in ordinals:
+        _add(out, f"bumili ako ng {surface} aklat",
+             "ordinal: NUM[ORDINAL=YES] + linker + N as OBJ", "parse")
+    _add(out, "tumakbo ang unang aso",
+         "ordinal: ORDINAL + linker + N as SUBJ", "parse")
+    _add(out, "pumunta ako sa ikatlong kuwarto",
+         "ordinal: ORDINAL + linker + N as DAT adjunct", "parse")
+    # Phase 5f Commit 8: fractions (compositional via existing
+    # cardinal / ordinal NP-modifier rules).
+    _add(out, "bumili ako ng dalawang kalahati",
+         "fraction: cardinal + kalahati (2/2)", "parse")
+    _add(out, "bumili ako ng tatlong kalahati",
+         "fraction: cardinal + kalahati (3/2)", "parse")
+    _add(out, "bumili ako ng apat na kapat",
+         "fraction: cardinal + kapat (4/4)", "parse")
+    _add(out, "bumili ako ng tatlong kapat",
+         "fraction: cardinal + kapat (3/4)", "parse")
+    _add(out, "bumili ako ng isang kalahati",
+         "fraction: SG cardinal + kalahati (1/2)", "parse")
+    _add(out, "bumili ako ng ikalawang bahagi",
+         "fraction: ordinal + bahagi (1/2 = 2nd part)", "parse")
+    _add(out, "bumili ako ng ikatlong bahagi",
+         "fraction: ordinal + bahagi (1/3 = 3rd part)", "parse")
+    _add(out, "bumili ako ng ikaapat na bahagi",
+         "fraction: ordinal + bahagi (1/4 = 4th part)", "parse")
+    _add(out, "bumili ako ng dalawang medya",
+         "fraction: cardinal + Spanish medya", "parse")
     return out
 
 

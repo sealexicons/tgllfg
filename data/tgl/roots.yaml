@@ -1511,6 +1511,42 @@
   pos: NOUN
   gloss: percent
   feats: {SEM_CLASS: PERCENTAGE}
+
+# === Phase 5f Commit 8: fraction NOUNs ===================================
+# Half / quarter / part lex for fractions. Compositional fractions
+# (``dalawang kalahati`` "two halves", ``apat na kapat`` "four
+# quarters", ``ikatlong bahagi`` "third part") compose from
+# cardinals (Phase 5f Commit 1) or ordinals (Phase 5f Commit 7)
+# + the new fraction NOUN via the existing cardinal-NP-modifier
+# and ordinal-NP-modifier rules — no new grammar required.
+#
+# ``kalahati`` and ``medya`` are bidirectional synonyms (native
+# vs Spanish-borrowed); both mean "half". ``medya`` is canonical
+# in clock-time register (``alas-otso y medya`` "8:30") which
+# Group E will exercise. ``kapat`` "quarter" coexists with the
+# existing NOUN ``kuwarto`` (currently glossed as "room"; in
+# clock-time context ``kuwarto`` also means "quarter of the
+# hour" — the polysemy is left to context, not lex). ``bahagi``
+# "part" is the head N for the productive ``[ORDINAL]ng bahagi``
+# fraction pattern (S&O 1972 §4.4).
+- citation: kalahati
+  pos: NOUN
+  gloss: half
+  feats: {SEM_CLASS: FRACTION}
+  synonyms: [medya]
+- citation: kapat
+  pos: NOUN
+  gloss: quarter
+  feats: {SEM_CLASS: FRACTION}
+- citation: medya
+  pos: NOUN
+  gloss: half (Spanish-borrowed; canonical in clock-time register)
+  feats: {SEM_CLASS: FRACTION}
+  synonyms: [kalahati]
+- citation: bahagi
+  pos: NOUN
+  gloss: part
+  feats: {SEM_CLASS: PART}
 - citation: lapis
   pos: NOUN
   gloss: pencil
