@@ -5428,3 +5428,102 @@ coverage is unchanged (the verbless surfaces still don't parse
 at the grammar level until Phase 5g lands). The 19 new tests
 pin behavior at the unit level only.
 
+## Phase 5e Commit 23: non-AV RECPFV (reclassification)
+
+**Date:** 2026-05-02. **Status:** active. Documentation-only
+commit; no grammar / lex / morph changes.
+
+The Phase 4 §7.2 "Out-of-scope" note flagged Recent Perfective
+as restricted to AV (the existing ``ka-`` + CV-redup paradigm
+cells cover only AF / um / mag / ma classes), and plan §10.1
+Group G carried "Non-AV RECPFV" forward as a Phase 5e
+candidate, claiming non-AV bases were attested with ``kaka-``
++ redup. On investigation against the *Handbook of Tagalog
+Verbs* (Ramos & Schachter; the companion volume to Teresita
+Ramos's dictionary), the claim doesn't hold up — every
+paradigm entry in the Handbook lists Recent Perfective only
+under AF (Actor Focus) and A2F (Actor Focus, mag-class),
+never under OF (Object Focus), DF (Directional Focus), IF
+(Instrumental Focus), BF (Benefactive Focus), LF (Locative
+Focus), or RF (Reason Focus). Phase 5e Commit 23 reclassifies
+the item to plan §18 (genuinely v1-out-of-scope) and pins the
+rationale here.
+
+### What the Handbook actually shows
+
+A representative entry for the verb ``abot`` "reach for"
+(Handbook line 219+ in the OCR):
+
+```
+Indicative AF Inf. umabot; Perf. umabot;
+              Imperf. umaabot; Cont. aabot;
+              Rec. Perf. kaaabot          ← AV with `-um-`
+
+A2F Inf. mag-abot; Perf. nag-abot;
+    Imperf. nag-aabot; Cont. mag-aabot;
+    Rec. Perf. kaaabot                    ← AV with `mag-`
+
+OF Inf. abutin; Perf. inabot;
+   Imperf. inaabot; Cont. aabutin         ← NO Rec. Perf.
+
+[OF entries for Aptative, Causative, etc. — none with Rec. Perf.]
+```
+
+The pattern repeats for every verb the Handbook lists (~200
+high-frequency verbs). Recent Perfective is paradigmatically
+an AF-only form. The Handbook's analysis matches Schachter &
+Otanes 1972 §5.31 ("The recent-perfective formation occurs
+primarily with actor-focus verbs") and Kroeger 1993's broader
+treatment of Tagalog aspect.
+
+### What the surface ``kaka-V-base`` does in non-AV contexts
+
+The AF Recent Perfective surface (``kakakain``, ``kabibili``,
+``kasusulat``, etc.) IS sometimes used in syntactically OV-like
+contexts:
+
+```
+Kakakain ko ang isda.   "I just ate the fish."
+                         (GEN actor `ko` + NOM patient `ang isda`)
+```
+
+Our current parser already produces a parse for these — the
+existing AV-RECPFV cell emits ``kakakain`` as
+``V[VOICE=AV, ASPECT=RECPFV]``, and the standard AV
+transitive S frame admits ``V[AV] + NP[GEN] + NP[NOM]``. The
+verb's morphological analysis remains AV; only the syntactic
+mapping looks OV-like (the GEN-NP is bound to OBJ and the
+NOM-NP to SUBJ in the AV frame). This isn't a bug — it
+reflects how Tagalog handles recent-perfective semantics with
+overt patient arguments.
+
+### Why we don't add an explicit non-AV RECPFV cell
+
+A genuine non-AV RECPFV form (distinct from the AF surface)
+would need ``ka-`` + redup PLUS the OV / DV / IV affix:
+
+```
+OV-RECPFV (hypothetical):  kakakainin   = ka-CV.CV-kain-in
+DV-RECPFV (hypothetical):  kakakainan   = ka-CV.CV-kain-an
+IV-RECPFV (hypothetical):  ikakakain    = i-ka-CV.CV-kain
+```
+
+None of these are documented in the Handbook, S&O 1972, R&G
+1981, R&B 1986, or the Ramos dictionary. Adding paradigm cells
+that emit them would be guesswork — same shape as the prior
+reclassifications (Commit 7 resumptive pronouns, Commit 13
+``magpa-...-an`` distributive, Commit 15 noun-deriving
+``ipang-`` senses). The reference grammars treat the
+recent-perfective as a paradigm gap on the non-AV side, and
+the implementation should mirror that.
+
+### Status of plan §10.1 Group G after this commit
+
+Two of three Group G items remain to be addressed:
+
+* **IV-REASON CTPL paradigm gap** (CTPL form ``ikakain``
+  analyses as IV-CONVEY rather than IV-REASON; Phase 5d
+  Commit 9 deferral). Coming in Commit 24.
+* **`huwag`'s MOOD=IMP lifted to matrix** (Phase 4 §7.2
+  limitation). Coming in Commit 25.
+

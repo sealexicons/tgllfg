@@ -245,6 +245,16 @@ list (see `docs/analysis-choices.md`):
   applicative is already covered by Phase 5c §7.7 Commit 4;
   noun-deriving uses remain deferred. See plan §18 and the
   analysis-choices.md "Phase 5e Commit 15" entry.
+- **Non-AV RECPFV (recent-perfective for OV / DV / IV).**
+  Reclassified in Phase 5e Commit 23 (originally a Group G
+  candidate). The Handbook of Tagalog Verbs (Ramos & Schachter)
+  lists Recent Perfective only under AF / A2F (both AV-shaped)
+  for every entry; never under OF / DF / IF / BF / LF / RF.
+  The AF-RECPFV surface ``kaka-V-base`` IS used in
+  syntactically OV-like contexts (``Kakakain ko ang isda``),
+  but morphologically it stays AV — the existing AV-RECPFV
+  cells already cover the surface. See plan §18 and the
+  analysis-choices.md "Phase 5e Commit 23" entry.
 - **DV PFV paradigm coverage gap (TBD).** Surfaced during
   Phase 5e Commit 18 review. The §7.1 DV PFV paradigm has
   full analyzer coverage only for ``binasahan`` (DV PFV of
