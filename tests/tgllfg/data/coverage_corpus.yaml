@@ -2795,6 +2795,277 @@
 - text: Parang isang aso ang bata.
   construction: 'comparative: parang + isang + N + ang-NP'
   expected: parse
+- text: Kumain ako ng isang isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng dalawang isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng tatlong isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng apat na isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng limang isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng anim na isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng pitong isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng walong isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng siyam na isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng sampung isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumakanta ang isang bata.
+  construction: 'cardinal: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Kumakanta ang dalawang bata.
+  construction: 'cardinal: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Kumakanta ang apat na bata.
+  construction: 'cardinal: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Kumakanta ang anim na bata.
+  construction: 'cardinal: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Tumakbo ang sampung aso.
+  construction: 'cardinal: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Pumunta ako sa tatlong kuwarto.
+  construction: 'cardinal: NUM + linker + N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa apat na bahay.
+  construction: 'cardinal: NUM + linker + N as DAT adjunct'
+  expected: parse
+- text: Kumain ako ng unong isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng dos na isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng tres na isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng kuwatrong isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng singkong isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng sais na isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng siyeteng isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng otsong isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng nuwebeng isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng dies na isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumakanta ang dos na bata.
+  construction: 'cardinal-spanish: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Tumakbo ang sais na aso.
+  construction: 'cardinal-spanish: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Parang dos na aso ang bata.
+  construction: 'cardinal-spanish: parang + Spanish cardinal + N + ang-NP'
+  expected: parse
+- text: Kumain ako ng labingisang isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labindalawang isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labintatlong isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labingapat na isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labinlimang isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labinganim na isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labimpitong isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labingwalong isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labinsiyam na isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng dalawampung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng tatlumpung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng apatnapung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng limampung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng animnapung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng pitumpung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng walumpung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng siyamnapung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng sandaan na isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng sanlibong isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumakanta ang dalawampung bata.
+  construction: 'cardinal-compound: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Tumakbo ang sandaan na aso.
+  construction: 'cardinal-compound: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Pumunta ako sa sanlibong kuwarto.
+  construction: 'cardinal-compound: NUM + linker + N as DAT adjunct'
+  expected: parse
+- text: Parang dalawampung aso ang bata.
+  construction: 'cardinal-compound: parang + compound cardinal + N + ang-NP'
+  expected: parse
+- text: Parang sandaan na aso ang bata.
+  construction: 'cardinal-compound: parang + compound cardinal + N + ang-NP'
+  expected: parse
+- text: Dalawa sila.
+  construction: 'cardinal-predicative: cardinal + PRON-clitic NOM SUBJ'
+  expected: parse
+- text: Lima kami.
+  construction: 'cardinal-predicative: cardinal + PRON-clitic NOM SUBJ'
+  expected: parse
+- text: Tatlo tayo.
+  construction: 'cardinal-predicative: cardinal + PRON-clitic NOM SUBJ'
+  expected: parse
+- text: Tatlo ang anak ko.
+  construction: 'cardinal-predicative: cardinal + NOM-NP SUBJ with possessor'
+  expected: parse
+- text: Lima ang isda.
+  construction: 'cardinal-predicative: cardinal + NOM-NP SUBJ'
+  expected: parse
+- text: Isa ang bata.
+  construction: 'cardinal-predicative: cardinal NUM=SG + NOM-NP SUBJ'
+  expected: parse
+- text: Dalawampu ang bata.
+  construction: 'cardinal-predicative: compound cardinal + NOM-NP SUBJ'
+  expected: parse
+- text: Sandaan ang aklat.
+  construction: 'cardinal-predicative: compound cardinal + NOM-NP SUBJ'
+  expected: parse
+- text: Dos sila.
+  construction: 'cardinal-predicative: Spanish cardinal + PRON-clitic SUBJ'
+  expected: parse
+- text: Singko ang isda.
+  construction: 'cardinal-predicative: Spanish cardinal + NOM-NP SUBJ'
+  expected: parse
+- text: Hindi tatlo ang anak ko.
+  construction: 'cardinal-predicative: NEG composition with predicative cardinal'
+  expected: parse
+- text: Tumakbo ako makaisa.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makalawa.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makatlo.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makaapat.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makalima.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makaanim.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makapito.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makawalo.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makasiyam.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Tumakbo ako makasampu.
+  construction: 'cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY
+    adjunct'
+  expected: parse
+- text: Kumain ang bata makatlo.
+  construction: 'cardinal-multiplicative: maka-cardinal with full NOM-NP SUBJ'
+  expected: parse
+- text: Hindi tumakbo si juan makalawa.
+  construction: 'cardinal-multiplicative: NEG composition with maka-cardinal'
+  expected: parse
+- text: Dos punto singko ang isda.
+  construction: 'cardinal-decimal: Spanish-borrowed decimal in predicative position'
+  expected: parse
+- text: Tatlo punto lima ang isda.
+  construction: 'cardinal-decimal: native-decimal predicative'
+  expected: parse
+- text: Apat punto anim ang aso.
+  construction: 'cardinal-decimal: native-decimal predicative'
+  expected: parse
+- text: Kuwatro punto otso ang isda.
+  construction: 'cardinal-decimal: Spanish-decimal predicative'
+  expected: parse
+- text: Dalawampu punto singko ang isda.
+  construction: 'cardinal-decimal: compound-integer + simple-fractional'
+  expected: parse
+- text: Sandaan punto lima ang isda.
+  construction: 'cardinal-decimal: 100.5 predicative'
+  expected: parse
+- text: Sanlibo punto apat ang isda.
+  construction: 'cardinal-decimal: 1000.4 predicative'
+  expected: parse
+- text: Bumili ako ng dalawampung porsiyento.
+  construction: 'cardinal-percent: percentage as cardinal-modified OBJ NP'
+  expected: parse
+- text: Bumili ako ng sandaan na porsiyento.
+  construction: 'cardinal-percent: 100% percentage as cardinal-modified OBJ NP'
+  expected: parse
+- text: Bumili ako ng singkong porsiyento.
+  construction: 'cardinal-percent: 5% percentage as cardinal-modified OBJ NP'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

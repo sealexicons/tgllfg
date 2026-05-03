@@ -253,8 +253,16 @@ class _Earley:
                 ):
                     if matches(expected, done.rule.lhs):
                         self._advance(state, done, done.end)
-            else:
-                self._scan(col, state, expected)
+            # Phase 5f Commit 6: ALWAYS also scan, even when the expected
+            # category is a non-terminal. A category can legitimately be
+            # both — e.g., ``NUM`` is a preterminal (lex tokens like
+            # ``dos`` / ``isa`` have ``pos: NUM``) AND a non-terminal
+            # (the decimal rule has ``NUM[CARDINAL=YES]`` as LHS). Without
+            # this, lex tokens with the same POS as a rule's LHS would
+            # never be scanned. For purely non-terminal categories (S, NP,
+            # PP, AdvP, ...) there are no matching lex tokens so the scan
+            # call is a no-op.
+            self._scan(col, state, expected)
         else:
             self._complete(state)
 

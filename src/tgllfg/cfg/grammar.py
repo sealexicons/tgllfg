@@ -277,6 +277,86 @@ class Grammar:
                 ],
             ))
 
+        # --- Phase 5f Commit 1: cardinal NP-internal modifier --------
+        #
+        # ``ang isang bata`` ("the one child"), ``ng tatlong libro``
+        # ("of three books"), ``sa apat na bata`` ("to four
+        # children"). The cardinal sits between the case marker and
+        # the head N via the linker — bound ``-ng`` after vowel-final
+        # cardinals (split off by ``split_linker_ng`` once the
+        # cardinal stems are known surfaces) or standalone ``na``
+        # after consonant-final cardinals (apat, anim, siyam). The
+        # standalone ``na`` after a NUM[CARDINAL=YES] is
+        # disambiguated as the linker (not the ALREADY enclitic) by
+        # ``disambiguate_homophone_clitics`` — see
+        # ``src/tgllfg/clitics/placement.py``.
+        #
+        # 6 rules total = 3 cases × 2 linker variants. Each rule
+        # produces NP directly so the cardinal's NUM and
+        # CARDINAL_VALUE land on the matrix NP without needing to
+        # widen the bare ``NP[CASE=X] → DET/ADP[CASE=X] N``
+        # projection (which would create empty f-structs for the
+        # bare-N path).
+        #
+        # Chained cardinals (``*ng tatlong dalawang bata``) are
+        # blocked by the rule shape — the rightmost daughter is N,
+        # not NP, so a second cardinal cannot wrap a cardinal-
+        # modified NP. (Cardinal coordination is a separate
+        # construction; lands with Group C mixed numbers / Phase 5k.)
+        _cardinal_case_marker = {
+            "NOM": "DET[CASE=NOM]",
+            "GEN": "ADP[CASE=GEN]",
+            "DAT": "ADP[CASE=DAT]",
+        }
+        for case, marker in _cardinal_case_marker.items():
+            for link in ("NA", "NG"):
+                rules.append(Rule(
+                    f"NP[CASE={case}]",
+                    [
+                        marker,
+                        "NUM[CARDINAL=YES]",
+                        f"PART[LINK={link}]",
+                        "N",
+                    ],
+                    [
+                        "(↑) = ↓1",
+                        "(↑ PRED) = ↓4 PRED",
+                        "(↑ LEMMA) = ↓4 LEMMA",
+                        "(↑ NUM) = ↓2 NUM",
+                        "(↑ CARDINAL_VALUE) = ↓2 CARDINAL_VALUE",
+                        "¬ (↓4 CARDINAL_VALUE)",
+                    ],
+                ))
+        # An N-level companion rule for bare cardinal-N use
+        # (no case marker): the parang-comparative standard
+        # (``parang isang aso`` "like one dog" — Phase 5e Commit 26)
+        # and future predicative-cardinal contexts (Phase 5f Group A
+        # item 4) consume bare N. The N-level rule shares head N's
+        # PRED + LEMMA into the matrix N; CARDINAL_VALUE rides on
+        # this matrix N and is visible to consumers (parang's OBJ).
+        # The chained-cardinal block lives here as
+        # ``¬ (↓3 CARDINAL_VALUE)`` since this rule allows recursive
+        # composition; the NP-level rules above are structurally
+        # blocked because their head daughter is N (not NP), but a
+        # bare-N chain would otherwise compose without the explicit
+        # constraint.
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "N",
+                [
+                    "NUM[CARDINAL=YES]",
+                    f"PART[LINK={link}]",
+                    "N",
+                ],
+                [
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                    "(↑ NUM) = ↓1 NUM",
+                    "(↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE",
+                    "¬ (↓3 CARDINAL_VALUE)",
+                ],
+            ))
+
         # --- Phase 4 §7.8: NP-internal possessive ---
         #
         # ``ang aklat ng bata`` ("the child's book") and pronominal
@@ -1950,6 +2030,120 @@ class Grammar:
                 "(↑ OBJ) = ↓2",
                 "(↑ SUBJ) = ↓3",
                 "(↓1 COMPARATIVE) =c 'YES'",
+            ],
+        ))
+
+        # --- Phase 5f Commit 4: predicative cardinal -----------------
+        #
+        # ``Dalawa sila.`` "There are two of them."
+        # ``Tatlo ang anak ko.`` "I have three children" (lit.
+        # "three the child of-mine").
+        # ``Sandaan ang aklat.`` "A hundred books."
+        #
+        # The cardinal serves as the matrix predicate with a NOM-NP
+        # pivot. Structurally analogous to the Phase 5e Commit 26
+        # comparative parang rule above (and the Phase 5d Commit 1
+        # evidential parang) but with NUM[CARDINAL=YES] as the
+        # predicate instead of V.
+        #
+        # F-structure shape:
+        #
+        #   PRED            = 'CARDINAL <SUBJ>'
+        #   CARDINAL_VALUE  = the count from the cardinal
+        #   NUM             = the cardinal's NUM (SG for isa/uno;
+        #                     PL for the rest)
+        #   SUBJ            = the NOM-NP pivot
+        #
+        # The PRED template ``CARDINAL <SUBJ>`` parallels other
+        # predicative rules' literal-PRED convention. The semantic
+        # interpretation "X is N in count" is downstream; the parser
+        # delivers the structure.
+        #
+        # No VOICE / ASPECT / MOOD: a numeric predicate isn't a
+        # verb and doesn't carry verbal morphology. Consumers
+        # (LMT classifier, ranker) recognise the PRED shape.
+        rules.append(Rule(
+            "S",
+            ["NUM[CARDINAL=YES]", "NP[CASE=NOM]"],
+            [
+                "(↑ PRED) = 'CARDINAL <SUBJ>'",
+                "(↑ SUBJ) = ↓2",
+                "(↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE",
+                "(↑ NUM) = ↓1 NUM",
+            ],
+        ))
+
+        # --- Phase 5f Commit 6: decimal cardinal --------------------
+        #
+        # ``dos punto singko`` "2.5", ``apat punto lima`` "4.5".
+        # Spanish-borrowed ``punto`` joins the integer-part cardinal
+        # to the fractional-part cardinal. The output is itself a
+        # ``NUM[CARDINAL=YES]`` so the existing cardinal-NP-modifier
+        # rules (Commit 1) and predicative-cardinal rule (Commit 4)
+        # accept it unchanged.
+        #
+        # Equations: ``(↑) = ↓1`` shares all of the integer NUM's
+        # f-structure with the matrix (so CARDINAL_VALUE, CARDINAL,
+        # NUM all percolate from the integer part); the fractional
+        # part is recorded as ``FRACTIONAL_VALUE`` (its own
+        # CARDINAL_VALUE), and ``DECIMAL=YES`` marks the matrix as
+        # a decimal value. CARDINAL_VALUE stays the integer part —
+        # the LFG equation language doesn't have string concatenation
+        # to construct a "2.5" literal, so we keep the parts separate.
+        # Downstream consumers that need the full numeric value
+        # combine ``CARDINAL_VALUE`` and ``FRACTIONAL_VALUE`` with
+        # the ``DECIMAL`` marker.
+        rules.append(Rule(
+            "NUM[CARDINAL=YES]",
+            [
+                "NUM[CARDINAL=YES]",
+                "PART[DECIMAL_SEP=YES]",
+                "NUM[CARDINAL=YES]",
+            ],
+            [
+                "(↑) = ↓1",
+                "(↑ FRACTIONAL_VALUE) = ↓3 CARDINAL_VALUE",
+                "(↑ DECIMAL) = 'YES'",
+                # Constraining equation: enforce that the middle PART
+                # daughter actually has DECIMAL_SEP=YES (i.e., is
+                # ``punto``). Without this, the non-conflict pattern
+                # matcher accepts any PART (including the LINK=NG /
+                # LINK=NA linker particles) because ``LINK`` and
+                # ``DECIMAL_SEP`` are different feature keys — this
+                # is the same pitfall Phase 5e Commit 25 hit with
+                # ``hindi`` vs ``huwag`` (and Commit 26 with
+                # ``parang`` vs ``tila``). The constraining
+                # equation rejects spurious matches at f-unification.
+                "(↓2 DECIMAL_SEP) =c 'YES'",
+            ],
+        ))
+
+        # --- Phase 5f Commit 5: clause-final FREQUENCY AdvP ---------
+        #
+        # ``Kumain ako makalawa.`` "I ate twice."
+        # ``Tumakbo siya makasampu.`` "He ran ten times."
+        #
+        # Closes part of the Phase 5e Commit 3 deferral on bare AdvP
+        # placement — scoped here to FREQUENCY adverbs only via the
+        # constraining equation ``(↓2 ADV_TYPE) =c 'FREQUENCY'``.
+        # The TIME / location / manner deferrals stay in force because
+        # those adverb types interact with the Wackernagel cluster
+        # and quantifier-float in ways that require separate
+        # analytical work; FREQUENCY adverbs are clausal modifiers
+        # with no such interaction.
+        #
+        # The AdvP attaches as a member of the matrix's ADJUNCT set
+        # (parallel to how the existing intransitive-V S rules treat
+        # GEN-NP adjuncts). The constraining equation prevents the
+        # rule from firing on TIME / SPATIAL / MANNER AdvPs (which
+        # would over-cover and trigger the deferred interactions).
+        rules.append(Rule(
+            "S",
+            ["S", "AdvP"],
+            [
+                "(↑) = ↓1",
+                "↓2 ∈ (↑ ADJUNCT)",
+                "(↓2 ADV_TYPE) =c 'FREQUENCY'",
             ],
         ))
 

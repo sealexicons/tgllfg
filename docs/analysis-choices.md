@@ -5886,3 +5886,627 @@ The comparative composes naturally:
 * **``mas`` / ``pinaka-`` comparatives** (``mas matalino``,
   ``pinakamatalino``). Phase 5h.
 
+## Phase 5f Commit 1: native cardinal NP-internal modifier (1-10)
+
+**Date:** 2026-05-03. **Status:** active. Phase 5f's foundational
+commit — items 2-7 of Group A (Spanish cardinals, compound
+cardinals, predicative cardinals, multiplicative ratios, decimals,
+percentages) and Groups B/C/E/F/H all consume the cardinal
+NP-modifier rule once it lands. Refs: plan §11.1 Group A item 1.
+
+### Lex change
+
+Native cardinals 1-10 added to ``data/tgl/particles.yaml`` with
+``pos: NUM``:
+
+* Vowel-final (use bound ``-ng`` linker via ``split_linker_ng``):
+  ``isa`` (1, NUM=SG), ``dalawa`` (2), ``tatlo`` (3), ``lima`` (5),
+  ``pito`` (7), ``walo`` (8), ``sampu`` (10).
+* Consonant-final (use standalone ``na`` linker): ``apat`` (4),
+  ``anim`` (6), ``siyam`` (9).
+
+Each carries ``CARDINAL: "YES"``, ``CARDINAL_VALUE: "<N>"`` (the
+integer as a string), and ``NUM: SG`` (only ``isa``) or
+``NUM: PL`` (2-10). The CARDINAL_VALUE quoting matters: PyYAML
+parses unquoted integers as Python ``int``, and the
+``_lex_equations`` filter in the parser drops non-string atomic
+values — same gotcha that surfaced in Phase 5e Commit 17 with
+booleans (``DEM: YES`` parsing as Python ``True``).
+
+### Grammar change
+
+**Two-track design** to handle cardinal-modified N at both NP
+level (case-marked, the canonical positions) and bare-N level
+(parang complements, future predicatives):
+
+* **NP-level cardinal rules** (6 = 3 cases × 2 linker variants).
+  Schema:
+
+  ```
+  NP[CASE=X] → DET/ADP[CASE=X] NUM[CARDINAL=YES] PART[LINK=Y] N
+  ```
+
+  Equations: case marker shares with NP via ``(↑) = ↓1``
+  (CASE/MARKER); head N's PRED + LEMMA percolate; cardinal's NUM
+  and CARDINAL_VALUE land on matrix NP. Chained cardinals
+  blocked at NP level by ``¬ (↓4 CARDINAL_VALUE)``: the head-N
+  daughter cannot itself carry a CARDINAL_VALUE.
+
+* **N-level cardinal rule** (2 = 1 × 2 linker variants):
+
+  ```
+  N → NUM[CARDINAL=YES] PART[LINK=Y] N
+  ```
+
+  Used for bare contexts where there's no case marker — the
+  parang-comparative standard (``parang isang aso ang bata``,
+  Phase 5e Commit 26) is the immediate consumer; Group A item 4
+  (predicative cardinals, ``Tatlo ang anak ko``) will be the
+  next. The recursive composition is blocked by ``¬ (↓3
+  CARDINAL_VALUE)`` on the head-N daughter.
+
+The two-track design produces ambiguity for case-marked
+cardinal NPs (the same input can parse via the NP-level rule
+directly or via N-level + NP-from-N composition). The NP-level
+parse is the cardinal-info-preserving one and is what the
+test suite asserts on; the composed N-level parse loses
+CARDINAL_VALUE at the NP level (the existing
+``NP[CASE=X] → DET/ADP[CASE=X] N`` rule projects only PRED +
+LEMMA from N). This redundancy is acceptable — the NP-from-N
+projection wasn't widened to pull NUM/CARDINAL_VALUE because
+defining equations on undefined paths create empty f-structures
+on bare N (a real regression: ``Kumain ang bata.`` would gain a
+spurious ``CARDINAL_VALUE: <empty>`` slot on its SUBJ).
+
+### Clitic-pass change
+
+A new branch in ``disambiguate_homophone_clitics``
+(``src/tgllfg/clitics/placement.py``) treats standalone ``na``
+after a ``NUM[CARDINAL=YES]`` as the linker — parallel to the
+Phase 5e Commit 16 DEM-DET/DEM-ADP exception. Without this,
+the Wackernagel pass would hoist ``na`` to clause-end as the
+ALREADY enclitic and ``apat na isda`` / ``anim na bata`` /
+``siyam na aklat`` would never reach the cardinal-NP-modifier
+rule.
+
+### Negative fixtures
+
+Per Phase 5f §11.2 negative-fixture convention:
+
+* ``*Kumain ako ng isa bata.`` — missing linker between cardinal
+  and N. No rule consumes the ``isa bata`` sequence as an N or
+  NP because the cardinal-NP-modifier rule requires a
+  ``PART[LINK=Y]`` middle daughter.
+* ``*Kumain ako ng tatlong dalawang bata.`` — chained cardinals.
+  Blocked by ``¬ (↓4 CARDINAL_VALUE)`` on NP-level rule and
+  ``¬ (↓3 CARDINAL_VALUE)`` on N-level rule.
+
+### Out of scope for this commit
+
+* Spanish-borrowed cardinals (``uno``, ``dos``, ``tres``, ...) —
+  Group A item 2.
+* Compound cardinals (``labing-isa`` 11, ``dalawampu`` 20, ...) —
+  Group A item 3.
+* Predicative cardinals (``Tatlo ang anak ko``) — Group A item 4
+  (consumes the N-level rule added here).
+* Multiplicative ratios (``maka-`` + cardinal, ``[CARDINAL]ng
+  beses``) — Group A item 5.
+* Decimals + percentages — Group A items 6-7.
+* Cardinal + dem composition (``itong tatlong bata``) — would
+  need either a dem rule extension or an NP-internal cardinal
+  modifier inside the dem-headed NP. Not in this commit.
+
+## Phase 5f Commit 2: Spanish-borrowed cardinals 1-10
+
+**Date:** 2026-05-03. **Status:** active. Lex-only addition;
+no grammar changes. Refs: plan §11.1 Group A item 2;
+Phase 5f Commit 1 (rule infrastructure).
+
+### Lex change
+
+10 entries added to ``data/tgl/particles.yaml`` parallel to
+the native-cardinal block from Commit 1:
+
+* Vowel-final (bound ``-ng`` linker): ``uno`` (1, NUM=SG),
+  ``kuwatro`` (4), ``singko`` (5), ``siyete`` (7), ``otso``
+  (8), ``nuwebe`` (9).
+* Consonant-final (standalone ``na`` linker): ``dos`` (2),
+  ``tres`` (3), ``sais`` (6), ``dies`` (10).
+
+Each carries the same ``CARDINAL: "YES"``,
+``CARDINAL_VALUE: "<N>"``, and ``NUM`` features as the native
+cardinals. CARDINAL_VALUE is duplicated across native and
+Spanish forms — both ``isa`` and ``uno`` map to "1", both
+``dalawa`` and ``dos`` map to "2", etc. — because the value
+is a numerical fact, not a register-marker. The choice between
+native and borrowed surface is a register decision left to the
+producer; the parser accepts both with identical f-structure
+output (modulo LEMMA, which encodes the surface stem).
+
+### Why no grammar change
+
+The Phase 5f Commit 1 cardinal-NP-modifier rules are
+non-conflict-matched on ``NUM[CARDINAL=YES]`` and
+``PART[LINK=NA|NG]``. They fire on any token analyzed as
+``NUM`` with ``CARDINAL=YES``, so adding new lex entries with
+that signature is sufficient. Same applies to the N-level
+companion rule and the ``disambiguate_homophone_clitics``
+NUM-CARDINAL branch.
+
+### Out of scope for this commit
+
+* Compound Spanish cardinals (``onse`` 11, ``dose`` 12, ...,
+  ``sentimo`` per cents in price expressions, etc.) — Group A
+  item 3 (compound cardinals).
+* Spanish ordinal forms (``primer``, ``segundo``, ...) — these
+  surface in fixed expressions (months, kings, etc.) but are
+  not productive in modern Tagalog; out of scope (§18).
+* Register-marking on the parsed f-structure (no
+  ``ORIGIN: SPANISH`` or ``REGISTER: BORROWED`` feature) —
+  the parser's job is structural; sociolinguistic register
+  belongs in a downstream layer.
+
+## Phase 5f Commit 3: compound cardinals 11-1000
+
+**Date:** 2026-05-03. **Status:** active. Lex-only addition;
+no grammar / morph changes. Refs: plan §11.1 Group A item 3
+(compound cardinals); Phase 5f Commit 1 (rule infrastructure).
+
+### Lex change
+
+19 hand-authored single-token compound surfaces added to
+``data/tgl/particles.yaml``:
+
+* **Teens (11-19)** — ``labing-`` prefix + 1-9 base with sandhi:
+  ``labingisa`` (11), ``labindalawa`` (12), ``labintatlo`` (13),
+  ``labingapat`` (14), ``labinlima`` (15), ``labinganim`` (16),
+  ``labimpito`` (17), ``labingwalo`` (18), ``labinsiyam`` (19).
+* **Decades (20-90)** — base + ``-pu`` / ``-mpu`` / ``na pu``
+  with sandhi: ``dalawampu`` (20), ``tatlumpu`` (30),
+  ``apatnapu`` (40), ``limampu`` (50), ``animnapu`` (60),
+  ``pitumpu`` (70), ``walumpu`` (80), ``siyamnapu`` (90).
+* **Hundreds and thousands**: ``sandaan`` (100), ``sanlibo``
+  (1000).
+
+All carry ``CARDINAL: "YES"``, ``CARDINAL_VALUE`` (the integer
+as a string, e.g., ``"11"``, ``"100"``), and ``NUM: PL`` (no
+compound is singular).
+
+### Why hand-authored, not productive morphology
+
+The plan (§11.1 Group A item 3) calls for "either a small
+``num_compound`` morph class plus sandhi ops, or a hand-authored
+lex of high-frequency forms (likely both — productive paradigm
+for the systematic part, lex for the irregulars)." This commit
+takes the hand-authored path because:
+
+* The high-frequency compounds (11-19, 20, 30, 40, 50, 60, 70,
+  80, 90, 100, 1000) cover the bulk of real-world usage in
+  prices, ages, dates, recipe quantities, and clock times.
+* The productive morphology has irregular sandhi (``-mpu``
+  after vowel-final 1-9 → ``dalawampu`` from ``dalawa``;
+  ``na pu`` after consonant-final 4 / 6 / 9 → ``apatnapu``,
+  ``animnapu``, ``siyamnapu``) and an irregular vowel mutation
+  (``tatlo`` → ``tatlumpu``, ``pito`` → ``pitumpu``, ``walo``
+  → ``walumpu``). Encoding these productively requires a small
+  morph class and sandhi rules — useful but not required for
+  v1 reference-grammar coverage.
+* Higher compound numerals (101-999, 1001-9999, etc.) require
+  NUM coordination (``isang daan at dalawampu`` 120;
+  ``apat na pu`t lima`` 45 with the bound ``'t``) which is
+  deferred to the Phase 5k coordination work.
+
+### Why no grammar change
+
+Same reason as Commit 2: the cardinal-NP-modifier rules from
+Commit 1 are non-conflict-matched on ``NUM[CARDINAL=YES]`` and
+``PART[LINK=NA|NG]``, so any new lex with that signature fires
+unchanged. The ``disambiguate_homophone_clitics`` NUM-CARDINAL
+branch likewise fires for compounds — the consonant-final
+compounds (``labingapat``, ``labinganim``, ``labinsiyam``,
+``sandaan``) all use the standalone ``na`` linker and benefit
+from the same disambiguation lift.
+
+### Orthography choice
+
+Single-token spellings throughout (``labingisa`` not
+``labing-isa``; ``apatnapu`` not ``apat na pu``; ``sandaan``
+not ``sang daan``). All three families are attested in modern
+Tagalog, but the single-token form is what the existing
+tokenizer yields without modification:
+
+* Hyphenated forms (``labing-isa``) tokenize as 3 tokens
+  (``labing``, ``-``, ``isa``) — would need a tokenizer
+  pre-pass to merge.
+* Multi-word forms (``apat na pu``) tokenize as 3 tokens
+  and would need NUM-internal grammar rules to compose
+  (with productive value calculation: 4 × 10 = 40).
+
+Both are interesting follow-ons but neither is needed to cover
+high-frequency v1 compound numerals.
+
+### Out of scope for this commit
+
+* Productive ``labing-`` and ``-pu`` morph paradigms (would
+  cover any base 1-9 systematically; useful for testing /
+  generation but redundant with the hand-authored lex for
+  parsing).
+* Hyphenated and multi-word compound variants
+  (``labing-isa``, ``apat na pu``).
+* Higher compound numerals (101-999, 1001+) requiring
+  coordination — deferred to Phase 5k cardinal-coordination
+  follow-on.
+* Group A item 4 (predicative cardinals) — next commit;
+  consumes both simple and compound cardinals via the
+  N-level rule already in place.
+
+## Phase 5f Commit 4: predicative cardinal
+
+**Date:** 2026-05-03. **Status:** active. One new S rule;
+no lex changes (cardinals from Commits 1-3 are reused). Refs:
+plan §11.1 Group A item 4; Phase 5e Commit 26 (parang —
+parallel predicative S rule shape); Phase 5d Commit 1
+(evidential parang).
+
+### Grammar change
+
+```
+S → NUM[CARDINAL=YES] NP[CASE=NOM]
+Equations:
+  (↑ PRED) = 'CARDINAL <SUBJ>'
+  (↑ SUBJ) = ↓2
+  (↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE
+  (↑ NUM) = ↓1 NUM
+```
+
+The cardinal serves as the matrix predicate; the NOM-NP is the
+pivot. F-structure shape:
+
+* PRED            = 'CARDINAL <SUBJ>' (literal)
+* CARDINAL_VALUE  = the count from the cardinal
+* NUM             = SG (only ``isa`` / ``uno``) or PL (rest)
+* SUBJ            = the NOM-NP pivot
+
+The PRED template ``CARDINAL <SUBJ>`` parallels the literal
+PRED conventions of the existing predicative S rules
+(``LIKE <SUBJ, OBJ>`` for comparative parang; ``SEEM <SUBJ>``
+for evidential parang). No VOICE / ASPECT / MOOD: a numeric
+predicate isn't a verb and doesn't carry verbal morphology.
+
+### Why NUM-headed S, not NUM-as-V
+
+The plan (§11.1 Group A item 4) offers two analytical paths:
+"a NUM-as-V analysis or a small NUM-headed S rule." This
+commit takes the **NUM-headed S** path because:
+
+* Cardinals are not verbs — they don't inflect for voice,
+  aspect, or mood. Forcing them through a VERB-typed analysis
+  would require either duplicate VERB lex entries (clunky) or
+  a special VOICE / ASPECT / MOOD = NULL discipline (complex
+  and a mismatch with the existing verbal pipeline).
+* A single new S rule is the minimal change. It composes
+  trivially with the matrix negation rule (``Hindi tatlo ang
+  anak ko``) and the verbless clitic-placement pass (Phase 5e
+  Commit 22 — NUM qualifies as a content-word anchor for
+  PRON-clitic SUBJ pivots like ``sila``, ``kami``, ``tayo``).
+* The single rule consumes simple (Commit 1), Spanish-borrowed
+  (Commit 2), and compound (Commit 3) cardinals — all match
+  ``NUM[CARDINAL=YES]``.
+
+### Composition
+
+Tested compositions:
+
+* PRON-clitic SUBJ: ``Dalawa sila``, ``Lima kami``, ``Tatlo
+  tayo``. The verbless clitic pass (Phase 5e Commit 22) treats
+  NUM as the content anchor; the PRON-clitic falls into the
+  post-anchor cluster (which is its surface position anyway —
+  no movement).
+* Full NOM-NP SUBJ: ``Tatlo ang anak ko`` (with possessor),
+  ``Lima ang isda``, ``Isa ang bata`` (NUM=SG case).
+* All cardinal classes: simple (``Lima ang isda``), Spanish
+  (``Dos sila``, ``Singko ang isda``), compound (``Dalawampu
+  ang bata``, ``Sandaan ang aklat``, ``Sanlibo ang isda``).
+* NEG: ``Hindi tatlo ang anak ko`` "I don't have three
+  children" — the Phase 4 §7.4 matrix-NEG rule prepends
+  ``hindi`` to any matrix S; predicative-cardinal S is no
+  exception.
+
+### Negative fixtures
+
+Per Phase 5f §11.2 negative-fixture convention:
+
+* ``*Tatlo.`` standalone — predicative cardinal needs a SUBJ;
+  the rule requires NP[CASE=NOM] as the second daughter.
+* ``*Tatlo ng anak ko.`` — wrong case. Predicative cardinal
+  requires NOM-NP, not GEN-NP. The rule's second daughter
+  pattern is ``NP[CASE=NOM]``, not ``NP[CASE=GEN]``.
+
+## Phase 5f Commit 5: multiplicative ratios
+
+**Date:** 2026-05-03. **Status:** active. Lex (NOUN + ADV)
+plus one new grammar rule. Refs: plan §11.1 Group A item 5;
+S&O 1972 §4.5; Phase 5e Commit 3 (AdvP deferral that this
+commit partially closes).
+
+### Lex change
+
+* **Frequency NOUNs** (``data/tgl/roots.yaml``):
+  ``beses`` and ``ulit`` (both with ``SEM_CLASS: FREQUENCY``;
+  bidirectional synonyms). Used in periphrastic frequency
+  expressions (``dalawang beses`` "twice", ``tatlong ulit``
+  "three times") via the existing Phase 5f Commit 1
+  cardinal-NP-modifier rule on the head N.
+* **Multiplier NOUNs**: ``doble`` and ``triple`` (both with
+  ``SEM_CLASS: MULTIPLIER``). Spanish-borrowed; lex-only —
+  surface in technical / commercial register.
+* **maka-cardinal ADVs** (``data/tgl/particles.yaml``): 10
+  hand-authored entries (``makaisa`` ... ``makasampu``) with
+  ``pos: ADV``, ``ADV_TYPE: FREQUENCY``, and
+  ``MULTIPLIER_VALUE: "<N>"``. Same hand-authored-lex strategy
+  as the compound cardinals from Commit 3 — productive
+  morphology (``maka-`` + cardinal stem) is real but a
+  hand-authored inventory of high-frequency forms is
+  sufficient for v1. The ``makaisa`` form is grammatically
+  well-formed but semantically rare; ``minsan`` "once /
+  sometimes" or the periphrastic ``nang isang beses`` are
+  more common in modern usage.
+
+### Grammar change
+
+One new rule (``src/tgllfg/cfg/grammar.py``):
+
+```
+S → S AdvP
+Equations:
+  (↑) = ↓1                          # share matrix with inner S
+  ↓2 ∈ (↑ ADJUNCT)                  # AdvP joins ADJUNCT set
+  (↓2 ADV_TYPE) =c 'FREQUENCY'      # constraining: FREQUENCY only
+```
+
+Closes part of the Phase 5e Commit 3 deferral on bare AdvP
+placement — scoped here to ``ADV_TYPE=FREQUENCY`` only via the
+constraining equation. The deferral note explicitly cited
+"interactions with the Wackernagel cluster and quantifier-
+float" as the reason for keeping bare placement deferred;
+FREQUENCY adverbs don't trigger those interactions (they're
+clausal modifiers, not noun-phrase or verb-phrase scoped),
+so this scoped lift is safe. The TIME / SPATIAL / MANNER
+deferral remains in force — those need separate analytical
+work.
+
+### Periphrastic ``[CARDINAL]ng beses`` — partially supported
+
+The lex side (``beses`` / ``ulit`` as NOUN with
+SEM_CLASS=FREQUENCY) is in place, and ``dalawang beses`` /
+``tatlong ulit`` parse correctly as cardinal-modified NPs via
+the Phase 5f Commit 1 cardinal-NP-modifier rule. **But** the
+adverbial-frequency reading of bare ``dalawang beses``
+(``Tumakbo ako dalawang beses`` "I ran twice") is not yet
+supported as a clause-final ADJUNCT. The N parses fine
+(cardinal-modified NOUN); what's missing is a rule attaching
+a SEM_CLASS=FREQUENCY N to the matrix S as ADJUNCT, parallel
+to the maka- ADV rule landed in this commit.
+
+The natural Tagalog forms for "X did Y N times" are:
+
+* ``Tumakbo ako dalawang beses.`` — bare frequency-N
+  clause-final.
+* ``Dalawang beses akong tumakbo.`` — frequency-N
+  topicalized (composes with existing ay-fronting machinery
+  once the bare-frequency-N is recognised).
+
+The form ``Tumakbo ako ng dalawang beses`` (with the
+case-marker ``ng``) is marginal / dispreferred — the
+``ng``-marked reading currently parses as a possessor on the
+SUBJ pronoun, which is the structurally available analysis but
+not the intended frequency reading.
+
+**Important:** ``nang [CARDINAL] beses`` is NOT the standard
+periphrastic frequency form. The narrative idiom
+``Nang isang beses, pumunta kami sa Maynila`` "Once, we went
+to Manila" exists and survives in storytelling register, but
+it's a temporal-framing construction (parallel to ``Nang araw
+na iyon`` "On that day"), not a productive frequency adverbial:
+``*nang dalawang beses``, ``*nang tatlong beses`` are
+unnatural. Encoding ``nang isang beses`` properly requires a
+narrow lexical idiom, not a generative ``nang + NUM + beses``
+rule (which would overgenerate). Deferred to a follow-on
+commit.
+
+The proper bare-frequency-N adjunct support is a small
+follow-on that needs:
+
+1. SEM_CLASS percolation through the cardinal-NP-modifier
+   rules so cardinal-modified ``beses`` carries
+   ``SEM_CLASS=FREQUENCY`` to the matrix N (currently only
+   PRED + LEMMA + NUM + CARDINAL_VALUE percolate; adding
+   SEM_CLASS hits the empty-f-structure issue documented in
+   Commit 1's two-track design).
+2. A new rule ``S → S N`` constraining on
+   ``(↓2 SEM_CLASS) =c 'FREQUENCY'``, parallel to the maka-
+   ADV rule in this commit.
+
+Both deferred to a follow-on commit. (S&O 1972 §4.5; user-
+provided linguistic note 2026-05-03.)
+
+### Composition
+
+* maka- frequency adverb in clause-final position:
+  ``Kumain ako makalawa``, ``Tumakbo siya makasampu``.
+* maka- with full NOM-NP SUBJ: ``Kumain ang bata makatlo``.
+* maka- with NEG: ``Hindi tumakbo si Juan makalawa``.
+* maka- recursive (S → S AdvP fires on its own output):
+  ``Tumakbo ako makalawa makatlo`` parses (semantically
+  odd but syntactically allowed; not blocked).
+
+### Negative fixtures
+
+Per Phase 5f §11.2 negative-fixture convention:
+
+* ``*Tumakbo ako kahapon.`` — TIME adverbs (kahapon —
+  ``ADV_TYPE=TIME``) still do NOT compose as bare clause-final
+  adjuncts. The constraining equation
+  ``(↓2 ADV_TYPE) =c 'FREQUENCY'`` restricts the new rule to
+  FREQUENCY only; the TIME deferral stays.
+
+### Out of scope for this commit
+
+* Bare-frequency-N as clause-final ADJUNCT
+  (``Tumakbo ako dalawang beses``) — see "Periphrastic" above.
+* Topicalized frequency-N (``Dalawang beses akong tumakbo``)
+  — depends on the bare-frequency-N rule landing first.
+* The narrative idiom ``Nang isang beses, ...`` — narrow
+  lexical idiom, separate follow-on; do NOT generalize to
+  ``nang + NUM + beses``.
+* Pre-verbal ``maka-`` with linker (``makalawang nakakain``):
+  the cited S&O example uses pre-verbal placement with
+  linker, but clause-final placement is the more common and
+  simpler case; pre-verbal is deferred.
+* Bare AdvP attachment for non-FREQUENCY adverb types — kept
+  deferred per the Phase 5e Commit 3 note.
+* Productive ``maka-`` morphology paradigm — the hand-authored
+  10-entry inventory covers v1 needs; productive treatment
+  is a follow-on if needed.
+* Spanish-borrowed ``doble`` / ``triple`` adverbial use —
+  surface in technical register (``Doble ang singil`` "the
+  charge is doubled") but the predicative reading isn't
+  exercised here. Lex-only addition for now.
+
+## Phase 5f Commit 6: decimals and percentages
+
+**Date:** 2026-05-03. **Status:** active. Lex (``punto``,
+``porsiyento``) plus one new grammar rule (decimal NUM) plus
+a small parser fix. Refs: plan §11.1 Group A items 6 + 7;
+R&G 1981 dialogue corpus; Phase 5f Commits 1, 4 (rule
+infrastructure consumed unchanged).
+
+### Lex change
+
+* ``punto`` (``data/tgl/particles.yaml``): PART with
+  ``DECIMAL_SEP: "YES"``. Spanish-borrowed decimal separator;
+  joins integer and fractional cardinals.
+* ``porsiyento`` (``data/tgl/roots.yaml``): NOUN with
+  ``SEM_CLASS: PERCENTAGE``. Spanish-borrowed; Tagalog has no
+  native percentage word. Used as the head N of cardinal-
+  modified percentage NPs.
+
+### Grammar change (decimal)
+
+```
+NUM[CARDINAL=YES] →
+    NUM[CARDINAL=YES] PART[DECIMAL_SEP=YES] NUM[CARDINAL=YES]
+Equations:
+  (↑) = ↓1                                    # share with integer part
+  (↑ FRACTIONAL_VALUE) = ↓3 CARDINAL_VALUE   # record fractional
+  (↑ DECIMAL) = 'YES'                         # mark as decimal
+  (↓2 DECIMAL_SEP) =c 'YES'                   # constraining
+```
+
+The output NUM[CARDINAL=YES] fits the existing predicative-
+cardinal rule (Commit 4) and (in principle) the cardinal-NP-
+modifier rules (Commit 1) without modification.
+
+The CARDINAL_VALUE on the matrix is the integer part only —
+the LFG equation language has no string-concatenation
+operator to construct "2.5" from "2" + "." + "5". Downstream
+consumers that need the full numeric value combine
+``CARDINAL_VALUE`` (integer), ``FRACTIONAL_VALUE``, and the
+``DECIMAL=YES`` marker.
+
+The constraining equation ``(↓2 DECIMAL_SEP) =c 'YES'`` is
+critical: without it, the non-conflict pattern matcher would
+accept any PART (including the linker particles ``-ng`` /
+``na``) as the middle daughter — because PART[DECIMAL_SEP=YES]
+and PART[LINK=NG] don't share any feature key, so non-conflict
+"matching" succeeds. With the constraint, the matcher accepts
+the pattern but f-unification rejects parses where the PART
+isn't actually ``punto``. Same pattern as the comparative-
+parang vs evidential-tila distinction (Phase 5e Commit 26)
+and the huwag MOOD constraint (Phase 5e Commit 25).
+
+### Parser fix (side change)
+
+Adding the decimal rule with ``NUM[CARDINAL=YES]`` as LHS made
+``NUM`` a non-terminal. The Earley parser's ``_step``
+previously dispatched binary — predict for non-terminals, scan
+for preterminals. Once NUM became a non-terminal, lex NUM
+tokens (``dos``, ``isa``, ``dalawa``, etc.) were never scanned
+in NUM-expecting positions, breaking all cardinal use.
+
+The fix (``src/tgllfg/parse/earley.py``): always scan in
+addition to predicting. A category can legitimately be both a
+non-terminal (rule LHS) and a preterminal (lex POS); both
+paths must be explored. For purely non-terminal categories
+(``S``, ``NP``, ``PP``, ``AdvP``, ...) the scan call is a
+no-op (no matching lex tokens). For ``N``, similarly — it's a
+non-terminal (``N → NOUN`` rule) but no lex tokens have
+``pos: N`` (they have ``pos: NOUN``), so scan is a no-op
+there too. Only ``NUM`` (and any future category that's
+both) actually gets dual treatment.
+
+The fix is small (one removed ``else`` clause + comment) but
+load-bearing for the architectural shape of the grammar.
+
+### No grammar change (percentages)
+
+``porsiyento`` is a regular NOUN; cardinal-modified percentage
+NPs (``dalawampung porsiyento`` "20%", ``sandaan na
+porsiyento`` "100%") parse via the existing Phase 5f Commit 1
+cardinal-NP-modifier rule without modification. Predicative
+percentage use (``Dalawampung porsiyento ang interes``
+"the interest is 20%") needs an equational sentence rule
+(``S → N NP[CASE=NOM]`` or similar) and is deferred — out of
+scope for Group A. The fixtures here exercise the cardinal-
+modified-NP-as-OBJ path.
+
+### Out of scope for this commit
+
+* Decimal as NP-modifier (``dos punto singkong libro`` "2.5
+  books") — semantically odd and likely not corpus-attested,
+  but structurally would work via the existing cardinal-NP-
+  modifier rule once SEM_CLASS percolation lands. Not
+  exercised here.
+* Equational sentences for predicative percentages — needs a
+  general N-as-predicate rule; deferred to a future commit.
+* Symbolic decimal forms (``2.5``, ``10.75``) — tokenizer
+  expansion track; symbolic numerals are §18 out-of-scope.
+* Three-term decimals (``dos punto singko punto otso``) —
+  not standard usage; rule recursion would technically allow
+  it but no test fixtures verify it.
+
+### Side change (Commit 4): `synonyms` lex field + ``aklat`` noun
+
+This commit adds a ``synonyms: list[str]`` field to the ``Root``
+dataclass and YAML loader so synonymous lex citations can be
+recorded as data (not just comments). Motivated by adding
+``aklat`` "book" to ``data/tgl/roots.yaml`` as the canonical
+``Sandaan ang aklat`` example (Ramos 1971: "aklát n. book.
+--syn. libró."). Both ``aklat`` and the existing ``libro``
+entries get bidirectional ``synonyms`` lists. The field is
+backward-compatible (defaults to an empty list) and currently
+unused by the parser — it's recorded for downstream tools
+(dictionary export, cross-reference, future ranker semantic
+similarity).
+
+### Out of scope for this commit
+
+* Cardinal as predicate over a clausal SUBJ
+  (``Tatlo na siyang anak ang nakain ng isda`` "the three of
+  her children who ate fish are gone") — would need
+  embedding-rule extension; not standard usage.
+* Predicative-cardinal in subordinate clauses (``Sinabi niya
+  na tatlo ang anak ko``) — the linker-XCOMP / linker-COMP
+  machinery from Phase 5c §7.6 should compose; not explicitly
+  tested here but no expected change to that machinery.
+* Number-agreement enforcement (``Tatlo ako`` would be
+  semantically odd — "I am three" — but currently parses
+  without any agreement check). The matrix NUM (from cardinal)
+  and the SUBJ NUM live on different f-structures with no
+  unifying equation. Adding agreement is a follow-on; out of
+  scope for this commit.
+
+
+
+
+

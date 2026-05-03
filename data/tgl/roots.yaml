@@ -1459,9 +1459,58 @@
 - citation: libro
   pos: NOUN
   gloss: book
+  synonyms: [aklat]
+- citation: aklat
+  pos: NOUN
+  gloss: book
+  # Native Tagalog form. Spanish-borrowed ``libro`` is an
+  # interchangeable synonym (Ramos 1971 dictionary entry: "aklát n.
+  # book. --syn. libró."). Both forms surface in modern usage; the
+  # native form is more frequent in literary register, the borrowed
+  # form in colloquial / technical register.
+  synonyms: [libro]
 - citation: papel
   pos: NOUN
   gloss: paper
+
+# === Phase 5f Commit 5: frequency / multiplier nouns =====================
+# Used in periphrastic multiplicative ratios (``dalawang beses``
+# "twice", ``tatlong ulit`` "three times") via the existing Phase 5f
+# Commit 1 cardinal-NP-modifier rules. SEM_CLASS=FREQUENCY marks
+# them for the LMT classifier. (S&O 1972 §4.5.)
+- citation: beses
+  pos: NOUN
+  gloss: times (occurrences)
+  feats: {SEM_CLASS: FREQUENCY}
+  synonyms: [ulit]
+- citation: ulit
+  pos: NOUN
+  gloss: times (repetitions)
+  feats: {SEM_CLASS: FREQUENCY}
+  synonyms: [beses]
+# Spanish-borrowed multipliers — surface in technical / commercial
+# register (``doble ang singil`` "the charge is doubled"). Lex-only
+# in this commit; treated as NOUN with SEM_CLASS=MULTIPLIER so the
+# existing NP machinery handles their distribution.
+- citation: doble
+  pos: NOUN
+  gloss: double
+  feats: {SEM_CLASS: MULTIPLIER}
+- citation: triple
+  pos: NOUN
+  gloss: triple
+  feats: {SEM_CLASS: MULTIPLIER}
+
+# === Phase 5f Commit 6: percentage NOUN ==================================
+# Used in percentage expressions (``dalawampung porsiyento`` "20%",
+# ``singkuwentang porsiyento`` "50%") via the existing Phase 5f
+# Commit 1 cardinal-NP-modifier rule. SEM_CLASS=PERCENTAGE marks
+# it for the LMT classifier and downstream consumers. (R&G 1981
+# dialogue corpus, prices.)
+- citation: porsiyento
+  pos: NOUN
+  gloss: percent
+  feats: {SEM_CLASS: PERCENTAGE}
 - citation: lapis
   pos: NOUN
   gloss: pencil

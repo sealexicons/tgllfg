@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 961 | 99.4% |
-| **fragment** |   4 |  0.4% |
-| **fail**     |   2 |  0.2% |
-| **TOTAL**    | 967 |       |
+| **parse**    | 1048 | 99.4% |
+| **fragment** |    4 |  0.4% |
+| **fail**     |    2 |  0.2% |
+| **TOTAL**    | 1054 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -36,6 +36,13 @@ out-of-scope items documented below.
 | demonstrative      |    44 |        0 |    0 |    44 | 100% |
 | **rg** (Ramos & Goulet 1981) |    20 |        0 |    0 |    20 | 100% |
 | possessive         |    18 |        0 |    0 |    18 | 100% |
+| cardinal           |    17 |        0 |    0 |    17 | 100% |
+| cardinal-spanish   |    13 |        0 |    0 |    13 | 100% |
+| cardinal-compound  |    24 |        0 |    0 |    24 | 100% |
+| cardinal-predicative |  11 |        0 |    0 |    11 | 100% |
+| cardinal-multiplicative |  12 |     0 |    0 |    12 | 100% |
+| cardinal-decimal   |     7 |        0 |    0 |     7 | 100% |
+| cardinal-percent   |     3 |        0 |    0 |     3 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -186,6 +193,130 @@ reading (Phase 5d Commit 1). Lex: ``parang`` carries an extra
 CTRL_CLASS=RAISING_BARE] N NP[CASE=NOM]`` builds PRED ``LIKE
 <SUBJ, OBJ>`` with SUBJ = comparee (ang-NP), OBJ = standard
 (bare N).
+
+### cardinal (17 sentences, 100%)
+
+Phase 5f Commit 1: native cardinal NP-internal modifier (1-10).
+Cardinals (``isa``, ``dalawa``, ``tatlo``, ``apat``, ``lima``,
+``anim``, ``pito``, ``walo``, ``siyam``, ``sampu``) attach to
+the head N via the linker — bound ``-ng`` after vowel-final
+cardinals, standalone ``na`` after consonant-final ``apat`` /
+``anim`` / ``siyam``. Two-track grammar: NP-level rules (3
+cases × 2 linker variants) handle case-marked NPs (``ang
+tatlong libro``, ``ng dalawang isda``, ``sa apat na bata``)
+with cardinal NUM and CARDINAL_VALUE projected to the matrix
+NP; an N-level companion rule handles bare cardinal-N for the
+parang-comparative standard (``parang isang aso``) and future
+predicative-cardinal contexts (Group A item 4). Chained
+cardinals (``*tatlong dalawang bata``) blocked by
+``¬ (↓4 CARDINAL_VALUE)`` constraint. The standalone ``na``
+linker after NUM[CARDINAL=YES] is disambiguated as the linker
+(not the ALREADY enclitic) by a new branch in
+``disambiguate_homophone_clitics`` — parallel to the Phase 5e
+Commit 16 DEM-DET/DEM-ADP exception.
+
+### cardinal-spanish (13 sentences, 100%)
+
+Phase 5f Commit 2: Spanish-borrowed cardinals 1-10 (``uno``,
+``dos``, ``tres``, ``kuwatro``, ``singko``, ``sais``,
+``siyete``, ``otso``, ``nuwebe``, ``dies``). Lex-only addition
+— same syntactic distribution as the native cardinals, so the
+Phase 5f Commit 1 cardinal-NP-modifier rules fire on these
+unchanged. The borrowing dominates in prices, ages, telephone
+numbers, and clock times. Linker variant follows the borrowed
+surface form: vowel-final ``uno`` / ``kuwatro`` / ``singko`` /
+``siyete`` / ``otso`` / ``nuwebe`` take the bound ``-ng``;
+consonant-final ``dos`` / ``tres`` / ``sais`` / ``dies`` take
+the standalone ``na``. (S&O 1972 §4; R&G 1981 dialogue corpus.)
+
+### cardinal-compound (24 sentences, 100%)
+
+Phase 5f Commit 3: hand-authored compound cardinals 11-1000.
+Teens 11-19 (``labingisa`` ... ``labinsiyam``), decades 20-90
+(``dalawampu``, ``tatlumpu``, ``apatnapu``, ..., ``siyamnapu``),
+plus 100 (``sandaan``) and 1000 (``sanlibo``). Lex-only single-
+token forms — same syntactic distribution as simple cardinals,
+so the Phase 5f Commit 1 rules fire unchanged. The productive
+morphology (``labing-`` prefix on 1-9 for the teens; ``-pu``
+suffix with sandhi for the decades) is real, but for v1
+reference-grammar coverage the hand-authored lex of high-
+frequency forms is sufficient. Coordinated higher numerals
+(``apat na pu`t lima`` 45) need the bound ``'t`` clitic split
+and NUM coordination — out of scope here, deferred to the Phase
+5k coordination work and a follow-on cardinal-coordination
+commit. Multi-word and hyphenated orthographic variants
+(``apat na pu``, ``labing-isa``) likewise deferred.
+
+### cardinal-predicative (11 sentences, 100%)
+
+Phase 5f Commit 4: predicative cardinal — the cardinal serves
+as the matrix predicate with a NOM-NP pivot (``Dalawa sila``
+"There are two of them"; ``Tatlo ang anak ko`` "I have three
+children"; ``Sandaan ang bahay`` "A hundred houses"). One new
+S rule: ``S → NUM[CARDINAL=YES] NP[CASE=NOM]`` with
+``PRED='CARDINAL <SUBJ>'``, CARDINAL_VALUE projected from the
+cardinal, and SUBJ from the NOM-NP. Structurally parallel to
+the Phase 5d Commit 1 evidential parang and Phase 5e Commit 26
+comparative parang rules. The single rule fires on simple
+(Commit 1), Spanish-borrowed (Commit 2), and compound
+(Commit 3) cardinals alike. Composes with negation
+(``Hindi tatlo ang anak ko``) via the existing Phase 4 §7.4
+matrix NEG rule.
+
+### cardinal-multiplicative (12 sentences, 100%)
+
+Phase 5f Commit 5: multiplicative ratios. Native ``maka-`` +
+cardinal stem yields a frequency adverb (``makalawa`` "twice",
+``makatlo`` "thrice", ``makaapat`` "four times"); 10 lex
+entries (``makaisa`` ... ``makasampu``) as ADV with
+``ADV_TYPE=FREQUENCY`` and ``MULTIPLIER_VALUE``. One new
+grammar rule ``S → S AdvP`` with constraining equation
+``(↓2 ADV_TYPE) =c 'FREQUENCY'`` attaches FREQUENCY adverbs as
+clause-final ADJUNCTs (closing part of the Phase 5e Commit 3
+deferral on bare AdvP placement, scoped to FREQUENCY only).
+Periphrastic ``[CARDINAL]ng beses`` / ``[CARDINAL]ng ulit`` is
+in lex (``beses`` / ``ulit`` NOUN with SEM_CLASS=FREQUENCY)
+but the adverbial reading is deferred. Spanish-borrowed
+``doble`` / ``triple`` lex-only.
+
+### cardinal-decimal (7 sentences, 100%)
+
+Phase 5f Commit 6: decimals. Spanish-borrowed ``punto``
+(``data/tgl/particles.yaml`` with ``DECIMAL_SEP=YES``) joins
+integer and fractional cardinals (``dos punto singko`` "2.5",
+``tatlo punto lima`` "3.5"). One new grammar rule
+``NUM[CARDINAL=YES] → NUM[CARDINAL=YES] PART[DECIMAL_SEP=YES]
+NUM[CARDINAL=YES]`` produces a decimal NUM that fits the
+existing predicative-cardinal rule (Commit 4) unchanged. The
+constraining equation ``(↓2 DECIMAL_SEP) =c 'YES'`` enforces
+that the middle PART is actually ``punto`` and not a stray
+linker (``-ng`` / ``na``) that would match by non-conflict.
+The decimal output's ``CARDINAL_VALUE`` is the integer part
+only (the equation language has no string concatenation to
+construct "2.5" literally); ``FRACTIONAL_VALUE`` and
+``DECIMAL=YES`` are recorded on the cardinal NUM. Fixtures
+exercise simple, compound, and Spanish integer parts.
+
+Side: parser fix in ``src/tgllfg/parse/earley.py`` —
+``_step`` now ALWAYS scans (in addition to predicting) when
+the expected category is a non-terminal. A category can
+legitimately be both a non-terminal (rule LHS) and a preterminal
+(lex POS) — ``NUM`` here being the motivating case. Without
+this fix, lex NUM tokens would never be scanned once any rule
+has ``NUM[CARDINAL=YES]`` as LHS.
+
+### cardinal-percent (3 sentences, 100%)
+
+Phase 5f Commit 6: percentages. Spanish-borrowed ``porsiyento``
+"percent" (``data/tgl/roots.yaml`` with
+``SEM_CLASS=PERCENTAGE``) is a NOUN; the existing Phase 5f
+Commit 1 cardinal-NP-modifier rule fires on
+``dalawampung porsiyento`` "20%", ``sandaan na porsiyento``
+"100%", ``singkong porsiyento`` "5%" without any new grammar.
+Predicative percentage use (``Dalawampung porsiyento ang
+interes`` "the interest is 20%") needs an equational sentence
+rule (S → N NP[CASE=NOM]) and is deferred — the fixtures here
+exercise the cardinal-modified-NP-as-OBJ path only.
 
 ### classic (12 sentences, 100%)
 

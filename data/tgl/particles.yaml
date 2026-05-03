@@ -283,3 +283,244 @@
 - surface: dahil
   pos: PREP
   feats: {PREP_TYPE: REASON}
+
+# === Phase 5f Commit 1: native cardinals 1-10 ============================
+# Cardinals as NP-internal modifiers via the linker
+# (``isang bata`` "one child", ``tatlong libro`` "three books").
+# CARDINAL=YES gates the cardinal-NP-modifier rule (see
+# src/tgllfg/cfg/grammar.py Phase 5f Commit 1). CARDINAL_VALUE is
+# quoted so PyYAML returns a string — the lex-equation pipeline
+# filters non-string atomic values (see Phase 5e Commit 16/26
+# YAML-boolean-trap memo), so unquoted integers would be dropped
+# silently. NUM is SG for `isa` and PL for 2-10 (the cardinal
+# contributes the matrix N's number).
+- surface: isa
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "1", NUM: SG}
+- surface: dalawa
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "2", NUM: PL}
+- surface: tatlo
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "3", NUM: PL}
+- surface: apat
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "4", NUM: PL}
+- surface: lima
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "5", NUM: PL}
+- surface: anim
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "6", NUM: PL}
+- surface: pito
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "7", NUM: PL}
+- surface: walo
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "8", NUM: PL}
+- surface: siyam
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "9", NUM: PL}
+- surface: sampu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "10", NUM: PL}
+
+# === Phase 5f Commit 2: Spanish-borrowed cardinals 1-10 ==================
+# Same syntactic distribution as the native cardinals — no grammar
+# changes needed; the Phase 5f Commit 1 cardinal-NP-modifier rules
+# (NP-level + N-level) fire on these once the lex is in place.
+# Spanish cardinals dominate in prices, ages, telephone numbers,
+# and clock times; native forms dominate in counting and ritual /
+# ceremonial register. (S&O 1972 §4; R&G 1981 dialogue corpus.)
+#
+# Linker variant follows the borrowed surface form, not the original
+# Spanish: vowel-final forms (uno, kuwatro, singko, siyete, otso,
+# nuwebe) take the bound ``-ng`` linker; consonant-final forms (dos,
+# tres, sais, dies) take the standalone ``na`` linker.
+- surface: uno
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "1", NUM: SG}
+- surface: dos
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "2", NUM: PL}
+- surface: tres
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "3", NUM: PL}
+- surface: kuwatro
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "4", NUM: PL}
+- surface: singko
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "5", NUM: PL}
+- surface: sais
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "6", NUM: PL}
+- surface: siyete
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "7", NUM: PL}
+- surface: otso
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "8", NUM: PL}
+- surface: nuwebe
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "9", NUM: PL}
+- surface: dies
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "10", NUM: PL}
+
+# === Phase 5f Commit 3: compound cardinals 11-1000 =======================
+# Hand-authored single-token lex for the high-frequency compound
+# cardinals: teens (11-19), decades (20-90), 100, 1000. Same
+# syntactic distribution as the simple cardinals from Commits 1-2;
+# the cardinal-NP-modifier rules fire on these unchanged.
+#
+# The productive morphology (labing- prefix on the 1-9 base for
+# the teens; -pu suffix with sandhi for the decades; sandaan /
+# sanlibo for hundreds / thousands) is real, but for v1 reference-
+# grammar coverage the hand-authored lex is sufficient. A
+# productive paradigm with sandhi rules is a deferred follow-on
+# (plan §11.1 Group A item 3 — "likely both"). See plan §18 if
+# productive treatment becomes needed.
+#
+# Coordinated higher numerals (``apat na pu`t lima`` 45,
+# ``isang daan at dalawampu`` 120) need the bound ``'t`` clitic
+# split and NUM coordination — out of scope here, deferred to
+# the Phase 5k coordination work which already plans the ``'t``
+# pass (and to a follow-on cardinal-coordination commit).
+#
+# Orthography: this commit uses single-token spellings throughout
+# (``labingisa`` not ``labing-isa``; ``apatnapu`` not ``apat na pu``).
+# Both hyphenated and three-word variants are attested in modern
+# Tagalog; the single-token form is what the existing tokenizer
+# yields without modification. Multi-word variants would need
+# either a tokenizer pre-pass or NUM-internal grammar rules
+# (see deferred-items list above).
+
+# --- Teens 11-19 (labing- + base) ----------------------------------------
+- surface: labingisa
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "11", NUM: PL}
+- surface: labindalawa
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "12", NUM: PL}
+- surface: labintatlo
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "13", NUM: PL}
+- surface: labingapat
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "14", NUM: PL}
+- surface: labinlima
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "15", NUM: PL}
+- surface: labinganim
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "16", NUM: PL}
+- surface: labimpito
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "17", NUM: PL}
+- surface: labingwalo
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "18", NUM: PL}
+- surface: labinsiyam
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "19", NUM: PL}
+
+# --- Decades 20-90 (base + -pu / -mpu / -na pu sandhi) -------------------
+- surface: dalawampu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "20", NUM: PL}
+- surface: tatlumpu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "30", NUM: PL}
+- surface: apatnapu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "40", NUM: PL}
+- surface: limampu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "50", NUM: PL}
+- surface: animnapu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "60", NUM: PL}
+- surface: pitumpu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "70", NUM: PL}
+- surface: walumpu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "80", NUM: PL}
+- surface: siyamnapu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "90", NUM: PL}
+
+# --- Hundreds and thousands ----------------------------------------------
+- surface: sandaan
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "100", NUM: PL}
+- surface: sanlibo
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "1000", NUM: PL}
+
+# === Phase 5f Commit 5: maka- multiplicative adverbials 1-10 =============
+# Productive ``maka-`` + cardinal stem yields a frequency / multi-
+# plicative adverb (``makalawa`` "twice", ``makatlo`` "thrice",
+# ``makaapat`` "four times"). Hand-authored lex following the same
+# coverage strategy as the compound cardinals in Commit 3 — the
+# productive maka- + cardinal morphology is real but a hand-authored
+# inventory of high-frequency forms is sufficient for v1.
+#
+# ADV_TYPE=FREQUENCY routes these adverbs through the new
+# Phase 5f Commit 5 sentential-ADJUNCT rule (``S → S AdvP[FREQ]``);
+# MULTIPLIER_VALUE records the count for downstream consumers.
+# The ``makaisa`` form is grammatically well-formed but semantically
+# rare in modern usage — ``minsan`` "once / sometimes" is the more
+# common form for "once". (The narrative idiom ``Nang isang beses``
+# also means "once" but is a temporal-framing construction, not a
+# productive frequency adverbial — ``*nang dalawang beses`` etc. are
+# unnatural.) Included here for paradigm completeness.
+#
+# Periphrastic frequency (``dalawang beses``, ``tatlong ulit``) uses
+# the existing Phase 5f Commit 1 cardinal-NP-modifier rule on the
+# new ``beses`` / ``ulit`` NOUN entries (data/tgl/roots.yaml) — but
+# the adverbial / adjunct attachment of bare ``dalawang beses`` is
+# a deferred follow-on (see analysis-choices.md Phase 5f Commit 5
+# Periphrastic section).
+- surface: makaisa
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "1"}
+- surface: makalawa
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "2"}
+- surface: makatlo
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "3"}
+- surface: makaapat
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "4"}
+- surface: makalima
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "5"}
+- surface: makaanim
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "6"}
+- surface: makapito
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "7"}
+- surface: makawalo
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "8"}
+- surface: makasiyam
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "9"}
+- surface: makasampu
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "10"}
+
+# === Phase 5f Commit 6: decimal separator (Spanish-borrowed) =============
+# ``dos punto singko`` "2.5", ``apat punto lima`` "4.5". The
+# ``punto`` particle joins integer-part and fractional-part
+# cardinals. Tagged ``DECIMAL_SEP=YES`` to gate the new
+# Phase 5f Commit 6 NUM-internal grammar rule
+# (``NUM → NUM PART[DECIMAL_SEP] NUM``); doesn't carry CASE or
+# any other particle features. (R&G 1981 dialogue corpus, prices.)
+- surface: punto
+  pos: PART
+  feats: {DECIMAL_SEP: "YES"}

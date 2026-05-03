@@ -1191,6 +1191,156 @@ def _comparative_corpus() -> list[dict[str, Any]]:
     return out
 
 
+def _cardinal_corpus() -> list[dict[str, Any]]:
+    """Phase 5f Commit 1: native cardinal NP-internal modifier (1-10).
+
+    Cardinal + linker + N. Vowel-final cardinals (isa, dalawa,
+    tatlo, lima, pito, walo, sampu) take the bound ``-ng`` linker;
+    consonant-final ones (apat, anim, siyam) take the standalone
+    ``na``.
+    """
+    out: list[dict[str, Any]] = []
+    cards = [
+        "isang", "dalawang", "tatlong", "apat na", "limang",
+        "anim na", "pitong", "walong", "siyam na", "sampung",
+    ]
+    for surface in cards:
+        _add(out, f"kumain ako ng {surface} isda",
+             "cardinal: NUM + linker + N as OBJ", "parse")
+    for surface in ("isang", "dalawang", "apat na", "anim na"):
+        _add(out, f"kumakanta ang {surface} bata",
+             "cardinal: NUM + linker + N as SUBJ", "parse")
+    _add(out, "tumakbo ang sampung aso",
+         "cardinal: NUM + linker + N as SUBJ", "parse")
+    _add(out, "pumunta ako sa tatlong kuwarto",
+         "cardinal: NUM + linker + N as DAT adjunct", "parse")
+    _add(out, "pumunta ako sa apat na bahay",
+         "cardinal: NUM + linker + N as DAT adjunct", "parse")
+    # Phase 5f Commit 2: Spanish-borrowed cardinals 1-10. Same
+    # syntactic distribution as native; sweep across all 10 in OBJ
+    # plus a couple of representative SUBJ / parang fixtures.
+    spanish = [
+        "unong", "dos na", "tres na", "kuwatrong", "singkong",
+        "sais na", "siyeteng", "otsong", "nuwebeng", "dies na",
+    ]
+    for surface in spanish:
+        _add(out, f"kumain ako ng {surface} isda",
+             "cardinal-spanish: NUM + linker + N as OBJ", "parse")
+    _add(out, "kumakanta ang dos na bata",
+         "cardinal-spanish: NUM + linker + N as SUBJ", "parse")
+    _add(out, "tumakbo ang sais na aso",
+         "cardinal-spanish: NUM + linker + N as SUBJ", "parse")
+    _add(out, "parang dos na aso ang bata",
+         "cardinal-spanish: parang + Spanish cardinal + N + ang-NP",
+         "parse")
+    # Phase 5f Commit 3: compound cardinals 11-1000. Hand-authored
+    # single-token forms; same syntactic distribution as simple
+    # cardinals.
+    compounds = [
+        "labingisang", "labindalawang", "labintatlong",
+        "labingapat na", "labinlimang", "labinganim na",
+        "labimpitong", "labingwalong", "labinsiyam na",
+        "dalawampung", "tatlumpung", "apatnapung", "limampung",
+        "animnapung", "pitumpung", "walumpung", "siyamnapung",
+        "sandaan na", "sanlibong",
+    ]
+    for surface in compounds:
+        _add(out, f"kumain ako ng {surface} isda",
+             "cardinal-compound: NUM + linker + N as OBJ", "parse")
+    _add(out, "kumakanta ang dalawampung bata",
+         "cardinal-compound: NUM + linker + N as SUBJ", "parse")
+    _add(out, "tumakbo ang sandaan na aso",
+         "cardinal-compound: NUM + linker + N as SUBJ", "parse")
+    _add(out, "pumunta ako sa sanlibong kuwarto",
+         "cardinal-compound: NUM + linker + N as DAT adjunct", "parse")
+    _add(out, "parang dalawampung aso ang bata",
+         "cardinal-compound: parang + compound cardinal + N + ang-NP",
+         "parse")
+    _add(out, "parang sandaan na aso ang bata",
+         "cardinal-compound: parang + compound cardinal + N + ang-NP",
+         "parse")
+    # Phase 5f Commit 4: predicative cardinals — NUM as matrix
+    # predicate with NOM-NP pivot.
+    _add(out, "dalawa sila",
+         "cardinal-predicative: cardinal + PRON-clitic NOM SUBJ", "parse")
+    _add(out, "lima kami",
+         "cardinal-predicative: cardinal + PRON-clitic NOM SUBJ", "parse")
+    _add(out, "tatlo tayo",
+         "cardinal-predicative: cardinal + PRON-clitic NOM SUBJ", "parse")
+    _add(out, "tatlo ang anak ko",
+         "cardinal-predicative: cardinal + NOM-NP SUBJ with possessor",
+         "parse")
+    _add(out, "lima ang isda",
+         "cardinal-predicative: cardinal + NOM-NP SUBJ", "parse")
+    _add(out, "isa ang bata",
+         "cardinal-predicative: cardinal NUM=SG + NOM-NP SUBJ", "parse")
+    _add(out, "dalawampu ang bata",
+         "cardinal-predicative: compound cardinal + NOM-NP SUBJ",
+         "parse")
+    _add(out, "sandaan ang aklat",
+         "cardinal-predicative: compound cardinal + NOM-NP SUBJ",
+         "parse")
+    _add(out, "dos sila",
+         "cardinal-predicative: Spanish cardinal + PRON-clitic SUBJ",
+         "parse")
+    _add(out, "singko ang isda",
+         "cardinal-predicative: Spanish cardinal + NOM-NP SUBJ",
+         "parse")
+    _add(out, "hindi tatlo ang anak ko",
+         "cardinal-predicative: NEG composition with predicative cardinal",
+         "parse")
+    # Phase 5f Commit 5: maka- multiplicative adverbials.
+    maka_cards = [
+        ("makaisa",   "1"),
+        ("makalawa",  "2"),
+        ("makatlo",   "3"),
+        ("makaapat",  "4"),
+        ("makalima",  "5"),
+        ("makaanim",  "6"),
+        ("makapito",  "7"),
+        ("makawalo",  "8"),
+        ("makasiyam", "9"),
+        ("makasampu", "10"),
+    ]
+    for surface, _ in maka_cards:
+        _add(out, f"tumakbo ako {surface}",
+             "cardinal-multiplicative: maka-cardinal as clause-final FREQUENCY adjunct",
+             "parse")
+    _add(out, "kumain ang bata makatlo",
+         "cardinal-multiplicative: maka-cardinal with full NOM-NP SUBJ",
+         "parse")
+    _add(out, "hindi tumakbo si juan makalawa",
+         "cardinal-multiplicative: NEG composition with maka-cardinal",
+         "parse")
+    # Phase 5f Commit 6: decimals + percentages.
+    _add(out, "dos punto singko ang isda",
+         "cardinal-decimal: Spanish-borrowed decimal in predicative position",
+         "parse")
+    _add(out, "tatlo punto lima ang isda",
+         "cardinal-decimal: native-decimal predicative", "parse")
+    _add(out, "apat punto anim ang aso",
+         "cardinal-decimal: native-decimal predicative", "parse")
+    _add(out, "kuwatro punto otso ang isda",
+         "cardinal-decimal: Spanish-decimal predicative", "parse")
+    _add(out, "dalawampu punto singko ang isda",
+         "cardinal-decimal: compound-integer + simple-fractional",
+         "parse")
+    _add(out, "sandaan punto lima ang isda",
+         "cardinal-decimal: 100.5 predicative", "parse")
+    _add(out, "sanlibo punto apat ang isda",
+         "cardinal-decimal: 1000.4 predicative", "parse")
+    _add(out, "bumili ako ng dalawampung porsiyento",
+         "cardinal-percent: percentage as cardinal-modified OBJ NP",
+         "parse")
+    _add(out, "bumili ako ng sandaan na porsiyento",
+         "cardinal-percent: 100% percentage as cardinal-modified OBJ NP",
+         "parse")
+    _add(out, "bumili ako ng singkong porsiyento",
+         "cardinal-percent: 5% percentage as cardinal-modified OBJ NP",
+         "parse")
+    return out
+
+
 def _all_corpus() -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     out.extend(_voice_aspect_corpus())
@@ -1202,6 +1352,7 @@ def _all_corpus() -> list[dict[str, Any]]:
     out.extend(_applicative_causative_corpus())
     out.extend(_demonstrative_possessive_corpus())
     out.extend(_comparative_corpus())
+    out.extend(_cardinal_corpus())
     out.extend(_robustness_corpus())
     out.extend(_classic_corpus())
     return out
