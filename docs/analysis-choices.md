@@ -6600,6 +6600,74 @@ Per Phase 5f §11.2 negative-fixture convention:
   ``ika-`` + compound cardinal; deferred to a follow-on
   alongside compound-cardinal coordination.
 
+## Phase 5f Commit 8: fractions
+
+**Date:** 2026-05-03. **Status:** active. Lex-only addition
+(4 NOUN entries); no grammar changes. Refs: plan §11.1
+Group C; S&O 1972 §4.4; Phase 5f Commits 1 + 7 (cardinal /
+ordinal NP-modifier rules consumed unchanged); Ramos 1971.
+
+### Lex change
+
+4 NOUN entries added to ``data/tgl/roots.yaml``:
+
+* ``kalahati`` "half" — native form. SEM_CLASS=FRACTION.
+  Bidirectional synonym of ``medya``.
+* ``kapat`` "quarter" — native form. SEM_CLASS=FRACTION.
+* ``medya`` "half" — Spanish-borrowed; canonical in clock-time
+  register (``alas-otso y medya`` "8:30") which Group E will
+  exercise. Bidirectional synonym of ``kalahati``.
+* ``bahagi`` "part" — head N for the productive
+  ``[ORDINAL]ng bahagi`` fraction pattern (``ikatlong bahagi``
+  "third part" = 1/3; ``ikaapat na bahagi`` "fourth part"
+  = 1/4). SEM_CLASS=PART.
+
+### Why no grammar change
+
+Compositional fractions parse via existing rules:
+
+* ``[CARDINAL]ng kalahati / kapat / medya`` (``dalawang
+  kalahati`` 2/2, ``apat na kapat`` 4/4, ``tatlong kapat``
+  3/4) uses the Phase 5f Commit 1 cardinal-NP-modifier rule.
+* ``[ORDINAL]ng bahagi`` (``ikatlong bahagi``,
+  ``ikaapat na bahagi``) uses the Phase 5f Commit 7
+  ordinal-NP-modifier rule.
+
+Both rule families fire on any matching CARDINAL=YES /
+ORDINAL=YES NUM + linker + N constituent — no need to add
+fraction-specific rules.
+
+### `kuwarto` polysemy note
+
+The existing NOUN ``kuwarto`` (glossed "room") also has a
+secondary "quarter [of the hour]" reading in clock-time
+register (``alas-otso y kuwarto`` "8:15"). The polysemy is
+left to context, not split into separate lex entries — the
+clock-time construction in Group E will provide the
+disambiguating context. This commit doesn't add a separate
+``kuwarto`` "quarter" entry to avoid duplicate-surface lex
+that the parser would treat as ambiguous on every input.
+
+### Out of scope for this commit
+
+* Mixed numbers (``dalawa't kalahati`` "two and a half" 2½;
+  ``apat at kalahati`` "four and a half" 4½; ``isa't kapat``
+  "one and a quarter" 1¼). Need the bound ``'t`` clitic
+  split (parallel to ``split_linker_ng`` / ``split_enclitics``)
+  and a NUM coordination rule. Deferred to Phase 5k
+  coordination work per plan §11.1 Group C item 4 — likely
+  shareable infrastructure with the other ``'t`` cases.
+* Hyphenated ``ikatlong-bahagi`` orthographic variant. The
+  unhyphenated ``ikatlong bahagi`` (two tokens, ordinal +
+  bahagi) is what the existing tokenizer yields and what this
+  commit exercises. The hyphenated form would need a tokenizer
+  pre-pass; deferred.
+* ``[CARDINAL]ng kuwarto`` clock-time register (``isang
+  kuwarto`` "a quarter [of an hour]") — the cardinal+kuwarto
+  parse already works syntactically (``kuwarto`` is NOUN); the
+  semantic disambiguation between "room" and "quarter [of
+  hour]" is a clock-construction concern. Deferred to Group E.
+
 ### Side change (Commit 4): `synonyms` lex field + ``aklat`` noun
 
 This commit adds a ``synonyms: list[str]`` field to the ``Root``

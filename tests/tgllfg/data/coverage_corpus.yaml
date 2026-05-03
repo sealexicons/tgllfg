@@ -3105,6 +3105,33 @@
 - text: Pumunta ako sa ikatlong kuwarto.
   construction: 'ordinal: ORDINAL + linker + N as DAT adjunct'
   expected: parse
+- text: Bumili ako ng dalawang kalahati.
+  construction: 'fraction: cardinal + kalahati (2/2)'
+  expected: parse
+- text: Bumili ako ng tatlong kalahati.
+  construction: 'fraction: cardinal + kalahati (3/2)'
+  expected: parse
+- text: Bumili ako ng apat na kapat.
+  construction: 'fraction: cardinal + kapat (4/4)'
+  expected: parse
+- text: Bumili ako ng tatlong kapat.
+  construction: 'fraction: cardinal + kapat (3/4)'
+  expected: parse
+- text: Bumili ako ng isang kalahati.
+  construction: 'fraction: SG cardinal + kalahati (1/2)'
+  expected: parse
+- text: Bumili ako ng ikalawang bahagi.
+  construction: 'fraction: ordinal + bahagi (1/2 = 2nd part)'
+  expected: parse
+- text: Bumili ako ng ikatlong bahagi.
+  construction: 'fraction: ordinal + bahagi (1/3 = 3rd part)'
+  expected: parse
+- text: Bumili ako ng ikaapat na bahagi.
+  construction: 'fraction: ordinal + bahagi (1/4 = 4th part)'
+  expected: parse
+- text: Bumili ako ng dalawang medya.
+  construction: 'fraction: cardinal + Spanish medya'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

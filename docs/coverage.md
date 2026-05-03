@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 1061 | 99.4% |
+| **parse**    | 1070 | 99.4% |
 | **fragment** |    4 |  0.4% |
 | **fail**     |    2 |  0.2% |
-| **TOTAL**    | 1067 |       |
+| **TOTAL**    | 1076 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -44,6 +44,7 @@ out-of-scope items documented below.
 | cardinal-decimal   |     7 |        0 |    0 |     7 | 100% |
 | cardinal-percent   |     3 |        0 |    0 |     3 | 100% |
 | ordinal            |    13 |        0 |    0 |    13 | 100% |
+| fraction           |     9 |        0 |    0 |     9 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -339,6 +340,26 @@ mga aklat`` 1st-PL). The Phase 5f Commit 1 NUM-CARDINAL
 disambiguator branch is extended to also cover ``NUM[ORDINAL=YES]``
 so consonant-final ordinals (``ikaapat``, ``ikaanim``,
 ``ikasiyam``) can use the standalone ``na`` linker.
+
+### fraction (9 sentences, 100%)
+
+Phase 5f Commit 8: fractions. 4 NOUN entries — ``kalahati``
+"half" (native, SEM_CLASS=FRACTION), ``kapat`` "quarter"
+(native, FRACTION), ``medya`` "half" (Spanish-borrowed,
+canonical in clock-time register, bidirectional synonym of
+``kalahati``), ``bahagi`` "part" (PART, head of productive
+``[ORDINAL]ng bahagi`` fraction pattern). Compositional
+fractions parse via existing rules — no new grammar:
+
+* ``[CARDINAL]ng kalahati / kapat`` (``dalawang kalahati``
+  2/2, ``apat na kapat`` 4/4, ``tatlong kapat`` 3/4) uses the
+  Phase 5f Commit 1 cardinal-NP-modifier rule.
+* ``[ORDINAL]ng bahagi`` (``ikatlong bahagi`` 1/3,
+  ``ikaapat na bahagi`` 1/4) uses the Phase 5f Commit 7
+  ordinal-NP-modifier rule.
+
+Mixed numbers (``dalawa't kalahati`` 2½) need the bound ``'t``
+clitic split + NUM coordination — deferred to Phase 5k.
 
 ### classic (12 sentences, 100%)
 
