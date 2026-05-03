@@ -79,3 +79,27 @@
   is_clitic: true
 - surface: kanila
   feats: {PERS: 3, NUM: PL, CASE: DAT}
+
+# --- Phase 5e Commit 20: kita fused clitic (1sg-GEN actor + 2sg-NOM SUBJ) ---
+#
+# Tagalog has a special second-position clitic ``kita`` that fuses
+# the 1sg-GEN actor and 2sg-NOM SUBJ of a non-AV verb into a single
+# token: ``Kinain kita`` "I ate you", ``Nakita kita`` "I saw you",
+# ``Bibigyan kita ng libro`` "I will give you a book". The fusion
+# is obligatory — *``Kinain ko ka`` is ungrammatical in modern
+# Tagalog (Schachter & Otanes 1972 §3.2; Kroeger 1993 §2.2).
+#
+# The lex entry carries only the ``KITA: YES`` marker; the actual
+# person/number/case feats for the two argument slots are set by
+# the grammar rules in src/tgllfg/cfg/grammar.py (Phase 5e Commit
+# 20 section). This keeps the lex flat (the loader doesn't support
+# nested feats in pronouns.yaml) while letting the grammar route
+# the dual binding into SUBJ and OBJ-AGENT.
+#
+# Note: ``kita`` also exists as a verb root (kita = "see, meet";
+# see data/tgl/roots.yaml). The morph analyzer returns BOTH
+# analyses; the chart parser picks the PRON path when the syntactic
+# context calls for a clitic.
+- surface: kita
+  feats: {KITA: YES}
+  is_clitic: true

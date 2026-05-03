@@ -2083,4 +2083,111 @@ class Grammar:
             ),
         ))
 
+        # --- Phase 5e Commit 20: kita clitic fusion ---
+        #
+        # Tagalog has a special second-position clitic ``kita`` that
+        # fuses the 1sg-GEN actor and 2sg-NOM SUBJ of a non-AV verb
+        # into a single token: ``Kinain kita`` "I ate you",
+        # ``Sinulatan kita ng liham`` "I wrote you a letter",
+        # ``Pinakain kita ng kanin`` "I fed you rice",
+        # ``Hindi kita kinain`` "I didn't eat you" (with kita
+        # hoisted to the post-V cluster by the Wackernagel pass).
+        # The fusion is obligatory — *``Kinain ko ka`` is
+        # ungrammatical in modern Tagalog (Schachter & Otanes 1972
+        # §3.2; Kroeger 1993 §2.2).
+        #
+        # Lex: ``data/tgl/pronouns.yaml`` carries a single entry
+        # ``kita`` with feats ``{KITA: YES, is_clitic: True}``. The
+        # grammar rules here build out the SUBJ and 1sg-actor
+        # f-structures from atomic-value equations, since the lex
+        # loader doesn't support nested feats.
+        #
+        # The dual binding sets:
+        #
+        # * ``(↑ SUBJ PERS) = '2'``, ``(↑ SUBJ NUM) = 'SG'``,
+        #   ``(↑ SUBJ CASE) = 'NOM'`` — the 2sg-NOM SUBJ (CAUSEE
+        #   in pa- variants; PATIENT / RECIPIENT / THEME in plain
+        #   variants).
+        # * ``(↑ <obj_target> PERS) = '1'``, ``(↑ <obj_target> NUM)
+        #   = 'SG'``, ``(↑ <obj_target> CASE) = 'GEN'`` — the
+        #   1sg-GEN actor. The typed slot follows the same
+        #   per-voice spec used by the standard non-AV S frames:
+        #   OBJ-AGENT for plain non-AV; OBJ-CAUSER for pa-OV /
+        #   pa-DV (CAUS=DIRECT).
+        #
+        # Three frame variants per voice spec:
+        #
+        # 1. **Bare** (``V kita``): the simplest case, e.g.
+        #    ``Kinain kita`` (OV), ``Binasahan kita`` (DV),
+        #    ``Ipinaggawa kita`` (IV-BEN), ``Pinakain kita``
+        #    (pa-OV: "I fed you").
+        # 2. **With overt PATIENT** (``V kita NP[GEN]``): used by
+        #    3-arg DV / IV / pa-OV constructions, e.g.
+        #    ``Sinulatan kita ng liham`` "I wrote you a letter",
+        #    ``Pinakain kita ng kanin`` "I fed you rice".
+        # 3. **With DAT adjunct** (``V kita NP[DAT]``): a peripheral
+        #    location / recipient adjunct.
+        #
+        # Note on paradigm coverage: the canonical example
+        # ``Nakita kita`` "I saw you" requires an OV-NVOL form of
+        # ``kita`` (na- prefix on the transitive root). The current
+        # ma-class paradigm only emits AV-NVOL forms; ``nakita``
+        # analyses as AV-NVOL only, so the kita-fusion rule doesn't
+        # fire for it. Tracked as a paradigm-coverage TBD alongside
+        # the DV PFV gap from Phase 5e Commit 18 (see plan §18).
+        kita_voice_specs = [
+            # (voice, obj_target, extras) — mirrors the standard
+            # voice_specs above so the typed actor-slot per voice
+            # matches the lexicon's expected PRED.
+            ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("OV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
+            ("DV", "OBJ-AGENT", [("CAUS", "NONE")]),
+            ("DV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
+            ("IV", "OBJ-AGENT", []),
+        ]
+        kita_subj_eqs = [
+            "(↑ SUBJ PERS) = '2'",
+            "(↑ SUBJ NUM) = 'SG'",
+            "(↑ SUBJ CASE) = 'NOM'",
+        ]
+        for voice, obj_target, extras in kita_voice_specs:
+            feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+            v_cat = f"V[{', '.join(feat_strs)}]"
+            actor_eqs = [
+                f"(↑ {obj_target} PERS) = '1'",
+                f"(↑ {obj_target} NUM) = 'SG'",
+                f"(↑ {obj_target} CASE) = 'GEN'",
+            ]
+            # Bare frame: V kita (no further args). Covers 2-arg
+            # constructions and intransitive-feeling causatives.
+            rules.append(Rule(
+                "S",
+                [v_cat, "PRON[KITA=YES]"],
+                _eqs(*kita_subj_eqs, *actor_eqs),
+            ))
+            # With-PATIENT frame: V kita NP[GEN]. Covers 3-arg
+            # ditransitives and 3-arg pa-causatives (where the GEN-NP
+            # is the OBJ-PATIENT — the third role beyond actor and
+            # SUBJ).
+            rules.append(Rule(
+                "S",
+                [v_cat, "PRON[KITA=YES]", "NP[CASE=GEN]"],
+                _eqs(
+                    *kita_subj_eqs,
+                    *actor_eqs,
+                    "(↑ OBJ-PATIENT) = ↓3",
+                ),
+            ))
+            # With-DAT frame: V kita NP[DAT]. The DAT-NP rides into
+            # ADJUNCT.
+            rules.append(Rule(
+                "S",
+                [v_cat, "PRON[KITA=YES]", "NP[CASE=DAT]"],
+                _eqs(
+                    *kita_subj_eqs,
+                    *actor_eqs,
+                    "↓3 ∈ (↑ ADJUNCT)",
+                ),
+            ))
+
         return Grammar(rules)

@@ -5064,3 +5064,148 @@ Three sources of structural ambiguity to consider, all resolved:
 3. **PRON-headed NP as the head**. The ``(↓1 LEMMA)`` constraint
    blocks this — see "The head-LEMMA constraint" above.
 
+## Phase 5e Commit 20: kita clitic fusion
+
+**Date:** 2026-05-02. **Status:** active. Adds the special
+second-position clitic ``kita`` that fuses the 1sg-GEN actor and
+2sg-NOM SUBJ of a non-AV verb into a single token: ``Kinain
+kita`` "I ate you", ``Sinulatan kita ng liham`` "I wrote you a
+letter", ``Pinakain kita ng kanin`` "I fed you rice", ``Hindi
+kita kinain`` "I didn't eat you". The fusion is obligatory in
+modern Tagalog (Schachter & Otanes 1972 §3.2; Kroeger 1993
+§2.2) — the alternative ``*Kinain ko ka`` is ungrammatical.
+
+### Lex layer
+
+A single new entry in ``data/tgl/pronouns.yaml``:
+
+```yaml
+- surface: kita
+  feats: {KITA: YES}
+  is_clitic: true
+```
+
+The lex carries only the marker ``KITA: YES``; the per-argument
+person/number/case feats are supplied by grammar equations (the
+lex loader doesn't support nested feats, so we can't put both
+1sg-GEN and 2sg-NOM bundles in a single PRON entry).
+
+The surface ``kita`` also exists as a verb root in
+``data/tgl/roots.yaml`` (``kita`` = "see, meet"), but the verb
+is never used as a bare lemma — it always appears with affixes
+(``kumita`` AV, ``kinita`` OV, ``nakita`` NVOL). The morph
+analyzer returns the PRON analysis for bare ``kita``, and the
+chart parser can also use the verb analysis for affixed forms;
+no ambiguity in practice.
+
+### Grammar layer
+
+``src/tgllfg/cfg/grammar.py`` adds a per-voice loop that mirrors
+the standard non-AV ``voice_specs`` structure used elsewhere:
+
+```python
+kita_voice_specs = [
+    ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
+    ("OV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
+    ("DV", "OBJ-AGENT", [("CAUS", "NONE")]),
+    ("DV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
+    ("IV", "OBJ-AGENT", []),
+]
+```
+
+For each ``(voice, obj_target, extras)`` triple, three frame
+variants:
+
+1. **Bare** (``V kita``): ``Kinain kita``, ``Binasahan kita``,
+   ``Ipinaggawa kita``, ``Pinakain kita``.
+2. **With overt PATIENT** (``V kita NP[GEN]``): ``Sinulatan
+   kita ng liham``, ``Pinakain kita ng kanin``,
+   ``Ipinaggawa kita ng silya``.
+3. **With DAT adjunct** (``V kita NP[DAT]``): peripheral
+   recipient / location adjuncts.
+
+The dual binding sets atomic values:
+
+```
+(↑ SUBJ PERS)             = '2'
+(↑ SUBJ NUM)              = 'SG'
+(↑ SUBJ CASE)             = 'NOM'
+(↑ <obj_target> PERS)     = '1'
+(↑ <obj_target> NUM)      = 'SG'
+(↑ <obj_target> CASE)     = 'GEN'
+```
+
+The ``<obj_target>`` per voice spec routes the 1sg actor to the
+right typed slot:
+
+* OV / DV with ``CAUS=NONE`` → ``OBJ-AGENT`` (plain non-AV
+  transitive).
+* OV / DV with ``CAUS=DIRECT`` → ``OBJ-CAUSER`` (pa-causatives;
+  the 1sg actor is the CAUSER, not the AGENT).
+* IV (any APPL) → ``OBJ-AGENT``.
+
+This routing matches the lexicon's expected PRED arity for each
+voice. For example, ``Pinakain kita ng kanin`` produces
+``CAUSE-EAT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>`` with SUBJ=2sg
+(CAUSEE), OBJ-CAUSER=1sg (the one who fed), OBJ-PATIENT=kanin.
+
+### Wackernagel placement
+
+``kita`` is marked ``is_clitic: true`` in the lex, so the
+existing §7.3 Wackernagel pass (``src/tgllfg/clitics/placement.py``)
+treats it like any pronominal clitic: pre-V occurrences are
+hoisted into the post-V cluster. ``Hindi kita kinain`` reorders
+to ``hindi kain kita`` after placement, matching the surface
+expectation. No new placement code was needed.
+
+### Note on the 'kita' pronoun's atomic-value equations
+
+The kita rule is the first place in the grammar that uses
+``(↑ <gf> ATTR) = 'value'`` to *create* the GF f-structure
+purely from grammar equations rather than by structure-sharing
+with a daughter f-structure (``(↑ <gf>) = ↓N``). The unifier
+handles this transparently: the equations create the GF
+sub-fstruct on the fly, with each atomic-value equation either
+defining or constraining the corresponding feature.
+
+A side benefit: the PRON entry's flat ``feats`` dict
+(``{KITA: YES}``) is sufficient lex-side. We don't need a
+nested-feats schema (``feats: {SUBJ: {PERS: 2, ...},
+OBJ-AGENT: {PERS: 1, ...}}``) to encode the dual binding.
+
+### Surface variants enabled
+
+```
+kinain kita              (OV bare)                   "I ate you"
+binasahan kita           (DV bare)                   "I read at you"
+ipinaggawa kita          (IV-BEN bare)               "I made (sth) for you"
+pinakain kita            (pa-OV bare, CAUSER=1sg)    "I fed you"
+sinulatan kita ng liham  (DV 3-arg + PATIENT)        "I wrote you a letter"
+ipinaggawa kita ng silya (IV-BEN 3-arg + PATIENT)    "I made you a chair"
+pinakain kita ng kanin   (pa-OV 3-arg + PATIENT)     "I fed you rice"
+hindi kita kinain        (NEG, kita hoisted)         "I didn't eat you"
+kinain na kita           (adv enclitic + kita)       "I already ate you"
+```
+
+### Out-of-scope (paradigm coverage gaps)
+
+* **OV-NVOL of ``kita`` (``Nakita kita`` "I saw you")** — the
+  canonical example in grammar texts. The current ma-class
+  paradigm only emits AV-NVOL forms; ``nakita`` analyses as
+  AV-NVOL only. Adding OV-NVOL ma-class cells is a paradigm
+  coverage follow-up, not a grammar / kita-fusion limitation.
+  Tracked as a TBD alongside the DV PFV gap from Phase 5e
+  Commit 18 (see plan §18 entries "DV PFV paradigm coverage
+  gap" — analogous form needed for OV-NVOL).
+* **PERS feature not propagated through standard PRON entries.**
+  Pre-existing parser quirk: ``_lex_equations`` in
+  ``src/tgllfg/parse/earley.py`` filters PRON feats to keep only
+  string-typed values. ``pronouns.yaml`` encodes ``PERS: 1`` as
+  a YAML integer, which gets dropped. This affects every PRON
+  in the lexicon (``ako``, ``ko``, ``mo``, etc.), not just
+  ``kita``. The kita fusion sidesteps the issue by setting PERS
+  via grammar equations as string literals (``'1'``, ``'2'``).
+  Lifting the lex/parser filter to allow integer PERS is a
+  Phase 5+ engineering follow-up — same shape as the DV / NVOL
+  paradigm gaps.
+

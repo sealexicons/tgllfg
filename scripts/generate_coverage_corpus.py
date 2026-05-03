@@ -308,6 +308,38 @@ def _clitic_corpus() -> list[dict[str, Any]]:
                      "clitic: cluster pron + adv",
                      "parse")
 
+    # Phase 5e Commit 20: kita clitic fusion (1sg-GEN actor +
+    # 2sg-NOM SUBJ in a single token). Bare frames across OV / DV
+    # / IV / pa-OV; with-PATIENT frames for 3-arg ditransitives
+    # and causatives; negation; adv enclitic interaction.
+    _add(out, "kinain kita",
+         "clitic: kita fusion (OV bare)",
+         "parse")
+    _add(out, "binasahan kita",
+         "clitic: kita fusion (DV bare)",
+         "parse")
+    _add(out, "ipinaggawa kita",
+         "clitic: kita fusion (IV-BEN bare)",
+         "parse")
+    _add(out, "pinakain kita",
+         "clitic: kita fusion (pa-OV bare; CAUSER 1sg / CAUSEE 2sg)",
+         "parse")
+    _add(out, "sinulatan kita ng liham",
+         "clitic: kita fusion (DV 3-arg with PATIENT)",
+         "parse")
+    _add(out, "ipinaggawa kita ng silya",
+         "clitic: kita fusion (IV-BEN 3-arg with PATIENT)",
+         "parse")
+    _add(out, "pinakain kita ng kanin",
+         "clitic: kita fusion (pa-OV 3-arg with PATIENT)",
+         "parse")
+    _add(out, "hindi kita kinain",
+         "clitic: kita fusion + NEG (kita hoisted to post-V cluster)",
+         "parse")
+    _add(out, "kinain na kita",
+         "clitic: kita fusion + adv enclitic (na ALREADY)",
+         "parse")
+
     return out
 
 

@@ -1237,6 +1237,33 @@
 - text: Kinain niya ba ang nanay.
   construction: 'clitic: cluster pron + adv'
   expected: parse
+- text: Kinain kita.
+  construction: 'clitic: kita fusion (OV bare)'
+  expected: parse
+- text: Binasahan kita.
+  construction: 'clitic: kita fusion (DV bare)'
+  expected: parse
+- text: Ipinaggawa kita.
+  construction: 'clitic: kita fusion (IV-BEN bare)'
+  expected: parse
+- text: Pinakain kita.
+  construction: 'clitic: kita fusion (pa-OV bare; CAUSER 1sg / CAUSEE 2sg)'
+  expected: parse
+- text: Sinulatan kita ng liham.
+  construction: 'clitic: kita fusion (DV 3-arg with PATIENT)'
+  expected: parse
+- text: Ipinaggawa kita ng silya.
+  construction: 'clitic: kita fusion (IV-BEN 3-arg with PATIENT)'
+  expected: parse
+- text: Pinakain kita ng kanin.
+  construction: 'clitic: kita fusion (pa-OV 3-arg with PATIENT)'
+  expected: parse
+- text: Hindi kita kinain.
+  construction: 'clitic: kita fusion + NEG (kita hoisted to post-V cluster)'
+  expected: parse
+- text: Kinain na kita.
+  construction: 'clitic: kita fusion + adv enclitic (na ALREADY)'
+  expected: parse
 - text: Ang aso ay nagkainan.
   construction: 'ay-inversion: SUBJ-fronted intransitive'
   expected: parse
