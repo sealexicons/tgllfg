@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 961 | 99.4% |
+| **parse**    | 978 | 99.4% |
 | **fragment** |   4 |  0.4% |
 | **fail**     |   2 |  0.2% |
-| **TOTAL**    | 967 |       |
+| **TOTAL**    | 984 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -36,6 +36,7 @@ out-of-scope items documented below.
 | demonstrative      |    44 |        0 |    0 |    44 | 100% |
 | **rg** (Ramos & Goulet 1981) |    20 |        0 |    0 |    20 | 100% |
 | possessive         |    18 |        0 |    0 |    18 | 100% |
+| cardinal           |    17 |        0 |    0 |    17 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -186,6 +187,27 @@ reading (Phase 5d Commit 1). Lex: ``parang`` carries an extra
 CTRL_CLASS=RAISING_BARE] N NP[CASE=NOM]`` builds PRED ``LIKE
 <SUBJ, OBJ>`` with SUBJ = comparee (ang-NP), OBJ = standard
 (bare N).
+
+### cardinal (17 sentences, 100%)
+
+Phase 5f Commit 1: native cardinal NP-internal modifier (1-10).
+Cardinals (``isa``, ``dalawa``, ``tatlo``, ``apat``, ``lima``,
+``anim``, ``pito``, ``walo``, ``siyam``, ``sampu``) attach to
+the head N via the linker — bound ``-ng`` after vowel-final
+cardinals, standalone ``na`` after consonant-final ``apat`` /
+``anim`` / ``siyam``. Two-track grammar: NP-level rules (3
+cases × 2 linker variants) handle case-marked NPs (``ang
+tatlong libro``, ``ng dalawang isda``, ``sa apat na bata``)
+with cardinal NUM and CARDINAL_VALUE projected to the matrix
+NP; an N-level companion rule handles bare cardinal-N for the
+parang-comparative standard (``parang isang aso``) and future
+predicative-cardinal contexts (Group A item 4). Chained
+cardinals (``*tatlong dalawang bata``) blocked by
+``¬ (↓4 CARDINAL_VALUE)`` constraint. The standalone ``na``
+linker after NUM[CARDINAL=YES] is disambiguated as the linker
+(not the ALREADY enclitic) by a new branch in
+``disambiguate_homophone_clitics`` — parallel to the Phase 5e
+Commit 16 DEM-DET/DEM-ADP exception.
 
 ### classic (12 sentences, 100%)
 

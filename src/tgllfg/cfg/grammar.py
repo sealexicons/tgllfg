@@ -277,6 +277,86 @@ class Grammar:
                 ],
             ))
 
+        # --- Phase 5f Commit 1: cardinal NP-internal modifier --------
+        #
+        # ``ang isang bata`` ("the one child"), ``ng tatlong libro``
+        # ("of three books"), ``sa apat na bata`` ("to four
+        # children"). The cardinal sits between the case marker and
+        # the head N via the linker — bound ``-ng`` after vowel-final
+        # cardinals (split off by ``split_linker_ng`` once the
+        # cardinal stems are known surfaces) or standalone ``na``
+        # after consonant-final cardinals (apat, anim, siyam). The
+        # standalone ``na`` after a NUM[CARDINAL=YES] is
+        # disambiguated as the linker (not the ALREADY enclitic) by
+        # ``disambiguate_homophone_clitics`` — see
+        # ``src/tgllfg/clitics/placement.py``.
+        #
+        # 6 rules total = 3 cases × 2 linker variants. Each rule
+        # produces NP directly so the cardinal's NUM and
+        # CARDINAL_VALUE land on the matrix NP without needing to
+        # widen the bare ``NP[CASE=X] → DET/ADP[CASE=X] N``
+        # projection (which would create empty f-structs for the
+        # bare-N path).
+        #
+        # Chained cardinals (``*ng tatlong dalawang bata``) are
+        # blocked by the rule shape — the rightmost daughter is N,
+        # not NP, so a second cardinal cannot wrap a cardinal-
+        # modified NP. (Cardinal coordination is a separate
+        # construction; lands with Group C mixed numbers / Phase 5k.)
+        _cardinal_case_marker = {
+            "NOM": "DET[CASE=NOM]",
+            "GEN": "ADP[CASE=GEN]",
+            "DAT": "ADP[CASE=DAT]",
+        }
+        for case, marker in _cardinal_case_marker.items():
+            for link in ("NA", "NG"):
+                rules.append(Rule(
+                    f"NP[CASE={case}]",
+                    [
+                        marker,
+                        "NUM[CARDINAL=YES]",
+                        f"PART[LINK={link}]",
+                        "N",
+                    ],
+                    [
+                        "(↑) = ↓1",
+                        "(↑ PRED) = ↓4 PRED",
+                        "(↑ LEMMA) = ↓4 LEMMA",
+                        "(↑ NUM) = ↓2 NUM",
+                        "(↑ CARDINAL_VALUE) = ↓2 CARDINAL_VALUE",
+                        "¬ (↓4 CARDINAL_VALUE)",
+                    ],
+                ))
+        # An N-level companion rule for bare cardinal-N use
+        # (no case marker): the parang-comparative standard
+        # (``parang isang aso`` "like one dog" — Phase 5e Commit 26)
+        # and future predicative-cardinal contexts (Phase 5f Group A
+        # item 4) consume bare N. The N-level rule shares head N's
+        # PRED + LEMMA into the matrix N; CARDINAL_VALUE rides on
+        # this matrix N and is visible to consumers (parang's OBJ).
+        # The chained-cardinal block lives here as
+        # ``¬ (↓3 CARDINAL_VALUE)`` since this rule allows recursive
+        # composition; the NP-level rules above are structurally
+        # blocked because their head daughter is N (not NP), but a
+        # bare-N chain would otherwise compose without the explicit
+        # constraint.
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "N",
+                [
+                    "NUM[CARDINAL=YES]",
+                    f"PART[LINK={link}]",
+                    "N",
+                ],
+                [
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                    "(↑ NUM) = ↓1 NUM",
+                    "(↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE",
+                    "¬ (↓3 CARDINAL_VALUE)",
+                ],
+            ))
+
         # --- Phase 4 §7.8: NP-internal possessive ---
         #
         # ``ang aklat ng bata`` ("the child's book") and pronominal

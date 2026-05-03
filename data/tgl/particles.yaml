@@ -283,3 +283,44 @@
 - surface: dahil
   pos: PREP
   feats: {PREP_TYPE: REASON}
+
+# === Phase 5f Commit 1: native cardinals 1-10 ============================
+# Cardinals as NP-internal modifiers via the linker
+# (``isang bata`` "one child", ``tatlong libro`` "three books").
+# CARDINAL=YES gates the cardinal-NP-modifier rule (see
+# src/tgllfg/cfg/grammar.py Phase 5f Commit 1). CARDINAL_VALUE is
+# quoted so PyYAML returns a string — the lex-equation pipeline
+# filters non-string atomic values (see Phase 5e Commit 16/26
+# YAML-boolean-trap memo), so unquoted integers would be dropped
+# silently. NUM is SG for `isa` and PL for 2-10 (the cardinal
+# contributes the matrix N's number).
+- surface: isa
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "1", NUM: SG}
+- surface: dalawa
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "2", NUM: PL}
+- surface: tatlo
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "3", NUM: PL}
+- surface: apat
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "4", NUM: PL}
+- surface: lima
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "5", NUM: PL}
+- surface: anim
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "6", NUM: PL}
+- surface: pito
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "7", NUM: PL}
+- surface: walo
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "8", NUM: PL}
+- surface: siyam
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "9", NUM: PL}
+- surface: sampu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "10", NUM: PL}

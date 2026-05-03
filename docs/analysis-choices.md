@@ -5886,3 +5886,113 @@ The comparative composes naturally:
 * **``mas`` / ``pinaka-`` comparatives** (``mas matalino``,
   ``pinakamatalino``). Phase 5h.
 
+## Phase 5f Commit 1: native cardinal NP-internal modifier (1-10)
+
+**Date:** 2026-05-03. **Status:** active. Phase 5f's foundational
+commit — items 2-7 of Group A (Spanish cardinals, compound
+cardinals, predicative cardinals, multiplicative ratios, decimals,
+percentages) and Groups B/C/E/F/H all consume the cardinal
+NP-modifier rule once it lands. Refs: plan §11.1 Group A item 1.
+
+### Lex change
+
+Native cardinals 1-10 added to ``data/tgl/particles.yaml`` with
+``pos: NUM``:
+
+* Vowel-final (use bound ``-ng`` linker via ``split_linker_ng``):
+  ``isa`` (1, NUM=SG), ``dalawa`` (2), ``tatlo`` (3), ``lima`` (5),
+  ``pito`` (7), ``walo`` (8), ``sampu`` (10).
+* Consonant-final (use standalone ``na`` linker): ``apat`` (4),
+  ``anim`` (6), ``siyam`` (9).
+
+Each carries ``CARDINAL: "YES"``, ``CARDINAL_VALUE: "<N>"`` (the
+integer as a string), and ``NUM: SG`` (only ``isa``) or
+``NUM: PL`` (2-10). The CARDINAL_VALUE quoting matters: PyYAML
+parses unquoted integers as Python ``int``, and the
+``_lex_equations`` filter in the parser drops non-string atomic
+values — same gotcha that surfaced in Phase 5e Commit 17 with
+booleans (``DEM: YES`` parsing as Python ``True``).
+
+### Grammar change
+
+**Two-track design** to handle cardinal-modified N at both NP
+level (case-marked, the canonical positions) and bare-N level
+(parang complements, future predicatives):
+
+* **NP-level cardinal rules** (6 = 3 cases × 2 linker variants).
+  Schema:
+
+  ```
+  NP[CASE=X] → DET/ADP[CASE=X] NUM[CARDINAL=YES] PART[LINK=Y] N
+  ```
+
+  Equations: case marker shares with NP via ``(↑) = ↓1``
+  (CASE/MARKER); head N's PRED + LEMMA percolate; cardinal's NUM
+  and CARDINAL_VALUE land on matrix NP. Chained cardinals
+  blocked at NP level by ``¬ (↓4 CARDINAL_VALUE)``: the head-N
+  daughter cannot itself carry a CARDINAL_VALUE.
+
+* **N-level cardinal rule** (2 = 1 × 2 linker variants):
+
+  ```
+  N → NUM[CARDINAL=YES] PART[LINK=Y] N
+  ```
+
+  Used for bare contexts where there's no case marker — the
+  parang-comparative standard (``parang isang aso ang bata``,
+  Phase 5e Commit 26) is the immediate consumer; Group A item 4
+  (predicative cardinals, ``Tatlo ang anak ko``) will be the
+  next. The recursive composition is blocked by ``¬ (↓3
+  CARDINAL_VALUE)`` on the head-N daughter.
+
+The two-track design produces ambiguity for case-marked
+cardinal NPs (the same input can parse via the NP-level rule
+directly or via N-level + NP-from-N composition). The NP-level
+parse is the cardinal-info-preserving one and is what the
+test suite asserts on; the composed N-level parse loses
+CARDINAL_VALUE at the NP level (the existing
+``NP[CASE=X] → DET/ADP[CASE=X] N`` rule projects only PRED +
+LEMMA from N). This redundancy is acceptable — the NP-from-N
+projection wasn't widened to pull NUM/CARDINAL_VALUE because
+defining equations on undefined paths create empty f-structures
+on bare N (a real regression: ``Kumain ang bata.`` would gain a
+spurious ``CARDINAL_VALUE: <empty>`` slot on its SUBJ).
+
+### Clitic-pass change
+
+A new branch in ``disambiguate_homophone_clitics``
+(``src/tgllfg/clitics/placement.py``) treats standalone ``na``
+after a ``NUM[CARDINAL=YES]`` as the linker — parallel to the
+Phase 5e Commit 16 DEM-DET/DEM-ADP exception. Without this,
+the Wackernagel pass would hoist ``na`` to clause-end as the
+ALREADY enclitic and ``apat na isda`` / ``anim na bata`` /
+``siyam na aklat`` would never reach the cardinal-NP-modifier
+rule.
+
+### Negative fixtures
+
+Per Phase 5f §11.2 negative-fixture convention:
+
+* ``*Kumain ako ng isa bata.`` — missing linker between cardinal
+  and N. No rule consumes the ``isa bata`` sequence as an N or
+  NP because the cardinal-NP-modifier rule requires a
+  ``PART[LINK=Y]`` middle daughter.
+* ``*Kumain ako ng tatlong dalawang bata.`` — chained cardinals.
+  Blocked by ``¬ (↓4 CARDINAL_VALUE)`` on NP-level rule and
+  ``¬ (↓3 CARDINAL_VALUE)`` on N-level rule.
+
+### Out of scope for this commit
+
+* Spanish-borrowed cardinals (``uno``, ``dos``, ``tres``, ...) —
+  Group A item 2.
+* Compound cardinals (``labing-isa`` 11, ``dalawampu`` 20, ...) —
+  Group A item 3.
+* Predicative cardinals (``Tatlo ang anak ko``) — Group A item 4
+  (consumes the N-level rule added here).
+* Multiplicative ratios (``maka-`` + cardinal, ``[CARDINAL]ng
+  beses``) — Group A item 5.
+* Decimals + percentages — Group A items 6-7.
+* Cardinal + dem composition (``itong tatlong bata``) — would
+  need either a dem rule extension or an NP-internal cardinal
+  modifier inside the dem-headed NP. Not in this commit.
+

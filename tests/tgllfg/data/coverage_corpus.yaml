@@ -2795,6 +2795,57 @@
 - text: Parang isang aso ang bata.
   construction: 'comparative: parang + isang + N + ang-NP'
   expected: parse
+- text: Kumain ako ng isang isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng dalawang isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng tatlong isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng apat na isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng limang isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng anim na isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng pitong isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng walong isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng siyam na isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng sampung isda.
+  construction: 'cardinal: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumakanta ang isang bata.
+  construction: 'cardinal: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Kumakanta ang dalawang bata.
+  construction: 'cardinal: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Kumakanta ang apat na bata.
+  construction: 'cardinal: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Kumakanta ang anim na bata.
+  construction: 'cardinal: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Tumakbo ang sampung aso.
+  construction: 'cardinal: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Pumunta ako sa tatlong kuwarto.
+  construction: 'cardinal: NUM + linker + N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa apat na bahay.
+  construction: 'cardinal: NUM + linker + N as DAT adjunct'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

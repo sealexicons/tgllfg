@@ -1191,6 +1191,34 @@ def _comparative_corpus() -> list[dict[str, Any]]:
     return out
 
 
+def _cardinal_corpus() -> list[dict[str, Any]]:
+    """Phase 5f Commit 1: native cardinal NP-internal modifier (1-10).
+
+    Cardinal + linker + N. Vowel-final cardinals (isa, dalawa,
+    tatlo, lima, pito, walo, sampu) take the bound ``-ng`` linker;
+    consonant-final ones (apat, anim, siyam) take the standalone
+    ``na``.
+    """
+    out: list[dict[str, Any]] = []
+    cards = [
+        "isang", "dalawang", "tatlong", "apat na", "limang",
+        "anim na", "pitong", "walong", "siyam na", "sampung",
+    ]
+    for surface in cards:
+        _add(out, f"kumain ako ng {surface} isda",
+             "cardinal: NUM + linker + N as OBJ", "parse")
+    for surface in ("isang", "dalawang", "apat na", "anim na"):
+        _add(out, f"kumakanta ang {surface} bata",
+             "cardinal: NUM + linker + N as SUBJ", "parse")
+    _add(out, "tumakbo ang sampung aso",
+         "cardinal: NUM + linker + N as SUBJ", "parse")
+    _add(out, "pumunta ako sa tatlong kuwarto",
+         "cardinal: NUM + linker + N as DAT adjunct", "parse")
+    _add(out, "pumunta ako sa apat na bahay",
+         "cardinal: NUM + linker + N as DAT adjunct", "parse")
+    return out
+
+
 def _all_corpus() -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     out.extend(_voice_aspect_corpus())
@@ -1202,6 +1230,7 @@ def _all_corpus() -> list[dict[str, Any]]:
     out.extend(_applicative_causative_corpus())
     out.extend(_demonstrative_possessive_corpus())
     out.extend(_comparative_corpus())
+    out.extend(_cardinal_corpus())
     out.extend(_robustness_corpus())
     out.extend(_classic_corpus())
     return out

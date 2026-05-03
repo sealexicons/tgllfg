@@ -296,6 +296,21 @@ def disambiguate_homophone_clitics(
         if "NOUN" in prev_pos or "N" in prev_pos:
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif prev is not None and any(
+            ma.pos == "NUM" and ma.feats.get("CARDINAL") == "YES"
+            for ma in prev
+        ):
+            # Phase 5f Commit 1: cardinal followed by ``na`` is the
+            # linker for the consonant-final cardinals
+            # (``apat na bata``, ``anim na isda``, ``siyam na aklat``).
+            # Vowel-final cardinals use the bound ``-ng`` linker (which
+            # has no clitic homophone), so this branch matters only
+            # for ``apat`` / ``anim`` / ``siyam``. Without the
+            # exception, the Wackernagel pass would hoist ``na`` to
+            # clause-end as the ALREADY enclitic and the
+            # cardinal-NP-modifier rule could never fire for these
+            # three cardinals.
+            out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+        elif prev is not None and any(
             ma.pos in ("DET", "ADP") and ma.feats.get("DEM") is True
             for ma in prev
         ):
