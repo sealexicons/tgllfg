@@ -45,6 +45,13 @@ class Root:
     # become grammar-visible category features; bool/non-str values
     # ride through f-equations only.
     feats: dict[str, object] = field(default_factory=dict)
+    # Synonyms — other lex citations that share the gloss. Phase 5f
+    # Commit 4 introduces this field to record native / Spanish-
+    # borrowed pairs (``aklat`` / ``libro``, ``kape`` / ``kapeng``)
+    # and dialect / register variants. The parser does not currently
+    # use this data; it's here for downstream tools (dictionary
+    # export, cross-reference, future ranker semantic similarity).
+    synonyms: list[str] = field(default_factory=list)
 
 
 @dataclass

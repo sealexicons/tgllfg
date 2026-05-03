@@ -2033,6 +2033,46 @@ class Grammar:
             ],
         ))
 
+        # --- Phase 5f Commit 4: predicative cardinal -----------------
+        #
+        # ``Dalawa sila.`` "There are two of them."
+        # ``Tatlo ang anak ko.`` "I have three children" (lit.
+        # "three the child of-mine").
+        # ``Sandaan ang aklat.`` "A hundred books."
+        #
+        # The cardinal serves as the matrix predicate with a NOM-NP
+        # pivot. Structurally analogous to the Phase 5e Commit 26
+        # comparative parang rule above (and the Phase 5d Commit 1
+        # evidential parang) but with NUM[CARDINAL=YES] as the
+        # predicate instead of V.
+        #
+        # F-structure shape:
+        #
+        #   PRED            = 'CARDINAL <SUBJ>'
+        #   CARDINAL_VALUE  = the count from the cardinal
+        #   NUM             = the cardinal's NUM (SG for isa/uno;
+        #                     PL for the rest)
+        #   SUBJ            = the NOM-NP pivot
+        #
+        # The PRED template ``CARDINAL <SUBJ>`` parallels other
+        # predicative rules' literal-PRED convention. The semantic
+        # interpretation "X is N in count" is downstream; the parser
+        # delivers the structure.
+        #
+        # No VOICE / ASPECT / MOOD: a numeric predicate isn't a
+        # verb and doesn't carry verbal morphology. Consumers
+        # (LMT classifier, ranker) recognise the PRED shape.
+        rules.append(Rule(
+            "S",
+            ["NUM[CARDINAL=YES]", "NP[CASE=NOM]"],
+            [
+                "(↑ PRED) = 'CARDINAL <SUBJ>'",
+                "(↑ SUBJ) = ↓2",
+                "(↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE",
+                "(↑ NUM) = ↓1 NUM",
+            ],
+        ))
+
         # --- Phase 5b: multi-GEN-NP applicative frames (IV-BEN) ---
         #
         # Three-argument applicatives like ``Ipinaggawa niya ng silya

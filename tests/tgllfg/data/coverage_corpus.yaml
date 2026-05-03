@@ -2957,6 +2957,39 @@
 - text: Parang sandaan na aso ang bata.
   construction: 'cardinal-compound: parang + compound cardinal + N + ang-NP'
   expected: parse
+- text: Dalawa sila.
+  construction: 'cardinal-predicative: cardinal + PRON-clitic NOM SUBJ'
+  expected: parse
+- text: Lima kami.
+  construction: 'cardinal-predicative: cardinal + PRON-clitic NOM SUBJ'
+  expected: parse
+- text: Tatlo tayo.
+  construction: 'cardinal-predicative: cardinal + PRON-clitic NOM SUBJ'
+  expected: parse
+- text: Tatlo ang anak ko.
+  construction: 'cardinal-predicative: cardinal + NOM-NP SUBJ with possessor'
+  expected: parse
+- text: Lima ang isda.
+  construction: 'cardinal-predicative: cardinal + NOM-NP SUBJ'
+  expected: parse
+- text: Isa ang bata.
+  construction: 'cardinal-predicative: cardinal NUM=SG + NOM-NP SUBJ'
+  expected: parse
+- text: Dalawampu ang bata.
+  construction: 'cardinal-predicative: compound cardinal + NOM-NP SUBJ'
+  expected: parse
+- text: Sandaan ang aklat.
+  construction: 'cardinal-predicative: compound cardinal + NOM-NP SUBJ'
+  expected: parse
+- text: Dos sila.
+  construction: 'cardinal-predicative: Spanish cardinal + PRON-clitic SUBJ'
+  expected: parse
+- text: Singko ang isda.
+  construction: 'cardinal-predicative: Spanish cardinal + NOM-NP SUBJ'
+  expected: parse
+- text: Hindi tatlo ang anak ko.
+  construction: 'cardinal-predicative: NEG composition with predicative cardinal'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

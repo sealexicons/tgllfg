@@ -6140,5 +6140,120 @@ high-frequency v1 compound numerals.
   consumes both simple and compound cardinals via the
   N-level rule already in place.
 
+## Phase 5f Commit 4: predicative cardinal
+
+**Date:** 2026-05-03. **Status:** active. One new S rule;
+no lex changes (cardinals from Commits 1-3 are reused). Refs:
+plan §11.1 Group A item 4; Phase 5e Commit 26 (parang —
+parallel predicative S rule shape); Phase 5d Commit 1
+(evidential parang).
+
+### Grammar change
+
+```
+S → NUM[CARDINAL=YES] NP[CASE=NOM]
+Equations:
+  (↑ PRED) = 'CARDINAL <SUBJ>'
+  (↑ SUBJ) = ↓2
+  (↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE
+  (↑ NUM) = ↓1 NUM
+```
+
+The cardinal serves as the matrix predicate; the NOM-NP is the
+pivot. F-structure shape:
+
+* PRED            = 'CARDINAL <SUBJ>' (literal)
+* CARDINAL_VALUE  = the count from the cardinal
+* NUM             = SG (only ``isa`` / ``uno``) or PL (rest)
+* SUBJ            = the NOM-NP pivot
+
+The PRED template ``CARDINAL <SUBJ>`` parallels the literal
+PRED conventions of the existing predicative S rules
+(``LIKE <SUBJ, OBJ>`` for comparative parang; ``SEEM <SUBJ>``
+for evidential parang). No VOICE / ASPECT / MOOD: a numeric
+predicate isn't a verb and doesn't carry verbal morphology.
+
+### Why NUM-headed S, not NUM-as-V
+
+The plan (§11.1 Group A item 4) offers two analytical paths:
+"a NUM-as-V analysis or a small NUM-headed S rule." This
+commit takes the **NUM-headed S** path because:
+
+* Cardinals are not verbs — they don't inflect for voice,
+  aspect, or mood. Forcing them through a VERB-typed analysis
+  would require either duplicate VERB lex entries (clunky) or
+  a special VOICE / ASPECT / MOOD = NULL discipline (complex
+  and a mismatch with the existing verbal pipeline).
+* A single new S rule is the minimal change. It composes
+  trivially with the matrix negation rule (``Hindi tatlo ang
+  anak ko``) and the verbless clitic-placement pass (Phase 5e
+  Commit 22 — NUM qualifies as a content-word anchor for
+  PRON-clitic SUBJ pivots like ``sila``, ``kami``, ``tayo``).
+* The single rule consumes simple (Commit 1), Spanish-borrowed
+  (Commit 2), and compound (Commit 3) cardinals — all match
+  ``NUM[CARDINAL=YES]``.
+
+### Composition
+
+Tested compositions:
+
+* PRON-clitic SUBJ: ``Dalawa sila``, ``Lima kami``, ``Tatlo
+  tayo``. The verbless clitic pass (Phase 5e Commit 22) treats
+  NUM as the content anchor; the PRON-clitic falls into the
+  post-anchor cluster (which is its surface position anyway —
+  no movement).
+* Full NOM-NP SUBJ: ``Tatlo ang anak ko`` (with possessor),
+  ``Lima ang isda``, ``Isa ang bata`` (NUM=SG case).
+* All cardinal classes: simple (``Lima ang isda``), Spanish
+  (``Dos sila``, ``Singko ang isda``), compound (``Dalawampu
+  ang bata``, ``Sandaan ang aklat``, ``Sanlibo ang isda``).
+* NEG: ``Hindi tatlo ang anak ko`` "I don't have three
+  children" — the Phase 4 §7.4 matrix-NEG rule prepends
+  ``hindi`` to any matrix S; predicative-cardinal S is no
+  exception.
+
+### Negative fixtures
+
+Per Phase 5f §11.2 negative-fixture convention:
+
+* ``*Tatlo.`` standalone — predicative cardinal needs a SUBJ;
+  the rule requires NP[CASE=NOM] as the second daughter.
+* ``*Tatlo ng anak ko.`` — wrong case. Predicative cardinal
+  requires NOM-NP, not GEN-NP. The rule's second daughter
+  pattern is ``NP[CASE=NOM]``, not ``NP[CASE=GEN]``.
+
+### Side change: `synonyms` lex field + ``aklat`` noun
+
+This commit adds a ``synonyms: list[str]`` field to the ``Root``
+dataclass and YAML loader so synonymous lex citations can be
+recorded as data (not just comments). Motivated by adding
+``aklat`` "book" to ``data/tgl/roots.yaml`` as the canonical
+``Sandaan ang aklat`` example (Ramos 1971: "aklát n. book.
+--syn. libró."). Both ``aklat`` and the existing ``libro``
+entries get bidirectional ``synonyms`` lists. The field is
+backward-compatible (defaults to an empty list) and currently
+unused by the parser — it's recorded for downstream tools
+(dictionary export, cross-reference, future ranker semantic
+similarity).
+
+### Out of scope for this commit
+
+* Cardinal as predicate over a clausal SUBJ
+  (``Tatlo na siyang anak ang nakain ng isda`` "the three of
+  her children who ate fish are gone") — would need
+  embedding-rule extension; not standard usage.
+* Predicative-cardinal in subordinate clauses (``Sinabi niya
+  na tatlo ang anak ko``) — the linker-XCOMP / linker-COMP
+  machinery from Phase 5c §7.6 should compose; not explicitly
+  tested here but no expected change to that machinery.
+* Number-agreement enforcement (``Tatlo ako`` would be
+  semantically odd — "I am three" — but currently parses
+  without any agreement check). The matrix NUM (from cardinal)
+  and the SUBJ NUM live on different f-structures with no
+  unifying equation. Adding agreement is a follow-on; out of
+  scope for this commit.
+
+
+
 
 

@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 1015 | 99.4% |
+| **parse**    | 1026 | 99.4% |
 | **fragment** |    4 |  0.4% |
 | **fail**     |    2 |  0.2% |
-| **TOTAL**    | 1021 |       |
+| **TOTAL**    | 1032 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -39,6 +39,7 @@ out-of-scope items documented below.
 | cardinal           |    17 |        0 |    0 |    17 | 100% |
 | cardinal-spanish   |    13 |        0 |    0 |    13 | 100% |
 | cardinal-compound  |    24 |        0 |    0 |    24 | 100% |
+| cardinal-predicative |  11 |        0 |    0 |    11 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -242,6 +243,22 @@ and NUM coordination — out of scope here, deferred to the Phase
 5k coordination work and a follow-on cardinal-coordination
 commit. Multi-word and hyphenated orthographic variants
 (``apat na pu``, ``labing-isa``) likewise deferred.
+
+### cardinal-predicative (11 sentences, 100%)
+
+Phase 5f Commit 4: predicative cardinal — the cardinal serves
+as the matrix predicate with a NOM-NP pivot (``Dalawa sila``
+"There are two of them"; ``Tatlo ang anak ko`` "I have three
+children"; ``Sandaan ang bahay`` "A hundred houses"). One new
+S rule: ``S → NUM[CARDINAL=YES] NP[CASE=NOM]`` with
+``PRED='CARDINAL <SUBJ>'``, CARDINAL_VALUE projected from the
+cardinal, and SUBJ from the NOM-NP. Structurally parallel to
+the Phase 5d Commit 1 evidential parang and Phase 5e Commit 26
+comparative parang rules. The single rule fires on simple
+(Commit 1), Spanish-borrowed (Commit 2), and compound
+(Commit 3) cardinals alike. Composes with negation
+(``Hindi tatlo ang anak ko``) via the existing Phase 4 §7.4
+matrix NEG rule.
 
 ### classic (12 sentences, 100%)
 

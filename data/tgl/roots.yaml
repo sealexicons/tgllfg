@@ -1459,6 +1459,16 @@
 - citation: libro
   pos: NOUN
   gloss: book
+  synonyms: [aklat]
+- citation: aklat
+  pos: NOUN
+  gloss: book
+  # Native Tagalog form. Spanish-borrowed ``libro`` is an
+  # interchangeable synonym (Ramos 1971 dictionary entry: "aklát n.
+  # book. --syn. libró."). Both forms surface in modern usage; the
+  # native form is more frequent in literary register, the borrowed
+  # form in colloquial / technical register.
+  synonyms: [libro]
 - citation: papel
   pos: NOUN
   gloss: paper

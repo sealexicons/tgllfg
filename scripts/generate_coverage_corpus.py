@@ -1259,6 +1259,36 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
     _add(out, "parang sandaan na aso ang bata",
          "cardinal-compound: parang + compound cardinal + N + ang-NP",
          "parse")
+    # Phase 5f Commit 4: predicative cardinals — NUM as matrix
+    # predicate with NOM-NP pivot.
+    _add(out, "dalawa sila",
+         "cardinal-predicative: cardinal + PRON-clitic NOM SUBJ", "parse")
+    _add(out, "lima kami",
+         "cardinal-predicative: cardinal + PRON-clitic NOM SUBJ", "parse")
+    _add(out, "tatlo tayo",
+         "cardinal-predicative: cardinal + PRON-clitic NOM SUBJ", "parse")
+    _add(out, "tatlo ang anak ko",
+         "cardinal-predicative: cardinal + NOM-NP SUBJ with possessor",
+         "parse")
+    _add(out, "lima ang isda",
+         "cardinal-predicative: cardinal + NOM-NP SUBJ", "parse")
+    _add(out, "isa ang bata",
+         "cardinal-predicative: cardinal NUM=SG + NOM-NP SUBJ", "parse")
+    _add(out, "dalawampu ang bata",
+         "cardinal-predicative: compound cardinal + NOM-NP SUBJ",
+         "parse")
+    _add(out, "sandaan ang aklat",
+         "cardinal-predicative: compound cardinal + NOM-NP SUBJ",
+         "parse")
+    _add(out, "dos sila",
+         "cardinal-predicative: Spanish cardinal + PRON-clitic SUBJ",
+         "parse")
+    _add(out, "singko ang isda",
+         "cardinal-predicative: Spanish cardinal + NOM-NP SUBJ",
+         "parse")
+    _add(out, "hindi tatlo ang anak ko",
+         "cardinal-predicative: NEG composition with predicative cardinal",
+         "parse")
     return out
 
 
