@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 978 | 99.4% |
+| **parse**    | 991 | 99.4% |
 | **fragment** |   4 |  0.4% |
 | **fail**     |   2 |  0.2% |
-| **TOTAL**    | 984 |       |
+| **TOTAL**    | 997 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -37,6 +37,7 @@ out-of-scope items documented below.
 | **rg** (Ramos & Goulet 1981) |    20 |        0 |    0 |    20 | 100% |
 | possessive         |    18 |        0 |    0 |    18 | 100% |
 | cardinal           |    17 |        0 |    0 |    17 | 100% |
+| cardinal-spanish   |    13 |        0 |    0 |    13 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -208,6 +209,20 @@ linker after NUM[CARDINAL=YES] is disambiguated as the linker
 (not the ALREADY enclitic) by a new branch in
 ``disambiguate_homophone_clitics`` — parallel to the Phase 5e
 Commit 16 DEM-DET/DEM-ADP exception.
+
+### cardinal-spanish (13 sentences, 100%)
+
+Phase 5f Commit 2: Spanish-borrowed cardinals 1-10 (``uno``,
+``dos``, ``tres``, ``kuwatro``, ``singko``, ``sais``,
+``siyete``, ``otso``, ``nuwebe``, ``dies``). Lex-only addition
+— same syntactic distribution as the native cardinals, so the
+Phase 5f Commit 1 cardinal-NP-modifier rules fire on these
+unchanged. The borrowing dominates in prices, ages, telephone
+numbers, and clock times. Linker variant follows the borrowed
+surface form: vowel-final ``uno`` / ``kuwatro`` / ``singko`` /
+``siyete`` / ``otso`` / ``nuwebe`` take the bound ``-ng``;
+consonant-final ``dos`` / ``tres`` / ``sais`` / ``dies`` take
+the standalone ``na``. (S&O 1972 §4; R&G 1981 dialogue corpus.)
 
 ### classic (12 sentences, 100%)
 

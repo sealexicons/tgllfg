@@ -2846,6 +2846,45 @@
 - text: Pumunta ako sa apat na bahay.
   construction: 'cardinal: NUM + linker + N as DAT adjunct'
   expected: parse
+- text: Kumain ako ng unong isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng dos na isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng tres na isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng kuwatrong isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng singkong isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng sais na isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng siyeteng isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng otsong isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng nuwebeng isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng dies na isda.
+  construction: 'cardinal-spanish: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumakanta ang dos na bata.
+  construction: 'cardinal-spanish: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Tumakbo ang sais na aso.
+  construction: 'cardinal-spanish: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Parang dos na aso ang bata.
+  construction: 'cardinal-spanish: parang + Spanish cardinal + N + ang-NP'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

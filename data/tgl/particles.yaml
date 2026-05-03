@@ -324,3 +324,46 @@
 - surface: sampu
   pos: NUM
   feats: {CARDINAL: "YES", CARDINAL_VALUE: "10", NUM: PL}
+
+# === Phase 5f Commit 2: Spanish-borrowed cardinals 1-10 ==================
+# Same syntactic distribution as the native cardinals — no grammar
+# changes needed; the Phase 5f Commit 1 cardinal-NP-modifier rules
+# (NP-level + N-level) fire on these once the lex is in place.
+# Spanish cardinals dominate in prices, ages, telephone numbers,
+# and clock times; native forms dominate in counting and ritual /
+# ceremonial register. (S&O 1972 §4; R&G 1981 dialogue corpus.)
+#
+# Linker variant follows the borrowed surface form, not the original
+# Spanish: vowel-final forms (uno, kuwatro, singko, siyete, otso,
+# nuwebe) take the bound ``-ng`` linker; consonant-final forms (dos,
+# tres, sais, dies) take the standalone ``na`` linker.
+- surface: uno
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "1", NUM: SG}
+- surface: dos
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "2", NUM: PL}
+- surface: tres
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "3", NUM: PL}
+- surface: kuwatro
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "4", NUM: PL}
+- surface: singko
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "5", NUM: PL}
+- surface: sais
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "6", NUM: PL}
+- surface: siyete
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "7", NUM: PL}
+- surface: otso
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "8", NUM: PL}
+- surface: nuwebe
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "9", NUM: PL}
+- surface: dies
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "10", NUM: PL}

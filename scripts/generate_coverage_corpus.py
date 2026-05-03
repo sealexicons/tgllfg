@@ -1216,6 +1216,23 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "cardinal: NUM + linker + N as DAT adjunct", "parse")
     _add(out, "pumunta ako sa apat na bahay",
          "cardinal: NUM + linker + N as DAT adjunct", "parse")
+    # Phase 5f Commit 2: Spanish-borrowed cardinals 1-10. Same
+    # syntactic distribution as native; sweep across all 10 in OBJ
+    # plus a couple of representative SUBJ / parang fixtures.
+    spanish = [
+        "unong", "dos na", "tres na", "kuwatrong", "singkong",
+        "sais na", "siyeteng", "otsong", "nuwebeng", "dies na",
+    ]
+    for surface in spanish:
+        _add(out, f"kumain ako ng {surface} isda",
+             "cardinal-spanish: NUM + linker + N as OBJ", "parse")
+    _add(out, "kumakanta ang dos na bata",
+         "cardinal-spanish: NUM + linker + N as SUBJ", "parse")
+    _add(out, "tumakbo ang sais na aso",
+         "cardinal-spanish: NUM + linker + N as SUBJ", "parse")
+    _add(out, "parang dos na aso ang bata",
+         "cardinal-spanish: parang + Spanish cardinal + N + ang-NP",
+         "parse")
     return out
 
 

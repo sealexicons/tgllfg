@@ -5996,3 +5996,53 @@ Per Phase 5f §11.2 negative-fixture convention:
   need either a dem rule extension or an NP-internal cardinal
   modifier inside the dem-headed NP. Not in this commit.
 
+## Phase 5f Commit 2: Spanish-borrowed cardinals 1-10
+
+**Date:** 2026-05-03. **Status:** active. Lex-only addition;
+no grammar changes. Refs: plan §11.1 Group A item 2;
+Phase 5f Commit 1 (rule infrastructure).
+
+### Lex change
+
+10 entries added to ``data/tgl/particles.yaml`` parallel to
+the native-cardinal block from Commit 1:
+
+* Vowel-final (bound ``-ng`` linker): ``uno`` (1, NUM=SG),
+  ``kuwatro`` (4), ``singko`` (5), ``siyete`` (7), ``otso``
+  (8), ``nuwebe`` (9).
+* Consonant-final (standalone ``na`` linker): ``dos`` (2),
+  ``tres`` (3), ``sais`` (6), ``dies`` (10).
+
+Each carries the same ``CARDINAL: "YES"``,
+``CARDINAL_VALUE: "<N>"``, and ``NUM`` features as the native
+cardinals. CARDINAL_VALUE is duplicated across native and
+Spanish forms — both ``isa`` and ``uno`` map to "1", both
+``dalawa`` and ``dos`` map to "2", etc. — because the value
+is a numerical fact, not a register-marker. The choice between
+native and borrowed surface is a register decision left to the
+producer; the parser accepts both with identical f-structure
+output (modulo LEMMA, which encodes the surface stem).
+
+### Why no grammar change
+
+The Phase 5f Commit 1 cardinal-NP-modifier rules are
+non-conflict-matched on ``NUM[CARDINAL=YES]`` and
+``PART[LINK=NA|NG]``. They fire on any token analyzed as
+``NUM`` with ``CARDINAL=YES``, so adding new lex entries with
+that signature is sufficient. Same applies to the N-level
+companion rule and the ``disambiguate_homophone_clitics``
+NUM-CARDINAL branch.
+
+### Out of scope for this commit
+
+* Compound Spanish cardinals (``onse`` 11, ``dose`` 12, ...,
+  ``sentimo`` per cents in price expressions, etc.) — Group A
+  item 3 (compound cardinals).
+* Spanish ordinal forms (``primer``, ``segundo``, ...) — these
+  surface in fixed expressions (months, kings, etc.) but are
+  not productive in modern Tagalog; out of scope (§18).
+* Register-marking on the parsed f-structure (no
+  ``ORIGIN: SPANISH`` or ``REGISTER: BORROWED`` feature) —
+  the parser's job is structural; sociolinguistic register
+  belongs in a downstream layer.
+
