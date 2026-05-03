@@ -6915,6 +6915,117 @@ TIME deferral lifts.
   isn't yet in lex; needs broader ``mga`` analysis (also
   marks plurals).
 
+## Phase 5f Commit 12: minute composition (Group E item 4)
+
+**Date:** 2026-05-03. **Status:** active. 2 PART operators in
+lex + 4 N grammar rules + a side change to ``N → NOUN``. Refs:
+plan §11.1 Group E item 4; S&O 1972 §6.13; Phase 5f Commits 5
++ 8 + 10 + 11.
+
+### Lex change
+
+2 PART operators added to ``data/tgl/particles.yaml``:
+
+* ``y`` — Spanish "and"; PART with MINUTE_OP=Y. Forward-
+  counting: ``alasotso y singko`` "8:05".
+* ``menos`` — Spanish "minus"; PART with MINUTE_OP=MENOS.
+  Backward-counting: ``alasotso menos singko`` "7:55".
+
+### Grammar change
+
+4 new N rules — 2 ops × 2 daughter types:
+
+```
+N → N PART NUM[CARDINAL=YES]                   (cardinal minute)
+Equations:
+  (↑) = ↓1
+  (↑ MINUTE_VALUE) = ↓3 CARDINAL_VALUE
+  (↑ MINUTE_OP) = '<OP>'
+  (↓1 SEM_CLASS) =c 'TIME'                     (head is clock-time)
+  (↓2 MINUTE_OP) =c '<OP>'                     (operator is right one)
+  (↓3 CARDINAL) =c 'YES'                       (third is cardinal)
+
+N → N PART N                                   (fractional minute)
+Equations:
+  (↑) = ↓1
+  (↑ MINUTE_FRACTION) = ↓3 LEMMA
+  (↑ MINUTE_OP) = '<OP>'
+  (↓1 SEM_CLASS) =c 'TIME'
+  (↓2 MINUTE_OP) =c '<OP>'
+  (↓3 SEM_CLASS) =c 'FRACTION'                 (third is fraction)
+```
+
+The output is N (the same category as the head clock-time
+NOUN), so the result composes via existing NP-from-N rules
+into NP[CASE=DAT] / NP[CASE=NOM] / etc. without any further
+grammar additions.
+
+The MINUTE_OP / MINUTE_VALUE / MINUTE_FRACTION features are
+on the inner N. The NP-from-N projection only takes PRED +
+LEMMA, so these features stay on N and aren't visible at the
+NP level (same limitation as cardinal-modified N → NP from
+Commit 1). Tests verify parse-success rather than feature-
+value access — the rule's internals are correct; if it fires,
+the features are set on the inner N.
+
+### Side change: ``N → NOUN`` rule
+
+The minute-composition rule needs ``(↓1 SEM_CLASS) =c 'TIME'``
+on the head N. But the existing ``N → NOUN`` rule projected
+only ``PRED`` and ``LEMMA`` from NOUN to N — SEM_CLASS / etc.
+stayed on the lex token's f-structure and weren't visible at
+the N level.
+
+The rule was updated to use full sharing (``(↑) = ↓1``)
+instead of explicit per-feature projection. Now SEM_CLASS
+(and TIME_VALUE, and any other lex feature on the NOUN)
+percolates from NOUN to N. PRED is still set explicitly
+(``(↑ PRED) = 'NOUN(↑ FORM)'``) because lex equations don't
+provide a PRED for plain nouns (only when a LexicalEntry
+with a PRED template is attached, which is rare in the seed
+lex). LEMMA percolates automatically via the shared structure.
+
+This change passes the entire existing test suite without
+regression — projecting MORE features from NOUN to N is
+strictly additive for downstream consumers.
+
+### kuwarto clock-fraction polysemy: deferred
+
+The plan mentioned ``kuwarto`` "quarter (of the hour)" as a
+fractional minute (``alasotso y kuwarto`` 8:15). But ``kuwarto``
+already exists as a NOUN ("room") in roots.yaml. Adding a
+duplicate ``kuwarto`` entry with SEM_CLASS=FRACTION causes
+the morph analyzer to collapse the entries — only the latest
+one is returned, shadowing the "room" reading.
+
+Polysemy resolution requires either:
+
+1. Analyzer support for multiple lex entries per (lemma, pos)
+   tuple, returning all readings.
+2. A dedicated CLOCK-FRACTION sub-class that doesn't conflict
+   with the NOUN-room reading.
+3. Modifying the existing ``kuwarto`` to add SEM_CLASS=FRACTION
+   (loses the SEM-class-based "room" disambiguation but works
+   for both readings since SEM_CLASS isn't constrained by
+   non-clock rules).
+
+Deferred to a follow-on commit. The minute-composition rule
+fires correctly on ``kalahati`` / ``medya`` (FRACTION nouns
+without polysemy issues); ``kuwarto`` is the only deferred
+case.
+
+### Out of scope for this commit
+
+* ``alasotso y kuwarto`` parsing — see polysemy deferral
+  above.
+* Chained minute compositions (``*alasotso y singko y dies``)
+  — would require recursive composition; not standard usage.
+* Symbolic time forms (``8:30``, ``8:05``) — tokenizer
+  expansion track; §18 out-of-scope.
+* MINUTE_OP / MINUTE_VALUE / MINUTE_FRACTION projection to NP
+  — same NP-from-N limitation as cardinal-modifier features
+  from Commit 1.
+
 ### Side change (Commit 4): `synonyms` lex field + ``aklat`` noun
 
 This commit adds a ``synonyms: list[str]`` field to the ``Root``

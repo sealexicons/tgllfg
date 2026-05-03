@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 1101 | 99.5% |
+| **parse**    | 1108 | 99.5% |
 | **fragment** |    4 |  0.4% |
 | **fail**     |    2 |  0.2% |
-| **TOTAL**    | 1107 |       |
+| **TOTAL**    | 1114 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -48,6 +48,7 @@ out-of-scope items documented below.
 | arithmetic         |     9 |        0 |    0 |     9 | 100% |
 | clock-time         |    14 |        0 |    0 |    14 | 100% |
 | time-of-day        |     8 |        0 |    0 |     8 | 100% |
+| minute             |     7 |        0 |    0 |     7 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -343,6 +344,21 @@ mga aklat`` 1st-PL). The Phase 5f Commit 1 NUM-CARDINAL
 disambiguator branch is extended to also cover ``NUM[ORDINAL=YES]``
 so consonant-final ordinals (``ikaapat``, ``ikaanim``,
 ``ikasiyam``) can use the standalone ``na`` linker.
+
+### minute (7 sentences, 100%)
+
+Phase 5f Commit 12: minute composition (Group E item 4).
+Spanish-borrowed ``y`` (forward, "and") and ``menos``
+(backward, "minus") PARTs feed 4 new N grammar rules:
+``alasotso y singko`` "8:05" (cardinal minute), ``alasotso
+y medya`` "8:30" (fractional minute), ``alasotso menos
+singko`` "7:55" (backward cardinal). Side change: ``N → NOUN``
+rule updated to use full sharing (``(↑) = ↓1``) so SEM_CLASS
+percolates from NOUN to N — needed by the minute-composition
+rule's ``(↓1 SEM_CLASS) =c 'TIME'`` constraint. ``alasotso y
+kuwarto`` (8:15) is deferred — kuwarto's clock-fraction
+polysemy needs analyzer support for multiple lex entries per
+(lemma, pos) tuple, currently the analyzer collapses them.
 
 ### time-of-day (8 sentences, 100%)
 

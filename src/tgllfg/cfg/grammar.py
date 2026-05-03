@@ -510,8 +510,19 @@ class Grammar:
             "N",
             ["NOUN"],
             [
+                # Phase 5f Commit 12: share N's f-structure with the
+                # NOUN lex token entirely (was: only PRED + LEMMA
+                # projected). This propagates SEM_CLASS / TIME_VALUE
+                # / etc. up to N so downstream rules can constrain on
+                # them — the minute-composition rule needs
+                # ``(↓1 SEM_CLASS) =c 'TIME'`` on the head N. PRED is
+                # set explicitly because the lex equations don't
+                # provide one for nouns (only the lex-entry-derived
+                # PRED is set when a LexicalEntry exists, which is
+                # rare for nouns in the seed lex). LEMMA percolates
+                # automatically via the shared structure.
+                "(↑) = ↓1",
                 "(↑ PRED) = 'NOUN(↑ FORM)'",
-                "(↑ LEMMA) = ↓1 LEMMA",
             ],
         ))
 
@@ -2276,6 +2287,67 @@ class Grammar:
                 "(↓6 CARDINAL) =c 'YES'",
             ],
         ))
+
+        # --- Phase 5f Commit 12: minute composition (Group E item 4)
+        #
+        # ``alasotso y singko`` "8:05" (cardinal minutes added),
+        # ``alasotso y medya`` "8:30" (fractional minute = half),
+        # ``alasotso y kuwarto`` "8:15" (fractional = quarter),
+        # ``alasotso menos singko`` "7:55" (cardinal minutes
+        # subtracted, backward-counting).
+        #
+        # Two operator PARTs (``y`` for forward-counting,
+        # ``menos`` for backward) × two minute-daughter types
+        # (NUM[CARDINAL=YES] for cardinal minutes,
+        # N[SEM_CLASS=FRACTION] for fractional minutes) = 4 rules.
+        #
+        # Output is N (the same category as the head clock-time
+        # NOUN), so the result composes via existing NP-from-N
+        # rules into NP[CASE=DAT] / NP[CASE=NOM] / etc. without
+        # any further grammar additions.
+        #
+        # F-structure on the matrix N:
+        #   ... (everything from the head clock-time, via (↑) = ↓1)
+        #   MINUTE_OP        = 'Y' | 'MENOS'
+        #   MINUTE_VALUE     = the cardinal minute count (for NUM
+        #                      daughter)
+        #   MINUTE_FRACTION  = the fraction's LEMMA (for FRACTION
+        #                      daughter — 'medya' = 30 min,
+        #                      'kuwarto' = 15 min, 'kapat' = 15 min,
+        #                      'kalahati' = 30 min)
+        #
+        # Constraining equations enforce that:
+        #   (↓1 SEM_CLASS) =c 'TIME'      — head is a clock time
+        #   (↓2 MINUTE_OP) =c '<OP>'      — middle PART is y or menos
+        #   (↓3 CARDINAL) =c 'YES' OR     — third daughter is right type
+        #   (↓3 SEM_CLASS) =c 'FRACTION'
+        for op in ("Y", "MENOS"):
+            # Cardinal-minute version: ``alasotso y singko``
+            rules.append(Rule(
+                "N",
+                ["N", "PART", "NUM[CARDINAL=YES]"],
+                [
+                    "(↑) = ↓1",
+                    "(↑ MINUTE_VALUE) = ↓3 CARDINAL_VALUE",
+                    f"(↑ MINUTE_OP) = '{op}'",
+                    "(↓1 SEM_CLASS) =c 'TIME'",
+                    f"(↓2 MINUTE_OP) =c '{op}'",
+                    "(↓3 CARDINAL) =c 'YES'",
+                ],
+            ))
+            # Fractional-minute version: ``alasotso y medya``
+            rules.append(Rule(
+                "N",
+                ["N", "PART", "N"],
+                [
+                    "(↑) = ↓1",
+                    "(↑ MINUTE_FRACTION) = ↓3 LEMMA",
+                    f"(↑ MINUTE_OP) = '{op}'",
+                    "(↓1 SEM_CLASS) =c 'TIME'",
+                    f"(↓2 MINUTE_OP) =c '{op}'",
+                    "(↓3 SEM_CLASS) =c 'FRACTION'",
+                ],
+            ))
 
         # --- Phase 5b: multi-GEN-NP applicative frames (IV-BEN) ---
         #

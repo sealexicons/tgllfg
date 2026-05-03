@@ -637,3 +637,17 @@
 - surface: kamakalawa
   pos: ADV
   feats: {ADV_TYPE: TIME, DEIXIS_TIME: PAST}
+
+# === Phase 5f Commit 12: minute-composition operators (Group E item 4) ===
+# Spanish-borrowed minute operators for clock-time composition:
+# ``alasotso y medya`` "8:30", ``alasotso y singko`` "8:05",
+# ``alasotso menos singko`` "7:55". The ``y`` operator counts
+# forward (adds minutes); ``menos`` counts backward (subtracts).
+# Both PARTs feed the Phase 5f Commit 12 minute-composition
+# grammar rules (src/tgllfg/cfg/grammar.py).
+- surface: y
+  pos: PART
+  feats: {MINUTE_OP: "Y"}
+- surface: menos
+  pos: PART
+  feats: {MINUTE_OP: "MENOS"}

@@ -3225,6 +3225,27 @@
 - text: Kamakalawa ay kumain ako.
   construction: 'time-deictic: kamakalawa ay-fronted'
   expected: parse
+- text: Pumunta ako sa alasotso y singko.
+  construction: 'minute: clock + y + cardinal (8:05)'
+  expected: parse
+- text: Pumunta ako sa alasotso y medya.
+  construction: 'minute: clock + y + medya (8:30)'
+  expected: parse
+- text: Pumunta ako sa alasotso menos singko.
+  construction: 'minute: clock + menos + cardinal (7:55)'
+  expected: parse
+- text: Pumunta ako sa alauna y medya.
+  construction: 'minute: clock + y + medya (1:30)'
+  expected: parse
+- text: Pumunta ako sa alasdose menos singko.
+  construction: 'minute: clock + menos + cardinal (11:55)'
+  expected: parse
+- text: Pumunta ako sa alasotso y dies.
+  construction: 'minute: clock + y + cardinal (8:10)'
+  expected: parse
+- text: Pumunta ako sa alasotso menos dies.
+  construction: 'minute: clock + menos + cardinal (7:50)'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

@@ -1430,6 +1430,21 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "time-deictic: kanina ay-fronted", "parse")
     _add(out, "kamakalawa ay kumain ako",
          "time-deictic: kamakalawa ay-fronted", "parse")
+    # Phase 5f Commit 12: minute composition.
+    _add(out, "pumunta ako sa alasotso y singko",
+         "minute: clock + y + cardinal (8:05)", "parse")
+    _add(out, "pumunta ako sa alasotso y medya",
+         "minute: clock + y + medya (8:30)", "parse")
+    _add(out, "pumunta ako sa alasotso menos singko",
+         "minute: clock + menos + cardinal (7:55)", "parse")
+    _add(out, "pumunta ako sa alauna y medya",
+         "minute: clock + y + medya (1:30)", "parse")
+    _add(out, "pumunta ako sa alasdose menos singko",
+         "minute: clock + menos + cardinal (11:55)", "parse")
+    _add(out, "pumunta ako sa alasotso y dies",
+         "minute: clock + y + cardinal (8:10)", "parse")
+    _add(out, "pumunta ako sa alasotso menos dies",
+         "minute: clock + menos + cardinal (7:50)", "parse")
     return out
 
 
