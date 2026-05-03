@@ -619,3 +619,21 @@
 - surface: hati
   pos: PART
   feats: {OP: DIVIDE}
+
+# === Phase 5f Commit 11: native time deictics (Group E item 5) ===========
+# ``kanina`` "earlier today" and ``kamakalawa`` "day before
+# yesterday" — native time deictics parallel to the existing
+# ``kahapon`` / ``ngayon`` / ``bukas`` / ``mamaya`` ADV entries
+# above. Both are ADVs that can attach as clause-level ADJUNCT
+# (the bare-AdvP-as-ADJUNCT path is currently FREQUENCY-only —
+# the TIME deferral from Phase 5e Commit 3 stays in force, so
+# ``kanina`` / ``kamakalawa`` work in ay-fronting position
+# already but not yet as bare clause-final adjuncts). The lex
+# entries are added now so they're available when the TIME
+# deferral lifts.
+- surface: kanina
+  pos: ADV
+  feats: {ADV_TYPE: TIME, DEIXIS_TIME: PAST}
+- surface: kamakalawa
+  pos: ADV
+  feats: {ADV_TYPE: TIME, DEIXIS_TIME: PAST}

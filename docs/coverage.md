@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 1093 | 99.5% |
+| **parse**    | 1101 | 99.5% |
 | **fragment** |    4 |  0.4% |
 | **fail**     |    2 |  0.2% |
-| **TOTAL**    | 1099 |       |
+| **TOTAL**    | 1107 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -47,6 +47,7 @@ out-of-scope items documented below.
 | fraction           |     9 |        0 |    0 |     9 | 100% |
 | arithmetic         |     9 |        0 |    0 |     9 | 100% |
 | clock-time         |    14 |        0 |    0 |    14 | 100% |
+| time-of-day        |     8 |        0 |    0 |     8 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -342,6 +343,24 @@ mga aklat`` 1st-PL). The Phase 5f Commit 1 NUM-CARDINAL
 disambiguator branch is extended to also cover ``NUM[ORDINAL=YES]``
 so consonant-final ordinals (``ikaapat``, ``ikaanim``,
 ``ikasiyam``) can use the standalone ``na`` linker.
+
+### time-of-day (8 sentences, 100%)
+
+Phase 5f Commit 11: time-of-day modifiers + native time
+deictics (Group E items 2 + 5). 5 lex entries — 3 NOUN
+(``umaga`` morning, ``tanghali`` noon, ``hapon`` afternoon)
+with SEM_CLASS=TIME, plus 2 ADV (``kanina`` "earlier today",
+``kamakalawa`` "day before yesterday") with ADV_TYPE=TIME and
+DEIXIS_TIME=PAST. Time-of-day modifiers compose via the
+existing Phase 4 §7.8 NP-internal possessive rule
+(``alasotso ng umaga`` "8 in the morning" parses with
+``umaga`` as syntactic POSS of ``alasotso``); time-of-day
+NOUNs also work as direct DAT adjuncts (``Pumunta ako sa
+umaga``). Native time deictics work in ay-fronting position
+(``Kanina ay pumunta ako``) but bare clause-final placement
+of TIME ADVs is still deferred per the Phase 5e Commit 3
+restriction (the Phase 5f Commit 5 sentential-AdvP rule is
+FREQUENCY-only). No new grammar required for this commit.
 
 ### clock-time (14 sentences, 100%)
 

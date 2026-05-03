@@ -1618,6 +1618,32 @@
   pos: NOUN
   gloss: twelve o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "12"}
+
+# === Phase 5f Commit 11: time-of-day NOUNs (Group E item 2) ==============
+# Time-of-day terms that serve as the head of GEN-NP time-of-day
+# modifiers (``alasotso ng umaga`` "8 in the morning") via the
+# existing Phase 4 §7.8 NP-internal possessive rule, and as the
+# head of DAT-NP time adjuncts (``Pumunta ako sa umaga`` "I went
+# in the morning") via the existing intransitive ADJUNCT routing.
+# No new grammar required.
+#
+# ``gabi`` (night) already exists as a plain NOUN; not modified
+# here to keep the diff focused — its plain-NOUN form already
+# composes via existing rules. ``madaling-araw`` (dawn) is
+# hyphenated and would need a tokenizer pre-pass; deferred.
+# ``araw`` (day / sun) already exists as NOUN.
+- citation: umaga
+  pos: NOUN
+  gloss: morning
+  feats: {SEM_CLASS: TIME}
+- citation: tanghali
+  pos: NOUN
+  gloss: noon / midday
+  feats: {SEM_CLASS: TIME}
+- citation: hapon
+  pos: NOUN
+  gloss: afternoon
+  feats: {SEM_CLASS: TIME}
 - citation: lapis
   pos: NOUN
   gloss: pencil

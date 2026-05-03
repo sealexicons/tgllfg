@@ -3201,6 +3201,30 @@
 - text: Natulog ako sa alasdose.
   construction: 'clock-time: alas-N at midnight (NVOL ABIL)'
   expected: parse
+- text: Pumunta ako sa alasotso ng umaga.
+  construction: 'time-of-day: clock + ng + umaga modifier'
+  expected: parse
+- text: Pumunta ako sa alasotso ng hapon.
+  construction: 'time-of-day: clock + ng + hapon modifier'
+  expected: parse
+- text: Pumunta ako sa alastres ng tanghali.
+  construction: 'time-of-day: clock + ng + tanghali modifier'
+  expected: parse
+- text: Pumunta ako sa alasdose ng gabi.
+  construction: 'time-of-day: clock + ng + gabi modifier (existing NOUN)'
+  expected: parse
+- text: Pumunta ako sa umaga.
+  construction: 'time-of-day: bare time NOUN as DAT adjunct'
+  expected: parse
+- text: Kumain ako sa hapon.
+  construction: 'time-of-day: bare time NOUN as DAT adjunct'
+  expected: parse
+- text: Kanina ay pumunta ako.
+  construction: 'time-deictic: kanina ay-fronted'
+  expected: parse
+- text: Kamakalawa ay kumain ako.
+  construction: 'time-deictic: kamakalawa ay-fronted'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

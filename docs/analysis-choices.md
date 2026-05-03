@@ -6839,6 +6839,82 @@ commits)
 * ``mga`` time approximation (``mga alasotso`` "around 8
   o'clock") — ``mga`` itself isn't in lex yet.
 
+## Phase 5f Commit 11: time-of-day NOUNs + native time deictics (Group E items 2 + 5)
+
+**Date:** 2026-05-03. **Status:** active. Lex-only addition;
+no grammar changes. Refs: plan §11.1 Group E items 2 + 5;
+S&O 1972 §6.13; Phase 5f Commits 5 + 10.
+
+### Lex change
+
+* **Time-of-day NOUNs** (``data/tgl/roots.yaml``):
+  ``umaga`` (morning), ``tanghali`` (noon / midday),
+  ``hapon`` (afternoon). All NOUN with SEM_CLASS=TIME.
+  ``gabi`` (night) and ``araw`` (day / sun) already exist as
+  plain NOUN entries in roots.yaml; not modified here to keep
+  the diff focused — they compose via existing rules without
+  the SEM_CLASS feature.
+* **Native time deictics** (``data/tgl/particles.yaml``):
+  ``kanina`` (earlier today), ``kamakalawa`` (day before
+  yesterday). Both ADV with ADV_TYPE=TIME and
+  DEIXIS_TIME=PAST. Parallel structure to the existing
+  ``kahapon`` / ``ngayon`` / ``bukas`` / ``mamaya`` ADV entries.
+
+### Why no grammar change
+
+Time-of-day modifier composition (``alasotso ng umaga`` "8 in
+the morning") parses via the existing Phase 4 §7.8 NP-internal
+possessive rule:
+
+* ``alasotso`` — clock-time NOUN (Phase 5f Commit 10)
+* ``ng umaga`` — GEN-NP modifier
+* The possessive rule attaches GEN-NP as POSS to the head N
+
+So ``alasotso ng umaga`` parses with ``umaga`` as the
+syntactic POSS of ``alasotso``. Semantically it's time-of-day
+modification, not possession; the parser delivers the
+constituency, the semantic distinction is downstream.
+
+Direct DAT use (``Pumunta ako sa umaga`` "I went in the
+morning") parses via the standard intransitive-AV ADJUNCT
+routing — ``sa umaga`` is a DAT-NP that attaches as an
+adjunct.
+
+### Time deictics: ay-fronting yes, bare clause-final no
+
+The new ADV deictics ``kanina`` / ``kamakalawa`` work in
+ay-fronting position (``Kanina ay pumunta ako`` "Earlier today
+I went") via the Phase 5e Commit 3 ay-fronting rule, which
+accepts AdvPs of any ADV_TYPE.
+
+But bare clause-final TIME-AdvP placement (``Pumunta ako
+kanina``) is **still deferred**. The Phase 5f Commit 5
+sentential-AdvP rule (``S → S AdvP``) carries the constraining
+equation ``(↓2 ADV_TYPE) =c 'FREQUENCY'`` — restricted to
+FREQUENCY adverbs only. The TIME / SPATIAL / MANNER deferral
+from Phase 5e Commit 3 stays in force because those interact
+with the Wackernagel cluster and quantifier-float in ways that
+need separate analytical work.
+
+The lex entries are added now so they're available when the
+TIME deferral lifts.
+
+### Out of scope for this commit
+
+* Bare clause-final TIME AdvP (``Pumunta ako kanina``) —
+  Phase 5e Commit 3 deferral, lifted in a separate commit.
+* ``madaling-araw`` "dawn" — hyphenated single-word concept,
+  needs tokenizer pre-pass; deferred.
+* Updating existing ``gabi`` / ``araw`` / ``bukas`` /
+  ``oras`` to add SEM_CLASS=TIME — keep diff focused; they
+  compose via existing rules without the feature.
+* Minute composition (``alasotso y medya`` 8:30) — needs
+  ``y`` and ``menos`` PART entries plus a ``TIME → CLOCK
+  [y|menos] NUM`` rule; follow-on commit.
+* ``mga`` time approximation (``mga alasotso``) — ``mga``
+  isn't yet in lex; needs broader ``mga`` analysis (also
+  marks plurals).
+
 ### Side change (Commit 4): `synonyms` lex field + ``aklat`` noun
 
 This commit adds a ``synonyms: list[str]`` field to the ``Root``

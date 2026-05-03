@@ -1412,6 +1412,24 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "clock-time: alas-N as DAT adjunct (different verb)", "parse")
     _add(out, "natulog ako sa alasdose",
          "clock-time: alas-N at midnight (NVOL ABIL)", "parse")
+    # Phase 5f Commit 11: time-of-day NOUNs + native time deictics.
+    _add(out, "pumunta ako sa alasotso ng umaga",
+         "time-of-day: clock + ng + umaga modifier", "parse")
+    _add(out, "pumunta ako sa alasotso ng hapon",
+         "time-of-day: clock + ng + hapon modifier", "parse")
+    _add(out, "pumunta ako sa alastres ng tanghali",
+         "time-of-day: clock + ng + tanghali modifier", "parse")
+    _add(out, "pumunta ako sa alasdose ng gabi",
+         "time-of-day: clock + ng + gabi modifier (existing NOUN)",
+         "parse")
+    _add(out, "pumunta ako sa umaga",
+         "time-of-day: bare time NOUN as DAT adjunct", "parse")
+    _add(out, "kumain ako sa hapon",
+         "time-of-day: bare time NOUN as DAT adjunct", "parse")
+    _add(out, "kanina ay pumunta ako",
+         "time-deictic: kanina ay-fronted", "parse")
+    _add(out, "kamakalawa ay kumain ako",
+         "time-deictic: kamakalawa ay-fronted", "parse")
     return out
 
 
