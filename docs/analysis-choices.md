@@ -6046,3 +6046,99 @@ NUM-CARDINAL branch.
   the parser's job is structural; sociolinguistic register
   belongs in a downstream layer.
 
+## Phase 5f Commit 3: compound cardinals 11-1000
+
+**Date:** 2026-05-03. **Status:** active. Lex-only addition;
+no grammar / morph changes. Refs: plan §11.1 Group A item 3
+(compound cardinals); Phase 5f Commit 1 (rule infrastructure).
+
+### Lex change
+
+19 hand-authored single-token compound surfaces added to
+``data/tgl/particles.yaml``:
+
+* **Teens (11-19)** — ``labing-`` prefix + 1-9 base with sandhi:
+  ``labingisa`` (11), ``labindalawa`` (12), ``labintatlo`` (13),
+  ``labingapat`` (14), ``labinlima`` (15), ``labinganim`` (16),
+  ``labimpito`` (17), ``labingwalo`` (18), ``labinsiyam`` (19).
+* **Decades (20-90)** — base + ``-pu`` / ``-mpu`` / ``na pu``
+  with sandhi: ``dalawampu`` (20), ``tatlumpu`` (30),
+  ``apatnapu`` (40), ``limampu`` (50), ``animnapu`` (60),
+  ``pitumpu`` (70), ``walumpu`` (80), ``siyamnapu`` (90).
+* **Hundreds and thousands**: ``sandaan`` (100), ``sanlibo``
+  (1000).
+
+All carry ``CARDINAL: "YES"``, ``CARDINAL_VALUE`` (the integer
+as a string, e.g., ``"11"``, ``"100"``), and ``NUM: PL`` (no
+compound is singular).
+
+### Why hand-authored, not productive morphology
+
+The plan (§11.1 Group A item 3) calls for "either a small
+``num_compound`` morph class plus sandhi ops, or a hand-authored
+lex of high-frequency forms (likely both — productive paradigm
+for the systematic part, lex for the irregulars)." This commit
+takes the hand-authored path because:
+
+* The high-frequency compounds (11-19, 20, 30, 40, 50, 60, 70,
+  80, 90, 100, 1000) cover the bulk of real-world usage in
+  prices, ages, dates, recipe quantities, and clock times.
+* The productive morphology has irregular sandhi (``-mpu``
+  after vowel-final 1-9 → ``dalawampu`` from ``dalawa``;
+  ``na pu`` after consonant-final 4 / 6 / 9 → ``apatnapu``,
+  ``animnapu``, ``siyamnapu``) and an irregular vowel mutation
+  (``tatlo`` → ``tatlumpu``, ``pito`` → ``pitumpu``, ``walo``
+  → ``walumpu``). Encoding these productively requires a small
+  morph class and sandhi rules — useful but not required for
+  v1 reference-grammar coverage.
+* Higher compound numerals (101-999, 1001-9999, etc.) require
+  NUM coordination (``isang daan at dalawampu`` 120;
+  ``apat na pu`t lima`` 45 with the bound ``'t``) which is
+  deferred to the Phase 5k coordination work.
+
+### Why no grammar change
+
+Same reason as Commit 2: the cardinal-NP-modifier rules from
+Commit 1 are non-conflict-matched on ``NUM[CARDINAL=YES]`` and
+``PART[LINK=NA|NG]``, so any new lex with that signature fires
+unchanged. The ``disambiguate_homophone_clitics`` NUM-CARDINAL
+branch likewise fires for compounds — the consonant-final
+compounds (``labingapat``, ``labinganim``, ``labinsiyam``,
+``sandaan``) all use the standalone ``na`` linker and benefit
+from the same disambiguation lift.
+
+### Orthography choice
+
+Single-token spellings throughout (``labingisa`` not
+``labing-isa``; ``apatnapu`` not ``apat na pu``; ``sandaan``
+not ``sang daan``). All three families are attested in modern
+Tagalog, but the single-token form is what the existing
+tokenizer yields without modification:
+
+* Hyphenated forms (``labing-isa``) tokenize as 3 tokens
+  (``labing``, ``-``, ``isa``) — would need a tokenizer
+  pre-pass to merge.
+* Multi-word forms (``apat na pu``) tokenize as 3 tokens
+  and would need NUM-internal grammar rules to compose
+  (with productive value calculation: 4 × 10 = 40).
+
+Both are interesting follow-ons but neither is needed to cover
+high-frequency v1 compound numerals.
+
+### Out of scope for this commit
+
+* Productive ``labing-`` and ``-pu`` morph paradigms (would
+  cover any base 1-9 systematically; useful for testing /
+  generation but redundant with the hand-authored lex for
+  parsing).
+* Hyphenated and multi-word compound variants
+  (``labing-isa``, ``apat na pu``).
+* Higher compound numerals (101-999, 1001+) requiring
+  coordination — deferred to Phase 5k cardinal-coordination
+  follow-on.
+* Group A item 4 (predicative cardinals) — next commit;
+  consumes both simple and compound cardinals via the
+  N-level rule already in place.
+
+
+

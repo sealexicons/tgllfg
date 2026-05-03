@@ -1233,6 +1233,32 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
     _add(out, "parang dos na aso ang bata",
          "cardinal-spanish: parang + Spanish cardinal + N + ang-NP",
          "parse")
+    # Phase 5f Commit 3: compound cardinals 11-1000. Hand-authored
+    # single-token forms; same syntactic distribution as simple
+    # cardinals.
+    compounds = [
+        "labingisang", "labindalawang", "labintatlong",
+        "labingapat na", "labinlimang", "labinganim na",
+        "labimpitong", "labingwalong", "labinsiyam na",
+        "dalawampung", "tatlumpung", "apatnapung", "limampung",
+        "animnapung", "pitumpung", "walumpung", "siyamnapung",
+        "sandaan na", "sanlibong",
+    ]
+    for surface in compounds:
+        _add(out, f"kumain ako ng {surface} isda",
+             "cardinal-compound: NUM + linker + N as OBJ", "parse")
+    _add(out, "kumakanta ang dalawampung bata",
+         "cardinal-compound: NUM + linker + N as SUBJ", "parse")
+    _add(out, "tumakbo ang sandaan na aso",
+         "cardinal-compound: NUM + linker + N as SUBJ", "parse")
+    _add(out, "pumunta ako sa sanlibong kuwarto",
+         "cardinal-compound: NUM + linker + N as DAT adjunct", "parse")
+    _add(out, "parang dalawampung aso ang bata",
+         "cardinal-compound: parang + compound cardinal + N + ang-NP",
+         "parse")
+    _add(out, "parang sandaan na aso ang bata",
+         "cardinal-compound: parang + compound cardinal + N + ang-NP",
+         "parse")
     return out
 
 

@@ -2885,6 +2885,78 @@
 - text: Parang dos na aso ang bata.
   construction: 'cardinal-spanish: parang + Spanish cardinal + N + ang-NP'
   expected: parse
+- text: Kumain ako ng labingisang isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labindalawang isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labintatlong isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labingapat na isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labinlimang isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labinganim na isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labimpitong isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labingwalong isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng labinsiyam na isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng dalawampung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng tatlumpung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng apatnapung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng limampung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng animnapung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng pitumpung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng walumpung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng siyamnapung isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng sandaan na isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumain ako ng sanlibong isda.
+  construction: 'cardinal-compound: NUM + linker + N as OBJ'
+  expected: parse
+- text: Kumakanta ang dalawampung bata.
+  construction: 'cardinal-compound: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Tumakbo ang sandaan na aso.
+  construction: 'cardinal-compound: NUM + linker + N as SUBJ'
+  expected: parse
+- text: Pumunta ako sa sanlibong kuwarto.
+  construction: 'cardinal-compound: NUM + linker + N as DAT adjunct'
+  expected: parse
+- text: Parang dalawampung aso ang bata.
+  construction: 'cardinal-compound: parang + compound cardinal + N + ang-NP'
+  expected: parse
+- text: Parang sandaan na aso ang bata.
+  construction: 'cardinal-compound: parang + compound cardinal + N + ang-NP'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

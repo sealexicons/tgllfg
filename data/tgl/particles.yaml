@@ -367,3 +367,94 @@
 - surface: dies
   pos: NUM
   feats: {CARDINAL: "YES", CARDINAL_VALUE: "10", NUM: PL}
+
+# === Phase 5f Commit 3: compound cardinals 11-1000 =======================
+# Hand-authored single-token lex for the high-frequency compound
+# cardinals: teens (11-19), decades (20-90), 100, 1000. Same
+# syntactic distribution as the simple cardinals from Commits 1-2;
+# the cardinal-NP-modifier rules fire on these unchanged.
+#
+# The productive morphology (labing- prefix on the 1-9 base for
+# the teens; -pu suffix with sandhi for the decades; sandaan /
+# sanlibo for hundreds / thousands) is real, but for v1 reference-
+# grammar coverage the hand-authored lex is sufficient. A
+# productive paradigm with sandhi rules is a deferred follow-on
+# (plan §11.1 Group A item 3 — "likely both"). See plan §18 if
+# productive treatment becomes needed.
+#
+# Coordinated higher numerals (``apat na pu`t lima`` 45,
+# ``isang daan at dalawampu`` 120) need the bound ``'t`` clitic
+# split and NUM coordination — out of scope here, deferred to
+# the Phase 5k coordination work which already plans the ``'t``
+# pass (and to a follow-on cardinal-coordination commit).
+#
+# Orthography: this commit uses single-token spellings throughout
+# (``labingisa`` not ``labing-isa``; ``apatnapu`` not ``apat na pu``).
+# Both hyphenated and three-word variants are attested in modern
+# Tagalog; the single-token form is what the existing tokenizer
+# yields without modification. Multi-word variants would need
+# either a tokenizer pre-pass or NUM-internal grammar rules
+# (see deferred-items list above).
+
+# --- Teens 11-19 (labing- + base) ----------------------------------------
+- surface: labingisa
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "11", NUM: PL}
+- surface: labindalawa
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "12", NUM: PL}
+- surface: labintatlo
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "13", NUM: PL}
+- surface: labingapat
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "14", NUM: PL}
+- surface: labinlima
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "15", NUM: PL}
+- surface: labinganim
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "16", NUM: PL}
+- surface: labimpito
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "17", NUM: PL}
+- surface: labingwalo
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "18", NUM: PL}
+- surface: labinsiyam
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "19", NUM: PL}
+
+# --- Decades 20-90 (base + -pu / -mpu / -na pu sandhi) -------------------
+- surface: dalawampu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "20", NUM: PL}
+- surface: tatlumpu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "30", NUM: PL}
+- surface: apatnapu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "40", NUM: PL}
+- surface: limampu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "50", NUM: PL}
+- surface: animnapu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "60", NUM: PL}
+- surface: pitumpu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "70", NUM: PL}
+- surface: walumpu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "80", NUM: PL}
+- surface: siyamnapu
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "90", NUM: PL}
+
+# --- Hundreds and thousands ----------------------------------------------
+- surface: sandaan
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "100", NUM: PL}
+- surface: sanlibo
+  pos: NUM
+  feats: {CARDINAL: "YES", CARDINAL_VALUE: "1000", NUM: PL}

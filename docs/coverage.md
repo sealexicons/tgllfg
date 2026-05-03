@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 991 | 99.4% |
-| **fragment** |   4 |  0.4% |
-| **fail**     |   2 |  0.2% |
-| **TOTAL**    | 997 |       |
+| **parse**    | 1015 | 99.4% |
+| **fragment** |    4 |  0.4% |
+| **fail**     |    2 |  0.2% |
+| **TOTAL**    | 1021 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -38,6 +38,7 @@ out-of-scope items documented below.
 | possessive         |    18 |        0 |    0 |    18 | 100% |
 | cardinal           |    17 |        0 |    0 |    17 | 100% |
 | cardinal-spanish   |    13 |        0 |    0 |    13 | 100% |
+| cardinal-compound  |    24 |        0 |    0 |    24 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -223,6 +224,24 @@ surface form: vowel-final ``uno`` / ``kuwatro`` / ``singko`` /
 ``siyete`` / ``otso`` / ``nuwebe`` take the bound ``-ng``;
 consonant-final ``dos`` / ``tres`` / ``sais`` / ``dies`` take
 the standalone ``na``. (S&O 1972 §4; R&G 1981 dialogue corpus.)
+
+### cardinal-compound (24 sentences, 100%)
+
+Phase 5f Commit 3: hand-authored compound cardinals 11-1000.
+Teens 11-19 (``labingisa`` ... ``labinsiyam``), decades 20-90
+(``dalawampu``, ``tatlumpu``, ``apatnapu``, ..., ``siyamnapu``),
+plus 100 (``sandaan``) and 1000 (``sanlibo``). Lex-only single-
+token forms — same syntactic distribution as simple cardinals,
+so the Phase 5f Commit 1 rules fire unchanged. The productive
+morphology (``labing-`` prefix on 1-9 for the teens; ``-pu``
+suffix with sandhi for the decades) is real, but for v1
+reference-grammar coverage the hand-authored lex of high-
+frequency forms is sufficient. Coordinated higher numerals
+(``apat na pu`t lima`` 45) need the bound ``'t`` clitic split
+and NUM coordination — out of scope here, deferred to the Phase
+5k coordination work and a follow-on cardinal-coordination
+commit. Multi-word and hyphenated orthographic variants
+(``apat na pu``, ``labing-isa``) likewise deferred.
 
 ### classic (12 sentences, 100%)
 
