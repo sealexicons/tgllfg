@@ -567,7 +567,46 @@
     - {op: cv_redup}
     - {op: prefix, value: "ka"}
     - {op: prefix, value: "i"}
-  notes: ikakakain (CTPL — cv-redup + ka- prefix + i-)
+  notes: ikakakain (CTPL "long" form — cv-redup + ka- prefix + i-)
+
+# Phase 5e Commit 24: IV-REASON CTPL "short" form. Lifts the
+# Phase 5d Commit 9 paradigm-gap deferral. The Handbook of
+# Tagalog Verbs (Ramos & Schachter; data/tgl/dictionaries/)
+# lists RF (Reason Focus) Cont with two variants separated by
+# `/` — e.g., for vowel-initial root `ingay`: `ikakaingay /
+# ikaiingay` (line 4120 in OCR); for `init`: `ikakainit /
+# ikaiinit` (line 4161). The first variant has an extra CV-
+# redup; the second drops it.
+#
+# For consonant-initial bases like `kain`, the analogous
+# "short" form is `ikakain` (i + ka + kain, no further redup) —
+# distinct from the "long" `ikakakain` only in whether the
+# CV-redup fires. Both are valid IV-REASON CTPL surfaces.
+#
+# This cell uses operations `[prefix ka, prefix i]` (no
+# cv_redup), producing the "short" form. Same operations as
+# IV-CONVEY CTPL would produce the same surface for some bases
+# (e.g., `kain` → `ikakain`); the morph analyzer returns BOTH
+# analyses (IV-CONVEY CTPL and IV-REASON CTPL "short"), and
+# the chart parser explores both readings. For other bases,
+# the surfaces differ:
+#
+#   kain    → IV-CONVEY CTPL `ikakain`  + IV-REASON CTPL "short" `ikakain` (same surface)
+#           → IV-REASON CTPL "long" `ikakakain` (existing cell above)
+#   bili    → IV-CONVEY CTPL `ibibili`  + IV-REASON CTPL "short" `ikabili`
+#           → IV-REASON CTPL "long" `ikabibili` (existing cell above)
+#   sulat   → IV-CONVEY CTPL `isusulat` + IV-REASON CTPL "short" `ikasulat`
+#           → IV-REASON CTPL "long" `ikasusulat` (existing cell above)
+- voice: IV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: ika
+  feats: {APPL: REASON}
+  operations:
+    - {op: prefix, value: "ka"}
+    - {op: prefix, value: "i"}
+  notes: ikakain, ikabili (CTPL "short" form — ka- prefix + i-, no cv-redup)
 
 # --- pa-...-in monoclausal direct causative (CAUS=DIRECT, OV) -----------
 - voice: OV

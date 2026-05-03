@@ -891,6 +891,21 @@ def _applicative_causative_corpus() -> list[dict[str, Any]]:
     # sandhi op).
     for s in ("ipinambili ng titser ang panulat",):
         _add(out, s, "applicative: ipang- (instrumental, IV-INSTR)", "parse")
+
+    # Phase 5e Commit 24: IV-REASON CTPL "short" form. The new
+    # paradigm cell makes ``ikakain`` analyse as IV-REASON CTPL
+    # alongside its existing IV-CONVEY CTPL reading; ``ikasulat``
+    # gets a new IV-REASON CTPL surface (distinct from the IV-
+    # CONVEY ``isusulat``).
+    _add(out, "ikakain ko ang isda",
+         "applicative: ika- (REASON, IV-REASON CTPL short form)",
+         "parse")
+    _add(out, "ikasulat ko ang liham",
+         "applicative: ika- (REASON, IV-REASON CTPL short form for sulat)",
+         "parse")
+    _add(out, "ikakakain ko ang isda",
+         "applicative: ika- (REASON, IV-REASON CTPL long form, regression)",
+         "parse")
     return out
 
 

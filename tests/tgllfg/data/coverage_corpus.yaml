@@ -2543,6 +2543,15 @@
 - text: Ipinambili ng titser ang panulat.
   construction: 'applicative: ipang- (instrumental, IV-INSTR)'
   expected: parse
+- text: Ikakain ko ang isda.
+  construction: 'applicative: ika- (REASON, IV-REASON CTPL short form)'
+  expected: parse
+- text: Ikasulat ko ang liham.
+  construction: 'applicative: ika- (REASON, IV-REASON CTPL short form for sulat)'
+  expected: parse
+- text: Ikakakain ko ang isda.
+  construction: 'applicative: ika- (REASON, IV-REASON CTPL long form, regression)'
+  expected: parse
 - text: Kumain ito.
   construction: 'demonstrative: standalone NOM'
   expected: parse

@@ -5527,3 +5527,113 @@ Two of three Group G items remain to be addressed:
 * **`huwag`'s MOOD=IMP lifted to matrix** (Phase 4 §7.2
   limitation). Coming in Commit 25.
 
+## Phase 5e Commit 24: IV-REASON CTPL short-form paradigm gap
+
+**Date:** 2026-05-02. **Status:** active. Lifts the Phase 5d
+Commit 9 paradigm-gap deferral. Before this commit, the surface
+``ikakain`` had only an IV-CONVEY CTPL reading; Tagalog
+actually admits both IV-CONVEY and IV-REASON CTPL on this
+surface, with IV-REASON being a "short" form of the longer
+``ikakakain``.
+
+### Evidence from the Handbook of Tagalog Verbs
+
+The Handbook (Ramos & Schachter; ``data/tgl/dictionaries/``)
+lists Reason Focus (RF) Cont with two surface variants
+separated by ``/`` for vowel-initial roots:
+
+```
+ingay (noise):  RF Cont. ikakaingay / ikaiingay   (line 4120 in OCR)
+init (heat):    RF Cont. ikakainit  / ikaiinit    (line 4161 in OCR)
+```
+
+The first variant has an extra CV-redup; the second drops it.
+The pattern generalizes to consonant-initial bases — for
+``kain``, the "long" form is ``ikakakain`` (i + ka + cv-redup
++ kain = 4 syllables), the "short" form is ``ikakain`` (i + ka
++ kain, no further redup = 3 syllables).
+
+### The change: a second IV-REASON CTPL paradigm cell
+
+A new cell in ``data/tgl/paradigms.yaml`` between the existing
+IV-REASON CTPL cell and the pa-...-in causative section:
+
+```yaml
+- voice: IV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: ika
+  feats: {APPL: REASON}
+  operations:
+    - {op: prefix, value: "ka"}
+    - {op: prefix, value: "i"}
+  notes: ikakain, ikabili (CTPL "short" form — ka- prefix + i-, no cv-redup)
+```
+
+Compared to the existing "long" form cell (operations
+``[cv_redup, prefix ka, prefix i]``), this cell omits the
+``cv_redup`` step. For ``kain``, both produce different
+surfaces — long: ``ikakakain``, short: ``ikakain``.
+
+### Surface coincidence with IV-CONVEY CTPL
+
+For ``kain``, the IV-REASON CTPL "short" form ``ikakain``
+coincides with the IV-CONVEY CTPL form (also ``ikakain`` —
+``i-`` + cv-redup of ``kain`` = ``ikakain``). The morph
+analyzer returns BOTH analyses for the surface; the chart
+parser explores both readings.
+
+For other ``ika``-class bases like ``sulat``, the surfaces
+differ:
+
+```
+sulat → IV-CONVEY CTPL:        isusulat   (i + cv-redup + sulat)
+      → IV-REASON CTPL "short": ikasulat   (i + ka + sulat)
+      → IV-REASON CTPL "long":  ikasusulat (i + ka + cv-redup + sulat)
+```
+
+So ``ikasulat`` is unambiguously IV-REASON CTPL.
+
+### Affix-class scope
+
+The new cell only fires for roots with ``ika`` in their
+``affix_class`` — currently ``kain`` and ``sulat``. Other
+verbs (``bili``, ``inom``, ``basa``, etc.) don't get the
+IV-REASON forms at all because they lack the ``ika`` class
+declaration. Expanding this declaration is a per-verb lex
+data follow-up, driven by which verbs corpus pressure
+surfaces.
+
+### Parse-level effect
+
+```
+Ikakain ko ang isda.   → 2 parses:
+                          PRED=KAIN <SUBJ, OBJ-AGENT>          (CONVEY)
+                          PRED=EAT-FOR-REASON <SUBJ, OBJ-AGENT> (REASON)
+Ikasulat ko ang liham. → 1 parse with REASON PRED.
+Ikakakain ko ang isda. → 1 parse with REASON PRED (long form, regression).
+```
+
+### Why we don't add a new ASPECT value
+
+The Handbook's pattern shows the "short" form is still
+aspectually CTPL — Cont. is the aspect column. Adding a new
+ASPECT (e.g., INF or REASON-SHORT) would conflict with the
+paradigm system's structure (aspect × mood × voice × affix
+class). The cleaner interpretation: the ``ka-`` prefix carries
+the REASON applicative and the rest of the form is shaped by
+aspect. The "short" form is a phonologically reduced CTPL
+where the CV-redup step is optional / absorbed.
+
+### No new tests for ``bili`` and others
+
+The new cell technically also fires for any ``ika``-class
+root, but only ``kain`` and ``sulat`` are currently declared.
+``bili`` doesn't have ``ika`` in its affix_class
+(``[um, in_oblig, an_oblig, i_oblig, mang, maka, ipag, ipang,
+mag_an, mang_retain]``), so ``ikabili`` wouldn't be generated
+even after this commit. Adding ``ika`` to ``bili``'s affix
+class is a separate lex-data follow-up (R&B 1986 doesn't list
+IV-REASON for ``bili``, so we don't pre-emptively add it).
+
