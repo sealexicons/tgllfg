@@ -6772,6 +6772,433 @@ NUM[ORDINAL=YES] constraint.
   ordinal/cardinal disjointness from Commit 7 prevents it
   structurally).
 
+## Phase 5f Commit 10: clock-time NOUNs (Group E item 1)
+
+**Date:** 2026-05-03. **Status:** active. Lex-only (12 entries);
+no grammar changes. Refs: plan §11.1 Group E item 1; R&G 1981;
+S&O 1972 §6.13.
+
+### Lex change
+
+12 NOUN entries added to ``data/tgl/roots.yaml`` for the
+Spanish-borrowed clock-time terms:
+
+* ``alauna`` (1 o'clock — special vowel-initial contraction:
+  ``ala-`` + ``una`` not ``alas-uno``).
+* ``alasdos`` (2), ``alastres`` (3), ``alaskuwatro`` (4),
+  ``alassingko`` (5), ``alassais`` (6), ``alassiyete`` (7),
+  ``alasotso`` (8), ``alasnuwebe`` (9), ``alasdies`` (10),
+  ``alasonse`` (11), ``alasdose`` (12).
+
+Each NOUN with ``SEM_CLASS: TIME`` and ``TIME_VALUE``: the
+hour as a string ("1" through "12").
+
+### Why no grammar change
+
+Clock-time NPs use the existing NP-from-N rules (``NP[CASE=DAT]
+→ ADP[CASE=DAT] N``) with ``sa`` as the DAT marker. Sentence-
+level attachment is via the standard intransitive-AV ADJUNCT
+routing. ``Pumunta ako sa alasotso`` "I went at 8 o'clock"
+parses with ``alasotso`` as the head N of a sa-marked DAT NP,
+attached to the matrix as ADJUNCT.
+
+### Orthography choice: single-token
+
+The standard orthography for clock-time terms is hyphenated
+(``ala-una``, ``alas-otso``, ``alas-dose``). The current
+tokenizer splits on hyphens (``alas-otso`` → ``alas`` + ``-`` +
+``otso``), so the standard orthography would require either:
+
+* A tokenizer pre-pass that recognises and merges
+  ``alas?-NUM`` patterns into a single token before morph.
+* A grammar rule that consumes ``alas`` + hyphen + cardinal as
+  a single TIME constituent.
+
+Both are deferred to a follow-on commit. This commit uses
+single-token forms (``alauna`` / ``alasotso`` / etc.) — a real
+attested orthographic variant in informal text — that work with
+the existing tokenizer unchanged.
+
+### Out of scope for this commit (deferred to follow-on Group E
+commits)
+
+* Hyphenated orthography (``ala-una`` / ``alas-otso``).
+* Time-of-day modifiers (``alasotso ng umaga`` "8 in the
+  morning"; ``alasotso ng hapon`` "8 in the afternoon"). Needs
+  ``umaga`` / ``hapon`` / ``gabi`` / ``tanghali`` /
+  ``madaling-araw`` lex with SEM_CLASS=TIME plus a small
+  modifier rule.
+* Minute composition: ``alasotso y medya`` 8:30, ``alasotso
+  y singko`` 8:05, ``alasotso menos singko`` 7:55. Needs
+  ``y`` and ``menos`` PART entries plus a
+  ``TIME → CLOCK [y|menos] NUM`` rule.
+* Native time deictics: ``kanina`` (earlier today), ``mamaya``
+  (later today), ``tanghali`` (noon), ``madaling-araw`` (dawn).
+  ``ngayon``, ``bukas``, ``kahapon``, ``mamaya`` already exist
+  as ADV; the missing ones plus a uniform SEM_CLASS=TIME tag.
+* ``mga`` time approximation (``mga alasotso`` "around 8
+  o'clock") — ``mga`` itself isn't in lex yet.
+
+## Phase 5f Commit 11: time-of-day NOUNs + native time deictics (Group E items 2 + 5)
+
+**Date:** 2026-05-03. **Status:** active. Lex-only addition;
+no grammar changes. Refs: plan §11.1 Group E items 2 + 5;
+S&O 1972 §6.13; Phase 5f Commits 5 + 10.
+
+### Lex change
+
+* **Time-of-day NOUNs** (``data/tgl/roots.yaml``):
+  ``umaga`` (morning), ``tanghali`` (noon / midday),
+  ``hapon`` (afternoon). All NOUN with SEM_CLASS=TIME.
+  ``gabi`` (night) and ``araw`` (day / sun) already exist as
+  plain NOUN entries in roots.yaml; not modified here to keep
+  the diff focused — they compose via existing rules without
+  the SEM_CLASS feature.
+* **Native time deictics** (``data/tgl/particles.yaml``):
+  ``kanina`` (earlier today), ``kamakalawa`` (day before
+  yesterday). Both ADV with ADV_TYPE=TIME and
+  DEIXIS_TIME=PAST. Parallel structure to the existing
+  ``kahapon`` / ``ngayon`` / ``bukas`` / ``mamaya`` ADV entries.
+
+### Why no grammar change
+
+Time-of-day modifier composition (``alasotso ng umaga`` "8 in
+the morning") parses via the existing Phase 4 §7.8 NP-internal
+possessive rule:
+
+* ``alasotso`` — clock-time NOUN (Phase 5f Commit 10)
+* ``ng umaga`` — GEN-NP modifier
+* The possessive rule attaches GEN-NP as POSS to the head N
+
+So ``alasotso ng umaga`` parses with ``umaga`` as the
+syntactic POSS of ``alasotso``. Semantically it's time-of-day
+modification, not possession; the parser delivers the
+constituency, the semantic distinction is downstream.
+
+Direct DAT use (``Pumunta ako sa umaga`` "I went in the
+morning") parses via the standard intransitive-AV ADJUNCT
+routing — ``sa umaga`` is a DAT-NP that attaches as an
+adjunct.
+
+### Time deictics: ay-fronting yes, bare clause-final no
+
+The new ADV deictics ``kanina`` / ``kamakalawa`` work in
+ay-fronting position (``Kanina ay pumunta ako`` "Earlier today
+I went") via the Phase 5e Commit 3 ay-fronting rule, which
+accepts AdvPs of any ADV_TYPE.
+
+But bare clause-final TIME-AdvP placement (``Pumunta ako
+kanina``) is **still deferred**. The Phase 5f Commit 5
+sentential-AdvP rule (``S → S AdvP``) carries the constraining
+equation ``(↓2 ADV_TYPE) =c 'FREQUENCY'`` — restricted to
+FREQUENCY adverbs only. The TIME / SPATIAL / MANNER deferral
+from Phase 5e Commit 3 stays in force because those interact
+with the Wackernagel cluster and quantifier-float in ways that
+need separate analytical work.
+
+The lex entries are added now so they're available when the
+TIME deferral lifts.
+
+### Out of scope for this commit
+
+* Bare clause-final TIME AdvP (``Pumunta ako kanina``) —
+  Phase 5e Commit 3 deferral, lifted in a separate commit.
+* ``madaling-araw`` "dawn" — hyphenated single-word concept,
+  needs tokenizer pre-pass; deferred.
+* Updating existing ``gabi`` / ``araw`` / ``bukas`` /
+  ``oras`` to add SEM_CLASS=TIME — keep diff focused; they
+  compose via existing rules without the feature.
+* Minute composition (``alasotso y medya`` 8:30) — needs
+  ``y`` and ``menos`` PART entries plus a ``TIME → CLOCK
+  [y|menos] NUM`` rule; follow-on commit.
+* ``mga`` time approximation (``mga alasotso``) — ``mga``
+  isn't yet in lex; needs broader ``mga`` analysis (also
+  marks plurals).
+
+## Phase 5f Commit 12: minute composition (Group E item 4)
+
+**Date:** 2026-05-03. **Status:** active. 2 PART operators in
+lex + 4 N grammar rules + a side change to ``N → NOUN``. Refs:
+plan §11.1 Group E item 4; S&O 1972 §6.13; Phase 5f Commits 5
++ 8 + 10 + 11.
+
+### Lex change
+
+2 PART operators added to ``data/tgl/particles.yaml``:
+
+* ``y`` — Spanish "and"; PART with MINUTE_OP=Y. Forward-
+  counting: ``alasotso y singko`` "8:05".
+* ``menos`` — Spanish "minus"; PART with MINUTE_OP=MENOS.
+  Backward-counting: ``alasotso menos singko`` "7:55".
+
+### Grammar change
+
+4 new N rules — 2 ops × 2 daughter types:
+
+```
+N → N PART NUM[CARDINAL=YES]                   (cardinal minute)
+Equations:
+  (↑) = ↓1
+  (↑ MINUTE_VALUE) = ↓3 CARDINAL_VALUE
+  (↑ MINUTE_OP) = '<OP>'
+  (↓1 SEM_CLASS) =c 'TIME'                     (head is clock-time)
+  (↓2 MINUTE_OP) =c '<OP>'                     (operator is right one)
+  (↓3 CARDINAL) =c 'YES'                       (third is cardinal)
+
+N → N PART N                                   (fractional minute)
+Equations:
+  (↑) = ↓1
+  (↑ MINUTE_FRACTION) = ↓3 LEMMA
+  (↑ MINUTE_OP) = '<OP>'
+  (↓1 SEM_CLASS) =c 'TIME'
+  (↓2 MINUTE_OP) =c '<OP>'
+  (↓3 SEM_CLASS) =c 'FRACTION'                 (third is fraction)
+```
+
+The output is N (the same category as the head clock-time
+NOUN), so the result composes via existing NP-from-N rules
+into NP[CASE=DAT] / NP[CASE=NOM] / etc. without any further
+grammar additions.
+
+The MINUTE_OP / MINUTE_VALUE / MINUTE_FRACTION features are
+on the inner N. The NP-from-N projection only takes PRED +
+LEMMA, so these features stay on N and aren't visible at the
+NP level (same limitation as cardinal-modified N → NP from
+Commit 1). Tests verify parse-success rather than feature-
+value access — the rule's internals are correct; if it fires,
+the features are set on the inner N.
+
+### Side change: ``N → NOUN`` rule
+
+The minute-composition rule needs ``(↓1 SEM_CLASS) =c 'TIME'``
+on the head N. But the existing ``N → NOUN`` rule projected
+only ``PRED`` and ``LEMMA`` from NOUN to N — SEM_CLASS / etc.
+stayed on the lex token's f-structure and weren't visible at
+the N level.
+
+The rule was updated to use full sharing (``(↑) = ↓1``)
+instead of explicit per-feature projection. Now SEM_CLASS
+(and TIME_VALUE, and any other lex feature on the NOUN)
+percolates from NOUN to N. PRED is still set explicitly
+(``(↑ PRED) = 'NOUN(↑ FORM)'``) because lex equations don't
+provide a PRED for plain nouns (only when a LexicalEntry
+with a PRED template is attached, which is rare in the seed
+lex). LEMMA percolates automatically via the shared structure.
+
+This change passes the entire existing test suite without
+regression — projecting MORE features from NOUN to N is
+strictly additive for downstream consumers.
+
+### kuwarto clock-fraction polysemy: deferred
+
+The plan mentioned ``kuwarto`` "quarter (of the hour)" as a
+fractional minute (``alasotso y kuwarto`` 8:15). But ``kuwarto``
+already exists as a NOUN ("room") in roots.yaml. Adding a
+duplicate ``kuwarto`` entry with SEM_CLASS=FRACTION causes
+the morph analyzer to collapse the entries — only the latest
+one is returned, shadowing the "room" reading.
+
+Polysemy resolution requires either:
+
+1. Analyzer support for multiple lex entries per (lemma, pos)
+   tuple, returning all readings.
+2. A dedicated CLOCK-FRACTION sub-class that doesn't conflict
+   with the NOUN-room reading.
+3. Modifying the existing ``kuwarto`` to add SEM_CLASS=FRACTION
+   (loses the SEM-class-based "room" disambiguation but works
+   for both readings since SEM_CLASS isn't constrained by
+   non-clock rules).
+
+Deferred to a follow-on commit. The minute-composition rule
+fires correctly on ``kalahati`` / ``medya`` (FRACTION nouns
+without polysemy issues); ``kuwarto`` is the only deferred
+case.
+
+### Out of scope for this commit
+
+* ``alasotso y kuwarto`` parsing — see polysemy deferral
+  above.
+* Chained minute compositions (``*alasotso y singko y dies``)
+  — would require recursive composition; not standard usage.
+* Symbolic time forms (``8:30``, ``8:05``) — tokenizer
+  expansion track; §18 out-of-scope.
+* MINUTE_OP / MINUTE_VALUE / MINUTE_FRACTION projection to NP
+  — same NP-from-N limitation as cardinal-modifier features
+  from Commit 1.
+
+## Phase 5f Commit 13: dates (Group F)
+
+**Date:** 2026-05-03. **Status:** active. 19 NOUN entries +
+2 PART entries + 4 grammar rules (3 PP variants + 1 S rule).
+Refs: plan §11.1 Group F; S&O 1972 §6.13; Phase 5f Commits 7
+(ordinals) + 11 (time deictics).
+
+### Lex change
+
+**Months** (data/tgl/roots.yaml): 12 Spanish-borrowed month
+names (``enero`` ... ``disyembre``) as NOUN with
+``SEM_CLASS: MONTH`` and ``MONTH_VALUE`` (1-12).
+
+**Days of week** (data/tgl/roots.yaml): 7 day-of-week NOUNs
+— Spanish-borrowed (``lunes``, ``martes``, ``miyerkules``,
+``huwebes``, ``biyernes``, ``sabado``) and native
+(``linggo``). All NOUN with ``SEM_CLASS: DAY`` and
+``DAY_VALUE`` (1-7). The existing ``linggo`` entry was
+updated in place to add SEM_CLASS=DAY (rather than adding a
+duplicate, which the morph analyzer collapses — see Phase 5f
+Commit 12 kuwarto polysemy memo).
+
+**Temporal-frame PARTs** (data/tgl/particles.yaml):
+
+* ``tuwing`` (every) — PART with ``TIME_FRAME: PERIODIC``.
+  Introduces a periodic temporal-frame PP.
+* ``noong`` (last / past) — PART with ``TIME_FRAME: PAST``.
+  Introduces a past temporal-frame PP.
+
+### Grammar change
+
+**3 PP rules** (gated by SEM_CLASS):
+
+```
+PP → PART N
+Equations:
+  (↑) = ↓1
+  (↑ OBJ) = ↓2
+  (↓1 TIME_FRAME)              # existential — PART has TIME_FRAME
+  (↓2 SEM_CLASS) =c '<X>'      # X in {DAY, TIME, MONTH}
+```
+
+3 rules covering DAY, TIME, MONTH SEM_CLASSes. The
+constraining equations gate the rule to genuinely temporal
+NOUNs only — ``*tuwing bata`` (no SEM_CLASS) doesn't compose
+because the constraining equation fails. Other temporal
+SEM_CLASSes (FRACTION, PERCENTAGE, etc.) also don't fire
+because they're not in the explicit DAY/TIME/MONTH set.
+
+**1 S rule** for clause-final temporal-frame PP attachment:
+
+```
+S → S PP
+Equations:
+  (↑) = ↓1
+  ↓2 ∈ (↑ ADJUNCT)
+  (↓2 TIME_FRAME)              # existential — PP has TIME_FRAME
+```
+
+Closes part of the Phase 5e Commit 3 deferral on bare PP
+placement — scoped to TIME_FRAME PPs only via the existential
+constraint. The existing PREP-PPs (``para sa X``,
+``tungkol sa X``, ``mula sa X``, ``dahil sa X``) don't have
+TIME_FRAME, so this rule doesn't fire on them — they remain
+restricted to ay-fronting position (Phase 5e Commit 3
+deferral remains in force for non-TIME_FRAME PPs).
+
+Same scoped-lift pattern as Phase 5f Commit 5's
+``S → S AdvP[FREQUENCY]``.
+
+### Date formula
+
+The formula ``ang ikalimang araw ng Enero`` "the fifth day
+of January" composes from existing rules:
+
+* ``ikalimang araw`` — ordinal-NP-modifier rule (Phase 5f
+  Commit 7) — ``ikalima`` + ``-ng`` + ``araw`` produces an
+  N with ORDINAL_VALUE=5 and LEMMA=araw.
+* ``ang ikalimang araw`` — existing ``NP[CASE=NOM] →
+  DET[CASE=NOM] N`` rule.
+* ``ng Enero`` — existing GEN-NP rule.
+* ``ang ikalimang araw ng Enero`` — existing Phase 4 §7.8
+  NP-internal possessive rule attaches GEN-NP as POSS.
+
+No new grammar required.
+
+### Out of scope for this commit
+
+* **Day-month abbreviated form** (``Mayo 5``) — needs digit
+  tokenization (the one digit-form case the linguistic scope
+  can't avoid per plan §11.1 Group F item 4). Tokenizer pre-
+  pass is the cleanest fix; deferred.
+* **Elided-N date formula** (``ang ikalima ng Enero``
+  without ``araw``) — needs an ordinal-as-N rule. Not
+  standard in formal Tagalog (the explicit ``araw`` is
+  preferred); deferred.
+* **Year expressions** (``noong 1990``) — needs digit
+  tokenization.
+* **MONTH_VALUE / DAY_VALUE projection to PP/NP** — same
+  NP-from-N projection limitation as cardinal-modifier
+  features.
+* **Other temporal SEM_CLASSes for tuwing/noong** —
+  e.g., season (``tuwing tag-init`` "every dry season"). Add
+  SEM_CLASS=SEASON to the rule's variant list when Group G
+  seasons land.
+
+## Phase 5f Commit 13 (bundled): mga time approximation (Group E item 3)
+
+**Date:** 2026-05-03. **Status:** active. 1 PART entry + 1
+grammar rule. Refs: plan §11.1 Group E item 3; Phase 5f
+Commit 10 (clock-time NOUNs consumed unchanged).
+
+This work landed inside the bundled git Commit 13 (``ec23c55
+Phase 5f Commit 13 — mga time approximation (Group E item 3)
++ dates (Group F)``); originally sequenced as a separate
+Commit 14 in the plan but bundled when the mga gap was
+identified during Group F work. The plan's Commit-14 slot is
+re-used by Group G seasons below.
+
+### Lex change
+
+* ``mga`` PART (data/tgl/particles.yaml) with
+  ``PLURAL_MARKER: YES``. The Tagalog plural / approximator
+  particle, used for both plural marking on regular nouns
+  (``ang mga aklat`` "the books") and approximation on
+  temporal / quantitative NPs (``mga alasotso`` "around 8
+  o'clock", ``mga sampu`` "around 10"). This commit adds the
+  lex entry plus a grammar rule for the time-approximation
+  reading only; plural marking and cardinal approximation
+  are deferred to follow-on commits.
+
+### Grammar change
+
+```
+N → PART N
+Equations:
+  (↑) = ↓2                          # share with head N
+  (↑ APPROX) = 'YES'                 # add APPROX feature
+  (↓1 PLURAL_MARKER) =c 'YES'       # particle is mga
+  (↓2 SEM_CLASS) =c 'TIME'          # head is clock-time
+```
+
+Output is N (same category as the head clock-time NOUN), so
+``sa mga alasotso`` composes via existing NP-from-N rules
+into NP[CASE=DAT] without further grammar additions.
+
+### Why TIME-only
+
+The plan note allows DAY / MONTH approximation in principle,
+but ``mga Lunes`` / ``mga Pebrero`` are not idiomatic in
+standard Tagalog (they would mean "plural Mondays" /
+"plural Februarys", not "around Monday" / "around February").
+So the approximator rule is restricted to SEM_CLASS=TIME.
+
+Cardinal approximation (``mga sampu`` "around ten") is a
+parallel construction with NUM[CARDINAL=YES] daughter; the
+plan calls for it as a follow-on.
+
+### Out of scope for this commit
+
+* **Plural marker on regular nouns** (``ang mga aklat`` "the
+  books") — needs an NP-internal rule for ``DET PART[mga] N``
+  plural marking, plus possibly NUM agreement effects.
+  Substantial scope; deferred.
+* **Cardinal approximation** (``mga sampu`` "around ten") —
+  parallel rule with NUM[CARDINAL=YES] daughter. Lex-only
+  follow-on — the rule already exists in shape, just needs
+  a NUM variant.
+* **DAY / MONTH approximation** — not idiomatic in standard
+  Tagalog.
+* **APPROX projection to NP** — same NP-from-N projection
+  limitation as cardinal-modifier features (Commit 1).
+
 ### Side change (Commit 4): `synonyms` lex field + ``aklat`` noun
 
 This commit adds a ``synonyms: list[str]`` field to the ``Root``
@@ -6803,7 +7230,151 @@ similarity).
   unifying equation. Adding agreement is a follow-on; out of
   scope for this commit.
 
+## Phase 5f Commit 14: seasons (Group G)
 
+**Date:** 2026-05-03. **Status:** active. 5 NOUN entries +
+1 grammar-rule extension (existing Commit 13 PP rule gains a
+SEASON variant). Refs: plan §11.1 Group G; R&B 1986; S&O 1972
+§6.13; Phase 5f Commit 13 (temporal-frame PP rule consumed
+with one variant added).
 
+Closes Phase 5f §11.1 Group G (seasons) with a deliberately
+small footprint — a hand-authored lex of the canonical two-
+season system plus three additional ``tag-`` compounds, and
+a one-line variant addition to the Phase 5f Commit 13
+temporal-frame PP rule.
 
+### Lex change
+
+Five season NOUNs (``data/tgl/roots.yaml``):
+
+* ``taginit`` — hot / dry season.
+* ``tagulan`` — rainy season.
+* ``taglamig`` — cold spell (colloquial).
+* ``tagaraw`` — sunny period.
+* ``taggutom`` — hunger season (figurative).
+
+All NOUN with ``SEM_CLASS: SEASON``. The first two are the
+canonical two-season pair; the remaining three are attested
+``tag-`` compounds (R&B 1986; S&O 1972 §6.13).
+
+### Why lex-only, not productive ``tag-``
+
+Per plan §11.1 Group G: the productive ``tag-`` morphology
+*does* derive nominalisations from a wider set of bases, but
+those productive readings are figurative or colloquial
+(``tag-pasko`` "Christmas season" — fine; but
+``tag-bili`` "buying season" — non-canonical, marketing-only)
+and don't form a clean season-naming class. A hand-authored
+lex per attested form is more conservative than a productive
+class, avoiding the over-coverage that a productive
+``tag- + N → SEASON`` rule would introduce.
+
+### Hyphenation: deferred
+
+The canonical orthography is ``tag-init``, ``tag-ulan``, etc.
+with an internal hyphen. The current tokenizer
+(``src/tgllfg/text/tokenizer.py``: ``\\w+|\\S``) splits hyphens
+into three tokens — ``tag-init`` becomes
+``[tag, -, init]``. The cleanest fix is a tokenizer pre-pass
+that recognises a closed list of canonical hyphenated forms
+(or a productive ``tag-`` glue rule) and emits them as single
+tokens; that pre-pass is deferred and is the only barrier to
+exposing the canonical orthography in the lex.
+
+For now the seed lex stores the single-token forms
+(``taginit``, ``tagulan``, ``taglamig``, ``tagaraw``,
+``taggutom``) which compose via the standard NOUN path. This
+is non-standard orthography but pragmatically equivalent for
+parsing.
+
+### Grammar change
+
+The Phase 5f Commit 13 temporal-frame PP rule
+
+```
+PP → PART N
+Equations:
+  (↑) = ↓1
+  (↑ OBJ) = ↓2
+  (↓1 TIME_FRAME)              # existential — PART has TIME_FRAME
+  (↓2 SEM_CLASS) =c '<X>'      # X in {DAY, TIME, MONTH, SEASON}
+```
+
+gains a SEASON variant (the ``for sem_class in (...)`` loop
+in ``src/tgllfg/cfg/grammar.py`` extends to four members).
+This makes ``tuwing tagulan`` "every rainy season" (PERIODIC)
+and ``noong taginit`` "during the dry season" (PAST) parse
+via the same machinery as ``tuwing Lunes`` / ``noong
+Pebrero``. The clause-final S → S PP rule is consumed
+unchanged (it's gated on TIME_FRAME, not SEM_CLASS).
+
+### Composition without new grammar
+
+* ``sa tagulan`` "in the rainy season" — DAT-NP; the existing
+  intransitive-ADJUNCT routing handles it. The SEM_CLASS=
+  SEASON marking does not disturb this path.
+* ``Tuwing tagulan ay pumunta ako.`` — ay-fronting of the new
+  PERIODIC SEASON PP composes via the existing ay-fronting
+  machinery on PPs (Phase 5e Commit 3).
+
+### Why piggyback on the Commit 13 PP rule
+
+The temporal-frame PP rule was authored with explicit
+SEM_CLASS gating precisely to scope clause-final temporal
+adjuncts to genuinely temporal NOUNs only (``*tuwing bata``
+fails). Adding SEASON to the variant tuple is a one-line
+extension — it doesn't change the rule's shape, doesn't
+introduce a new f-structure feature, and doesn't open up the
+rule to non-temporal heads. The Commit 13 author flagged this
+exact follow-on in their "Out of scope" notes ("Add
+SEM_CLASS=SEASON to the rule's variant list when Group G
+seasons land"); this commit lifts that deferral.
+
+An alternative (a separate season-only PP rule) would have
+been wasteful — same rule shape, same constraining equations,
+just a different SEM_CLASS literal.
+
+### Negative fixtures (per §11.2)
+
+* ``*Pumunta ako tuwing aklat.`` — ``aklat`` has no
+  SEM_CLASS, so the constraining equation fails for all four
+  variants (DAY / TIME / MONTH / SEASON). The PP rule does
+  not fire and the sentence does not produce a TIME_FRAME PP
+  parse.
+* ``*Pumunta ako tuwing araw.`` — ``araw`` is an existing
+  NOUN (day / sun) with no SEM_CLASS set. Including this
+  fixture confirms the gate is constraining (not just
+  descriptive): if the gate were missing, ``araw`` would be a
+  plausible season-domain head and the rule would over-fire.
+* ``aklat`` does not pick up SEM_CLASS=SEASON from anywhere.
+  (Sanity check on the lex addition.)
+
+### Out of scope for this commit
+
+* **Hyphenated orthography** (``tag-init``, ``tag-ulan``,
+  etc.) — needs the deferred tokenizer pre-pass described
+  above.
+* **Productive ``tag-`` paradigm** — see "Why lex-only" above.
+  Adding a productive class would over-cover figurative /
+  colloquial uses.
+* **SEM_CLASS=SEASON projection to NP / PP-matrix** — the
+  same NP-from-N projection limitation as cardinal-modifier
+  features (Commit 1) and MONTH_VALUE / DAY_VALUE on date
+  PPs (Commit 13). Tests walk down to the OBJ N to read
+  SEM_CLASS rather than expecting it on the matrix
+  PP / NP.
+* **``mga`` season approximation** (``mga tagulan`` "around
+  the rainy season") — not idiomatic; the analogue ``mga
+  Pebrero`` is similarly non-idiomatic. Not added.
+
+### Side change: ruff F841 cleanup in test_cardinal_predicative.py
+
+Removed an unused local variable (``f = rs[0][1]`` at
+``tests/tgllfg/test_cardinal_predicative.py:253``) that ruff
+F841 flagged. The variable was assigned but never read — the
+test's actual assertion logic uses a separate ``parse_text``
+call below the dead assignment. Pre-existing from Phase 5f
+Commit 4 (``ff4de03``). Cleaned up here so ``hatch run check``
+passes ahead of the Phase 5f Group EFG PR.
 

@@ -1399,6 +1399,99 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "parse")
     _add(out, "sampu hati sa lima ay dalawa",
          "arithmetic: division (10/5=2)", "parse")
+    # Phase 5f Commit 10: clock-time NOUNs (Group E item 1).
+    clock_times = [
+        "alauna", "alasdos", "alastres", "alaskuwatro", "alassingko",
+        "alassais", "alassiyete", "alasotso", "alasnuwebe", "alasdies",
+        "alasonse", "alasdose",
+    ]
+    for ct in clock_times:
+        _add(out, f"pumunta ako sa {ct}",
+             "clock-time: alas-N as DAT adjunct", "parse")
+    _add(out, "kumain ako sa alauna",
+         "clock-time: alas-N as DAT adjunct (different verb)", "parse")
+    _add(out, "natulog ako sa alasdose",
+         "clock-time: alas-N at midnight (NVOL ABIL)", "parse")
+    # Phase 5f Commit 11: time-of-day NOUNs + native time deictics.
+    _add(out, "pumunta ako sa alasotso ng umaga",
+         "time-of-day: clock + ng + umaga modifier", "parse")
+    _add(out, "pumunta ako sa alasotso ng hapon",
+         "time-of-day: clock + ng + hapon modifier", "parse")
+    _add(out, "pumunta ako sa alastres ng tanghali",
+         "time-of-day: clock + ng + tanghali modifier", "parse")
+    _add(out, "pumunta ako sa alasdose ng gabi",
+         "time-of-day: clock + ng + gabi modifier (existing NOUN)",
+         "parse")
+    _add(out, "pumunta ako sa umaga",
+         "time-of-day: bare time NOUN as DAT adjunct", "parse")
+    _add(out, "kumain ako sa hapon",
+         "time-of-day: bare time NOUN as DAT adjunct", "parse")
+    _add(out, "kanina ay pumunta ako",
+         "time-deictic: kanina ay-fronted", "parse")
+    _add(out, "kamakalawa ay kumain ako",
+         "time-deictic: kamakalawa ay-fronted", "parse")
+    # Phase 5f Commit 12: minute composition.
+    _add(out, "pumunta ako sa alasotso y singko",
+         "minute: clock + y + cardinal (8:05)", "parse")
+    _add(out, "pumunta ako sa alasotso y medya",
+         "minute: clock + y + medya (8:30)", "parse")
+    _add(out, "pumunta ako sa alasotso menos singko",
+         "minute: clock + menos + cardinal (7:55)", "parse")
+    _add(out, "pumunta ako sa alauna y medya",
+         "minute: clock + y + medya (1:30)", "parse")
+    _add(out, "pumunta ako sa alasdose menos singko",
+         "minute: clock + menos + cardinal (11:55)", "parse")
+    _add(out, "pumunta ako sa alasotso y dies",
+         "minute: clock + y + cardinal (8:10)", "parse")
+    _add(out, "pumunta ako sa alasotso menos dies",
+         "minute: clock + menos + cardinal (7:50)", "parse")
+    # Phase 5f Commit 13: dates (Group F).
+    days_short = ["lunes", "martes", "miyerkules", "huwebes",
+                  "biyernes", "sabado", "linggo"]
+    for day in days_short:
+        _add(out, f"pumunta ako sa {day}",
+             "date: sa + day-of-week as DAT adjunct", "parse")
+    months_sample = ["enero", "pebrero", "marso", "agosto", "disyembre"]
+    for day in days_short[:3]:
+        _add(out, f"pumunta ako tuwing {day}",
+             "date: tuwing + day-of-week as PP", "parse")
+    for month in months_sample:
+        _add(out, f"pumunta kami noong {month}",
+             "date: noong + month as PP", "parse")
+    _add(out, "pumunta ako tuwing umaga",
+         "date: tuwing + TIME as PP", "parse")
+    _add(out, "pumunta ako noong umaga",
+         "date: noong + TIME as PP", "parse")
+    _add(out, "pumunta ako sa ikalimang araw ng enero",
+         "date: ordinal + araw + ng + month (date formula)", "parse")
+    _add(out, "pumunta ako sa unang araw ng disyembre",
+         "date: ordinal + araw + ng + month (date formula)", "parse")
+    _add(out, "tuwing lunes ay pumunta ako",
+         "date: tuwing-PP ay-fronted", "parse")
+    # Phase 5f Commit 13: mga time approximation (bundled with
+    # dates above; section was originally numbered Commit 14 in
+    # the plan but landed in the bundled Commit 13 commit).
+    _add(out, "pumunta ako sa mga alasotso",
+         "mga: time approximation (around 8 o'clock)", "parse")
+    _add(out, "pumunta ako sa mga alauna",
+         "mga: time approximation (around 1 o'clock)", "parse")
+    _add(out, "pumunta ako sa mga alasdose",
+         "mga: time approximation (around 12 o'clock)", "parse")
+    _add(out, "kumain ako sa mga alasotso",
+         "mga: time approximation with kain verb", "parse")
+    # Phase 5f Commit 14: seasons (Group G).
+    seasons = ["taginit", "tagulan", "taglamig", "tagaraw", "taggutom"]
+    for s in seasons:
+        _add(out, f"pumunta ako sa {s}",
+             f"season: sa + {s} as DAT adjunct", "parse")
+    for s in seasons:
+        _add(out, f"pumunta ako tuwing {s}",
+             f"season: tuwing + {s} as PERIODIC PP", "parse")
+    for s in seasons:
+        _add(out, f"pumunta kami noong {s}",
+             f"season: noong + {s} as PAST PP", "parse")
+    _add(out, "tuwing tagulan ay pumunta ako",
+         "season: tuwing-PP ay-fronted", "parse")
     return out
 
 

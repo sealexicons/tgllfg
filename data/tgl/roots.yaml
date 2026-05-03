@@ -1547,6 +1547,242 @@
   pos: NOUN
   gloss: part
   feats: {SEM_CLASS: PART}
+
+# === Phase 5f Commit 10: clock-time NOUNs (Group E item 1) ===============
+# Spanish-borrowed clock-time terms 1-12. ``ala-`` (vowel-initial,
+# only ``una`` for 1 o'clock) vs ``alas-`` (everything else).
+# Single-token forms — the standard hyphenated orthography
+# (``ala-una`` / ``alas-dos`` / etc.) requires a tokenizer pre-pass
+# (the tokenizer splits hyphens), deferred follow-on. Multi-token
+# variants (``ala una`` / ``alas dos``) are non-standard.
+#
+# SEM_CLASS=TIME marks them for the LMT classifier and downstream
+# consumers (sa-NP routing, future temporal-frame ADJUNCT slot).
+# TIME_VALUE records the hour (1-12). Used as:
+#
+# * DAT-NP for time adjunct: ``Pumunta ako sa alasotso.``
+#   "I went at 8 o'clock." (sa-NP via existing rules.)
+# * Bare-NP for time-stating: ``Alasotso na.`` "It's 8 o'clock
+#   now." (verbless, with adv enclitic.)
+# * Compositional with minute (``alasotso y medya`` 8:30,
+#   ``alasotso menos singko`` 7:55) — minute composition is a
+#   deferred follow-on.
+# * With time-of-day modifier (``alasotso ng umaga`` "8 in the
+#   morning") — time-of-day modifiers are a separate follow-on.
+# (R&G 1981; S&O 1972 §6.13.)
+- citation: alauna
+  pos: NOUN
+  gloss: one o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "1"}
+- citation: alasdos
+  pos: NOUN
+  gloss: two o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "2"}
+- citation: alastres
+  pos: NOUN
+  gloss: three o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "3"}
+- citation: alaskuwatro
+  pos: NOUN
+  gloss: four o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "4"}
+- citation: alassingko
+  pos: NOUN
+  gloss: five o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "5"}
+- citation: alassais
+  pos: NOUN
+  gloss: six o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "6"}
+- citation: alassiyete
+  pos: NOUN
+  gloss: seven o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "7"}
+- citation: alasotso
+  pos: NOUN
+  gloss: eight o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "8"}
+- citation: alasnuwebe
+  pos: NOUN
+  gloss: nine o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "9"}
+- citation: alasdies
+  pos: NOUN
+  gloss: ten o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "10"}
+- citation: alasonse
+  pos: NOUN
+  gloss: eleven o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "11"}
+- citation: alasdose
+  pos: NOUN
+  gloss: twelve o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "12"}
+
+# === Phase 5f Commit 11: time-of-day NOUNs (Group E item 2) ==============
+# Time-of-day terms that serve as the head of GEN-NP time-of-day
+# modifiers (``alasotso ng umaga`` "8 in the morning") via the
+# existing Phase 4 §7.8 NP-internal possessive rule, and as the
+# head of DAT-NP time adjuncts (``Pumunta ako sa umaga`` "I went
+# in the morning") via the existing intransitive ADJUNCT routing.
+# No new grammar required.
+#
+# ``gabi`` (night) already exists as a plain NOUN; not modified
+# here to keep the diff focused — its plain-NOUN form already
+# composes via existing rules. ``madaling-araw`` (dawn) is
+# hyphenated and would need a tokenizer pre-pass; deferred.
+# ``araw`` (day / sun) already exists as NOUN.
+- citation: umaga
+  pos: NOUN
+  gloss: morning
+  feats: {SEM_CLASS: TIME}
+- citation: tanghali
+  pos: NOUN
+  gloss: noon / midday
+  feats: {SEM_CLASS: TIME}
+- citation: hapon
+  pos: NOUN
+  gloss: afternoon
+  feats: {SEM_CLASS: TIME}
+
+# === Phase 5f Commit 13: Spanish month names (Group F item 1) ============
+# 12 Spanish-borrowed month names. SEM_CLASS=MONTH marks them
+# for the LMT classifier and feeds the Phase 5f Commit 13
+# date-of-week PP rule (PP → PART[TIME_FRAME] N with
+# (↓2 SEM_CLASS) =c 'MONTH'). Also used in date formulas
+# (``ang ikalimang araw ng Enero`` "the fifth day of January")
+# via the existing Phase 4 §7.8 NP-internal possessive rule.
+- citation: enero
+  pos: NOUN
+  gloss: January
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "1"}
+- citation: pebrero
+  pos: NOUN
+  gloss: February
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "2"}
+- citation: marso
+  pos: NOUN
+  gloss: March
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "3"}
+- citation: abril
+  pos: NOUN
+  gloss: April
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "4"}
+- citation: mayo
+  pos: NOUN
+  gloss: May
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "5"}
+- citation: hunyo
+  pos: NOUN
+  gloss: June
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "6"}
+- citation: hulyo
+  pos: NOUN
+  gloss: July
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "7"}
+- citation: agosto
+  pos: NOUN
+  gloss: August
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "8"}
+- citation: setyembre
+  pos: NOUN
+  gloss: September
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "9"}
+- citation: oktubre
+  pos: NOUN
+  gloss: October
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "10"}
+- citation: nobyembre
+  pos: NOUN
+  gloss: November
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "11"}
+- citation: disyembre
+  pos: NOUN
+  gloss: December
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "12"}
+
+# === Phase 5f Commit 13: day-of-week names (Group F item 2) ==============
+# 7 day-of-week names — Spanish-borrowed (Lunes, Martes,
+# Miyerkules, Huwebes, Biyernes, Sabado) and native (Linggo).
+# SEM_CLASS=DAY marks them for the LMT classifier and feeds
+# the Phase 5f Commit 13 date-of-week PP rule. Also work as
+# DAT-NP via existing rules (``sa Lunes`` "on Monday").
+- citation: lunes
+  pos: NOUN
+  gloss: Monday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "1"}
+- citation: martes
+  pos: NOUN
+  gloss: Tuesday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "2"}
+- citation: miyerkules
+  pos: NOUN
+  gloss: Wednesday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "3"}
+- citation: huwebes
+  pos: NOUN
+  gloss: Thursday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "4"}
+- citation: biyernes
+  pos: NOUN
+  gloss: Friday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "5"}
+- citation: sabado
+  pos: NOUN
+  gloss: Saturday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "6"}
+  # ``linggo`` (Sunday / week) lives in its existing entry below;
+  # SEM_CLASS=DAY added there to avoid duplicating the surface
+  # (the morph analyzer collapses duplicate (lemma, pos) entries
+  # — see Phase 5f Commit 12 kuwarto deferral memo).
+
+# === Phase 5f Commit 14: seasons (Group G) ===============================
+# Two-season system (canonical): ``tag-init`` (hot / dry season)
+# and ``tag-ulan`` (rainy season). Plus three other ``tag-``
+# compounds: ``tag-lamig`` (cold spell — colloquial),
+# ``tag-araw`` (sunny period), ``tag-gutom`` (hunger season —
+# figurative). All zero-derived nouns built on ``tag-`` + N. Per
+# plan §11.1 Group G: lex per attested form rather than productive
+# paradigm — productive ``tag-`` carries figurative / colloquial
+# readings beyond pure season-naming, so a hand-authored lex is
+# more conservative than a productive class.
+#
+# SEM_CLASS=SEASON marks them for the LMT classifier and feeds
+# the Phase 5f Commit 13 temporal-frame PP rule (new SEASON
+# variant added in this commit) so:
+#
+#   tuwing tagulan  "every rainy season"   (PERIODIC PP)
+#   noong taginit   "during the dry season" (PAST PP)
+#
+# Hyphenation note: the canonical orthography is ``tag-init``,
+# ``tag-ulan``, etc. The current tokenizer
+# (``src/tgllfg/text/tokenizer.py``: ``\w+|\S``) splits hyphens
+# into three tokens (``tag``, ``-``, ``init``); supporting the
+# hyphenated forms requires a tokenizer pre-pass and is deferred.
+# For now the seed lex stores the single-token forms
+# (``taginit``, ``tagulan``, ...) which compose via the standard
+# NOUN path. (R&B 1986; S&O 1972 §6.13.)
+- citation: taginit
+  pos: NOUN
+  gloss: hot/dry season
+  feats: {SEM_CLASS: SEASON}
+- citation: tagulan
+  pos: NOUN
+  gloss: rainy season
+  feats: {SEM_CLASS: SEASON}
+- citation: taglamig
+  pos: NOUN
+  gloss: cold spell
+  feats: {SEM_CLASS: SEASON}
+- citation: tagaraw
+  pos: NOUN
+  gloss: sunny period
+  feats: {SEM_CLASS: SEASON}
+- citation: taggutom
+  pos: NOUN
+  gloss: hunger season
+  feats: {SEM_CLASS: SEASON}
+
 - citation: lapis
   pos: NOUN
   gloss: pencil
@@ -1606,6 +1842,7 @@
 - citation: linggo
   pos: NOUN
   gloss: week, Sunday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "7"}
 
 - citation: pera
   pos: NOUN

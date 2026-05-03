@@ -510,8 +510,19 @@ class Grammar:
             "N",
             ["NOUN"],
             [
+                # Phase 5f Commit 12: share N's f-structure with the
+                # NOUN lex token entirely (was: only PRED + LEMMA
+                # projected). This propagates SEM_CLASS / TIME_VALUE
+                # / etc. up to N so downstream rules can constrain on
+                # them — the minute-composition rule needs
+                # ``(↓1 SEM_CLASS) =c 'TIME'`` on the head N. PRED is
+                # set explicitly because the lex equations don't
+                # provide one for nouns (only the lex-entry-derived
+                # PRED is set when a LexicalEntry exists, which is
+                # rare for nouns in the seed lex). LEMMA percolates
+                # automatically via the shared structure.
+                "(↑) = ↓1",
                 "(↑ PRED) = 'NOUN(↑ FORM)'",
-                "(↑ LEMMA) = ↓1 LEMMA",
             ],
         ))
 
@@ -2173,6 +2184,95 @@ class Grammar:
             ],
         ))
 
+        # --- Phase 5f Commit 14: mga time approximation (Group E item 3)
+        #
+        # ``mga alasotso`` "around 8 o'clock", ``mga alauna``
+        # "around 1 o'clock", ``sa mga alastres`` "at around 3
+        # o'clock". The ``mga`` particle (PLURAL_MARKER=YES in
+        # particles.yaml) takes a TIME-class N and produces an
+        # approximated time N (with APPROX=YES feature).
+        #
+        # Output is N (same category as the head clock-time
+        # NOUN), so ``sa mga alasotso`` composes via existing
+        # NP-from-N rules into NP[CASE=DAT] without further
+        # grammar additions.
+        #
+        # The constraining equations enforce:
+        #   (↓1 PLURAL_MARKER) =c 'YES'   — particle is mga
+        #   (↓2 SEM_CLASS) =c 'TIME'      — head is clock-time
+        #
+        # Plural marking on regular nouns (``ang mga aklat`` "the
+        # books") and cardinal approximation (``mga sampu`` "around
+        # ten") use the same ``mga`` lex entry but are separate
+        # constructions; deferred follow-ons.
+        rules.append(Rule(
+            "N",
+            ["PART", "N"],
+            [
+                "(↑) = ↓2",
+                "(↑ APPROX) = 'YES'",
+                "(↓1 PLURAL_MARKER) =c 'YES'",
+                "(↓2 SEM_CLASS) =c 'TIME'",
+            ],
+        ))
+
+        # --- Phase 5f Commit 13: temporal-frame PP (Group F item 5)
+        #
+        # ``tuwing Lunes`` "every Monday", ``noong Pebrero`` "in
+        # February", ``noong umaga`` "this morning". The temporal-
+        # frame PARTs (``tuwing`` / ``noong``) introduce a bare-N
+        # complement (no DAT marker, unlike standard PPs).
+        #
+        # F-structure:
+        #   PP[TIME_FRAME=PERIODIC|PAST, OBJ={N}]
+        #
+        # The PP shares with PART (``(↑) = ↓1``), pulling
+        # TIME_FRAME up to the matrix PP. The N becomes OBJ.
+        #
+        # Four SEM_CLASS variants (DAY / TIME / MONTH / SEASON)
+        # gate the rule to genuinely temporal NOUNs only —
+        # ``*tuwing bata`` ("every child"?) doesn't compose because
+        # ``bata`` has no SEM_CLASS. The constraining equations
+        # ``(↓1 TIME_FRAME)`` (existential — PART has TIME_FRAME)
+        # and ``(↓2 SEM_CLASS) =c '<X>'`` enforce both. The SEASON
+        # variant was added in Phase 5f Commit 14 (Group G) to cover
+        # ``tuwing tagulan`` "every rainy season" and ``noong
+        # taginit`` "during the dry season".
+        for sem_class in ("DAY", "TIME", "MONTH", "SEASON"):
+            rules.append(Rule(
+                "PP",
+                ["PART", "N"],
+                [
+                    "(↑) = ↓1",
+                    "(↑ OBJ) = ↓2",
+                    "(↓1 TIME_FRAME)",
+                    f"(↓2 SEM_CLASS) =c '{sem_class}'",
+                ],
+            ))
+
+        # Clause-final temporal-frame PP attachment:
+        # ``Pumunta ako tuwing Lunes.`` "I went every Monday."
+        # ``Pumunta kami noong Pebrero.`` "We went in February."
+        #
+        # Closes part of the Phase 5e Commit 3 deferral on bare PP
+        # placement — scoped to TIME_FRAME PPs only via the
+        # existential constraint ``(↓2 TIME_FRAME)``. The
+        # ``para sa X`` / ``tungkol sa X`` / ``mula sa X`` /
+        # ``dahil sa X`` PPs (Phase 5e Commit 3 PREP entries) don't
+        # have TIME_FRAME, so this rule doesn't fire on them — they
+        # remain restricted to ay-fronting position. (Same scoped-
+        # lift pattern as Phase 5f Commit 5's
+        # ``S → S AdvP[FREQUENCY]``.)
+        rules.append(Rule(
+            "S",
+            ["S", "PP"],
+            [
+                "(↑) = ↓1",
+                "↓2 ∈ (↑ ADJUNCT)",
+                "(↓2 TIME_FRAME)",
+            ],
+        ))
+
         # --- Phase 5f Commit 5: clause-final FREQUENCY AdvP ---------
         #
         # ``Kumain ako makalawa.`` "I ate twice."
@@ -2276,6 +2376,67 @@ class Grammar:
                 "(↓6 CARDINAL) =c 'YES'",
             ],
         ))
+
+        # --- Phase 5f Commit 12: minute composition (Group E item 4)
+        #
+        # ``alasotso y singko`` "8:05" (cardinal minutes added),
+        # ``alasotso y medya`` "8:30" (fractional minute = half),
+        # ``alasotso y kuwarto`` "8:15" (fractional = quarter),
+        # ``alasotso menos singko`` "7:55" (cardinal minutes
+        # subtracted, backward-counting).
+        #
+        # Two operator PARTs (``y`` for forward-counting,
+        # ``menos`` for backward) × two minute-daughter types
+        # (NUM[CARDINAL=YES] for cardinal minutes,
+        # N[SEM_CLASS=FRACTION] for fractional minutes) = 4 rules.
+        #
+        # Output is N (the same category as the head clock-time
+        # NOUN), so the result composes via existing NP-from-N
+        # rules into NP[CASE=DAT] / NP[CASE=NOM] / etc. without
+        # any further grammar additions.
+        #
+        # F-structure on the matrix N:
+        #   ... (everything from the head clock-time, via (↑) = ↓1)
+        #   MINUTE_OP        = 'Y' | 'MENOS'
+        #   MINUTE_VALUE     = the cardinal minute count (for NUM
+        #                      daughter)
+        #   MINUTE_FRACTION  = the fraction's LEMMA (for FRACTION
+        #                      daughter — 'medya' = 30 min,
+        #                      'kuwarto' = 15 min, 'kapat' = 15 min,
+        #                      'kalahati' = 30 min)
+        #
+        # Constraining equations enforce that:
+        #   (↓1 SEM_CLASS) =c 'TIME'      — head is a clock time
+        #   (↓2 MINUTE_OP) =c '<OP>'      — middle PART is y or menos
+        #   (↓3 CARDINAL) =c 'YES' OR     — third daughter is right type
+        #   (↓3 SEM_CLASS) =c 'FRACTION'
+        for op in ("Y", "MENOS"):
+            # Cardinal-minute version: ``alasotso y singko``
+            rules.append(Rule(
+                "N",
+                ["N", "PART", "NUM[CARDINAL=YES]"],
+                [
+                    "(↑) = ↓1",
+                    "(↑ MINUTE_VALUE) = ↓3 CARDINAL_VALUE",
+                    f"(↑ MINUTE_OP) = '{op}'",
+                    "(↓1 SEM_CLASS) =c 'TIME'",
+                    f"(↓2 MINUTE_OP) =c '{op}'",
+                    "(↓3 CARDINAL) =c 'YES'",
+                ],
+            ))
+            # Fractional-minute version: ``alasotso y medya``
+            rules.append(Rule(
+                "N",
+                ["N", "PART", "N"],
+                [
+                    "(↑) = ↓1",
+                    "(↑ MINUTE_FRACTION) = ↓3 LEMMA",
+                    f"(↑ MINUTE_OP) = '{op}'",
+                    "(↓1 SEM_CLASS) =c 'TIME'",
+                    f"(↓2 MINUTE_OP) =c '{op}'",
+                    "(↓3 SEM_CLASS) =c 'FRACTION'",
+                ],
+            ))
 
         # --- Phase 5b: multi-GEN-NP applicative frames (IV-BEN) ---
         #

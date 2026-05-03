@@ -619,3 +619,63 @@
 - surface: hati
   pos: PART
   feats: {OP: DIVIDE}
+
+# === Phase 5f Commit 11: native time deictics (Group E item 5) ===========
+# ``kanina`` "earlier today" and ``kamakalawa`` "day before
+# yesterday" — native time deictics parallel to the existing
+# ``kahapon`` / ``ngayon`` / ``bukas`` / ``mamaya`` ADV entries
+# above. Both are ADVs that can attach as clause-level ADJUNCT
+# (the bare-AdvP-as-ADJUNCT path is currently FREQUENCY-only —
+# the TIME deferral from Phase 5e Commit 3 stays in force, so
+# ``kanina`` / ``kamakalawa`` work in ay-fronting position
+# already but not yet as bare clause-final adjuncts). The lex
+# entries are added now so they're available when the TIME
+# deferral lifts.
+- surface: kanina
+  pos: ADV
+  feats: {ADV_TYPE: TIME, DEIXIS_TIME: PAST}
+- surface: kamakalawa
+  pos: ADV
+  feats: {ADV_TYPE: TIME, DEIXIS_TIME: PAST}
+
+# === Phase 5f Commit 12: minute-composition operators (Group E item 4) ===
+# Spanish-borrowed minute operators for clock-time composition:
+# ``alasotso y medya`` "8:30", ``alasotso y singko`` "8:05",
+# ``alasotso menos singko`` "7:55". The ``y`` operator counts
+# forward (adds minutes); ``menos`` counts backward (subtracts).
+# Both PARTs feed the Phase 5f Commit 12 minute-composition
+# grammar rules (src/tgllfg/cfg/grammar.py).
+- surface: y
+  pos: PART
+  feats: {MINUTE_OP: "Y"}
+- surface: menos
+  pos: PART
+  feats: {MINUTE_OP: "MENOS"}
+
+# === Phase 5f Commit 13: temporal-frame markers (Group F item 5) =========
+# ``tuwing`` (every) and ``noong`` (last / past) introduce
+# adverbial temporal frames over a bare-N complement:
+# ``tuwing Lunes`` "every Monday", ``noong Pebrero`` "in
+# February", ``noong umaga`` "this morning". Feed the new
+# Phase 5f Commit 13 PP rule (PP → PART[TIME_FRAME] N).
+- surface: tuwing
+  pos: PART
+  feats: {TIME_FRAME: "PERIODIC"}
+- surface: noong
+  pos: PART
+  feats: {TIME_FRAME: "PAST"}
+
+# === Phase 5f Commit 14: mga time approximation (Group E item 3) =========
+# ``mga`` is the Tagalog plural / approximator particle. It marks
+# plurality on regular nouns (``ang mga aklat`` "the books") AND
+# approximation on temporal / quantitative NPs (``mga alasotso``
+# "around 8 o'clock", ``mga sampu`` "around ten"). This commit
+# adds the lex entry plus a grammar rule for the time-
+# approximation reading; plural marking and cardinal
+# approximation are deferred to follow-on commits.
+#
+# PLURAL_MARKER=YES distinguishes ``mga`` from other PARTs in
+# the constraining equation on the approximator rule.
+- surface: mga
+  pos: PART
+  feats: {PLURAL_MARKER: "YES"}
