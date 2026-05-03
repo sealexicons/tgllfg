@@ -5209,3 +5209,133 @@ kinain na kita           (adv enclitic + kita)       "I already ate you"
   Phase 5+ engineering follow-up — same shape as the DV / NVOL
   paradigm gaps.
 
+## Phase 5e Commit 21: SOC mood (hortative) with `tayo` 1pl-INCL pivot
+
+**Date:** 2026-05-02. **Status:** active. Lifts the Phase 4 §7.2
+``MOOD=SOC`` inventory entry for the hortative case ("let's X").
+The SOC mood was already partially lifted by Phase 5e Commit 12
+for the ``mag-...-an`` reciprocal; this commit completes the
+deferral by adding the bare ``mag-`` + base hortative form.
+
+### The construction
+
+The hortative uses the bare ``mag-`` + base form (no CV-redup,
+no realis prefix) with the 1pl-INCL pivot ``tayo``:
+
+```
+Magkape tayo.            "Let's have coffee."        (canonical)
+Maglinis tayo ng kuwarto. "Let's clean the room."
+Magsayaw tayo.           "Let's dance."
+Magkanta tayo.           "Let's sing."
+Magpasyal tayo.          "Let's take a walk."
+Magsulat tayo ng liham.  "Let's write a letter."
+Maglaba tayo ng damit.   "Let's wash clothes."
+```
+
+The same morphological surface is also the IMP form for
+2nd-person SUBJs (``Maglinis ka`` "Clean!" — addressee
+imperative). The IMP variant lifts in a separate commit
+(Group G item 3, ``huwag-MOOD lift``); for now, MOOD=SOC is
+asserted at the morph level, and other PRON SUBJs that match
+the standard AV S frame produce semantically odd but
+grammatically well-formed parses (e.g., ``Maglinis ako`` parses
+as MOOD=SOC with 1sg SUBJ).
+
+### Paradigm cell
+
+A new cell in ``data/tgl/paradigms.yaml`` between the existing
+mag-CTPL/IND cell and the next paradigm section:
+
+```yaml
+- voice: AV
+  aspect: CTPL
+  mood: SOC
+  transitivity: ''
+  affix_class: mag
+  feats: {MOOD: SOC}
+  operations:
+    - {op: prefix, value: "mag"}
+  notes: maglinis, magbigay (mag- + base for hortative SOC; takes 1pl-INCL `tayo` SUBJ)
+```
+
+The cell uses ``aspect: CTPL`` (the closest existing aspect to
+"irrealis / non-finite") and ``mood: SOC`` to distinguish from
+the existing CTPL/IND cell (which adds ``cv_redup`` and
+produces ``maglilinis`` etc.). Different surfaces, no shadowing.
+
+The ``operations`` list contains just ``{op: prefix, value:
+"mag"}`` — no CV-redup, no realis. For any mag-class root, the
+cell emits ``mag-`` + base verbatim.
+
+### Denominal `kape` verb
+
+To support the canonical ``Magkape tayo`` example, ``kape``
+(originally a NOUN: "coffee") is also added as a VERB with
+``affix_class: [mag]``:
+
+```yaml
+- citation: kape
+  pos: VERB
+  gloss: have coffee
+  transitivity: INTR
+  affix_class: [mag]
+```
+
+This dual NOUN+VERB pattern is already attested in the seed
+lexicon (``trabaho``, ``tao``, ``gulay``, ``gutom``, ``salita``
+all carry both POS analyses). The mag-NOUN denominal pattern is
+productive in Tagalog (``magkape`` "drink coffee", ``magbahay``
+"build a house", ``magsasaka`` "be a farmer"); the seed picks
+just ``kape`` for the canonical example. Other denominal
+mag-verbs lift trivially by adding the same dual entry.
+
+### No new grammar rules needed
+
+The existing AV S frames carry MOOD from V to matrix without
+modification:
+
+* ``S → V[VOICE=AV] NP[CASE=NOM]`` (intransitive AV)
+* ``S → V[VOICE=AV] NP[CASE=NOM] NP[CASE=GEN]`` (transitive AV
+  via the standard ``voice_specs`` loop)
+* ``S → V[VOICE=AV] NP[CASE=NOM] NP[CASE=DAT]`` (intransitive
+  AV + DAT adjunct)
+
+For ``Magsayaw tayo``, the intransitive frame fires with V
+being ``magsayaw`` (V[VOICE=AV, MOOD=SOC]) and SUBJ being
+``tayo`` (NP[CASE=NOM]). MOOD=SOC propagates from V to matrix
+via the implicit feature inheritance. ``tayo``'s lex feats
+(NUM=PL, CLUSV=INCL, CASE=NOM) propagate to SUBJ.
+
+For ``Maglinis tayo ng kuwarto``, the transitive frame fires
+similarly with the addition of OBJ=kuwarto.
+
+### The `tayo` constraint is implicit, not enforced
+
+The grammar doesn't constrain SOC to require ``tayo`` as the
+SUBJ — any NP[CASE=NOM] would match the AV S frame. So
+``Maglinis ako.`` parses as MOOD=SOC with 1sg-NOM SUBJ
+(semantically odd: the SOC reading needs 1pl-INCL). This is a
+deliberate scope choice for v1: the SOC/IMP mood ambiguity
+requires either (a) PRON-PERS-aware grammar rules (the PERS
+feature is currently filtered out by the lex/parser quirk noted
+in Commit 20's docs) or (b) a richer mood inventory
+distinguishing INFINITIVE / NON-FINITE from SOC and IMP. Both
+are tractable Phase 5+ extensions. For now, SOC is asserted at
+the morph level and the construction works canonically with
+``tayo`` (the only context where the SOC reading is canonical).
+
+### Out-of-scope
+
+* **SOC negation with ``huwag``** (``Huwag tayong magkape``
+  "Let's not have coffee"). The interaction between ``huwag``'s
+  IMP particle and the SOC mood requires the Group G item 3
+  huwag-MOOD lift to be in place first. Tracked as a TBD.
+* **IMP variant** (``Magkape ka`` "Have coffee!"). Same surface
+  form, but PRON SUBJ is 2nd-person. Needs PERS-aware grammar
+  rules; see the PERS-filtering note in Commit 20's docs.
+* **Other denominal mag-NOUN verbs** (``magtanim`` "plant",
+  ``magbahay`` "build a house", ``magkotse`` "drive a car",
+  etc.). Each requires adding the noun's dual VERB entry. The
+  seed picks just ``kape`` for the canonical example; expanding
+  is a small lex-data follow-up driven by corpus pressure.
+

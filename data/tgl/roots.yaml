@@ -1493,6 +1493,18 @@
 - citation: kape
   pos: NOUN
   gloss: coffee
+# Phase 5e Commit 21: kape as denominal mag- verb. The mag-NOUN
+# pattern is productive for verbs of consumption / engagement
+# (`magkape` = drink coffee, `mag-tubig` = fetch water,
+# `magbahay` = build a house). The seed lexicon picks just `kape`
+# for the SOC hortative example `Magkape tayo` "Let's have
+# coffee"; other denominal mag-verbs lift trivially by adding the
+# same dual NOUN+VERB entry.
+- citation: kape
+  pos: VERB
+  gloss: have coffee
+  transitivity: INTR
+  affix_class: [mag]
 - citation: prutas
   pos: NOUN
   gloss: fruit

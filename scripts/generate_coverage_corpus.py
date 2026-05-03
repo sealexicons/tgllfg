@@ -340,6 +340,39 @@ def _clitic_corpus() -> list[dict[str, Any]]:
          "clitic: kita fusion + adv enclitic (na ALREADY)",
          "parse")
 
+    # Phase 5e Commit 21: SOC mood (hortative) with `tayo`
+    # 1pl-INCL pivot. The bare mag- + base form (no redup, no
+    # realis) emits MOOD=SOC; `tayo` as the SUBJ gives the
+    # canonical "let's X" reading. Intransitive + transitive
+    # shapes; SOC composes with adv enclitics and DAT adjuncts.
+    _add(out, "magsayaw tayo",
+         "clitic: SOC hortative (intransitive)",
+         "parse")
+    _add(out, "magkanta tayo",
+         "clitic: SOC hortative (intransitive)",
+         "parse")
+    _add(out, "magpasyal tayo",
+         "clitic: SOC hortative (intransitive)",
+         "parse")
+    _add(out, "magkape tayo",
+         "clitic: SOC hortative (canonical denominal mag-NOUN)",
+         "parse")
+    _add(out, "maglinis tayo ng kuwarto",
+         "clitic: SOC hortative (transitive with overt OBJ)",
+         "parse")
+    _add(out, "maglaba tayo ng damit",
+         "clitic: SOC hortative (transitive)",
+         "parse")
+    _add(out, "magsulat tayo ng liham",
+         "clitic: SOC hortative (transitive)",
+         "parse")
+    _add(out, "magsayaw tayo na",
+         "clitic: SOC hortative + adv enclitic (na ALREADY)",
+         "parse")
+    _add(out, "magsayaw tayo sa kuwarto",
+         "clitic: SOC hortative + DAT adjunct",
+         "parse")
+
     return out
 
 

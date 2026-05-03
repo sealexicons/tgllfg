@@ -81,6 +81,30 @@
     - {op: prefix, value: "mag"}
   notes: maglilinis, magbibigay (mag- in irrealis)
 
+# Phase 5e Commit 21: AV-mag SOC (hortative) — bare `mag-` + base
+# (no CV-redup, no realis), MOOD=SOC. Used in 1pl-INCL hortatives
+# like `Maglinis tayo` "Let's clean", `Magbigay tayo ng X` "Let's
+# give X", `Magkape tayo` "Let's have coffee". The same
+# morphological surface is also the IMP form for 2nd-person
+# subjects (`Maglinis ka` "Clean!" — addressee-imperative); the
+# IMP variant lifts in a separate commit (Group G item 3,
+# huwag-MOOD lift). For now, MOOD=SOC is asserted at the morph
+# level — the existing AV S frames carry MOOD from V to matrix
+# without needing new grammar rules.
+#
+# Lifts the Phase 4 §7.2 SOC-as-inventory-only deferral for the
+# hortative case (Phase 5e Commit 12 already lifted SOC for the
+# mag-...-an reciprocal).
+- voice: AV
+  aspect: CTPL
+  mood: SOC
+  transitivity: ''
+  affix_class: mag
+  feats: {MOOD: SOC}
+  operations:
+    - {op: prefix, value: "mag"}
+  notes: maglinis, magbigay (mag- + base for hortative SOC; takes 1pl-INCL `tayo` SUBJ)
+
 # === AV — Actor Voice (mang- distributive class) =========================
 #
 # The mang- prefix exhibits nasal substitution: the prefix's final ng

@@ -1264,6 +1264,33 @@
 - text: Kinain na kita.
   construction: 'clitic: kita fusion + adv enclitic (na ALREADY)'
   expected: parse
+- text: Magsayaw tayo.
+  construction: 'clitic: SOC hortative (intransitive)'
+  expected: parse
+- text: Magkanta tayo.
+  construction: 'clitic: SOC hortative (intransitive)'
+  expected: parse
+- text: Magpasyal tayo.
+  construction: 'clitic: SOC hortative (intransitive)'
+  expected: parse
+- text: Magkape tayo.
+  construction: 'clitic: SOC hortative (canonical denominal mag-NOUN)'
+  expected: parse
+- text: Maglinis tayo ng kuwarto.
+  construction: 'clitic: SOC hortative (transitive with overt OBJ)'
+  expected: parse
+- text: Maglaba tayo ng damit.
+  construction: 'clitic: SOC hortative (transitive)'
+  expected: parse
+- text: Magsulat tayo ng liham.
+  construction: 'clitic: SOC hortative (transitive)'
+  expected: parse
+- text: Magsayaw tayo na.
+  construction: 'clitic: SOC hortative + adv enclitic (na ALREADY)'
+  expected: parse
+- text: Magsayaw tayo sa kuwarto.
+  construction: 'clitic: SOC hortative + DAT adjunct'
+  expected: parse
 - text: Ang aso ay nagkainan.
   construction: 'ay-inversion: SUBJ-fronted intransitive'
   expected: parse
