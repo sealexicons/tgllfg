@@ -2229,13 +2229,16 @@ class Grammar:
         # The PP shares with PART (``(↑) = ↓1``), pulling
         # TIME_FRAME up to the matrix PP. The N becomes OBJ.
         #
-        # Three SEM_CLASS variants (DAY / TIME / MONTH) gate the
-        # rule to genuinely temporal NOUNs only — ``*tuwing bata``
-        # ("every child"?) doesn't compose because ``bata`` has no
-        # SEM_CLASS. The constraining equations
+        # Four SEM_CLASS variants (DAY / TIME / MONTH / SEASON)
+        # gate the rule to genuinely temporal NOUNs only —
+        # ``*tuwing bata`` ("every child"?) doesn't compose because
+        # ``bata`` has no SEM_CLASS. The constraining equations
         # ``(↓1 TIME_FRAME)`` (existential — PART has TIME_FRAME)
-        # and ``(↓2 SEM_CLASS) =c '<X>'`` enforce both.
-        for sem_class in ("DAY", "TIME", "MONTH"):
+        # and ``(↓2 SEM_CLASS) =c '<X>'`` enforce both. The SEASON
+        # variant was added in Phase 5f Commit 14 (Group G) to cover
+        # ``tuwing tagulan`` "every rainy season" and ``noong
+        # taginit`` "during the dry season".
+        for sem_class in ("DAY", "TIME", "MONTH", "SEASON"):
             rules.append(Rule(
                 "PP",
                 ["PART", "N"],

@@ -1468,7 +1468,9 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "date: ordinal + araw + ng + month (date formula)", "parse")
     _add(out, "tuwing lunes ay pumunta ako",
          "date: tuwing-PP ay-fronted", "parse")
-    # Phase 5f Commit 14: mga time approximation.
+    # Phase 5f Commit 13: mga time approximation (bundled with
+    # dates above; section was originally numbered Commit 14 in
+    # the plan but landed in the bundled Commit 13 commit).
     _add(out, "pumunta ako sa mga alasotso",
          "mga: time approximation (around 8 o'clock)", "parse")
     _add(out, "pumunta ako sa mga alauna",
@@ -1477,6 +1479,19 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "mga: time approximation (around 12 o'clock)", "parse")
     _add(out, "kumain ako sa mga alasotso",
          "mga: time approximation with kain verb", "parse")
+    # Phase 5f Commit 14: seasons (Group G).
+    seasons = ["taginit", "tagulan", "taglamig", "tagaraw", "taggutom"]
+    for s in seasons:
+        _add(out, f"pumunta ako sa {s}",
+             f"season: sa + {s} as DAT adjunct", "parse")
+    for s in seasons:
+        _add(out, f"pumunta ako tuwing {s}",
+             f"season: tuwing + {s} as PERIODIC PP", "parse")
+    for s in seasons:
+        _add(out, f"pumunta kami noong {s}",
+             f"season: noong + {s} as PAST PP", "parse")
+    _add(out, "tuwing tagulan ay pumunta ako",
+         "season: tuwing-PP ay-fronted", "parse")
     return out
 
 

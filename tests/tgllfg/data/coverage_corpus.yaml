@@ -3318,6 +3318,54 @@
 - text: Kumain ako sa mga alasotso.
   construction: 'mga: time approximation with kain verb'
   expected: parse
+- text: Pumunta ako sa taginit.
+  construction: 'season: sa + taginit as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa tagulan.
+  construction: 'season: sa + tagulan as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa taglamig.
+  construction: 'season: sa + taglamig as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa tagaraw.
+  construction: 'season: sa + tagaraw as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa taggutom.
+  construction: 'season: sa + taggutom as DAT adjunct'
+  expected: parse
+- text: Pumunta ako tuwing taginit.
+  construction: 'season: tuwing + taginit as PERIODIC PP'
+  expected: parse
+- text: Pumunta ako tuwing tagulan.
+  construction: 'season: tuwing + tagulan as PERIODIC PP'
+  expected: parse
+- text: Pumunta ako tuwing taglamig.
+  construction: 'season: tuwing + taglamig as PERIODIC PP'
+  expected: parse
+- text: Pumunta ako tuwing tagaraw.
+  construction: 'season: tuwing + tagaraw as PERIODIC PP'
+  expected: parse
+- text: Pumunta ako tuwing taggutom.
+  construction: 'season: tuwing + taggutom as PERIODIC PP'
+  expected: parse
+- text: Pumunta kami noong taginit.
+  construction: 'season: noong + taginit as PAST PP'
+  expected: parse
+- text: Pumunta kami noong tagulan.
+  construction: 'season: noong + tagulan as PAST PP'
+  expected: parse
+- text: Pumunta kami noong taglamig.
+  construction: 'season: noong + taglamig as PAST PP'
+  expected: parse
+- text: Pumunta kami noong tagaraw.
+  construction: 'season: noong + tagaraw as PAST PP'
+  expected: parse
+- text: Pumunta kami noong taggutom.
+  construction: 'season: noong + taggutom as PAST PP'
+  expected: parse
+- text: Tuwing tagulan ay pumunta ako.
+  construction: 'season: tuwing-PP ay-fronted'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

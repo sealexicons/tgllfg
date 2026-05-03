@@ -1735,6 +1735,54 @@
   # SEM_CLASS=DAY added there to avoid duplicating the surface
   # (the morph analyzer collapses duplicate (lemma, pos) entries
   # — see Phase 5f Commit 12 kuwarto deferral memo).
+
+# === Phase 5f Commit 14: seasons (Group G) ===============================
+# Two-season system (canonical): ``tag-init`` (hot / dry season)
+# and ``tag-ulan`` (rainy season). Plus three other ``tag-``
+# compounds: ``tag-lamig`` (cold spell — colloquial),
+# ``tag-araw`` (sunny period), ``tag-gutom`` (hunger season —
+# figurative). All zero-derived nouns built on ``tag-`` + N. Per
+# plan §11.1 Group G: lex per attested form rather than productive
+# paradigm — productive ``tag-`` carries figurative / colloquial
+# readings beyond pure season-naming, so a hand-authored lex is
+# more conservative than a productive class.
+#
+# SEM_CLASS=SEASON marks them for the LMT classifier and feeds
+# the Phase 5f Commit 13 temporal-frame PP rule (new SEASON
+# variant added in this commit) so:
+#
+#   tuwing tagulan  "every rainy season"   (PERIODIC PP)
+#   noong taginit   "during the dry season" (PAST PP)
+#
+# Hyphenation note: the canonical orthography is ``tag-init``,
+# ``tag-ulan``, etc. The current tokenizer
+# (``src/tgllfg/text/tokenizer.py``: ``\w+|\S``) splits hyphens
+# into three tokens (``tag``, ``-``, ``init``); supporting the
+# hyphenated forms requires a tokenizer pre-pass and is deferred.
+# For now the seed lex stores the single-token forms
+# (``taginit``, ``tagulan``, ...) which compose via the standard
+# NOUN path. (R&B 1986; S&O 1972 §6.13.)
+- citation: taginit
+  pos: NOUN
+  gloss: hot/dry season
+  feats: {SEM_CLASS: SEASON}
+- citation: tagulan
+  pos: NOUN
+  gloss: rainy season
+  feats: {SEM_CLASS: SEASON}
+- citation: taglamig
+  pos: NOUN
+  gloss: cold spell
+  feats: {SEM_CLASS: SEASON}
+- citation: tagaraw
+  pos: NOUN
+  gloss: sunny period
+  feats: {SEM_CLASS: SEASON}
+- citation: taggutom
+  pos: NOUN
+  gloss: hunger season
+  feats: {SEM_CLASS: SEASON}
+
 - citation: lapis
   pos: NOUN
   gloss: pencil

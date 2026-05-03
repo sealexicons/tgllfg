@@ -7132,11 +7132,18 @@ No new grammar required.
   SEM_CLASS=SEASON to the rule's variant list when Group G
   seasons land.
 
-## Phase 5f Commit 14: mga time approximation (Group E item 3)
+## Phase 5f Commit 13 (bundled): mga time approximation (Group E item 3)
 
 **Date:** 2026-05-03. **Status:** active. 1 PART entry + 1
 grammar rule. Refs: plan §11.1 Group E item 3; Phase 5f
 Commit 10 (clock-time NOUNs consumed unchanged).
+
+This work landed inside the bundled git Commit 13 (``ec23c55
+Phase 5f Commit 13 — mga time approximation (Group E item 3)
++ dates (Group F)``); originally sequenced as a separate
+Commit 14 in the plan but bundled when the mga gap was
+identified during Group F work. The plan's Commit-14 slot is
+re-used by Group G seasons below.
 
 ### Lex change
 
@@ -7223,7 +7230,151 @@ similarity).
   unifying equation. Adding agreement is a follow-on; out of
   scope for this commit.
 
+## Phase 5f Commit 14: seasons (Group G)
 
+**Date:** 2026-05-03. **Status:** active. 5 NOUN entries +
+1 grammar-rule extension (existing Commit 13 PP rule gains a
+SEASON variant). Refs: plan §11.1 Group G; R&B 1986; S&O 1972
+§6.13; Phase 5f Commit 13 (temporal-frame PP rule consumed
+with one variant added).
 
+Closes Phase 5f §11.1 Group G (seasons) with a deliberately
+small footprint — a hand-authored lex of the canonical two-
+season system plus three additional ``tag-`` compounds, and
+a one-line variant addition to the Phase 5f Commit 13
+temporal-frame PP rule.
 
+### Lex change
+
+Five season NOUNs (``data/tgl/roots.yaml``):
+
+* ``taginit`` — hot / dry season.
+* ``tagulan`` — rainy season.
+* ``taglamig`` — cold spell (colloquial).
+* ``tagaraw`` — sunny period.
+* ``taggutom`` — hunger season (figurative).
+
+All NOUN with ``SEM_CLASS: SEASON``. The first two are the
+canonical two-season pair; the remaining three are attested
+``tag-`` compounds (R&B 1986; S&O 1972 §6.13).
+
+### Why lex-only, not productive ``tag-``
+
+Per plan §11.1 Group G: the productive ``tag-`` morphology
+*does* derive nominalisations from a wider set of bases, but
+those productive readings are figurative or colloquial
+(``tag-pasko`` "Christmas season" — fine; but
+``tag-bili`` "buying season" — non-canonical, marketing-only)
+and don't form a clean season-naming class. A hand-authored
+lex per attested form is more conservative than a productive
+class, avoiding the over-coverage that a productive
+``tag- + N → SEASON`` rule would introduce.
+
+### Hyphenation: deferred
+
+The canonical orthography is ``tag-init``, ``tag-ulan``, etc.
+with an internal hyphen. The current tokenizer
+(``src/tgllfg/text/tokenizer.py``: ``\\w+|\\S``) splits hyphens
+into three tokens — ``tag-init`` becomes
+``[tag, -, init]``. The cleanest fix is a tokenizer pre-pass
+that recognises a closed list of canonical hyphenated forms
+(or a productive ``tag-`` glue rule) and emits them as single
+tokens; that pre-pass is deferred and is the only barrier to
+exposing the canonical orthography in the lex.
+
+For now the seed lex stores the single-token forms
+(``taginit``, ``tagulan``, ``taglamig``, ``tagaraw``,
+``taggutom``) which compose via the standard NOUN path. This
+is non-standard orthography but pragmatically equivalent for
+parsing.
+
+### Grammar change
+
+The Phase 5f Commit 13 temporal-frame PP rule
+
+```
+PP → PART N
+Equations:
+  (↑) = ↓1
+  (↑ OBJ) = ↓2
+  (↓1 TIME_FRAME)              # existential — PART has TIME_FRAME
+  (↓2 SEM_CLASS) =c '<X>'      # X in {DAY, TIME, MONTH, SEASON}
+```
+
+gains a SEASON variant (the ``for sem_class in (...)`` loop
+in ``src/tgllfg/cfg/grammar.py`` extends to four members).
+This makes ``tuwing tagulan`` "every rainy season" (PERIODIC)
+and ``noong taginit`` "during the dry season" (PAST) parse
+via the same machinery as ``tuwing Lunes`` / ``noong
+Pebrero``. The clause-final S → S PP rule is consumed
+unchanged (it's gated on TIME_FRAME, not SEM_CLASS).
+
+### Composition without new grammar
+
+* ``sa tagulan`` "in the rainy season" — DAT-NP; the existing
+  intransitive-ADJUNCT routing handles it. The SEM_CLASS=
+  SEASON marking does not disturb this path.
+* ``Tuwing tagulan ay pumunta ako.`` — ay-fronting of the new
+  PERIODIC SEASON PP composes via the existing ay-fronting
+  machinery on PPs (Phase 5e Commit 3).
+
+### Why piggyback on the Commit 13 PP rule
+
+The temporal-frame PP rule was authored with explicit
+SEM_CLASS gating precisely to scope clause-final temporal
+adjuncts to genuinely temporal NOUNs only (``*tuwing bata``
+fails). Adding SEASON to the variant tuple is a one-line
+extension — it doesn't change the rule's shape, doesn't
+introduce a new f-structure feature, and doesn't open up the
+rule to non-temporal heads. The Commit 13 author flagged this
+exact follow-on in their "Out of scope" notes ("Add
+SEM_CLASS=SEASON to the rule's variant list when Group G
+seasons land"); this commit lifts that deferral.
+
+An alternative (a separate season-only PP rule) would have
+been wasteful — same rule shape, same constraining equations,
+just a different SEM_CLASS literal.
+
+### Negative fixtures (per §11.2)
+
+* ``*Pumunta ako tuwing aklat.`` — ``aklat`` has no
+  SEM_CLASS, so the constraining equation fails for all four
+  variants (DAY / TIME / MONTH / SEASON). The PP rule does
+  not fire and the sentence does not produce a TIME_FRAME PP
+  parse.
+* ``*Pumunta ako tuwing araw.`` — ``araw`` is an existing
+  NOUN (day / sun) with no SEM_CLASS set. Including this
+  fixture confirms the gate is constraining (not just
+  descriptive): if the gate were missing, ``araw`` would be a
+  plausible season-domain head and the rule would over-fire.
+* ``aklat`` does not pick up SEM_CLASS=SEASON from anywhere.
+  (Sanity check on the lex addition.)
+
+### Out of scope for this commit
+
+* **Hyphenated orthography** (``tag-init``, ``tag-ulan``,
+  etc.) — needs the deferred tokenizer pre-pass described
+  above.
+* **Productive ``tag-`` paradigm** — see "Why lex-only" above.
+  Adding a productive class would over-cover figurative /
+  colloquial uses.
+* **SEM_CLASS=SEASON projection to NP / PP-matrix** — the
+  same NP-from-N projection limitation as cardinal-modifier
+  features (Commit 1) and MONTH_VALUE / DAY_VALUE on date
+  PPs (Commit 13). Tests walk down to the OBJ N to read
+  SEM_CLASS rather than expecting it on the matrix
+  PP / NP.
+* **``mga`` season approximation** (``mga tagulan`` "around
+  the rainy season") — not idiomatic; the analogue ``mga
+  Pebrero`` is similarly non-idiomatic. Not added.
+
+### Side change: ruff F841 cleanup in test_cardinal_predicative.py
+
+Removed an unused local variable (``f = rs[0][1]`` at
+``tests/tgllfg/test_cardinal_predicative.py:253``) that ruff
+F841 flagged. The variable was assigned but never read — the
+test's actual assertion logic uses a separate ``parse_text``
+call below the dead assignment. Pre-existing from Phase 5f
+Commit 4 (``ff4de03``). Cleaned up here so ``hatch run check``
+passes ahead of the Phase 5f Group EFG PR.
 

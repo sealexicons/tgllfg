@@ -248,9 +248,6 @@ class TestPredicativeRegressions:
         # ``Kumain ako ng tatlong isda.`` — the canonical NP-modifier
         # use from Commit 1 must still parse with CARDINAL_VALUE on
         # the OBJ NP.
-        rs = parse_text("Kumain ako ng tatlong isda.")
-        assert rs
-        f = rs[0][1]
         # Find any parse with EAT predicate and OBJ carrying the
         # cardinal info.
         found = False
