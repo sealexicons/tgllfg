@@ -308,12 +308,77 @@ def _clitic_corpus() -> list[dict[str, Any]]:
                      "clitic: cluster pron + adv",
                      "parse")
 
+    # Phase 5e Commit 20: kita clitic fusion (1sg-GEN actor +
+    # 2sg-NOM SUBJ in a single token). Bare frames across OV / DV
+    # / IV / pa-OV; with-PATIENT frames for 3-arg ditransitives
+    # and causatives; negation; adv enclitic interaction.
+    _add(out, "kinain kita",
+         "clitic: kita fusion (OV bare)",
+         "parse")
+    _add(out, "binasahan kita",
+         "clitic: kita fusion (DV bare)",
+         "parse")
+    _add(out, "ipinaggawa kita",
+         "clitic: kita fusion (IV-BEN bare)",
+         "parse")
+    _add(out, "pinakain kita",
+         "clitic: kita fusion (pa-OV bare; CAUSER 1sg / CAUSEE 2sg)",
+         "parse")
+    _add(out, "sinulatan kita ng liham",
+         "clitic: kita fusion (DV 3-arg with PATIENT)",
+         "parse")
+    _add(out, "ipinaggawa kita ng silya",
+         "clitic: kita fusion (IV-BEN 3-arg with PATIENT)",
+         "parse")
+    _add(out, "pinakain kita ng kanin",
+         "clitic: kita fusion (pa-OV 3-arg with PATIENT)",
+         "parse")
+    _add(out, "hindi kita kinain",
+         "clitic: kita fusion + NEG (kita hoisted to post-V cluster)",
+         "parse")
+    _add(out, "kinain na kita",
+         "clitic: kita fusion + adv enclitic (na ALREADY)",
+         "parse")
+
+    # Phase 5e Commit 21: SOC mood (hortative) with `tayo`
+    # 1pl-INCL pivot. The bare mag- + base form (no redup, no
+    # realis) emits MOOD=SOC; `tayo` as the SUBJ gives the
+    # canonical "let's X" reading. Intransitive + transitive
+    # shapes; SOC composes with adv enclitics and DAT adjuncts.
+    _add(out, "magsayaw tayo",
+         "clitic: SOC hortative (intransitive)",
+         "parse")
+    _add(out, "magkanta tayo",
+         "clitic: SOC hortative (intransitive)",
+         "parse")
+    _add(out, "magpasyal tayo",
+         "clitic: SOC hortative (intransitive)",
+         "parse")
+    _add(out, "magkape tayo",
+         "clitic: SOC hortative (canonical denominal mag-NOUN)",
+         "parse")
+    _add(out, "maglinis tayo ng kuwarto",
+         "clitic: SOC hortative (transitive with overt OBJ)",
+         "parse")
+    _add(out, "maglaba tayo ng damit",
+         "clitic: SOC hortative (transitive)",
+         "parse")
+    _add(out, "magsulat tayo ng liham",
+         "clitic: SOC hortative (transitive)",
+         "parse")
+    _add(out, "magsayaw tayo na",
+         "clitic: SOC hortative + adv enclitic (na ALREADY)",
+         "parse")
+    _add(out, "magsayaw tayo sa kuwarto",
+         "clitic: SOC hortative + DAT adjunct",
+         "parse")
+
     return out
 
 
 def _ay_inversion_corpus() -> list[dict[str, Any]]:
-    """§7.4: ay-inversion. Limited to pivot SUBJ fronting (per the
-    implementation; non-pivot deferred)."""
+    """§7.4: ay-inversion. Pivot SUBJ fronting (Phase 4 §7.4) plus
+    pa-causative actor-fronting (Phase 5e Commit 1)."""
     out: list[dict[str, Any]] = []
     for lemma in ("kain", "bili", "basa"):
         for asp in ("PFV", "IPFV"):
@@ -331,6 +396,90 @@ def _ay_inversion_corpus() -> list[dict[str, Any]]:
         _add(out, f"{nom} ay hindi {_VERB_FORMS['kain']['AV']['PFV']}",
              "ay-inversion: with NEG",
              "parse")
+
+    # Phase 5e Commit 1: pa-OV / pa-DV (CAUS=DIRECT) actor-fronting.
+    # The fronted GEN-NP is the CAUSER; the inner SUBJ pivot
+    # (CAUSEE for pa-OV, LOCATION/RECIPIENT for pa-DV) stays overt.
+    for caus_form in ("pinakain", "pinabasa", "pinainom"):
+        _add(out, f"ng nanay ay {caus_form} ang bata",
+             f"ay-inversion: pa-OV actor-fronting ({caus_form})",
+             "parse")
+    # 3-arg pa-OV with overt PATIENT.
+    _add(out, "ng nanay ay pinakain ang bata ng kanin",
+         "ay-inversion: 3-arg pa-OV actor-fronting",
+         "parse")
+    # pa-DV (pa-...-an) actor-fronting.
+    for dv_form in ("pinakainan", "pinabasahan", "pinainuman"):
+        _add(out, f"ng nanay ay {dv_form} ang bata",
+             f"ay-inversion: pa-DV actor-fronting ({dv_form})",
+             "parse")
+    # Inner negation under pa-causative actor-fronting.
+    _add(out, "ng nanay ay hindi pinakain ang bata",
+         "ay-inversion: pa-OV actor-fronting + NEG",
+         "parse")
+
+    # Phase 5e Commit 2: multi-GEN-NP ay-fronting. Fronts one of
+    # the two GEN-NPs in a Phase 5b 3-arg multi-GEN frame; the
+    # other GEN-NP is retained in the inner clause along with the
+    # NOM pivot.
+    # IV 3-arg with OBJ-AGENT extracted (PATIENT retained).
+    _add(out, "ng nanay ay ipinaggawa ang kapatid ng silya",
+         "ay-inversion: IV-BEN 3-arg AGENT-fronted",
+         "parse")
+    _add(out, "ng nanay ay ipinambili ang pera ng isda",
+         "ay-inversion: IV-INSTR 3-arg AGENT-fronted",
+         "parse")
+    _add(out, "ng bata ay ikinasulat ang gutom ng isda",
+         "ay-inversion: IV-REASON 3-arg AGENT-fronted",
+         "parse")
+    # IV 3-arg with OBJ-PATIENT extracted (AGENT retained).
+    _add(out, "ng silya ay ipinaggawa ang kapatid ng nanay",
+         "ay-inversion: IV-BEN 3-arg PATIENT-fronted",
+         "parse")
+    _add(out, "ng isda ay ipinambili ang pera ng nanay",
+         "ay-inversion: IV-INSTR 3-arg PATIENT-fronted",
+         "parse")
+    # pa-OV-direct 3-arg with OBJ-PATIENT extracted (CAUSER retained).
+    _add(out, "ng kanin ay pinakain ng nanay ang bata",
+         "ay-inversion: pa-OV 3-arg PATIENT-fronted",
+         "parse")
+    _add(out, "ng libro ay pinabasa ng nanay ang bata",
+         "ay-inversion: pa-OV 3-arg PATIENT-fronted (basa)",
+         "parse")
+    # Negation under multi-GEN ay-fronting.
+    _add(out, "ng nanay ay hindi ipinaggawa ang kapatid ng silya",
+         "ay-inversion: IV-BEN 3-arg AGENT-fronted + NEG",
+         "parse")
+
+    # Phase 5e Commit 3: AdvP / PP ay-fronting. Lifts the §7.4
+    # "Out-of-scope" item that required a categorial-inventory
+    # expansion (ADV / PREP POS, AdvP / PP non-terminals).
+    # Temporal AdvP fronting.
+    for adv in ("kahapon", "ngayon", "bukas", "mamaya"):
+        _add(out, f"{adv} ay tumakbo si Maria",
+             f"ay-inversion: AdvP fronted ({adv})",
+             "parse")
+    # AdvP with negated inner clause.
+    _add(out, "kahapon ay hindi tumakbo si Maria",
+         "ay-inversion: AdvP fronted + NEG",
+         "parse")
+    # AdvP with transitive inner.
+    _add(out, "kahapon ay kumain ang aso ng isda",
+         "ay-inversion: AdvP fronted + transitive inner",
+         "parse")
+    # PP fronting: para / tungkol / mula / dahil.
+    _add(out, "para sa bata ay binili niya ang libro",
+         "ay-inversion: PP fronted (para)",
+         "parse")
+    _add(out, "tungkol sa nanay ay sumulat ang bata",
+         "ay-inversion: PP fronted (tungkol)",
+         "parse")
+    _add(out, "mula sa bahay ay tumakbo si Maria",
+         "ay-inversion: PP fronted (mula)",
+         "parse")
+    _add(out, "dahil sa gutom ay kumain ang bata",
+         "ay-inversion: PP fronted (dahil)",
+         "parse")
     return out
 
 
@@ -364,6 +513,134 @@ def _relativization_corpus() -> list[dict[str, Any]]:
              "relativization: OBJ-rel rejected (SUBJ-only)",
              "fragment",
              notes="Tagalog SUBJ-only restriction; full parse fails, sub-spans surface as fragments")
+
+    # Phase 5e Commit 4: multi-pronoun RC composition. Phase 5d
+    # Commit 10's `_is_post_embedded_v_pron` Wackernagel exception
+    # plus existing relativization compose to handle a matrix-
+    # cluster PRON and an embedded RC-actor PRON in one sentence.
+    for matrix_pron, rc_pron in [
+        ("ko", "niya"),    # 1sg-GEN matrix + 3sg-GEN RC
+        ("mo", "niya"),    # 2sg-GEN matrix + 3sg-GEN RC
+        ("niya", "ko"),    # 3sg-GEN matrix + 1sg-GEN RC
+    ]:
+        _add(out, f"nakita {matrix_pron} ang batang kinain {rc_pron}",
+             "relativization: multi-pronoun RC (matrix + embedded)",
+             "parse")
+    # Inner-NEG inside the RC.
+    _add(out, "nakita ko ang batang hindi kinain niya",
+         "relativization: multi-pronoun RC + inner NEG",
+         "parse")
+
+    # Phase 5e Commit 5: headless / free relatives. ``ang/ng/sa`` +
+    # S_GAP forms an NP without an overt head noun; the headless
+    # head's PRED is 'PRO' and the gapped clause sits in ADJ.
+    _add(out, "tumakbo ang tumakbo",
+         "relativization: headless RC (AV-INTR matrix + AV-INTR RC)",
+         "parse")
+    _add(out, "tumakbo ang kumain ng isda",
+         "relativization: headless RC (AV-tr RC)",
+         "parse")
+    _add(out, "tumakbo ang kinain ng aso",
+         "relativization: headless RC (OV-tr RC, patient pivot)",
+         "parse")
+    _add(out, "nakita ko ang tumakbo",
+         "relativization: headless RC in OBJ position",
+         "parse")
+    _add(out, "tumakbo ang hindi kumain ng isda",
+         "relativization: headless RC + inner NEG",
+         "parse")
+
+    # Phase 5e Commit 6: ``na`` linker disambiguation after PRON.
+    # The PRON ``ko`` / ``mo`` / ``niya`` is the NP-internal
+    # possessor of the head NOUN; the standalone ``na`` is the
+    # linker introducing the RC, not the 2P aspectual clitic.
+    _add(out, "tumakbo ang bata ko na kumain",
+         "relativization: post-poss-PRON na linker (1sg)",
+         "parse")
+    _add(out, "tumakbo ang bata mo na kumain",
+         "relativization: post-poss-PRON na linker (2sg)",
+         "parse")
+    _add(out, "tumakbo ang bata niya na kumain",
+         "relativization: post-poss-PRON na linker (3sg)",
+         "parse")
+    _add(out, "tumakbo ang bata ko na kumain ng isda",
+         "relativization: post-poss-PRON na linker + transitive RC",
+         "parse")
+    _add(out, "tumakbo ang bata ko na kinain ng aso",
+         "relativization: post-poss-PRON na linker + OV RC",
+         "parse")
+    _add(out, "tumakbo ang bata ko na hindi kumain",
+         "relativization: post-poss-PRON na linker + NEG-skip",
+         "parse")
+
+    # Phase 5e Commit 18: possessive-linker RC with consonant-final
+    # PRON. The four consonant-final GEN pronouns (``natin`` /
+    # ``namin`` / ``ninyo`` / ``nila``) cannot fuse with the bound
+    # ``-ng`` linker; they take the standalone ``na`` linker
+    # instead. The wrap rule's dual binding (POSS = OBJ-AGENT) is
+    # the same as Phase 5d Commit 6's ``-ng`` form. Vowel-final
+    # PRON + standalone ``na`` (``aklat ko na kinain``) also lifts
+    # via the same LINK=NA branch.
+    for pron in ("namin", "natin", "ninyo", "nila"):
+        _add(out, f"lumakad ang bata {pron} na binasa",
+             "relativization: poss-linker RC, consonant-final PRON (na)",
+             "parse")
+    _add(out, "kumain ang bata ng libro namin na binasa",
+         "relativization: poss-linker RC in OBJ position (consonant-final PRON)",
+         "parse")
+    _add(out, "lumakad ang bata namin na hindi binasa",
+         "relativization: poss-linker RC + inner NEG (consonant-final PRON)",
+         "parse")
+    # Vowel-final PRON + standalone ``na`` (alongside the existing
+    # fused ``-ng`` form).
+    for pron in ("ko", "mo", "niya"):
+        _add(out, f"lumakad ang bata {pron} na kinain",
+             "relativization: poss-linker RC, vowel-final PRON + standalone na",
+             "parse")
+    # Consonant-final HEAD NP — the most-motivating surface, since
+    # neither head nor PRON can take the bound ``-ng`` linker.
+    _add(out, "lumakad ang kapatid namin na binasa",
+         "relativization: poss-linker RC, consonant-final head + consonant-final PRON",
+         "parse")
+    # Non-AV voice variants — Phase 5d Commit 6 supports OV / DV / IV
+    # via S_GAP_NA but only OV was exercised. Pin DV (``binasahan``)
+    # and IV (``ipinaggawa`` bare; ``ipinagsulat`` with DAT adjunct).
+    _add(out, "lumakad ang bata namin na binasahan",
+         "relativization: poss-linker RC, DV variant (binasahan)",
+         "parse")
+    _add(out, "lumakad ang bata namin na ipinaggawa",
+         "relativization: poss-linker RC, IV bare (ipinaggawa)",
+         "parse")
+    _add(out, "lumakad ang bata namin na ipinagsulat sa kapatid",
+         "relativization: poss-linker RC, IV + DAT adjunct (ipinagsulat)",
+         "parse")
+
+    # Phase 5e Commit 19: possessive-linker RC with non-pronominal
+    # possessor — common nouns (``ng batang binasa``) and proper
+    # nouns (``ni Juan na binasa``). Same dual-binding shape as
+    # Commit 18, generalized by widening the wrap rule's second
+    # daughter from ``PRON[CASE=GEN]`` to ``NP[CASE=GEN]``.
+    _add(out, "lumakad ang libro ng batang binasa",
+         "relativization: poss-linker RC, common-noun possessor (NG)",
+         "parse")
+    _add(out, "lumakad ang libro ng asong kinain",
+         "relativization: poss-linker RC, common-noun possessor (different head)",
+         "parse")
+    _add(out, "lumakad ang libro ni juan na binasa",
+         "relativization: poss-linker RC, proper-noun possessor (NI)",
+         "parse")
+    _add(out, "lumakad ang libro ni maria na binasa",
+         "relativization: poss-linker RC, proper-noun possessor (NI)",
+         "parse")
+    _add(out, "kumain ang aso ng libro ng batang binasa",
+         "relativization: poss-linker RC, NOUN possessor in OBJ position",
+         "parse")
+    _add(out, "lumakad ang libro ng batang hindi binasa",
+         "relativization: poss-linker RC + inner NEG (NOUN possessor)",
+         "parse")
+    _add(out, "lumakad ang libro ng batang ipinaggawa",
+         "relativization: poss-linker RC, NOUN possessor + IV variant",
+         "parse")
     return out
 
 
@@ -418,6 +695,159 @@ def _control_corpus() -> list[dict[str, Any]]:
         _add(out, f"{psych} kong hindi kumain",
              f"control: inner NEG + {psych}",
              "parse")
+
+    # Phase 5e Commit 8: control / raising composition pinning.
+    # Existing Phase 5c §7.6 follow-on Commit 5 (raising at S level)
+    # plus Phase 5d Commit 7 (raising at S_XCOMP level) compose
+    # naturally; this adds explicit corpus coverage.
+    # Control under raising — RAISING (linker form):
+    _add(out, "mukhang gusto ng batang kumain",
+         "control: control under mukha-raising (psych)",
+         "parse")
+    _add(out, "mukhang pumayag ang batang kumain",
+         "control: control under mukha-raising (intrans)",
+         "parse")
+    _add(out, "bakang gusto ng batang kumain",
+         "control: control under baka-raising (psych)",
+         "parse")
+    # Control under raising — RAISING_BARE (no linker):
+    _add(out, "parang gusto ng batang kumain",
+         "control: control under parang-raising (bare)",
+         "parse")
+    _add(out, "tila gusto ng batang kumain",
+         "control: control under tila-raising (bare)",
+         "parse")
+    # TRANS control + raising in XCOMP:
+    _add(out, "pinilit ng nanay ang batang mukhang umuwi",
+         "control: TRANS + raising in XCOMP (mukha)",
+         "parse")
+    _add(out, "pinilit ng nanay ang batang parang umuwi",
+         "control: TRANS + raising in XCOMP (parang)",
+         "parse")
+    # Negation composition:
+    _add(out, "mukhang hindi gusto ng batang kumain",
+         "control: control under raising + middle NEG",
+         "parse")
+    _add(out, "mukhang gusto ng batang hindi kumain",
+         "control: control under raising + inner NEG",
+         "parse")
+
+    # Phase 5e Commit 9: nested-control composition with multi-arg
+    # innermost. Phase 5c §7.6 Commit 3 nested-S_XCOMP rules
+    # compose with Phase 5d Commit 8 (pa-OV under control) and
+    # Commit 9 (IV multi-GEN under control); this adds explicit
+    # corpus coverage.
+    # Nested pa-OV under control:
+    _add(out, "gusto kong pumayag na pakakainin ang bata",
+         "control: nested pa-OV under control (psych+intrans)",
+         "parse")
+    _add(out, "gusto kong pumayag na pakakainin ang bata ng kanin",
+         "control: nested 3-arg pa-OV under control",
+         "parse")
+    _add(out, "pumayag akong gustong pakakainin ang bata",
+         "control: nested pa-OV under control (intrans+psych)",
+         "parse")
+    _add(out, "gusto kong gustong pakakainin ang bata",
+         "control: nested pa-OV under psych+psych",
+         "parse")
+    # IV multi-GEN under nested control:
+    _add(out, "gusto kong pumayag na ipaggagawa ang silya ng nanay",
+         "control: nested IV-BEN 3-arg under control",
+         "parse")
+    _add(out, "gusto kong pumayag na ipaggagawa ang kapatid",
+         "control: nested IV-BEN 2-arg under control",
+         "parse")
+    # Negation in nested compositions:
+    _add(out, "gusto kong pumayag na hindi pakakainin ang bata",
+         "control: nested pa-OV + innermost NEG",
+         "parse")
+    _add(out, "gusto kong hindi pumayag na pakakainin ang bata",
+         "control: nested pa-OV + middle NEG",
+         "parse")
+
+    # Phase 5e Commit 10: 3-arg pa-DV (with overt PATIENT). New
+    # lex profile + multi-GEN top-level rules + S_XCOMP rules
+    # under control + S_GAP_OBJ_CAUSER / S_GAP_OBJ_PATIENT
+    # extensions for ay-fronting.
+    # Top-level 3-arg pa-DV across the three NP-order permutations:
+    _add(out, "pinakainan ng nanay ng kanin ang bata",
+         "causative: 3-arg pa-DV (GEN-GEN-NOM)",
+         "parse")
+    _add(out, "pinakainan ng nanay ang bata ng kanin",
+         "causative: 3-arg pa-DV (GEN-NOM-GEN)",
+         "parse")
+    _add(out, "pinakainan ang bata ng nanay ng kanin",
+         "causative: 3-arg pa-DV (NOM-GEN-GEN)",
+         "parse")
+    # Other anchor verbs:
+    _add(out, "pinabasahan ng nanay ng libro ang bata",
+         "causative: 3-arg pa-DV (basa)",
+         "parse")
+    # 3-arg pa-DV under control:
+    _add(out, "gusto kong pakakainan ang bata ng kanin",
+         "control: 3-arg pa-DV under psych control",
+         "parse")
+    _add(out, "pumayag akong pakakainan ang bata ng kanin",
+         "control: 3-arg pa-DV under intrans control",
+         "parse")
+    # 3-arg pa-DV ay-fronting:
+    _add(out, "ng nanay ay pinakainan ang bata ng kanin",
+         "ay-inversion: 3-arg pa-DV CAUSER-fronted",
+         "parse")
+    _add(out, "ng kanin ay pinakainan ng nanay ang bata",
+         "ay-inversion: 3-arg pa-DV PATIENT-fronted",
+         "parse")
+
+    # Phase 5e Commit 11: 3-arg plain DV (CAUS=NONE) ditransitives.
+    # New intrinsic profile + sulat DV 3-arg lex entry + 3
+    # multi-GEN-NP grammar rules.
+    _add(out, "sinulatan ng nanay ng liham ang anak",
+         "causative: 3-arg DV plain (GEN-GEN-NOM, sulat)",
+         "parse")
+    _add(out, "sinulatan ang anak ng nanay ng liham",
+         "causative: 3-arg DV plain (NOM-GEN-GEN, sulat)",
+         "parse")
+    _add(out, "sinulatan ng nanay ang anak ng liham",
+         "causative: 3-arg DV plain (GEN-NOM-GEN, sulat)",
+         "parse")
+    # IPFV aspect:
+    _add(out, "sinusulatan ng nanay ng liham ang anak",
+         "causative: 3-arg DV plain IPFV",
+         "parse")
+
+    # Phase 5e Commit 12: mag-...-an reciprocal / social.
+    # New affix class with PFV / IPFV / CTPL cells; the lex's
+    # MOOD=SOC discriminator distinguishes the reciprocal PRED
+    # ("EAT-TOGETHER") from the plain AV reading ("EAT").
+    _add(out, "nagkainan sila",
+         "causative: mag-...-an reciprocal (kain PFV)",
+         "parse")
+    _add(out, "nagkakainan sila",
+         "causative: mag-...-an reciprocal (kain IPFV)",
+         "parse")
+    _add(out, "magkakainan sila",
+         "causative: mag-...-an reciprocal (kain CTPL)",
+         "parse")
+    _add(out, "nagbilihan sila",
+         "causative: mag-...-an reciprocal (bili PFV)",
+         "parse")
+    _add(out, "hindi nagkainan sila",
+         "causative: mag-...-an reciprocal + NEG",
+         "parse")
+
+    # Phase 5e Commit 14: AV mang- retain pattern. Per-base
+    # affix class mang_retain admits the retain-consonant
+    # variant alongside the default drop pattern. Both forms
+    # parse to the same lex PRED (BUY <SUBJ>).
+    _add(out, "nambili ang nanay",
+         "voice/aspect: mang- retain (bili PFV)",
+         "parse")
+    _add(out, "nambibili ang nanay",
+         "voice/aspect: mang- retain (bili IPFV)",
+         "parse")
+    _add(out, "mambibili ang nanay",
+         "voice/aspect: mang- retain (bili CTPL)",
+         "parse")
     return out
 
 
@@ -456,9 +886,26 @@ def _applicative_causative_corpus() -> list[dict[str, Any]]:
             _add(out, f"{caus_form} {nom} na kumain ng isda",
                  "causative: magpa- AV biclausal + transitive XCOMP",
                  "parse")
-    # Out-of-scope: ipang- (deferred — homorganic nasal sandhi)
+    # ipang- instrumental applicative (Phase 5c §7.7 follow-on
+    # Commit 4 lifted the deferral via the new ``nasal_assim_prefix``
+    # sandhi op).
     for s in ("ipinambili ng titser ang panulat",):
-        _add(out, s, "applicative: ipang- (deferred)", "fail")
+        _add(out, s, "applicative: ipang- (instrumental, IV-INSTR)", "parse")
+
+    # Phase 5e Commit 24: IV-REASON CTPL "short" form. The new
+    # paradigm cell makes ``ikakain`` analyse as IV-REASON CTPL
+    # alongside its existing IV-CONVEY CTPL reading; ``ikasulat``
+    # gets a new IV-REASON CTPL surface (distinct from the IV-
+    # CONVEY ``isusulat``).
+    _add(out, "ikakain ko ang isda",
+         "applicative: ika- (REASON, IV-REASON CTPL short form)",
+         "parse")
+    _add(out, "ikasulat ko ang liham",
+         "applicative: ika- (REASON, IV-REASON CTPL short form for sulat)",
+         "parse")
+    _add(out, "ikakakain ko ang isda",
+         "applicative: ika- (REASON, IV-REASON CTPL long form, regression)",
+         "parse")
     return out
 
 
@@ -478,6 +925,60 @@ def _demonstrative_possessive_corpus() -> list[dict[str, Any]]:
                 _add(out, f"{verb} {nom} {dem_g}",
                      "demonstrative: GEN demonstrative as OBJ",
                      "parse")
+    # Phase 5e Commit 16: pre-modifier demonstrative with linker
+    # (``itong bata`` "this child"). The dem precedes the head N
+    # via the linker — bound ``-ng`` on PROX (vowel-final dem),
+    # standalone ``na`` on MED / DIST (consonant-final dem).
+    # Three cases × three deixis × representative bases.
+    # PROX (bound ``-ng``).
+    for verb in ("kumain", "tumakbo", "natulog"):
+        for dem_n, n in (("itong", "bata"), ("itong", "babae")):
+            _add(out, f"{verb} {dem_n} {n}",
+                 "demonstrative: pre-modifier NOM PROX (-ng linker)",
+                 "parse")
+    # MED / DIST (standalone ``na``).
+    for verb in ("kumain", "tumakbo"):
+        for dem in ("iyan", "iyon"):
+            _add(out, f"{verb} {dem} na bata",
+                 f"demonstrative: pre-modifier NOM "
+                 f"{'MED' if dem == 'iyan' else 'DIST'} (na linker)",
+                 "parse")
+    # GEN pre-mod (OV — pre-mod dem is OBJ-AGENT).
+    _add(out, "kinain nitong bata ang isda",
+         "demonstrative: pre-modifier GEN PROX (-ng linker)",
+         "parse")
+    _add(out, "kinain niyon na bata ang isda",
+         "demonstrative: pre-modifier GEN DIST (na linker)",
+         "parse")
+    # Pre + post stacking on same N (R&B 1986 examples).
+    _add(out, "kumain itong batang ito",
+         "demonstrative: pre + post-mod stacking",
+         "parse")
+    # Phase 5e Commit 17: dem on a relativized head. The
+    # post-mod-dem rule (Phase 5d Commit 3) and the §7.5 RC rule
+    # already compose; this commit lifted the latent disambiguator
+    # bug that prevented the standalone ``na`` from staying in
+    # place between the dem and the RC. NOM-headed dem-on-RC.
+    for verb in ("tumakbo", "natulog"):
+        for dem in ("ito", "iyan", "iyon"):
+            _add(out, f"{verb} ang batang {dem} na kumain",
+                 f"demonstrative: post-mod {dem} on RC'd head "
+                 f"({'PROX' if dem == 'ito' else 'MED' if dem == 'iyan' else 'DIST'})",
+                 "parse")
+    _add(out, "tumakbo ang batang ito na kumain ng isda",
+         "demonstrative: post-mod dem on RC'd head, transitive RC",
+         "parse")
+    _add(out, "tumakbo ang lalaki na ito na kumain",
+         "demonstrative: post-mod (na linker) on RC'd head",
+         "parse")
+    # GEN-headed (in OV-actor position).
+    _add(out, "kinain ng batang nito na kumain ang isda",
+         "demonstrative: GEN post-mod dem on RC'd OV-actor head",
+         "parse")
+    # Pre-mod + RC (Phase 5e Commit 16 + Phase 4 §7.5; pin in corpus).
+    _add(out, "tumakbo itong batang kumain",
+         "demonstrative: pre-mod + RC composition",
+         "parse")
     # Possessive: ng-NP modifier
     for verb in ("kumain", "bumili"):
         for nom in _NOM_NPS[:3]:
@@ -664,6 +1165,32 @@ def _classic_corpus() -> list[dict[str, Any]]:
     ]
 
 
+def _comparative_corpus() -> list[dict[str, Any]]:
+    """Phase 5e Commit 26: comparative ``parang`` (``parang + N
+    + ang-NP``, "X is like Y"). Distinct from the evidential
+    ``parang + clause`` reading (Phase 5d Commit 1)."""
+    out: list[dict[str, Any]] = []
+    for std, comparee in [
+        ("aso", "ang bata"),
+        ("bata", "ang nanay"),
+        ("nanay", "ang bata"),
+        ("aso", "si Juan"),
+        ("aso", "ang isda"),
+    ]:
+        _add(out, f"parang {std} {comparee}",
+             "comparative: parang + N + ang-NP",
+             "parse")
+    # NEG composition
+    _add(out, "hindi parang aso ang bata",
+         "comparative: parang + N + ang-NP, NEG",
+         "parse")
+    # Numeral-modified standard
+    _add(out, "parang isang aso ang bata",
+         "comparative: parang + isang + N + ang-NP",
+         "parse")
+    return out
+
+
 def _all_corpus() -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     out.extend(_voice_aspect_corpus())
@@ -674,6 +1201,7 @@ def _all_corpus() -> list[dict[str, Any]]:
     out.extend(_control_corpus())
     out.extend(_applicative_causative_corpus())
     out.extend(_demonstrative_possessive_corpus())
+    out.extend(_comparative_corpus())
     out.extend(_robustness_corpus())
     out.extend(_classic_corpus())
     return out

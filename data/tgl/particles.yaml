@@ -158,9 +158,16 @@
 # form for V[CTRL_CLASS=RAISING]. `yata` "supposedly" is also
 # evidential but is a Wackernagel 2P clitic in Tagalog (already
 # seeded as PART[is_clitic=true] below) — not a raising verb.
+# Phase 5e Commit 26: parang carries an extra COMPARATIVE feature
+# distinguishing the comparative reading (`Parang aso ang bata.`
+# "The child is like a dog") from tila's evidential-only reading.
+# Both keep CTRL_CLASS=RAISING_BARE for the existing evidential
+# (Phase 5d Commit 1) form `Parang umuulan` / `Tila umuulan`. The
+# comparative grammar rule (cfg/grammar.py) constrains on
+# `(↓1 COMPARATIVE) =c 'YES'` to fire only on parang (not tila).
 - surface: parang
   pos: VERB
-  feats: {CTRL_CLASS: RAISING_BARE}
+  feats: {CTRL_CLASS: RAISING_BARE, COMPARATIVE: "YES"}
 - surface: tila
   pos: VERB
   feats: {CTRL_CLASS: RAISING_BARE}
@@ -235,3 +242,44 @@
   feats: {EPISTEMIC: PRESUMABLY}
   is_clitic: true
   clitic_class: 2P
+
+# === Phase 5e Commit 3: temporal adverbs (ADV) ===========================
+# Closed-class temporal expressions that appear as sentential modifiers
+# (clause-final or as ay-fronted topic). Tagalog also admits these as
+# bare nouns in certain contexts (`kahapon` already has a NOUN entry in
+# roots.yaml as "yesterday"); the ADV reading here is additive — both
+# analyses surface and the grammar picks whichever fits. ADV_TYPE=TIME
+# is exposed for grammar-rule matching; DEIXIS_TIME (PAST / PRES / FUT)
+# captures temporal anchoring without conflating with the spatial DEIXIS
+# feature on demonstratives.
+- surface: kahapon
+  pos: ADV
+  feats: {ADV_TYPE: TIME, DEIXIS_TIME: PAST}
+- surface: ngayon
+  pos: ADV
+  feats: {ADV_TYPE: TIME, DEIXIS_TIME: PRES}
+- surface: bukas
+  pos: ADV
+  feats: {ADV_TYPE: TIME, DEIXIS_TIME: FUT}
+- surface: mamaya
+  pos: ADV
+  feats: {ADV_TYPE: TIME, DEIXIS_TIME: FUT}
+
+# === Phase 5e Commit 3: prepositions (PREP) ==============================
+# Compound prepositions that head a PP with a sa-NP complement
+# (PP → PREP NP[CASE=DAT]). Common Tagalog PPs: ``para sa X`` "for X",
+# ``tungkol sa X`` "about X", ``mula sa X`` "from X", ``dahil sa X``
+# "because of X". The PREP word itself contributes a PREP_TYPE feature
+# that marks the semantic role the PP plays as a sentential modifier.
+- surface: para
+  pos: PREP
+  feats: {PREP_TYPE: BENEFICIARY}
+- surface: tungkol
+  pos: PREP
+  feats: {PREP_TYPE: TOPIC}
+- surface: mula
+  pos: PREP
+  feats: {PREP_TYPE: SOURCE}
+- surface: dahil
+  pos: PREP
+  feats: {PREP_TYPE: REASON}

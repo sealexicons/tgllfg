@@ -2969,3 +2969,2920 @@ and is not a structural concern.
   Wackernagel logic handles them independently, but this hasn't
   been pinned with tests.
 
+## Phase 5e Commit 1: pa-OV / pa-DV (CAUS=DIRECT) actor-fronting
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5d Commit 5 added three gap-category non-terminals
+(``S_GAP_OBJ``, ``S_GAP_OBJ_AGENT``, ``S_GAP_OBL``) plus three
+matching ay-fronting wrap rules, lifting the §7.4 deferral on
+non-pivot ay-fronting for OBJ-θ and DAT-marked obliques. The
+``S_GAP_OBJ_AGENT`` non-terminal admits non-AV transitive
+fronting only when the V carries ``CAUS=NONE``. The constraint
+deliberately excluded pa-OV / pa-DV (CAUS=DIRECT) — under
+monoclausal direct causation the actor's typed GF is
+``OBJ-CAUSER`` rather than ``OBJ-AGENT``, so a different gap
+category is needed. Phase 5e Commit 1 fills in the parallel
+extraction path.
+
+### One new gap-category, one new wrap rule
+
+```
+S_GAP_OBJ_CAUSER → V[VOICE=OV, CAUS=DIRECT] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)
+S_GAP_OBJ_CAUSER → V[VOICE=OV, CAUS=DIRECT] NP[CASE=NOM] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-PATIENT) = ↓3
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)
+S_GAP_OBJ_CAUSER → V[VOICE=OV, CAUS=DIRECT] NP[CASE=GEN] NP[CASE=NOM]
+   (↑ SUBJ) = ↓3
+   (↑ OBJ-PATIENT) = ↓2
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)
+S_GAP_OBJ_CAUSER → V[VOICE=DV, CAUS=DIRECT] NP[CASE=NOM]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-CAUSER) = (↑ REL-PRO)
+(plus +DAT-adjunct variants for pa-OV-2arg and pa-DV; recursive
+ PART[POLARITY=NEG] for inner negation)
+
+S → NP[CASE=GEN] PART[LINK=AY] S_GAP_OBJ_CAUSER
+   (↑) = ↓3
+   (↑ TOPIC) = ↓1
+   (↓3 REL-PRO) = ↓1
+   (↓3 REL-PRO) =c (↓3 OBJ-CAUSER)
+```
+
+The fronted GEN-NP is the ``CAUSER`` (demoted from actor under
+pa-causation). The 3-arg pa-OV variants leave both the NOM
+pivot (``CAUSEE``) and the GEN ``OBJ-PATIENT`` overt inside the
+inner clause, mirroring Phase 5d Commit 8's S_XCOMP pattern and
+the top-level Phase 5b multi-GEN-NP frame ordering.
+
+### Disambiguation against S_GAP_OBJ_AGENT
+
+The two gap-categories ``S_GAP_OBJ_AGENT`` (Commit 5) and the
+new ``S_GAP_OBJ_CAUSER`` both attach to the same wrap-rule
+shape ``NP[CASE=GEN] PART[LINK=AY] S_GAP_*``. The parser
+explores both, but the inner V's CAUS feature picks a unique
+winner: CAUS=DIRECT routes only to ``S_GAP_OBJ_CAUSER``;
+CAUS=NONE routes only to ``S_GAP_OBJ_AGENT``. The parser's
+non-conflict feature matcher means each gap-category's V
+filter must be **explicit** about CAUS to avoid cross-firing
+on a missing-feature catch-all; both gap-categories already
+carry their CAUS constraint, so no new sentinel is needed.
+
+### Why pa-DV stays 2-arg
+
+Phase 5d Commit 2 introduced pa-DV (``pa-...-an``) with the
+2-arg PRED ``CAUSE-EAT-AT <SUBJ, OBJ-CAUSER>`` only — a 3-arg
+pa-DV variant with overt patient is enumerated as a separate
+deferral in plan §10.1 Group D ("Three-argument top-level
+pa-DV"). Phase 5e Commit 1 doesn't add a 3-arg pa-DV gap-
+category for the same reason: there's no lex profile for it
+to attach to. When the 3-arg pa-DV lex lands (Group D commit),
+its S_GAP_OBJ_CAUSER frame is a one-line addition.
+
+### What this lifts
+
+* 2-arg pa-OV actor-fronting:
+  ``Ng nanay ay pinakain ang bata.``
+* 3-arg pa-OV actor-fronting (both NP orders):
+  ``Ng nanay ay pinakain ang bata ng kanin.``
+  ``Ng nanay ay pinakain ng kanin ang bata.``
+* 2-arg pa-DV actor-fronting:
+  ``Ng nanay ay pinakainan ang bata.``
+* All three pa-OV anchor verbs (kain / basa / inom) and three
+  pa-DV anchor verbs (kain / basa / inom).
+* IPFV aspect on the embedded V (``pinakakain``).
+* Inner negation under fronting
+  (``Ng nanay ay hindi pinakain ang bata.``).
+
+### Out-of-scope (still deferred)
+
+* **3-arg pa-DV actor-fronting.** Blocked on the 3-arg pa-DV
+  lex profile; lifts as a follow-on once that lands (plan §10.1
+  Group D).
+* **Pa-OV / pa-DV actor-fronting under embedded control.** The
+  Phase 5d Commit 8 S_XCOMP pa-causative rules embed under
+  control, but the *fronted* form under control would need a
+  matching ``S_XCOMP_GAP_OBJ_CAUSER`` or similar. Composition
+  not exercised by corpus.
+
+## Phase 5e Commit 2: multi-GEN-NP ay-fronting
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5b multi-GEN-NP frames bind two GEN-marked non-pivots
+positionally to typed ``OBJ-θ`` slots: in IV (any APPL) the first
+ng-NP is ``OBJ-AGENT`` and the second is ``OBJ-PATIENT``; in
+pa-OV-direct it's ``OBJ-CAUSER`` and ``OBJ-PATIENT``. Phase 5d
+Commit 5 added ay-fronting only for non-3-arg shapes (no second
+GEN). Phase 5e Commit 1 added 3-arg pa-OV with the CAUSER fronted
+(``S_GAP_OBJ_CAUSER`` 3-arg). Phase 5e Commit 2 fills in the
+remaining 3-arg multi-GEN extractions:
+
+* 3-arg IV with OBJ-AGENT extracted (OBJ-PATIENT retained):
+  ``Ng nanay ay ipinaggawa ang kapatid ng silya``.
+* 3-arg multi-GEN with OBJ-PATIENT extracted (in either IV with
+  OBJ-AGENT retained, or pa-OV-direct with OBJ-CAUSER retained):
+  ``Ng silya ay ipinaggawa ang kapatid ng nanay``,
+  ``Ng kanin ay pinakain ng nanay ang bata``.
+
+### S_GAP_OBJ_AGENT IV 3-arg additions
+
+The Phase 5d Commit 5 ``S_GAP_OBJ_AGENT`` rules covered only
+2-arg shapes (V plus a single NOM pivot, optionally with a DAT
+adjunct). Two IV-only 3-arg variants are added:
+
+```
+S_GAP_OBJ_AGENT → V[VOICE=IV] NP[CASE=NOM] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-PATIENT) = ↓3
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+S_GAP_OBJ_AGENT → V[VOICE=IV] NP[CASE=GEN] NP[CASE=NOM]
+   (↑ SUBJ) = ↓3
+   (↑ OBJ-PATIENT) = ↓2
+   (↑ OBJ-AGENT) = (↑ REL-PRO)
+```
+
+The voice is restricted to IV because only IV multi-GEN frames
+have a non-CAUSER second GEN-NP. The 2-arg rules are unchanged.
+
+### S_GAP_OBJ_PATIENT — new gap-category
+
+A single new non-terminal handles PATIENT-extraction across
+both 3-arg multi-GEN voice families. The retained-GEN binding
+is voice-conditioned:
+
+```
+S_GAP_OBJ_PATIENT → V[VOICE=IV] NP[CASE=NOM] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-AGENT) = ↓3
+   (↑ OBJ-PATIENT) = (↑ REL-PRO)
+S_GAP_OBJ_PATIENT → V[VOICE=IV] NP[CASE=GEN] NP[CASE=NOM]
+   (↑ SUBJ) = ↓3
+   (↑ OBJ-AGENT) = ↓2
+   (↑ OBJ-PATIENT) = (↑ REL-PRO)
+S_GAP_OBJ_PATIENT → V[VOICE=OV, CAUS=DIRECT] NP[CASE=NOM] NP[CASE=GEN]
+   (↑ SUBJ) = ↓2
+   (↑ OBJ-CAUSER) = ↓3
+   (↑ OBJ-PATIENT) = (↑ REL-PRO)
+S_GAP_OBJ_PATIENT → V[VOICE=OV, CAUS=DIRECT] NP[CASE=GEN] NP[CASE=NOM]
+   (↑ SUBJ) = ↓3
+   (↑ OBJ-CAUSER) = ↓2
+   (↑ OBJ-PATIENT) = (↑ REL-PRO)
+S_GAP_OBJ_PATIENT → PART[POLARITY=NEG] S_GAP_OBJ_PATIENT
+   (↑) = ↓2  (↑ POLARITY) = 'NEG'
+```
+
+The wrap rule:
+
+```
+S → NP[CASE=GEN] PART[LINK=AY] S_GAP_OBJ_PATIENT
+   (↑) = ↓3
+   (↑ TOPIC) = ↓1
+   (↓3 REL-PRO) = ↓1
+   (↓3 REL-PRO) =c (↓3 OBJ-PATIENT)
+```
+
+### Structural ambiguity: both readings parse
+
+For an inner-clause shape like ``ipinaggawa ang kapatid ng silya``
+(IV-BEN with one retained GEN), two gap-categories match the
+same shape:
+
+* ``S_GAP_OBJ_AGENT`` 3-arg: gap = OBJ-AGENT, retained = OBJ-PATIENT.
+* ``S_GAP_OBJ_PATIENT`` IV: gap = OBJ-PATIENT, retained = OBJ-AGENT.
+
+Both rules fire and both wrap rules above succeed (with their
+respective constraining equations). The result is two parses for
+the same surface, distinguished by which fronted-NP role binds:
+
+* ``Ng nanay ay ipinaggawa ang kapatid ng silya`` admits both
+  AGENT-fronted (TOPIC=nanay=AGENT, silya=PATIENT) and
+  PATIENT-fronted (TOPIC=nanay=PATIENT, silya=AGENT) readings.
+  Animacy makes the first natural; the second is structurally
+  available.
+
+This mirrors Tagalog's tolerance for the corresponding role
+ambiguity in non-fronted multi-GEN frames (the Phase 5b
+positional convention is just the unmarked default; lexical
+semantics resolves the actual binding). Tests pin the natural
+reading via a TOPIC-PRED-GF triple filter.
+
+### Discrimination by voice + CAUS
+
+The two voice/feature combinations on ``S_GAP_OBJ_PATIENT`` are
+mutually exclusive (IV vs OV-CAUS=DIRECT), so a single inner
+clause never matches both branches of ``S_GAP_OBJ_PATIENT`` —
+the f-structure is unambiguous about *which* GF the retained
+GEN-NP fills (OBJ-AGENT under IV, OBJ-CAUSER under pa-OV-direct).
+Cross-voice contamination is structurally impossible.
+
+### What this lifts
+
+* IV-BEN / IV-INSTR / IV-REASON 3-arg with AGENT fronted
+  (``Ng nanay ay ipinaggawa ang kapatid ng silya``,
+  ``Ng nanay ay ipinambili ang pera ng isda``,
+  ``Ng bata ay ikinasulat ang gutom ng isda``).
+* IV 3-arg with PATIENT fronted
+  (``Ng silya ay ipinaggawa ang kapatid ng nanay``).
+* pa-OV-direct 3-arg with PATIENT fronted
+  (``Ng kanin ay pinakain ng nanay ang bata``).
+* Both inner NP orders (NOM-GEN and GEN-NOM after the V).
+* Inner negation under fronting.
+
+### Out-of-scope (still deferred)
+
+* **DV 3-arg multi-GEN ay-fronting.** Blocked on Group D's "DV
+  three-argument constructions" item — DV multi-GEN rules
+  themselves don't yet exist. Lifts as a follow-on once that
+  Group D commit lands.
+* **3-arg multi-GEN ay-fronting under embedded control.**
+  Crosses with Phase 5d Commits 7 / 8 / 9; not exercised by the
+  current corpus.
+
+## Phase 5e Commit 3: AdvP / PP ay-fronting
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 4 §7.4's "Out-of-scope" list flagged ``Kahapon ay tumakbo
+si Maria`` (temporal AdvP) and ``Para sa bata ay binili niya ang
+aklat`` (PP) as deferred until "the categorial inventory expands".
+Phase 5e Commit 3 lifts the deferral with the smallest categorial
+expansion sufficient to host the construction.
+
+### Two new POS values
+
+In :file:`data/tgl/particles.yaml`:
+
+* ``ADV`` — closed-class temporal adverbs. Seeded with four
+  entries: ``kahapon`` "yesterday" (DEIXIS_TIME=PAST), ``ngayon``
+  "now/today" (PRES), ``bukas`` "tomorrow" (FUT), ``mamaya``
+  "later" (FUT). Each carries ``ADV_TYPE=TIME`` for grammar-rule
+  matching.
+* ``PREP`` — compound preposition heads that subcategorise for a
+  sa-NP complement. Seeded with four entries: ``para``
+  (PREP_TYPE=BENEFICIARY), ``tungkol`` (TOPIC), ``mula`` (SOURCE),
+  ``dahil`` (REASON). Each PREP carries ``LEMMA`` (set
+  automatically by the analyzer for ADV / PREP particles, mirroring
+  the noun-LEMMA pattern from Phase 5c §8 follow-on Commit 6) so
+  the head's lemma percolates through ``AdvP → ADV`` and
+  ``PP → PREP NP[CASE=DAT]`` to the matrix TOPIC.
+
+### Two new non-terminals
+
+```
+AdvP → ADV
+   (↑) = ↓1
+
+PP → PREP NP[CASE=DAT]
+   (↑) = ↓1
+   (↑ OBJ) = ↓2
+```
+
+The AdvP rule is a single-child lift — closed-class single-word
+adverbs don't need internal structure. The PP rule heads with the
+PREP and exposes the sa-NP complement as ``OBJ`` (analogous to
+how a clause's V exposes its arguments). The PP's f-structure
+inherits ``PREP_TYPE`` and ``LEMMA`` from its head.
+
+### Two new ay-fronting wrap rules
+
+```
+S → AdvP PART[LINK=AY] S
+   (↑) = ↓3
+   (↑ TOPIC) = ↓1
+   ↓1 ∈ (↑ ADJ)
+
+S → PP PART[LINK=AY] S
+   (↑) = ↓3
+   (↑ TOPIC) = ↓1
+   ↓1 ∈ (↑ ADJ)
+```
+
+Both rules:
+
+* Make the inner S the matrix's f-structure (``(↑) = ↓3``).
+* Set the matrix's ``TOPIC`` to the fronted phrase.
+* Add the fronted phrase to the matrix's ``ADJ`` set, preserving
+  adjunct semantics alongside the topic-marking.
+
+The inner S is a complete clause with no gap — AdvP / PP are
+sentential modifiers, not arguments of any voice/aspect frame,
+so there's nothing to extract from the inner clause's GF
+inventory. This contrasts with the NP ay-fronting rules
+(``S → NP[CASE=*] PART[LINK=AY] S_GAP_*``) which do require a
+gap-category for the extracted argument.
+
+### Why ADJ instead of ADJUNCT
+
+Two non-governable set-valued attributes coexist in the f-structure:
+
+* ``ADJUNCT`` holds DAT-NPs (sa-NPs) as collected by the parser's
+  ``↓N ∈ (↑ ADJUNCT)`` equations. The Phase 5 LMT
+  ``oblique_classifier`` post-processes this set into typed
+  ``OBL-θ`` slots (LOC / RECIP / etc.).
+* ``ADJ`` holds quantifier-floats (Phase 4 §7.8), 2P clitic
+  particles (Phase 4 §7.3), and now AdvP / PP fronted topics.
+  The classifier doesn't touch ADJ.
+
+Putting AdvP / PP in ``ADJ`` keeps them out of the
+oblique-classifier's purview (they're not sa-NPs); they're
+modifier-class adjuncts, not GF-typed obliques.
+
+### Discrimination against existing fronting rules
+
+The new wrap rules use ``AdvP`` and ``PP`` non-terminals as
+their first child, distinct from the existing ``NP[CASE=NOM/GEN/DAT]``
+fronts. The parser's matcher selects the rule based on the
+non-terminal type plus child features, so cross-firing is
+structurally impossible:
+
+* ``Kahapon ay tumakbo si Maria`` — only the AdvP wrap rule
+  matches (``kahapon`` as ADV); the NP-fronting rules require an
+  NP, which a bare adverb without a DET cannot form.
+* ``Para sa bata ay binili niya ang libro`` — both the PP wrap
+  rule (``para`` as PREP heading a PP) and the DAT-NP wrap rule
+  (``sa bata`` as a fronted DAT-NP, ignoring ``para``) could
+  fire. The existing DAT-NP rule requires a single ``NP[CASE=DAT]``
+  not preceded by anything; the surface has ``para sa bata``
+  which contains an extra PREP token, so the DAT-NP-only rule
+  doesn't extend across it. The PP wrap rule wins.
+
+### What this lifts
+
+* Temporal-AdvP ay-fronting:
+  ``Kahapon ay tumakbo si Maria.``
+  ``Ngayon ay kumakain ang bata.``
+  ``Bukas ay tutulog si Maria.``
+  ``Mamaya ay tutulog si Maria.``
+* PP ay-fronting across all four seeded prepositions:
+  ``Para sa bata ay binili niya ang libro.``
+  ``Tungkol sa nanay ay sumulat ang bata.``
+  ``Mula sa bahay ay tumakbo si Maria.``
+  ``Dahil sa gutom ay kumain ang bata.``
+* Inner-clause negation under both forms.
+* Inner-clause transitive frames (AV and OV).
+
+### Out-of-scope (still deferred)
+
+* **Non-fronted AdvP / PP placement.** Clause-final or
+  unmarked-sentential-adjunct placement of AdvP / PP
+  (``Tumakbo si Maria kahapon``, ``Binili niya ang libro
+  para sa bata``) — keeps AdvP / PP out of the matrix's
+  post-V argument frames. Adding bare placement would interact
+  with §7.3 Wackernagel-cluster placement and §7.8 quantifier-
+  float and is left as a separate commit. The bare-AdvP /
+  bare-PP usage is more frequent than the ay-fronted form, so
+  this is a real gap; landing it as a separate commit keeps the
+  scope reviewable.
+* **Multi-word AdvPs.** ``kahapon ng umaga`` "yesterday morning"
+  needs an ``AdvP → ADV NP[CASE=GEN]`` rule.
+* **AdvP / PP modifying inner NPs.** ``ang aklat para sa bata``
+  ("the book for the child") embeds the PP inside an NP rather
+  than at the clausal level. Different attachment site.
+
+## Phase 5e Commit 4: multi-pronoun RC composition pinning
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5d Commit 10's deferral list flagged "Multi-pronoun RCs" —
+a single matrix sentence with both a matrix-cluster PRON and an
+embedded RC-actor PRON, e.g. ``Nakita ko ang batang kinain niya``
+("I saw the child she ate"). The Wackernagel logic from
+Commit 10 (specifically
+:func:`tgllfg.clitics.placement._is_post_embedded_v_pron`)
+already handled the two pronouns independently per-token: the
+post-matrix-V PRON (``ko``) goes into the matrix V's cluster,
+the post-embedded-V PRON (``niya``) stays in place as the RC's
+actor. The construction was structurally available but not
+pinned with tests.
+
+This commit is **test-only** — no grammar / placement / lex
+changes. It pins the composition with explicit assertions:
+
+* Both PRONs end up in distinct f-structure slots (different
+  ``FStructure.id``s).
+* The matrix-cluster PRON binds to the matrix V's appropriate
+  role (matrix.OBJ in the synthesized AV-NVOL ``nakita`` case;
+  matrix.SUBJ in AV-tr cases).
+* The embedded RC-actor PRON binds inside the RC (the RC is an
+  ADJ member of its head NP; the PRON fills the RC's
+  OBJ-AGENT) — not at the matrix level.
+* Negation under either the matrix or the RC composes
+  independently.
+
+### Identification by structural position, not LEMMA / PERS
+
+Pronouns in Tagalog don't carry a grammar-visible LEMMA (the
+analyzer doesn't add one for the PRON path), and PERS rides on
+``feats`` as an integer which the pipeline's lex-equation
+derivation drops (only string-valued feats become lex
+equations). The two PRONs in a multi-pronoun RC are therefore
+**indistinguishable at the f-structure level** beyond:
+
+* Their structural position (matrix slot vs ADJ-RC slot).
+* Their CASE / NUM features (which are string-valued and
+  percolate).
+
+Tests rely on structural position plus CASE / NUM. This is
+sufficient for "composition pinning" but doesn't directly
+distinguish 1sg vs 2sg vs 3sg. Adding string-valued PERS to the
+analyzer is a small follow-up that would let downstream
+consumers identify pronouns by person; out of scope for this
+commit.
+
+### What this lifts
+
+Three matrix-PRON / RC-PRON orderings explicitly tested:
+
+* ``Nakita ko ang batang kinain niya.`` (1sg + 3sg)
+* ``Nakita mo ang batang kinain niya.`` (2sg + 3sg)
+* ``Nakita niya ang batang kinain ko.`` (3sg + 1sg)
+
+Plus AV-matrix variant
+(``Kumain ako ng batang kinain niya.``) and inner-NEG
+composition (``Nakita ko ang batang hindi kinain niya.``).
+
+### Out-of-scope (still deferred)
+
+* **3+ pronouns in a single sentence.** Matrix + RC1 + RC2 with
+  three distinct PRONs (``Nakita ko ang batang kinain mo ng
+  isdang nahuli niya``) — the recursion is structurally
+  available but combinatorially explodes the parse forest;
+  stress-test deferred until corpus pressure justifies.
+* **PERS exposure as string-valued feat.** Would let tests and
+  downstream consumers distinguish 1sg / 2sg / 3sg pronouns at
+  the f-structure level. Trivial analyzer addition; deferred
+  to a separate engineering follow-up.
+
+## Phase 5e Commit 5: headless / free relatives
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 4 §7.5's "Out-of-scope" list flagged headless / free
+relatives (``ang kumain`` "the one who ate") as deferred. A
+headless RC is a relative clause used directly as an NP, with
+no overt head noun — the "head" is interpreted as a
+phonologically null PRO that's identified with the gap-filler
+(REL-PRO).
+
+### Three additive grammar rules
+
+```
+NP[CASE=NOM] → DET[CASE=NOM, DEM=NO] S_GAP
+NP[CASE=GEN] → ADP[CASE=GEN, DEM=NO] S_GAP
+NP[CASE=DAT] → ADP[CASE=DAT, DEM=NO] S_GAP
+
+   (↑ PRED) = 'PRO'
+   (↑ CASE) = '<case>'
+   (↑ MARKER) = ↓1 MARKER
+   ↓2 ∈ (↑ ADJ)
+   (↓2 REL-PRO PRED) = 'PRO'
+   (↓2 REL-PRO CASE) = '<case>'
+   (↓2 REL-PRO) =c (↓2 SUBJ)
+```
+
+Each rule is a single-line addition mirroring the Phase 4 §7.8
+standalone-demonstrative analysis (PRED='PRO' for the implicit
+head) plus the §7.5 head-initial-relativization equation
+pattern (S_GAP attaches as ADJ; REL-PRO inherits PRED='PRO' and
+CASE).
+
+### DEM=NO discrimination prevents cross-firing
+
+The new rules constrain ``DEM=NO`` on the determiner so they
+don't fire on standalone demonstratives (``ito`` / ``iyan`` /
+``iyon`` carry ``DEM=YES``). The Phase 4 §7.8 standalone-
+demonstrative rule continues to handle ``Kumain iyon.`` ("That
+one ate."); the headless-RC rule handles ``Tumakbo ang
+tumakbo.`` ("The one who ran ran."). The two never compete on
+the same surface because their initial-determiner POS×DEM
+combinations are disjoint.
+
+### Synthesizer-fallback limitation: AV-tr RC needs overt OBJ
+
+The synthesizer-fallback path (Phase 4 §7.2,
+:func:`_synthesize_verb_entry`) emits exactly ONE entry per
+voice for verbs not in BASE: AV-tr produces ``<SUBJ, OBJ>`` (no
+intransitive variant). So ``ang umiinom`` (a headless RC where
+the inner V is ``inom`` AV-IPFV, with no BASE entry) needs an
+overt OBJ to satisfy completeness — ``ang umiinom ng tubig`` is
+fine, but bare ``ang umiinom`` is not. Hand-authored AV-intr
+entries (``kain``, ``bili``) admit the bare form
+(``ang kumain``); intrinsically intransitive verbs
+(``takbo``, ``tulog``) also admit the bare form. The limitation
+is a synthesizer scope issue, not a headless-RC issue.
+
+### What this lifts
+
+* AV-INTR-RC: ``Tumakbo ang tumakbo.``, ``Tumakbo ang natulog.``
+* AV-tr-RC with overt OBJ: ``Tumakbo ang kumain ng isda.``,
+  ``Kumain ang kumain ng isda.``
+* OV-tr-RC (patient pivot): ``Tumakbo ang kinain ng aso.``
+* Headless RC in non-SUBJ position:
+  ``Nakita ko ang tumakbo.`` (OBJ-position headless RC).
+* Inner negation under headless RC:
+  ``Tumakbo ang hindi kumain ng isda.``
+
+The construction composes with the existing Phase 4 §7.8 NP-
+internal possessive (``ang kumain ng bata`` could mean either
+"the one who ate the child" with `ng bata` as OBJ, OR "the
+child's-eating(-thing)" with `ng bata` as POSS — both readings
+are linguistically valid and both surface in n-best output).
+
+### Out-of-scope (still deferred)
+
+* **Headless RC with synthesized AV-intransitive verb.** Verbs
+  with TR=TR but no hand-authored intransitive AV BASE entry
+  (e.g., ``inom`` AV without overt OBJ) don't form a valid
+  bare headless RC because completeness fails. A synthesizer
+  enhancement that emits both ``<SUBJ>`` and ``<SUBJ, OBJ>``
+  variants for TR-marked AV verbs would lift this; deferred
+  as an engineering follow-up.
+* **Headless RC modifying another NP.** ``ang aklat ng kumain``
+  (a possessive structure where the possessor is itself a
+  headless RC) might admit interesting parses; not exercised.
+
+## Phase 5e Commit 6: ``na`` linker disambiguation after PRON
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5d Commit 10's deferral list flagged ``Tumakbo ang bata ko
+na nakita`` (NP-internal possessor + linker + RC). The
+:func:`tgllfg.clitics.placement.disambiguate_homophone_clitics`
+pass historically treated post-PRON ``na`` as the 2P aspectual
+clitic ``ALREADY`` (CLITIC_CLASS=2P) and moved it to clause-end,
+breaking the linker / RC parse.
+
+This commit adds a third left-context exception in the
+disambiguator (alongside the two existing control-verb cases),
+plus a small look-ahead helper.
+
+### The new exception
+
+``disambiguate_homophone_clitics`` already had two left-context
+exceptions where post-VERB / post-PRON ``na`` is the linker:
+
+1. ``V[CTRL_CLASS!=NONE]`` directly preceding (Phase 5c §7.6
+   follow-on Commit 3) — ``Gusto na kumain``.
+2. PRON preceding, the PRON's prev being ``V[CTRL_CLASS!=NONE]``
+   (Phase 4 §7.10) — ``Kaya namin na kumain``.
+
+Phase 5e Commit 6 adds a third:
+
+3. PRON preceding, the PRON's prev being NOUN (i.e., the PRON
+   is an NP-internal possessor), AND the next content token
+   after ``na`` is a VERB (or NEG + VERB).
+
+### Look-ahead through PART[POLARITY=NEG]
+
+A small helper :func:`_next_content_is_verb` looks at the next
+position; if it's a ``PART[POLARITY=NEG]`` token (``hindi`` /
+``huwag``) and not a VERB, it skips one position and looks
+again. Returns True only if the first non-NEG content token is
+a VERB. This makes ``Tumakbo ang bata ko na hindi kumain`` work
+(NEG-RC under the new disambiguation).
+
+### Why look at both sides?
+
+The trigger condition is **bilateral**: NOUN before PRON before
+``na`` before VERB. The simpler "PRON before ``na`` before VERB"
+pattern would fire in too many cases — for instance,
+``Kumain mo na ang isda`` has post-V PRON ``mo`` followed by
+``na`` followed by DET ``ang`` (not VERB), so that case is
+unaffected. But ``Kumain mo na nakita`` would
+spuriously trigger if we only looked right (V + PRON + na + V),
+even though the natural reading there is the 2P clitic ``mo na``
+followed by an awkward second clause. Requiring NOUN preceding
+the PRON narrows the trigger to the genuine NP-internal-
+possessive pattern, which is the only context where ``na`` after
+a post-noun PRON unambiguously introduces an RC.
+
+### Synthesizer-fallback caveat
+
+The deferral note's example ``Tumakbo ang bata ko na nakita``
+uses ``nakita`` (kita NVOL form). ``kita`` is TR-only in the
+seed lexicon, so the synthesizer fallback emits only
+``KITA <SUBJ, OBJ>`` — the bare RC ``nakita`` (no overt OBJ)
+fails completeness. The disambiguation fix from this commit is
+correct, but the corpus tests for the construction use verbs
+that have hand-authored AV-intransitive BASE entries
+(``kain``, ``bili``, etc.) or are intrinsically intransitive
+(``takbo``, ``tulog``). Adding bare-AV-intr synthesizer
+fallback for TR verbs is the same engineering follow-up flagged
+in Phase 5e Commit 5 (headless / free relatives) and is
+deferred to a separate commit.
+
+### What this lifts
+
+* ``Tumakbo ang bata ko na kumain.`` "My child who ate ran."
+* ``Tumakbo ang bata mo na kumain.`` (2sg-GEN possessor)
+* ``Tumakbo ang bata niya na kumain.`` (3sg-GEN possessor)
+* ``Tumakbo ang bata ko na kumain ng isda.`` (transitive RC).
+* ``Tumakbo ang bata ko na kinain ng aso.`` (OV RC).
+* ``Tumakbo ang bata ko na hindi kumain.`` (NEG-RC under
+  the construction).
+
+### Out-of-scope (still deferred)
+
+* **Bare-AV-intr synthesizer fallback.** As above — needed to
+  lift the original ``Tumakbo ang bata ko na nakita`` example
+  where the RC's V is a TR verb without a hand-authored
+  intransitive entry.
+* **Other possessive markers + na linker.** ``aklat ng bata na
+  nakita`` (non-pronominal possessor) — the existing
+  NP-internal possessive plus relativization rules already
+  handle this without disambiguation issues; not exercised
+  here.
+
+## Phase 5e Commit 7: resumptive pronouns in RCs (reclassification)
+
+**Date:** 2026-05-01. **Status:** active. Documentation-only
+commit; no grammar / lex / morph changes.
+
+The Phase 4 §7.5 "Out-of-scope" note flagged "Resumptive
+pronouns in RCs (rare in modern Tagalog)" as deferred, and
+plan §10.1 Group B carried it forward as a Phase 5e candidate.
+On investigation, the construction does not have a stable,
+corpus-attested syntactic shape in modern written Tagalog, and
+attempting to implement it without that grounding would mean
+guessing at form. Phase 5e Commit 7 reclassifies the item to
+plan §18 (genuinely v1-out-of-scope) and pins the rationale
+here.
+
+### Why Tagalog doesn't really use resumptive RCs
+
+Resumptive pronouns are a cross-linguistic strategy where a
+pronoun fills the relativized position instead of leaving a
+gap (English colloquial: "the man who I saw him"). Tagalog has
+two structural alternatives that obviate the resumptive option:
+
+1. **Voice alternation** is the canonical strategy for
+   non-SUBJ relativization. The SUBJ-only restriction (Kroeger
+   1993 §5; Schachter & Otanes 1972 §5.16) means only the
+   ang-NP can be relativized, but voice alternation lets the
+   speaker pick which thematic role becomes the ang-NP. To
+   relativize the agent of a "patient-pivot" event, switch to
+   AV and the agent becomes the SUBJ:
+   ``Ang batang kumain ng isda.`` "The child who ate the fish."
+   (AV; bata is SUBJ=actor.) The OV form
+   ``*Ang batang kinain ang isda.`` "The child who-ate the fish"
+   (with bata as the agent of OV) is rejected by the SUBJ-only
+   restriction and is the construction a resumptive pronoun
+   would otherwise repair.
+2. **Restructuring with a relative clause that itself is the
+   matrix** (focus / cleft constructions) — ``Ang bata ang
+   kumain ng isda.`` "It's the child who ate the fish."
+
+Both strategies are productive, well-documented, and present
+in the corpus. Resumptive pronouns aren't.
+
+### What the corpus shows
+
+The Phase 4 §7.10 reference corpus (818 sentences originally,
+now 859 with the Phase 5e additions) contains zero
+unambiguously-resumptive RC examples. The seeded R&G 1981
+fixtures (20 sentences) and the classic / S&O / Kroeger
+fixtures (12 sentences) likewise don't include any. The
+deferral note's "rare in modern Tagalog" flag accurately
+captures this.
+
+### What it would take to lift
+
+A meaningful implementation would need:
+
+1. A corpus showing the construction at non-trivial frequency.
+2. Agreement on its syntactic shape — typically:
+   ``NP[CASE=X] → NP[CASE=X] PART[LINK] S_RES`` where
+   ``S_RES`` is a *non-gapped* clause containing a coreferent
+   pronoun that's functionally identified with the head.
+3. Decision on how to identify the coreferent pronoun: by
+   pragmatic / discourse-anaphora resolution (out of scope
+   per §18 sentence-level tooling) or by an explicit
+   ``REL-PRO`` binding equation that's lex-licensed.
+
+None of these conditions hold. Reclassifying to §18 is the
+honest call.
+
+### Where it lives now
+
+* Plan §10.1 Group B has a parenthetical noting the
+  reclassification and a pointer to §10.2 / §18.
+* Plan §10.2 ("Items not enumerated above") gains the
+  resumptive item alongside the other genuinely-out-of-scope
+  Phase 5e items (unbounded control chains, 3+ sa-NPs,
+  non-restrictive RCs).
+* Plan §18 gains a new bullet articulating the why.
+* This `docs/analysis-choices.md` section pins the rationale
+  with citations.
+
+### Out-of-scope (still deferred)
+
+The reclassification doesn't itself defer anything new —
+resumptive pronouns were already deferred at §7.5 and §10.1.
+The change is administrative: moving an item from
+"additive Phase 5e candidate" to "v1-out-of-scope".
+
+## Phase 5e Commit 8: control / raising composition pinning
+
+**Date:** 2026-05-01. **Status:** active. Test-only commit; no
+grammar / lex / morph changes.
+
+Phase 5d Commit 7's deferral list flagged two raising / control
+compositions as available structurally but not pinned with
+tests:
+
+* **Control under raising** — a raising matrix embedding a
+  control clause as its non-gap S complement. The Phase 5c §7.6
+  Commit 5 raising rule
+  ``S → V[CTRL_CLASS=RAISING] PART[LINK] S`` admits any
+  complete S as the inner clause, including a control-S.
+* **TRANS control + raising** — a TRANS control verb
+  (``pinilit``) whose XCOMP is itself a raising-S_XCOMP. The
+  Phase 5d Commit 7 ``S_XCOMP``-level raising rules made this
+  composition available; this commit pins it.
+
+### Composition shapes
+
+**Control under raising:**
+
+```
+Mukhang gusto ng batang kumain.
+S[SEEM]
+  XCOMP = S[WANT, PSYCH-control]
+            SUBJ = bata (GEN-experiencer)
+            XCOMP = S_XCOMP[EAT]
+                      SUBJ = bata (REL-PRO bound)
+  SUBJ = bata (raising structure-share)
+```
+
+All three SUBJ slots (mukha.SUBJ, gusto.SUBJ, kumain.SUBJ) end
+up sharing one f-node id — verified by Python-id equality in
+tests. The raising binding equation
+``(↑ SUBJ) = (↑ XCOMP SUBJ)`` lifts gusto's SUBJ to mukha's
+SUBJ, and gusto's existing control equation
+``(↑ SUBJ) = (↑ XCOMP REL-PRO)`` chains into kain.
+
+**TRANS control + raising:**
+
+```
+Pinilit ng nanay ang batang mukhang umuwi.
+S[FORCE]
+  OBJ-AGENT = nanay
+  SUBJ = bata
+  XCOMP = S_XCOMP[SEEM, raising]
+            SUBJ = bata (raising shares)
+            XCOMP = S_XCOMP[UWI]
+                      SUBJ = bata (REL-PRO bound)
+```
+
+Three SUBJ slots again share one f-node id. The Phase 5d
+Commit 7 ``S_XCOMP`` raising rule (with its own
+``(↑ SUBJ) = (↑ REL-PRO)`` plus
+``(↑ SUBJ) = (↑ XCOMP SUBJ)``) composes seamlessly with the
+TRANS-control wrap rule's
+``(↑ SUBJ) = (↑ XCOMP REL-PRO)``.
+
+### What this lifts (pins, really)
+
+* Control under linked raising (mukha / baka):
+  ``Mukhang gusto ng batang kumain.``,
+  ``Bakang gusto ng batang kumain.``,
+  ``Mukhang pumayag ang batang kumain.``
+* Control under bare raising (parang / tila):
+  ``Parang gusto ng batang kumain.``,
+  ``Tila gusto ng batang kumain.``
+* TRANS control + raising in XCOMP:
+  ``Pinilit ng nanay ang batang mukhang umuwi.``,
+  ``Pinilit ng nanay ang batang parang umuwi.``
+* Negation at the middle level
+  (``Mukhang hindi gusto ng batang kumain``) and at the
+  innermost level
+  (``Mukhang gusto ng batang hindi kumain``).
+
+### Out-of-scope (still deferred)
+
+* **Psych control over a raising-S at the S level**
+  (``Gusto kong mukhang kumain ang aso``). The structure puts a
+  raising-S inside an ``S_XCOMP`` slot; the outermost layer is
+  ``gusto``'s control wrap rule expecting an ``S_XCOMP``, but
+  the raising rule expects its inner clause to be a complete
+  ``S`` (with overt SUBJ). Resolving the conflict needs either
+  a new control-over-raising-S wrap rule shape or the inner
+  raising-S to admit a SUBJ-gap variant. Not exercised by the
+  current corpus and not pursued in this commit.
+
+## Phase 5e Commit 9: nested-control composition with multi-arg embedded clauses
+
+**Date:** 2026-05-01. **Status:** active. Test-only commit; no
+grammar / lex / morph changes.
+
+Phase 5d Commits 8 and 9's deferral lists flagged two
+compositions as available structurally but not pinned with
+tests:
+
+* **Nested pa-causatives under control.** Phase 5c §7.6 Commit
+  3 added nested-S_XCOMP rules — a control verb's XCOMP is
+  itself another control verb whose XCOMP is the action.
+  Phase 5d Commit 8 added pa-OV (CAUS=DIRECT) S_XCOMP rules
+  (the embedded actor's typed slot is ``OBJ-CAUSER``). Stacked,
+  they produce 3-level controller chains where the innermost
+  is a pa-OV.
+* **IV multi-GEN under nested control.** Phase 5d Commit 9
+  added 3-arg IV S_XCOMP rules (gap = OBJ-AGENT,
+  retained = OBJ-PATIENT). When stacked under the Commit 3
+  nested-control infrastructure, the controller chains to the
+  embedded ``OBJ-AGENT`` while ``OBJ-PATIENT`` stays overt as a
+  GEN-NP.
+
+### Composition shapes
+
+**Nested pa-OV under control** (3 levels, gap routes to
+OBJ-CAUSER):
+
+```
+Gusto kong pumayag na pakakainin ang bata.
+S[WANT, PSYCH]
+  SUBJ = ko (GEN experiencer)
+  XCOMP = S_XCOMP[AGREE, INTRANS]
+            SUBJ = ko (REL-PRO bound)
+            XCOMP = S_XCOMP[CAUSE-EAT, pa-OV]
+                      SUBJ = bata (the causee)
+                      OBJ-CAUSER = ko (REL-PRO bound; the gap)
+```
+
+Three slots — matrix.SUBJ, XCOMP.SUBJ, XCOMP.XCOMP.OBJ-CAUSER —
+share one f-node id via Python-id equality. The pa-OV's pivot
+(``ang bata`` = causee) is a separate f-node.
+
+The 3-arg variant ``Gusto kong pumayag na pakakainin ang bata
+ng kanin`` adds an overt ``OBJ-PATIENT = kanin`` while
+preserving the OBJ-CAUSER gap binding.
+
+**IV multi-GEN under nested control** (3 levels, gap routes to
+OBJ-AGENT):
+
+```
+Gusto kong pumayag na ipaggagawa ang silya ng nanay.
+S[WANT, PSYCH]
+  SUBJ = ko
+  XCOMP = S_XCOMP[AGREE, INTRANS]
+            SUBJ = ko
+            XCOMP = S_XCOMP[MAKE-FOR, IV-BEN 3-arg]
+                      SUBJ = silya (the BEN pivot)
+                      OBJ-PATIENT = nanay (overt GEN)
+                      OBJ-AGENT = ko (REL-PRO bound; the gap)
+```
+
+Both compositions reuse existing rules — no engine, grammar, or
+lex changes. The Phase 5b ``apply_lmt_with_check`` recursive
+walker validates each embedded f-structure against its own
+intrinsic profile, so all three levels of LMT-coherence checks
+pass cleanly.
+
+### Out-of-scope (still deferred)
+
+* **Pa-DV under nested control.** Phase 5d Commit 2 introduced
+  pa-DV (``pa-...-an``) at S level, and Phase 5d Commit 8 added
+  pa-DV under single-level control. Pa-DV under *nested* control
+  (e.g., ``Gusto kong pumayag na pakakainan ang bata``) should
+  compose via the existing rules but isn't pinned here. Adding
+  it would mirror the pa-OV pattern.
+* **3-arg pa-DV** — separate Phase 5e Commit 10 item.
+  Currently the lex profile is 2-arg only, so 3-arg pa-DV under
+  nested control is doubly blocked.
+* **4+ levels of nesting.** Phase 5c Commit 3 covers 4 levels;
+  composing pa-OV / IV-3arg innermost with 4+ levels of control
+  hasn't been pinned.
+
+## Phase 5e Commit 10: 3-arg pa-DV (with overt PATIENT)
+
+**Date:** 2026-05-01. **Status:** active.
+
+Phase 5d Commit 2 introduced pa-DV (``pa-...-an``) at the matrix
+level with a 2-arg PRED ``CAUSE-X-AT <SUBJ, OBJ-CAUSER>`` —
+mirroring the pa-OV 2-arg shape but with the pa-DV pivot
+(LOCATION / recipient / dative) at SUBJ. Phase 5d Commit 8 added
+pa-DV under control at 2-arg. The 3-arg pa-DV variant (with
+overt PATIENT) was deferred in both commits because the lex
+profile didn't admit a third argument and a new intrinsic
+profile was needed.
+
+Phase 5e Commit 10 fills in the pa-DV symmetry to match Phase
+5b's pa-OV-direct 3-arg coverage:
+
+### New intrinsic profile
+
+```python
+_DV_CAUS_DIRECT_THREE_ARG = {
+    "CAUSER":   (True, True),     # → OBJ-CAUSER
+    "PATIENT":  (True, True),     # → OBJ-PATIENT
+    "LOCATION": (False, False),   # → SUBJ (the pivot)
+}
+```
+
+Mirrors ``_OV_CAUS_DIRECT_THREE_ARG`` but with LOCATION at
+SUBJ instead of CAUSEE. The role label is LOCATION because
+Tagalog's DV broadly subsumes locative + recipient + dative
+under one voice; for animate-pivot tests like ``ang bata`` the
+reading is recipient.
+
+### Three new BASE entries (kain / basa / inom DV CAUS=DIRECT 3-arg)
+
+```
+CAUSE-EAT-AT   <SUBJ, OBJ-CAUSER, OBJ-PATIENT>   kain DV CAUS=DIRECT
+CAUSE-READ-AT  <SUBJ, OBJ-CAUSER, OBJ-PATIENT>   basa DV CAUS=DIRECT
+CAUSE-DRINK-AT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>   inom DV CAUS=DIRECT
+```
+
+Both 2-arg and 3-arg entries coexist for each verb; lex lookup
+chooses based on NP count.
+
+### New top-level multi-GEN-NP pa-DV grammar rules
+
+Three permutations parallel to the Phase 5b multi-GEN-NP pa-OV
+rules:
+
+```
+S → V[VOICE=DV, CAUS=DIRECT] NP[CASE=NOM] NP[CASE=GEN] NP[CASE=GEN]
+   ↳ SUBJ=NOM (LOCATION), OBJ-CAUSER=1st GEN, OBJ-PATIENT=2nd GEN
+S → V[VOICE=DV, CAUS=DIRECT] NP[CASE=GEN] NP[CASE=NOM] NP[CASE=GEN]
+S → V[VOICE=DV, CAUS=DIRECT] NP[CASE=GEN] NP[CASE=GEN] NP[CASE=NOM]
+```
+
+The first ng-NP is CAUSER (the agentive instigator), the second
+is PATIENT, per the Phase 5b positional convention.
+
+### S_XCOMP additions for 3-arg pa-DV under control
+
+```
+S_XCOMP → V[VOICE=DV, CAUS=DIRECT] NP[CASE=NOM] NP[CASE=GEN]
+   ↳ SUBJ=NOM, OBJ-PATIENT=GEN, OBJ-CAUSER=REL-PRO (gap)
+S_XCOMP → V[VOICE=DV, CAUS=DIRECT] NP[CASE=GEN] NP[CASE=NOM]
+```
+
+Mirrors the pa-OV variants in Phase 5d Commit 8.
+
+### S_GAP_OBJ_CAUSER and S_GAP_OBJ_PATIENT additions for ay-fronting
+
+* ``S_GAP_OBJ_CAUSER`` gains 3-arg pa-DV variants (NOM-GEN /
+  GEN-NOM with retained OBJ-PATIENT) — lifts the deferral
+  flagged in Phase 5e Commit 1.
+* ``S_GAP_OBJ_PATIENT``'s ``patient_gap_specs`` gains
+  ``("V[VOICE=DV, CAUS=DIRECT]", "OBJ-CAUSER")`` — lets pa-DV
+  3-arg PATIENT-fronting use the same gap-category as IV /
+  pa-OV.
+
+### Sentences enabled
+
+* Top-level 3-arg pa-DV across all three NP-order permutations:
+  ``Pinakainan ng nanay ng kanin ang bata.`` "Mother fed rice
+  to the child."
+* 3-arg pa-DV under control:
+  ``Gusto kong pakakainan ang bata ng kanin.`` "I want to feed
+  rice to the child."
+* 3-arg pa-DV ay-fronting (CAUSER-fronted, PATIENT retained):
+  ``Ng nanay ay pinakainan ang bata ng kanin.``
+* 3-arg pa-DV ay-fronting (PATIENT-fronted, CAUSER retained):
+  ``Ng kanin ay pinakainan ng nanay ang bata.``
+
+### Composition with embedded control
+
+Single-level pa-DV under control works (PSYCH and INTRANS
+classes). Nested pa-DV under control composes via the same
+Phase 5c §7.6 Commit 3 nested-S_XCOMP rules that pa-OV uses,
+though it isn't separately pinned with tests in this commit.
+
+### Out-of-scope (still deferred)
+
+* **Nested 3-arg pa-DV under multi-level control** — like the
+  pa-OV nested cases pinned in Phase 5e Commit 9, but with
+  3-arg pa-DV innermost. Should compose; not pinned.
+* **Other less-common DV causative variants** (``ka-...-an``
+  reciprocal, ``magpa-...-an`` distributive) — separate Phase
+  5e Group D items. Not lifted by this commit.
+
+## Phase 5e Commit 11: 3-argument plain DV (CAUS=NONE)
+
+**Date:** 2026-05-02. **Status:** active.
+
+Phase 5b's multi-GEN-NP rules were IV-only; Phase 5d Commit 4
+added IV-INSTR / IV-REASON 3-arg variants; Phase 5e Commit 10
+added pa-DV (CAUS=DIRECT) 3-arg. The remaining gap was **plain
+DV (CAUS=NONE) ditransitives** like ``Sinulatan ng nanay ng
+liham ang anak`` "Mother wrote a letter to the child", where
+the AGENT and PATIENT are GEN-marked non-pivots and the
+RECIPIENT is the NOM-marked DV pivot. Phase 5e Commit 11 fills
+this in.
+
+### New intrinsic profile
+
+```python
+_DV_TR_AGENT_PATIENT_RECIPIENT_THREE_ARG = {
+    "AGENT":     (True, True),    # → OBJ-AGENT
+    "PATIENT":   (True, True),    # → OBJ-PATIENT
+    "RECIPIENT": (False, False),  # → SUBJ (the DV pivot)
+}
+```
+
+Mirrors ``_DV_CAUS_DIRECT_THREE_ARG`` from Phase 5e Commit 10
+but with AGENT instead of CAUSER and RECIPIENT instead of
+LOCATION. Both choices are role-naming conventions; under the
+LMT engine they map to the same typed OBJ-θ slots.
+
+### New BASE entry
+
+```
+WRITE-TO <SUBJ, OBJ-AGENT, OBJ-PATIENT>   sulat DV CAUS=NONE 3-arg
+```
+
+The "-TO" PRED suffix mirrors the pa-DV "-AT" convention so the
+3-arg variant is distinguishable from the existing 2-arg
+``WRITE <SUBJ, OBJ-AGENT>`` form (whose PRED stays bare for
+backward compatibility with existing tests). Both lex profiles
+coexist; lex lookup chooses based on NP count.
+
+### Three top-level multi-GEN-NP grammar rules
+
+Parallel to the Phase 5b pa-OV-direct and Phase 5e Commit 10
+pa-DV rules, with ``V[VOICE=DV, CAUS=NONE]`` matching plain
+(non-causative) DV:
+
+```
+S → V[VOICE=DV, CAUS=NONE] NP[CASE=NOM] NP[CASE=GEN] NP[CASE=GEN]
+   ↳ SUBJ=NOM (RECIPIENT), OBJ-AGENT=1st GEN, OBJ-PATIENT=2nd GEN
+S → V[VOICE=DV, CAUS=NONE] NP[CASE=GEN] NP[CASE=NOM] NP[CASE=GEN]
+S → V[VOICE=DV, CAUS=NONE] NP[CASE=GEN] NP[CASE=GEN] NP[CASE=NOM]
+```
+
+The first ng-NP is AGENT, the second is PATIENT — same Phase 5b
+positional convention.
+
+### Why only sulat for now
+
+DV ditransitives are a relatively narrow construction in
+Tagalog. ``sulat`` (write) is the canonical example because the
+RECIPIENT pivot is animate (``ang anak``) and the PATIENT
+(``ng liham``) is a typical written object. Other DV verbs
+(``kain``, ``inom``, ``basa``) admit 2-arg DV readings (place
+pivot or recipient pivot) but rarely surface with overt
+PATIENT in the GEN slot — those constructions tend to use the
+pa-DV form (the Phase 5e Commit 10 pattern) instead. Adding
+3-arg plain-DV entries for the other anchors would be lex-only
+and is deferred until corpus pressure justifies.
+
+### Sentences enabled
+
+* ``Sinulatan ng nanay ng liham ang anak.`` (GEN-GEN-NOM)
+* ``Sinulatan ang anak ng nanay ng liham.`` (NOM-GEN-GEN)
+* ``Sinulatan ng nanay ang anak ng liham.`` (GEN-NOM-GEN)
+* IPFV aspect (``Sinusulatan ng nanay ng liham ang anak``)
+* Negation under matrix (``Hindi sinulatan ng nanay ng liham
+  ang anak``)
+
+### Coexistence with the 2-arg reading
+
+When the surface includes the GEN-GEN cluster, the parser
+admits both the 3-arg reading (with overt OBJ-PATIENT) and a
+2-arg reading where ``ng nanay ng liham`` is parsed as a
+possessive ``mother's letter`` filling OBJ-AGENT. Both are
+linguistically valid; the n-best list contains both. Tests
+assert the 3-arg reading is among the parses.
+
+### Out-of-scope (still deferred)
+
+* **Plain DV 3-arg under control / ay-fronting.** The
+  multi-arg-under-control patterns from Phase 5e Commits 9 and
+  10 don't yet have plain-DV variants. Adding them mirrors the
+  pa-OV / pa-DV approach.
+* **3-arg plain DV for other anchor verbs.** Lex-only
+  extensions; deferred until corpus pressure justifies.
+
+## Phase 5e Commit 12: mag-...-an reciprocal / social
+
+**Date:** 2026-05-02. **Status:** active.
+
+Plan §10.1 Group D originally flagged ``ka-...-an`` as the
+"reciprocal causative" affix. Investigation against
+Schachter & Otanes 1972 §5.27, Ramos 1971, and R&B 1986
+confirmed that the **well-attested reciprocal pattern is
+``mag-...-an``**, not ``ka-...-an``. Tagalog ``ka-...-an`` is
+more typically a noun-deriving pattern (``kahirapan``
+"poverty", ``kasamahan`` "companionship") and isn't a verbal
+voice/applicative. Phase 5e Commit 12 implements the attested
+form (``mag-...-an``) under that name; the speculative
+``ka-...-an`` is dropped from the deferral list.
+
+### Construction
+
+S&O 1972 §5.27 documents ``mag-...-an`` as the canonical
+reciprocal / social form: an action performed cooperatively or
+mutually by a plural SUBJ. The construction is a member of the
+broader "social mood" inventory that Phase 4 §7.2 left as
+inventory-only; this commit lifts it.
+
+Examples:
+
+* ``Nagkainan sila.`` "They ate together."
+* ``Nagkakainan sila.`` IPFV.
+* ``Magkakainan sila.`` CTPL.
+* ``Nagbilihan sila.`` "They exchanged in trade."
+
+### Implementation
+
+**New affix class ``mag_an``** with three paradigm cells in
+``data/tgl/paradigms.yaml``. Each cell carries
+``feats: {MOOD: SOC, RECP: YES}``:
+
+```
+PFV:  prefix("nag")  → suffix("an")            → nagkainan
+IPFV: cv_redup → prefix("nag")  → suffix("an") → nagkakainan
+CTPL: cv_redup → prefix("mag")  → suffix("an") → magkakainan
+```
+
+**Lex entries** for ``kain`` and ``bili`` reciprocal:
+
+```
+EAT-TOGETHER  <SUBJ>   kain  AV MOOD=SOC
+BUY-EXCHANGE  <SUBJ>   bili  AV MOOD=SOC
+```
+
+**Affix-class registration**: ``mag_an`` added to ``kain``'s
+and ``bili``'s ``affix_class`` lists in ``data/tgl/roots.yaml``.
+
+### Discrimination via MOOD=SOC
+
+The reciprocal lex's ``morph_constraints={..., "MOOD": "SOC"}``
+ensures it only matches reciprocal MorphAnalyses (which carry
+``MOOD=SOC``). Plain AV-intr lex entries (no MOOD constraint)
+match BOTH plain and reciprocal MorphAnalyses under the
+parser's non-conflict matcher. This produces a known
+ambiguity: ``Nagkainan sila`` admits two parses — one with the
+bare ``EAT <SUBJ>`` PRED, one with ``EAT-TOGETHER <SUBJ>``.
+Both are well-formed; the natural reading depends on context
+and lexical semantics, and tests assert the reciprocal reading
+is among the n-best rather than asserting it's the only one.
+
+This mirrors the Phase 5d / Phase 5e ambiguity pattern (e.g.,
+multi-GEN-NP frame ambiguity, raising-vs-noun on
+``mukha`` / ``baka``): both readings are linguistically valid;
+ranker plus pragmatic disambiguation pick.
+
+### Why MOOD=SOC and not a new VOICE feature
+
+Three options were considered for the reciprocal feature:
+
+1. New ``VOICE`` value (e.g., ``RECP``) — rejected: voice in
+   Tagalog is a 4-way system (AV/OV/DV/IV) and adding a fifth
+   would break the LMT engine's voice-aware mapping.
+2. New top-level feature (``RECP=YES``) — partial: works as a
+   discriminator but adds a feature with limited scope.
+3. ``MOOD=SOC`` — chosen. The Phase 4 §7.2 inventory already
+   listed SOC ("social") mood; reciprocal fits squarely under
+   the social-mood semantic umbrella. Lifting it from
+   inventory-only matches the original §7.2 plan-text intent.
+
+Both ``MOOD=SOC`` and ``RECP=YES`` (boolean) are emitted on the
+MorphAnalysis. Only ``MOOD=SOC`` (string-valued) propagates to
+the f-structure under the parser's "string feats only" rule.
+``RECP`` is informational at the morph level.
+
+### Out-of-scope (still deferred)
+
+* **Reciprocal with overt NP arguments.**
+  ``Nagkainan sila ng isda`` "They ate fish together" admits
+  the reciprocal SUBJ + an OBJ. The current lex profile is
+  intransitive; transitive reciprocal (with a GEN-NP OBJ)
+  would need a 2-arg lex profile.
+* **Reciprocal under control / ay-fronting / nesting.** The
+  reciprocal interacts with the existing control / fronting
+  infrastructure but isn't pinned in this commit.
+* **Other reciprocal anchor verbs.** Currently only ``kain``
+  and ``bili``. ``basa`` reciprocal (``nagbasahan`` "read
+  together / read at each other") would be a one-line
+  addition.
+* **`ka-...-an` re-classification.** The plan §10.1 Group D
+  claim that ``ka-...-an`` is a reciprocal causative is
+  retracted in this commit. The form is documented as a
+  noun-derivation pattern in §18-style territory, but a future
+  commit could survey actual ``ka-...-an`` verbal uses (some
+  reflexive-like derivations exist in S&O 1972 §5.28); not
+  pursued now.
+
+## Phase 5e Commit 13: ``magpa-...-an`` distributive (reclassification)
+
+**Date:** 2026-05-02. **Status:** active. Documentation-only
+commit; no grammar / lex / morph / corpus / test changes.
+
+The Phase 5e §10.1 Group D plan note paired ``ka-...-an``
+reciprocal with ``magpa-...-an`` distributive as "causative
+variants" parallel to ``pa-...-in`` and ``pa-...-an``.
+Phase 5e Commit 12 already retired the ``ka-...-an`` claim
+(the attested reciprocal pattern is ``mag-...-an``).
+Phase 5e Commit 13 retires the ``magpa-...-an`` claim along
+the same lines.
+
+### Why this isn't a real form
+
+Investigation against the available sources:
+
+* **S&O 1972 §5.27** documents the Tagalog reciprocal as
+  ``mag-...-an``; the distributive (the marker for "everyone
+  / each one does X") is the existing ``mang-`` AV prefix
+  (Ramos 1971 dictionary classifies it as AV-distributive in
+  every paradigm table) and the ``magsi-`` collective form
+  (less productive; S&O 1972 §5.27).
+* **Ramos 1971 dictionary** organises every voice's paradigm
+  as Indicative + Distributive, with the Distributive column
+  always labelled ``MANG-`` — never ``magpa-...-an``.
+* **R&B 1986 paradigm tables** mention the productive forms
+  for each verb's affix-class membership; ``magpa-...-an``
+  doesn't appear as a separate paradigm row.
+
+The plan note appears to have been written by analogy with
+the ``pa-...-in`` / ``pa-...-an`` causative pair without
+external attestation. Tagalog distributive is a separable
+construction from causative, marked by ``mang-`` (productive)
+or ``magsi-`` (collective).
+
+### Where Tagalog distributive lives now
+
+* **``mang-``**: already implemented as the ``mang`` affix
+  class (Phase 2C scale-up; documented in Phase 4 §7.7's
+  applicative work). ``namili`` "shopped / went buying";
+  ``namamasyal`` "stroll around". The morph analyzer
+  generates these correctly via the existing ``nasal_substitute``
+  sandhi op.
+* **``magsi-``**: attested in S&O 1972 §5.27 but not
+  exercised by the Phase 4 §7.10 corpus, the seeded R&G 1981
+  fixtures, or the classic / S&O / Kroeger fixtures.
+  Implementation would mirror Phase 5e Commit 12's
+  ``mag_an`` shape (new affix class with PFV/IPFV/CTPL cells)
+  but with ``prefix("nagsi")`` / ``prefix("magsi")`` and no
+  suffix. Deferred until corpus pressure justifies — adding
+  it now would over-engineer a marginal construction without
+  test fixtures to anchor it.
+
+### Where ``magpa-...-an`` lives now
+
+§18 (genuinely v1-out-of-scope), with the explanation pinned
+above. Revisit only if a corpus emerges where the construction
+appears with non-trivial frequency.
+
+### What this commit changes
+
+Documentation only:
+
+* Plan §10.1 Group D's ``magpa-...-an`` bullet is collapsed
+  into a single re-classification note alongside the
+  Commit 12 ``ka-...-an`` retraction.
+* Plan §10.2 ("Items not enumerated above") gains the
+  ``magpa-...-an`` bullet alongside the other reclassified
+  items (resumptive pronouns, etc.).
+* Plan §18 gains a ``magpa-...-an`` bullet with the why.
+* This `docs/analysis-choices.md` section pins the rationale.
+* `docs/coverage.md` "What's intentionally not covered" gains
+  an entry.
+
+### Out-of-scope (still deferred)
+
+The reclassification doesn't itself defer anything new —
+``magpa-...-an`` was already deferred via the Phase 5d
+Commit 2 "other less-common causative variants" note. The
+change is administrative: moving an item from
+"additive Phase 5e candidate" to "v1-out-of-scope-as-named"
+and pointing to the actually-attested distributive markers.
+
+## Phase 5e Commit 14: AV mang- retain readings
+
+**Date:** 2026-05-02. **Status:** active.
+
+Schachter & Otanes 1972 §5.27 + Ramos 1971 paradigm tables
+note that some bases admit a retain-pattern variant of the
+``mang-`` distributive AV alongside the default drop pattern.
+The retain pattern keeps the base's first consonant and adds a
+homorganic nasal — exactly the same ``nasal_assim_prefix`` op
+that Phase 5c §7.7 introduced for the ``ipang-`` IV-INSTR /
+``ika-`` IV-REASON applicatives.
+
+The two patterns can carry slightly different semantics
+("habitual buyer / shopper" vs "engaging in the buying
+activity") or be dialectal variants. Phase 5c §7.7 follow-on
+flagged this as deferred; Phase 5e Commit 14 lifts it.
+
+### Two patterns, same lex PRED
+
+Both surface forms route to the same ``BUY <SUBJ>`` lex entry
+because the existing AV-intransitive lex doesn't constrain on
+the surface pattern. Roughly:
+
+```
+drop:   mang- + bili → mami → mamili / namili / namimili / mamimili
+retain: mang- + bili → namb → nambili / nambibili / mambibili
+                                                   (no “mambili” form;
+                                                    cv-redup is required
+                                                    for IPFV / CTPL)
+```
+
+### Three new paradigm cells
+
+In ``data/tgl/paradigms.yaml``, a new ``mang_retain`` affix
+class with PFV / IPFV / CTPL cells:
+
+```
+PFV:  nasal_assim_prefix("nang")                  → nambili
+IPFV: cv_redup → nasal_assim_prefix("nang")       → nambibili
+CTPL: cv_redup → nasal_assim_prefix("mang")       → mambibili
+```
+
+The cells use ``nasal_assim_prefix`` (retain) where the
+existing ``mang`` cells use ``nasal_substitute`` (drop). PFV
+prefix is ``"nang"`` (realis); CTPL prefix is ``"mang"``
+(irrealis).
+
+### Per-base flagging
+
+The new ``mang_retain`` affix class is per-base. Currently only
+``bili`` carries ``mang_retain`` in its
+``affix_class`` list (``data/tgl/roots.yaml``); other roots
+that admit the retain pattern (e.g., ``tahi``, ``patay``) can
+opt in by adding ``mang_retain`` to their list. Roots without
+the flag don't generate retain-pattern surfaces:
+
+```
+nambili    parses (bili HAS mang_retain in affix_class)
+nankain    _UNK   (kain has neither mang nor mang_retain)
+```
+
+### Why route both forms to the same PRED
+
+The semantic difference between drop and retain forms is
+subtle and varies by source. Some sources treat them as
+dialectal variants of the same predicate; others assign
+slightly different aspectual readings (drop = habitual /
+professional; retain = activity-engaged). Without
+corpus-grounded distributional evidence to pin a stable
+contrast, conflating both forms under ``BUY <SUBJ>`` is
+the safer default. A future commit could add per-form
+aspectual or pragmatic features if a corpus emerges that
+distinguishes them.
+
+### Out-of-scope (still deferred)
+
+* **Other retain-pattern bases.** Currently only ``bili``.
+  Other roots historically attested with retain-pattern
+  variants (``tahi`` → ``nantahi``, ``patay`` → ``namatay``)
+  could opt in via affix-class registration; not pursued here.
+* **Per-form aspectual feats.** If corpus pressure reveals a
+  systematic semantic contrast between drop and retain
+  surfaces, a feature like ``MANG_PATTERN=DROP|RETAIN`` could
+  ride on the morph analysis and route to distinct lex PREDs.
+* **Retain pattern under control / ay-fronting.** The retain
+  form is AV-intransitive; control / fronting compositions
+  reuse the existing AV-intr infrastructure and should
+  compose, but aren't pinned in this commit.
+
+## Phase 5e Commit 15: other ``ipang-`` senses (reclassification)
+
+**Date:** 2026-05-02. **Status:** active. Documentation-only
+commit; no grammar / lex / morph / corpus / test changes.
+
+The Phase 5e §10.1 Group D plan note flagged "Other ``ipang-``
+senses" — specifically the purpose-nominal use of ``pang-``
+(``pambili`` "for buying / shopping", ``pansulat`` "writing
+instrument", ``pangkain`` "food"). These were listed as
+additive lex entries that could land as separate noun lex
+entries once corpus pressure surfaced specific tokens.
+
+Phase 5e Commit 15 makes the deferral explicit: Phase 5c
+§7.7 Commit 4 lifted the **verbal** ``ipang-`` IV-INSTR use of
+the same ``pang-`` morpheme, but the **noun-deriving** uses
+remain deferred.
+
+### Why this isn't a Phase 5e implementation item
+
+Three architectural / corpus considerations:
+
+1. **They are nouns, not verbs.** The construction uses
+   ``pang-`` to derive nouns from verbal roots
+   (``bili`` → ``pambili``, ``sulat`` → ``pansulat``). The
+   resulting forms function as NP heads or modifiers, not as
+   clause heads. Implementing them as a productive paradigm
+   would mean adding **nominal**-deriving morphology alongside
+   the existing verbal paradigms — a meaningful extension to
+   the morph engine.
+2. **No corpus fixtures.** Neither the Phase 4 §7.10 reference
+   corpus, the seeded R&G 1981 fixtures, nor the classic /
+   S&O / Kroeger fixtures contain ``pambili``-like forms in
+   testable contexts. Adding speculative noun entries without
+   fixtures would bloat the seed without anchoring the
+   construction's syntactic distribution.
+3. **The lex-only approach is narrow.** The plan note's
+   "additional senses can land as separate lex entries"
+   suggests the path of least resistance: hand-author
+   ``pambili`` etc. as nouns in ``data/tgl/roots.yaml``.
+   That's feasible and could be done one token at a time when
+   a corpus surfaces specific cases — but it doesn't merit a
+   Phase 5e item by itself.
+
+### What ``ipang-`` already covers
+
+Phase 5c §7.7 Commit 4 lifted the verbal ``ipang-`` IV-INSTR
+applicative (``ipinambili`` "instrument-bought";
+``ipinantahi`` "needle-sewed"). This is the productive
+**verbal** use of ``pang-`` (``i-`` + ``pang-`` + V).
+Phase 5e Commit 14 added the AV ``mang-`` retain pattern
+(``nambili`` "engaging in buying"), which uses the same
+``nasal_assim_prefix`` morphological op.
+
+The remaining ``pang-`` uses (purpose nominals) fall outside
+the verbal paradigm because they don't carry voice / aspect /
+mood inflection — they're zero-inflected derived nouns.
+
+### What it would take to lift
+
+* **Lex-only path** (when corpus pressure surfaces tokens):
+  add each form as a NOUN entry in ``data/tgl/roots.yaml``,
+  e.g., ``- citation: pambili, pos: NOUN, gloss: shopping
+  money / for buying``. The existing N rules and NP-formation
+  rules absorb them.
+* **Productive-derivation path** (more ambitious): a new
+  ``pang_n`` morphological class deriving NOUN from VERB
+  roots, parallel to (but distinct from) the verbal
+  ``ipang`` / ``mang_retain`` classes. This requires deciding
+  the derived-noun's lex profile: PRED, SEM_CLASS, possible
+  argument-frame inheritance from the source verb, etc.
+
+Both paths are deferred to v1+ when corpus pressure justifies.
+
+### Where it lives now
+
+* Plan §10.1 Group D parenthetical noting the reclassification
+  and pointer to §10.2 / §18.
+* Plan §10.2 ("Items not enumerated above") gains the
+  ``pang-``-purpose-nominals item (sixth item; the plan now
+  flags this re-categorisation explicitly).
+* Plan §18 gains a bullet articulating the rationale and the
+  two implementation paths.
+* This `docs/analysis-choices.md` section pins the rationale.
+
+### Out-of-scope (still deferred)
+
+The reclassification doesn't itself defer anything new — the
+Phase 5c §7.7 follow-on already noted these as deferred. The
+change is administrative: moving the item from "additive Phase
+5e candidate" to "v1-out-of-scope as named, with two
+implementation paths spelled out".
+
+## Phase 5e Commit 16: pre-modifier demonstrative with linker
+
+**Date:** 2026-05-02. **Status:** active. Lifts the §7.8
+deferral on "Pre-modifier demonstrative with linker" noted as
+out-of-scope under Phase 5d Commit 3. Sentences like
+``Kumain itong bata`` ("this child ate") and
+``Kinain nitong bata ang isda`` ("this child ate the fish")
+now parse with the demonstrative serving as the determiner
+(replacing ``ang`` / ``ng`` / ``sa``) followed by the linker
+and the head N.
+
+### Six grammar rules (3 cases × 2 linker variants)
+
+```
+NP[CASE=NOM] → DET[CASE=NOM, DEM=YES] PART[LINK=…] N
+NP[CASE=GEN] → ADP[CASE=GEN, DEM=YES] PART[LINK=…] N
+NP[CASE=DAT] → ADP[CASE=DAT, DEM=YES] PART[LINK=…] N
+```
+
+PROX dems (``ito`` / ``nito`` / ``dito``) are vowel-final and
+take the bound ``-ng`` linker — ``itong`` is split by
+``split_linker_ng`` into ``ito`` + ``-ng``. MED dems (``iyan``
+/ ``niyan`` / ``diyan``) and DIST dems (``iyon`` / ``niyon`` /
+``doon``) are consonant-final and take the standalone ``na``
+linker. The case-typed pattern in the rule's first child
+enforces case agreement at the parser level.
+
+### Equations: matrix shares dem, PRED projects from N
+
+```
+(↑) = ↓1                  -- DET/ADP carries CASE/MARKER/DEIXIS
+(↑ PRED) = ↓3 PRED         -- N supplies PRED
+(↑ LEMMA) = ↓3 LEMMA
+```
+
+Unlike the post-modifier rule (where the head NP carries its
+own case marker like ``ang`` and the dem only contributes
+DEIXIS), the pre-modifier dem **replaces** the case marker —
+the dem itself is the determiner. The head's PRED + LEMMA
+project from the bare N (no inner DET); the dem's CASE,
+MARKER, DEIXIS, DEM percolate to the matrix NP via the share
+equation. This is structurally the mirror of Phase 5d Commit 3.
+
+### Fifth left-context exception in `disambiguate_homophone_clitics`
+
+The standalone ``na`` is homophonous between the LINK=NA
+linker and the ASPECT_PART=ALREADY 2P enclitic. The Phase 4 /
+5c / 5d disambiguator branched on prev-token POS:
+
+* prev=NOUN/N → linker (already in place);
+* prev=VERB/PRON → clitic (with three sub-exceptions);
+* otherwise → keep both readings (placement decides).
+
+For pre-modifier dems with MED / DIST (``iyan na bata`` /
+``iyon na bata``), prev-token=DET/ADP and DEM=YES. Without an
+explicit branch, the "otherwise" case kept both readings, but
+``_is_clitic_token`` then sees the clitic reading and the
+Wackernagel pass hoists ``na`` into the post-V cluster — the
+linker reading dies before the new grammar rule can fire.
+
+Phase 5e Commit 16 adds a fifth branch between the NOUN and
+VERB/PRON arms:
+
+```python
+elif any(
+    ma.pos in ("DET", "ADP") and ma.feats.get("DEM") == "YES"
+    for ma in prev
+):
+    out.append([
+        ma for ma in cands
+        if ma.feats.get("is_clitic") is not True
+    ])
+```
+
+When ``na`` follows a DEM-DET (``iyan`` / ``iyon``) or
+DEM-ADP (``niyan`` / ``niyon`` / ``diyan`` / ``doon``), the
+linker reading wins. The branch is guarded by ``DEM=YES`` so
+plain DET / ADP entries (``ang``, ``ng``, ``sa``, ``si``,
+``ni``, ``kay``) don't fire — those rarely precede ``na`` in
+isolation, but the explicit guard keeps the branch tight.
+
+PROX dems (``ito`` / ``nito`` / ``dito``) take the bound
+``-ng`` linker, which has no clitic homophone, so this
+disambiguator branch only matters for MED / DIST.
+
+### Surface variants enabled
+
+```
+itong bata           (NOM PROX, vowel-final dem + bound -ng)
+iyan na bata         (NOM MED,  consonant-final dem + na)
+iyon na bata         (NOM DIST, consonant-final dem + na)
+nitong bata          (GEN PROX, in OV-actor or possessor)
+niyan na bata        (GEN MED)
+niyon na bata        (GEN DIST)
+ditong palengke      (DAT PROX, in OBL-LOC or ADJUNCT)
+diyan na palengke    (DAT MED)
+doon na palengke     (DAT DIST)
+```
+
+Pre + post-modifier stacking on the same N (``itong batang
+ito``) composes as expected — both rules fire and DEIXIS=PROX
+is set consistently. R&B 1986 cites this stacked form as
+common in spoken Tagalog.
+
+### Out-of-scope (still deferred)
+
+* **Demonstrative as modifier of a relativized head**
+  (``ang batang ito na kumain`` "this child who ate"). The
+  RC's linker would compete with the dem-modifier's linker;
+  needs ranker-policy refinement. Phase 5e Commit 17.
+* **Pre-modifier dem with N-internal modifiers between dem and
+  head** (``itong matalinong bata`` "this intelligent child"
+  with adjective). The current rule consumes a bare N; it
+  doesn't recurse into adjective-modified N projections
+  because §7.8 doesn't yet wire NP-internal adjective
+  modification. Out of scope here — bundle with the future
+  ADJ-modifier item if one is added.
+
+### Why this lands as a pre-modifier-only commit
+
+Both pre- and post-modifier dem-with-linker forms are
+attested. Phase 5d Commit 3 implemented post-modifier; the
+pre-modifier mirror is structurally simpler (dem replaces
+case marker rather than coexisting with it) but interacts
+with the ``na``-disambiguation pass in a way that needs the
+fifth left-context branch. Bundling pre+post into one commit
+would have obscured both interactions; splitting them keeps
+each commit's contract self-contained.
+
+## Phase 5e Commit 17: demonstrative on a relativized head
+
+**Date:** 2026-05-02. **Status:** active. Lifts the §7.8 / §7.5
+deferral on "Demonstrative as modifier of a relativized head"
+noted as out-of-scope under Phase 5d Commit 3. Sentences like
+``Tumakbo ang batang ito na kumain`` ("the child who ate ran")
+now parse with the post-mod dem and the RC composing through
+the existing Phase 5d Commit 3 + Phase 4 §7.5 rules. No new
+grammar rules are added.
+
+### Plan note vs. actual diagnosis
+
+The Phase 5d Commit 3 deferral note read:
+
+> The RC's linker would compete with the dem-modifier's linker;
+> needs ranker-policy refinement.
+
+Investigation showed the deferral note was inaccurate — the
+construction wasn't being mis-ranked, it was failing to parse
+at all. The root cause turned out to be a latent bug in the
+Phase 5e Commit 16 disambiguator branch for ``na`` after a
+demonstrative DET / ADP, not anything to do with rule
+competition.
+
+### The bug: boolean DEM compared as a string
+
+Phase 5e Commit 16 added a fifth branch to
+``disambiguate_homophone_clitics`` (in
+``src/tgllfg/clitics/placement.py``) intended to keep the
+standalone ``na`` as a linker when preceded by a
+demonstrative DET / ADP. The branch read:
+
+```python
+elif prev is not None and any(
+    ma.pos in ("DET", "ADP") and ma.feats.get("DEM") == "YES"
+    for ma in prev
+):
+    out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+```
+
+The ``DEM`` feature is set in ``data/tgl/particles.yaml`` as
+
+```yaml
+- surface: ito
+  pos: DET
+  feats: {CASE: NOM, DEIXIS: PROX, DEM: YES}
+```
+
+PyYAML 1.1-style boolean parsing renders ``YES`` as the Python
+boolean ``True`` (not the string ``"YES"``). The string
+comparison ``== "YES"`` against ``True`` always returned
+False, so the branch never fired. Phase 5e Commit 16's
+MED / DIST cases (``Kumain iyan na bata``,
+``Kumain iyon na bata``) still parsed only because the
+clitic-pass moved the standalone ``na`` to clause-final as the
+aspectual ``ALREADY`` enclitic and the bare-NP rule absorbed
+the demonstrative DET as a determiner with DEIXIS percolating
+to the matrix NP — the f-structure DEIXIS came out right but
+the analytical structure was the fallback, not the new
+pre-modifier-dem rule.
+
+### Phase 5e Commit 17 fix
+
+The corrected branch compares against the boolean directly:
+
+```python
+elif prev is not None and any(
+    ma.pos in ("DET", "ADP") and ma.feats.get("DEM") is True
+    for ma in prev
+):
+    out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+```
+
+With the branch finally firing, the standalone ``na`` after a
+demonstrative is forced to the linker reading. Two
+constructions are unblocked:
+
+1. **The Phase 5e Commit 16 MED / DIST pre-modifier dem cases**
+   now use the proper ``NP[CASE=NOM] → DET[CASE=NOM, DEM=YES]
+   PART[LINK=NA] N`` rule (the Commit 16 grammar addition that
+   was supposed to apply but didn't because of this disambiguator
+   bug). The fallback path through the bare-NP rule no longer
+   fires for this surface — the ``na`` stays in place rather
+   than being moved to clause-final as ``ALREADY``.
+2. **The dem-on-RC construction** (``ang batang ito na
+   kumain``) parses by composing the existing Phase 5d Commit 3
+   post-mod-dem rule with the Phase 4 §7.5 RC rule. The post-mod
+   dem produces an NP[CASE=NOM] with DEIXIS percolated; the RC
+   rule wraps that NP with the ``na`` linker and the SUBJ-gapped
+   inner clause. No new grammar rule is needed — only the
+   disambiguator fix unblocks the surface order the parser
+   needed to see.
+
+### Surface variants enabled
+
+```
+ang batang ito na kumain          (NOM PROX, head-NG-dem-NA-RC)
+ang batang iyan na kumain         (NOM MED)
+ang batang iyon na kumain         (NOM DIST)
+ang lalaki na ito na kumain       (head-NA-dem-NA-RC, two NAs)
+ang batang ito na kumain ng isda  (transitive RC)
+ng batang nito na kumain          (GEN-headed, OV-actor)
+```
+
+The RC body can carry any voice / aspect / argument frame the
+existing Phase 4 §7.5 wrap rule supports — the dem on the head
+NP is independent of the RC's internal shape.
+
+### Why no new grammar rule is needed
+
+The Phase 5d Commit 3 post-mod-dem rule produces
+``NP[CASE=NOM]`` with DEIXIS percolated; the matrix's
+f-structure is shared with the head NP's via ``(↑) = ↓1``. The
+Phase 4 §7.5 RC wrap rule takes any ``NP[CASE=NOM]`` (or any
+case) as the head, regardless of whether the head has DEIXIS or
+not. The two rules compose by stacking:
+
+```
+NP[CASE=NOM]
+├── NP[CASE=NOM]            (post-mod-dem-d head)
+│   ├── NP[CASE=NOM]        (bare ``ang bata``)
+│   ├── PART[LINK=NG]       (bound linker)
+│   └── DET[CASE=NOM, DEM=YES]  (``ito``)
+├── PART[LINK=NA]           (RC linker)
+└── S_GAP                   (``kumain``)
+```
+
+The disambiguator fix is the only change needed; the rules
+were already in place.
+
+### Out-of-scope (still deferred)
+
+* **Pre-modifier dem on a relativized head**
+  (``itong batang kumain`` "this child who ate"). Already
+  works via the Phase 5e Commit 16 pre-mod-dem rule + Phase 4
+  §7.5 RC rule — pinned by a regression test in this commit.
+  Not a new construction; included as a regression check.
+* **Dem on a relativized head where the RC itself contains a
+  dem-modified NP**, e.g., ``ang batang ito na kumain ng
+  isdang iyon`` "this child who ate that fish". Composes
+  recursively; covered by existing rules. Not pinned in this
+  commit (the recursive case is ordinary composition with no
+  new analytical content).
+
+## Phase 5e Commit 18: possessive-linker RC with consonant-final PRON
+
+**Date:** 2026-05-02. **Status:** active. Extends Phase 5d
+Commit 6's possessive-linker RC construction (``aklat kong
+binasa`` "the book that I read") to the four consonant-final
+GEN pronouns ``natin`` (1pl-INCL), ``namin`` (1pl-EXCL),
+``ninyo`` (2pl), and ``nila`` (3pl).
+
+### The construction
+
+Phase 5d Commit 6 lifted the dual-binding form where a
+pronominal RC actor is hoisted out of a non-AV RC and surfaces
+as a possessor of the head NP, joined by a linker. Commit 6
+covered only the three vowel-final GEN pronouns ``ko`` /
+``mo`` / ``niya``, which fuse with the bound linker into a
+single ``Vng`` orthographic word (``kong`` / ``mong`` /
+``niyang``) and are split back apart by
+:func:`tgllfg.text.split_linker_ng`.
+
+The four consonant-final GEN pronouns end in ``n`` and so
+cannot fuse with the bound ``-ng`` linker (Tagalog
+phonotactics: ``-ng`` only attaches to vowel-final hosts).
+Their analogous form uses the **standalone ``na`` linker**
+instead:
+
+```
+aklat namin na binasa     "the book that we (excl) read"
+aklat natin na binasa     "the book that we (incl) read"
+aklat ninyo na binasa     "the book that you (pl) read"
+aklat nila na binasa      "the book that they read"
+```
+
+The vowel-final pronouns also admit the standalone-``na``
+form alongside the fused ``-ng`` form:
+
+```
+aklat ko na kinain       (= aklat kong kinain)
+aklat mo na kinain       (= aklat mong kinain)
+aklat niya na kinain     (= aklat niyang kinain)
+```
+
+Both linker variants carry the same f-equations.
+
+### Enabling pieces already in place
+
+Two of the three required pieces were already present from
+prior commits and need no modification for Commit 18:
+
+1. **Wackernagel placement keeps the consonant-final PRON in
+   place** via the existing ``_is_post_noun_pron`` exception
+   (Phase 5c §7.8 lift, lines 124–143 of
+   ``src/tgllfg/clitics/placement.py``). The ``-ng``-linker
+   variant needed a separate ``_is_pre_linker_pron`` exception
+   (Phase 5d Commit 6) because the Vng-fused form was split
+   back apart by ``split_linker_ng`` and the resulting PRON sat
+   between two non-NOUN tokens. The standalone-``na`` form
+   surfaces as a literal post-NOUN PRON, so the older
+   ``_is_post_noun_pron`` rule applies directly.
+
+2. **The post-PRON ``na`` is preserved as the linker** (rather
+   than hoisted as the 2P aspectual ``ALREADY`` clitic) by the
+   third left-context exception in
+   ``disambiguate_homophone_clitics`` (Phase 5e Commit 6, lines
+   305–325 of the same file). The branch fires whenever a
+   PRON-after-NOUN is followed by a VERB (or NEG + VERB). It
+   was originally added for the NP-internal possessive + RC
+   case (``bata ko na nakita`` — head NOUN + possessor PRON +
+   linker + standard RC), but the same pattern catches the
+   Commit 18 dual-binding case.
+
+### The change: extend the wrap rule
+
+The only required change for Commit 18 is one extra iteration
+in the wrap-rule loop in ``src/tgllfg/cfg/grammar.py``:
+
+```python
+for case in ("NOM", "GEN", "DAT"):
+    np_cat = f"NP[CASE={case}]"
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            np_cat,
+            [np_cat, "PRON[CASE=GEN]", f"PART[LINK={link}]", "S_GAP_NA"],
+            [
+                "(↑) = ↓1",
+                "(↑ POSS) = ↓2",
+                "↓4 ∈ (↑ ADJ)",
+                "(↓4 OBJ-AGENT) = ↓2",
+                "(↓4 REL-PRO PRED) = (↓1 PRED)",
+                "(↓4 REL-PRO CASE) = (↓1 CASE)",
+                "(↓4 REL-PRO) =c (↓4 SUBJ)",
+            ],
+        ))
+```
+
+This mirrors the standard relativization wrap rule a few lines
+above (``NP → NP PART[LINK=NA|NG] S_GAP``), which has long
+admitted both linker variants in parallel. The dual-binding
+``(↑ POSS) = ↓2`` and ``(↓4 OBJ-AGENT) = ↓2`` is unchanged.
+
+### Why no rule competition with the standard RC wrap
+
+The standard relativization wrap rule (``NP[CASE=X] → NP[CASE=X]
+PART[LINK=X] S_GAP``) admits both linker variants and could in
+principle compete with the Commit 18 wrap rule on surfaces like
+``aklat namin na binasa``. It does not, for two reasons:
+
+1. The standard wrap rule consumes 3 daughters (NP + linker +
+   ``S_GAP``); the Commit 18 wrap rule consumes 4 daughters (NP
+   + PRON + linker + ``S_GAP_NA``). The PRON token is part of
+   the head NP under the standard rule (consumed by
+   ``NP → NP PRON`` for pronominal possessor), but is consumed
+   separately under the Commit 18 rule. These are different
+   tree shapes, and the parser explores both.
+
+2. ``S_GAP`` requires the actor slot to be filled by an overt
+   GEN-NP (or to be the gap itself); ``S_GAP_NA`` explicitly
+   has no overt GEN-NP, with the actor (``OBJ-AGENT``) supplied
+   externally by the wrap rule. For surfaces without an overt
+   GEN-NP after the V, only ``S_GAP_NA`` succeeds. For surfaces
+   *with* an overt GEN-NP after the V (``aklat na binasa nila``
+   "the book that they read", standard relativization with the
+   actor staying inside the RC), only ``S_GAP`` succeeds.
+
+The two analyses surface in different clusters of constructions
+and don't generate spurious parses for either.
+
+### Surface variants enabled
+
+```
+lumakad ang bata namin na binasa    (1pl-EXCL, SUBJ position)
+lumakad ang bata natin na binasa    (1pl-INCL)
+lumakad ang bata ninyo na binasa    (2pl)
+lumakad ang bata nila na binasa     (3pl)
+kumain ang bata ng libro nila na binasa   (OBJ position)
+lumakad ang bata namin na hindi binasa    (RC under inner NEG)
+lumakad ang bata ko na kinain       (vowel-final PRON + standalone na)
+lumakad ang kapatid namin na binasa (consonant-final HEAD + PRON)
+lumakad ang bata namin na binasahan (DV variant)
+lumakad ang bata namin na ipinaggawa (IV bare)
+lumakad ang bata namin na ipinagsulat sa kapatid (IV + DAT)
+```
+
+The id-equality between ``POSS`` and the RC's ``OBJ-AGENT``
+(the dual-binding signature) is asserted by
+``test_poss_and_obj_agent_share_node`` in
+``tests/tgllfg/test_possessive_linker_rc_consonant_pron.py``.
+
+### Non-AV voice coverage
+
+Phase 5d Commit 6's grammar code admitted OV / DV / IV in
+``S_GAP_NA`` but its tests only exercised OV. Commit 18 also
+pins DV and IV with consonant-final pronouns:
+
+* **OV** — ``binasa`` / ``kinain`` (most common; the canonical
+  patient-pivot case where the actor is extracted as POSS).
+* **DV** — ``binasahan`` (DV PFV of ``basa`` is the only DV
+  form with full analyzer coverage in the seed lexicon; other
+  DV PFVs like ``binigyan`` / ``binilhan`` / ``kinanan`` are
+  ``_UNK`` to the morph analyzer and would parse only after a
+  paradigm-cell expansion).
+* **IV** — ``ipinaggawa`` (BEN bare), ``ipinagsulat`` (BEN
+  with DAT adjunct ``sa kapatid``). The S_GAP_NA IV frames
+  are ``[v_cat]`` (bare) and ``[v_cat, NP[CASE=DAT]]`` (DAT
+  adjunct only — no overt GEN-NP, since the actor is the gap).
+
+### POSS-EXTRACTED guard (also fixes a pre-existing Commit 6 spurious parse)
+
+Phase 5d Commit 6 had a latent issue that surfaced cleanly only
+once Commit 18's testing was thorough: when the surface combined
+the dual-binding wrap rule with an overt GEN-NP after the verb
+(e.g., ``Tumakbo ang bata kong kinain ng aso`` "the child of-mine
+whom the dog ate ran"), the chart parser produced an extra
+"hybrid" parse where the standard NP-internal possessive rule
+fired on the wrap-rule output:
+
+```
+[bata ko na kinain]_NP[POSS=ko]  +  ng aso  →
+    NP[POSS = unify(ko, aso)]
+```
+
+The unification succeeded because ``ko`` (PRON) had no LEMMA /
+MARKER and ``aso`` (NOUN) had no PERS / NUM — they're feature-
+compatible. The dual binding ``(↑ POSS) = ↓2`` and ``(↓4
+OBJ-AGENT) = ↓2`` then made OBJ-AGENT also point to this
+hybrid fstruct, so the RC's actor became a strange merger of
+``ko``'s pronominal features and ``aso``'s nominal lemma.
+Existing tests passed because they used ``_find_…`` helpers
+that scanned the n-best list for any parse with the desired
+shape — the spurious hybrid was just noise alongside the
+intended parses.
+
+Commit 18 fixes this in three pieces:
+
+1. **The wrap rule marks its output**: a new equation
+   ``(↑ POSS-EXTRACTED) = 'YES'`` added to the wrap rule's
+   equations records that the POSS slot was filled by actor
+   extraction (not by an external GEN-NP modifier).
+
+2. **The §7.8 NP-internal possessive rule guards against it**:
+   a constraining equation ``¬ (↑ POSS-EXTRACTED)`` rejects
+   the rule when applied to an NP whose POSS slot was already
+   filled by extraction.
+
+3. **Right-associative iterated possessives are unaffected**:
+   the standard NP-poss rule does NOT set POSS-EXTRACTED, so
+   stacking it (``aklat ng bata ng pamilya`` → libro.POSS=bata,
+   bata.POSS=pamilya) continues to work.
+
+The guard applies symmetrically to both linker variants — it
+also removes the same hybrid parse from Phase 5d Commit 6's
+``-ng`` form (``bata kong kinain ng aso``). After the fix:
+
+```
+'Tumakbo ang bata ko na kinain ng aso.'   3 parses → 2 parses
+'Tumakbo ang bata kong kinain ng aso.'    3 parses → 2 parses
+```
+
+The 2 remaining parses are the intended one (POSS=PRON,
+OBJ-AGENT=NOUN, distinct fstructs) and a separate analysis
+where the RC's actor is gapped differently — both linguistically
+sensible. Pinned by ``TestPossessiveExtractedGuard`` in the
+Commit 18 test file.
+
+### Lifted in Phase 5e Commit 19
+
+* **Non-pronominal possessors with linker** (``aklat ng batang
+  binasa``, ``aklat ni Juan na binasa``). See the next entry.
+
+## Phase 5e Commit 19: possessive-linker RC with non-pronominal possessor
+
+**Date:** 2026-05-02. **Status:** active. Extends Phase 5d
+Commit 6 + Phase 5e Commit 18's pronominal possessive-linker RC
+construction to **non-pronominal possessors** — common nouns and
+proper names. The grammar change is a one-token widening of the
+wrap rule's second daughter from ``PRON[CASE=GEN]`` to
+``NP[CASE=GEN]``, plus a head-NP existential constraint to keep
+the rule from spuriously firing on PRON-headed NPs.
+
+### The construction
+
+The dual-binding shape introduced in Commit 6 (PRON possessor)
+extends naturally to NOUN / proper-noun possessors:
+
+```
+aklat ng batang binasa     "the book that the child read"
+aklat ng asong kinain      "the book that the dog ate"
+aklat ni Juan na binasa    "the book that Juan read"
+aklat ni Maria na binasa   "the book that Maria read"
+```
+
+In each case the GEN-marked possessor (``ng bata``, ``ng aso``,
+``ni Juan``, ``ni Maria``) is BOTH the head NP's POSS AND the
+embedded RC's OBJ-AGENT — exactly the same dual binding as the
+pronominal cases. The linker variant (``-ng`` bound vs ``na``
+standalone) follows the host's phonotactics.
+
+### The grammar change: one-token widening
+
+The Commit 18 wrap rule was:
+
+```python
+NP[CASE=X] → NP[CASE=X] PRON[CASE=GEN] PART[LINK=L] S_GAP_NA
+```
+
+Widened to:
+
+```python
+NP[CASE=X] → NP[CASE=X] NP[CASE=GEN] PART[LINK=L] S_GAP_NA
+```
+
+The Phase 4 §7.8 grammar already has ``NP[CASE=GEN] →
+PRON[CASE=GEN]`` as a unit rule, so widening from
+``PRON[CASE=GEN]`` to ``NP[CASE=GEN]`` is a strict
+generalization that subsumes the PRON case. Pronominal
+possessors continue to parse via the PRON-to-NP unit rule; NOUN
+and proper-noun possessors now also parse directly.
+
+### The head-LEMMA constraint
+
+A new existential constraint ``(↓1 LEMMA)`` is added to the wrap
+rule's equations. It fires only when the head NP carries LEMMA in
+its f-structure. NOUNs and proper nouns do; PRONs and
+headless-RC NPs do not.
+
+**Why the constraint is needed**: without it, the widened
+``NP[CASE=GEN]`` slot lets the rule fire on surfaces where it
+shouldn't. E.g., ``Kumain ako ng batang kinain niya`` ("I ate the
+child that he ate") had a spurious extra parse where ``ako``
+(PRON-NOM, no LEMMA) was bound as the head NP and ``ng bata`` was
+its dual-bound possessor + RC actor. The intended analysis is
+``ako = SUBJ`` and ``ng batang kinain niya = OBJ`` (with internal
+standard RC). The constraint blocks the spurious head-binding by
+requiring the head NP to be NOUN / proper-noun (LEMMA-bearing).
+
+The constraint is also semantically motivated: the construction
+"X with possessor Y where Y is also the actor" only makes sense
+with X being a possessable thing, which in Tagalog means a NOUN or
+proper noun — pronouns aren't possessable in this shape.
+
+### Surface variants enabled
+
+```
+lumakad ang libro ng batang binasa     (common-noun possessor, NG marker, -ng linker)
+lumakad ang libro ng asong kinain      (different head + different verb)
+lumakad ang libro ni Juan na binasa    (proper-noun possessor, NI marker, na linker)
+kumain ang aso ng libro ng batang binasa   (OBJ-position case)
+lumakad ang libro ng batang hindi binasa   (RC under inner NEG)
+lumakad ang libro ng batang ipinaggawa     (IV variant)
+```
+
+The id-equality between ``POSS`` and the RC's ``OBJ-AGENT``
+(the dual-binding signature) is asserted by
+``test_poss_and_obj_agent_share_node`` in
+``tests/tgllfg/test_possessive_linker_rc_noun.py``.
+
+### Composition with prior commits unchanged
+
+The widening preserves all earlier behavior:
+
+* **Pronominal cases** (Commit 6 / Commit 18) — unchanged. Pinned
+  by ``test_pronominal_commit_6_still_works`` and
+  ``test_pronominal_commit_18_still_works``.
+* **Standard NP-poss + standard relativization** (``libro na
+  binasa ng bata``) — unchanged. The wrap rule requires
+  ``PART[LINK=L] + S_GAP_NA``, which doesn't fit a surface where
+  the actor stays inside the RC; the standard ``S_GAP`` path is
+  used instead. Pinned by
+  ``test_standard_relativization_with_overt_actor``.
+* **Right-associative iterated possessives** (``libro ng bata ng
+  pamilya``) — unchanged. The POSS-EXTRACTED guard from Commit 18
+  only blocks NP-poss extension on wrap-rule outputs; legitimate
+  iterated chains formed by repeated NP-poss applications are
+  not marked as POSS-EXTRACTED. Pinned by
+  ``test_iterated_npposs_unaffected``.
+
+### Rule competition (none)
+
+Three sources of structural ambiguity to consider, all resolved:
+
+1. **NOUN possessor + RC vs standard NP-poss + standard RC**.
+   For ``libro ng batang binasa``, the standard NP-poss + RC
+   path requires ``binasa`` (OV) to fit ``S_GAP``, which needs an
+   overt GEN actor. Without an actor inside the RC, ``S_GAP``
+   fails. Only the new wrap rule succeeds. No competition.
+2. **Recursive NP[GEN] possessor**. ``libro ng bata ng pamilya
+   na binasa`` (the family-of-the-child read the book) could in
+   principle match the wrap rule with the recursive ``ng bata ng
+   pamilya`` as the dual-bound possessor. The grammar admits
+   this; semantics is "the family is the actor and possessor".
+   The intended right-associative reading is preserved; the
+   recursive-possessor reading is also produced for chart
+   completeness.
+3. **PRON-headed NP as the head**. The ``(↓1 LEMMA)`` constraint
+   blocks this — see "The head-LEMMA constraint" above.
+
+## Phase 5e Commit 20: kita clitic fusion
+
+**Date:** 2026-05-02. **Status:** active. Adds the special
+second-position clitic ``kita`` that fuses the 1sg-GEN actor and
+2sg-NOM SUBJ of a non-AV verb into a single token: ``Kinain
+kita`` "I ate you", ``Sinulatan kita ng liham`` "I wrote you a
+letter", ``Pinakain kita ng kanin`` "I fed you rice", ``Hindi
+kita kinain`` "I didn't eat you". The fusion is obligatory in
+modern Tagalog (Schachter & Otanes 1972 §3.2; Kroeger 1993
+§2.2) — the alternative ``*Kinain ko ka`` is ungrammatical.
+
+### Lex layer
+
+A single new entry in ``data/tgl/pronouns.yaml``:
+
+```yaml
+- surface: kita
+  feats: {KITA: YES}
+  is_clitic: true
+```
+
+The lex carries only the marker ``KITA: YES``; the per-argument
+person/number/case feats are supplied by grammar equations (the
+lex loader doesn't support nested feats, so we can't put both
+1sg-GEN and 2sg-NOM bundles in a single PRON entry).
+
+The surface ``kita`` also exists as a verb root in
+``data/tgl/roots.yaml`` (``kita`` = "see, meet"), but the verb
+is never used as a bare lemma — it always appears with affixes
+(``kumita`` AV, ``kinita`` OV, ``nakita`` NVOL). The morph
+analyzer returns the PRON analysis for bare ``kita``, and the
+chart parser can also use the verb analysis for affixed forms;
+no ambiguity in practice.
+
+### Grammar layer
+
+``src/tgllfg/cfg/grammar.py`` adds a per-voice loop that mirrors
+the standard non-AV ``voice_specs`` structure used elsewhere:
+
+```python
+kita_voice_specs = [
+    ("OV", "OBJ-AGENT", [("CAUS", "NONE")]),
+    ("OV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
+    ("DV", "OBJ-AGENT", [("CAUS", "NONE")]),
+    ("DV", "OBJ-CAUSER", [("CAUS", "DIRECT")]),
+    ("IV", "OBJ-AGENT", []),
+]
+```
+
+For each ``(voice, obj_target, extras)`` triple, three frame
+variants:
+
+1. **Bare** (``V kita``): ``Kinain kita``, ``Binasahan kita``,
+   ``Ipinaggawa kita``, ``Pinakain kita``.
+2. **With overt PATIENT** (``V kita NP[GEN]``): ``Sinulatan
+   kita ng liham``, ``Pinakain kita ng kanin``,
+   ``Ipinaggawa kita ng silya``.
+3. **With DAT adjunct** (``V kita NP[DAT]``): peripheral
+   recipient / location adjuncts.
+
+The dual binding sets atomic values:
+
+```
+(↑ SUBJ PERS)             = '2'
+(↑ SUBJ NUM)              = 'SG'
+(↑ SUBJ CASE)             = 'NOM'
+(↑ <obj_target> PERS)     = '1'
+(↑ <obj_target> NUM)      = 'SG'
+(↑ <obj_target> CASE)     = 'GEN'
+```
+
+The ``<obj_target>`` per voice spec routes the 1sg actor to the
+right typed slot:
+
+* OV / DV with ``CAUS=NONE`` → ``OBJ-AGENT`` (plain non-AV
+  transitive).
+* OV / DV with ``CAUS=DIRECT`` → ``OBJ-CAUSER`` (pa-causatives;
+  the 1sg actor is the CAUSER, not the AGENT).
+* IV (any APPL) → ``OBJ-AGENT``.
+
+This routing matches the lexicon's expected PRED arity for each
+voice. For example, ``Pinakain kita ng kanin`` produces
+``CAUSE-EAT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>`` with SUBJ=2sg
+(CAUSEE), OBJ-CAUSER=1sg (the one who fed), OBJ-PATIENT=kanin.
+
+### Wackernagel placement
+
+``kita`` is marked ``is_clitic: true`` in the lex, so the
+existing §7.3 Wackernagel pass (``src/tgllfg/clitics/placement.py``)
+treats it like any pronominal clitic: pre-V occurrences are
+hoisted into the post-V cluster. ``Hindi kita kinain`` reorders
+to ``hindi kain kita`` after placement, matching the surface
+expectation. No new placement code was needed.
+
+### Note on the 'kita' pronoun's atomic-value equations
+
+The kita rule is the first place in the grammar that uses
+``(↑ <gf> ATTR) = 'value'`` to *create* the GF f-structure
+purely from grammar equations rather than by structure-sharing
+with a daughter f-structure (``(↑ <gf>) = ↓N``). The unifier
+handles this transparently: the equations create the GF
+sub-fstruct on the fly, with each atomic-value equation either
+defining or constraining the corresponding feature.
+
+A side benefit: the PRON entry's flat ``feats`` dict
+(``{KITA: YES}``) is sufficient lex-side. We don't need a
+nested-feats schema (``feats: {SUBJ: {PERS: 2, ...},
+OBJ-AGENT: {PERS: 1, ...}}``) to encode the dual binding.
+
+### Surface variants enabled
+
+```
+kinain kita              (OV bare)                   "I ate you"
+binasahan kita           (DV bare)                   "I read at you"
+ipinaggawa kita          (IV-BEN bare)               "I made (sth) for you"
+pinakain kita            (pa-OV bare, CAUSER=1sg)    "I fed you"
+sinulatan kita ng liham  (DV 3-arg + PATIENT)        "I wrote you a letter"
+ipinaggawa kita ng silya (IV-BEN 3-arg + PATIENT)    "I made you a chair"
+pinakain kita ng kanin   (pa-OV 3-arg + PATIENT)     "I fed you rice"
+hindi kita kinain        (NEG, kita hoisted)         "I didn't eat you"
+kinain na kita           (adv enclitic + kita)       "I already ate you"
+```
+
+### Out-of-scope (paradigm coverage gaps)
+
+* **OV-NVOL of ``kita`` (``Nakita kita`` "I saw you")** — the
+  canonical example in grammar texts. The current ma-class
+  paradigm only emits AV-NVOL forms; ``nakita`` analyses as
+  AV-NVOL only. Adding OV-NVOL ma-class cells is a paradigm
+  coverage follow-up, not a grammar / kita-fusion limitation.
+  Tracked as a TBD alongside the DV PFV gap from Phase 5e
+  Commit 18 (see plan §18 entries "DV PFV paradigm coverage
+  gap" — analogous form needed for OV-NVOL).
+* **PERS feature not propagated through standard PRON entries.**
+  Pre-existing parser quirk: ``_lex_equations`` in
+  ``src/tgllfg/parse/earley.py`` filters PRON feats to keep only
+  string-typed values. ``pronouns.yaml`` encodes ``PERS: 1`` as
+  a YAML integer, which gets dropped. This affects every PRON
+  in the lexicon (``ako``, ``ko``, ``mo``, etc.), not just
+  ``kita``. The kita fusion sidesteps the issue by setting PERS
+  via grammar equations as string literals (``'1'``, ``'2'``).
+  Lifting the lex/parser filter to allow integer PERS is a
+  Phase 5+ engineering follow-up — same shape as the DV / NVOL
+  paradigm gaps.
+
+## Phase 5e Commit 21: SOC mood (hortative) with `tayo` 1pl-INCL pivot
+
+**Date:** 2026-05-02. **Status:** active. Lifts the Phase 4 §7.2
+``MOOD=SOC`` inventory entry for the hortative case ("let's X").
+The SOC mood was already partially lifted by Phase 5e Commit 12
+for the ``mag-...-an`` reciprocal; this commit completes the
+deferral by adding the bare ``mag-`` + base hortative form.
+
+### The construction
+
+The hortative uses the bare ``mag-`` + base form (no CV-redup,
+no realis prefix) with the 1pl-INCL pivot ``tayo``:
+
+```
+Magkape tayo.            "Let's have coffee."        (canonical)
+Maglinis tayo ng kuwarto. "Let's clean the room."
+Magsayaw tayo.           "Let's dance."
+Magkanta tayo.           "Let's sing."
+Magpasyal tayo.          "Let's take a walk."
+Magsulat tayo ng liham.  "Let's write a letter."
+Maglaba tayo ng damit.   "Let's wash clothes."
+```
+
+The same morphological surface is also the IMP form for
+2nd-person SUBJs (``Maglinis ka`` "Clean!" — addressee
+imperative). The IMP variant lifts in a separate commit
+(Group G item 3, ``huwag-MOOD lift``); for now, MOOD=SOC is
+asserted at the morph level, and other PRON SUBJs that match
+the standard AV S frame produce semantically odd but
+grammatically well-formed parses (e.g., ``Maglinis ako`` parses
+as MOOD=SOC with 1sg SUBJ).
+
+### Paradigm cell
+
+A new cell in ``data/tgl/paradigms.yaml`` between the existing
+mag-CTPL/IND cell and the next paradigm section:
+
+```yaml
+- voice: AV
+  aspect: CTPL
+  mood: SOC
+  transitivity: ''
+  affix_class: mag
+  feats: {MOOD: SOC}
+  operations:
+    - {op: prefix, value: "mag"}
+  notes: maglinis, magbigay (mag- + base for hortative SOC; takes 1pl-INCL `tayo` SUBJ)
+```
+
+The cell uses ``aspect: CTPL`` (the closest existing aspect to
+"irrealis / non-finite") and ``mood: SOC`` to distinguish from
+the existing CTPL/IND cell (which adds ``cv_redup`` and
+produces ``maglilinis`` etc.). Different surfaces, no shadowing.
+
+The ``operations`` list contains just ``{op: prefix, value:
+"mag"}`` — no CV-redup, no realis. For any mag-class root, the
+cell emits ``mag-`` + base verbatim.
+
+### Denominal `kape` verb
+
+To support the canonical ``Magkape tayo`` example, ``kape``
+(originally a NOUN: "coffee") is also added as a VERB with
+``affix_class: [mag]``:
+
+```yaml
+- citation: kape
+  pos: VERB
+  gloss: have coffee
+  transitivity: INTR
+  affix_class: [mag]
+```
+
+This dual NOUN+VERB pattern is already attested in the seed
+lexicon (``trabaho``, ``tao``, ``gulay``, ``gutom``, ``salita``
+all carry both POS analyses). The mag-NOUN denominal pattern is
+productive in Tagalog (``magkape`` "drink coffee", ``magbahay``
+"build a house", ``magsasaka`` "be a farmer"); the seed picks
+just ``kape`` for the canonical example. Other denominal
+mag-verbs lift trivially by adding the same dual entry.
+
+### No new grammar rules needed
+
+The existing AV S frames carry MOOD from V to matrix without
+modification:
+
+* ``S → V[VOICE=AV] NP[CASE=NOM]`` (intransitive AV)
+* ``S → V[VOICE=AV] NP[CASE=NOM] NP[CASE=GEN]`` (transitive AV
+  via the standard ``voice_specs`` loop)
+* ``S → V[VOICE=AV] NP[CASE=NOM] NP[CASE=DAT]`` (intransitive
+  AV + DAT adjunct)
+
+For ``Magsayaw tayo``, the intransitive frame fires with V
+being ``magsayaw`` (V[VOICE=AV, MOOD=SOC]) and SUBJ being
+``tayo`` (NP[CASE=NOM]). MOOD=SOC propagates from V to matrix
+via the implicit feature inheritance. ``tayo``'s lex feats
+(NUM=PL, CLUSV=INCL, CASE=NOM) propagate to SUBJ.
+
+For ``Maglinis tayo ng kuwarto``, the transitive frame fires
+similarly with the addition of OBJ=kuwarto.
+
+### The `tayo` constraint is implicit, not enforced
+
+The grammar doesn't constrain SOC to require ``tayo`` as the
+SUBJ — any NP[CASE=NOM] would match the AV S frame. So
+``Maglinis ako.`` parses as MOOD=SOC with 1sg-NOM SUBJ
+(semantically odd: the SOC reading needs 1pl-INCL). This is a
+deliberate scope choice for v1: the SOC/IMP mood ambiguity
+requires either (a) PRON-PERS-aware grammar rules (the PERS
+feature is currently filtered out by the lex/parser quirk noted
+in Commit 20's docs) or (b) a richer mood inventory
+distinguishing INFINITIVE / NON-FINITE from SOC and IMP. Both
+are tractable Phase 5+ extensions. For now, SOC is asserted at
+the morph level and the construction works canonically with
+``tayo`` (the only context where the SOC reading is canonical).
+
+### Out-of-scope
+
+* **SOC negation with ``huwag``** (``Huwag tayong magkape``
+  "Let's not have coffee"). The interaction between ``huwag``'s
+  IMP particle and the SOC mood requires the Group G item 3
+  huwag-MOOD lift to be in place first. Tracked as a TBD.
+* **IMP variant** (``Magkape ka`` "Have coffee!"). Same surface
+  form, but PRON SUBJ is 2nd-person. Needs PERS-aware grammar
+  rules; see the PERS-filtering note in Commit 20's docs.
+* **Other denominal mag-NOUN verbs** (``magtanim`` "plant",
+  ``magbahay`` "build a house", ``magkotse`` "drive a car",
+  etc.). Each requires adding the noun's dual VERB entry. The
+  seed picks just ``kape`` for the canonical example; expanding
+  is a small lex-data follow-up driven by corpus pressure.
+
+## Phase 5e Commit 22: verbless clitic placement
+
+**Date:** 2026-05-02. **Status:** active. Lifts the Phase 4 §7.3
+verbless-fragment deferral. The Wackernagel placement pass was
+verb-anchored: when no VERB token appeared in the input, the
+pass returned the analyses unchanged. This left verbless
+predicate constructions like ``Maganda na ka`` "You're beautiful
+already" or ``Hindi ka maganda`` "You're not beautiful" without
+proper clitic placement — even though the cluster ordering rules
+themselves don't depend on the anchor being a verb.
+
+### The change: fallback anchor lookup
+
+A new helper ``_find_verbless_anchor`` in
+``src/tgllfg/clitics/placement.py`` returns the first token
+that's:
+
+* Not a clitic (PRON-clitic or PART-2P-clitic).
+* Not ``PART[POLARITY=NEG]`` (``hindi``, ``huwag``).
+* Not punctuation.
+
+When no VERB exists, this anchor takes the verb's place in the
+cluster machinery. The PRON post-anchor cluster, the adv
+enclitic clause-end placement, and the existing post-NOUN /
+pre-linker / post-embedded-V exceptions all carry over
+unchanged.
+
+When a VERB is present, the verb-anchor wins (existing
+behavior). The fallback only fires for genuinely verbless
+inputs.
+
+### Anchor selection rationale
+
+The anchor is the first **predicate-like** token. Tagalog
+verbless predicates can be:
+
+* **Adjective predicates** — ``Maganda ka.`` "You're
+  beautiful" (the predicate-adj construction is Phase 5g; the
+  placement-pass change here covers the cluster shape so it's
+  ready when 5g lands).
+* **Noun predicates** — ``Bata ka.`` "You're a child"
+  (equational with NOUN predicate).
+* **Locative predicates** — ``Dito ka.`` "You're here" (ADP
+  locative dem as predicate).
+* **PP / quantifier predicates** — also covered.
+
+Pre-anchor tokens ``hindi`` / ``huwag`` (NEG-PART) are skipped
+during anchor lookup, mirroring the verb-anchored behavior
+(NEG sits pre-V; the V is the anchor).
+
+### Interaction with the §7.5 ``na``-disambiguator
+
+The Phase 5e Commit 6 ``na``-disambiguator treats post-NOUN
+``na`` as the linker rather than the adv enclitic
+(``Tumakbo ang bata ko na nakita`` — ``na`` introduces the RC,
+not ALREADY). This applies to verbless inputs too — ``Bata na
+ka.`` parses with ``na`` as a linker, leaving only ``ka`` as the
+PRON-clitic to cluster.
+
+For unambiguous adv-enclitic cases (``Maganda na ka.`` —
+``maganda`` is ADJ-_UNK so the disambiguator's NOUN branch
+doesn't fire), ``na`` keeps its is_clitic reading and is pulled
+to clause-end as expected.
+
+### Surface variants enabled
+
+```
+Maganda na ka.        → maganda ka . na     (PRON cluster + adv at end)
+Maganda ba ka.        → maganda ka . ba     (interrogative ba)
+Maganda na ka ba.     → maganda ka . na ba  (PRON + 2 advs)
+Hindi ka maganda.     → hindi maganda ka .  (NEG + pre-anchor PRON hoist)
+Hindi na ka maganda.  → hindi maganda ka . na   (NEG + adv + pre-anchor PRON)
+```
+
+Tests pin the cluster shape at the placement layer
+(``tests/tgllfg/test_verbless_clitic_placement.py``). End-to-end
+parse coverage of these surfaces is gated on Phase 5g
+(adjectives) — most verbless predicate constructions need the
+predicative-adj clause type to land. The placement-pass change
+is intentionally ahead of 5g so the cluster ordering is correct
+when 5g composes.
+
+### No corpus change
+
+This commit is a placement-pass-only change. Corpus parse
+coverage is unchanged (the verbless surfaces still don't parse
+at the grammar level until Phase 5g lands). The 19 new tests
+pin behavior at the unit level only.
+
+## Phase 5e Commit 23: non-AV RECPFV (reclassification)
+
+**Date:** 2026-05-02. **Status:** active. Documentation-only
+commit; no grammar / lex / morph changes.
+
+The Phase 4 §7.2 "Out-of-scope" note flagged Recent Perfective
+as restricted to AV (the existing ``ka-`` + CV-redup paradigm
+cells cover only AF / um / mag / ma classes), and plan §10.1
+Group G carried "Non-AV RECPFV" forward as a Phase 5e
+candidate, claiming non-AV bases were attested with ``kaka-``
++ redup. On investigation against the *Handbook of Tagalog
+Verbs* (Ramos & Schachter; the companion volume to Teresita
+Ramos's dictionary), the claim doesn't hold up — every
+paradigm entry in the Handbook lists Recent Perfective only
+under AF (Actor Focus) and A2F (Actor Focus, mag-class),
+never under OF (Object Focus), DF (Directional Focus), IF
+(Instrumental Focus), BF (Benefactive Focus), LF (Locative
+Focus), or RF (Reason Focus). Phase 5e Commit 23 reclassifies
+the item to plan §18 (genuinely v1-out-of-scope) and pins the
+rationale here.
+
+### What the Handbook actually shows
+
+A representative entry for the verb ``abot`` "reach for"
+(Handbook line 219+ in the OCR):
+
+```
+Indicative AF Inf. umabot; Perf. umabot;
+              Imperf. umaabot; Cont. aabot;
+              Rec. Perf. kaaabot          ← AV with `-um-`
+
+A2F Inf. mag-abot; Perf. nag-abot;
+    Imperf. nag-aabot; Cont. mag-aabot;
+    Rec. Perf. kaaabot                    ← AV with `mag-`
+
+OF Inf. abutin; Perf. inabot;
+   Imperf. inaabot; Cont. aabutin         ← NO Rec. Perf.
+
+[OF entries for Aptative, Causative, etc. — none with Rec. Perf.]
+```
+
+The pattern repeats for every verb the Handbook lists (~200
+high-frequency verbs). Recent Perfective is paradigmatically
+an AF-only form. The Handbook's analysis matches Schachter &
+Otanes 1972 §5.31 ("The recent-perfective formation occurs
+primarily with actor-focus verbs") and Kroeger 1993's broader
+treatment of Tagalog aspect.
+
+### What the surface ``kaka-V-base`` does in non-AV contexts
+
+The AF Recent Perfective surface (``kakakain``, ``kabibili``,
+``kasusulat``, etc.) IS sometimes used in syntactically OV-like
+contexts:
+
+```
+Kakakain ko ang isda.   "I just ate the fish."
+                         (GEN actor `ko` + NOM patient `ang isda`)
+```
+
+Our current parser already produces a parse for these — the
+existing AV-RECPFV cell emits ``kakakain`` as
+``V[VOICE=AV, ASPECT=RECPFV]``, and the standard AV
+transitive S frame admits ``V[AV] + NP[GEN] + NP[NOM]``. The
+verb's morphological analysis remains AV; only the syntactic
+mapping looks OV-like (the GEN-NP is bound to OBJ and the
+NOM-NP to SUBJ in the AV frame). This isn't a bug — it
+reflects how Tagalog handles recent-perfective semantics with
+overt patient arguments.
+
+### Why we don't add an explicit non-AV RECPFV cell
+
+A genuine non-AV RECPFV form (distinct from the AF surface)
+would need ``ka-`` + redup PLUS the OV / DV / IV affix:
+
+```
+OV-RECPFV (hypothetical):  kakakainin   = ka-CV.CV-kain-in
+DV-RECPFV (hypothetical):  kakakainan   = ka-CV.CV-kain-an
+IV-RECPFV (hypothetical):  ikakakain    = i-ka-CV.CV-kain
+```
+
+None of these are documented in the Handbook, S&O 1972, R&G
+1981, R&B 1986, or the Ramos dictionary. Adding paradigm cells
+that emit them would be guesswork — same shape as the prior
+reclassifications (Commit 7 resumptive pronouns, Commit 13
+``magpa-...-an`` distributive, Commit 15 noun-deriving
+``ipang-`` senses). The reference grammars treat the
+recent-perfective as a paradigm gap on the non-AV side, and
+the implementation should mirror that.
+
+### Status of plan §10.1 Group G after this commit
+
+Two of three Group G items remain to be addressed:
+
+* **IV-REASON CTPL paradigm gap** (CTPL form ``ikakain``
+  analyses as IV-CONVEY rather than IV-REASON; Phase 5d
+  Commit 9 deferral). Coming in Commit 24.
+* **`huwag`'s MOOD=IMP lifted to matrix** (Phase 4 §7.2
+  limitation). Coming in Commit 25.
+
+## Phase 5e Commit 24: IV-REASON CTPL short-form paradigm gap
+
+**Date:** 2026-05-02. **Status:** active. Lifts the Phase 5d
+Commit 9 paradigm-gap deferral. Before this commit, the surface
+``ikakain`` had only an IV-CONVEY CTPL reading; Tagalog
+actually admits both IV-CONVEY and IV-REASON CTPL on this
+surface, with IV-REASON being a "short" form of the longer
+``ikakakain``.
+
+### Evidence from the Handbook of Tagalog Verbs
+
+The Handbook (Ramos & Schachter; ``data/tgl/dictionaries/``)
+lists Reason Focus (RF) Cont with two surface variants
+separated by ``/`` for vowel-initial roots:
+
+```
+ingay (noise):  RF Cont. ikakaingay / ikaiingay   (line 4120 in OCR)
+init (heat):    RF Cont. ikakainit  / ikaiinit    (line 4161 in OCR)
+```
+
+The first variant has an extra CV-redup; the second drops it.
+The pattern generalizes to consonant-initial bases — for
+``kain``, the "long" form is ``ikakakain`` (i + ka + cv-redup
++ kain = 4 syllables), the "short" form is ``ikakain`` (i + ka
++ kain, no further redup = 3 syllables).
+
+### The change: a second IV-REASON CTPL paradigm cell
+
+A new cell in ``data/tgl/paradigms.yaml`` between the existing
+IV-REASON CTPL cell and the pa-...-in causative section:
+
+```yaml
+- voice: IV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: ika
+  feats: {APPL: REASON}
+  operations:
+    - {op: prefix, value: "ka"}
+    - {op: prefix, value: "i"}
+  notes: ikakain, ikabili (CTPL "short" form — ka- prefix + i-, no cv-redup)
+```
+
+Compared to the existing "long" form cell (operations
+``[cv_redup, prefix ka, prefix i]``), this cell omits the
+``cv_redup`` step. For ``kain``, both produce different
+surfaces — long: ``ikakakain``, short: ``ikakain``.
+
+### Surface coincidence with IV-CONVEY CTPL
+
+For ``kain``, the IV-REASON CTPL "short" form ``ikakain``
+coincides with the IV-CONVEY CTPL form (also ``ikakain`` —
+``i-`` + cv-redup of ``kain`` = ``ikakain``). The morph
+analyzer returns BOTH analyses for the surface; the chart
+parser explores both readings.
+
+For other ``ika``-class bases like ``sulat``, the surfaces
+differ:
+
+```
+sulat → IV-CONVEY CTPL:        isusulat   (i + cv-redup + sulat)
+      → IV-REASON CTPL "short": ikasulat   (i + ka + sulat)
+      → IV-REASON CTPL "long":  ikasusulat (i + ka + cv-redup + sulat)
+```
+
+So ``ikasulat`` is unambiguously IV-REASON CTPL.
+
+### Affix-class scope
+
+The new cell only fires for roots with ``ika`` in their
+``affix_class`` — currently ``kain`` and ``sulat``. Other
+verbs (``bili``, ``inom``, ``basa``, etc.) don't get the
+IV-REASON forms at all because they lack the ``ika`` class
+declaration. Expanding this declaration is a per-verb lex
+data follow-up, driven by which verbs corpus pressure
+surfaces.
+
+### Parse-level effect
+
+```
+Ikakain ko ang isda.   → 2 parses:
+                          PRED=KAIN <SUBJ, OBJ-AGENT>          (CONVEY)
+                          PRED=EAT-FOR-REASON <SUBJ, OBJ-AGENT> (REASON)
+Ikasulat ko ang liham. → 1 parse with REASON PRED.
+Ikakakain ko ang isda. → 1 parse with REASON PRED (long form, regression).
+```
+
+### Why we don't add a new ASPECT value
+
+The Handbook's pattern shows the "short" form is still
+aspectually CTPL — Cont. is the aspect column. Adding a new
+ASPECT (e.g., INF or REASON-SHORT) would conflict with the
+paradigm system's structure (aspect × mood × voice × affix
+class). The cleaner interpretation: the ``ka-`` prefix carries
+the REASON applicative and the rest of the form is shaped by
+aspect. The "short" form is a phonologically reduced CTPL
+where the CV-redup step is optional / absorbed.
+
+### No new tests for ``bili`` and others
+
+The new cell technically also fires for any ``ika``-class
+root, but only ``kain`` and ``sulat`` are currently declared.
+``bili`` doesn't have ``ika`` in its affix_class
+(``[um, in_oblig, an_oblig, i_oblig, mang, maka, ipag, ipang,
+mag_an, mang_retain]``), so ``ikabili`` wouldn't be generated
+even after this commit. Adding ``ika`` to ``bili``'s affix
+class is a separate lex-data follow-up (R&B 1986 doesn't list
+IV-REASON for ``bili``, so we don't pre-emptively add it).
+
+## Phase 5e Commit 25: huwag MOOD=IMP lifted to matrix via CLAUSE-MOOD
+
+**Date:** 2026-05-02. **Status:** active. Lifts the Phase 4
+§7.2 limitation where the negation rule's ``(↑) = ↓2``
+propagated the inner verb's MOOD=IND, conflicting with the
+imperative-particle's MOOD=IMP. The §7.2 docs flagged two
+resolution paths: selective GF projection or feature
+architecture distinguishing predicate-mood from clausal-mood.
+Phase 5e Commit 25 takes the **feature-architecture** path.
+
+### The limitation
+
+Before this commit, ``huwag`` (PART[POLARITY=NEG, MOOD=IMP])
+behaved syntactically identically to ``hindi`` (PART[POLARITY=
+NEG]) — the matrix's MOOD stayed at IND (inherited from the
+inner verb via ``(↑) = ↓2``), with only POLARITY=NEG marking
+the negation. The huwag particle's lex-emitted MOOD=IMP sat
+on the particle's own f-structure and never reached the
+matrix.
+
+### The fix: a CLAUSE-MOOD feature
+
+A new feature ``CLAUSE-MOOD`` is introduced for sentential /
+speech-act mood, distinct from the verb's morphological
+``MOOD``:
+
+* ``MOOD`` (existing) — the verb's morphological mood. IND
+  (default for indicative verb forms), ABIL (maka-
+  abilitative), NVOL (ma- non-volitional), SOC (Phase 5e
+  Commit 21 hortative and Phase 5e Commit 12 reciprocal).
+  Always projected from the verb's lex equations.
+* ``CLAUSE-MOOD`` (new) — the sentential / speech-act mood.
+  Set to IMP for negative imperatives via ``huwag``. Unset
+  for declaratives (the absence is the IND default; we don't
+  ceremoniously set CLAUSE-MOOD=IND on every clause).
+
+This corresponds to the LFG-canonical distinction between
+predicate-mood and clausal-mood (see Bresnan 2001 §3.5):
+verbal morphology projects predicate-mood; particles and
+clausal markers contribute clausal-mood.
+
+### Grammar change: split into two NEG rules
+
+The existing single rule ``S → PART[POLARITY=NEG] S`` is split:
+
+```python
+# Hindi rule (declarative NEG): restrict to particles WITHOUT MOOD.
+rules.append(Rule(
+    "S",
+    ["PART[POLARITY=NEG]", "S"],
+    [
+        "(↑) = ↓2",
+        "(↑ POLARITY) = 'NEG'",
+        "¬ (↓1 MOOD)",
+    ],
+))
+
+# Huwag rule (imperative NEG): require MOOD=IMP on the particle,
+# lift to CLAUSE-MOOD on matrix.
+rules.append(Rule(
+    "S",
+    ["PART[MOOD=IMP, POLARITY=NEG]", "S"],
+    [
+        "(↑) = ↓2",
+        "(↑ POLARITY) = 'NEG'",
+        "(↑ CLAUSE-MOOD) = 'IMP'",
+        "(↓1 MOOD) =c 'IMP'",
+    ],
+))
+```
+
+The hindi rule's ``¬ (↓1 MOOD)`` constraint excludes huwag
+(which has MOOD=IMP). The huwag rule's ``(↓1 MOOD) =c 'IMP'``
+constraint excludes hindi — this constraining equation is
+needed because the category-pattern matcher
+(``compile.py::matches``) is non-conflict (matches if no
+disagreement, doesn't require all expected features present),
+so ``PART[MOOD=IMP, POLARITY=NEG]`` would also match a
+candidate without MOOD by absorption.
+
+### Why feature architecture, not selective projection
+
+The plan's other option, selective GF projection — enumerate
+the GFs to copy from the inner clause via ``(↑ X) = (↓2 X)``
+while excluding MOOD, then set ``(↑ MOOD) = 'IMP'`` —
+technically works. It's rejected here for two reasons:
+
+1. **Phantom GF slots.** The unifier's defining-equation
+   semantics use ``_resolve_for_write`` (get-or-create)
+   on both LHS and RHS designators. So ``(↑ OBJ-PATIENT) =
+   (↓2 OBJ-PATIENT)`` for an intransitive inner clause where
+   OBJ-PATIENT is undefined would CREATE both ↑.OBJ-PATIENT
+   and ↓2.OBJ-PATIENT as fresh empty fstructs and unify them.
+   This pollutes the inner clause's f-structure with phantom
+   GF slots that didn't exist before. Tests that assert "OBJ
+   is None" would still pass (the empty fstruct isn't
+   semantically meaningful), but it's bookkeeping noise.
+
+2. **Better separation of concerns.** CLAUSE-MOOD as a
+   distinct feature lets future commits add other clausal
+   mood values (DECL for declarative speech-act, INT for
+   interrogative, etc.) without touching the verb-MOOD
+   projection. The architecture stays clean.
+
+### Surface coverage
+
+```
+Huwag kumain ang bata.        → CLAUSE-MOOD=IMP, POLARITY=NEG, MOOD=IND
+Huwag kumain ng isda ang bata.→ CLAUSE-MOOD=IMP, POLARITY=NEG, MOOD=IND
+Huwag pa kumain ang bata.     → CLAUSE-MOOD=IMP + adv enclitic (`pa` YET)
+Hindi kumain ang bata.        → POLARITY=NEG, MOOD=IND, no CLAUSE-MOOD (unchanged)
+Kumain ang bata.              → MOOD=IND, no POLARITY/CLAUSE-MOOD (unchanged)
+```
+
+### Out-of-scope (deferred)
+
+* **The control-style imperative** ``Huwag kang kumain.`` (with
+  addressee + linker + verb). This is the canonical surface
+  for direct imperatives ("Don't (you sg) eat") but requires
+  a different wrap rule shape — analogous to a control verb
+  taking SUBJ + linker + S_XCOMP. Phase 5e Commit 25 only
+  covers the matrix-NEG style ``Huwag kumain ang bata.``;
+  the PRON-LINK form is deferred to a separate commit (or
+  Phase 5g+ when adjective predication and verbless clause
+  shapes mature).
+* **Lifting hindi to CLAUSE-MOOD=DECL.** We intentionally
+  leave CLAUSE-MOOD unset for declaratives. Adding
+  CLAUSE-MOOD=DECL to every clause would be ceremony with no
+  current consumer. If a future commit needs to distinguish
+  declarative from interrogative or other speech-act moods,
+  this is a one-line addition.
+* **The huwag clitic interaction with SOC** (``Huwag tayong
+  kumain.`` "Let's not eat" — combines NEG-IMP with SOC). The
+  IMP / SOC interaction is a paradigm and clausal-mood
+  composition question that's separate from the lift here.
+  Tracked in plan §10.1 Group F (already lifted at the SOC
+  end via Commit 21; the huwag side is distinct).
+
+## Phase 5e Commit 26: comparative ``parang``
+
+**Date:** 2026-05-02. **Status:** active. Lifts the Phase 5d
+Commit 1 deferral. The existing ``parang`` lex entry covered
+the evidential reading (``Parang umuulan`` "It seems like it's
+raining" — ``parang + clause``). The comparative reading
+(``Parang aso ang bata`` "The child is like a dog" —
+``parang + bare-N + ang-NP``) is structurally distinct and
+gets its own grammar rule in this commit.
+
+### Lex change
+
+``parang`` (data/tgl/particles.yaml) gains a ``COMPARATIVE:
+"YES"`` feature. The string-quoted value avoids the YAML
+boolean trap (``YES`` parses as Python ``True``, which then
+gets filtered out by ``_lex_equations`` since it's not a
+string — same gotcha that surfaced in Phase 5e Commit 17 with
+``DEM`` and Phase 5e Commit 25 with the constraining-equation
+match for huwag).
+
+``tila`` keeps only ``CTRL_CLASS=RAISING_BARE`` — no
+comparative reading in standard usage. ``Tila aso ang bata``
+correctly fails to parse (no rule fits the surface, since the
+constraining equation in the comparative rule excludes it).
+
+### Grammar change
+
+A new S rule mirroring the existing Phase 5d Commit 1
+evidential rule's category (``V[CTRL_CLASS=RAISING_BARE]``):
+
+```python
+S → V[COMPARATIVE=YES, CTRL_CLASS=RAISING_BARE] N NP[CASE=NOM]
+    (↑ PRED) = 'LIKE <SUBJ, OBJ>'
+    (↑ OBJ) = ↓2
+    (↑ SUBJ) = ↓3
+    (↓1 COMPARATIVE) =c 'YES'
+```
+
+The constraining equation excludes ``tila`` — the category-
+pattern matcher (``compile.py::matches``) is non-conflict, so
+``V[COMPARATIVE=YES, CTRL_CLASS=RAISING_BARE]`` would also
+match ``tila`` (RAISING_BARE without COMPARATIVE) by absorption
+without the explicit constraint.
+
+The bare ``N`` daughter projects PRED + LEMMA via the existing
+``N → NOUN`` rule, so OBJ ends up with the NOUN's lemma and a
+NOUN-style PRED.
+
+### F-structure shape
+
+```
+PRED  = 'LIKE <SUBJ, OBJ>'
+SUBJ  = the comparee (the ang-NP)
+OBJ   = the standard (the bare N)
+```
+
+For ``Parang aso ang bata.``:
+
+```
+PRED = 'LIKE <SUBJ, OBJ>'
+SUBJ = {LEMMA: 'bata', CASE: 'NOM', ...}
+OBJ  = {LEMMA: 'aso', PRED: 'NOUN(↑ FORM)'}
+```
+
+### Why GEN-marked OBJ vs bare N
+
+In Tagalog, a comparative complement isn't marked with ``ng``
+(GEN). It's a bare nominal. The existing OBJ slot (which is
+typically GEN-marked) is reused here as a structural slot for
+the comparison standard, without case-marking constraints.
+This is consistent with how comparatives work cross-
+linguistically (the standard of comparison often has a
+distinct case marking, sometimes none).
+
+An alternative would be a typed slot like ``OBL-LIKE`` or
+``COMP-STD``. Reusing OBJ keeps the f-structure schema simple
+and avoids introducing yet another GF for one construction.
+If future work distinguishes the comparative complement from
+ordinary OBJ in semantic-role assignment, switching to a
+typed slot is a one-line change.
+
+### Composition
+
+The comparative composes naturally:
+
+* **Negation**: ``Hindi parang aso ang bata.`` — POLARITY=NEG
+  is overlaid on the matrix via the standard NEG rule.
+* **Relativization on SUBJ**: ``Parang aso ang batang
+  kumain.`` — the SUBJ NP can carry an internal RC.
+
+### Out-of-scope (deferred)
+
+* **Adjective-modified standard**: ``Parang asong matalino
+  ang bata.`` "The child is like a smart dog." — needs the
+  Phase 5g adjective machinery for ``asong matalino``. Not
+  parsed here.
+* **Determiner-marked standard**: ``Parang ang aso ang
+  bata.`` — non-standard surface; the standard form uses bare
+  N.
+* **Comparative + clause as standard**: ``Parang umiiyak ang
+  bata.`` "The child is like (someone who is) crying." This
+  is captured by the existing evidential reading
+  (``parang + clause``); whether comparative-vs-evidential is
+  a separable distinction with overt clauses is a deeper
+  semantic question deferred to v1+ pragmatic analysis.
+* **``kasing-`` / ``sing-`` equative comparatives**
+  (``kasingganda ng aso``). Phase 5h coverage (comparison &
+  degree) per plan §12.2.
+* **``mas`` / ``pinaka-`` comparatives** (``mas matalino``,
+  ``pinakamatalino``). Phase 5h.
+

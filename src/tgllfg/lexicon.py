@@ -197,6 +197,33 @@ _OV_CAUS_DIRECT_THREE_ARG: dict[
     "PATIENT": (True, True),
     "CAUSEE": (False, False),
 }
+# Phase 5e Commit 10: three-arg pa-DV (pa-...-an) with explicit
+# PATIENT alongside CAUSER and LOCATION-pivot. Mirrors the 3-arg
+# pa-OV profile but with LOCATION (the recipient / locative) as
+# the SUBJ-mapped role rather than CAUSEE. Both CAUSER and PATIENT
+# are [+r, +o] → typed OBJ-θ.
+_DV_CAUS_DIRECT_THREE_ARG: dict[
+    str, tuple[bool | None, bool | None]
+] = {
+    "CAUSER": (True, True),
+    "PATIENT": (True, True),
+    "LOCATION": (False, False),
+}
+# Phase 5e Commit 11: three-arg plain DV (CAUS=NONE) with
+# explicit PATIENT alongside AGENT and RECIPIENT-pivot. Mirrors
+# the 3-arg pa-DV profile but with AGENT instead of CAUSER and
+# RECIPIENT instead of LOCATION (semantically the same — DV's
+# broad voice category covers location / recipient / dative —
+# but role-named for non-causative DV ditransitives like
+# ``Sinulatan ng nanay ng letra ang anak`` "Mother wrote a
+# letter to the child").
+_DV_TR_AGENT_PATIENT_RECIPIENT_THREE_ARG: dict[
+    str, tuple[bool | None, bool | None]
+] = {
+    "AGENT": (True, True),
+    "PATIENT": (True, True),
+    "RECIPIENT": (False, False),
+}
 # Indirect (biclausal) causative: CAUSER pivot, EVENT stipulated as
 # XCOMP via gf_defaults — the LMT bridge ``stipulated_gfs_for`` picks
 # it up. The EVENT role itself has no [±r, ±o] (off the truth table).
@@ -283,6 +310,23 @@ BASE: dict[str, list[LexicalEntry]] = {
             {"AGENT": "SUBJ", "PATIENT": "OBJ"},
             intrinsic_classification=_AV_TR_AGENT_PATIENT,
         ),
+        # Phase 5e Commit 12: mag-...-an reciprocal / social.
+        # ``Nagkainan sila.`` "They ate together / [ate at each
+        # other]." Single thematic role (the reciprocally-acting
+        # group); MOOD=SOC discriminates from plain AV.
+        LexicalEntry(
+            lemma="kain",
+            pred="EAT-TOGETHER <SUBJ>",
+            a_structure=["ACTOR"],
+            morph_constraints={
+                "VOICE": "AV",
+                "MOOD": "SOC",
+                "CAUS": "NONE",
+                "APPL": "NONE",
+            },
+            gf_defaults={"ACTOR": "SUBJ"},
+            intrinsic_classification=_AV_INTR_ACTOR,
+        ),
         # OV transitive: patient pivot, agent as ng-NP=OBJ-AGENT.
         _entry(
             "kain", "OV", "EAT <SUBJ, OBJ-AGENT>",
@@ -306,6 +350,23 @@ BASE: dict[str, list[LexicalEntry]] = {
             ["AGENT", "THEME"],
             {"AGENT": "SUBJ", "THEME": "OBJ"},
             intrinsic_classification=_AV_TR_AGENT_THEME,
+        ),
+        # Phase 5e Commit 12: mag-...-an reciprocal / social.
+        # ``Nagbilihan sila.`` "They exchanged in trade / sold to
+        # each other." bili's intrinsic-AGENT profile (vs kain's
+        # intrinsic-ACTOR) is preserved here.
+        LexicalEntry(
+            lemma="bili",
+            pred="BUY-EXCHANGE <SUBJ>",
+            a_structure=["AGENT"],
+            morph_constraints={
+                "VOICE": "AV",
+                "MOOD": "SOC",
+                "CAUS": "NONE",
+                "APPL": "NONE",
+            },
+            gf_defaults={"AGENT": "SUBJ"},
+            intrinsic_classification=_AV_INTR_AGENT,
         ),
         _entry(
             "bili", "OV", "BUY <SUBJ, OBJ-AGENT>",
@@ -366,6 +427,24 @@ BASE: dict[str, list[LexicalEntry]] = {
             ["AGENT", "RECIPIENT"],
             {"RECIPIENT": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_DV_TR_AGENT_RECIPIENT,
+        ),
+        # Phase 5e Commit 11: three-argument plain DV with explicit
+        # PATIENT/THEME alongside AGENT and RECIPIENT-pivot.
+        # ``Sinulatan ng nanay ng letra ang anak``
+        # "Mother wrote a letter to the child."
+        # The "-TO" PRED suffix mirrors the pa-DV "-AT" convention
+        # for distinguishing 3-arg DV from the 2-arg form (whose
+        # PRED stays bare ``WRITE`` for compatibility with existing
+        # tests).
+        _entry(
+            "sulat", "DV", "WRITE-TO <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+            ["AGENT", "PATIENT", "RECIPIENT"],
+            {
+                "RECIPIENT": "SUBJ",
+                "AGENT": "OBJ-AGENT",
+                "PATIENT": "OBJ-PATIENT",
+            },
+            intrinsic_classification=_DV_TR_AGENT_PATIENT_RECIPIENT_THREE_ARG,
         ),
         _entry(
             "sulat", "IV", "WRITE <SUBJ, OBJ-AGENT>",
@@ -895,6 +974,55 @@ BASE["inom"].append(LexicalEntry(
     morph_constraints={"VOICE": "DV", "CAUS": "DIRECT"},
     gf_defaults={"LOCATION": "SUBJ", "CAUSER": "OBJ-CAUSER"},
     intrinsic_classification=_DV_CAUS_DIRECT,
+))
+
+# Phase 5e Commit 10: three-arg pa-DV (pa-...-an) with explicit
+# PATIENT. Mirrors the Phase 5b 3-arg pa-OV pattern but with the
+# pa-DV pivot (LOCATION / recipient / dative) at SUBJ. Both CAUSER
+# and PATIENT demote to typed OBJ-θ slots (OBJ-CAUSER,
+# OBJ-PATIENT). The grammar binds them positionally via the new
+# top-level multi-GEN-NP pa-DV rules and via the matching
+# S_XCOMP rules under control.
+#
+#   Pinakainan ng nanay ng kanin ang bata.
+#     "Mother fed-rice-to the child."
+#   Pinabasahan ng nanay ng aklat ang bata.
+#     "Mother read-the-book-to the child."
+BASE["kain"].append(LexicalEntry(
+    lemma="kain",
+    pred="CAUSE-EAT-AT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>",
+    a_structure=["CAUSER", "PATIENT", "LOCATION"],
+    morph_constraints={"VOICE": "DV", "CAUS": "DIRECT"},
+    gf_defaults={
+        "LOCATION": "SUBJ",
+        "CAUSER": "OBJ-CAUSER",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_DV_CAUS_DIRECT_THREE_ARG,
+))
+BASE["basa"].append(LexicalEntry(
+    lemma="basa",
+    pred="CAUSE-READ-AT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>",
+    a_structure=["CAUSER", "PATIENT", "LOCATION"],
+    morph_constraints={"VOICE": "DV", "CAUS": "DIRECT"},
+    gf_defaults={
+        "LOCATION": "SUBJ",
+        "CAUSER": "OBJ-CAUSER",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_DV_CAUS_DIRECT_THREE_ARG,
+))
+BASE["inom"].append(LexicalEntry(
+    lemma="inom",
+    pred="CAUSE-DRINK-AT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>",
+    a_structure=["CAUSER", "PATIENT", "LOCATION"],
+    morph_constraints={"VOICE": "DV", "CAUS": "DIRECT"},
+    gf_defaults={
+        "LOCATION": "SUBJ",
+        "CAUSER": "OBJ-CAUSER",
+        "PATIENT": "OBJ-PATIENT",
+    },
+    intrinsic_classification=_DV_CAUS_DIRECT_THREE_ARG,
 ))
 
 # Indirect (biclausal) causatives (magpa- AV): SUBJ = causer,

@@ -81,6 +81,30 @@
     - {op: prefix, value: "mag"}
   notes: maglilinis, magbibigay (mag- in irrealis)
 
+# Phase 5e Commit 21: AV-mag SOC (hortative) — bare `mag-` + base
+# (no CV-redup, no realis), MOOD=SOC. Used in 1pl-INCL hortatives
+# like `Maglinis tayo` "Let's clean", `Magbigay tayo ng X` "Let's
+# give X", `Magkape tayo` "Let's have coffee". The same
+# morphological surface is also the IMP form for 2nd-person
+# subjects (`Maglinis ka` "Clean!" — addressee-imperative); the
+# IMP variant lifts in a separate commit (Group G item 3,
+# huwag-MOOD lift). For now, MOOD=SOC is asserted at the morph
+# level — the existing AV S frames carry MOOD from V to matrix
+# without needing new grammar rules.
+#
+# Lifts the Phase 4 §7.2 SOC-as-inventory-only deferral for the
+# hortative case (Phase 5e Commit 12 already lifted SOC for the
+# mag-...-an reciprocal).
+- voice: AV
+  aspect: CTPL
+  mood: SOC
+  transitivity: ''
+  affix_class: mag
+  feats: {MOOD: SOC}
+  operations:
+    - {op: prefix, value: "mag"}
+  notes: maglinis, magbigay (mag- + base for hortative SOC; takes 1pl-INCL `tayo` SUBJ)
+
 # === AV — Actor Voice (mang- distributive class) =========================
 #
 # The mang- prefix exhibits nasal substitution: the prefix's final ng
@@ -124,6 +148,53 @@
     - {op: cv_redup}
     - {op: prefix, value: "ma"}
   notes: mamimili (← mang+CV-redup of post-subst base)
+
+# === AV — mang- retain pattern (Phase 5e Commit 14) =====================
+#
+# Schachter & Otanes 1972 §5.27 + Ramos 1971 paradigm tables note
+# that some bases admit a retain-pattern variant of the mang-
+# distributive alongside the default drop pattern. The retain
+# pattern keeps the base's first consonant and adds a homorganic
+# nasal (the same ``nasal_assim_prefix`` op introduced for the
+# Phase 5c §7.7 ipang- IV-INSTR / ika- IV-REASON applicatives):
+#
+#   mang- + bili → drop:   mami → mamili    (existing mang class)
+#   mang- + bili → retain: namb → nambili → namb-i-bili → mambili (Phase 5e)
+#
+# The two forms can carry slightly different semantics
+# ("habitual buyer" vs "engaging in buying activity") or be
+# dialectal variants. Per-base flagging via the new ``mang_retain``
+# affix class lets bases opt into the retain pattern alongside
+# the default drop pattern. The lex entries (BUY <SUBJ> etc.) are
+# unchanged — both surface forms route to the same PRED.
+- voice: AV
+  aspect: PFV
+  mood: IND
+  transitivity: ''
+  affix_class: mang_retain
+  operations:
+    - {op: nasal_assim_prefix, value: "nang"}
+  notes: nambili (← nang+bili, retain pattern). nantahi.
+
+- voice: AV
+  aspect: IPFV
+  mood: IND
+  transitivity: ''
+  affix_class: mang_retain
+  operations:
+    - {op: cv_redup}
+    - {op: nasal_assim_prefix, value: "nang"}
+  notes: nambibili (← nang+CV-redup of bili → nang+bibili → nambibili)
+
+- voice: AV
+  aspect: CTPL
+  mood: IND
+  transitivity: ''
+  affix_class: mang_retain
+  operations:
+    - {op: cv_redup}
+    - {op: nasal_assim_prefix, value: "mang"}
+  notes: mambibili (← mang+CV-redup of bili)
 
 # === AV — Actor Voice (maka- abilitative class) ==========================
 #
@@ -496,7 +567,46 @@
     - {op: cv_redup}
     - {op: prefix, value: "ka"}
     - {op: prefix, value: "i"}
-  notes: ikakakain (CTPL — cv-redup + ka- prefix + i-)
+  notes: ikakakain (CTPL "long" form — cv-redup + ka- prefix + i-)
+
+# Phase 5e Commit 24: IV-REASON CTPL "short" form. Lifts the
+# Phase 5d Commit 9 paradigm-gap deferral. The Handbook of
+# Tagalog Verbs (Ramos & Schachter; data/tgl/dictionaries/)
+# lists RF (Reason Focus) Cont with two variants separated by
+# `/` — e.g., for vowel-initial root `ingay`: `ikakaingay /
+# ikaiingay` (line 4120 in OCR); for `init`: `ikakainit /
+# ikaiinit` (line 4161). The first variant has an extra CV-
+# redup; the second drops it.
+#
+# For consonant-initial bases like `kain`, the analogous
+# "short" form is `ikakain` (i + ka + kain, no further redup) —
+# distinct from the "long" `ikakakain` only in whether the
+# CV-redup fires. Both are valid IV-REASON CTPL surfaces.
+#
+# This cell uses operations `[prefix ka, prefix i]` (no
+# cv_redup), producing the "short" form. Same operations as
+# IV-CONVEY CTPL would produce the same surface for some bases
+# (e.g., `kain` → `ikakain`); the morph analyzer returns BOTH
+# analyses (IV-CONVEY CTPL and IV-REASON CTPL "short"), and
+# the chart parser explores both readings. For other bases,
+# the surfaces differ:
+#
+#   kain    → IV-CONVEY CTPL `ikakain`  + IV-REASON CTPL "short" `ikakain` (same surface)
+#           → IV-REASON CTPL "long" `ikakakain` (existing cell above)
+#   bili    → IV-CONVEY CTPL `ibibili`  + IV-REASON CTPL "short" `ikabili`
+#           → IV-REASON CTPL "long" `ikabibili` (existing cell above)
+#   sulat   → IV-CONVEY CTPL `isusulat` + IV-REASON CTPL "short" `ikasulat`
+#           → IV-REASON CTPL "long" `ikasusulat` (existing cell above)
+- voice: IV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: ika
+  feats: {APPL: REASON}
+  operations:
+    - {op: prefix, value: "ka"}
+    - {op: prefix, value: "i"}
+  notes: ikakain, ikabili (CTPL "short" form — ka- prefix + i-, no cv-redup)
 
 # --- pa-...-in monoclausal direct causative (CAUS=DIRECT, OV) -----------
 - voice: OV
@@ -622,3 +732,58 @@
     - {op: cv_redup}
     - {op: prefix, value: "mag"}
   notes: magpapakain
+
+# --- mag-...-an reciprocal / social (Phase 5e Commit 12) ----------------
+#
+# Schachter & Otanes 1972 §5.27 documents the ``mag-...-an`` pattern
+# as the canonical Tagalog reciprocal / social form: an action
+# performed cooperatively or mutually by a plural SUBJ. Examples:
+# ``nag-iyak-an`` "cried together / cried at each other";
+# ``nag-bigay-an`` "exchanged"; ``nag-kain-an`` "ate together".
+#
+# Phase 5e Commit 12 lifts this from the Phase 4 §7.2 SOC-as-
+# inventory-only deferral. The plan §10.1 Group D originally
+# flagged ``ka-...-an`` as the "reciprocal causative" affix, but
+# investigation against S&O 1972 + Ramos 1971 + R&B 1986 confirmed
+# that the well-attested reciprocal pattern is ``mag-...-an``
+# (``ka-...-an`` is more typically a noun-deriving pattern in
+# Tagalog and isn't a verbal voice/applicative). The implementation
+# uses the attested form rather than the speculative one.
+#
+# Cell-level feat ``MOOD=SOC`` lifts the SOC mood from inventory-
+# only status. Lex entries select these cells via
+# ``morph_constraints={"MOOD": "SOC"}``.
+- voice: AV
+  aspect: PFV
+  mood: SOC
+  transitivity: ''
+  affix_class: mag_an
+  feats: {MOOD: SOC, RECP: YES}
+  operations:
+    - {op: suffix, value: an}
+    - {op: prefix, value: "nag"}
+  notes: nagkainan, nagbigayan (mag- → nag- realis + -an reciprocal)
+
+- voice: AV
+  aspect: IPFV
+  mood: SOC
+  transitivity: ''
+  affix_class: mag_an
+  feats: {MOOD: SOC, RECP: YES}
+  operations:
+    - {op: cv_redup}
+    - {op: suffix, value: an}
+    - {op: prefix, value: "nag"}
+  notes: nagkakainan, nagbibigayan
+
+- voice: AV
+  aspect: CTPL
+  mood: SOC
+  transitivity: ''
+  affix_class: mag_an
+  feats: {MOOD: SOC, RECP: YES}
+  operations:
+    - {op: cv_redup}
+    - {op: suffix, value: an}
+    - {op: prefix, value: "mag"}
+  notes: magkakainan, magbibigayan

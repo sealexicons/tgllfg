@@ -185,6 +185,13 @@ class Analyzer:
             # the parser's non-conflict matcher.
             if p.pos in ("DET", "ADP"):
                 feats.setdefault("DEM", "NO")
+            # Phase 5e Commit 3: ADV / PREP particles auto-carry
+            # LEMMA so the grammar's `(↑) = ↓1` percolation in
+            # `AdvP → ADV` and `PP → PREP NP[CASE=DAT]` exposes the
+            # head's lemma at the AdvP / PP f-structure (mirroring
+            # the noun pattern from Phase 5c §8 follow-on Commit 6).
+            if p.pos in ("ADV", "PREP"):
+                feats.setdefault("LEMMA", p.surface)
             self._index.particles.setdefault(p.surface.lower(), []).append(
                 MorphAnalysis(
                     lemma=p.surface,
