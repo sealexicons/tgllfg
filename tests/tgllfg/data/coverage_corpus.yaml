@@ -3132,6 +3132,33 @@
 - text: Bumili ako ng dalawang medya.
   construction: 'fraction: cardinal + Spanish medya'
   expected: parse
+- text: Dalawa dagdag tatlo ay lima.
+  construction: 'arithmetic: addition (2+3=5)'
+  expected: parse
+- text: Apat dagdag lima ay siyam.
+  construction: 'arithmetic: addition (4+5=9)'
+  expected: parse
+- text: Lima dagdag lima ay sampu.
+  construction: 'arithmetic: addition (5+5=10)'
+  expected: parse
+- text: Sampu bawas tatlo ay pito.
+  construction: 'arithmetic: subtraction (10-3=7)'
+  expected: parse
+- text: Walo bawas lima ay tatlo.
+  construction: 'arithmetic: subtraction (8-5=3)'
+  expected: parse
+- text: Dalawa beses tatlo ay anim.
+  construction: 'arithmetic: multiplication (2*3=6)'
+  expected: parse
+- text: Lima beses dalawa ay sampu.
+  construction: 'arithmetic: multiplication (5*2=10)'
+  expected: parse
+- text: Anim hati sa dalawa ay tatlo.
+  construction: 'arithmetic: division (6/2=3) with sa-marked divisor'
+  expected: parse
+- text: Sampu hati sa lima ay dalawa.
+  construction: 'arithmetic: division (10/5=2)'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

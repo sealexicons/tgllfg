@@ -1379,6 +1379,26 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "fraction: ordinal + bahagi (1/4 = 4th part)", "parse")
     _add(out, "bumili ako ng dalawang medya",
          "fraction: cardinal + Spanish medya", "parse")
+    # Phase 5f Commit 9: arithmetic predicates (Group D).
+    _add(out, "dalawa dagdag tatlo ay lima",
+         "arithmetic: addition (2+3=5)", "parse")
+    _add(out, "apat dagdag lima ay siyam",
+         "arithmetic: addition (4+5=9)", "parse")
+    _add(out, "lima dagdag lima ay sampu",
+         "arithmetic: addition (5+5=10)", "parse")
+    _add(out, "sampu bawas tatlo ay pito",
+         "arithmetic: subtraction (10-3=7)", "parse")
+    _add(out, "walo bawas lima ay tatlo",
+         "arithmetic: subtraction (8-5=3)", "parse")
+    _add(out, "dalawa beses tatlo ay anim",
+         "arithmetic: multiplication (2*3=6)", "parse")
+    _add(out, "lima beses dalawa ay sampu",
+         "arithmetic: multiplication (5*2=10)", "parse")
+    _add(out, "anim hati sa dalawa ay tatlo",
+         "arithmetic: division (6/2=3) with sa-marked divisor",
+         "parse")
+    _add(out, "sampu hati sa lima ay dalawa",
+         "arithmetic: division (10/5=2)", "parse")
     return out
 
 

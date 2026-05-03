@@ -2202,6 +2202,81 @@ class Grammar:
             ],
         ))
 
+        # --- Phase 5f Commit 9: arithmetic predicates (Group D) -----
+        #
+        # Word-form arithmetic: ``Dalawa dagdag tatlo ay lima``
+        # "2+3=5", ``Sampu bawas tatlo ay pito`` "10-3=7",
+        # ``Dalawa beses tatlo ay anim`` "2*3=6", ``Anim hati sa
+        # dalawa ay tatlo`` "6/2=3". The PART operators (dagdag /
+        # bawas / beses / hati) are added in particles.yaml with
+        # an ``OP`` feature.
+        #
+        # F-structure shape (matrix S):
+        #   PRED       = 'ARITHMETIC <SUBJ>'
+        #   OP         = 'PLUS' | 'MINUS' | 'TIMES' | 'DIVIDE'
+        #   OPERAND_1  = the first cardinal's CARDINAL_VALUE
+        #   OPERAND_2  = the second cardinal's CARDINAL_VALUE
+        #   RESULT     = the result cardinal's CARDINAL_VALUE
+        #
+        # The constraining equation ``(↓2 OP) =c '...'`` enforces
+        # that the operator daughter actually has the right OP
+        # value (without the constraint, the non-conflict pattern
+        # matcher would accept any PART since OP / LINK /
+        # ASPECT_PART / DECIMAL_SEP don't share keys — same fix-
+        # pattern as Commit 6's PART[DECIMAL_SEP=YES] constraint).
+        #
+        # Plus / minus / times share a 5-daughter shape; division
+        # has 6 daughters because ``hati`` takes a ``sa``-marked
+        # divisor (``hati sa dalawa`` "divided by two"). The
+        # division operator's ``sa`` is a real DAT case marker, so
+        # the rule's third daughter is ``ADP[CASE=DAT]``.
+        for op_name in ("PLUS", "MINUS", "TIMES"):
+            rules.append(Rule(
+                "S",
+                [
+                    "NUM[CARDINAL=YES]",
+                    "PART",
+                    "NUM[CARDINAL=YES]",
+                    "PART[LINK=AY]",
+                    "NUM[CARDINAL=YES]",
+                ],
+                [
+                    "(↑ PRED) = 'ARITHMETIC'",
+                    f"(↑ OP) = '{op_name}'",
+                    "(↑ OPERAND_1) = ↓1 CARDINAL_VALUE",
+                    "(↑ OPERAND_2) = ↓3 CARDINAL_VALUE",
+                    "(↑ RESULT) = ↓5 CARDINAL_VALUE",
+                    f"(↓2 OP) =c '{op_name}'",
+                    "(↓1 CARDINAL) =c 'YES'",
+                    "(↓3 CARDINAL) =c 'YES'",
+                    "(↓5 CARDINAL) =c 'YES'",
+                ],
+            ))
+        # Division: ``X hati sa Y ay Z``. 6 daughters; the divisor
+        # carries DAT case via ``sa``.
+        rules.append(Rule(
+            "S",
+            [
+                "NUM[CARDINAL=YES]",
+                "PART",
+                "ADP[CASE=DAT]",
+                "NUM[CARDINAL=YES]",
+                "PART[LINK=AY]",
+                "NUM[CARDINAL=YES]",
+            ],
+            [
+                "(↑ PRED) = 'ARITHMETIC'",
+                "(↑ OP) = 'DIVIDE'",
+                "(↑ OPERAND_1) = ↓1 CARDINAL_VALUE",
+                "(↑ OPERAND_2) = ↓4 CARDINAL_VALUE",
+                "(↑ RESULT) = ↓6 CARDINAL_VALUE",
+                "(↓2 OP) =c 'DIVIDE'",
+                "(↓1 CARDINAL) =c 'YES'",
+                "(↓4 CARDINAL) =c 'YES'",
+                "(↓6 CARDINAL) =c 'YES'",
+            ],
+        ))
+
         # --- Phase 5b: multi-GEN-NP applicative frames (IV-BEN) ---
         #
         # Three-argument applicatives like ``Ipinaggawa niya ng silya

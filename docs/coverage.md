@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 1070 | 99.4% |
+| **parse**    | 1079 | 99.4% |
 | **fragment** |    4 |  0.4% |
 | **fail**     |    2 |  0.2% |
-| **TOTAL**    | 1076 |       |
+| **TOTAL**    | 1085 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -45,6 +45,7 @@ out-of-scope items documented below.
 | cardinal-percent   |     3 |        0 |    0 |     3 | 100% |
 | ordinal            |    13 |        0 |    0 |    13 | 100% |
 | fraction           |     9 |        0 |    0 |     9 | 100% |
+| arithmetic         |     9 |        0 |    0 |     9 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -340,6 +341,21 @@ mga aklat`` 1st-PL). The Phase 5f Commit 1 NUM-CARDINAL
 disambiguator branch is extended to also cover ``NUM[ORDINAL=YES]``
 so consonant-final ordinals (``ikaapat``, ``ikaanim``,
 ``ikasiyam``) can use the standalone ``na`` linker.
+
+### arithmetic (9 sentences, 100%)
+
+Phase 5f Commit 9: word-form arithmetic predicates (Group D).
+4 PART operators (``dagdag`` PLUS, ``bawas`` MINUS, ``beses``
+TIMES, ``hati`` DIVIDE) plus 4 S rules. Plus / minus / times
+share a 5-daughter shape (``X op Y ay Z``); division has 6
+daughters because ``hati`` takes a ``sa``-marked divisor
+(``hati sa Y`` "divided by Y"). F-structure: PRED='ARITHMETIC'
+(no argument list — arithmetic doesn't have a conventional
+SUBJ); OP, OPERAND_1, OPERAND_2, RESULT carried as features.
+Constraining equation ``(↓2 OP) =c '<OP>'`` per rule enforces
+the right operator. ``beses`` PART (TIMES) coexists with the
+existing ``beses`` NOUN (FREQUENCY, Phase 5f Commit 5) — both
+readings fire in their respective contexts.
 
 ### fraction (9 sentences, 100%)
 

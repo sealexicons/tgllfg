@@ -6668,6 +6668,110 @@ that the parser would treat as ambiguous on every input.
   semantic disambiguation between "room" and "quarter [of
   hour]" is a clock-construction concern. Deferred to Group E.
 
+## Phase 5f Commit 9: arithmetic predicates (Group D)
+
+**Date:** 2026-05-03. **Status:** active. 4 PART operators in
+lex + 4 S rules. Refs: plan §11.1 Group D; R&B 1986 §3
+(glances at this register); S&O 1972 doesn't cover the
+arithmetic-predicate register; Phase 5f Commits 1-8 (cardinals
+consumed unchanged).
+
+### Lex change
+
+4 PART entries added to ``data/tgl/particles.yaml`` with an
+``OP`` feature:
+
+* ``dagdag`` — OP=PLUS. Coexists with the existing ``dagdag``
+  VERB root (in ``data/tgl/roots.yaml``, "add to"); the bare
+  uninflected form is _UNK from the verbal pipeline (no
+  paradigm cell emits a bare form), so adding the PART entry
+  introduces no ambiguity in the verbal use cases (which
+  always carry a voice/aspect prefix or infix).
+* ``bawas`` — OP=MINUS. Same coexistence story as ``dagdag``.
+* ``beses`` — OP=TIMES. **Coexists with the existing**
+  ``beses`` **NOUN** with SEM_CLASS=FREQUENCY (Phase 5f
+  Commit 5). Both readings now exist in the morph index; the
+  PART reading fires in arithmetic-operator positions, the
+  NOUN reading in periphrastic-frequency NP positions. Same
+  coexistence pattern as ``na`` (LINK vs ASPECT_PART).
+* ``hati`` — OP=DIVIDE.
+
+### Grammar change
+
+4 new S rules:
+
+```
+S → NUM[CARDINAL=YES] PART NUM[CARDINAL=YES] PART[LINK=AY] NUM[CARDINAL=YES]
+Equations:
+  (↑ PRED) = 'ARITHMETIC'
+  (↑ OP) = '<OP>'                 # PLUS | MINUS | TIMES
+  (↑ OPERAND_1) = ↓1 CARDINAL_VALUE
+  (↑ OPERAND_2) = ↓3 CARDINAL_VALUE
+  (↑ RESULT) = ↓5 CARDINAL_VALUE
+  (↓2 OP) =c '<OP>'                # constraining: right operator
+  (↓1 CARDINAL) =c 'YES'
+  (↓3 CARDINAL) =c 'YES'
+  (↓5 CARDINAL) =c 'YES'
+```
+
+3 rules for plus / minus / times. Division has 6 daughters
+because ``hati`` takes a ``sa``-marked divisor:
+
+```
+S → NUM[CARDINAL=YES] PART ADP[CASE=DAT] NUM[CARDINAL=YES] PART[LINK=AY] NUM[CARDINAL=YES]
+Equations:
+  (↑ PRED) = 'ARITHMETIC'
+  (↑ OP) = 'DIVIDE'
+  (↑ OPERAND_1) = ↓1 CARDINAL_VALUE
+  (↑ OPERAND_2) = ↓4 CARDINAL_VALUE
+  (↑ RESULT) = ↓6 CARDINAL_VALUE
+  (↓2 OP) =c 'DIVIDE'
+  ...
+```
+
+### Why PRED='ARITHMETIC' (no argument list)
+
+Initial draft used ``'ARITHMETIC <SUBJ>'`` mirroring the
+predicative-cardinal rule from Commit 4. But arithmetic
+expressions have no conventional SUBJ — there's no NP
+argument that maps to SUBJ in the f-structure (the operands
+and result are CARDINAL_VALUE features, not NP arguments).
+Using ``<SUBJ>`` triggered the LFG Subject Condition and
+Completeness checks ("PRED 'ARITHMETIC' requires 'SUBJ' but
+it is not present"). Dropping the argument list produces a
+valid LFG f-structure: PRED is just a label, no governable GFs
+required.
+
+### Why constraining equations on every operand
+
+The pattern matcher is non-conflict — without
+``(↓1 CARDINAL) =c 'YES'``, a NUM[ORDINAL=YES] (Phase 5f
+Commit 7) could match the ``NUM[CARDINAL=YES]`` daughter
+slot. The constraining equations enforce CARDINAL-only at
+each operand position. Same fix-pattern as Commit 6's
+PART[DECIMAL_SEP=YES] constraint and Commit 7's
+NUM[ORDINAL=YES] constraint.
+
+### Out of scope for this commit
+
+* Symbol-form arithmetic (``2 + 3 = 5``, ``10 - 3 = 7``,
+  etc.) — tokenizer expansion track; §18 out-of-scope.
+* Spanish-borrowed ``multiplikado`` synonym for ``beses``
+  (TIMES). Less common than the native form; lex-only
+  follow-on if corpus pressure surfaces it.
+* Compound expressions (``Dalawa dagdag tatlo dagdag apat ay
+  siyam`` "2+3+4=9") — would need a recursive NUMOP rule;
+  deferred.
+* Decimal operands (``Dos punto singko dagdag isa ay tatlo
+  punto singko`` "2.5+1=3.5") — the decimal NUM from Commit
+  6 satisfies ``NUM[CARDINAL=YES]`` and CARDINAL_VALUE only
+  records the integer part, so this would partially work
+  (operand_1=2 not 2.5). Defer until full decimal-value
+  representation lands.
+* Ordinal arithmetic (no such thing in standard usage; the
+  ordinal/cardinal disjointness from Commit 7 prevents it
+  structurally).
+
 ### Side change (Commit 4): `synonyms` lex field + ``aklat`` noun
 
 This commit adds a ``synonyms: list[str]`` field to the ``Root``
