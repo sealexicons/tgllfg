@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 1079 | 99.4% |
+| **parse**    | 1093 | 99.5% |
 | **fragment** |    4 |  0.4% |
 | **fail**     |    2 |  0.2% |
-| **TOTAL**    | 1085 |       |
+| **TOTAL**    | 1099 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -46,6 +46,7 @@ out-of-scope items documented below.
 | ordinal            |    13 |        0 |    0 |    13 | 100% |
 | fraction           |     9 |        0 |    0 |     9 | 100% |
 | arithmetic         |     9 |        0 |    0 |     9 | 100% |
+| clock-time         |    14 |        0 |    0 |    14 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -341,6 +342,21 @@ mga aklat`` 1st-PL). The Phase 5f Commit 1 NUM-CARDINAL
 disambiguator branch is extended to also cover ``NUM[ORDINAL=YES]``
 so consonant-final ordinals (``ikaapat``, ``ikaanim``,
 ``ikasiyam``) can use the standalone ``na`` linker.
+
+### clock-time (14 sentences, 100%)
+
+Phase 5f Commit 10: Spanish-borrowed clock-time NOUNs 1-12
+(Group E item 1). 12 single-token lex entries — ``alauna`` (1
+o'clock, ``ala-`` vowel-initial form), ``alasdos`` ...
+``alasdose`` (everything else uses ``alas-``). Each NOUN with
+``SEM_CLASS=TIME`` and ``TIME_VALUE``. Used as DAT-NP for
+time adjuncts (``Pumunta ako sa alasotso`` "I went at 8
+o'clock") via the existing intransitive-AV ADJUNCT routing —
+no new grammar required. Hyphenated orthography (``ala-una``
+/ ``alas-otso``) requires a tokenizer pre-pass; deferred
+follow-on. Other Group E items (time-of-day modifiers, minute
+composition, native time deictics, ``mga`` approximation) are
+follow-on commits within Group EFG.
 
 ### arithmetic (9 sentences, 100%)
 

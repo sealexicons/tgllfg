@@ -6772,6 +6772,73 @@ NUM[ORDINAL=YES] constraint.
   ordinal/cardinal disjointness from Commit 7 prevents it
   structurally).
 
+## Phase 5f Commit 10: clock-time NOUNs (Group E item 1)
+
+**Date:** 2026-05-03. **Status:** active. Lex-only (12 entries);
+no grammar changes. Refs: plan §11.1 Group E item 1; R&G 1981;
+S&O 1972 §6.13.
+
+### Lex change
+
+12 NOUN entries added to ``data/tgl/roots.yaml`` for the
+Spanish-borrowed clock-time terms:
+
+* ``alauna`` (1 o'clock — special vowel-initial contraction:
+  ``ala-`` + ``una`` not ``alas-uno``).
+* ``alasdos`` (2), ``alastres`` (3), ``alaskuwatro`` (4),
+  ``alassingko`` (5), ``alassais`` (6), ``alassiyete`` (7),
+  ``alasotso`` (8), ``alasnuwebe`` (9), ``alasdies`` (10),
+  ``alasonse`` (11), ``alasdose`` (12).
+
+Each NOUN with ``SEM_CLASS: TIME`` and ``TIME_VALUE``: the
+hour as a string ("1" through "12").
+
+### Why no grammar change
+
+Clock-time NPs use the existing NP-from-N rules (``NP[CASE=DAT]
+→ ADP[CASE=DAT] N``) with ``sa`` as the DAT marker. Sentence-
+level attachment is via the standard intransitive-AV ADJUNCT
+routing. ``Pumunta ako sa alasotso`` "I went at 8 o'clock"
+parses with ``alasotso`` as the head N of a sa-marked DAT NP,
+attached to the matrix as ADJUNCT.
+
+### Orthography choice: single-token
+
+The standard orthography for clock-time terms is hyphenated
+(``ala-una``, ``alas-otso``, ``alas-dose``). The current
+tokenizer splits on hyphens (``alas-otso`` → ``alas`` + ``-`` +
+``otso``), so the standard orthography would require either:
+
+* A tokenizer pre-pass that recognises and merges
+  ``alas?-NUM`` patterns into a single token before morph.
+* A grammar rule that consumes ``alas`` + hyphen + cardinal as
+  a single TIME constituent.
+
+Both are deferred to a follow-on commit. This commit uses
+single-token forms (``alauna`` / ``alasotso`` / etc.) — a real
+attested orthographic variant in informal text — that work with
+the existing tokenizer unchanged.
+
+### Out of scope for this commit (deferred to follow-on Group E
+commits)
+
+* Hyphenated orthography (``ala-una`` / ``alas-otso``).
+* Time-of-day modifiers (``alasotso ng umaga`` "8 in the
+  morning"; ``alasotso ng hapon`` "8 in the afternoon"). Needs
+  ``umaga`` / ``hapon`` / ``gabi`` / ``tanghali`` /
+  ``madaling-araw`` lex with SEM_CLASS=TIME plus a small
+  modifier rule.
+* Minute composition: ``alasotso y medya`` 8:30, ``alasotso
+  y singko`` 8:05, ``alasotso menos singko`` 7:55. Needs
+  ``y`` and ``menos`` PART entries plus a
+  ``TIME → CLOCK [y|menos] NUM`` rule.
+* Native time deictics: ``kanina`` (earlier today), ``mamaya``
+  (later today), ``tanghali`` (noon), ``madaling-araw`` (dawn).
+  ``ngayon``, ``bukas``, ``kahapon``, ``mamaya`` already exist
+  as ADV; the missing ones plus a uniform SEM_CLASS=TIME tag.
+* ``mga`` time approximation (``mga alasotso`` "around 8
+  o'clock") — ``mga`` itself isn't in lex yet.
+
 ### Side change (Commit 4): `synonyms` lex field + ``aklat`` noun
 
 This commit adds a ``synonyms: list[str]`` field to the ``Root``

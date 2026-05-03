@@ -1547,6 +1547,77 @@
   pos: NOUN
   gloss: part
   feats: {SEM_CLASS: PART}
+
+# === Phase 5f Commit 10: clock-time NOUNs (Group E item 1) ===============
+# Spanish-borrowed clock-time terms 1-12. ``ala-`` (vowel-initial,
+# only ``una`` for 1 o'clock) vs ``alas-`` (everything else).
+# Single-token forms — the standard hyphenated orthography
+# (``ala-una`` / ``alas-dos`` / etc.) requires a tokenizer pre-pass
+# (the tokenizer splits hyphens), deferred follow-on. Multi-token
+# variants (``ala una`` / ``alas dos``) are non-standard.
+#
+# SEM_CLASS=TIME marks them for the LMT classifier and downstream
+# consumers (sa-NP routing, future temporal-frame ADJUNCT slot).
+# TIME_VALUE records the hour (1-12). Used as:
+#
+# * DAT-NP for time adjunct: ``Pumunta ako sa alasotso.``
+#   "I went at 8 o'clock." (sa-NP via existing rules.)
+# * Bare-NP for time-stating: ``Alasotso na.`` "It's 8 o'clock
+#   now." (verbless, with adv enclitic.)
+# * Compositional with minute (``alasotso y medya`` 8:30,
+#   ``alasotso menos singko`` 7:55) — minute composition is a
+#   deferred follow-on.
+# * With time-of-day modifier (``alasotso ng umaga`` "8 in the
+#   morning") — time-of-day modifiers are a separate follow-on.
+# (R&G 1981; S&O 1972 §6.13.)
+- citation: alauna
+  pos: NOUN
+  gloss: one o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "1"}
+- citation: alasdos
+  pos: NOUN
+  gloss: two o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "2"}
+- citation: alastres
+  pos: NOUN
+  gloss: three o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "3"}
+- citation: alaskuwatro
+  pos: NOUN
+  gloss: four o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "4"}
+- citation: alassingko
+  pos: NOUN
+  gloss: five o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "5"}
+- citation: alassais
+  pos: NOUN
+  gloss: six o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "6"}
+- citation: alassiyete
+  pos: NOUN
+  gloss: seven o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "7"}
+- citation: alasotso
+  pos: NOUN
+  gloss: eight o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "8"}
+- citation: alasnuwebe
+  pos: NOUN
+  gloss: nine o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "9"}
+- citation: alasdies
+  pos: NOUN
+  gloss: ten o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "10"}
+- citation: alasonse
+  pos: NOUN
+  gloss: eleven o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "11"}
+- citation: alasdose
+  pos: NOUN
+  gloss: twelve o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "12"}
 - citation: lapis
   pos: NOUN
   gloss: pencil

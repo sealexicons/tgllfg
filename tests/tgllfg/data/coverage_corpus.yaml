@@ -3159,6 +3159,48 @@
 - text: Sampu hati sa lima ay dalawa.
   construction: 'arithmetic: division (10/5=2)'
   expected: parse
+- text: Pumunta ako sa alauna.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa alasdos.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa alastres.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa alaskuwatro.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa alassingko.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa alassais.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa alassiyete.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa alasotso.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa alasnuwebe.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa alasdies.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa alasonse.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa alasdose.
+  construction: 'clock-time: alas-N as DAT adjunct'
+  expected: parse
+- text: Kumain ako sa alauna.
+  construction: 'clock-time: alas-N as DAT adjunct (different verb)'
+  expected: parse
+- text: Natulog ako sa alasdose.
+  construction: 'clock-time: alas-N at midnight (NVOL ABIL)'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

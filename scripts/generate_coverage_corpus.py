@@ -1399,6 +1399,19 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "parse")
     _add(out, "sampu hati sa lima ay dalawa",
          "arithmetic: division (10/5=2)", "parse")
+    # Phase 5f Commit 10: clock-time NOUNs (Group E item 1).
+    clock_times = [
+        "alauna", "alasdos", "alastres", "alaskuwatro", "alassingko",
+        "alassais", "alassiyete", "alasotso", "alasnuwebe", "alasdies",
+        "alasonse", "alasdose",
+    ]
+    for ct in clock_times:
+        _add(out, f"pumunta ako sa {ct}",
+             "clock-time: alas-N as DAT adjunct", "parse")
+    _add(out, "kumain ako sa alauna",
+         "clock-time: alas-N as DAT adjunct (different verb)", "parse")
+    _add(out, "natulog ako sa alasdose",
+         "clock-time: alas-N at midnight (NVOL ABIL)", "parse")
     return out
 
 
