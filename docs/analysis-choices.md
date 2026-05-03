@@ -5775,3 +5775,114 @@ Kumain ang bata.              → MOOD=IND, no POLARITY/CLAUSE-MOOD (unchanged)
   Tracked in plan §10.1 Group F (already lifted at the SOC
   end via Commit 21; the huwag side is distinct).
 
+## Phase 5e Commit 26: comparative ``parang``
+
+**Date:** 2026-05-02. **Status:** active. Lifts the Phase 5d
+Commit 1 deferral. The existing ``parang`` lex entry covered
+the evidential reading (``Parang umuulan`` "It seems like it's
+raining" — ``parang + clause``). The comparative reading
+(``Parang aso ang bata`` "The child is like a dog" —
+``parang + bare-N + ang-NP``) is structurally distinct and
+gets its own grammar rule in this commit.
+
+### Lex change
+
+``parang`` (data/tgl/particles.yaml) gains a ``COMPARATIVE:
+"YES"`` feature. The string-quoted value avoids the YAML
+boolean trap (``YES`` parses as Python ``True``, which then
+gets filtered out by ``_lex_equations`` since it's not a
+string — same gotcha that surfaced in Phase 5e Commit 17 with
+``DEM`` and Phase 5e Commit 25 with the constraining-equation
+match for huwag).
+
+``tila`` keeps only ``CTRL_CLASS=RAISING_BARE`` — no
+comparative reading in standard usage. ``Tila aso ang bata``
+correctly fails to parse (no rule fits the surface, since the
+constraining equation in the comparative rule excludes it).
+
+### Grammar change
+
+A new S rule mirroring the existing Phase 5d Commit 1
+evidential rule's category (``V[CTRL_CLASS=RAISING_BARE]``):
+
+```python
+S → V[COMPARATIVE=YES, CTRL_CLASS=RAISING_BARE] N NP[CASE=NOM]
+    (↑ PRED) = 'LIKE <SUBJ, OBJ>'
+    (↑ OBJ) = ↓2
+    (↑ SUBJ) = ↓3
+    (↓1 COMPARATIVE) =c 'YES'
+```
+
+The constraining equation excludes ``tila`` — the category-
+pattern matcher (``compile.py::matches``) is non-conflict, so
+``V[COMPARATIVE=YES, CTRL_CLASS=RAISING_BARE]`` would also
+match ``tila`` (RAISING_BARE without COMPARATIVE) by absorption
+without the explicit constraint.
+
+The bare ``N`` daughter projects PRED + LEMMA via the existing
+``N → NOUN`` rule, so OBJ ends up with the NOUN's lemma and a
+NOUN-style PRED.
+
+### F-structure shape
+
+```
+PRED  = 'LIKE <SUBJ, OBJ>'
+SUBJ  = the comparee (the ang-NP)
+OBJ   = the standard (the bare N)
+```
+
+For ``Parang aso ang bata.``:
+
+```
+PRED = 'LIKE <SUBJ, OBJ>'
+SUBJ = {LEMMA: 'bata', CASE: 'NOM', ...}
+OBJ  = {LEMMA: 'aso', PRED: 'NOUN(↑ FORM)'}
+```
+
+### Why GEN-marked OBJ vs bare N
+
+In Tagalog, a comparative complement isn't marked with ``ng``
+(GEN). It's a bare nominal. The existing OBJ slot (which is
+typically GEN-marked) is reused here as a structural slot for
+the comparison standard, without case-marking constraints.
+This is consistent with how comparatives work cross-
+linguistically (the standard of comparison often has a
+distinct case marking, sometimes none).
+
+An alternative would be a typed slot like ``OBL-LIKE`` or
+``COMP-STD``. Reusing OBJ keeps the f-structure schema simple
+and avoids introducing yet another GF for one construction.
+If future work distinguishes the comparative complement from
+ordinary OBJ in semantic-role assignment, switching to a
+typed slot is a one-line change.
+
+### Composition
+
+The comparative composes naturally:
+
+* **Negation**: ``Hindi parang aso ang bata.`` — POLARITY=NEG
+  is overlaid on the matrix via the standard NEG rule.
+* **Relativization on SUBJ**: ``Parang aso ang batang
+  kumain.`` — the SUBJ NP can carry an internal RC.
+
+### Out-of-scope (deferred)
+
+* **Adjective-modified standard**: ``Parang asong matalino
+  ang bata.`` "The child is like a smart dog." — needs the
+  Phase 5g adjective machinery for ``asong matalino``. Not
+  parsed here.
+* **Determiner-marked standard**: ``Parang ang aso ang
+  bata.`` — non-standard surface; the standard form uses bare
+  N.
+* **Comparative + clause as standard**: ``Parang umiiyak ang
+  bata.`` "The child is like (someone who is) crying." This
+  is captured by the existing evidential reading
+  (``parang + clause``); whether comparative-vs-evidential is
+  a separable distinction with overt clauses is a deeper
+  semantic question deferred to v1+ pragmatic analysis.
+* **``kasing-`` / ``sing-`` equative comparatives**
+  (``kasingganda ng aso``). Phase 5h coverage (comparison &
+  degree) per plan §12.2.
+* **``mas`` / ``pinaka-`` comparatives** (``mas matalino``,
+  ``pinakamatalino``). Phase 5h.
+

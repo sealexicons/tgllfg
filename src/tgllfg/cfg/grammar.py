@@ -1907,6 +1907,52 @@ class Grammar:
                 ),
             ))
 
+        # --- Phase 5e Commit 26: comparative `parang` ---
+        #
+        # ``Parang aso ang bata.`` "The child is like a dog." The
+        # comparative reading of `parang` is structurally distinct
+        # from the evidential reading (`Parang umuulan` "It seems
+        # like it's raining" — Phase 5d Commit 1). The comparative
+        # form takes a bare nominal as the standard of comparison
+        # and an ang-NP as the comparee.
+        #
+        # F-structure shape:
+        #
+        #   PRED = 'LIKE <SUBJ, OBJ>'
+        #   SUBJ = the comparee (the ang-NP)
+        #   OBJ  = the standard (the bare N)
+        #
+        # The bare N projects PRED + LEMMA via the existing
+        # ``N → NOUN`` rule, so OBJ ends up with the NOUN's lemma
+        # and a NOUN-style PRED.
+        #
+        # ``parang`` and ``tila`` are typed as ``V`` (per
+        # ``particles.yaml`` ``pos: VERB``); the existing Phase 5d
+        # Commit 1 evidential rule uses ``V[CTRL_CLASS=RAISING_BARE]``,
+        # so this rule mirrors that category.
+        #
+        # The constraining equation ``(↓1 COMPARATIVE) =c 'YES'``
+        # restricts to ``parang`` only — the category-pattern
+        # matcher (``compile.py::matches``) is non-conflict, so
+        # ``V[COMPARATIVE=YES, CTRL_CLASS=RAISING_BARE]`` would
+        # also match ``tila`` (RAISING_BARE without COMPARATIVE) by
+        # absorption without the explicit constraint.
+        #
+        # The existing evidential rule (Phase 5d Commit 1) for
+        # ``parang + clause`` continues to fire on ``Parang kumain
+        # ang bata`` (parang followed by V, not bare N) — different
+        # rule shape, no competition.
+        rules.append(Rule(
+            "S",
+            ["V[COMPARATIVE=YES, CTRL_CLASS=RAISING_BARE]", "N", "NP[CASE=NOM]"],
+            [
+                "(↑ PRED) = 'LIKE <SUBJ, OBJ>'",
+                "(↑ OBJ) = ↓2",
+                "(↑ SUBJ) = ↓3",
+                "(↓1 COMPARATIVE) =c 'YES'",
+            ],
+        ))
+
         # --- Phase 5b: multi-GEN-NP applicative frames (IV-BEN) ---
         #
         # Three-argument applicatives like ``Ipinaggawa niya ng silya

@@ -1165,6 +1165,32 @@ def _classic_corpus() -> list[dict[str, Any]]:
     ]
 
 
+def _comparative_corpus() -> list[dict[str, Any]]:
+    """Phase 5e Commit 26: comparative ``parang`` (``parang + N
+    + ang-NP``, "X is like Y"). Distinct from the evidential
+    ``parang + clause`` reading (Phase 5d Commit 1)."""
+    out: list[dict[str, Any]] = []
+    for std, comparee in [
+        ("aso", "ang bata"),
+        ("bata", "ang nanay"),
+        ("nanay", "ang bata"),
+        ("aso", "si Juan"),
+        ("aso", "ang isda"),
+    ]:
+        _add(out, f"parang {std} {comparee}",
+             "comparative: parang + N + ang-NP",
+             "parse")
+    # NEG composition
+    _add(out, "hindi parang aso ang bata",
+         "comparative: parang + N + ang-NP, NEG",
+         "parse")
+    # Numeral-modified standard
+    _add(out, "parang isang aso ang bata",
+         "comparative: parang + isang + N + ang-NP",
+         "parse")
+    return out
+
+
 def _all_corpus() -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     out.extend(_voice_aspect_corpus())
@@ -1175,6 +1201,7 @@ def _all_corpus() -> list[dict[str, Any]]:
     out.extend(_control_corpus())
     out.extend(_applicative_causative_corpus())
     out.extend(_demonstrative_possessive_corpus())
+    out.extend(_comparative_corpus())
     out.extend(_robustness_corpus())
     out.extend(_classic_corpus())
     return out

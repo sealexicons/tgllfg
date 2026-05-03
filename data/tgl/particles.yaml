@@ -158,9 +158,16 @@
 # form for V[CTRL_CLASS=RAISING]. `yata` "supposedly" is also
 # evidential but is a Wackernagel 2P clitic in Tagalog (already
 # seeded as PART[is_clitic=true] below) — not a raising verb.
+# Phase 5e Commit 26: parang carries an extra COMPARATIVE feature
+# distinguishing the comparative reading (`Parang aso ang bata.`
+# "The child is like a dog") from tila's evidential-only reading.
+# Both keep CTRL_CLASS=RAISING_BARE for the existing evidential
+# (Phase 5d Commit 1) form `Parang umuulan` / `Tila umuulan`. The
+# comparative grammar rule (cfg/grammar.py) constrains on
+# `(↓1 COMPARATIVE) =c 'YES'` to fire only on parang (not tila).
 - surface: parang
   pos: VERB
-  feats: {CTRL_CLASS: RAISING_BARE}
+  feats: {CTRL_CLASS: RAISING_BARE, COMPARATIVE: "YES"}
 - surface: tila
   pos: VERB
   feats: {CTRL_CLASS: RAISING_BARE}

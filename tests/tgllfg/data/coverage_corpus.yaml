@@ -2774,6 +2774,27 @@
 - text: Tumakbo ang nanay iba.
   construction: 'quantifier: floated iba'
   expected: parse
+- text: Parang aso ang bata.
+  construction: 'comparative: parang + N + ang-NP'
+  expected: parse
+- text: Parang bata ang nanay.
+  construction: 'comparative: parang + N + ang-NP'
+  expected: parse
+- text: Parang nanay ang bata.
+  construction: 'comparative: parang + N + ang-NP'
+  expected: parse
+- text: Parang aso si Juan.
+  construction: 'comparative: parang + N + ang-NP'
+  expected: parse
+- text: Parang aso ang isda.
+  construction: 'comparative: parang + N + ang-NP'
+  expected: parse
+- text: Hindi parang aso ang bata.
+  construction: 'comparative: parang + N + ang-NP, NEG'
+  expected: parse
+- text: Parang isang aso ang bata.
+  construction: 'comparative: parang + isang + N + ang-NP'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment
