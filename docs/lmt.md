@@ -355,8 +355,6 @@ specific GFs that disagreed.
 
 ## See also
 
-* `~/.claude/plans/tgllfg-evolution.md` §8 — the plan section
-  that motivated this implementation.
 * `docs/analysis-choices.md` — Phase 5 §8 LMT entry for the
   analytical decisions (OBJ-θ upgrade, role-inventory augmentation,
   OBL-X classification approach, diagnostic promotion policy).
