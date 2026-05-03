@@ -1644,6 +1644,97 @@
   pos: NOUN
   gloss: afternoon
   feats: {SEM_CLASS: TIME}
+
+# === Phase 5f Commit 13: Spanish month names (Group F item 1) ============
+# 12 Spanish-borrowed month names. SEM_CLASS=MONTH marks them
+# for the LMT classifier and feeds the Phase 5f Commit 13
+# date-of-week PP rule (PP → PART[TIME_FRAME] N with
+# (↓2 SEM_CLASS) =c 'MONTH'). Also used in date formulas
+# (``ang ikalimang araw ng Enero`` "the fifth day of January")
+# via the existing Phase 4 §7.8 NP-internal possessive rule.
+- citation: enero
+  pos: NOUN
+  gloss: January
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "1"}
+- citation: pebrero
+  pos: NOUN
+  gloss: February
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "2"}
+- citation: marso
+  pos: NOUN
+  gloss: March
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "3"}
+- citation: abril
+  pos: NOUN
+  gloss: April
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "4"}
+- citation: mayo
+  pos: NOUN
+  gloss: May
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "5"}
+- citation: hunyo
+  pos: NOUN
+  gloss: June
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "6"}
+- citation: hulyo
+  pos: NOUN
+  gloss: July
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "7"}
+- citation: agosto
+  pos: NOUN
+  gloss: August
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "8"}
+- citation: setyembre
+  pos: NOUN
+  gloss: September
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "9"}
+- citation: oktubre
+  pos: NOUN
+  gloss: October
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "10"}
+- citation: nobyembre
+  pos: NOUN
+  gloss: November
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "11"}
+- citation: disyembre
+  pos: NOUN
+  gloss: December
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "12"}
+
+# === Phase 5f Commit 13: day-of-week names (Group F item 2) ==============
+# 7 day-of-week names — Spanish-borrowed (Lunes, Martes,
+# Miyerkules, Huwebes, Biyernes, Sabado) and native (Linggo).
+# SEM_CLASS=DAY marks them for the LMT classifier and feeds
+# the Phase 5f Commit 13 date-of-week PP rule. Also work as
+# DAT-NP via existing rules (``sa Lunes`` "on Monday").
+- citation: lunes
+  pos: NOUN
+  gloss: Monday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "1"}
+- citation: martes
+  pos: NOUN
+  gloss: Tuesday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "2"}
+- citation: miyerkules
+  pos: NOUN
+  gloss: Wednesday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "3"}
+- citation: huwebes
+  pos: NOUN
+  gloss: Thursday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "4"}
+- citation: biyernes
+  pos: NOUN
+  gloss: Friday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "5"}
+- citation: sabado
+  pos: NOUN
+  gloss: Saturday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "6"}
+  # ``linggo`` (Sunday / week) lives in its existing entry below;
+  # SEM_CLASS=DAY added there to avoid duplicating the surface
+  # (the morph analyzer collapses duplicate (lemma, pos) entries
+  # — see Phase 5f Commit 12 kuwarto deferral memo).
 - citation: lapis
   pos: NOUN
   gloss: pencil
@@ -1703,6 +1794,7 @@
 - citation: linggo
   pos: NOUN
   gloss: week, Sunday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "7"}
 
 - citation: pera
   pos: NOUN

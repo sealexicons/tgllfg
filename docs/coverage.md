@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 1108 | 99.5% |
+| **parse**    | 1132 | 99.5% |
 | **fragment** |    4 |  0.4% |
 | **fail**     |    2 |  0.2% |
-| **TOTAL**    | 1114 |       |
+| **TOTAL**    | 1138 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -49,6 +49,8 @@ out-of-scope items documented below.
 | clock-time         |    14 |        0 |    0 |    14 | 100% |
 | time-of-day        |     8 |        0 |    0 |     8 | 100% |
 | minute             |     7 |        0 |    0 |     7 | 100% |
+| date               |    20 |        0 |    0 |    20 | 100% |
+| mga                |     4 |        0 |    0 |     4 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -344,6 +346,34 @@ mga aklat`` 1st-PL). The Phase 5f Commit 1 NUM-CARDINAL
 disambiguator branch is extended to also cover ``NUM[ORDINAL=YES]``
 so consonant-final ordinals (``ikaapat``, ``ikaanim``,
 ``ikasiyam``) can use the standalone ``na`` linker.
+
+### mga (4 sentences, 100%)
+
+Phase 5f Commit 14: ``mga`` time approximation (Group E
+item 3). The Tagalog plural / approximator particle ``mga``
+takes a TIME-class N and produces an approximated time
+(``mga alasotso`` "around 8 o'clock"). One new N rule
+(``N → PART N`` with constraining equations on
+PLURAL_MARKER and SEM_CLASS=TIME). Plural marking on regular
+nouns and cardinal approximation use the same ``mga`` lex
+entry but are separate constructions; deferred follow-ons.
+
+### date (20 sentences, 100%)
+
+Phase 5f Commit 13: dates (Group F). 12 Spanish month NOUNs
+(SEM_CLASS=MONTH) + 7 day-of-week NOUNs (SEM_CLASS=DAY) +
+``tuwing`` (PERIODIC) and ``noong`` (PAST) PARTs. New PP rule
+``PP → PART N`` (3 SEM_CLASS variants for DAY/TIME/MONTH) and
+new clause-final S rule ``S → S PP`` with TIME_FRAME
+existential constraint (closes part of the Phase 5e Commit 3
+deferral on bare PP placement, scoped to TIME_FRAME PPs only).
+Date-of-week with ``sa`` (``sa Lunes`` "on Monday") uses the
+existing DAT-NP rule. Date formula (``ang ikalimang araw ng
+Enero``) composes from existing rules — ordinal-NP-modifier
+(Commit 7) on ``araw`` + Phase 4 §7.8 NP-internal possessive
+on ``ng Enero``. Day-month abbreviated form (``Mayo 5``) and
+elided-N date formula (``ikalima ng Enero``) deferred —
+require digit tokenizer / ordinal-as-N rule.
 
 ### minute (7 sentences, 100%)
 

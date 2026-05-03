@@ -3246,6 +3246,78 @@
 - text: Pumunta ako sa alasotso menos dies.
   construction: 'minute: clock + menos + cardinal (7:50)'
   expected: parse
+- text: Pumunta ako sa lunes.
+  construction: 'date: sa + day-of-week as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa martes.
+  construction: 'date: sa + day-of-week as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa miyerkules.
+  construction: 'date: sa + day-of-week as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa huwebes.
+  construction: 'date: sa + day-of-week as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa biyernes.
+  construction: 'date: sa + day-of-week as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa sabado.
+  construction: 'date: sa + day-of-week as DAT adjunct'
+  expected: parse
+- text: Pumunta ako sa linggo.
+  construction: 'date: sa + day-of-week as DAT adjunct'
+  expected: parse
+- text: Pumunta ako tuwing lunes.
+  construction: 'date: tuwing + day-of-week as PP'
+  expected: parse
+- text: Pumunta ako tuwing martes.
+  construction: 'date: tuwing + day-of-week as PP'
+  expected: parse
+- text: Pumunta ako tuwing miyerkules.
+  construction: 'date: tuwing + day-of-week as PP'
+  expected: parse
+- text: Pumunta kami noong enero.
+  construction: 'date: noong + month as PP'
+  expected: parse
+- text: Pumunta kami noong pebrero.
+  construction: 'date: noong + month as PP'
+  expected: parse
+- text: Pumunta kami noong marso.
+  construction: 'date: noong + month as PP'
+  expected: parse
+- text: Pumunta kami noong agosto.
+  construction: 'date: noong + month as PP'
+  expected: parse
+- text: Pumunta kami noong disyembre.
+  construction: 'date: noong + month as PP'
+  expected: parse
+- text: Pumunta ako tuwing umaga.
+  construction: 'date: tuwing + TIME as PP'
+  expected: parse
+- text: Pumunta ako noong umaga.
+  construction: 'date: noong + TIME as PP'
+  expected: parse
+- text: Pumunta ako sa ikalimang araw ng enero.
+  construction: 'date: ordinal + araw + ng + month (date formula)'
+  expected: parse
+- text: Pumunta ako sa unang araw ng disyembre.
+  construction: 'date: ordinal + araw + ng + month (date formula)'
+  expected: parse
+- text: Tuwing lunes ay pumunta ako.
+  construction: 'date: tuwing-PP ay-fronted'
+  expected: parse
+- text: Pumunta ako sa mga alasotso.
+  construction: 'mga: time approximation (around 8 o''clock)'
+  expected: parse
+- text: Pumunta ako sa mga alauna.
+  construction: 'mga: time approximation (around 1 o''clock)'
+  expected: parse
+- text: Pumunta ako sa mga alasdose.
+  construction: 'mga: time approximation (around 12 o''clock)'
+  expected: parse
+- text: Kumain ako sa mga alasotso.
+  construction: 'mga: time approximation with kain verb'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

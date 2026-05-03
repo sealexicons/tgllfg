@@ -7026,6 +7026,172 @@ case.
   — same NP-from-N limitation as cardinal-modifier features
   from Commit 1.
 
+## Phase 5f Commit 13: dates (Group F)
+
+**Date:** 2026-05-03. **Status:** active. 19 NOUN entries +
+2 PART entries + 4 grammar rules (3 PP variants + 1 S rule).
+Refs: plan §11.1 Group F; S&O 1972 §6.13; Phase 5f Commits 7
+(ordinals) + 11 (time deictics).
+
+### Lex change
+
+**Months** (data/tgl/roots.yaml): 12 Spanish-borrowed month
+names (``enero`` ... ``disyembre``) as NOUN with
+``SEM_CLASS: MONTH`` and ``MONTH_VALUE`` (1-12).
+
+**Days of week** (data/tgl/roots.yaml): 7 day-of-week NOUNs
+— Spanish-borrowed (``lunes``, ``martes``, ``miyerkules``,
+``huwebes``, ``biyernes``, ``sabado``) and native
+(``linggo``). All NOUN with ``SEM_CLASS: DAY`` and
+``DAY_VALUE`` (1-7). The existing ``linggo`` entry was
+updated in place to add SEM_CLASS=DAY (rather than adding a
+duplicate, which the morph analyzer collapses — see Phase 5f
+Commit 12 kuwarto polysemy memo).
+
+**Temporal-frame PARTs** (data/tgl/particles.yaml):
+
+* ``tuwing`` (every) — PART with ``TIME_FRAME: PERIODIC``.
+  Introduces a periodic temporal-frame PP.
+* ``noong`` (last / past) — PART with ``TIME_FRAME: PAST``.
+  Introduces a past temporal-frame PP.
+
+### Grammar change
+
+**3 PP rules** (gated by SEM_CLASS):
+
+```
+PP → PART N
+Equations:
+  (↑) = ↓1
+  (↑ OBJ) = ↓2
+  (↓1 TIME_FRAME)              # existential — PART has TIME_FRAME
+  (↓2 SEM_CLASS) =c '<X>'      # X in {DAY, TIME, MONTH}
+```
+
+3 rules covering DAY, TIME, MONTH SEM_CLASSes. The
+constraining equations gate the rule to genuinely temporal
+NOUNs only — ``*tuwing bata`` (no SEM_CLASS) doesn't compose
+because the constraining equation fails. Other temporal
+SEM_CLASSes (FRACTION, PERCENTAGE, etc.) also don't fire
+because they're not in the explicit DAY/TIME/MONTH set.
+
+**1 S rule** for clause-final temporal-frame PP attachment:
+
+```
+S → S PP
+Equations:
+  (↑) = ↓1
+  ↓2 ∈ (↑ ADJUNCT)
+  (↓2 TIME_FRAME)              # existential — PP has TIME_FRAME
+```
+
+Closes part of the Phase 5e Commit 3 deferral on bare PP
+placement — scoped to TIME_FRAME PPs only via the existential
+constraint. The existing PREP-PPs (``para sa X``,
+``tungkol sa X``, ``mula sa X``, ``dahil sa X``) don't have
+TIME_FRAME, so this rule doesn't fire on them — they remain
+restricted to ay-fronting position (Phase 5e Commit 3
+deferral remains in force for non-TIME_FRAME PPs).
+
+Same scoped-lift pattern as Phase 5f Commit 5's
+``S → S AdvP[FREQUENCY]``.
+
+### Date formula
+
+The formula ``ang ikalimang araw ng Enero`` "the fifth day
+of January" composes from existing rules:
+
+* ``ikalimang araw`` — ordinal-NP-modifier rule (Phase 5f
+  Commit 7) — ``ikalima`` + ``-ng`` + ``araw`` produces an
+  N with ORDINAL_VALUE=5 and LEMMA=araw.
+* ``ang ikalimang araw`` — existing ``NP[CASE=NOM] →
+  DET[CASE=NOM] N`` rule.
+* ``ng Enero`` — existing GEN-NP rule.
+* ``ang ikalimang araw ng Enero`` — existing Phase 4 §7.8
+  NP-internal possessive rule attaches GEN-NP as POSS.
+
+No new grammar required.
+
+### Out of scope for this commit
+
+* **Day-month abbreviated form** (``Mayo 5``) — needs digit
+  tokenization (the one digit-form case the linguistic scope
+  can't avoid per plan §11.1 Group F item 4). Tokenizer pre-
+  pass is the cleanest fix; deferred.
+* **Elided-N date formula** (``ang ikalima ng Enero``
+  without ``araw``) — needs an ordinal-as-N rule. Not
+  standard in formal Tagalog (the explicit ``araw`` is
+  preferred); deferred.
+* **Year expressions** (``noong 1990``) — needs digit
+  tokenization.
+* **MONTH_VALUE / DAY_VALUE projection to PP/NP** — same
+  NP-from-N projection limitation as cardinal-modifier
+  features.
+* **Other temporal SEM_CLASSes for tuwing/noong** —
+  e.g., season (``tuwing tag-init`` "every dry season"). Add
+  SEM_CLASS=SEASON to the rule's variant list when Group G
+  seasons land.
+
+## Phase 5f Commit 14: mga time approximation (Group E item 3)
+
+**Date:** 2026-05-03. **Status:** active. 1 PART entry + 1
+grammar rule. Refs: plan §11.1 Group E item 3; Phase 5f
+Commit 10 (clock-time NOUNs consumed unchanged).
+
+### Lex change
+
+* ``mga`` PART (data/tgl/particles.yaml) with
+  ``PLURAL_MARKER: YES``. The Tagalog plural / approximator
+  particle, used for both plural marking on regular nouns
+  (``ang mga aklat`` "the books") and approximation on
+  temporal / quantitative NPs (``mga alasotso`` "around 8
+  o'clock", ``mga sampu`` "around 10"). This commit adds the
+  lex entry plus a grammar rule for the time-approximation
+  reading only; plural marking and cardinal approximation
+  are deferred to follow-on commits.
+
+### Grammar change
+
+```
+N → PART N
+Equations:
+  (↑) = ↓2                          # share with head N
+  (↑ APPROX) = 'YES'                 # add APPROX feature
+  (↓1 PLURAL_MARKER) =c 'YES'       # particle is mga
+  (↓2 SEM_CLASS) =c 'TIME'          # head is clock-time
+```
+
+Output is N (same category as the head clock-time NOUN), so
+``sa mga alasotso`` composes via existing NP-from-N rules
+into NP[CASE=DAT] without further grammar additions.
+
+### Why TIME-only
+
+The plan note allows DAY / MONTH approximation in principle,
+but ``mga Lunes`` / ``mga Pebrero`` are not idiomatic in
+standard Tagalog (they would mean "plural Mondays" /
+"plural Februarys", not "around Monday" / "around February").
+So the approximator rule is restricted to SEM_CLASS=TIME.
+
+Cardinal approximation (``mga sampu`` "around ten") is a
+parallel construction with NUM[CARDINAL=YES] daughter; the
+plan calls for it as a follow-on.
+
+### Out of scope for this commit
+
+* **Plural marker on regular nouns** (``ang mga aklat`` "the
+  books") — needs an NP-internal rule for ``DET PART[mga] N``
+  plural marking, plus possibly NUM agreement effects.
+  Substantial scope; deferred.
+* **Cardinal approximation** (``mga sampu`` "around ten") —
+  parallel rule with NUM[CARDINAL=YES] daughter. Lex-only
+  follow-on — the rule already exists in shape, just needs
+  a NUM variant.
+* **DAY / MONTH approximation** — not idiomatic in standard
+  Tagalog.
+* **APPROX projection to NP** — same NP-from-N projection
+  limitation as cardinal-modifier features (Commit 1).
+
 ### Side change (Commit 4): `synonyms` lex field + ``aklat`` noun
 
 This commit adds a ``synonyms: list[str]`` field to the ``Root``

@@ -1445,6 +1445,38 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "minute: clock + y + cardinal (8:10)", "parse")
     _add(out, "pumunta ako sa alasotso menos dies",
          "minute: clock + menos + cardinal (7:50)", "parse")
+    # Phase 5f Commit 13: dates (Group F).
+    days_short = ["lunes", "martes", "miyerkules", "huwebes",
+                  "biyernes", "sabado", "linggo"]
+    for day in days_short:
+        _add(out, f"pumunta ako sa {day}",
+             "date: sa + day-of-week as DAT adjunct", "parse")
+    months_sample = ["enero", "pebrero", "marso", "agosto", "disyembre"]
+    for day in days_short[:3]:
+        _add(out, f"pumunta ako tuwing {day}",
+             "date: tuwing + day-of-week as PP", "parse")
+    for month in months_sample:
+        _add(out, f"pumunta kami noong {month}",
+             "date: noong + month as PP", "parse")
+    _add(out, "pumunta ako tuwing umaga",
+         "date: tuwing + TIME as PP", "parse")
+    _add(out, "pumunta ako noong umaga",
+         "date: noong + TIME as PP", "parse")
+    _add(out, "pumunta ako sa ikalimang araw ng enero",
+         "date: ordinal + araw + ng + month (date formula)", "parse")
+    _add(out, "pumunta ako sa unang araw ng disyembre",
+         "date: ordinal + araw + ng + month (date formula)", "parse")
+    _add(out, "tuwing lunes ay pumunta ako",
+         "date: tuwing-PP ay-fronted", "parse")
+    # Phase 5f Commit 14: mga time approximation.
+    _add(out, "pumunta ako sa mga alasotso",
+         "mga: time approximation (around 8 o'clock)", "parse")
+    _add(out, "pumunta ako sa mga alauna",
+         "mga: time approximation (around 1 o'clock)", "parse")
+    _add(out, "pumunta ako sa mga alasdose",
+         "mga: time approximation (around 12 o'clock)", "parse")
+    _add(out, "kumain ako sa mga alasotso",
+         "mga: time approximation with kain verb", "parse")
     return out
 
 

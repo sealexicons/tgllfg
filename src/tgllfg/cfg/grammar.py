@@ -2184,6 +2184,92 @@ class Grammar:
             ],
         ))
 
+        # --- Phase 5f Commit 14: mga time approximation (Group E item 3)
+        #
+        # ``mga alasotso`` "around 8 o'clock", ``mga alauna``
+        # "around 1 o'clock", ``sa mga alastres`` "at around 3
+        # o'clock". The ``mga`` particle (PLURAL_MARKER=YES in
+        # particles.yaml) takes a TIME-class N and produces an
+        # approximated time N (with APPROX=YES feature).
+        #
+        # Output is N (same category as the head clock-time
+        # NOUN), so ``sa mga alasotso`` composes via existing
+        # NP-from-N rules into NP[CASE=DAT] without further
+        # grammar additions.
+        #
+        # The constraining equations enforce:
+        #   (↓1 PLURAL_MARKER) =c 'YES'   — particle is mga
+        #   (↓2 SEM_CLASS) =c 'TIME'      — head is clock-time
+        #
+        # Plural marking on regular nouns (``ang mga aklat`` "the
+        # books") and cardinal approximation (``mga sampu`` "around
+        # ten") use the same ``mga`` lex entry but are separate
+        # constructions; deferred follow-ons.
+        rules.append(Rule(
+            "N",
+            ["PART", "N"],
+            [
+                "(↑) = ↓2",
+                "(↑ APPROX) = 'YES'",
+                "(↓1 PLURAL_MARKER) =c 'YES'",
+                "(↓2 SEM_CLASS) =c 'TIME'",
+            ],
+        ))
+
+        # --- Phase 5f Commit 13: temporal-frame PP (Group F item 5)
+        #
+        # ``tuwing Lunes`` "every Monday", ``noong Pebrero`` "in
+        # February", ``noong umaga`` "this morning". The temporal-
+        # frame PARTs (``tuwing`` / ``noong``) introduce a bare-N
+        # complement (no DAT marker, unlike standard PPs).
+        #
+        # F-structure:
+        #   PP[TIME_FRAME=PERIODIC|PAST, OBJ={N}]
+        #
+        # The PP shares with PART (``(↑) = ↓1``), pulling
+        # TIME_FRAME up to the matrix PP. The N becomes OBJ.
+        #
+        # Three SEM_CLASS variants (DAY / TIME / MONTH) gate the
+        # rule to genuinely temporal NOUNs only — ``*tuwing bata``
+        # ("every child"?) doesn't compose because ``bata`` has no
+        # SEM_CLASS. The constraining equations
+        # ``(↓1 TIME_FRAME)`` (existential — PART has TIME_FRAME)
+        # and ``(↓2 SEM_CLASS) =c '<X>'`` enforce both.
+        for sem_class in ("DAY", "TIME", "MONTH"):
+            rules.append(Rule(
+                "PP",
+                ["PART", "N"],
+                [
+                    "(↑) = ↓1",
+                    "(↑ OBJ) = ↓2",
+                    "(↓1 TIME_FRAME)",
+                    f"(↓2 SEM_CLASS) =c '{sem_class}'",
+                ],
+            ))
+
+        # Clause-final temporal-frame PP attachment:
+        # ``Pumunta ako tuwing Lunes.`` "I went every Monday."
+        # ``Pumunta kami noong Pebrero.`` "We went in February."
+        #
+        # Closes part of the Phase 5e Commit 3 deferral on bare PP
+        # placement — scoped to TIME_FRAME PPs only via the
+        # existential constraint ``(↓2 TIME_FRAME)``. The
+        # ``para sa X`` / ``tungkol sa X`` / ``mula sa X`` /
+        # ``dahil sa X`` PPs (Phase 5e Commit 3 PREP entries) don't
+        # have TIME_FRAME, so this rule doesn't fire on them — they
+        # remain restricted to ay-fronting position. (Same scoped-
+        # lift pattern as Phase 5f Commit 5's
+        # ``S → S AdvP[FREQUENCY]``.)
+        rules.append(Rule(
+            "S",
+            ["S", "PP"],
+            [
+                "(↑) = ↓1",
+                "↓2 ∈ (↑ ADJUNCT)",
+                "(↓2 TIME_FRAME)",
+            ],
+        ))
+
         # --- Phase 5f Commit 5: clause-final FREQUENCY AdvP ---------
         #
         # ``Kumain ako makalawa.`` "I ate twice."

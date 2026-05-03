@@ -651,3 +651,31 @@
 - surface: menos
   pos: PART
   feats: {MINUTE_OP: "MENOS"}
+
+# === Phase 5f Commit 13: temporal-frame markers (Group F item 5) =========
+# ``tuwing`` (every) and ``noong`` (last / past) introduce
+# adverbial temporal frames over a bare-N complement:
+# ``tuwing Lunes`` "every Monday", ``noong Pebrero`` "in
+# February", ``noong umaga`` "this morning". Feed the new
+# Phase 5f Commit 13 PP rule (PP → PART[TIME_FRAME] N).
+- surface: tuwing
+  pos: PART
+  feats: {TIME_FRAME: "PERIODIC"}
+- surface: noong
+  pos: PART
+  feats: {TIME_FRAME: "PAST"}
+
+# === Phase 5f Commit 14: mga time approximation (Group E item 3) =========
+# ``mga`` is the Tagalog plural / approximator particle. It marks
+# plurality on regular nouns (``ang mga aklat`` "the books") AND
+# approximation on temporal / quantitative NPs (``mga alasotso``
+# "around 8 o'clock", ``mga sampu`` "around ten"). This commit
+# adds the lex entry plus a grammar rule for the time-
+# approximation reading; plural marking and cardinal
+# approximation are deferred to follow-on commits.
+#
+# PLURAL_MARKER=YES distinguishes ``mga`` from other PARTs in
+# the constraining equation on the approximator rule.
+- surface: mga
+  pos: PART
+  feats: {PLURAL_MARKER: "YES"}
