@@ -3036,6 +3036,36 @@
 - text: Hindi tumakbo si juan makalawa.
   construction: 'cardinal-multiplicative: NEG composition with maka-cardinal'
   expected: parse
+- text: Dos punto singko ang isda.
+  construction: 'cardinal-decimal: Spanish-borrowed decimal in predicative position'
+  expected: parse
+- text: Tatlo punto lima ang isda.
+  construction: 'cardinal-decimal: native-decimal predicative'
+  expected: parse
+- text: Apat punto anim ang aso.
+  construction: 'cardinal-decimal: native-decimal predicative'
+  expected: parse
+- text: Kuwatro punto otso ang isda.
+  construction: 'cardinal-decimal: Spanish-decimal predicative'
+  expected: parse
+- text: Dalawampu punto singko ang isda.
+  construction: 'cardinal-decimal: compound-integer + simple-fractional'
+  expected: parse
+- text: Sandaan punto lima ang isda.
+  construction: 'cardinal-decimal: 100.5 predicative'
+  expected: parse
+- text: Sanlibo punto apat ang isda.
+  construction: 'cardinal-decimal: 1000.4 predicative'
+  expected: parse
+- text: Bumili ako ng dalawampung porsiyento.
+  construction: 'cardinal-percent: percentage as cardinal-modified OBJ NP'
+  expected: parse
+- text: Bumili ako ng sandaan na porsiyento.
+  construction: 'cardinal-percent: 100% percentage as cardinal-modified OBJ NP'
+  expected: parse
+- text: Bumili ako ng singkong porsiyento.
+  construction: 'cardinal-percent: 5% percentage as cardinal-modified OBJ NP'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

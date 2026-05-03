@@ -513,3 +513,14 @@
 - surface: makasampu
   pos: ADV
   feats: {ADV_TYPE: FREQUENCY, MULTIPLIER_VALUE: "10"}
+
+# === Phase 5f Commit 6: decimal separator (Spanish-borrowed) =============
+# ``dos punto singko`` "2.5", ``apat punto lima`` "4.5". The
+# ``punto`` particle joins integer-part and fractional-part
+# cardinals. Tagged ``DECIMAL_SEP=YES`` to gate the new
+# Phase 5f Commit 6 NUM-internal grammar rule
+# (``NUM → NUM PART[DECIMAL_SEP] NUM``); doesn't carry CASE or
+# any other particle features. (R&G 1981 dialogue corpus, prices.)
+- surface: punto
+  pos: PART
+  feats: {DECIMAL_SEP: "YES"}

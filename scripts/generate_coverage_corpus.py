@@ -1312,6 +1312,32 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
     _add(out, "hindi tumakbo si juan makalawa",
          "cardinal-multiplicative: NEG composition with maka-cardinal",
          "parse")
+    # Phase 5f Commit 6: decimals + percentages.
+    _add(out, "dos punto singko ang isda",
+         "cardinal-decimal: Spanish-borrowed decimal in predicative position",
+         "parse")
+    _add(out, "tatlo punto lima ang isda",
+         "cardinal-decimal: native-decimal predicative", "parse")
+    _add(out, "apat punto anim ang aso",
+         "cardinal-decimal: native-decimal predicative", "parse")
+    _add(out, "kuwatro punto otso ang isda",
+         "cardinal-decimal: Spanish-decimal predicative", "parse")
+    _add(out, "dalawampu punto singko ang isda",
+         "cardinal-decimal: compound-integer + simple-fractional",
+         "parse")
+    _add(out, "sandaan punto lima ang isda",
+         "cardinal-decimal: 100.5 predicative", "parse")
+    _add(out, "sanlibo punto apat ang isda",
+         "cardinal-decimal: 1000.4 predicative", "parse")
+    _add(out, "bumili ako ng dalawampung porsiyento",
+         "cardinal-percent: percentage as cardinal-modified OBJ NP",
+         "parse")
+    _add(out, "bumili ako ng sandaan na porsiyento",
+         "cardinal-percent: 100% percentage as cardinal-modified OBJ NP",
+         "parse")
+    _add(out, "bumili ako ng singkong porsiyento",
+         "cardinal-percent: 5% percentage as cardinal-modified OBJ NP",
+         "parse")
     return out
 
 

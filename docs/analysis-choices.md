@@ -6373,6 +6373,108 @@ Per Phase 5f §11.2 negative-fixture convention:
   charge is doubled") but the predicative reading isn't
   exercised here. Lex-only addition for now.
 
+## Phase 5f Commit 6: decimals and percentages
+
+**Date:** 2026-05-03. **Status:** active. Lex (``punto``,
+``porsiyento``) plus one new grammar rule (decimal NUM) plus
+a small parser fix. Refs: plan §11.1 Group A items 6 + 7;
+R&G 1981 dialogue corpus; Phase 5f Commits 1, 4 (rule
+infrastructure consumed unchanged).
+
+### Lex change
+
+* ``punto`` (``data/tgl/particles.yaml``): PART with
+  ``DECIMAL_SEP: "YES"``. Spanish-borrowed decimal separator;
+  joins integer and fractional cardinals.
+* ``porsiyento`` (``data/tgl/roots.yaml``): NOUN with
+  ``SEM_CLASS: PERCENTAGE``. Spanish-borrowed; Tagalog has no
+  native percentage word. Used as the head N of cardinal-
+  modified percentage NPs.
+
+### Grammar change (decimal)
+
+```
+NUM[CARDINAL=YES] →
+    NUM[CARDINAL=YES] PART[DECIMAL_SEP=YES] NUM[CARDINAL=YES]
+Equations:
+  (↑) = ↓1                                    # share with integer part
+  (↑ FRACTIONAL_VALUE) = ↓3 CARDINAL_VALUE   # record fractional
+  (↑ DECIMAL) = 'YES'                         # mark as decimal
+  (↓2 DECIMAL_SEP) =c 'YES'                   # constraining
+```
+
+The output NUM[CARDINAL=YES] fits the existing predicative-
+cardinal rule (Commit 4) and (in principle) the cardinal-NP-
+modifier rules (Commit 1) without modification.
+
+The CARDINAL_VALUE on the matrix is the integer part only —
+the LFG equation language has no string-concatenation
+operator to construct "2.5" from "2" + "." + "5". Downstream
+consumers that need the full numeric value combine
+``CARDINAL_VALUE`` (integer), ``FRACTIONAL_VALUE``, and the
+``DECIMAL=YES`` marker.
+
+The constraining equation ``(↓2 DECIMAL_SEP) =c 'YES'`` is
+critical: without it, the non-conflict pattern matcher would
+accept any PART (including the linker particles ``-ng`` /
+``na``) as the middle daughter — because PART[DECIMAL_SEP=YES]
+and PART[LINK=NG] don't share any feature key, so non-conflict
+"matching" succeeds. With the constraint, the matcher accepts
+the pattern but f-unification rejects parses where the PART
+isn't actually ``punto``. Same pattern as the comparative-
+parang vs evidential-tila distinction (Phase 5e Commit 26)
+and the huwag MOOD constraint (Phase 5e Commit 25).
+
+### Parser fix (side change)
+
+Adding the decimal rule with ``NUM[CARDINAL=YES]`` as LHS made
+``NUM`` a non-terminal. The Earley parser's ``_step``
+previously dispatched binary — predict for non-terminals, scan
+for preterminals. Once NUM became a non-terminal, lex NUM
+tokens (``dos``, ``isa``, ``dalawa``, etc.) were never scanned
+in NUM-expecting positions, breaking all cardinal use.
+
+The fix (``src/tgllfg/parse/earley.py``): always scan in
+addition to predicting. A category can legitimately be both a
+non-terminal (rule LHS) and a preterminal (lex POS); both
+paths must be explored. For purely non-terminal categories
+(``S``, ``NP``, ``PP``, ``AdvP``, ...) the scan call is a
+no-op (no matching lex tokens). For ``N``, similarly — it's a
+non-terminal (``N → NOUN`` rule) but no lex tokens have
+``pos: N`` (they have ``pos: NOUN``), so scan is a no-op
+there too. Only ``NUM`` (and any future category that's
+both) actually gets dual treatment.
+
+The fix is small (one removed ``else`` clause + comment) but
+load-bearing for the architectural shape of the grammar.
+
+### No grammar change (percentages)
+
+``porsiyento`` is a regular NOUN; cardinal-modified percentage
+NPs (``dalawampung porsiyento`` "20%", ``sandaan na
+porsiyento`` "100%") parse via the existing Phase 5f Commit 1
+cardinal-NP-modifier rule without modification. Predicative
+percentage use (``Dalawampung porsiyento ang interes``
+"the interest is 20%") needs an equational sentence rule
+(``S → N NP[CASE=NOM]`` or similar) and is deferred — out of
+scope for Group A. The fixtures here exercise the cardinal-
+modified-NP-as-OBJ path.
+
+### Out of scope for this commit
+
+* Decimal as NP-modifier (``dos punto singkong libro`` "2.5
+  books") — semantically odd and likely not corpus-attested,
+  but structurally would work via the existing cardinal-NP-
+  modifier rule once SEM_CLASS percolation lands. Not
+  exercised here.
+* Equational sentences for predicative percentages — needs a
+  general N-as-predicate rule; deferred to a future commit.
+* Symbolic decimal forms (``2.5``, ``10.75``) — tokenizer
+  expansion track; symbolic numerals are §18 out-of-scope.
+* Three-term decimals (``dos punto singko punto otso``) —
+  not standard usage; rule recursion would technically allow
+  it but no test fixtures verify it.
+
 ### Side change (Commit 4): `synonyms` lex field + ``aklat`` noun
 
 This commit adds a ``synonyms: list[str]`` field to the ``Root``

@@ -2073,6 +2073,51 @@ class Grammar:
             ],
         ))
 
+        # --- Phase 5f Commit 6: decimal cardinal --------------------
+        #
+        # ``dos punto singko`` "2.5", ``apat punto lima`` "4.5".
+        # Spanish-borrowed ``punto`` joins the integer-part cardinal
+        # to the fractional-part cardinal. The output is itself a
+        # ``NUM[CARDINAL=YES]`` so the existing cardinal-NP-modifier
+        # rules (Commit 1) and predicative-cardinal rule (Commit 4)
+        # accept it unchanged.
+        #
+        # Equations: ``(↑) = ↓1`` shares all of the integer NUM's
+        # f-structure with the matrix (so CARDINAL_VALUE, CARDINAL,
+        # NUM all percolate from the integer part); the fractional
+        # part is recorded as ``FRACTIONAL_VALUE`` (its own
+        # CARDINAL_VALUE), and ``DECIMAL=YES`` marks the matrix as
+        # a decimal value. CARDINAL_VALUE stays the integer part —
+        # the LFG equation language doesn't have string concatenation
+        # to construct a "2.5" literal, so we keep the parts separate.
+        # Downstream consumers that need the full numeric value
+        # combine ``CARDINAL_VALUE`` and ``FRACTIONAL_VALUE`` with
+        # the ``DECIMAL`` marker.
+        rules.append(Rule(
+            "NUM[CARDINAL=YES]",
+            [
+                "NUM[CARDINAL=YES]",
+                "PART[DECIMAL_SEP=YES]",
+                "NUM[CARDINAL=YES]",
+            ],
+            [
+                "(↑) = ↓1",
+                "(↑ FRACTIONAL_VALUE) = ↓3 CARDINAL_VALUE",
+                "(↑ DECIMAL) = 'YES'",
+                # Constraining equation: enforce that the middle PART
+                # daughter actually has DECIMAL_SEP=YES (i.e., is
+                # ``punto``). Without this, the non-conflict pattern
+                # matcher accepts any PART (including the LINK=NG /
+                # LINK=NA linker particles) because ``LINK`` and
+                # ``DECIMAL_SEP`` are different feature keys — this
+                # is the same pitfall Phase 5e Commit 25 hit with
+                # ``hindi`` vs ``huwag`` (and Commit 26 with
+                # ``parang`` vs ``tila``). The constraining
+                # equation rejects spurious matches at f-unification.
+                "(↓2 DECIMAL_SEP) =c 'YES'",
+            ],
+        ))
+
         # --- Phase 5f Commit 5: clause-final FREQUENCY AdvP ---------
         #
         # ``Kumain ako makalawa.`` "I ate twice."

@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 1038 | 99.4% |
+| **parse**    | 1048 | 99.4% |
 | **fragment** |    4 |  0.4% |
 | **fail**     |    2 |  0.2% |
-| **TOTAL**    | 1044 |       |
+| **TOTAL**    | 1054 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -41,6 +41,8 @@ out-of-scope items documented below.
 | cardinal-compound  |    24 |        0 |    0 |    24 | 100% |
 | cardinal-predicative |  11 |        0 |    0 |    11 | 100% |
 | cardinal-multiplicative |  12 |     0 |    0 |    12 | 100% |
+| cardinal-decimal   |     7 |        0 |    0 |     7 | 100% |
+| cardinal-percent   |     3 |        0 |    0 |     3 | 100% |
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
@@ -274,9 +276,47 @@ clause-final ADJUNCTs (closing part of the Phase 5e Commit 3
 deferral on bare AdvP placement, scoped to FREQUENCY only).
 Periphrastic ``[CARDINAL]ng beses`` / ``[CARDINAL]ng ulit`` is
 in lex (``beses`` / ``ulit`` NOUN with SEM_CLASS=FREQUENCY)
-but the adverbial reading is deferred — needs ``nang`` lex
-plus a sentential GEN-NP-as-frequency rule. Spanish-borrowed
+but the adverbial reading is deferred. Spanish-borrowed
 ``doble`` / ``triple`` lex-only.
+
+### cardinal-decimal (7 sentences, 100%)
+
+Phase 5f Commit 6: decimals. Spanish-borrowed ``punto``
+(``data/tgl/particles.yaml`` with ``DECIMAL_SEP=YES``) joins
+integer and fractional cardinals (``dos punto singko`` "2.5",
+``tatlo punto lima`` "3.5"). One new grammar rule
+``NUM[CARDINAL=YES] → NUM[CARDINAL=YES] PART[DECIMAL_SEP=YES]
+NUM[CARDINAL=YES]`` produces a decimal NUM that fits the
+existing predicative-cardinal rule (Commit 4) unchanged. The
+constraining equation ``(↓2 DECIMAL_SEP) =c 'YES'`` enforces
+that the middle PART is actually ``punto`` and not a stray
+linker (``-ng`` / ``na``) that would match by non-conflict.
+The decimal output's ``CARDINAL_VALUE`` is the integer part
+only (the equation language has no string concatenation to
+construct "2.5" literally); ``FRACTIONAL_VALUE`` and
+``DECIMAL=YES`` are recorded on the cardinal NUM. Fixtures
+exercise simple, compound, and Spanish integer parts.
+
+Side: parser fix in ``src/tgllfg/parse/earley.py`` —
+``_step`` now ALWAYS scans (in addition to predicting) when
+the expected category is a non-terminal. A category can
+legitimately be both a non-terminal (rule LHS) and a preterminal
+(lex POS) — ``NUM`` here being the motivating case. Without
+this fix, lex NUM tokens would never be scanned once any rule
+has ``NUM[CARDINAL=YES]`` as LHS.
+
+### cardinal-percent (3 sentences, 100%)
+
+Phase 5f Commit 6: percentages. Spanish-borrowed ``porsiyento``
+"percent" (``data/tgl/roots.yaml`` with
+``SEM_CLASS=PERCENTAGE``) is a NOUN; the existing Phase 5f
+Commit 1 cardinal-NP-modifier rule fires on
+``dalawampung porsiyento`` "20%", ``sandaan na porsiyento``
+"100%", ``singkong porsiyento`` "5%" without any new grammar.
+Predicative percentage use (``Dalawampung porsiyento ang
+interes`` "the interest is 20%") needs an equational sentence
+rule (S → N NP[CASE=NOM]) and is deferred — the fixtures here
+exercise the cardinal-modified-NP-as-OBJ path only.
 
 ### classic (12 sentences, 100%)
 

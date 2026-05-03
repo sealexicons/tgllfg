@@ -1500,6 +1500,17 @@
   pos: NOUN
   gloss: triple
   feats: {SEM_CLASS: MULTIPLIER}
+
+# === Phase 5f Commit 6: percentage NOUN ==================================
+# Used in percentage expressions (``dalawampung porsiyento`` "20%",
+# ``singkuwentang porsiyento`` "50%") via the existing Phase 5f
+# Commit 1 cardinal-NP-modifier rule. SEM_CLASS=PERCENTAGE marks
+# it for the LMT classifier and downstream consumers. (R&G 1981
+# dialogue corpus, prices.)
+- citation: porsiyento
+  pos: NOUN
+  gloss: percent
+  feats: {SEM_CLASS: PERCENTAGE}
 - citation: lapis
   pos: NOUN
   gloss: pencil
