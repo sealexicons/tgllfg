@@ -12,81 +12,16 @@
 # Citations: Ramos & Bautista 1986 (R&B), Schachter & Otanes 1972
 # (S&O). Page numbers in comments where the entry is documented.
 
-# --- Common nouns ---
+# === Common nouns ========================================================
+# General-purpose noun roots — household items, body parts, food,
+# people, places, abstract nouns, etc. Alphabetical by citation.
+# Merges the pre-reorder "Common nouns" / "Phase 4 §7.1 anchor
+# nouns" / "Phase 2C bulk noun scale-up (Commit 3b)" sub-sections
+# (commit-organised splits with no linguistic distinction). Per-
+# root linguistic notes (Phase 5c §7.7 ipang- test fixtures, Phase
+# 5c §7.6 raising fixtures, etc.) live as inline comments on the
+# specific entries.
 
-- citation: aso
-  pos: NOUN
-  gloss: dog
-- citation: pusa
-  pos: NOUN
-  gloss: cat
-- citation: ibon
-  pos: NOUN
-  gloss: bird
-- citation: isda
-  pos: NOUN
-  gloss: fish
-- citation: kabayo
-  pos: NOUN
-  gloss: horse
-- citation: baboy
-  pos: NOUN
-  gloss: pig
-- citation: manok
-  pos: NOUN
-  gloss: chicken
-
-- citation: bata
-  pos: NOUN
-  gloss: child
-- citation: babae
-  pos: NOUN
-  gloss: woman
-- citation: lalaki
-  pos: NOUN
-  gloss: man
-- citation: tao
-  pos: NOUN
-  gloss: person, human (homophonous with the verb above; nouns and verbs share surfaces)
-- citation: kaibigan
-  pos: NOUN
-  gloss: friend
-- citation: pamilya
-  pos: NOUN
-  gloss: family
-- citation: nanay
-  pos: NOUN
-  gloss: mother
-- citation: tatay
-  pos: NOUN
-  gloss: father
-- citation: kapatid
-  pos: NOUN
-  gloss: sibling
-
-- citation: bahay
-  pos: NOUN
-  gloss: house
-- citation: paaralan
-  pos: NOUN
-  gloss: school
-- citation: simbahan
-  pos: NOUN
-  gloss: church
-- citation: ospital
-  pos: NOUN
-  gloss: hospital
-- citation: tindahan
-  pos: NOUN
-  gloss: store, shop
-- citation: kuwarto
-  pos: NOUN
-  gloss: room
-
-- citation: libro
-  pos: NOUN
-  gloss: book
-  synonyms: [aklat]
 - citation: aklat
   pos: NOUN
   gloss: book
@@ -96,25 +31,629 @@
   # native form is more frequent in literary register, the borrowed
   # form in colloquial / technical register.
   synonyms: [libro]
+
+- citation: ama
+  pos: NOUN
+  gloss: father (formal)
+
+- citation: anak
+  pos: NOUN
+  gloss: child, offspring
+
+- citation: apo
+  pos: NOUN
+  gloss: grandchild
+
+- citation: apoy
+  pos: NOUN
+  gloss: fire
+
+- citation: araw
+  pos: NOUN
+  gloss: day, sun
+
+- citation: asawa
+  pos: NOUN
+  gloss: spouse
+
+- citation: asin
+  pos: NOUN
+  gloss: salt
+
+- citation: aso
+  pos: NOUN
+  gloss: dog
+
+- citation: asukal
+  pos: NOUN
+  gloss: sugar
+
+- citation: babae
+  pos: NOUN
+  gloss: woman
+
+- citation: baboy
+  pos: NOUN
+  gloss: pig
+
+- citation: bag
+  pos: NOUN
+  gloss: bag
+
+- citation: bahay
+  pos: NOUN
+  gloss: house
+
+- citation: baka
+  pos: NOUN
+  gloss: cow
+
+- citation: balat
+  pos: NOUN
+  gloss: skin
+
+- citation: balikat
+  pos: NOUN
+  gloss: shoulder
+
+- citation: basura
+  pos: NOUN
+  gloss: garbage, trash
+
+- citation: bata
+  pos: NOUN
+  gloss: child
+
+- citation: bato
+  pos: NOUN
+  gloss: stone, rock
+
+- citation: bayan
+  pos: NOUN
+  gloss: town, country
+
+- citation: bibig
+  pos: NOUN
+  gloss: mouth
+
+# -- Food --
+- citation: bigas
+  pos: NOUN
+  gloss: uncooked rice
+
+- citation: bintana
+  pos: NOUN
+  gloss: window
+
+- citation: binti
+  pos: NOUN
+  gloss: leg
+
+- citation: bisikleta
+  pos: NOUN
+  gloss: bicycle
+
+- citation: bituin
+  pos: NOUN
+  gloss: star
+
+- citation: bubong
+  pos: NOUN
+  gloss: roof
+
+- citation: buhok
+  pos: NOUN
+  gloss: hair
+
+- citation: bulaklak
+  pos: NOUN
+  gloss: flower
+
+- citation: bundok
+  pos: NOUN
+  gloss: mountain
+
+- citation: bus
+  pos: NOUN
+  gloss: bus
+
+# -- Nature --
+- citation: buwan
+  pos: NOUN
+  gloss: moon, month
+
+# -- Animals --
+- citation: daga
+  pos: NOUN
+  gloss: rat, mouse
+
+- citation: dagat
+  pos: NOUN
+  gloss: sea
+
+- citation: dahon
+  pos: NOUN
+  gloss: leaf
+
+# -- Clothing / transport --
+- citation: damit
+  pos: NOUN
+  gloss: clothing, dress
+
+- citation: dibdib
+  pos: NOUN
+  gloss: chest
+
+- citation: dila
+  pos: NOUN
+  gloss: tongue
+
+- citation: dilim
+  pos: NOUN
+  gloss: darkness
+
+- citation: dingding
+  pos: NOUN
+  gloss: wall
+
+- citation: doktor
+  pos: NOUN
+  gloss: doctor
+
+- citation: dugo
+  pos: NOUN
+  gloss: blood
+
+- citation: dyip
+  pos: NOUN
+  gloss: jeepney
+
+- citation: eroplano
+  pos: NOUN
+  gloss: airplane
+
+- citation: eskwela
+  pos: NOUN
+  gloss: school (colloquial; cf. paaralan)
+
+- citation: estudyante
+  pos: NOUN
+  gloss: student
+
+- citation: gabi
+  pos: NOUN
+  gloss: night
+
+- citation: gatas
+  pos: NOUN
+  gloss: milk
+
+- citation: gulay
+  pos: NOUN
+  gloss: vegetable (homophonous with the verb)
+
+- citation: guro
+  pos: NOUN
+  gloss: teacher
+
+- citation: gutom
+  pos: NOUN
+  gloss: hunger (Phase 5c §7.7 ika- test fixture)
+
+- citation: hagdan
+  pos: NOUN
+  gloss: stairs, ladder
+
+- citation: hangin
+  pos: NOUN
+  gloss: wind
+
+- citation: ibon
+  pos: NOUN
+  gloss: bird
+
+- citation: ilog
+  pos: NOUN
+  gloss: river
+
+- citation: ilong
+  pos: NOUN
+  gloss: nose
+
+# -- People / kinship / roles --
+- citation: ina
+  pos: NOUN
+  gloss: mother (formal)
+
+- citation: isda
+  pos: NOUN
+  gloss: fish
+
+- citation: itlog
+  pos: NOUN
+  gloss: egg
+
+- citation: kabayo
+  pos: NOUN
+  gloss: horse
+
+- citation: kahapon
+  pos: NOUN
+  gloss: yesterday
+
+- citation: kaibigan
+  pos: NOUN
+  gloss: friend
+
+- citation: kalabaw
+  pos: NOUN
+  gloss: water buffalo, carabao
+
+# -- Objects / places --
+- citation: kama
+  pos: NOUN
+  gloss: bed
+
+- citation: kamatis
+  pos: NOUN
+  gloss: tomato
+
+- citation: kamay
+  pos: NOUN
+  gloss: hand
+
+- citation: kambing
+  pos: NOUN
+  gloss: goat
+
+- citation: kanin
+  pos: NOUN
+  gloss: cooked rice
+
+- citation: kapatid
+  pos: NOUN
+  gloss: sibling
+
+- citation: kape
+  pos: NOUN
+  gloss: coffee
+
+- citation: kapitbahay
+  pos: NOUN
+  gloss: neighbor
+
+- citation: karayom
+  pos: NOUN
+  gloss: needle (instrument; Phase 5c §7.7 ipang- test fixture)
+
+- citation: karne
+  pos: NOUN
+  gloss: meat
+
+- citation: keso
+  pos: NOUN
+  gloss: cheese
+
+- citation: kotse
+  pos: NOUN
+  gloss: car
+
+- citation: kuko
+  pos: NOUN
+  gloss: nail (finger / toe)
+
+- citation: kuneho
+  pos: NOUN
+  gloss: rabbit
+
+- citation: kuwarto
+  pos: NOUN
+  gloss: room
+
+- citation: lalaki
+  pos: NOUN
+  gloss: man
+
+- citation: langaw
+  pos: NOUN
+  gloss: fly (insect)
+
+- citation: langit
+  pos: NOUN
+  gloss: sky, heaven
+
+- citation: lapis
+  pos: NOUN
+  gloss: pencil
+
+- citation: libro
+  pos: NOUN
+  gloss: book
+  synonyms: [aklat]
+
+- citation: liham
+  pos: NOUN
+  gloss: letter (correspondence)
+
+- citation: likod
+  pos: NOUN
+  gloss: back
+
+- citation: liwanag
+  pos: NOUN
+  gloss: light
+
+- citation: lola
+  pos: NOUN
+  gloss: grandmother
+
+- citation: lolo
+  pos: NOUN
+  gloss: grandfather
+
+- citation: lupa
+  pos: NOUN
+  gloss: earth, soil
+
+- citation: mangga
+  pos: NOUN
+  gloss: mango
+
+- citation: manok
+  pos: NOUN
+  gloss: chicken
+
+- citation: mansanas
+  pos: NOUN
+  gloss: apple
+
+- citation: mata
+  pos: NOUN
+  gloss: eye
+
+- citation: mesa
+  pos: NOUN
+  gloss: table
+
+- citation: mukha
+  pos: NOUN
+  gloss: face (homophonous with the raising verb "seem"; Phase 5c §7.6 fixture)
+
+- citation: nanay
+  pos: NOUN
+  gloss: mother
+
+- citation: ngayon
+  pos: NOUN
+  gloss: now, today
+
+- citation: ngipin
+  pos: NOUN
+  gloss: tooth
+
+- citation: niyog
+  pos: NOUN
+  gloss: coconut
+
+- citation: oras
+  pos: NOUN
+  gloss: hour, time
+
+- citation: ospital
+  pos: NOUN
+  gloss: hospital
+
+- citation: paa
+  pos: NOUN
+  gloss: foot
+
+- citation: paaralan
+  pos: NOUN
+  gloss: school
+
+- citation: pagkain
+  pos: NOUN
+  gloss: food (lit. "for-eating", from kain)
+
+- citation: palengke
+  pos: NOUN
+  gloss: market
+
+- citation: pamilya
+  pos: NOUN
+  gloss: family
+
+- citation: pangalan
+  pos: NOUN
+  gloss: name
+
+- citation: panulat
+  pos: NOUN
+  gloss: pen, writing instrument
+
 - citation: papel
   pos: NOUN
   gloss: paper
 
-# === Phase 5f Commit 5: frequency / multiplier nouns =====================
-# Used in periphrastic multiplicative ratios (``dalawang beses``
-# "twice", ``tatlong ulit`` "three times") via the existing Phase 5f
-# Commit 1 cardinal-NP-modifier rules. SEM_CLASS=FREQUENCY marks
-# them for the LMT classifier. (S&O 1972 §4.5.)
+- citation: pari
+  pos: NOUN
+  gloss: priest
+
+- citation: parke
+  pos: NOUN
+  gloss: park
+
+- citation: patatas
+  pos: NOUN
+  gloss: potato
+
+- citation: pato
+  pos: NOUN
+  gloss: duck
+
+- citation: pen
+  pos: NOUN
+  gloss: pen
+
+- citation: pera
+  pos: NOUN
+  gloss: money
+
+- citation: pinsan
+  pos: NOUN
+  gloss: cousin
+
+- citation: pinto
+  pos: NOUN
+  gloss: door
+
+- citation: prutas
+  pos: NOUN
+  gloss: fruit
+
+- citation: pulis
+  pos: NOUN
+  gloss: police officer
+
+- citation: puno
+  pos: NOUN
+  gloss: tree
+
+- citation: pusa
+  pos: NOUN
+  gloss: cat
+
+- citation: puso
+  pos: NOUN
+  gloss: heart
+
+- citation: saging
+  pos: NOUN
+  gloss: banana
+
+- citation: sahig
+  pos: NOUN
+  gloss: floor
+
+- citation: salamin
+  pos: NOUN
+  gloss: mirror, glasses
+
+- citation: salita
+  pos: NOUN
+  gloss: word
+
+- citation: sandali
+  pos: NOUN
+  gloss: a moment
+
+- citation: sapatos
+  pos: NOUN
+  gloss: shoes
+
+- citation: silya
+  pos: NOUN
+  gloss: chair
+
+- citation: simbahan
+  pos: NOUN
+  gloss: church
+
+- citation: suka
+  pos: NOUN
+  gloss: vinegar
+
+- citation: sumbrero
+  pos: NOUN
+  gloss: hat
+
+- citation: tao
+  pos: NOUN
+  gloss: person, human (homophonous with the verb above; nouns and verbs share surfaces)
+
+# -- Time --
+- citation: taon
+  pos: NOUN
+  gloss: year
+
+- citation: tatay
+  pos: NOUN
+  gloss: father
+
+- citation: tenga
+  pos: NOUN
+  gloss: ear
+
+- citation: tinapay
+  pos: NOUN
+  gloss: bread
+
+- citation: tindahan
+  pos: NOUN
+  gloss: store, shop
+
+- citation: tita
+  pos: NOUN
+  gloss: aunt
+
+- citation: tito
+  pos: NOUN
+  gloss: uncle
+
+- citation: titser
+  pos: NOUN
+  gloss: teacher
+
+- citation: tiyan
+  pos: NOUN
+  gloss: stomach
+
+- citation: trabaho
+  pos: NOUN
+  gloss: work, job (homophonous with the verb)
+
+- citation: tren
+  pos: NOUN
+  gloss: train
+
+- citation: tubig
+  pos: NOUN
+  gloss: water
+
+- citation: ulan
+  pos: NOUN
+  gloss: rain
+
+- citation: ulap
+  pos: NOUN
+  gloss: cloud
+
+# -- Body parts --
+- citation: ulo
+  pos: NOUN
+  gloss: head
+
+- citation: utak
+  pos: NOUN
+  gloss: brain
+
+- citation: wika
+  pos: NOUN
+  gloss: language
+
+
+# === Frequency / multiplier nouns (Phase 5f Commit 5) ====================
+# `beses` / `ulit` (FREQUENCY): "times (occurrences/repetitions)".
+# `doble` / `triple` (MULTIPLIER): Spanish-borrowed multipliers
+# surfacing in technical / commercial register (``doble ang
+# singil`` "the charge is doubled"). Alphabetical by citation.
+
 - citation: beses
   pos: NOUN
   gloss: times (occurrences)
   feats: {SEM_CLASS: FREQUENCY}
   synonyms: [ulit]
-- citation: ulit
-  pos: NOUN
-  gloss: times (repetitions)
-  feats: {SEM_CLASS: FREQUENCY}
-  synonyms: [beses]
+
 # Spanish-borrowed multipliers — surface in technical / commercial
 # register (``doble ang singil`` "the charge is doubled"). Lex-only
 # in this commit; treated as NOUN with SEM_CLASS=MULTIPLIER so the
@@ -123,756 +662,339 @@
   pos: NOUN
   gloss: double
   feats: {SEM_CLASS: MULTIPLIER}
+
 - citation: triple
   pos: NOUN
   gloss: triple
   feats: {SEM_CLASS: MULTIPLIER}
 
-# === Phase 5f Commit 6: percentage NOUN ==================================
+- citation: ulit
+  pos: NOUN
+  gloss: times (repetitions)
+  feats: {SEM_CLASS: FREQUENCY}
+  synonyms: [beses]
+
+
+# === Percentage NOUN (Phase 5f Commit 6) =================================
 # Used in percentage expressions (``dalawampung porsiyento`` "20%",
-# ``singkuwentang porsiyento`` "50%") via the existing Phase 5f
-# Commit 1 cardinal-NP-modifier rule. SEM_CLASS=PERCENTAGE marks
-# it for the LMT classifier and downstream consumers. (R&G 1981
-# dialogue corpus, prices.)
+# ``isang porsiyento`` "1%"). Spanish-borrowed.
+
 - citation: porsiyento
   pos: NOUN
   gloss: percent
   feats: {SEM_CLASS: PERCENTAGE}
 
-# === Phase 5f Commit 8: fraction NOUNs ===================================
-# Half / quarter / part lex for fractions. Compositional fractions
-# (``dalawang kalahati`` "two halves", ``apat na kapat`` "four
-# quarters", ``ikatlong bahagi`` "third part") compose from
-# cardinals (Phase 5f Commit 1) or ordinals (Phase 5f Commit 7)
-# + the new fraction NOUN via the existing cardinal-NP-modifier
-# and ordinal-NP-modifier rules — no new grammar required.
-#
-# ``kalahati`` and ``medya`` are bidirectional synonyms (native
-# vs Spanish-borrowed); both mean "half". ``medya`` is canonical
-# in clock-time register (``alas-otso y medya`` "8:30") which
-# Group E will exercise. ``kapat`` "quarter" coexists with the
-# existing NOUN ``kuwarto`` (currently glossed as "room"; in
-# clock-time context ``kuwarto`` also means "quarter of the
-# hour" — the polysemy is left to context, not lex). ``bahagi``
-# "part" is the head N for the productive ``[ORDINAL]ng bahagi``
-# fraction pattern (S&O 1972 §4.4).
-- citation: kalahati
-  pos: NOUN
-  gloss: half
-  feats: {SEM_CLASS: FRACTION}
-  synonyms: [medya]
-- citation: kapat
-  pos: NOUN
-  gloss: quarter
-  feats: {SEM_CLASS: FRACTION}
-- citation: medya
-  pos: NOUN
-  gloss: half (Spanish-borrowed; canonical in clock-time register)
-  feats: {SEM_CLASS: FRACTION}
-  synonyms: [kalahati]
+
+# === Fraction NOUNs (Phase 5f Commit 8) ==================================
+# Numeric fractions (``kalahati`` "half", ``kapat`` "quarter",
+# ``medya`` "half-Spanish"; ``bahagi`` "part"). Alphabetical by
+# citation.
+
 - citation: bahagi
   pos: NOUN
   gloss: part
   feats: {SEM_CLASS: PART}
 
-# === Phase 5f Commit 10: clock-time NOUNs (Group E item 1) ===============
-# Spanish-borrowed clock-time terms 1-12. ``ala-`` (vowel-initial,
-# only ``una`` for 1 o'clock) vs ``alas-`` (everything else).
-# Single-token forms — the standard hyphenated orthography
-# (``ala-una`` / ``alas-dos`` / etc.) requires a tokenizer pre-pass
-# (the tokenizer splits hyphens), deferred follow-on. Multi-token
-# variants (``ala una`` / ``alas dos``) are non-standard.
-#
-# SEM_CLASS=TIME marks them for the LMT classifier and downstream
-# consumers (sa-NP routing, future temporal-frame ADJUNCT slot).
-# TIME_VALUE records the hour (1-12). Used as:
-#
-# * DAT-NP for time adjunct: ``Pumunta ako sa alasotso.``
-#   "I went at 8 o'clock." (sa-NP via existing rules.)
-# * Bare-NP for time-stating: ``Alasotso na.`` "It's 8 o'clock
-#   now." (verbless, with adv enclitic.)
-# * Compositional with minute (``alasotso y medya`` 8:30,
-#   ``alasotso menos singko`` 7:55) — minute composition is a
-#   deferred follow-on.
-# * With time-of-day modifier (``alasotso ng umaga`` "8 in the
-#   morning") — time-of-day modifiers are a separate follow-on.
-# (R&G 1981; S&O 1972 §6.13.)
+- citation: kalahati
+  pos: NOUN
+  gloss: half
+  feats: {SEM_CLASS: FRACTION}
+  synonyms: [medya]
+
+- citation: kapat
+  pos: NOUN
+  gloss: quarter
+  feats: {SEM_CLASS: FRACTION}
+
+- citation: medya
+  pos: NOUN
+  gloss: half (Spanish-borrowed; canonical in clock-time register)
+  feats: {SEM_CLASS: FRACTION}
+  synonyms: [kalahati]
+
+
+# === Clock-time NOUNs (Phase 5f Commit 10) ===============================
+# Spanish-borrowed clock-time terms 1-12. Sorted by TIME_VALUE
+# (the hour they denote). Surfaces ``ala-`` (vowel-initial,
+# ``ala-una``) for hour 1 and ``alas-`` (consonant-initial,
+# ``alas-dos`` ... ``alas-dose``) for hours 2-12.
+
 - citation: alauna
   pos: NOUN
   gloss: one o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "1"}
+
 - citation: alasdos
   pos: NOUN
   gloss: two o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "2"}
+
 - citation: alastres
   pos: NOUN
   gloss: three o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "3"}
+
 - citation: alaskuwatro
   pos: NOUN
   gloss: four o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "4"}
+
 - citation: alassingko
   pos: NOUN
   gloss: five o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "5"}
+
 - citation: alassais
   pos: NOUN
   gloss: six o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "6"}
+
 - citation: alassiyete
   pos: NOUN
   gloss: seven o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "7"}
+
 - citation: alasotso
   pos: NOUN
   gloss: eight o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "8"}
+
 - citation: alasnuwebe
   pos: NOUN
   gloss: nine o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "9"}
+
 - citation: alasdies
   pos: NOUN
   gloss: ten o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "10"}
+
 - citation: alasonse
   pos: NOUN
   gloss: eleven o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "11"}
+
 - citation: alasdose
   pos: NOUN
   gloss: twelve o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "12"}
 
-# === Phase 5f Commit 11: time-of-day NOUNs (Group E item 2) ==============
-# Time-of-day terms that serve as the head of GEN-NP time-of-day
-# modifiers (``alasotso ng umaga`` "8 in the morning") via the
-# existing Phase 4 §7.8 NP-internal possessive rule, and as the
-# head of DAT-NP time adjuncts (``Pumunta ako sa umaga`` "I went
-# in the morning") via the existing intransitive ADJUNCT routing.
-# No new grammar required.
-#
-# ``gabi`` (night) already exists as a plain NOUN; not modified
-# here to keep the diff focused — its plain-NOUN form already
-# composes via existing rules. ``madaling-araw`` (dawn) is
-# hyphenated and would need a tokenizer pre-pass; deferred.
-# ``araw`` (day / sun) already exists as NOUN.
-- citation: umaga
-  pos: NOUN
-  gloss: morning
-  feats: {SEM_CLASS: TIME}
-- citation: tanghali
-  pos: NOUN
-  gloss: noon / midday
-  feats: {SEM_CLASS: TIME}
+
+# === Time-of-day NOUNs (Phase 5f Commit 11) ==============================
+# `umaga` (morning), `tanghali` (noon / midday), `hapon`
+# (afternoon). `gabi` (night) and `araw` (day / sun) live in the
+# Common-nouns section without SEM_CLASS=TIME — composing time-of-
+# day prepositional phrases via existing rules. Alphabetical by
+# citation.
+
 - citation: hapon
   pos: NOUN
   gloss: afternoon
   feats: {SEM_CLASS: TIME}
 
-# === Phase 5f Commit 13: Spanish month names (Group F item 1) ============
-# 12 Spanish-borrowed month names. SEM_CLASS=MONTH marks them
-# for the LMT classifier and feeds the Phase 5f Commit 13
-# date-of-week PP rule (PP → PART[TIME_FRAME] N with
-# (↓2 SEM_CLASS) =c 'MONTH'). Also used in date formulas
-# (``ang ikalimang araw ng Enero`` "the fifth day of January")
-# via the existing Phase 4 §7.8 NP-internal possessive rule.
+- citation: tanghali
+  pos: NOUN
+  gloss: noon / midday
+  feats: {SEM_CLASS: TIME}
+
+- citation: umaga
+  pos: NOUN
+  gloss: morning
+  feats: {SEM_CLASS: TIME}
+
+
+# === Spanish month names (Phase 5f Commit 13) ============================
+# 12 Spanish-borrowed month names. SEM_CLASS=MONTH marks them for
+# the LMT classifier and feeds the Phase 5f Commit 13 date-of-week
+# PP rule (PP → PART[TIME_FRAME] N with (↓2 SEM_CLASS) =c
+# 'MONTH'). Sorted by MONTH_VALUE January..December.
+
 - citation: enero
   pos: NOUN
   gloss: January
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "1"}
+
 - citation: pebrero
   pos: NOUN
   gloss: February
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "2"}
+
 - citation: marso
   pos: NOUN
   gloss: March
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "3"}
+
 - citation: abril
   pos: NOUN
   gloss: April
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "4"}
+
 - citation: mayo
   pos: NOUN
   gloss: May
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "5"}
+
 - citation: hunyo
   pos: NOUN
   gloss: June
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "6"}
+
 - citation: hulyo
   pos: NOUN
   gloss: July
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "7"}
+
 - citation: agosto
   pos: NOUN
   gloss: August
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "8"}
+
 - citation: setyembre
   pos: NOUN
   gloss: September
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "9"}
+
 - citation: oktubre
   pos: NOUN
   gloss: October
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "10"}
+
 - citation: nobyembre
   pos: NOUN
   gloss: November
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "11"}
+
 - citation: disyembre
   pos: NOUN
   gloss: December
   feats: {SEM_CLASS: MONTH, MONTH_VALUE: "12"}
 
-# === Phase 5f Commit 13: day-of-week names (Group F item 2) ==============
+
+# === Day-of-week names (Phase 5f Commit 13) ==============================
 # 7 day-of-week names — Spanish-borrowed (Lunes, Martes,
 # Miyerkules, Huwebes, Biyernes, Sabado) and native (Linggo).
-# SEM_CLASS=DAY marks them for the LMT classifier and feeds
-# the Phase 5f Commit 13 date-of-week PP rule. Also work as
-# DAT-NP via existing rules (``sa Lunes`` "on Monday").
+# SEM_CLASS=DAY marks them for the LMT classifier and feeds the
+# Phase 5f Commit 13 date-of-week PP rule. Also work as DAT-NP
+# via existing rules (``sa Lunes`` "on Monday"). Sorted by
+# DAY_VALUE Monday..Sunday.
+
 - citation: lunes
   pos: NOUN
   gloss: Monday
   feats: {SEM_CLASS: DAY, DAY_VALUE: "1"}
+
 - citation: martes
   pos: NOUN
   gloss: Tuesday
   feats: {SEM_CLASS: DAY, DAY_VALUE: "2"}
+
 - citation: miyerkules
   pos: NOUN
   gloss: Wednesday
   feats: {SEM_CLASS: DAY, DAY_VALUE: "3"}
+
 - citation: huwebes
   pos: NOUN
   gloss: Thursday
   feats: {SEM_CLASS: DAY, DAY_VALUE: "4"}
+
 - citation: biyernes
   pos: NOUN
   gloss: Friday
   feats: {SEM_CLASS: DAY, DAY_VALUE: "5"}
+
 - citation: sabado
   pos: NOUN
   gloss: Saturday
   feats: {SEM_CLASS: DAY, DAY_VALUE: "6"}
-  # ``linggo`` (Sunday / week) lives in its existing entry below;
-  # SEM_CLASS=DAY added there to avoid duplicating the surface
-  # (the morph analyzer collapses duplicate (lemma, pos) entries
-  # — see Phase 5f Commit 12 kuwarto deferral memo).
 
-# === Phase 5f Commit 14: seasons (Group G) ===============================
-# Two-season system (canonical): ``tag-init`` (hot / dry season)
-# and ``tag-ulan`` (rainy season). Plus three other ``tag-``
-# compounds: ``tag-lamig`` (cold spell — colloquial),
-# ``tag-araw`` (sunny period), ``tag-gutom`` (hunger season —
-# figurative). All zero-derived nouns built on ``tag-`` + N. Per
-# plan §11.1 Group G: lex per attested form rather than productive
-# paradigm — productive ``tag-`` carries figurative / colloquial
-# readings beyond pure season-naming, so a hand-authored lex is
-# more conservative than a productive class.
-#
-# SEM_CLASS=SEASON marks them for the LMT classifier and feeds
-# the Phase 5f Commit 13 temporal-frame PP rule (new SEASON
-# variant added in this commit) so:
-#
-#   tuwing tagulan  "every rainy season"   (PERIODIC PP)
-#   noong taginit   "during the dry season" (PAST PP)
-#
-# Hyphenation note: the canonical orthography is ``tag-init``,
-# ``tag-ulan``, etc. The current tokenizer
-# (``src/tgllfg/text/tokenizer.py``: ``\w+|\S``) splits hyphens
-# into three tokens (``tag``, ``-``, ``init``); supporting the
-# hyphenated forms requires a tokenizer pre-pass and is deferred.
-# For now the seed lex stores the single-token forms
-# (``taginit``, ``tagulan``, ...) which compose via the standard
-# NOUN path. (R&B 1986; S&O 1972 §6.13.)
-- citation: taginit
-  pos: NOUN
-  gloss: hot/dry season
-  feats: {SEM_CLASS: SEASON}
-- citation: tagulan
-  pos: NOUN
-  gloss: rainy season
-  feats: {SEM_CLASS: SEASON}
-- citation: taglamig
-  pos: NOUN
-  gloss: cold spell
-  feats: {SEM_CLASS: SEASON}
-- citation: tagaraw
-  pos: NOUN
-  gloss: sunny period
-  feats: {SEM_CLASS: SEASON}
-- citation: taggutom
-  pos: NOUN
-  gloss: hunger season
-  feats: {SEM_CLASS: SEASON}
-
-# === Phase 5f Commit 18: collective numerals (Group H2 item 4) =============
-# Measure / collective NOUNs that take a complement N — the
-# measured noun — either via a GEN-NP marker (``isang pares ng
-# sapatos`` "one pair of shoes") or via the linker (``isang
-# dosenang itlog`` "one dozen eggs"). The GEN form composes via
-# existing rules (Phase 5f Commit 1 cardinal NP-modifier +
-# Phase 4 §7.8 NP-internal possessive); the linker form needs
-# a small new measure-N rule (Phase 5f Commit 18 in
-# src/tgllfg/cfg/grammar.py): ``N → N[MEASURE=YES] PART[LINK]
-# N``.
-#
-# All four entries are NOUN with ``MEASURE: "YES"``. Spanish-
-# borrowed pares / dosena (S&O 1972 §4.5) and reduplicated
-# native daandaan / libulibo (R&B 1986). The reduplicated
-# productive form (``X-X`` = "many X-units") generalises to
-# higher-order multiples in principle (``milyong-milyon``
-# "millions"), but per plan §11.1 Group H item 4 we lex per
-# attested form rather than introduce a productive
-# ``card_redup`` morph class. Deferred.
-#
-# Hyphenation note: the canonical orthography for the
-# reduplicated forms is ``daan-daan`` and ``libu-libo``. The
-# tokenizer (``\w+|\S``) splits hyphens, so the canonical
-# surfaces tokenise as 3 tokens (``daan``, ``-``, ``daan``).
-# For now the seed lex stores single-token forms (``daandaan``,
-# ``libulibo``) — same precedent as Phase 5f Commit 14 seasons
-# (``taginit``) and Commit 16 approximators
-# (``humigitkumulang``). The hyphenated form awaits a
-# tokenizer pre-pass.
-- citation: pares
-  pos: NOUN
-  gloss: pair
-  feats: {MEASURE: "YES"}
-- citation: dosena
-  pos: NOUN
-  gloss: dozen
-  feats: {MEASURE: "YES"}
-- citation: daandaan
-  pos: NOUN
-  gloss: hundreds
-  feats: {MEASURE: "YES", COLL_VALUE: HUNDREDS}
-- citation: libulibo
-  pos: NOUN
-  gloss: thousands
-  feats: {MEASURE: "YES", COLL_VALUE: THOUSANDS}
-
-- citation: lapis
-  pos: NOUN
-  gloss: pencil
-- citation: pen
-  pos: NOUN
-  gloss: pen
-- citation: mesa
-  pos: NOUN
-  gloss: table
-- citation: silya
-  pos: NOUN
-  gloss: chair
-
-- citation: pagkain
-  pos: NOUN
-  gloss: food (lit. "for-eating", from kain)
-- citation: kanin
-  pos: NOUN
-  gloss: cooked rice
-- citation: tubig
-  pos: NOUN
-  gloss: water
-- citation: tinapay
-  pos: NOUN
-  gloss: bread
-- citation: gatas
-  pos: NOUN
-  gloss: milk
-- citation: kape
-  pos: NOUN
-  gloss: coffee
-- citation: prutas
-  pos: NOUN
-  gloss: fruit
-
-- citation: araw
-  pos: NOUN
-  gloss: day, sun
-- citation: gabi
-  pos: NOUN
-  gloss: night
-- citation: oras
-  pos: NOUN
-  gloss: hour, time
 - citation: linggo
   pos: NOUN
   gloss: week, Sunday
   feats: {SEM_CLASS: DAY, DAY_VALUE: "7"}
 
-- citation: pera
-  pos: NOUN
-  gloss: money
-- citation: karayom
-  pos: NOUN
-  gloss: needle (instrument; Phase 5c §7.7 ipang- test fixture)
-- citation: gutom
-  pos: NOUN
-  gloss: hunger (Phase 5c §7.7 ika- test fixture)
-- citation: mukha
-  pos: NOUN
-  gloss: face (homophonous with the raising verb "seem"; Phase 5c §7.6 fixture)
-- citation: titser
-  pos: NOUN
-  gloss: teacher
-- citation: panulat
-  pos: NOUN
-  gloss: pen, writing instrument
-- citation: trabaho
-  pos: NOUN
-  gloss: work, job (homophonous with the verb)
-- citation: pangalan
-  pos: NOUN
-  gloss: name
-- citation: salita
-  pos: NOUN
-  gloss: word
-- citation: wika
-  pos: NOUN
-  gloss: language
 
-# --- Phase 4 §7.1 anchor nouns ------------------------------------------
-# Direct objects / pivots in the Phase 4 voice-extension test sentences.
-- citation: liham
-  pos: NOUN
-  gloss: letter (correspondence)
-- citation: basura
-  pos: NOUN
-  gloss: garbage, trash
+# === Seasons (Phase 5f Commit 14) ========================================
+# Two-season canonical (taginit hot/dry, tagulan rainy) plus three
+# `tag-` derivatives (taglamig cold spell, tagaraw sunny period,
+# taggutom hunger season). Order preserved from the pre-reorder
+# layout — canonical first, derivatives after — rather than
+# alphabetised, because the two-season system has a clear
+# canonical-vs-derivative distinction that alphabetising would
+# obscure.
+#
+# Hyphenation note: the canonical orthography is `tag-init`, etc.
+# The current tokenizer (`\w+|\S`) splits hyphens, so the seed
+# stores single-token forms (`taginit`, `tagulan`); supporting the
+# hyphenated forms requires a tokenizer pre-pass and is deferred.
 
-# --- Phase 2C bulk noun scale-up (Commit 3b) -----------------------------
+- citation: taginit
+  pos: NOUN
+  gloss: hot/dry season
+  feats: {SEM_CLASS: SEASON}
 
-# -- People / kinship / roles --
-- citation: ina
+- citation: tagulan
   pos: NOUN
-  gloss: mother (formal)
-- citation: ama
-  pos: NOUN
-  gloss: father (formal)
-- citation: anak
-  pos: NOUN
-  gloss: child, offspring
-- citation: asawa
-  pos: NOUN
-  gloss: spouse
-- citation: lolo
-  pos: NOUN
-  gloss: grandfather
-- citation: lola
-  pos: NOUN
-  gloss: grandmother
-- citation: tito
-  pos: NOUN
-  gloss: uncle
-- citation: tita
-  pos: NOUN
-  gloss: aunt
-- citation: pinsan
-  pos: NOUN
-  gloss: cousin
-- citation: apo
-  pos: NOUN
-  gloss: grandchild
-- citation: doktor
-  pos: NOUN
-  gloss: doctor
-- citation: guro
-  pos: NOUN
-  gloss: teacher
-- citation: estudyante
-  pos: NOUN
-  gloss: student
-- citation: pari
-  pos: NOUN
-  gloss: priest
-- citation: pulis
-  pos: NOUN
-  gloss: police officer
-- citation: kapitbahay
-  pos: NOUN
-  gloss: neighbor
+  gloss: rainy season
+  feats: {SEM_CLASS: SEASON}
 
-# -- Body parts --
-- citation: ulo
+- citation: taglamig
   pos: NOUN
-  gloss: head
-- citation: mata
-  pos: NOUN
-  gloss: eye
-- citation: ilong
-  pos: NOUN
-  gloss: nose
-- citation: bibig
-  pos: NOUN
-  gloss: mouth
-- citation: ngipin
-  pos: NOUN
-  gloss: tooth
-- citation: dila
-  pos: NOUN
-  gloss: tongue
-- citation: tenga
-  pos: NOUN
-  gloss: ear
-- citation: kamay
-  pos: NOUN
-  gloss: hand
-- citation: paa
-  pos: NOUN
-  gloss: foot
-- citation: binti
-  pos: NOUN
-  gloss: leg
-- citation: balikat
-  pos: NOUN
-  gloss: shoulder
-- citation: likod
-  pos: NOUN
-  gloss: back
-- citation: tiyan
-  pos: NOUN
-  gloss: stomach
-- citation: dibdib
-  pos: NOUN
-  gloss: chest
-- citation: puso
-  pos: NOUN
-  gloss: heart
-- citation: utak
-  pos: NOUN
-  gloss: brain
-- citation: dugo
-  pos: NOUN
-  gloss: blood
-- citation: buhok
-  pos: NOUN
-  gloss: hair
-- citation: balat
-  pos: NOUN
-  gloss: skin
-- citation: kuko
-  pos: NOUN
-  gloss: nail (finger / toe)
+  gloss: cold spell
+  feats: {SEM_CLASS: SEASON}
 
-# -- Nature --
-- citation: buwan
+- citation: tagaraw
   pos: NOUN
-  gloss: moon, month
-- citation: bituin
-  pos: NOUN
-  gloss: star
-- citation: ulap
-  pos: NOUN
-  gloss: cloud
-- citation: ulan
-  pos: NOUN
-  gloss: rain
-- citation: hangin
-  pos: NOUN
-  gloss: wind
-- citation: ilog
-  pos: NOUN
-  gloss: river
-- citation: dagat
-  pos: NOUN
-  gloss: sea
-- citation: bundok
-  pos: NOUN
-  gloss: mountain
-- citation: puno
-  pos: NOUN
-  gloss: tree
-- citation: dahon
-  pos: NOUN
-  gloss: leaf
-- citation: bulaklak
-  pos: NOUN
-  gloss: flower
-- citation: langit
-  pos: NOUN
-  gloss: sky, heaven
-- citation: lupa
-  pos: NOUN
-  gloss: earth, soil
-- citation: apoy
-  pos: NOUN
-  gloss: fire
-- citation: bato
-  pos: NOUN
-  gloss: stone, rock
-- citation: liwanag
-  pos: NOUN
-  gloss: light
-- citation: dilim
-  pos: NOUN
-  gloss: darkness
+  gloss: sunny period
+  feats: {SEM_CLASS: SEASON}
 
-# -- Animals --
-- citation: daga
+- citation: taggutom
   pos: NOUN
-  gloss: rat, mouse
-- citation: kalabaw
-  pos: NOUN
-  gloss: water buffalo, carabao
-- citation: baka
-  pos: NOUN
-  gloss: cow
-- citation: kambing
-  pos: NOUN
-  gloss: goat
-- citation: pato
-  pos: NOUN
-  gloss: duck
-- citation: kuneho
-  pos: NOUN
-  gloss: rabbit
-- citation: langaw
-  pos: NOUN
-  gloss: fly (insect)
+  gloss: hunger season
+  feats: {SEM_CLASS: SEASON}
 
-# -- Food --
-- citation: bigas
-  pos: NOUN
-  gloss: uncooked rice
-- citation: asin
-  pos: NOUN
-  gloss: salt
-- citation: asukal
-  pos: NOUN
-  gloss: sugar
-- citation: itlog
-  pos: NOUN
-  gloss: egg
-- citation: mansanas
-  pos: NOUN
-  gloss: apple
-- citation: saging
-  pos: NOUN
-  gloss: banana
-- citation: mangga
-  pos: NOUN
-  gloss: mango
-- citation: niyog
-  pos: NOUN
-  gloss: coconut
-- citation: kamatis
-  pos: NOUN
-  gloss: tomato
-- citation: patatas
-  pos: NOUN
-  gloss: potato
-- citation: suka
-  pos: NOUN
-  gloss: vinegar
-- citation: keso
-  pos: NOUN
-  gloss: cheese
-- citation: karne
-  pos: NOUN
-  gloss: meat
-- citation: gulay
-  pos: NOUN
-  gloss: vegetable (homophonous with the verb)
 
-# -- Objects / places --
-- citation: kama
-  pos: NOUN
-  gloss: bed
-- citation: salamin
-  pos: NOUN
-  gloss: mirror, glasses
-- citation: pinto
-  pos: NOUN
-  gloss: door
-- citation: bintana
-  pos: NOUN
-  gloss: window
-- citation: sahig
-  pos: NOUN
-  gloss: floor
-- citation: dingding
-  pos: NOUN
-  gloss: wall
-- citation: bubong
-  pos: NOUN
-  gloss: roof
-- citation: hagdan
-  pos: NOUN
-  gloss: stairs, ladder
-- citation: palengke
-  pos: NOUN
-  gloss: market
-- citation: parke
-  pos: NOUN
-  gloss: park
-- citation: bayan
-  pos: NOUN
-  gloss: town, country
-- citation: eskwela
-  pos: NOUN
-  gloss: school (colloquial; cf. paaralan)
+# === Collective numerals (Phase 5f Commit 18) ============================
+# Measure / collective NOUNs that take a complement N — pares "pair"
+# (×2), dosena "dozen" (×12), daandaan "hundreds" (×100s),
+# libulibo "thousands" (×1000s). Order preserved by ascending N.
 
-# -- Time --
-- citation: taon
+- citation: pares
   pos: NOUN
-  gloss: year
-- citation: kahapon
-  pos: NOUN
-  gloss: yesterday
-- citation: ngayon
-  pos: NOUN
-  gloss: now, today
-- citation: sandali
-  pos: NOUN
-  gloss: a moment
+  gloss: pair
+  feats: {MEASURE: "YES"}
 
-# -- Clothing / transport --
-- citation: damit
+- citation: dosena
   pos: NOUN
-  gloss: clothing, dress
-- citation: sapatos
-  pos: NOUN
-  gloss: shoes
-- citation: sumbrero
-  pos: NOUN
-  gloss: hat
-- citation: bag
-  pos: NOUN
-  gloss: bag
-- citation: kotse
-  pos: NOUN
-  gloss: car
-- citation: dyip
-  pos: NOUN
-  gloss: jeepney
-- citation: bus
-  pos: NOUN
-  gloss: bus
-- citation: tren
-  pos: NOUN
-  gloss: train
-- citation: eroplano
-  pos: NOUN
-  gloss: airplane
-- citation: bisikleta
-  pos: NOUN
-  gloss: bicycle
+  gloss: dozen
+  feats: {MEASURE: "YES"}
 
-# --- Proper-name placeholders ---
-- citation: maria
+- citation: daandaan
   pos: NOUN
-  gloss: Maria (proper name)
-- citation: juan
+  gloss: hundreds
+  feats: {MEASURE: "YES", COLL_VALUE: HUNDREDS}
+
+- citation: libulibo
   pos: NOUN
-  gloss: Juan (proper name)
-- citation: pedro
-  pos: NOUN
-  gloss: Pedro (proper name)
+  gloss: thousands
+  feats: {MEASURE: "YES", COLL_VALUE: THOUSANDS}
+
+
+# === Proper-name placeholders ============================================
+# Test-fixture proper names. Alphabetical by citation.
+
 - citation: ana
   pos: NOUN
   gloss: Ana (proper name)
+
+- citation: juan
+  pos: NOUN
+  gloss: Juan (proper name)
+
+- citation: maria
+  pos: NOUN
+  gloss: Maria (proper name)
+
+- citation: pedro
+  pos: NOUN
+  gloss: Pedro (proper name)
