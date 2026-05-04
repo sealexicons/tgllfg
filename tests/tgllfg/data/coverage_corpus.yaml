@@ -3435,6 +3435,24 @@
 - text: Bumili ako ng higit sa apat na aklat.
   construction: 'comparator: higit + consonant-final cardinal (apat na)'
   expected: parse
+- text: Bumili ako ng isang pares ng sapatos.
+  construction: 'collective: pares + GEN-NP (one pair of shoes)'
+  expected: parse
+- text: Bumili ako ng isang dosena ng itlog.
+  construction: 'collective: dosena + GEN-NP (one dozen eggs)'
+  expected: parse
+- text: Bumili ako ng isang dosenang itlog.
+  construction: 'collective: dosena + linker (measure-N rule)'
+  expected: parse
+- text: Bumili ako ng isang pares na sapatos.
+  construction: 'collective: pares + na linker'
+  expected: parse
+- text: Bumili ako ng daandaan na aklat.
+  construction: 'collective: daandaan (hundreds) + na'
+  expected: parse
+- text: Bumili ako ng libulibong tao.
+  construction: 'collective: libulibo (thousands) + -ng'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

@@ -1783,6 +1783,52 @@
   gloss: hunger season
   feats: {SEM_CLASS: SEASON}
 
+# === Phase 5f Commit 18: collective numerals (Group H2 item 4) =============
+# Measure / collective NOUNs that take a complement N — the
+# measured noun — either via a GEN-NP marker (``isang pares ng
+# sapatos`` "one pair of shoes") or via the linker (``isang
+# dosenang itlog`` "one dozen eggs"). The GEN form composes via
+# existing rules (Phase 5f Commit 1 cardinal NP-modifier +
+# Phase 4 §7.8 NP-internal possessive); the linker form needs
+# a small new measure-N rule (Phase 5f Commit 18 in
+# src/tgllfg/cfg/grammar.py): ``N → N[MEASURE=YES] PART[LINK]
+# N``.
+#
+# All four entries are NOUN with ``MEASURE: "YES"``. Spanish-
+# borrowed pares / dosena (S&O 1972 §4.5) and reduplicated
+# native daandaan / libulibo (R&B 1986). The reduplicated
+# productive form (``X-X`` = "many X-units") generalises to
+# higher-order multiples in principle (``milyong-milyon``
+# "millions"), but per plan §11.1 Group H item 4 we lex per
+# attested form rather than introduce a productive
+# ``card_redup`` morph class. Deferred.
+#
+# Hyphenation note: the canonical orthography for the
+# reduplicated forms is ``daan-daan`` and ``libu-libo``. The
+# tokenizer (``\w+|\S``) splits hyphens, so the canonical
+# surfaces tokenise as 3 tokens (``daan``, ``-``, ``daan``).
+# For now the seed lex stores single-token forms (``daandaan``,
+# ``libulibo``) — same precedent as Phase 5f Commit 14 seasons
+# (``taginit``) and Commit 16 approximators
+# (``humigitkumulang``). The hyphenated form awaits a
+# tokenizer pre-pass.
+- citation: pares
+  pos: NOUN
+  gloss: pair
+  feats: {MEASURE: "YES"}
+- citation: dosena
+  pos: NOUN
+  gloss: dozen
+  feats: {MEASURE: "YES"}
+- citation: daandaan
+  pos: NOUN
+  gloss: hundreds
+  feats: {MEASURE: "YES", COLL_VALUE: HUNDREDS}
+- citation: libulibo
+  pos: NOUN
+  gloss: thousands
+  feats: {MEASURE: "YES", COLL_VALUE: THOUSANDS}
+
 - citation: lapis
   pos: NOUN
   gloss: pencil

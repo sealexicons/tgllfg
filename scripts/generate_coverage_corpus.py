@@ -1535,6 +1535,19 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "comparator: higit in SUBJ", "parse")
     _add(out, "bumili ako ng higit sa apat na aklat",
          "comparator: higit + consonant-final cardinal (apat na)", "parse")
+    # Phase 5f Commit 18: collective numerals (Group H2 item 4).
+    _add(out, "bumili ako ng isang pares ng sapatos",
+         "collective: pares + GEN-NP (one pair of shoes)", "parse")
+    _add(out, "bumili ako ng isang dosena ng itlog",
+         "collective: dosena + GEN-NP (one dozen eggs)", "parse")
+    _add(out, "bumili ako ng isang dosenang itlog",
+         "collective: dosena + linker (measure-N rule)", "parse")
+    _add(out, "bumili ako ng isang pares na sapatos",
+         "collective: pares + na linker", "parse")
+    _add(out, "bumili ako ng daandaan na aklat",
+         "collective: daandaan (hundreds) + na", "parse")
+    _add(out, "bumili ako ng libulibong tao",
+         "collective: libulibo (thousands) + -ng", "parse")
     return out
 
 

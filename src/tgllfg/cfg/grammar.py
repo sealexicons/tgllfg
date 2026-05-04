@@ -590,6 +590,52 @@ class Grammar:
                 ],
             ))
 
+        # --- Phase 5f Commit 18: measure-N rule (Group H2 item 4) ---
+        #
+        # ``dosenang itlog`` "a dozen eggs", ``pares na sapatos``
+        # "pair of shoes" (uncardinal), ``daandaan na aklat``
+        # "hundreds of books", ``libulibong tao`` "thousands of
+        # people". A measure / collective NOUN attaches to a
+        # measured-N complement via the linker, producing N. The
+        # output's PRED + LEMMA come from the measured (right-
+        # hand) N; the measure NOUN's lemma rides as
+        # ``MEASURE_HEAD``. ``MEASURE='YES'`` propagates upward
+        # for downstream consumers.
+        #
+        # Plan §11.1 Group H item 4: pares takes a GEN-NP
+        # complement (``isang pares ng sapatos``) AND a linker
+        # complement; dosena uses the linker form
+        # (``isang dosenang itlog``); reduplicated daandaan /
+        # libulibo are described as taking a GEN complement.
+        # The GEN form composes via existing rules (Phase 5f
+        # Commit 1 cardinal NP-modifier + Phase 4 §7.8 NP-internal
+        # possessive); this commit's measure-N rule covers the
+        # linker form, which is more idiomatic for native speakers.
+        #
+        # The constraining equation ``(↓1 MEASURE) =c 'YES'`` gates
+        # the rule to measure NOUNs only — generic ``bata na
+        # aklat`` ("child book"?) doesn't compose because ``bata``
+        # has no MEASURE feature. ``¬ (↓3 MEASURE)`` blocks chained
+        # measures (parallel to the cardinal rule's
+        # ``¬ (↓4 CARDINAL_VALUE)``).
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "N",
+                [
+                    "N",
+                    f"PART[LINK={link}]",
+                    "N",
+                ],
+                [
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                    "(↑ MEASURE_HEAD) = ↓1 LEMMA",
+                    "(↑ MEASURE) = 'YES'",
+                    "(↓1 MEASURE) =c 'YES'",
+                    "¬ (↓3 MEASURE)",
+                ],
+            ))
+
         # --- N from NOUN (toy PRED; Phase 5 will lexicalise properly) ---
         # Phase 5c §8 follow-on (Commit 6): also expose the noun's
         # ``LEMMA`` (always set by the noun analyzer) so the multi-OBL

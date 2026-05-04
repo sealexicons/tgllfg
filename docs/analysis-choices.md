@@ -7911,3 +7911,156 @@ consumers (LMT, semantics, normalization).
   works mechanically with the frame rules. Not explicitly
   tested but no special handling needed.
 
+## Phase 5f Commit 18: collective numerals (Group H2 item 4)
+
+**Date:** 2026-05-03. **Status:** active. 4 NOUN lex entries
++ 1 new grammar rule (with 2 linker variants). Refs: plan
+§11.1 Group H item 4 (collective numerals); S&O 1972 §4.5;
+R&B 1986; Phase 5f Commit 1 (cardinal NP-modifier rule
+consumed unchanged for the GEN-complement form and as the
+outer modifier for the LINKER-complement form); Phase 4 §7.8
+(NP-internal possessive consumed unchanged for the GEN-
+complement form); Phase 5f Commit 14 / Commit 16 (single-
+token hyphenation precedent for canonical ``daan-daan`` /
+``libu-libo`` reduplicated forms).
+
+Opens Group H2 (collective numerals + distributive ``tig-`` +
+universal ``bawat`` / ``kada``) with the largest sub-item:
+collective numerals.
+
+### Lex change
+
+Four NOUN entries in ``data/tgl/roots.yaml``:
+
+* ``pares``    — NOUN[MEASURE="YES"]. "pair" (Spanish-borrowed).
+* ``dosena``   — NOUN[MEASURE="YES"]. "dozen" (Spanish-borrowed).
+* ``daandaan`` — NOUN[MEASURE="YES", COLL_VALUE=HUNDREDS].
+                  "hundreds" (canonical orthography
+                  ``daan-daan``).
+* ``libulibo`` — NOUN[MEASURE="YES", COLL_VALUE=THOUSANDS].
+                  "thousands" (canonical ``libu-libo``).
+
+The string-quoted ``"YES"`` on MEASURE follows the same
+recurring-pitfall convention as previous Phase 5f commits:
+bare ``YES`` parses as Python boolean and fails the
+``=c 'YES'`` constraining equation.
+
+Hyphenation note: the canonical orthography for the
+reduplicated forms is ``daan-daan`` and ``libu-libo``. The
+tokenizer (``\w+|\S``) splits hyphens, so the canonical
+surfaces tokenise as 3 tokens. The single-token forms
+(``daandaan``, ``libulibo``) follow the same precedent as
+seasons (``taginit``) and approximators
+(``humigitkumulang``). The hyphenated form awaits a tokenizer
+pre-pass.
+
+### Two complement forms: GEN vs LINKER
+
+Tagalog measure phrases admit two structurally distinct
+complement forms, with somewhat different head-choice
+implications:
+
+**GEN-complement form** (composes via existing rules):
+
+```
+isang pares ng sapatos          "one pair of shoes"
+└──────────┬───────┘
+           NP[CASE=GEN]
+            ├─ NP[CASE=GEN]: ``isang pares`` (head=pares, CV=1)
+            └─ NP[CASE=GEN]: ``ng sapatos`` (POSS)
+```
+
+The cardinal-modifier rule fires on ``isang pares`` (head=
+pares); the NP-internal possessive rule attaches ``ng
+sapatos`` as POSS. Head is the measure NOUN.
+
+**LINKER-complement form** (uses the new measure-N rule):
+
+```
+isang dosenang itlog            "one dozen eggs"
+└────────────────┬───┘
+                  NP[CASE=GEN]
+                   ├─ ``isa``   NUM[CARDINAL=YES, CV=1]
+                   ├─ ``-ng``    PART[LINK=NG]
+                   └─ ``dosenang itlog``   N (via measure-N rule)
+                                            ├─ ``dosena`` N[MEASURE=YES]
+                                            ├─ ``-ng``     PART[LINK=NG]
+                                            └─ ``itlog``   N
+                       result: PRED + LEMMA = itlog;
+                                MEASURE_HEAD = dosena;
+                                MEASURE = YES.
+```
+
+The inner measure-N rule produces N with the *measured* N as
+the head (PRED + LEMMA = itlog); the measure NOUN's lemma
+rides as ``MEASURE_HEAD``. The cardinal-modifier rule
+consumes the resulting N unchanged.
+
+This head-choice asymmetry between GEN-form and LINKER-form
+reflects a real Tagalog distinction: the GEN form quantifies
+the measure ("a pair, of shoes"), while the LINKER form
+quantifies the measured ("a dozen eggs"). Both are
+grammatical for both lex items; the analysis-choices
+implication is that downstream consumers (LMT, semantic
+normalisation) must walk both paths.
+
+### Grammar change
+
+A single new rule with 2 linker variants:
+
+```
+N → N PART[LINK=NA|NG] N
+Equations:
+  (↑ PRED) = ↓3 PRED                # head = measured (right) N
+  (↑ LEMMA) = ↓3 LEMMA
+  (↑ MEASURE_HEAD) = ↓1 LEMMA       # measure NOUN's lemma rides
+  (↑ MEASURE) = 'YES'               # propagate upward
+  (↓1 MEASURE) =c 'YES'             # gate to measure NOUNs
+  ¬ (↓3 MEASURE)                    # block chained measures
+```
+
+The constraining equation ``(↓1 MEASURE) =c 'YES'`` is the
+load-bearing piece — without it, the rule would fire on any
+``N PART[LINK] N`` sequence (over-generation: ``bata na
+aklat`` "child book"?). The ``¬ (↓3 MEASURE)`` block rejects
+chained measures (``*isang dosenang dosenang itlog``).
+
+### Why a new measure-N rule rather than just lex
+
+The GEN-complement form composes via existing rules, but the
+LINKER-complement form is more idiomatic for native speakers
+of Tagalog. Without the measure-N rule, the LINKER form
+either fails to parse or composes via accidentally-permissive
+fallbacks (e.g., the parser's robustness path treating
+``dosenang`` as _UNK and absorbing it). Adding the targeted
+rule makes the parse principled and gives downstream
+consumers the right structural / featural information.
+
+### Negative fixtures (per §11.2)
+
+* ``*isang batang aklat`` — bata is a regular NOUN with no
+  MEASURE feature; the linker-form measure-N rule's gate
+  fails, so no comparator-style composition occurs.
+* ``*isang dosenang dosenang itlog`` — chained measure NOUNs
+  blocked by ``¬ (↓3 MEASURE)``.
+
+### Out of scope for this commit
+
+* **Hyphenated ``daan-daan`` / ``libu-libo``** orthography —
+  needs the same tokenizer pre-pass deferred for Phase 5f
+  Commit 14 seasons / Commit 16 ``humigit-kumulang``.
+* **Productive ``card_redup`` morph class** for higher-order
+  reduplicated multiples (``milyong-milyon`` "millions",
+  ``bilyong-bilyon`` "billions") — per plan §11.1 Group H
+  item 4: lex per attested form; productive class deferred.
+* **MEASURE percolation to the matrix NP** — same NP-from-N
+  projection limitation as cardinal-modifier features (Commit
+  1). Tests walk down to verify CARDINAL_VALUE + LEMMA on the
+  matrix NP plus a parse path with the right measure-N inner
+  composition.
+* **Other measure NOUNs** (``baso`` "cup" → ``isang basong
+  tubig`` "one cup of water", ``piraso`` "piece" → ``isang
+  pirasong papel`` "one piece of paper", ``tasa`` "cup",
+  etc.) — extending the MEASURE lex inventory is additive
+  but not in plan §11.1 Group H scope. Defer.
+
