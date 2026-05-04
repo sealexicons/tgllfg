@@ -373,6 +373,55 @@
   pos: Q
   feats: {QUANT: EVERY, UNIV: "YES"}
 
+# === Phase 5f Commit 21: distributive-possessive (Group H3 item 7) =========
+# Reduplicated possessive pronouns with distributive force —
+# ``kani-kaniyang ganda`` "each one's beauty",
+# ``kanya-kanyang aklat`` "each their own book". Two
+# orthographic variants attested:
+#
+#   kani-kaniya  — reduplication of ``kaniya`` (alternate
+#                  form of ``kanya``); the i-vowel reflects
+#                  the reduplication pattern.
+#   kanya-kanya  — full reduplication of ``kanya``.
+#
+# Both forms are functionally equivalent: distributive-
+# possessive Q heads. The plan §11.1 Group H item 7 (S&O 1972
+# §6.13) describes them as "reduplicated possessive pronoun
+# with distributive force ... Composes from existing PRON-poss
+# machinery + the linker".
+#
+# Implementation: treat the reduplicated forms as Q[DISTRIB_POSS=
+# "YES"] rather than PRON. The syntactic distribution is
+# Q-like (preposed quantifier with linker complement),
+# matching the shape established by Phase 5f Commit 15 vague-Q-
+# modifier and Commit 20 universal. The PRON-derived semantics
+# (each-one's-own) ride as the QUANT atom and the
+# DISTRIB_POSS feature.
+#
+# Hyphenation note: same tokenizer issue as Commits 14 / 16 /
+# 18 / 19 — ``\w+|\S`` splits hyphens. Single-token forms
+# (``kanikaniya``, ``kanyakanya``) follow the established
+# precedent. Canonical hyphenated awaits a tokenizer pre-pass.
+#
+# Out of scope for this commit:
+#
+# * Standalone use (``Kanya-kanya na lang.`` "It's each one's
+#   own now.") — idiomatic; needs separate handling.
+# * Productive reduplication of arbitrary pronouns
+#   (``akin-akin``, ``inyo-inyo``) — the attested distributive-
+#   possessive paradigm is restricted to the 3rd-person forms
+#   (kanya / kaniya); per-form lex is sufficient.
+# * Generic preposed-possessor construction (``kanyang aklat``
+#   "his/her book", ``aking aklat`` "my book") — additive but
+#   structurally different (PRON[DAT] + LINK + N, not
+#   distributive). Defer.
+- surface: kanikaniya
+  pos: Q
+  feats: {QUANT: EACH_OWN, DISTRIB_POSS: "YES"}
+- surface: kanyakanya
+  pos: Q
+  feats: {QUANT: EACH_OWN, DISTRIB_POSS: "YES"}
+
 # === Phase 4 §7.6: psych control predicates ==============================
 # Pseudo-verbal predicates that select an XCOMP complement clause and
 # take a GEN-marked experiencer. They have no verbal morphology

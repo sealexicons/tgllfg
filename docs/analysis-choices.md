@@ -8340,3 +8340,143 @@ implementation here matches the canonical surfaces.
   bawat`` is non-standard). Not explicitly tested or
   documented as supported.
 
+## Phase 5f Commit 21: distributive-possessive ``kani-kaniya`` / ``kanya-kanya`` (Group H3 item 7)
+
+**Date:** 2026-05-04. **Status:** active. 2 Q lex entries +
+7 new grammar rules + 1 gating addition on the existing
+Phase 5b partitive rules. Refs: plan §11.1 Group H item 7
+(distributive-possessive); S&O 1972 §6.13; R&B 1986; Phase 5f
+Commit 15 (vague-Q-modifier rule consumed as the structural
+template); Phase 5f Commit 20 (universal Q rule's bare-NOM
+companion consumed as a structural template); existing PRON-
+poss machinery referenced by the plan but not directly
+consumed (the construction is Q-based not PRON-based).
+
+Opens Group H3 (the final Phase 5f sub-PR).
+
+### Lex change
+
+Two Q entries in ``data/tgl/particles.yaml``:
+
+* ``kanikaniya`` — Q[QUANT=EACH_OWN, DISTRIB_POSS="YES"].
+  Reduplication of ``kaniya`` (alternate form of ``kanya``);
+  the i-vowel reflects the reduplication pattern.
+* ``kanyakanya`` — Q[QUANT=EACH_OWN, DISTRIB_POSS="YES"]. Full
+  reduplication of ``kanya``.
+
+Both forms are functionally equivalent. The two orthographic
+variants are both attested in standard Tagalog (R&B 1986).
+
+### Why Q (not PRON)?
+
+The plan §11.1 Group H item 7 describes these as "reduplicated
+possessive pronoun with distributive force ... Composes from
+existing PRON-poss machinery + the linker." The plan's PRON
+framing reflects the morphological etymology (reduplication of
+``kanya`` "his/her" / ``kaniya``) — but the syntactic
+distribution is Q-like:
+
+* Pre-N quantifier slot (between case-marker and head N).
+* Linker required between Q and N.
+* Cannot postpose like a possessor (``aklat ko`` "my book"
+  works; ``*aklat kanyakanya`` doesn't).
+* Can stand alone in NOM with no DET (parallel to ``bawat
+  bata``).
+
+The existing PRON-poss machinery is the postposed-possessor
+rule (``NP → NP NP[CASE=GEN]``) which fires on a GEN-NP
+attaching to an existing NP. The distributive-possessive
+construction is the inverse — preposed Q + linker + N. So
+the plan's "PRON-poss machinery" reuse is structural in
+spirit (the f-structure puts the reduplicated form in a
+possessor-like role) but the rule shape is Q-modifier-like.
+
+Implementation choice: treat as Q[DISTRIB_POSS=YES]. The
+``DISTRIB_POSS`` feature distinguishes this Q-distribution
+from the four already covered (partitive / vague-modifier /
+universal / bare-NOM-universal):
+
+| Distribution | Lex feature | Rule | Phase |
+|--------------|--------------|------|-------|
+| Partitive | (none) | ``DET/ADP Q NP[GEN]`` | Phase 5b |
+| Vague-modifier | VAGUE=YES | ``DET/ADP Q LINK N`` | Phase 5f Commit 15 |
+| Universal | UNIV=YES | ``DET/ADP Q N`` | Phase 5f Commit 20 |
+| Bare-NOM universal | UNIV=YES | ``Q N`` | Phase 5f Commit 20 |
+| Distributive-possessive | DISTRIB_POSS=YES | ``DET/ADP Q LINK N`` | This commit |
+| Bare-NOM distrib-poss | DISTRIB_POSS=YES | ``Q LINK N`` | This commit |
+
+The new distributive-possessive rule shape coincides with the
+vague-Q-modifier rule shape (both ``DET/ADP Q LINK N``) but
+with different gating constraints. Two parallel rules with
+different gates rather than one disjunctive rule.
+
+### Hyphenation
+
+Canonical orthography is ``kani-kaniya`` and ``kanya-kanya``.
+Same tokenizer issue as Commits 14 / 16 / 18 / 19: ``\w+|\S``
+splits hyphens. Single-token forms (``kanikaniya``,
+``kanyakanya``) are the established precedent. Canonical
+hyphenated awaits a tokenizer pre-pass.
+
+### Grammar change
+
+Six case-marked NP rules in ``src/tgllfg/cfg/grammar.py`` (3
+cases × 2 linker variants):
+
+```
+NP[CASE=X] → DET/ADP[CASE=X] Q PART[LINK=NA|NG] N
+Equations:
+  (↑) = ↓1                            # CASE / MARKER from outer marker
+  (↑ PRED) = ↓4 PRED                  # head N supplies PRED
+  (↑ LEMMA) = ↓4 LEMMA
+  (↑ QUANT) = ↓2 QUANT                # Q's QUANT lifts (= 'EACH_OWN')
+  (↑ DISTRIB_POSS) = 'YES'            # mark NP for downstream consumers
+  ¬ (↓4 DISTRIB_POSS)                 # block chained
+  (↓2 DISTRIB_POSS) =c 'YES'          # gate to DISTRIB_POSS Q heads
+```
+
+Plus 2 bare-NOM rules (NA / NG linker variants) for surfaces
+where the distributive-possessive Q functions as the
+determiner-equivalent (``Kanyakanyang aklat ay binili
+nila.``):
+
+```
+NP[CASE=NOM] → Q PART[LINK=NA|NG] N
+Equations:
+  (↑ PRED) = ↓3 PRED
+  (↑ LEMMA) = ↓3 LEMMA
+  (↑ QUANT) = ↓1 QUANT
+  (↑ DISTRIB_POSS) = 'YES'
+  (↑ CASE) = 'NOM'
+  ¬ (↓3 DISTRIB_POSS)
+  (↓1 DISTRIB_POSS) =c 'YES'
+```
+
+Gate addition on existing Phase 5b ``Q + NP[GEN]`` partitive
+rules (3 case variants): each gains ``¬ (↓2 DISTRIB_POSS)``
+(parallel to the existing ``¬ (↓2 VAGUE)`` and
+``¬ (↓2 UNIV)`` gates from Commits 15 + 20).
+
+### Negative fixtures (per §11.2)
+
+* ``*kanikaniyang kanyakanyang aklat`` — chained
+  distributive-possessives blocked by ``¬ (↓4 DISTRIB_POSS)``.
+* ``*ng kanyakanya ng aklat`` — DISTRIB_POSS in GEN-NP
+  partitive blocked by the new ``¬ (↓2 DISTRIB_POSS)`` gate.
+
+### Out of scope for this commit
+
+* **Standalone use** (``Kanya-kanya na lang.`` "It's each
+  one's own now.") — idiomatic; needs separate handling.
+* **Productive reduplication of arbitrary pronouns**
+  (``akin-akin``, ``inyo-inyo``) — restricted in standard
+  Tagalog to 3rd-person; per-form lex sufficient.
+* **Generic preposed-possessor construction**
+  (``kanyang aklat`` "his/her book", ``aking aklat`` "my
+  book") — additive but structurally distinct (PRON[CASE=DAT]
+  + LINK + N rather than Q + LINK + N). Worth a separate
+  commit; defer.
+* **Hyphenated ``kani-kaniya`` / ``kanya-kanya``** —
+  needs the same tokenizer pre-pass deferred for Commits 14
+  / 16 / 18 / 19.
+

@@ -3504,6 +3504,21 @@
 - text: Kada bata ay kumakain.
   construction: 'universal: kada bare-NOM ay-fronted'
   expected: parse
+- text: Bumili ako ng kanikaniyang aklat.
+  construction: 'distrib-poss: kanikaniya + linker + N (GEN OBJ)'
+  expected: parse
+- text: Bumili ako ng kanyakanyang aklat.
+  construction: 'distrib-poss: kanyakanya + linker + N (GEN OBJ)'
+  expected: parse
+- text: Pumunta ako sa kanyakanyang bahay.
+  construction: 'distrib-poss: kanyakanya + linker + N (DAT)'
+  expected: parse
+- text: Kanyakanyang aklat ay binili nila.
+  construction: 'distrib-poss: kanyakanya bare-NOM ay-fronted'
+  expected: parse
+- text: Kanikaniyang aklat ay binili nila.
+  construction: 'distrib-poss: kanikaniya bare-NOM ay-fronted'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

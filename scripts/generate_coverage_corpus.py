@@ -1577,6 +1577,16 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "universal: kada (colloquial) in NOM SUBJ", "parse")
     _add(out, "kada bata ay kumakain",
          "universal: kada bare-NOM ay-fronted", "parse")
+    # Phase 5f Commit 21: distributive-possessive (Group H3 item 7).
+    for q in ("kanikaniya", "kanyakanya"):
+        _add(out, f"bumili ako ng {q}ng aklat",
+             f"distrib-poss: {q} + linker + N (GEN OBJ)", "parse")
+    _add(out, "pumunta ako sa kanyakanyang bahay",
+         "distrib-poss: kanyakanya + linker + N (DAT)", "parse")
+    _add(out, "kanyakanyang aklat ay binili nila",
+         "distrib-poss: kanyakanya bare-NOM ay-fronted", "parse")
+    _add(out, "kanikaniyang aklat ay binili nila",
+         "distrib-poss: kanikaniya bare-NOM ay-fronted", "parse")
     return out
 
 
