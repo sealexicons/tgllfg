@@ -112,11 +112,13 @@ def _apply(op: Operation, base: str, flags: set[str]) -> str:
 @dataclass
 class _Index:
     """Surface-keyed lookup tables built once per analyzer instance.
-    Particles and verb_forms are list-valued because a single surface
-    can carry multiple analyses (e.g. ``na`` is both the linker and
-    the aspectual second-position enclitic ``na`` "already")."""
+    All four are list-valued: a single surface can carry multiple
+    analyses (e.g. ``na`` is both the linker and the aspectual 2P
+    enclitic, and ``kuwarto`` carries both "room" and "quarter-of-
+    hour" NOUN readings — Phase 5f closing deferral on multiple lex
+    entries per ``(lemma, pos)`` tuple)."""
     verb_forms: dict[str, list[MorphAnalysis]] = field(default_factory=dict)
-    nouns: dict[str, MorphAnalysis] = field(default_factory=dict)
+    nouns: dict[str, list[MorphAnalysis]] = field(default_factory=dict)
     particles: dict[str, list[MorphAnalysis]] = field(default_factory=dict)
     pronouns: dict[str, MorphAnalysis] = field(default_factory=dict)
 
@@ -167,7 +169,7 @@ class Analyzer:
         if n in self._index.verb_forms:
             out.extend(self._index.verb_forms[n])
         if n in self._index.nouns:
-            out.append(self._index.nouns[n])
+            out.extend(self._index.nouns[n])
         if not out:
             out.append(MorphAnalysis(lemma=n, pos="_UNK", feats={}))
         return out
@@ -245,10 +247,12 @@ class Analyzer:
                 # hardcoded empty.
                 noun_feats: dict[str, object] = {**r.feats}
                 noun_feats.setdefault("LEMMA", r.citation)
-                self._index.nouns[r.citation.lower()] = MorphAnalysis(
-                    lemma=r.citation,
-                    pos="NOUN",
-                    feats=noun_feats,
+                self._index.nouns.setdefault(r.citation.lower(), []).append(
+                    MorphAnalysis(
+                        lemma=r.citation,
+                        pos="NOUN",
+                        feats=noun_feats,
+                    ),
                 )
 
     def _index_verb_paradigms(self, root: Root) -> None:

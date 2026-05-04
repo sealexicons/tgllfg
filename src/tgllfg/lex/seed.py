@@ -107,8 +107,24 @@ async def _upsert_lemmas(
 ) -> int:
     if not roots:
         return 0
-    rows = [
-        {
+    # Phase 5f closing deferral on multiple lex entries per
+    # ``(lemma, pos)`` (2026-05-04): the YAML lex now permits
+    # multiple Root entries for the same ``(citation, pos)`` (e.g.
+    # ``kuwarto`` "room" + ``kuwarto`` "quarter (of hour)"). The
+    # ``Lemma`` schema doesn't carry ``feats`` and enforces a
+    # unique ``(language_id, citation_form, pos)``, so the DB
+    # backend collapses to one row per pair — keeping the first
+    # encountered. This is a known DB-backend limitation; the
+    # YAML-backed analyzer (the default) sees both readings via
+    # the list-valued noun index in ``morph/analyzer.py``.
+    seen: set[tuple[str, str]] = set()
+    rows = []
+    for r in roots:
+        key = (r.citation, r.pos)
+        if key in seen:
+            continue
+        seen.add(key)
+        rows.append({
             "language_id": language_id,
             "citation_form": r.citation,
             "pos": r.pos,
@@ -116,9 +132,7 @@ async def _upsert_lemmas(
             "transitivity": r.transitivity or "",
             "affix_class": list(r.affix_class or ()),
             "sandhi_flags": list(r.sandhi_flags or ()),
-        }
-        for r in roots
-    ]
+        })
     stmt = pg_insert(m.Lemma).values(rows)
     stmt = stmt.on_conflict_do_update(
         constraint="uq_lemma_lang_form_pos",
