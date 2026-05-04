@@ -1083,3 +1083,35 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↓3 SEM_CLASS) =c 'FRACTION'",
             ],
         ))
+
+    # --- Phase 5f closing deferral: day-of-month form (Mayo 5) ----
+    #
+    # ``Mayo 5`` "May 5" — a MONTH NOUN compounded with a DOM
+    # digit. Composed via this N-internal rule; the resulting N
+    # projects ``SEM_CLASS=MONTH`` from the head so the existing
+    # temporal-frame PP rule (``PP → PART N`` with
+    # ``(↓2 SEM_CLASS) =c 'MONTH'`` from ``cfg/discourse.py``)
+    # admits ``tuwing Mayo 5`` "every May 5" and
+    # ``noong Mayo 5`` "on May 5" unchanged.
+    #
+    # The DOM digit lifts to ``DAY_OF_MONTH`` on the matrix N.
+    # Constraining ``(↓2 DIGIT_FORM) =c 'YES'`` restricts the
+    # rule to digit-form DOM (``Mayo 5``); a word-form DOM
+    # (``Mayo lima``) is grammatical but rare and not exercised
+    # by the seed corpus — the digit form is the canonical
+    # written register for dates.
+    #
+    # Companion to the year-expression PP rule in
+    # ``cfg/discourse.py`` (Phase 5f closing deferral). The
+    # combined ``noong Mayo 5, 1990`` "on May 5, 1990" is
+    # deferred — comma tokenization not yet supported.
+    rules.append(Rule(
+        "N",
+        ["N", "NUM[CARDINAL=YES]"],
+        [
+            "(↑) = ↓1",
+            "(↑ DAY_OF_MONTH) = ↓2 CARDINAL_VALUE",
+            "(↓1 SEM_CLASS) =c 'MONTH'",
+            "(↓2 DIGIT_FORM) =c 'YES'",
+        ],
+    ))

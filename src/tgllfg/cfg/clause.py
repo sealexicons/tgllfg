@@ -220,6 +220,39 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓6 CARDINAL) =c 'YES'",
         ],
     ))
+    # Symbolic division: ``X / Y = Z``. Parallel 5-daughter rule
+    # for the ``/`` PART form (no DAT marker before the divisor).
+    # Companion to the ``+`` / ``-`` / ``*`` / ``=`` symbolic
+    # operators added in particles.yaml under the digit
+    # tokenization closing deferral; those three slot into the
+    # word-form 5-daughter rule above unchanged. The constraining
+    # ``(↓2 SYMBOLIC) =c 'YES'`` keeps this rule from firing on
+    # word-form ``hati`` (which lacks ``SYMBOLIC=YES``); ``hati``
+    # without ``sa`` is ungrammatical Tagalog and the existing
+    # negative test ``*Anim hati dalawa ay tatlo`` confirms it
+    # shouldn't parse. (Phase 5f closing deferral, 2026-05-04.)
+    rules.append(Rule(
+        "S",
+        [
+            "NUM[CARDINAL=YES]",
+            "PART",
+            "NUM[CARDINAL=YES]",
+            "PART[LINK=AY]",
+            "NUM[CARDINAL=YES]",
+        ],
+        [
+            "(↑ PRED) = 'ARITHMETIC'",
+            "(↑ OP) = 'DIVIDE'",
+            "(↑ OPERAND_1) = ↓1 CARDINAL_VALUE",
+            "(↑ OPERAND_2) = ↓3 CARDINAL_VALUE",
+            "(↑ RESULT) = ↓5 CARDINAL_VALUE",
+            "(↓2 OP) =c 'DIVIDE'",
+            "(↓2 SYMBOLIC) =c 'YES'",
+            "(↓1 CARDINAL) =c 'YES'",
+            "(↓3 CARDINAL) =c 'YES'",
+            "(↓5 CARDINAL) =c 'YES'",
+        ],
+    ))
 
 
     # --- Phase 5b: multi-GEN-NP applicative frames (IV-BEN) ---

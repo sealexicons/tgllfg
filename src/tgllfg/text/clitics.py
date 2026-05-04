@@ -26,13 +26,25 @@ _VOWEL_NG_END = re.compile(r"^(.+[aeiouAEIOU])ng$")
 
 
 def split_enclitics(tokens: list[Token]) -> list[Token]:
+    """Split annotated enclitic attachments of the form
+    ``host=enclitic`` (e.g. ``kumain=na``) into two tokens. The
+    split fires only when the host is non-empty AND the suffix is a
+    known enclitic from :data:`ENCLITICS`; otherwise the token is
+    preserved unchanged. This guards against eating the standalone
+    ``=`` symbol (the digit-tokenization closing deferral added it
+    as a symbolic equality PART for arithmetic) and against the
+    pre-2026-05-04 silent drop of the post-``=`` portion when it
+    wasn't a recognised enclitic.
+    """
     out: list[Token] = []
     for t in tokens:
         if "=" in t.surface:
             base, after = t.surface.split("=", 1)
-            out.append(Token(base, base.lower(), t.start, t.start+len(base)))
-            if after in ENCLITICS:
+            if base and after in ENCLITICS:
+                out.append(Token(base, base.lower(), t.start, t.start+len(base)))
                 out.append(Token(after, after.lower(), t.start+len(base)+1, t.end))
+            else:
+                out.append(t)
         else:
             out.append(t)
     return out

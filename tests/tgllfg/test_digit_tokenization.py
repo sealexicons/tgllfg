@@ -297,3 +297,189 @@ class TestWordFormRegression:
         assert m.feats.get("CARDINAL") == "YES"
         assert m.feats.get("CARDINAL_VALUE") == value
         assert m.feats.get("DIGIT_FORM") is None
+
+
+# === Extended digit tokenization (post-Phase-5f close) ===================
+# The classes below cover constructions that didn't parse from morph
+# alone: symbolic arithmetic operators (``+`` / ``-`` / ``*`` / ``/``
+# and ``=``) added as PART entries with the same feature shapes as
+# their word-form counterparts, dot decimal separator (``.`` as
+# PART[DECIMAL_SEP=YES]), day-of-month form (``Mayo 5`` via a new
+# ``N → N[SEM_CLASS=MONTH] NUM[CARDINAL=YES, DIGIT_FORM=YES]`` rule
+# in ``cfg/nominal.py``), and year expressions (``noong 1990`` via a
+# new ``PP → PART NUM`` variant in ``cfg/discourse.py``). Two
+# pre-existing latent issues exposed and fixed alongside:
+# (i) the Phase 4 §7.3 clitic-absorption rule's ``PART[CLITIC_CLASS=2P]``
+# pattern was only non-conflict matched, so any clause-final PART
+# without a CLITIC_CLASS feature got absorbed into ADJ — tightened
+# with a constraining ``(↓2 CLITIC_CLASS) =c '2P'``;
+# (ii) ``split_enclitics`` ate the standalone ``=`` symbol because
+# it unconditionally split on ``=`` even when the result had no
+# valid enclitic suffix — now requires both a non-empty host and a
+# recognised enclitic. The tokenizer also strips a trailing ``.`` /
+# ``?`` / ``!`` orthographic terminator (previously absorbed at the
+# parser level via ``_strip_non_content``, which no longer fires
+# now that ``.`` has a non-_UNK PART analysis).
+
+
+class TestSymbolicArithmetic:
+    """``5 + 3 = 8`` — symbolic operators slot into the existing
+    arithmetic-predicate rules. PLUS / MINUS / TIMES use the shared
+    5-daughter rule; DIVIDE uses a new 5-daughter symbolic rule
+    (the word-form ``hati sa Y`` has a 6-daughter rule with the DAT
+    divisor marker)."""
+
+    @pytest.mark.parametrize("text,op,a,b,r", [
+        ("5 + 3 = 8.",   "PLUS",   "5", "3", "8"),
+        ("10 - 4 = 6.",  "MINUS",  "10", "4", "6"),
+        ("2 * 3 = 6.",   "TIMES",  "2", "3", "6"),
+        ("6 / 2 = 3.",   "DIVIDE", "6", "2", "3"),
+        ("100 + 1 = 101.", "PLUS", "100", "1", "101"),
+    ])
+    def test_symbolic_arith(
+        self, text: str, op: str, a: str, b: str, r: str,
+    ) -> None:
+        f = _matrix(text)
+        assert f is not None, f"no parse for {text!r}"
+        assert f.feats.get("PRED") == "ARITHMETIC"
+        assert f.feats.get("OP") == op
+        assert f.feats.get("OPERAND_1") == a
+        assert f.feats.get("OPERAND_2") == b
+        assert f.feats.get("RESULT") == r
+
+    def test_word_form_arith_regression(self) -> None:
+        """Word-form arithmetic ``Anim hati sa dalawa ay tatlo``
+        (6-daughter division rule) still parses unchanged after
+        the new 5-daughter symbolic-division rule lands."""
+        f = _matrix("Anim hati sa dalawa ay tatlo.")
+        assert f is not None
+        assert f.feats.get("OP") == "DIVIDE"
+        assert f.feats.get("OPERAND_1") == "6"
+        assert f.feats.get("OPERAND_2") == "2"
+        assert f.feats.get("RESULT") == "3"
+
+
+class TestDotDecimalSeparator:
+    """``5.3 ang isda`` and ``5 . 3 ang isda`` — symbolic dot
+    decimal separator. Fires the existing decimal-NUM rule
+    (``NUM → NUM PART[DECIMAL_SEP=YES] NUM``); the ``.`` PART has
+    the same DECIMAL_SEP=YES feature as ``punto``."""
+
+    @pytest.mark.parametrize("text", [
+        "5.3 ang isda.",
+        "5 . 3 ang isda.",
+        "10.5 ang isda.",
+    ])
+    def test_dot_decimal_predicative(self, text: str) -> None:
+        f = _matrix(text)
+        assert f is not None, f"no parse for {text!r}"
+        assert f.feats.get("PRED") == "CARDINAL <SUBJ>"
+        # Integer part is the leading digit.
+        assert f.feats.get("CARDINAL_VALUE") == text.split(".")[0].split()[-1].strip()
+
+    def test_no_spurious_adj_from_terminator(self) -> None:
+        """The trailing ``.`` is stripped by the tokenizer, NOT
+        absorbed into ADJ. Confirms the ``ADJ`` field stays absent
+        on a standard plain-V parse."""
+        f = _matrix("Tumakbo ang aso.")
+        assert f is not None
+        assert f.feats.get("ADJ") is None, (
+            f"trailing period leaked into ADJ: {f.feats.get('ADJ')!r}"
+        )
+
+
+class TestDayOfMonthForm:
+    """``Mayo 5`` — a MONTH NOUN compounded with a digit DOM. The
+    new ``N → N[SEM_CLASS=MONTH] NUM[CARDINAL=YES, DIGIT_FORM=YES]``
+    rule projects SEM_CLASS=MONTH from the head and adds DAY_OF_MONTH
+    from the digit. Composes inside the existing temporal-frame PP
+    rule."""
+
+    @pytest.mark.parametrize("text,month_value,dom", [
+        ("Tumakbo si Juan tuwing Mayo 5.",  "5",  "5"),
+        ("Pumunta kami noong Mayo 5.",      "5",  "5"),
+        ("Tumakbo si Juan tuwing Enero 1.", "1",  "1"),
+        ("Pumunta kami noong Disyembre 25.", "12", "25"),
+    ])
+    def test_day_of_month(
+        self, text: str, month_value: str, dom: str,
+    ) -> None:
+        f = _matrix(text)
+        assert f is not None, f"no parse for {text!r}"
+        adjuncts = f.feats.get("ADJUNCT")
+        assert adjuncts, f"no ADJUNCT in {text!r}"
+        members = list(adjuncts) if isinstance(adjuncts, frozenset) else [adjuncts]
+        # Find the temporal-frame PP and inspect its OBJ.
+        time_pp = next(
+            (m for m in members
+             if isinstance(m, FStructure) and m.feats.get("TIME_FRAME")),
+            None,
+        )
+        assert time_pp is not None, f"no TIME_FRAME PP in {members}"
+        obj = time_pp.feats.get("OBJ")
+        assert obj is not None
+        assert obj.feats.get("SEM_CLASS") == "MONTH"
+        assert obj.feats.get("MONTH_VALUE") == month_value
+        assert obj.feats.get("DAY_OF_MONTH") == dom
+
+    def test_word_form_dom_does_not_fire(self) -> None:
+        """Word-form DOM (``Mayo lima``) is grammatical Tagalog
+        but the new compound-N rule constrains on
+        ``(↓2 DIGIT_FORM) =c 'YES'`` — so ``Mayo lima`` does NOT
+        fire this rule. Sentence may still parse via other rules
+        (e.g. ``lima`` as a separate constituent), but the
+        compound-N construction is digit-only."""
+        f = _matrix("Pumunta kami noong Mayo lima.")
+        if f is None:
+            return  # No parse at all is acceptable; the rule didn't overgenerate.
+        adjuncts = f.feats.get("ADJUNCT")
+        members = list(adjuncts) if isinstance(adjuncts, frozenset) else [adjuncts]
+        for m in members:
+            if isinstance(m, FStructure) and m.feats.get("TIME_FRAME"):
+                obj = m.feats.get("OBJ")
+                if obj is not None:
+                    assert obj.feats.get("DAY_OF_MONTH") is None, (
+                        "compound-N rule fired for word-form DOM"
+                    )
+
+
+class TestYearExpression:
+    """``noong 1990`` / ``tuwing 2026`` — a temporal-frame PART
+    followed by a digit-form NUM. New ``PP → PART NUM`` rule
+    constrained on ``DIGIT_FORM=YES`` lifts ``CARDINAL_VALUE`` to
+    ``YEAR`` on the matrix PP."""
+
+    @pytest.mark.parametrize("text,frame,year", [
+        ("Pumunta kami noong 1990.", "PAST", "1990"),
+        ("Tumakbo si Juan tuwing 2026.", "PERIODIC", "2026"),
+        ("Pumunta kami noong 0.", "PAST", "0"),
+    ])
+    def test_year_pp(self, text: str, frame: str, year: str) -> None:
+        f = _matrix(text)
+        assert f is not None, f"no parse for {text!r}"
+        adjuncts = f.feats.get("ADJUNCT")
+        assert adjuncts, f"no ADJUNCT in {text!r}"
+        members = list(adjuncts) if isinstance(adjuncts, frozenset) else [adjuncts]
+        year_pp = next(
+            (m for m in members
+             if isinstance(m, FStructure) and m.feats.get("YEAR")),
+            None,
+        )
+        assert year_pp is not None, f"no YEAR PP in {members}"
+        assert year_pp.feats.get("TIME_FRAME") == frame
+        assert year_pp.feats.get("YEAR") == year
+
+    def test_word_form_year_does_not_fire(self) -> None:
+        """Word-form years (``noong sandaan-siyamnapung``) don't
+        fire the rule because ``DIGIT_FORM=YES`` is required.
+        Verified by parsing a known word-form temporal-frame PP
+        and confirming no spurious YEAR feature appears."""
+        f = _matrix("Pumunta kami noong Pebrero.")
+        assert f is not None
+        adjuncts = f.feats.get("ADJUNCT")
+        members = list(adjuncts) if isinstance(adjuncts, frozenset) else [adjuncts]
+        for m in members:
+            if isinstance(m, FStructure) and m.feats.get("TIME_FRAME"):
+                assert m.feats.get("YEAR") is None, (
+                    "year-PP rule fired on a word-form MONTH N"
+                )

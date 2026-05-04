@@ -65,10 +65,19 @@ def register_rules(rules: list[Rule]) -> None:
     # ``CLITIC_CLASS=2P`` distinguishes Wackernagel enclitics from
     # the other PART tokens (linkers, the ``hindi`` negation
     # particle).
+    # The constraining equation enforces strict CLITIC_CLASS=2P
+    # matching: the chart's non-conflict matcher would otherwise
+    # accept any PART that simply lacks the CLITIC_CLASS feature
+    # (e.g. linker ``na``/``-ng``, decimal ``.`` / ``punto``,
+    # arithmetic operators) and absorb them into ADJ at clause-
+    # final position. The strict ``=c`` ensures only genuine 2P
+    # enclitics fire here. (Tightened 2026-05-04 alongside the
+    # digit tokenization closing deferral, which exposed the
+    # latent looseness via the new ``.`` PART.)
     rules.append(Rule(
         "S",
         ["S", "PART[CLITIC_CLASS=2P]"],
-        ["(↑) = ↓1", "↓2 ∈ (↑ ADJ)"],
+        ["(↑) = ↓1", "↓2 ∈ (↑ ADJ)", "(↓2 CLITIC_CLASS) =c '2P'"],
     ))
 
 

@@ -390,17 +390,57 @@ def _iter_cnodes(state: StateInfo) -> Iterator[CNode]:
 def _strip_non_content(
     sentence_lex: list[list[tuple[MorphAnalysis, LexicalEntry | None]]],
 ) -> list[list[tuple[MorphAnalysis, LexicalEntry | None]]]:
-    """Remove tokens whose only analysis is the fallback POS ``'_UNK'``.
+    """Remove tokens whose only analysis is the fallback POS ``'_UNK'``,
+    plus orthographic-terminator PARTs (``.`` / ``?`` / ``!`` carrying
+    ``ORTHOGRAPHIC_TERMINATOR=YES``) that aren't sandwiched between
+    two NUM tokens (i.e. aren't serving as a decimal separator).
 
     Punctuation, unknown words, and other orthographic noise pass
     through morphology as ``_UNK``; the parser ignores them. Tokens
     with at least one non-_UNK analysis stay (with all analyses kept,
-    including any _UNK) so ambiguity is preserved."""
+    including any _UNK) so ambiguity is preserved.
+
+    The orthographic-terminator carve-out (Phase 5f closing deferral,
+    2026-05-04) is needed because the digit tokenization work added
+    ``.`` as a PART with ``DECIMAL_SEP=YES`` so it can serve as a
+    decimal separator mid-sentence (``5.3``). The same surface at
+    sentence end is purely orthographic — it shouldn't reach the
+    chart. The strip is **position-aware**: a ``.`` flanked by two
+    NUM tokens survives (decimal context); ``.`` / ``?`` / ``!``
+    elsewhere are stripped, including post-``reorder_clitics``
+    positions where the terminator may have been pushed past a 2P
+    enclitic. The strip happens here (rather than in the tokenizer)
+    so upstream stages that inspect the token list —
+    :func:`reorder_clitics`, test fixtures asserting on intermediate
+    token shapes — still see the terminator in its original
+    position."""
     keep: list[list[tuple[MorphAnalysis, LexicalEntry | None]]] = []
     for cands in sentence_lex:
         if any(ma.pos != "_UNK" for ma, _ in cands):
             keep.append(cands)
-    return keep
+
+    def is_terminator(cands: list[tuple[MorphAnalysis, LexicalEntry | None]]) -> bool:
+        return all(
+            ma.pos == "PART" and ma.feats.get("ORTHOGRAPHIC_TERMINATOR") == "YES"
+            for ma, _ in cands
+        )
+
+    def is_num(cands: list[tuple[MorphAnalysis, LexicalEntry | None]] | None) -> bool:
+        if cands is None:
+            return False
+        return any(ma.pos == "NUM" for ma, _ in cands)
+
+    final: list[list[tuple[MorphAnalysis, LexicalEntry | None]]] = []
+    for i, cands in enumerate(keep):
+        if is_terminator(cands):
+            prev = keep[i - 1] if i > 0 else None
+            nxt = keep[i + 1] if i + 1 < len(keep) else None
+            if is_num(prev) and is_num(nxt):
+                final.append(cands)  # decimal separator — keep
+            # else: orthographic terminator — strip
+            continue
+        final.append(cands)
+    return final
 
 
 def _ma_to_pattern(ma: MorphAnalysis) -> CategoryPattern:
