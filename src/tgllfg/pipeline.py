@@ -37,7 +37,12 @@ from .lexicon import lookup_lexicon
 from .lmt import apply_lmt_with_check
 from .morph import analyze_tokens
 from .parse import parse_with_annotations
-from .text import split_enclitics, split_linker_ng, tokenize
+from .text import (
+    merge_hyphen_compounds,
+    split_enclitics,
+    split_linker_ng,
+    tokenize,
+)
 
 
 @dataclass(frozen=True)
@@ -103,12 +108,24 @@ def parse_text_with_fragments(
     partial f-structure and the diagnostics that prevented promotion.
     """
     toks = tokenize(text)
-    toks = split_enclitics(toks)
     # Phase 4 §7.5: detach the bound linker ``-ng`` from vowel-final
     # hosts (``batang`` → ``bata`` + ``-ng``) so the relativization
     # rules see a uniform ``PART[LINK=NA|NG]`` between the head NP
-    # and the relative clause.
+    # and the relative clause. Runs before
+    # :func:`merge_hyphen_compounds` so a hyphenated compound with a
+    # bound linker on the right half (``kani-kaniyang``) reaches the
+    # merge as ``kani`` / ``-`` / ``kaniya`` / ``-ng`` and the
+    # canonical join (``kani`` + ``kaniya`` = ``kanikaniya``) finds
+    # a hit in the analyzer index.
     toks = split_linker_ng(toks)
+    # Phase 5f closing deferral: collapse canonical hyphenated
+    # compounds (``tag-init`` → ``taginit``, ``daan-daan`` →
+    # ``daandaan``, etc.) into single tokens that match the
+    # seed-lex single-token entries. Runs before
+    # :func:`split_enclitics` so the merged compound is the unit
+    # passed to all downstream pre-parse stages.
+    toks = merge_hyphen_compounds(toks)
+    toks = split_enclitics(toks)
     mlist = analyze_tokens(toks)
     # Phase 4 §7.3: pull Wackernagel clitics into their canonical
     # post-verbal cluster before lexicon lookup. Pronominal clitics
