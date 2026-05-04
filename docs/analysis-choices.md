@@ -8480,3 +8480,121 @@ rules (3 case variants): each gains ``¬ (↓2 DISTRIB_POSS)``
   needs the same tokenizer pre-pass deferred for Commits 14
   / 16 / 18 / 19.
 
+## Phase 5f Commit 22: wholes ``buo`` / ``buong`` (Group H3 item 8)
+
+**Date:** 2026-05-04. **Status:** active. 1 Q lex entry + 8
+new grammar rules + 1 gating addition on the existing Phase
+5b partitive rules. Refs: plan §11.1 Group H item 8 (wholes);
+S&O 1972 §4.7; R&B 1986; Phase 5f Commit 15 (vague-Q-modifier
+rule consumed as the structural template); Phase 5f Commit 21
+(distributive-possessive bare-NOM rule consumed as a
+structural template); Phase 4 split_linker_ng (consumed
+unchanged for the bound ``-ng`` form).
+
+### Lex change
+
+One Q entry in ``data/tgl/particles.yaml``:
+
+* ``buo`` — Q[QUANT=WHOLE, WHOLE="YES"]. Citation form,
+  vowel-final. The bound ``-ng`` linker form ``buong`` is
+  produced by the existing split_linker_ng pre-pass once
+  ``buo`` is a known surface in the morph index.
+
+### POS choice: Q rather than ADJ
+
+The plan §11.1 Group H item 8 description — "Pre-N modifier
+with linker (``buo`` + ``-ng``); lex (``buo``) plus the
+Group A rule" — doesn't specify the POS. Two options:
+
+1. **ADJ**: ``buo`` is an adjective ("whole, entire") that
+   modifies a head N via the linker. This would feed an
+   adjective-modifier rule (which doesn't yet exist; it
+   lands with Phase 5g).
+2. **Q**: ``buo`` is a totality quantifier (quantifies over
+   the entirety of the entity, not a property like color or
+   size). Plan groups it under Group H quantifiers.
+   Linker-modifier distribution matches the established Q
+   template (Commits 15 / 20 / 21).
+
+This commit chose option 2 (Q). Rationale:
+
+* Semantic role is totality quantification, not property
+  attribution. ``buo`` doesn't gradate (``*mas buo`` "more
+  whole" is non-canonical) — adjectives typically gradate.
+* Plan groups it under Group H, alongside other quantifiers
+  (universals, vague, distributives).
+* The linker-modifier rule template is already established
+  for Q heads (Commits 15 / 20 / 21).
+* Predicate-Adj path doesn't exist yet (Phase 5g). Adding
+  ``buo`` as ADJ now would require either deferring lex+rule
+  to Phase 5g, or adding ad-hoc machinery here.
+
+A future Phase 5g may revisit the Q-vs-ADJ classification of
+``buo`` (and similar totality quantifiers like ``ilang``
+"some / a few" — already added as Q[VAGUE=YES] in Commit 15)
+once the adjective infrastructure exists. For Phase 5f scope,
+Q is the cleanest choice.
+
+### Grammar change
+
+Six case-marked NP rules in ``src/tgllfg/cfg/grammar.py`` (3
+cases × 2 linker variants):
+
+```
+NP[CASE=X] → DET/ADP[CASE=X] Q PART[LINK=NA|NG] N
+Equations:
+  (↑) = ↓1
+  (↑ PRED) = ↓4 PRED
+  (↑ LEMMA) = ↓4 LEMMA
+  (↑ QUANT) = ↓2 QUANT
+  (↑ WHOLE) = 'YES'
+  ¬ (↓4 WHOLE)
+  (↓2 WHOLE) =c 'YES'
+```
+
+Two bare-NOM rules (NA / NG variants) for surfaces where
+``buo`` functions as the determiner-equivalent
+(``Buong pamilya ay kumakain.``):
+
+```
+NP[CASE=NOM] → Q PART[LINK=NA|NG] N
+Equations:
+  (↑ PRED) = ↓3 PRED
+  (↑ LEMMA) = ↓3 LEMMA
+  (↑ QUANT) = ↓1 QUANT
+  (↑ WHOLE) = 'YES'
+  (↑ CASE) = 'NOM'
+  ¬ (↓3 WHOLE)
+  (↓1 WHOLE) =c 'YES'
+```
+
+Gate addition: each of the 3 existing Phase 5b ``Q +
+NP[GEN]`` partitive rules gains ``¬ (↓2 WHOLE)``. Wholes
+only take the linker-N form; ``*ang buo ng bata`` is non-
+standard.
+
+The NA linker variant of the new rules is included for
+symmetry — ``buo`` is vowel-final so only NG fires in
+practice. If a future consonant-final WHOLE entry is added
+(unlikely; ``buo`` is the only canonical form), the NA
+variant is ready.
+
+### Negative fixtures (per §11.2)
+
+* ``*ang buong buong bata`` — chained wholes blocked by
+  ``¬ (↓4 WHOLE)``.
+* ``*ang buo ng bata`` — WHOLE in GEN-NP partitive blocked
+  by the new ``¬ (↓2 WHOLE)`` gate.
+
+### Out of scope for this commit
+
+* **Predicative use** (``Buo ang bata.`` "The child is
+  whole / intact") — would parse via a future predicate-Q
+  rule. Defer.
+* **Floated ``buo``** (``Kumain ang bata buo``) —
+  mechanically fires via the existing Phase 4 §7.8 ``S → S
+  Q`` float rule but not idiomatic for ``buo``. Not
+  explicitly tested.
+* **ADJ-vs-Q reanalysis** — Phase 5g may revisit the
+  classification once adjective infrastructure exists.
+

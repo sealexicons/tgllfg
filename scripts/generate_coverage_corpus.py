@@ -1587,6 +1587,17 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "distrib-poss: kanyakanya bare-NOM ay-fronted", "parse")
     _add(out, "kanikaniyang aklat ay binili nila",
          "distrib-poss: kanikaniya bare-NOM ay-fronted", "parse")
+    # Phase 5f Commit 22: wholes buo / buong (Group H3 item 8).
+    _add(out, "kumakain ang buong bata",
+         "whole: buo + linker + N (NOM SUBJ)", "parse")
+    _add(out, "kumain ako ng buong araw",
+         "whole: buo + linker + N (GEN OBJ)", "parse")
+    _add(out, "pumunta ako sa buong pamilya",
+         "whole: buo + linker + N (DAT)", "parse")
+    _add(out, "buong pamilya ay kumakain",
+         "whole: buo bare-NOM ay-fronted (pamilya)", "parse")
+    _add(out, "buong bata ay kumakain",
+         "whole: buo bare-NOM ay-fronted (bata)", "parse")
     return out
 
 

@@ -422,6 +422,42 @@
   pos: Q
   feats: {QUANT: EACH_OWN, DISTRIB_POSS: "YES"}
 
+# === Phase 5f Commit 22: wholes `buo` / `buong` (Group H3 item 8) ==========
+# Pre-N totality quantifier — ``buong bata`` "whole / entire
+# child", ``buong araw`` "whole day", ``buong pamilya`` "entire
+# family". Plan §11.1 Group H item 8 (S&O 1972 §4.7; R&B 1986).
+#
+# Single lex entry ``buo`` (the citation form, vowel-final).
+# The bound ``-ng`` linker form ``buong`` is produced by the
+# Phase 4 split_linker_ng pre-pass once ``buo`` is a known
+# surface. The construction ``buong N`` parses as
+# ``buo + -ng + N`` via a new Phase 5f Commit 22 grammar rule
+# (Q[WHOLE=YES] + linker + N — same template as Phase 5f
+# Commit 15 vague-Q-modifier and Commit 21 distributive-
+# possessive, gated on a different feature).
+#
+# POS choice: Q rather than ADJ. Semantically ``buo`` is a
+# totality quantifier (it quantifies over the entirety of the
+# entity, not a property like color or size). The plan groups
+# it under Group H quantifiers, and the linker-modifier
+# distribution matches the established Q template. Treating
+# ``buo`` as ADJ would force it through the (Phase 5g)
+# adjective-modifier path, which doesn't exist yet and which
+# would conflate genuine adjectives with totality quantifiers.
+#
+# Out of scope for this commit:
+#
+# * Predicative use (``Buo ang bata.`` "The child is whole /
+#   intact") — would parse via a future predicate-Q rule;
+#   defer.
+# * Floated ``buo`` (``Kumain ang bata buo`` "the whole
+#   child ate") — would mechanically fire via the existing
+#   Phase 4 §7.8 ``S → S Q`` float rule; not idiomatic for
+#   ``buo``, deferred.
+- surface: buo
+  pos: Q
+  feats: {QUANT: WHOLE, WHOLE: "YES"}
+
 # === Phase 4 §7.6: psych control predicates ==============================
 # Pseudo-verbal predicates that select an XCOMP complement clause and
 # take a GEN-marked experiencer. They have no verbal morphology

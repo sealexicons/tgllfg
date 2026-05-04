@@ -505,6 +505,7 @@ class Grammar:
                 "¬ (↓2 VAGUE)",
                 "¬ (↓2 UNIV)",
                 "¬ (↓2 DISTRIB_POSS)",
+                "¬ (↓2 WHOLE)",
             ],
         ))
         rules.append(Rule(
@@ -517,6 +518,7 @@ class Grammar:
                 "¬ (↓2 VAGUE)",
                 "¬ (↓2 UNIV)",
                 "¬ (↓2 DISTRIB_POSS)",
+                "¬ (↓2 WHOLE)",
             ],
         ))
         rules.append(Rule(
@@ -529,6 +531,7 @@ class Grammar:
                 "¬ (↓2 VAGUE)",
                 "¬ (↓2 UNIV)",
                 "¬ (↓2 DISTRIB_POSS)",
+                "¬ (↓2 WHOLE)",
             ],
         ))
 
@@ -710,6 +713,63 @@ class Grammar:
                     "(↑ CASE) = 'NOM'",
                     "¬ (↓3 DISTRIB_POSS)",
                     "(↓1 DISTRIB_POSS) =c 'YES'",
+                ],
+            ))
+
+        # --- Phase 5f Commit 22: wholes `buo` / `buong`
+        # (Group H3 item 8) -----------------------------------------
+        #
+        # ``buong bata`` "whole / entire child", ``buong araw``
+        # "whole day", ``buong pamilya`` "entire family". A
+        # totality Q head takes a linker + N complement, producing
+        # an NP marked with ``WHOLE=YES``. Plan §11.1 Group H item
+        # 8 (S&O 1972 §4.7).
+        #
+        # Rule shape mirrors Phase 5f Commit 15 vague-Q-modifier
+        # and Commit 21 distributive-possessive: ``DET/ADP Q
+        # PART[LINK] N``. The constraining equation
+        # ``(↓2 WHOLE) =c 'YES'`` gates the rule to ``buo``;
+        # non-WHOLE Q heads (lahat / iba / vague / universal /
+        # distributive-possessive) match by absence on WHOLE
+        # without it.
+        #
+        # 6 case-marked variants (3 cases × 2 linker variants —
+        # ``buo`` is vowel-final so only the NG variant fires in
+        # practice; the NA variant is included for symmetry and
+        # to support any future consonant-final WHOLE entries).
+        # Plus 2 bare-NOM variants for surfaces like ``Buong araw
+        # ay nag-aral siya.``
+        for case, marker in _cardinal_case_marker.items():
+            for link in ("NA", "NG"):
+                rules.append(Rule(
+                    f"NP[CASE={case}]",
+                    [marker, "Q", f"PART[LINK={link}]", "N"],
+                    [
+                        "(↑) = ↓1",
+                        "(↑ PRED) = ↓4 PRED",
+                        "(↑ LEMMA) = ↓4 LEMMA",
+                        "(↑ QUANT) = ↓2 QUANT",
+                        "(↑ WHOLE) = 'YES'",
+                        "¬ (↓4 WHOLE)",
+                        "(↓2 WHOLE) =c 'YES'",
+                    ],
+                ))
+
+        # Bare-NOM rule (totality Q can stand alone as an NP
+        # without a DET — ``buong araw`` standalone in ay-fronted
+        # position, etc.).
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "NP[CASE=NOM]",
+                ["Q", f"PART[LINK={link}]", "N"],
+                [
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                    "(↑ QUANT) = ↓1 QUANT",
+                    "(↑ WHOLE) = 'YES'",
+                    "(↑ CASE) = 'NOM'",
+                    "¬ (↓3 WHOLE)",
+                    "(↓1 WHOLE) =c 'YES'",
                 ],
             ))
 
