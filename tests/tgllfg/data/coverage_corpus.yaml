@@ -3366,6 +3366,75 @@
 - text: Tuwing tagulan ay pumunta ako.
   construction: 'season: tuwing-PP ay-fronted'
   expected: parse
+- text: Kumain ako ng maraming isda.
+  construction: 'vague: marami-ng + N (OBJ)'
+  expected: parse
+- text: Kumain ako ng kaunting isda.
+  construction: 'vague: kaunti-ng + N (OBJ)'
+  expected: parse
+- text: Kumain ako ng konting isda.
+  construction: 'vague: konti-ng + N (OBJ)'
+  expected: parse
+- text: Kumain ako ng kakaunting isda.
+  construction: 'vague: kakaunti-ng + N (OBJ)'
+  expected: parse
+- text: Pumunta ako sa ilan na bata.
+  construction: 'vague: ilan + na + N (DAT)'
+  expected: parse
+- text: Pumunta ako sa iilan na bata.
+  construction: 'vague: iilan + na + N (DAT)'
+  expected: parse
+- text: Pumunta ako sa karamihan na bata.
+  construction: 'vague: karamihan + na + N (DAT)'
+  expected: parse
+- text: Kumakain ang maraming bata.
+  construction: 'vague: marami in SUBJ'
+  expected: parse
+- text: Kumakain ang karamihan na bata.
+  construction: 'vague: karamihan + na in SUBJ'
+  expected: parse
+- text: Bumili ako ng halos sampung aklat.
+  construction: 'approx: halos + cardinal NP-modifier (OBJ)'
+  expected: parse
+- text: Bumili ako ng humigitkumulang sampung aklat.
+  construction: 'approx: humigitkumulang + cardinal NP-modifier (OBJ)'
+  expected: parse
+- text: Bumili ako ng mga sampung aklat.
+  construction: 'approx: broader mga + cardinal NP-modifier'
+  expected: parse
+- text: Kumakain ang mga tatlong bata.
+  construction: 'approx: broader mga + cardinal in SUBJ'
+  expected: parse
+- text: Kumakain ang halos lahat ng bata.
+  construction: 'approx: halos + lahat partitive'
+  expected: parse
+- text: Bumili ako ng halos maraming aklat.
+  construction: 'approx: halos + vague-Q linker'
+  expected: parse
+- text: Kumakain ang halos sampung bata.
+  construction: 'approx: halos + cardinal in SUBJ'
+  expected: parse
+- text: Bumili ako ng halos apat na aklat.
+  construction: 'approx: halos + consonant-final cardinal (apat na)'
+  expected: parse
+- text: Bumili ako ng higit sa sampung aklat.
+  construction: 'comparator: higit sa NUM (more-than)'
+  expected: parse
+- text: Bumili ako ng kulang sa sampung aklat.
+  construction: 'comparator: kulang sa NUM (less-than)'
+  expected: parse
+- text: Bumili ako ng hindi bababa sa sampung aklat.
+  construction: 'comparator: hindi bababa sa NUM (at-least)'
+  expected: parse
+- text: Bumili ako ng hindi hihigit sa sampung aklat.
+  construction: 'comparator: hindi hihigit sa NUM (at-most)'
+  expected: parse
+- text: Kumakain ang higit sa sampung bata.
+  construction: 'comparator: higit in SUBJ'
+  expected: parse
+- text: Bumili ako ng higit sa apat na aklat.
+  construction: 'comparator: higit + consonant-final cardinal (apat na)'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

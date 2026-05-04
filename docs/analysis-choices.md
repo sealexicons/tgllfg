@@ -7378,3 +7378,536 @@ call below the dead assignment. Pre-existing from Phase 5f
 Commit 4 (``ff4de03``). Cleaned up here so ``hatch run check``
 passes ahead of the Phase 5f Group EFG PR.
 
+## Phase 5f Commit 15: vague cardinals (Group H1 item 1)
+
+**Date:** 2026-05-03. **Status:** active. 7 Q lex entries +
+6 new NP-level grammar rules + 2 new N-level rules + 1 gating
+addition on the existing Phase 5b partitive rule + 1 new
+disambiguator branch. Refs: plan §11.1 Group H item 1; S&O
+1972 §4.7; R&B 1986; Phase 4 §7.8 (existing ``lahat`` /
+``iba`` Q-class consumed unchanged); Phase 5b §7.8 follow-on
+(existing pre-NP partitive consumed with a vague-blocking
+gate); Phase 5f Commit 1 (cardinal-NP-modifier rule consumed
+as the structural template).
+
+Opens Group H1 (vague + approximators + numeric comparatives)
+with the largest sub-item, vague cardinals. Group H is plan
+§11.1's "extensions to §7.8": Phase 4 §7.8 wired only ``lahat``
+and ``iba`` as Q-class entries; Group H closes the inventory
+gap. The plan §11.1 Group H header summarises the engineering
+strategy: "the grammar rule is the Group A cardinal-NP-modifier
+rule generalised to any NUM / Q head" — this commit lands the
+Q variant of that rule.
+
+### Lex change
+
+Seven Q entries in ``data/tgl/particles.yaml``:
+
+* ``ilan``      — ``Q[QUANT=FEW, VAGUE="YES"]``
+* ``marami``    — ``Q[QUANT=MANY, VAGUE="YES"]``
+* ``kaunti``    — ``Q[QUANT=FEW, VAGUE="YES"]``
+* ``konti``     — ``Q[QUANT=FEW, VAGUE="YES"]``
+* ``kakaunti``  — ``Q[QUANT=VERY_FEW, VAGUE="YES"]``
+* ``iilan``     — ``Q[QUANT=FEW, VAGUE="YES"]``
+* ``karamihan`` — ``Q[QUANT=MOST, VAGUE="YES"]``
+
+The string-quoted ``"YES"`` is essential: bare ``YES`` is
+parsed by YAML 1.1 as Python boolean ``True``, which would
+not match the ``=c 'YES'`` constraining equation in the new
+grammar rules. The existing ``CARDINAL: "YES"`` / ``ORDINAL:
+"YES"`` entries follow the same convention — Group A authors
+hit the same trap. (Discovered during Commit 15 development.
+Worth promoting to a lex-authoring note in plan §11.2 or
+docs/diagnostics.md as a recurring pitfall.)
+
+### Why Q, not NUM[VAGUE]?
+
+The plan describes vague cardinals as quantifiers without an
+exact value, contrasting them with the precise numeric
+cardinals. Two implementations were viable:
+
+1. **NUM[VAGUE=YES]** — a sub-class of NUM. Reuses the
+   existing cardinal-NP-modifier rule path with a relaxed
+   constraint.
+2. **Q[VAGUE=YES]** — a sub-class of Q (the existing class
+   for ``lahat`` / ``iba``). Adds a parallel rule with a Q
+   daughter.
+
+Option 2 won. Reasons:
+
+* **Semantic alignment.** ``marami`` / ``ilan`` etc. don't
+  participate in arithmetic, fractions, ordinals, decimals,
+  or any of the constructions in Groups A-D. They quantify
+  rather than count. Grouping them with ``lahat`` / ``iba``
+  reflects the actual distribution.
+* **No NUM features.** Vague cardinals carry no
+  CARDINAL_VALUE / ORDINAL_VALUE / NUM (sg/pl). Pretending
+  they're NUM and then suppressing those features via
+  constraints is more bookkeeping than benefit.
+* **Plan endorsement.** §11.1 Group H literally says "any
+  NUM / Q head" — both are anticipated. Q is the cleaner
+  fit for vague cardinals; NUM remains for cardinals,
+  ordinals, fractions, decimals, percentages, multiplicative
+  ratios.
+
+Reduplication-derived ``iilan`` (from ``isa``) and ``ka-…-an``
+derived ``karamihan`` are listed as attested forms; productive
+reduplication / ``ka-…-an`` morphology for vague cardinals is
+deferred (out of scope for Group H1). The count-mass
+distinction (``marami`` + count vs ``marami`` + mass — both
+grammatical, no morphological alternation; S&O 1972 §4.7) is
+lex-internal, not a syntactic split, so the lex entry is
+uniform.
+
+### Grammar change
+
+**6 NP-level rules** (3 cases × 2 linker variants):
+
+```
+NP[CASE=X] → DET/ADP[CASE=X] Q PART[LINK=NA|NG] N
+Equations:
+  (↑) = ↓1                          # CASE / MARKER from outer marker
+  (↑ PRED) = ↓4 PRED                # head N supplies PRED
+  (↑ LEMMA) = ↓4 LEMMA              # ... and LEMMA
+  (↑ QUANT) = ↓2 QUANT              # Q lifts QUANT to NP
+  (↑ VAGUE) = 'YES'                 # mark NP for downstream consumers
+  ¬ (↓4 VAGUE)                      # block chained vague Qs
+  (↓2 VAGUE) =c 'YES'               # gate to vague Qs only
+```
+
+The constraining equation ``(↓2 VAGUE) =c 'YES'`` is the load-
+bearing piece — without it, the non-conflict matcher would
+match ``lahat`` / ``iba`` (which have no VAGUE) by absence and
+land them in the linker form, over-coverage no plan calls for.
+Same fix-pattern as the cardinal rule's
+``(↓2 CARDINAL) =c 'YES'`` (Phase 5f Commit 1) and the ordinal
+rule's ``(↓2 ORDINAL) =c 'YES'`` (Phase 5f Commit 7).
+
+The chained-vague block ``¬ (↓4 VAGUE)`` mirrors the cardinal
+rule's ``¬ (↓4 CARDINAL_VALUE)``: ``*ang maraming kaunting
+bata`` ("many few children"?) doesn't compose because the head
+N (which is the matrix of the inner vague-Q rule) carries
+VAGUE=YES, which the outer rule rejects.
+
+**2 N-level rules** (parang etc.):
+
+```
+N → Q PART[LINK=NA|NG] N
+```
+
+Mirrors the Phase 5f Commit 1 N-level cardinal companion. The
+Phase 5e Commit 26 ``parang isang aso`` rule selects an N
+daughter, so the N-level companion is needed for ``parang
+maraming aso`` "like many dogs" to compose. (Not explicitly
+tested in this commit — sweep coverage is at NP level — but
+the rule mechanically fires.)
+
+### Existing partitive: gating with `¬ (↓2 VAGUE)`
+
+The Phase 5b §7.8 follow-on partitive rule (``DET/ADP Q
+NP[GEN]``) had no VAGUE constraint. With the new vague Qs
+added, that rule would fire on ``ang marami ng bata`` — a non-
+standard surface. The plan H1 description explicitly restricts
+vague cardinals to "the linker" form. So the existing
+partitive gets a new constraining equation
+``¬ (↓2 VAGUE)`` on each of its 3 case variants, scoping the
+partitive to non-vague Qs (currently ``lahat`` / ``iba``). The
+DAT-NP partitive variant of vague Qs (``marami sa kanila``
+"many of them") is a separate construction — DAT-NP, not
+GEN-NP — and is deferred.
+
+### Disambiguator: linker after consonant-final vague Q
+
+The pre-parse ``disambiguate_homophone_clitics`` step in
+``src/tgllfg/clitics/placement.py`` chooses between the two
+readings of ``na``: linker (``LINK=NA``) vs ALREADY clitic
+(``CLITIC_CLASS=2P``, ``ASPECT_PART=ALREADY``). The choice is
+left-context-driven: NOUN / NUM[CARDINAL=YES, ORDINAL=YES] /
+DET[DEM=YES] before ``na`` ⇒ linker; VERB / PRON before
+``na`` ⇒ clitic.
+
+Vague Q before ``na`` was previously unhandled — the fall-
+through "leave both readings" path didn't help because the
+placement pass greedily moves any kept-clitic ``na`` to the
+Wackernagel cluster, leaving ``[Q] [N]`` without a linker
+between them. The new branch detects ``Q[VAGUE=YES]`` before
+``na`` and drops the clitic reading, parallel to the existing
+NUM branches. Gated on ``VAGUE=YES`` so the ``lahat`` / ``iba``
+distribution (which doesn't use the linker form in Phase 5f
+scope) is unaffected.
+
+This affects only the consonant-final vague Qs (``ilan``,
+``iilan``, ``karamihan``); vowel-final ones (``marami``,
+``kaunti``, ``konti``, ``kakaunti``) use the bound ``-ng``
+linker which has no clitic homophone, so ``maraming bata``
+splits cleanly via ``split_linker_ng`` regardless of the
+disambiguator.
+
+### Negative fixtures (per §11.2)
+
+* ``*ang maraming kaunting bata`` — chained vague Qs blocked by
+  ``¬ (↓4 VAGUE)``.
+* ``*ang marami ng bata`` — vague-Q in GEN-NP partitive blocked
+  by the new ``¬ (↓2 VAGUE)`` gate on the existing Phase 5b
+  rule.
+
+### Out of scope for this commit
+
+* **DAT-NP partitive for vague Qs** (``marami sa kanila``
+  "many of them") — separate construction; not in Group H1
+  scope. Defer.
+* **Contracted ``ilang bata`` form** (irregular bound ``-ng``
+  on the consonant-final stem ``ilan``) — non-standard
+  contraction; would need a tokenizer pre-pass for the
+  irregular split. Defer.
+* **Float for vague Qs** (``Kumain sila marami``) — the
+  existing Phase 4 §7.8 ``S → S Q`` float rule fires on vague
+  Qs unmodified, but the binding semantics differ from
+  ``lahat`` float (vague selects a subset; ``lahat`` asserts
+  about the whole). Mechanically composes; semantically a
+  follow-on if corpus pressure surfaces a need.
+* **VAGUE projection to outer NPs (POSS, etc.)** — same NP-
+  from-N projection limitation as cardinal-modifier features.
+
+## Phase 5f Commit 16: approximators (Group H1 item 2)
+
+**Date:** 2026-05-03. **Status:** active. 2 PART lex entries
++ 3 new grammar rules. Refs: plan §11.1 Group H item 2; S&O
+1972 §4.7; R&B 1986; Phase 5f Commit 13 (mga rule consumed
+with parallel NUM extension); Phase 5f Commit 1 (cardinal
+NP-modifier rule consumed unchanged; cardinal NUMs flow
+through the new wrap rule); Phase 5b (partitive) and Phase 5f
+Commit 15 (vague-Q-modifier) consumed unchanged for the Q
+wrap. docs/analysis-choices.md "Phase 5f Commit 13 (bundled):
+mga" entry — the cardinal-approximation deferral noted there
+is lifted in this commit.
+
+### Lex change
+
+Two PART entries in ``data/tgl/particles.yaml``:
+
+* ``halos`` — PART[APPROX="YES"]. "almost / nearly".
+* ``humigitkumulang`` — PART[APPROX="YES"]. "approximately /
+  more or less". Stored as the single-token form.
+
+Hyphenation note: the canonical orthography is
+``humigit-kumulang``. The tokenizer (``\w+|\S``) splits
+hyphens, so the canonical surface tokenises as 3 tokens
+(``humigit``, ``-``, ``kumulang``) — and ``humigit`` happens
+to also analyse as the AV PFV form of the verb root ``higit``
+"exceed" (an unrelated coincidence that would create
+ambiguous parses if unguarded). The single-token form
+``humigitkumulang`` sidesteps both issues. Same pragmatic
+precedent as Phase 5f Commit 14 seasons (``taginit`` for
+canonical ``tag-init``); the canonical hyphenated form awaits
+a tokenizer pre-pass.
+
+The string-quoted ``"YES"`` in the lex entry matters for the
+same reason as Phase 5f Commit 15: bare ``YES`` parses as
+Python boolean ``True``, which would not match the
+``=c 'YES'`` constraining equation. (Same recurring pitfall;
+worth mentioning in plan §11.2 / docs/diagnostics.md.)
+
+### Grammar change
+
+Three new rules in ``src/tgllfg/cfg/grammar.py``:
+
+**1. Cardinal-NUM approximator wrap.**
+
+```
+NUM → PART[APPROX=YES] NUM[CARDINAL=YES]
+Equations:
+  (↑) = ↓2                          # share daughter NUM's f-structure
+  (↑ APPROX) = 'YES'                # add APPROX feature
+  (↓1 APPROX) =c 'YES'              # gate to APPROX-marked PART
+  (↓2 CARDINAL) =c 'YES'            # gate to cardinal NUM
+```
+
+The output category is NUM (preserving CARDINAL=YES,
+CARDINAL_VALUE, NUM=PL/SG), so the matrix-NP cardinal-
+modifier rule (Phase 5f Commit 1) consumes the wrapped NUM
+unchanged. ``halos sampu`` "almost ten" produces NUM[CARDINAL=
+YES, CARDINAL_VALUE=10, APPROX=YES, NUM=PL]; the cardinal-
+modifier rule's ``(↓2 CARDINAL) =c 'YES'`` constraint matches,
+the matrix NP gains CARDINAL_VALUE=10, and APPROX rides on
+the inner NUM.
+
+**2. Q-approximator wrap.**
+
+```
+Q → PART[APPROX=YES] Q
+Equations:
+  (↑) = ↓2
+  (↑ APPROX) = 'YES'
+  (↓1 APPROX) =c 'YES'
+```
+
+Output is Q (preserving QUANT, VAGUE), so the existing Phase
+5b ``Q + NP[GEN]`` partitive (``halos lahat ng bata`` "almost
+all of the children") and the Phase 5f Commit 15 vague-Q-
+modifier (``halos maraming bata`` "almost many children")
+consume the wrapped Q unchanged. The Q rule has no daughter-
+gating constraint beyond ``(↓1 APPROX) =c 'YES'`` — any Q
+(lahat / iba / vague) can be wrapped.
+
+**3. Broader mga: extension to cardinal NUMs.**
+
+```
+NUM → PART[PLURAL_MARKER=YES] NUM[CARDINAL=YES]
+Equations:
+  (↑) = ↓2
+  (↑ APPROX) = 'YES'
+  (↓1 PLURAL_MARKER) =c 'YES'
+  (↓2 CARDINAL) =c 'YES'
+```
+
+Parallel to the Phase 5f Commit 13 ``N → PART[mga] N`` rule
+(time approximation), this rule extends ``mga`` to cardinal
+NUMs. Same lex entry (``mga`` with PLURAL_MARKER=YES); same
+APPROX=YES output; different daughter category (NUM not N).
+
+The Commit 13 doc note explicitly flagged this follow-on
+("Cardinal approximation (``mga sampu`` "around ten") use the
+same ``mga`` lex entry but are separate constructions;
+deferred follow-ons"); this commit lifts that deferral. The
+in-source comment on the Commit 13 N rule has been updated
+to point at the new NUM rule.
+
+### Why three rules, not one with disjunction
+
+The grammar engine doesn't currently support disjunction in
+RHS categories or constraining equations. Three flat rules
+each gated on a different combination of features is the
+cleanest expression. The three are structurally similar (same
+shared-fstruct pattern; same APPROX=YES output) but the
+gating differs:
+
+| Rule | Daughter PART feature | Daughter content category gate |
+|------|------------------------|--------------------------------|
+| 1 (halos cardinal) | APPROX=YES | CARDINAL=YES on NUM |
+| 2 (halos Q) | APPROX=YES | (no gate; any Q) |
+| 3 (mga cardinal) | PLURAL_MARKER=YES | CARDINAL=YES on NUM |
+
+A future grammar-engine extension supporting feature-
+disjunction in constraining equations (``(↓1 APPROX) =c 'YES'
+| (↓1 PLURAL_MARKER) =c 'YES'``) would let rules 1 and 3
+collapse into one. Out of scope here.
+
+### Cardinal-NP-modifier rule consumes the wrap unchanged
+
+The matrix-NP cardinal-modifier rule (Phase 5f Commit 1)
+specifies ``NUM[CARDINAL=YES]`` as its daughter category. The
+wrap rule's output is exactly that category — same surface,
+new APPROX feature. So ``halos sampu`` slots in wherever
+``sampu`` does:
+
+* ``Bumili ako ng halos sampung aklat.`` — OBJ position.
+* ``Kumakain ang halos sampung bata.`` — SUBJ position.
+* ``Pumunta ako sa halos sampung bahay.`` — DAT position.
+* ``Halos sampu ang aklat ko.`` — predicative position
+  (Phase 5f Commit 4 predicative-cardinal rule).
+
+The matrix NP (or matrix predicate clause, in the predicative
+case) doesn't lift APPROX from the daughter NUM — same NP-
+from-N projection limitation as cardinal-modifier features.
+Tests walk down to the inner NUM to verify APPROX=YES.
+
+### Negative fixtures (per §11.2)
+
+* ``*Pumunta ako sa halos bata.`` — ``bata`` is N (not NUM/Q
+  with APPROX gating). The wrap rules' constraining equations
+  fail; no parse composes ``halos`` as an approximator
+  modifier on ``bata``.
+* ``*Pumunta ako halos.`` — bare ``halos`` with no NUM/Q
+  daughter. The wrap rules require a daughter; without one
+  the rule doesn't fire.
+
+### Out of scope for this commit
+
+* **Hyphenated ``humigit-kumulang`` orthography** — needs the
+  same tokenizer pre-pass deferred for Phase 5f Commit 14
+  seasons.
+* **``malapit sa NUM``** "close to N" — multi-word
+  approximator with a DAT-NP complement
+  (``malapit sa sampu`` "close to ten"). Analytically more
+  involved than the simple pre-modifier; the head ``malapit``
+  is an adjective and the construction needs an
+  ADJ + DAT-NP frame rule. Deferred to a later commit.
+* **APPROX percolation to the matrix NP** — same NP-from-N
+  projection limitation as cardinal-modifier features
+  (Commit 1) and SEASON percolation (Commit 14). Could be
+  lifted by extending the Commit 1 / Commit 7 / Commit 15
+  NP-modifier rules to lift APPROX explicitly; out of scope
+  for this commit.
+* **mga DAY / MONTH approximation** — non-idiomatic; flagged
+  out-of-scope in Commit 13 and remains so.
+
+## Phase 5f Commit 17: numeric comparatives (Group H1 item 3)
+
+**Date:** 2026-05-03. **Status:** active. 4 PART lex entries
++ 4 new grammar frame rules. Refs: plan §11.1 Group H item 3
+(numeric comparatives) + Group H header (NUM/Q rule
+generalisation thesis); S&O 1972 §4.7; R&B 1986; Phase 5f
+Commit 1 (cardinal NP-modifier rule consumed unchanged for the
+wrapped NUM); existing intransitive negation, the verb-root
+``higit`` (consumed unchanged via polysemy), the verb roots
+``baba`` and ``higit`` paradigm-generated CTPL forms (consumed
+unchanged via polysemy), and the existing ``ADP[CASE=DAT]``
+``sa`` (consumed unchanged).
+
+Closes Group H1 (vague + approximators + numeric comparatives)
+with the smallest-but-most-idiomatic sub-item: numeric
+comparatives. The plan's thesis "These compose existing
+constituents (negation hindi, the NEG-headed copula in
+bababa / hihigit, DAT-NP sa NUM) plus a small frame rule for
+the NUM modifier" is realised as a tagged-PART lex
+(``COMP_PHRASE``) plus four parallel frame rules each gated
+on a specific lex tag.
+
+### Lex change
+
+Four PART entries in ``data/tgl/particles.yaml``:
+
+* ``higit``    — PART[COMP_PHRASE="HIGIT"]. Solo use: "more (than)".
+* ``kulang``   — PART[COMP_PHRASE="KULANG"]. Solo use: "less (than)".
+* ``bababa``   — PART[COMP_PHRASE="BABABA"]. Negated-context use:
+                 ``hindi bababa`` "no less than / at least".
+* ``hihigit``  — PART[COMP_PHRASE="HIHIGIT"]. Negated-context use:
+                 ``hindi hihigit`` "no more than / at most".
+
+### Polysemy with verb-form analyses
+
+``higit`` is also a verb root in roots.yaml (``higit`` "pull,
+exceed", VERB; affix_class ``[um, mag, in_oblig, maka]``).
+``bababa`` is generated by the paradigm engine as the AV CTPL
+of root ``baba`` "descend"; ``hihigit`` is the AV CTPL of root
+``higit``. Adding these four surfaces as PART entries here
+creates polysemy with the verb / verb-form analyses; the morph
+analyzer returns both (different POS), and the parser picks
+the analysis that yields a successful parse.
+
+Polysemy via different POS does NOT trigger the analyzer's
+duplicate-collapse semantics (which only fires on identical
+``(lemma, pos)`` keys — the same trap that hit ``kuwarto`` /
+``linggo`` in earlier commits). Verified: tokens for
+``bababa`` and ``hihigit`` return both PART (new) and VERB
+(existing) analyses; ``higit`` returns only PART (the bare
+verb root doesn't surface as a finite form in normal
+sentences); ``kulang`` returns only PART (no existing root).
+
+The frame rules require PART daughters at specific positions,
+so VERB analyses are eliminated by the rule's POS constraint
+in the comparative context. Conversely, when bababa / hihigit
+appear as finite verb forms in normal clauses (``Bababa ang
+bata.`` "The child will descend."), the VERB analyses fire
+via the existing intransitive-AV S rule. Both paths coexist
+without interference.
+
+### Why ``COMP_PHRASE`` tags rather than COMP values directly
+
+A simpler-looking design would put COMP=GT on ``higit`` lex,
+COMP=LT on ``kulang``, etc., and have rules read the COMP
+value off the daughter. But the negated patterns flip
+semantics: ``bababa sa N`` alone (uncompounded with hindi)
+means "less than N" (LT), but ``hindi bababa sa N`` means "no
+less than N" (GE). The lex value would have to be either the
+intrinsic semantics or the after-composition semantics; either
+choice creates inconsistencies for the other rule (solo vs
+negated).
+
+The chosen design — ``COMP_PHRASE`` as an opaque lex tag,
+``COMP`` set explicitly by each frame rule — keeps the lex
+neutral on the comparator's compositional behaviour and
+collects the COMP=value decision into the rule that has full
+context (with or without ``hindi``). The four rules become
+pleasingly symmetric:
+
+| Rule | Daughters | COMP value |
+|------|-----------|------------|
+| 1 | ``PART[HIGIT] ADP[DAT] NUM[CARDINAL=YES]`` | GT |
+| 2 | ``PART[KULANG] ADP[DAT] NUM[CARDINAL=YES]`` | LT |
+| 3 | ``PART[NEG] PART[BABABA] ADP[DAT] NUM[CARDINAL=YES]`` | GE |
+| 4 | ``PART[NEG] PART[HIHIGIT] ADP[DAT] NUM[CARDINAL=YES]`` | LE |
+
+### Grammar change
+
+Four parallel rules in ``src/tgllfg/cfg/grammar.py``, generated
+by two ``for`` loops over ``(comp_lex, comp_value)`` pairs.
+
+**Solo frame** (higit / kulang):
+
+```
+NUM → PART ADP NUM
+Equations:
+  (↑) = ↓3                              # share inner NUM's f-structure
+  (↑ COMP) = '<GT or LT>'               # set explicitly per rule
+  (↓1 COMP_PHRASE) =c '<HIGIT or KULANG>'
+  (↓2 CASE) =c 'DAT'                    # ``sa`` only
+  (↓3 CARDINAL) =c 'YES'                # genuine cardinal NUM
+```
+
+**Negated frame** (hindi bababa / hindi hihigit):
+
+```
+NUM → PART PART ADP NUM
+Equations:
+  (↑) = ↓4
+  (↑ COMP) = '<GE or LE>'
+  (↓1 POLARITY) =c 'NEG'                # ``hindi`` (existing)
+  (↓2 COMP_PHRASE) =c '<BABABA or HIHIGIT>'
+  (↓3 CASE) =c 'DAT'
+  (↓4 CARDINAL) =c 'YES'
+```
+
+The ``(↑) = ↓N`` shared-fstruct on the inner NUM daughter
+preserves CARDINAL=YES, CARDINAL_VALUE, NUM=PL/SG. Each rule
+adds its specific ``COMP`` value. Output is NUM, so the
+matrix-NP cardinal-modifier rule (Phase 5f Commit 1) consumes
+the wrapped NUM unchanged — same composition pattern as
+Commit 16's halos / mga wraps.
+
+### Frame rules vs deeper compositional analysis
+
+The plan's "small frame rule" framing is deliberate: the
+alternative would be to derive ``hindi bababa sa NUM`` from
+its parts via standard negation + verb + DAT-NP rules, then
+syntactically lift the resulting f-structure into a NUM
+modifier. That deeper analysis would expose the underlying
+copular / NEG-headed structure but require more grammar (a
+clause-as-NUM-modifier embedding, or a multi-stage
+construction-grammar lift). The frame-rule approach is
+shallower but achieves the goal: parse the four idiomatic
+phrases as NUM modifiers, with COMP feature for downstream
+consumers (LMT, semantics, normalization).
+
+### Negative fixtures (per §11.2)
+
+* ``*higit sampung aklat`` — frame rule requires the DAT
+  marker ``sa`` between the comparator and the NUM standard.
+* ``*higit sa bata`` — head is N (not NUM[CARDINAL=YES]); the
+  ``(↓ CARDINAL) =c 'YES'`` constraint fails.
+* ``*hindi bababa sampung aklat`` — negated frame rule
+  requires ``sa`` (parallel to the solo frame).
+
+### Out of scope for this commit
+
+* **Gradable / scalar ``mas``** (without numeric reference,
+  e.g., ``mas matalino`` "more intelligent") — Phase 5h
+  (gradable adjective comparison). Distinct construction;
+  doesn't take a numeric standard.
+* **Comparators on Q heads** (``higit sa kalahati`` "more
+  than half", ``higit sa lahat`` "more than all") — extending
+  the frame rules to admit FRACTION / PERCENTAGE /
+  MULTIPLIER / Q daughters is mechanical but additive. Defer.
+* **COMP projection to the matrix NP** — the wrapped NUM
+  carries COMP, but the matrix NP doesn't lift it (same NP-
+  from-N projection limitation as APPROX in Commit 16,
+  CARDINAL_VALUE in Commit 1, etc.). Tests verify
+  CARDINAL_VALUE preservation; COMP rides on the inner NUM
+  for downstream consumers.
+* **Compound numeric standards** (``higit sa dalawang
+  daan`` "more than two hundred") — the inner NUM standard
+  composes via existing compound-cardinal rules, so this
+  works mechanically with the frame rules. Not explicitly
+  tested but no special handling needed.
+

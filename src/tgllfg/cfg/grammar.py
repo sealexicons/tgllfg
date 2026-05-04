@@ -482,21 +482,113 @@ class Grammar:
         # the quantifier atom onto the NP. The inner NP[GEN] is
         # preserved as its own sub-projection (CASE=GEN there,
         # CASE=NOM on the outer); only its PRED value is borrowed.
+        #
+        # Phase 5f Commit 15 follow-on: ``¬ (↓2 VAGUE)`` blocks the
+        # vague cardinals (``marami``, ``ilan``, etc.) from this
+        # GEN-NP partitive — they take the linker form only
+        # (``maraming bata``, not ``*marami ng bata``). The DAT-NP
+        # partitive variant of vague cardinals (``marami sa
+        # kanila`` "many of them") is a separate construction
+        # deferred for now.
         rules.append(Rule(
             "NP[CASE=NOM]",
             ["DET[CASE=NOM]", "Q", "NP[CASE=GEN]"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓3 PRED",
+                "(↑ QUANT) = ↓2 QUANT",
+                "¬ (↓2 VAGUE)",
+            ],
         ))
         rules.append(Rule(
             "NP[CASE=GEN]",
             ["ADP[CASE=GEN]", "Q", "NP[CASE=GEN]"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓3 PRED",
+                "(↑ QUANT) = ↓2 QUANT",
+                "¬ (↓2 VAGUE)",
+            ],
         ))
         rules.append(Rule(
             "NP[CASE=DAT]",
             ["ADP[CASE=DAT]", "Q", "NP[CASE=GEN]"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓3 PRED",
+                "(↑ QUANT) = ↓2 QUANT",
+                "¬ (↓2 VAGUE)",
+            ],
         ))
+
+        # --- Phase 5f Commit 15: vague cardinal NP-internal modifier ---
+        #
+        # ``ang maraming bata`` "many children", ``ng kaunting
+        # tubig`` "of a little water", ``sa iilan na aklat`` "to a
+        # few books". The vague-cardinal Q sits between the case
+        # marker and the head N via the linker, mirroring the
+        # Phase 5f Commit 1 cardinal-NP-modifier rule (the plan
+        # §11.1 Group H description literally calls Group H rules
+        # "the Group A cardinal-NP-modifier rule generalised to any
+        # NUM / Q head" — this commit lands the Q variant).
+        #
+        # Unlike the cardinal rule, the daughter doesn't contribute
+        # CARDINAL_VALUE; it contributes ``QUANT`` (MANY / FEW /
+        # VERY_FEW / MOST) and ``VAGUE=YES`` rides up to the matrix
+        # NP for the LMT classifier and downstream consumers. The
+        # constraining equation ``(↓2 VAGUE) =c 'YES'`` enforces
+        # the daughter is actually a vague Q (lahat / iba would
+        # otherwise match by non-conflict on the absence of CARDINAL
+        # / ORDINAL / VAGUE).
+        #
+        # 6 NP-level rules = 3 cases × 2 linker variants. Chained
+        # vague Qs (``*ang maraming maraming bata``) are blocked by
+        # ``¬ (↓4 VAGUE)`` parallel to the cardinal rule's
+        # ``¬ (↓4 CARDINAL_VALUE)``.
+        for case, marker in _cardinal_case_marker.items():
+            for link in ("NA", "NG"):
+                rules.append(Rule(
+                    f"NP[CASE={case}]",
+                    [
+                        marker,
+                        "Q",
+                        f"PART[LINK={link}]",
+                        "N",
+                    ],
+                    [
+                        "(↑) = ↓1",
+                        "(↑ PRED) = ↓4 PRED",
+                        "(↑ LEMMA) = ↓4 LEMMA",
+                        "(↑ QUANT) = ↓2 QUANT",
+                        "(↑ VAGUE) = 'YES'",
+                        "¬ (↓4 VAGUE)",
+                        "(↓2 VAGUE) =c 'YES'",
+                    ],
+                ))
+
+        # N-level companion rule (parang etc.). Mirrors the Phase 5f
+        # Commit 1 N-level cardinal rule — produces N (not NP) for
+        # consumers that compose at N level (e.g., the Phase 5e
+        # Commit 26 ``parang isang aso`` rule selects an N
+        # daughter). Chained-vague-Q blocking via ``¬ (↓3 VAGUE)``
+        # parallel to the NP-level rule.
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "N",
+                [
+                    "Q",
+                    f"PART[LINK={link}]",
+                    "N",
+                ],
+                [
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                    "(↑ QUANT) = ↓1 QUANT",
+                    "(↑ VAGUE) = 'YES'",
+                    "¬ (↓3 VAGUE)",
+                    "(↓1 VAGUE) =c 'YES'",
+                ],
+            ))
 
         # --- N from NOUN (toy PRED; Phase 5 will lexicalise properly) ---
         # Phase 5c §8 follow-on (Commit 6): also expose the noun's
@@ -2184,7 +2276,8 @@ class Grammar:
             ],
         ))
 
-        # --- Phase 5f Commit 14: mga time approximation (Group E item 3)
+        # --- Phase 5f Commit 13 (bundled): mga time approximation
+        # (Group E item 3) -------------------------------------------
         #
         # ``mga alasotso`` "around 8 o'clock", ``mga alauna``
         # "around 1 o'clock", ``sa mga alastres`` "at around 3
@@ -2202,9 +2295,10 @@ class Grammar:
         #   (↓2 SEM_CLASS) =c 'TIME'      — head is clock-time
         #
         # Plural marking on regular nouns (``ang mga aklat`` "the
-        # books") and cardinal approximation (``mga sampu`` "around
-        # ten") use the same ``mga`` lex entry but are separate
-        # constructions; deferred follow-ons.
+        # books") is a separate construction; deferred. Cardinal
+        # approximation (``mga sampu`` "around ten") was deferred
+        # in Commit 13 and is lifted by the parallel NUM rule
+        # below in Phase 5f Commit 16 (Group H1 item 2).
         rules.append(Rule(
             "N",
             ["PART", "N"],
@@ -2215,6 +2309,137 @@ class Grammar:
                 "(↓2 SEM_CLASS) =c 'TIME'",
             ],
         ))
+
+        # --- Phase 5f Commit 16: approximators (Group H1 item 2) ----
+        #
+        # ``halos sampu`` "almost ten", ``halos lahat`` "almost
+        # all", ``halos maraming bata`` "almost many children",
+        # ``humigitkumulang sampu`` "approximately ten", and
+        # ``mga sampu`` "around ten" — a closed-class set of
+        # approximator pre-modifiers wrap a NUM (CARDINAL=YES) or
+        # Q head and add ``APPROX=YES`` to the result.
+        #
+        # Three rules total:
+        #
+        # 1. ``NUM → PART[APPROX=YES] NUM[CARDINAL=YES]`` wraps a
+        #    cardinal NUM. Output is NUM (preserving CARDINAL=YES
+        #    + CARDINAL_VALUE), so the matrix-NP cardinal-modifier
+        #    rule (Phase 5f Commit 1) consumes it directly:
+        #    ``Bumili ako ng halos sampung aklat.`` parses as
+        #    ``[halos sampu]ng aklat`` with CARDINAL_VALUE=10 +
+        #    APPROX=YES on the matrix NP.
+        # 2. ``Q → PART[APPROX=YES] Q`` wraps a quantifier. Output
+        #    is Q (preserving QUANT + VAGUE), so the existing
+        #    Phase 5b partitive (``Q + NP[GEN]``) and Phase 5f
+        #    Commit 15 vague-Q-modifier rules consume it:
+        #    ``halos lahat ng bata`` partitive,
+        #    ``halos maraming bata`` linker form.
+        # 3. ``NUM → PART[PLURAL_MARKER=YES] NUM[CARDINAL=YES]``
+        #    extends the Phase 5f Commit 13 mga rule from TIME
+        #    NOUNs to cardinal NUMs. ``mga sampu`` "around ten"
+        #    is the target; same surface uses the same lex entry,
+        #    different rule.
+        #
+        # The constraining equation ``(↓1 APPROX) =c 'YES'`` (rules
+        # 1 + 2) gates the daughter to actual approximator PARTs
+        # (``halos`` / ``humigitkumulang``); ``(↓1 PLURAL_MARKER)
+        # =c 'YES'`` (rule 3) gates to ``mga``. The
+        # ``(↓2 CARDINAL) =c 'YES'`` constraint on rules 1 + 3
+        # enforces the daughter is a genuinely cardinal NUM
+        # (parallel to Commit 1's cardinal NP-modifier rule).
+        rules.append(Rule(
+            "NUM",
+            ["PART", "NUM"],
+            [
+                "(↑) = ↓2",
+                "(↑ APPROX) = 'YES'",
+                "(↓1 APPROX) =c 'YES'",
+                "(↓2 CARDINAL) =c 'YES'",
+            ],
+        ))
+        rules.append(Rule(
+            "Q",
+            ["PART", "Q"],
+            [
+                "(↑) = ↓2",
+                "(↑ APPROX) = 'YES'",
+                "(↓1 APPROX) =c 'YES'",
+            ],
+        ))
+        rules.append(Rule(
+            "NUM",
+            ["PART", "NUM"],
+            [
+                "(↑) = ↓2",
+                "(↑ APPROX) = 'YES'",
+                "(↓1 PLURAL_MARKER) =c 'YES'",
+                "(↓2 CARDINAL) =c 'YES'",
+            ],
+        ))
+
+        # --- Phase 5f Commit 17: numeric comparatives (Group H1
+        # item 3) -----------------------------------------------------
+        #
+        # ``higit sa sampu`` "more than ten", ``kulang sa sampu``
+        # "less than ten", ``hindi bababa sa sampu`` "no less than
+        # ten / at least ten", ``hindi hihigit sa sampu`` "no more
+        # than ten / at most ten". Four idiomatic phrase patterns
+        # that wrap a NUM[CARDINAL=YES] standard via the DAT marker
+        # ``sa`` and modify a NUM head with COMP feature.
+        #
+        # Per plan §11.1 Group H item 3: "These compose existing
+        # constituents (negation hindi, the NEG-headed copula in
+        # bababa / hihigit, DAT-NP sa NUM) plus a small frame rule
+        # for the NUM modifier." The "small frame rule" is realised
+        # here as four parallel rules each gated on a specific
+        # COMP_PHRASE lex tag.
+        #
+        # Each rule's output is NUM (preserving CARDINAL=YES,
+        # CARDINAL_VALUE, NUM=PL/SG via shared-fstruct ``(↑) = ↓N``
+        # on the inner NUM daughter) plus a new ``COMP`` feature
+        # set explicitly to GT / LT / GE / LE — the ``hindi
+        # bababa`` / ``hindi hihigit`` patterns set GE / LE
+        # respectively because the negation flips the underlying
+        # head's semantics. The matrix-NP cardinal-modifier rule
+        # (Phase 5f Commit 1) then consumes the wrapped NUM
+        # unchanged.
+        #
+        # Solo patterns (higit / kulang): 3 daughters
+        # ``PART ADP[CASE=DAT] NUM[CARDINAL=YES]``. Negated
+        # patterns (hindi bababa / hindi hihigit): 4 daughters
+        # ``PART[POLARITY=NEG] PART ADP[CASE=DAT] NUM[CARDINAL=YES]``.
+        #
+        # Constraints follow the established Phase 5f pattern:
+        # ``(↓N COMP_PHRASE) =c 'X'`` gates each rule to its
+        # specific lex tag; ``(↓ CASE) =c 'DAT'`` enforces ``sa``
+        # rather than ``ng`` / ``ang``; ``(↓ CARDINAL) =c 'YES'``
+        # enforces a genuinely cardinal NUM (parallel to Commit 1
+        # / 16's cardinal gate).
+        for comp_lex, comp_value in (("HIGIT", "GT"), ("KULANG", "LT")):
+            rules.append(Rule(
+                "NUM",
+                ["PART", "ADP", "NUM"],
+                [
+                    "(↑) = ↓3",
+                    f"(↑ COMP) = '{comp_value}'",
+                    f"(↓1 COMP_PHRASE) =c '{comp_lex}'",
+                    "(↓2 CASE) =c 'DAT'",
+                    "(↓3 CARDINAL) =c 'YES'",
+                ],
+            ))
+        for comp_lex, comp_value in (("BABABA", "GE"), ("HIHIGIT", "LE")):
+            rules.append(Rule(
+                "NUM",
+                ["PART", "PART", "ADP", "NUM"],
+                [
+                    "(↑) = ↓4",
+                    f"(↑ COMP) = '{comp_value}'",
+                    "(↓1 POLARITY) =c 'NEG'",
+                    f"(↓2 COMP_PHRASE) =c '{comp_lex}'",
+                    "(↓3 CASE) =c 'DAT'",
+                    "(↓4 CARDINAL) =c 'YES'",
+                ],
+            ))
 
         # --- Phase 5f Commit 13: temporal-frame PP (Group F item 5)
         #

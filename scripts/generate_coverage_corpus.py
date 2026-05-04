@@ -1492,6 +1492,49 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
              f"season: noong + {s} as PAST PP", "parse")
     _add(out, "tuwing tagulan ay pumunta ako",
          "season: tuwing-PP ay-fronted", "parse")
+    # Phase 5f Commit 15: vague cardinals (Group H1 item 1).
+    vague_vowel = [("marami", "many"), ("kaunti", "few"),
+                   ("konti", "few"), ("kakaunti", "very-few")]
+    vague_cons = [("ilan", "few"), ("iilan", "few"),
+                  ("karamihan", "most")]
+    for lemma, _ in vague_vowel:
+        _add(out, f"kumain ako ng {lemma}ng isda",
+             f"vague: {lemma}-ng + N (OBJ)", "parse")
+    for lemma, _ in vague_cons:
+        _add(out, f"pumunta ako sa {lemma} na bata",
+             f"vague: {lemma} + na + N (DAT)", "parse")
+    _add(out, "kumakain ang maraming bata",
+         "vague: marami in SUBJ", "parse")
+    _add(out, "kumakain ang karamihan na bata",
+         "vague: karamihan + na in SUBJ", "parse")
+    # Phase 5f Commit 16: approximators (Group H1 item 2).
+    for approx in ("halos", "humigitkumulang"):
+        _add(out, f"bumili ako ng {approx} sampung aklat",
+             f"approx: {approx} + cardinal NP-modifier (OBJ)", "parse")
+    _add(out, "bumili ako ng mga sampung aklat",
+         "approx: broader mga + cardinal NP-modifier", "parse")
+    _add(out, "kumakain ang mga tatlong bata",
+         "approx: broader mga + cardinal in SUBJ", "parse")
+    _add(out, "kumakain ang halos lahat ng bata",
+         "approx: halos + lahat partitive", "parse")
+    _add(out, "bumili ako ng halos maraming aklat",
+         "approx: halos + vague-Q linker", "parse")
+    _add(out, "kumakain ang halos sampung bata",
+         "approx: halos + cardinal in SUBJ", "parse")
+    _add(out, "bumili ako ng halos apat na aklat",
+         "approx: halos + consonant-final cardinal (apat na)", "parse")
+    # Phase 5f Commit 17: numeric comparatives (Group H1 item 3).
+    for comp, gloss in (("higit", "more-than"), ("kulang", "less-than")):
+        _add(out, f"bumili ako ng {comp} sa sampung aklat",
+             f"comparator: {comp} sa NUM ({gloss})", "parse")
+    _add(out, "bumili ako ng hindi bababa sa sampung aklat",
+         "comparator: hindi bababa sa NUM (at-least)", "parse")
+    _add(out, "bumili ako ng hindi hihigit sa sampung aklat",
+         "comparator: hindi hihigit sa NUM (at-most)", "parse")
+    _add(out, "kumakain ang higit sa sampung bata",
+         "comparator: higit in SUBJ", "parse")
+    _add(out, "bumili ako ng higit sa apat na aklat",
+         "comparator: higit + consonant-final cardinal (apat na)", "parse")
     return out
 
 
