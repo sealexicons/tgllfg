@@ -68,29 +68,14 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
+from ._helpers import _eqs
+
 
 @dataclass
 class Rule:
     lhs: str
     rhs: list[str]          # nonterminals/terminals with feature labels like NP[CASE=NOM]
     equations: list[str]    # LFG equations using ↑ and ↓i (i = child index, 1-based)
-
-
-# Equations every clausal rule emits to percolate verb features up
-# to the matrix f-structure. ``↓1`` is always the verb in our
-# V-initial rules.
-_VERB_PERCOLATION: tuple[str, ...] = (
-    "(↑ PRED) = ↓1 PRED",
-    "(↑ VOICE) = ↓1 VOICE",
-    "(↑ ASPECT) = ↓1 ASPECT",
-    "(↑ MOOD) = ↓1 MOOD",
-    "(↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT",
-)
-
-
-def _eqs(*extras: str) -> list[str]:
-    """Build an equation list: verb percolation followed by extras."""
-    return [*_VERB_PERCOLATION, *extras]
 
 
 class Grammar:
