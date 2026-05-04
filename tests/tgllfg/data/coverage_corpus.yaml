@@ -3534,6 +3534,18 @@
 - text: Buong bata ay kumakain.
   construction: 'whole: buo bare-NOM ay-fronted (bata)'
   expected: parse
+- text: Kumain sila pareho.
+  construction: 'dual: pareho float (clause-final, PRON SUBJ)'
+  expected: parse
+- text: Kumain sila kapwa.
+  construction: 'dual: kapwa float (formal)'
+  expected: parse
+- text: Kumain ang bata pareho.
+  construction: 'dual: pareho float with nominal SUBJ'
+  expected: parse
+- text: Kumain ang bata kapwa.
+  construction: 'dual: kapwa float with nominal SUBJ'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

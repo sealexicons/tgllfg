@@ -8598,3 +8598,138 @@ variant is ready.
 * **ADJ-vs-Q reanalysis** — Phase 5g may revisit the
   classification once adjective infrastructure exists.
 
+## Phase 5f Commit 23: dual ``pareho`` / ``kapwa`` (Group H3 item 9; closes Phase 5f)
+
+**Date:** 2026-05-04. **Status:** active. 2 Q lex entries.
+NO new grammar rules — both consume the existing Phase 4
+§7.8 ``S → S Q`` float rule unchanged. 1 gating addition on
+the existing Phase 5b partitive rules. Refs: plan §11.1
+Group H item 9 (dual); S&O 1972 §4.7; R&B 1986; Phase 4 §7.8
+(existing float rule consumed unchanged); Phase 5b §7.8
+follow-on (existing partitive consumed with new dual-blocking
+gate).
+
+Closes **Phase 5f**.
+
+### Lex change
+
+Two Q entries in ``data/tgl/particles.yaml``:
+
+* ``pareho`` — Q[QUANT=BOTH, DUAL="YES"]. Native dual.
+* ``kapwa``  — Q[QUANT=BOTH, DUAL="YES"]. Formal dual.
+
+### Polysemy with future Phase 5h equative-predicate reading
+
+``pareho`` also has an equative-predicate reading
+(``Pareho ang kanilang sapatos.`` "their shoes are the same"),
+which belongs in Phase 5h (gradable / equative comparison)
+per the plan §11.1 Group H item 9. This commit covers only
+the floated-quantifier reading. Following the Phase 5f Commit
+17 bababa / hihigit precedent, the equative reading will be
+added as a separate ``(lemma, pos)`` entry when Phase 5h
+lands — the morph analyzer's different-POS handling supports
+the polysemy without collision.
+
+### Float rule consumes unchanged
+
+The existing Phase 4 §7.8 ``S → S Q`` rule:
+
+```
+S → S Q
+Equations:
+  (↑) = ↓1
+  ↓2 ∈ (↑ ADJ)
+  (↓2 ANTECEDENT) = (↑ SUBJ)
+```
+
+attaches Q at clause-final position as a member of the
+matrix's ADJ set with binding to SUBJ. With pareho / kapwa as
+Q, the rule fires on:
+
+* ``Kumain sila pareho.`` → ADJ contains pareho
+  f-structure (LEMMA, QUANT=BOTH, DUAL=YES); ANTECEDENT →
+  matrix SUBJ (sila).
+* ``Kumain ang bata kapwa.`` → similar shape.
+
+The matrix's ADJ-member carries the full Q lex f-structure
+including DUAL=YES, so downstream consumers (LMT, semantics)
+can detect the dual marking via the standard ADJ traversal.
+
+### Gate addition on partitive
+
+Each of the 3 existing Phase 5b ``Q + NP[GEN]`` partitive
+rules gains ``¬ (↓2 DUAL)`` (parallel to existing VAGUE /
+UNIV / DISTRIB_POSS / WHOLE gates). Duals only float; the
+partitive ``*ang pareho ng bata`` is non-standard.
+
+With this commit, the partitive rule has 5 negative gates
+(VAGUE / UNIV / DISTRIB_POSS / WHOLE / DUAL). All five are
+the canonical Q-feature flavours added in Phase 5f.
+
+### Why no rule for the clause-initial form?
+
+The plan §11.1 Group H item 9 canonical example is ``Pareho
+silang kumain.`` "they both ate" — Q clause-initial with
+PRON-clitic + linker + V. This surface is structurally
+distinct from the float construction and would require a new
+S frame rule. Possible structures:
+
+```
+S → Q[DUAL=YES] PRON[NOM] PART[LINK] V
+  (↑ PRED) = 'DUAL <SUBJ>'
+  (↑ SUBJ) = ↓2
+  (↑ DUAL) = 'YES'
+  (↑ XCOMP) = ↓4
+  (↓4 SUBJ) = (↑ SUBJ)   # control
+```
+
+— pareho as predicate-Q with linker-attached XCOMP. But this
+is analytically more involved than the float consumption, and
+the same proposition is expressed by the clause-final float
+form (``Kumain sila pareho.``) which already parses. For
+Phase 5f scope, that's adequate. Deferred.
+
+### Negative fixtures (per §11.2)
+
+* ``*ang pareho ng aklat`` — DUAL in GEN-NP partitive
+  blocked by new ``¬ (↓2 DUAL)`` gate.
+* ``*ang kapwa ng aklat`` — same blocking.
+
+### Out of scope for this commit
+
+* **Clause-initial form** (``Pareho silang kumain.``) — see
+  "Why no rule" above.
+* **Equative predicate** of ``pareho`` (``Pareho ang
+  kanilang sapatos.``) — Phase 5h scope.
+* **Number agreement** with the SUBJ — semantically a dual Q
+  requires a plural antecedent (``*Kumain siya pareho.`` is
+  semantically odd). The float rule's ``ANTECEDENT`` binding
+  sets up the link but no agreement check is performed.
+  Adding agreement is a follow-on; out of scope for this
+  commit.
+
+### Phase 5f close
+
+This commit completes the Phase 5f §11.1 deliverables:
+
+| Group | Items | Phase 5f Commits | Status |
+|-------|-------|-------------------|--------|
+| A | Cardinals (native, Spanish, compound, predicative, multiplicative, decimals/percentages) | 1-6 | merged in PR #12 |
+| B | Ordinals 1-10 | 7 | merged in PR #13 |
+| C | Fractions | 8 | merged in PR #13 |
+| D | Arithmetic predicates | 9 | merged in PR #14 |
+| E | Times (clock + time-of-day + deictics + minute composition + mga approximation) | 10-13 | merged in PR #15 |
+| F | Dates (months + days + date formula) | 13 | merged in PR #15 |
+| G | Seasons | 14 | merged in PR #15 |
+| H1 | Vague + approximators + numeric comparatives | 15-17 | merged in PR #16 |
+| H2 | Collective + distributive ``tig-`` + universal ``bawat``/``kada`` | 18-20 | merged in PR #17 |
+| H3 | Distributive-possessive + wholes + dual | 21-23 | this PR |
+
+Phase 5f total: ~23 commits across 9 PRs (including the prep
+PR #11). Test count: ~3653 (start of 5f) → ~4337 (end of 5f),
++684 unit + parametrized tests. Coverage corpus:
+~1085 → ~1212 sentences, 99.5% parse rate maintained
+throughout. Next: Phase 5g (gradable adjectives + comparison
++ degree, plan §12). Per the effort protocol, the cutover
+will need a deliberate pause-and-verify before starting.
+

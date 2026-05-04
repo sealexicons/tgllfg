@@ -1598,6 +1598,15 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "whole: buo bare-NOM ay-fronted (pamilya)", "parse")
     _add(out, "buong bata ay kumakain",
          "whole: buo bare-NOM ay-fronted (bata)", "parse")
+    # Phase 5f Commit 23: dual pareho / kapwa (Group H3 item 9).
+    _add(out, "kumain sila pareho",
+         "dual: pareho float (clause-final, PRON SUBJ)", "parse")
+    _add(out, "kumain sila kapwa",
+         "dual: kapwa float (formal)", "parse")
+    _add(out, "kumain ang bata pareho",
+         "dual: pareho float with nominal SUBJ", "parse")
+    _add(out, "kumain ang bata kapwa",
+         "dual: kapwa float with nominal SUBJ", "parse")
     return out
 
 

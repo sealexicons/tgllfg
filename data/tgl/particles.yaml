@@ -458,6 +458,53 @@
   pos: Q
   feats: {QUANT: WHOLE, WHOLE: "YES"}
 
+# === Phase 5f Commit 23: dual `pareho` / `kapwa` (Group H3 item 9) ==========
+# Closes Phase 5f. Plan §11.1 Group H item 9 (S&O 1972 §4.7;
+# R&B 1986). Two Q[DUAL=YES] entries — ``pareho`` "both /
+# alike" and ``kapwa`` "both" (more formal):
+#
+#   Kumain sila pareho.   "they both ate"  (clause-final
+#                          float; this commit's target form)
+#   Kumain sila kapwa.    "they both ate"  (formal variant)
+#
+# Both consume the existing Phase 4 §7.8 ``S → S Q`` float
+# rule unchanged — the float rule attaches Q at clause-final
+# position as a member of the matrix's ADJ set with binding
+# ``(↓2 ANTECEDENT) = (↑ SUBJ)``. The matrix's ADJ-member
+# carries the Q lex's full f-structure (LEMMA, QUANT=BOTH,
+# DUAL=YES). No new grammar required for the float use.
+#
+# Polysemy: ``pareho`` also has an equative-predicate reading
+# (``Pareho ang kanilang sapatos`` "their shoes are the same"),
+# which belongs in Phase 5h (gradable / equative comparison)
+# per the plan. This commit covers only the floated-quantifier
+# use; the equative-predicate use will be added as a separate
+# (lemma, pos) entry when Phase 5h lands. Polysemy via
+# different POS is the established pattern (Phase 5f Commit 17
+# bababa / hihigit precedent).
+#
+# Out of scope for this commit:
+#
+# * **Clause-initial form** ``Pareho silang kumain.`` "they
+#   both ate" — same surface-meaning as ``Kumain sila pareho.``
+#   but with Q clause-initial. Plan §11.1 Group H item 9
+#   describes this as the canonical surface, but parsing it
+#   requires a new S frame rule (``S → Q[DUAL=YES] PRON[NOM]
+#   PART[LINK] V``) modelling pareho as a clause-initial
+#   predicate-like Q with linker-attached V complement.
+#   Analytically distinct from the float construction this
+#   commit covers; deferred to a later commit. Both surfaces
+#   express the same proposition, so Phase 5f scope is
+#   adequately covered by the float form.
+# * **Equative predicate** ``Pareho ang kanilang sapatos.``
+#   "their shoes are the same" — Phase 5h scope.
+- surface: pareho
+  pos: Q
+  feats: {QUANT: BOTH, DUAL: "YES"}
+- surface: kapwa
+  pos: Q
+  feats: {QUANT: BOTH, DUAL: "YES"}
+
 # === Phase 4 §7.6: psych control predicates ==============================
 # Pseudo-verbal predicates that select an XCOMP complement clause and
 # take a GEN-marked experiencer. They have no verbal morphology

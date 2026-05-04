@@ -506,6 +506,7 @@ class Grammar:
                 "¬ (↓2 UNIV)",
                 "¬ (↓2 DISTRIB_POSS)",
                 "¬ (↓2 WHOLE)",
+                "¬ (↓2 DUAL)",
             ],
         ))
         rules.append(Rule(
@@ -519,6 +520,7 @@ class Grammar:
                 "¬ (↓2 UNIV)",
                 "¬ (↓2 DISTRIB_POSS)",
                 "¬ (↓2 WHOLE)",
+                "¬ (↓2 DUAL)",
             ],
         ))
         rules.append(Rule(
@@ -532,6 +534,7 @@ class Grammar:
                 "¬ (↓2 UNIV)",
                 "¬ (↓2 DISTRIB_POSS)",
                 "¬ (↓2 WHOLE)",
+                "¬ (↓2 DUAL)",
             ],
         ))
 
