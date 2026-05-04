@@ -1564,6 +1564,19 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "distrib: tigisa in SUBJ", "parse")
     _add(out, "tigisa sila",
          "distrib: tigisa as predicative-cardinal", "parse")
+    # Phase 5f Commit 20: universal bawat / kada (Group H2 item 6).
+    _add(out, "kumakain ang bawat bata",
+         "universal: bawat in NOM SUBJ", "parse")
+    _add(out, "kumain ako ng bawat aklat",
+         "universal: bawat in GEN OBJ", "parse")
+    _add(out, "pumunta ako sa bawat bata",
+         "universal: bawat in DAT ADJUNCT", "parse")
+    _add(out, "bawat bata ay kumakain",
+         "universal: bawat bare-NOM ay-fronted", "parse")
+    _add(out, "kumakain ang kada bata",
+         "universal: kada (colloquial) in NOM SUBJ", "parse")
+    _add(out, "kada bata ay kumakain",
+         "universal: kada bare-NOM ay-fronted", "parse")
     return out
 
 

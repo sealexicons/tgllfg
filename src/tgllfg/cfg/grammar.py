@@ -490,6 +490,11 @@ class Grammar:
         # partitive variant of vague cardinals (``marami sa
         # kanila`` "many of them") is a separate construction
         # deferred for now.
+        #
+        # Phase 5f Commit 20 follow-on: ``¬ (↓2 UNIV)`` similarly
+        # blocks the universals (``bawat``, ``kada``) — they take
+        # a bare-N complement, not GEN-NP. (``*ang bawat ng bata``
+        # is non-standard.)
         rules.append(Rule(
             "NP[CASE=NOM]",
             ["DET[CASE=NOM]", "Q", "NP[CASE=GEN]"],
@@ -498,6 +503,7 @@ class Grammar:
                 "(↑ PRED) = ↓3 PRED",
                 "(↑ QUANT) = ↓2 QUANT",
                 "¬ (↓2 VAGUE)",
+                "¬ (↓2 UNIV)",
             ],
         ))
         rules.append(Rule(
@@ -508,6 +514,7 @@ class Grammar:
                 "(↑ PRED) = ↓3 PRED",
                 "(↑ QUANT) = ↓2 QUANT",
                 "¬ (↓2 VAGUE)",
+                "¬ (↓2 UNIV)",
             ],
         ))
         rules.append(Rule(
@@ -518,6 +525,7 @@ class Grammar:
                 "(↑ PRED) = ↓3 PRED",
                 "(↑ QUANT) = ↓2 QUANT",
                 "¬ (↓2 VAGUE)",
+                "¬ (↓2 UNIV)",
             ],
         ))
 
@@ -589,6 +597,61 @@ class Grammar:
                     "(↓1 VAGUE) =c 'YES'",
                 ],
             ))
+
+        # --- Phase 5f Commit 20: universal `bawat` / `kada`
+        # NP-internal modifier (Group H2 item 6) ---------------------
+        #
+        # ``bawat bata`` "every child", ``kada bata`` "every child"
+        # (colloquial), ``ang bawat bata`` "the every child", ``sa
+        # bawat bata`` "to every child". Universal Q heads take a
+        # bare N complement (no linker, no DET between Q and N).
+        # Plan §11.1 Group H item 6 (S&O 1972 §4.7).
+        #
+        # 4 rules total: 3 case-marked variants
+        # (``DET/ADP[CASE=X] Q[UNIV=YES] N``) plus 1 bare-NOM
+        # variant (``Q[UNIV=YES] N``). The bare-NOM rule covers
+        # ``Bawat bata ay kumakain.`` "Every child eats." style
+        # surfaces where bawat itself functions as the determiner-
+        # equivalent.
+        #
+        # The constraining equation ``(↓N UNIV) =c 'YES'`` gates
+        # the rule to universal Q heads — non-universal Qs
+        # (``lahat`` / ``iba`` / vague) match this rule's daughter
+        # by non-conflict on the absence of UNIV unless gated.
+        # Same fix-pattern as the cardinal / ordinal / vague-Q
+        # rules' positive constraint on the daughter feature.
+        # ``¬ (↓last UNIV)`` blocks chained universals
+        # (``*bawat bawat bata``).
+        for case, marker in _cardinal_case_marker.items():
+            rules.append(Rule(
+                f"NP[CASE={case}]",
+                [marker, "Q", "N"],
+                [
+                    "(↑) = ↓1",
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                    "(↑ QUANT) = ↓2 QUANT",
+                    "(↑ UNIV) = 'YES'",
+                    "¬ (↓3 UNIV)",
+                    "(↓2 UNIV) =c 'YES'",
+                ],
+            ))
+
+        # Bare-NOM rule (universals can stand alone as NPs without
+        # a DET — bawat / kada act as their own determiner).
+        rules.append(Rule(
+            "NP[CASE=NOM]",
+            ["Q", "N"],
+            [
+                "(↑ PRED) = ↓2 PRED",
+                "(↑ LEMMA) = ↓2 LEMMA",
+                "(↑ QUANT) = ↓1 QUANT",
+                "(↑ UNIV) = 'YES'",
+                "(↑ CASE) = 'NOM'",
+                "¬ (↓2 UNIV)",
+                "(↓1 UNIV) =c 'YES'",
+            ],
+        ))
 
         # --- Phase 5f Commit 18: measure-N rule (Group H2 item 4) ---
         #

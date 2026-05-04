@@ -3486,6 +3486,24 @@
 - text: Tigisa sila.
   construction: 'distrib: tigisa as predicative-cardinal'
   expected: parse
+- text: Kumakain ang bawat bata.
+  construction: 'universal: bawat in NOM SUBJ'
+  expected: parse
+- text: Kumain ako ng bawat aklat.
+  construction: 'universal: bawat in GEN OBJ'
+  expected: parse
+- text: Pumunta ako sa bawat bata.
+  construction: 'universal: bawat in DAT ADJUNCT'
+  expected: parse
+- text: Bawat bata ay kumakain.
+  construction: 'universal: bawat bare-NOM ay-fronted'
+  expected: parse
+- text: Kumakain ang kada bata.
+  construction: 'universal: kada (colloquial) in NOM SUBJ'
+  expected: parse
+- text: Kada bata ay kumakain.
+  construction: 'universal: kada bare-NOM ay-fronted'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

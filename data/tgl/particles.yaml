@@ -322,6 +322,57 @@
   pos: NUM
   feats: {CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE: "10", NUM: PL}
 
+# === Phase 5f Commit 20: universal `bawat` / `kada` (Group H2 item 6) ======
+# Pre-N universal quantifiers — closes Group H2 (Group H sub-PR
+# 2 of 3). Plan §11.1 Group H item 6 (S&O 1972 §4.7; R&B 1986):
+#
+#   bawat bata  "every child"
+#   bawat isa   "every one"
+#   kada bata   "every child" (Spanish-borrowed colloquial
+#                synonym of bawat)
+#
+# Both are Q heads with ``UNIV: "YES"``. Unlike ``lahat`` /
+# ``iba`` (Phase 4 §7.8 partitive Q heads taking GEN-NP) and
+# unlike the vague Qs (Phase 5f Commit 15 taking linker + N),
+# universals take a **bare N** complement (no linker, no DET
+# between Q and N). This is the third Q-distribution Phase 5f
+# has now covered:
+#
+#   Q + NP[GEN]              partitive (lahat / iba; Phase 5b)
+#   Q + PART[LINK] + N        vague-Q-modifier (Phase 5f Commit 15)
+#   Q + N                    universal (this commit)
+#
+# The new grammar rules (Phase 5f Commit 20 in
+# src/tgllfg/cfg/grammar.py) parallel Phase 5f Commit 15 except
+# the linker daughter is dropped. Three case-marked variants
+# (DET/ADP[CASE=X] Q[UNIV=YES] N) plus one bare-NOM variant
+# (Q[UNIV=YES] N) for surfaces like ``Bawat bata ay kumakain.``
+# where bawat itself functions as the determiner-equivalent.
+#
+# The existing Phase 5b partitive rules gain ``¬ (↓2 UNIV)``
+# (parallel to the Phase 5f Commit 15 ``¬ (↓2 VAGUE)`` gate)
+# so universals only take the bare-N form (the partitive
+# ``*ang bawat ng bata`` is non-standard and shouldn't compose).
+#
+# Out of scope for this commit:
+#
+# * ``bawat isa`` / ``bawat dalawa`` (Q + NUM as quantifier
+#   over a number) — needs a parallel Q + NUM rule. Defer.
+# * Q-quantification over a non-N head (``bawat sa kanila``
+#   "every of them" with a DAT-NP complement) — additive but
+#   structurally distinct.
+# * Floated universals (``Kumakain ang bata bawat`` "the
+#   children eat each one"?) — not idiomatic for ``bawat``;
+#   the existing Phase 4 §7.8 ``S → S Q`` float rule would
+#   mechanically fire but the result isn't natural Tagalog.
+#   Defer.
+- surface: bawat
+  pos: Q
+  feats: {QUANT: EVERY, UNIV: "YES"}
+- surface: kada
+  pos: Q
+  feats: {QUANT: EVERY, UNIV: "YES"}
+
 # === Phase 4 §7.6: psych control predicates ==============================
 # Pseudo-verbal predicates that select an XCOMP complement clause and
 # take a GEN-marked experiencer. They have no verbal morphology
