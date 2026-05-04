@@ -12,7 +12,7 @@ Lex (data/tgl/particles.yaml):
 * ``y`` PART, MINUTE_OP=Y (forward-counting "and").
 * ``menos`` PART, MINUTE_OP=MENOS (backward-counting "minus").
 
-Lex (data/tgl/roots.yaml) addendum:
+Lex (data/tgl/nouns.yaml) addendum:
 
 * ``kuwarto`` "quarter (of the hour)" added as a separate
   NOUN entry alongside the existing ``kuwarto`` "room" NOUN.

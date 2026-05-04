@@ -3,7 +3,7 @@
 Adds month NOUNs, day-of-week NOUNs, and temporal-frame
 markers (``tuwing`` / ``noong``) for date constructions.
 
-Lex (data/tgl/roots.yaml):
+Lex (data/tgl/nouns.yaml):
 
 * 12 Spanish month names (``enero`` .. ``disyembre``) as
   NOUN with SEM_CLASS=MONTH and MONTH_VALUE (1-12).

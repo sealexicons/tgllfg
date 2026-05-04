@@ -135,7 +135,7 @@ async def test_seed_populates_lemma_morph_metadata(
     postgres_container: PostgresContainer, empty_migrated_engine: AsyncEngine
 ) -> None:
     """The new lemma.transitivity and lemma.affix_class columns must
-    arrive populated for verbs that declare them in roots.yaml."""
+    arrive populated for verbs that declare them in verbs.yaml."""
     await seed_database(postgres_container.get_connection_url())
 
     sessionmaker = async_sessionmaker(empty_migrated_engine, expire_on_commit=False)

@@ -14,7 +14,7 @@ multipliers for technical / commercial register.
 
 This commit lands:
 
-* Lex (data/tgl/roots.yaml): ``beses``, ``ulit`` (NOUN with
+* Lex (data/tgl/nouns.yaml): ``beses``, ``ulit`` (NOUN with
   ``SEM_CLASS=FREQUENCY``); ``doble``, ``triple`` (NOUN with
   ``SEM_CLASS=MULTIPLIER``).
 * Lex (data/tgl/particles.yaml): 10 ``maka-`` cardinals

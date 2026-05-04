@@ -20,7 +20,7 @@ to the same PRED.
 
 Currently only ``bili`` carries the ``mang_retain`` affix-class
 flag; other roots can opt in by adding ``mang_retain`` to their
-``affix_class`` list in ``data/tgl/roots.yaml``.
+``affix_class`` list in ``data/tgl/verbs.yaml``.
 """
 
 from __future__ import annotations

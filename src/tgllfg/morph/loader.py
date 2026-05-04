@@ -44,7 +44,14 @@ def load_morph_data(data_dir: Path | None = None) -> MorphData:
         return MorphData()
 
     return MorphData(
-        roots=_load_roots(base / "roots.yaml"),
+        # The seed lexicon is split by POS: verbs.yaml first (so the
+        # paradigm-generating VERB roots get indexed in their original
+        # order), then nouns.yaml. Together they reproduce the
+        # iteration order of the pre-split data/tgl/roots.yaml.
+        roots=(
+            _load_roots(base / "verbs.yaml")
+            + _load_roots(base / "nouns.yaml")
+        ),
         paradigm_cells=_load_paradigm_cells(base / "paradigms.yaml"),
         particles=_load_particles(base / "particles.yaml"),
         pronouns=_load_pronouns(base / "pronouns.yaml"),

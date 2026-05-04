@@ -97,7 +97,7 @@
 # the dual binding into SUBJ and OBJ-AGENT.
 #
 # Note: ``kita`` also exists as a verb root (kita = "see, meet";
-# see data/tgl/roots.yaml). The morph analyzer returns BOTH
+# see data/tgl/verbs.yaml). The morph analyzer returns BOTH
 # analyses; the chart parser picks the PRON path when the syntactic
 # context calls for a clitic.
 - surface: kita

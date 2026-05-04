@@ -86,7 +86,7 @@ group.
 | RECPFV   | Recent perfective          | "Just-completed" aspect (`katatapos`-style); Phase 4 §7.2.                                         |
 | SOC      | Social mood                | "Common" or social-deontic mood; Phase 4 §7.2.                                                     |
 | STAT     | Stative                    | Subset of NVOL / `ma-` semantics (e.g. *natulog*).                                                 |
-| TR       | Transitivity               | Lemma feature taking TR (transitive) / INTR (intransitive); from `roots.yaml`.                     |
+| TR       | Transitivity               | Lemma feature taking TR (transitive) / INTR (intransitive); from `verbs.yaml`.                     |
 | INTR     | Intransitive               | Value of TR.                                                                                       |
 
 ### Case / nominal features
@@ -144,7 +144,7 @@ group.
 | CAUS     | Causative                          | `DIRECT`, `INDIRECT`, `∅`                    | `pa-` direct vs biclausal indirect.              |
 | CTRL_CLASS | Control class                    | `PSYCH`, `INTRANS`, `TRANS`, `NONE`          | Phase 4 §7.6 — discriminates control-verb subtypes for the SUBJ-binding equation. |
 
-### Affix-class labels (`roots.yaml` `affix_class:`)
+### Affix-class labels (`verbs.yaml` `affix_class:`)
 
 | Label      | Expansion                                                                                  |
 |------------|--------------------------------------------------------------------------------------------|
@@ -157,7 +157,7 @@ group.
 | mang       | mang- distributive AV class with nasal substitution.                                       |
 | um         | -um- AV class (e.g. *kumain*).                                                             |
 
-### Per-root sandhi flags (`roots.yaml` `sandhi_flags:`)
+### Per-root sandhi flags (`verbs.yaml` `sandhi_flags:`)
 
 | Flag                  | Effect                                                                                                |
 |-----------------------|-------------------------------------------------------------------------------------------------------|
@@ -275,7 +275,7 @@ appear in the bottom section.
 | `mang-` distributive paradigm          | `data/tgl/paradigms.yaml`                      | Kroeger 1993 §4.4.                              |
 | `maka-` abilitative                    | `data/tgl/paradigms.yaml`                      | Kroeger 1993 §4.5.                              |
 | `ma-` non-volitional / stative         | `data/tgl/paradigms.yaml`                      | Schachter & Otanes 1972 §5.27; Kroeger 1993 §4.5. |
-| Affix-class membership per verb        | `data/tgl/roots.yaml`                          | Ramos & Bautista 1986 (per-verb index).         |
+| Affix-class membership per verb        | `data/tgl/verbs.yaml`                          | Ramos & Bautista 1986 (per-verb index).         |
 | Verb paradigm tables                   | `tests/tgllfg/test_morph_paradigms.py`         | Ramos & Bautista 1986; Schachter & Otanes 1972 ch. 5. |
 | Ang-NP as pivot / SUBJ                 | `src/tgllfg/cfg/grammar.py`                    | Kroeger 1993 chs. 2–3.                          |
 | Voice-alias mapping (S&O ↔ Kroeger)    | `data/tgl/voice_aliases.yaml`                  | Kroeger 1993 §1.3 (reduction); Schachter & Otanes 1972 §§5.20–5.30 (focus inventory). |
@@ -348,7 +348,7 @@ these entries.
   Bautista. 1986. *Handbook of Tagalog Verbs: Inflections, Modes, and
   Aspects*. University of Hawaii Press. (User holds a purchased
   electronic copy under `data/tgl/dictionaries/`, gitignored. Cited
-  inline in `data/tgl/roots.yaml` as "R&B" with page numbers.)
+  inline in `data/tgl/verbs.yaml` as "R&B" with page numbers.)
 - **Robinson 1965.** Robinson, J. A. 1965. "A Machine-Oriented Logic
   Based on the Resolution Principle." *Journal of the ACM* 12(1): 23–41.
 - **Schachter & Otanes 1972.** Schachter, Paul and Fe T. Otanes. 1972.

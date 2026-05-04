@@ -1,8 +1,14 @@
-# Refactor plan: split `src/tgllfg/cfg/grammar.py` into per-area modules
+# Refactor plan: per-area cfg/ modules + roots.yaml split
 
-**Status:** planned (engineering, post-Phase-5f). **Surfaced:**
-2026-05-03 external review. **Tracked:** plan §18 entry "Refactor
-``src/tgllfg/cfg/grammar.py`` into a package with smaller modules".
+**Status:** part 1 (cfg/ split) done 2026-05-04 across Commits 2-9
+of branch ``feature/refactor-grammar-package``; part 2 (cfg/
+filename suffix drop) done in Commit 10; part 3 (roots.yaml split
+into ``verbs.yaml`` + ``nouns.yaml``) done in Commit 11; part 4
+(reorder per-POS entries by citation) done in Commit 12.
+**Surfaced:** 2026-05-03 external review (parts 1-2);
+maintainer-driven follow-up (parts 3-4). **Tracked:** plan §18
+entry "Refactor ``src/tgllfg/cfg/grammar.py`` into a package with
+smaller modules".
 
 ## Why
 
@@ -357,3 +363,78 @@ The plan §18 entry suggests "between Phase 5f close and Phase
   module split requires.
 * **Sub-splitting nominal.py** along det/quant/adj boundaries
   — defer until size demands it.
+
+## Part 3: split `data/tgl/roots.yaml` by POS
+
+### Why
+
+After the cfg/ split, the largest remaining single-file blob is
+``data/tgl/roots.yaml`` (411 entries: 204 ``pos: VERB`` + 207
+``pos: NOUN``). The two POS regions have nothing in common —
+verbs declare ``affix_class`` lists and ``transitivity``, nouns
+carry ``SEM_CLASS`` features and a flat shape — so a maintainer
+adding a new noun typically wants to ignore the entire verb
+region (and vice versa). The pre-split file also has one
+structural anomaly: a "Phase 4 §7.6: control verbs" sub-section
+of ``pos: VERB`` entries was buried inside the noun region. The
+split is the natural moment to put those verb entries back into
+the verb file, plus pull the lone interleaved ``kape`` VERB entry
+(co-located with its NOUN reading at line 1860) out of the noun
+region.
+
+### What
+
+Two new files replace ``data/tgl/roots.yaml``:
+
+* ``data/tgl/verbs.yaml`` — 204 ``pos: VERB`` entries.
+* ``data/tgl/nouns.yaml`` — 207 ``pos: NOUN`` entries.
+
+The morph loader in ``src/tgllfg/morph/loader.py`` reads both and
+concatenates verbs first, then nouns — preserving the exact
+iteration order over ``MorphData.roots`` that the analyzer relied
+on pre-split. The parse baseline (``scripts/check_parses_unchanged.py
+--check``) holds at zero ranker-output diff.
+
+### How
+
+Section structure within each file is preserved from the original
+(e.g., the verb file keeps its ``-um-`` / ``mag-`` / ``mang-`` /
+control-verbs sub-sections; the noun file keeps its semantic-class
+sub-sections — frequency / percentage / fraction / clock-time /
+months / days / seasons / collective numerals). The umbrella
+``# === Verb roots ===`` / ``# === Noun roots ===`` headers are
+dropped because the file itself is now POS-typed.
+
+Within each section, source order is initially preserved (Commit
+11). Commit 12 then reorders entries by citation form, with the
+following carve-outs:
+
+* Verbs file: a Control verbs section (``CTRL_CLASS`` carriers,
+  3 entries) is preserved as a labelled section because the
+  grammar treats them specially via the control-wrap rules in
+  ``cfg/control.py``. All other verbs are merged into a single
+  alphabetical list. The historical ``# --- Phase 2C bulk verb
+  scale-up A/B/C ---`` section markers are dropped (commit-
+  organised, not linguistic).
+* Nouns file: the SEM_CLASS-driven sections stay separate
+  (frequency / percentage / fraction / clock-time / time-of-day /
+  months / days / seasons / collective numerals) because the
+  grammar gates rules on those features. Within each, alphabetical
+  by citation **except** months / days / seasons /
+  collective numerals — for those four, chronological / cyclical /
+  by-N order is more natural than alphabetical and is preserved.
+
+### Test invariants (parts 3-4)
+
+Same as parts 1-2 — every commit must show:
+
+* ``hatch run pytest -q`` — identical pass count.
+* ``hatch run check`` — clean.
+* ``hatch run python scripts/check_parses_unchanged.py --check``
+  — zero ranker-output diff against the Commit 1 baseline.
+
+Reordering risk is real for verbs because paradigm-cell
+generation iterates ``MorphData.roots`` and indexes synthesised
+inflected forms — a re-order shouldn't matter (the index is keyed
+by (lemma, pos) tuples, and there are no duplicates), but the
+parse baseline is the authoritative check.

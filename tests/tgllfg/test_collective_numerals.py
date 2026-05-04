@@ -9,7 +9,7 @@ eggs"). The GEN-complement form (``isang pares ng sapatos``
 Commit 1 cardinal NP-modifier + Phase 4 §7.8 NP-internal
 possessive — without new grammar.
 
-Lex (data/tgl/roots.yaml):
+Lex (data/tgl/nouns.yaml):
 
 * ``pares``    — NOUN[MEASURE="YES"]. "pair" (Spanish-borrowed).
 * ``dosena``   — NOUN[MEASURE="YES"]. "dozen" (Spanish-borrowed).

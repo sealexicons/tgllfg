@@ -7,7 +7,7 @@ Phase 5f Commit 13 temporal-frame PP rule with a SEASON variant
 so ``tuwing tagulan`` "every rainy season" and ``noong taginit``
 "during the dry season" parse.
 
-Lex (data/tgl/roots.yaml):
+Lex (data/tgl/nouns.yaml):
 
 * 5 season NOUNs with SEM_CLASS=SEASON. Stored as single-token
   forms (``taginit``, ``tagulan``, ...) because the canonical
