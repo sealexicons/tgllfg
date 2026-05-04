@@ -60,7 +60,11 @@ Tests cover:
 Out of scope (deferred follow-on commits):
 
 * Hyphenated ``daan-daan`` / ``libu-libo`` orthography —
-  needs the same tokenizer pre-pass deferred for Phase 5f
+  addressed by the post-Phase-5f deferrals PR via
+  ``merge_hyphen_compounds`` in ``src/tgllfg/text/multiword.py``.
+  The single-token form (``daandaan`` / ``libulibo``) remains the
+  canonical lex entry; the merge collapses ``X``, ``-``, ``Y`` to
+  it before parsing. Originally deferred for Phase 5f
   Commit 14 seasons / Commit 16 ``humigit-kumulang``.
 * Productive ``card_redup`` morph class for higher-order
   reduplicated multiples (``milyong-milyon`` "millions",

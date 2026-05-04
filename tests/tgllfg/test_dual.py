@@ -48,12 +48,10 @@ Tests cover:
 Out of scope (deferred follow-on commits):
 
 * Clause-initial form (``Pareho silang kumain.`` "they both
-  ate") — same surface-meaning as the float form but
-  structurally distinct (Q clause-initial with PRON-clitic
-  + linker + V). Plan §11.1 Group H item 9 describes this
-  as the canonical surface, but parsing it requires a new S
-  frame rule. Both surfaces express the same proposition;
-  Phase 5f scope is adequately covered by the float form.
+  ate") — addressed by the post-Phase-5f deferrals PR's
+  clause-initial-dual S rule in ``cfg/clitic.py``
+  (with AV intransitive / transitive / ditransitive variants).
+  Tested directly in ``test_q_clitic_predicate.py``.
 * Equative predicate (``Pareho ang kanilang sapatos.``) —
   Phase 5h scope.
 """

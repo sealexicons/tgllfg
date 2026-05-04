@@ -12,7 +12,10 @@ Lex (data/tgl/particles.yaml):
 * ``humigitkumulang`` — PART[APPROX="YES"]. "approximately /
   more or less". Stored as the single-token form because the
   canonical hyphenated orthography ``humigit-kumulang`` is
-  split by the current tokenizer; tokenizer pre-pass deferred
+  split by the previous tokenizer; the post-Phase-5f deferrals
+  PR added ``merge_hyphen_compounds`` which collapses
+  ``humigit-kumulang`` to the single-token lex entry. Originally
+  deferred for the
   (parallel to the Phase 5f Commit 14 seasons treatment).
 
 Grammar (src/tgllfg/cfg/nominal.py):
@@ -53,8 +56,10 @@ Tests cover:
 
 Out of scope (deferred follow-on commits):
 
-* Hyphenated ``humigit-kumulang`` orthography — needs
-  tokenizer pre-pass.
+* Hyphenated ``humigit-kumulang`` orthography — addressed
+  by the post-Phase-5f deferrals PR via
+  ``merge_hyphen_compounds``. Originally deferred for the
+  Phase 5f tokenizer pre-pass track.
 * ``malapit sa NUM`` "close to N" — multi-word approximator
   with DAT-NP complement; analytically more involved than
   the simple pre-modifier; deferred to a later commit.

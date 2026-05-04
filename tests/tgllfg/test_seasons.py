@@ -13,7 +13,9 @@ Lex (data/tgl/nouns.yaml):
   forms (``taginit``, ``tagulan``, ...) because the canonical
   hyphenated orthography (``tag-init``, ``tag-ulan``, ...) is
   split by the current tokenizer (``\\w+|\\S``); a tokenizer
-  pre-pass to glue the hyphenated forms is deferred.
+  pre-pass for the hyphenated forms was added by the post-
+  Phase-5f deferrals PR (``merge_hyphen_compounds`` in
+  ``src/tgllfg/text/multiword.py``).
 
 Grammar (src/tgllfg/cfg/discourse.py):
 
@@ -44,8 +46,8 @@ Tests cover:
 
 Out of scope (deferred follow-on commits):
 
-* Hyphenated orthography (``tag-init`` etc.) — needs a tokenizer
-  pre-pass.
+* Hyphenated orthography (``tag-init`` etc.) — addressed by the
+  post-Phase-5f deferrals PR's ``merge_hyphen_compounds``.
 * Productive ``tag-`` paradigm (figurative / colloquial readings
   beyond the lexicalised season set) — explicit plan §11.1
   Group G choice.

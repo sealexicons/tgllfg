@@ -28,8 +28,8 @@ Tests cover:
 
 Out of scope (deferred follow-on commits within Group E):
 
-* Hyphenated orthography (``ala-una`` / ``alas-otso``) — needs
-  a tokenizer pre-pass.
+* Hyphenated orthography (``ala-una`` / ``alas-otso``) — addressed
+  by the post-Phase-5f deferrals PR's ``merge_hyphen_compounds``.
 * Time-of-day modifiers (``alasotso ng umaga`` "8 in the
   morning") — needs ``umaga`` / ``hapon`` / ``gabi`` /
   ``tanghali`` / ``madaling-araw`` lex with SEM_CLASS=TIME

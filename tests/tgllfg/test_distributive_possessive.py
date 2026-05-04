@@ -19,7 +19,9 @@ Both forms are functionally equivalent; the orthographic
 distinction reflects the two attested reduplication patterns.
 Single-token forms per the precedent set in Phase 5f Commits
 14 / 16 / 18 / 19; canonical hyphenated ``kani-kaniya`` /
-``kanya-kanya`` awaits a tokenizer pre-pass.
+``kanya-kanya`` is now handled by the post-Phase-5f deferrals
+PR's ``merge_hyphen_compounds`` (with the bound-``-ng``-linker
+carve-out for ``kani-kaniyang`` etc.).
 
 Grammar (src/tgllfg/cfg/nominal.py):
 
