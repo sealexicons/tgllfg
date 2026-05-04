@@ -482,21 +482,113 @@ class Grammar:
         # the quantifier atom onto the NP. The inner NP[GEN] is
         # preserved as its own sub-projection (CASE=GEN there,
         # CASE=NOM on the outer); only its PRED value is borrowed.
+        #
+        # Phase 5f Commit 15 follow-on: ``¬ (↓2 VAGUE)`` blocks the
+        # vague cardinals (``marami``, ``ilan``, etc.) from this
+        # GEN-NP partitive — they take the linker form only
+        # (``maraming bata``, not ``*marami ng bata``). The DAT-NP
+        # partitive variant of vague cardinals (``marami sa
+        # kanila`` "many of them") is a separate construction
+        # deferred for now.
         rules.append(Rule(
             "NP[CASE=NOM]",
             ["DET[CASE=NOM]", "Q", "NP[CASE=GEN]"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓3 PRED",
+                "(↑ QUANT) = ↓2 QUANT",
+                "¬ (↓2 VAGUE)",
+            ],
         ))
         rules.append(Rule(
             "NP[CASE=GEN]",
             ["ADP[CASE=GEN]", "Q", "NP[CASE=GEN]"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓3 PRED",
+                "(↑ QUANT) = ↓2 QUANT",
+                "¬ (↓2 VAGUE)",
+            ],
         ))
         rules.append(Rule(
             "NP[CASE=DAT]",
             ["ADP[CASE=DAT]", "Q", "NP[CASE=GEN]"],
-            ["(↑) = ↓1", "(↑ PRED) = ↓3 PRED", "(↑ QUANT) = ↓2 QUANT"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓3 PRED",
+                "(↑ QUANT) = ↓2 QUANT",
+                "¬ (↓2 VAGUE)",
+            ],
         ))
+
+        # --- Phase 5f Commit 15: vague cardinal NP-internal modifier ---
+        #
+        # ``ang maraming bata`` "many children", ``ng kaunting
+        # tubig`` "of a little water", ``sa iilan na aklat`` "to a
+        # few books". The vague-cardinal Q sits between the case
+        # marker and the head N via the linker, mirroring the
+        # Phase 5f Commit 1 cardinal-NP-modifier rule (the plan
+        # §11.1 Group H description literally calls Group H rules
+        # "the Group A cardinal-NP-modifier rule generalised to any
+        # NUM / Q head" — this commit lands the Q variant).
+        #
+        # Unlike the cardinal rule, the daughter doesn't contribute
+        # CARDINAL_VALUE; it contributes ``QUANT`` (MANY / FEW /
+        # VERY_FEW / MOST) and ``VAGUE=YES`` rides up to the matrix
+        # NP for the LMT classifier and downstream consumers. The
+        # constraining equation ``(↓2 VAGUE) =c 'YES'`` enforces
+        # the daughter is actually a vague Q (lahat / iba would
+        # otherwise match by non-conflict on the absence of CARDINAL
+        # / ORDINAL / VAGUE).
+        #
+        # 6 NP-level rules = 3 cases × 2 linker variants. Chained
+        # vague Qs (``*ang maraming maraming bata``) are blocked by
+        # ``¬ (↓4 VAGUE)`` parallel to the cardinal rule's
+        # ``¬ (↓4 CARDINAL_VALUE)``.
+        for case, marker in _cardinal_case_marker.items():
+            for link in ("NA", "NG"):
+                rules.append(Rule(
+                    f"NP[CASE={case}]",
+                    [
+                        marker,
+                        "Q",
+                        f"PART[LINK={link}]",
+                        "N",
+                    ],
+                    [
+                        "(↑) = ↓1",
+                        "(↑ PRED) = ↓4 PRED",
+                        "(↑ LEMMA) = ↓4 LEMMA",
+                        "(↑ QUANT) = ↓2 QUANT",
+                        "(↑ VAGUE) = 'YES'",
+                        "¬ (↓4 VAGUE)",
+                        "(↓2 VAGUE) =c 'YES'",
+                    ],
+                ))
+
+        # N-level companion rule (parang etc.). Mirrors the Phase 5f
+        # Commit 1 N-level cardinal rule — produces N (not NP) for
+        # consumers that compose at N level (e.g., the Phase 5e
+        # Commit 26 ``parang isang aso`` rule selects an N
+        # daughter). Chained-vague-Q blocking via ``¬ (↓3 VAGUE)``
+        # parallel to the NP-level rule.
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "N",
+                [
+                    "Q",
+                    f"PART[LINK={link}]",
+                    "N",
+                ],
+                [
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                    "(↑ QUANT) = ↓1 QUANT",
+                    "(↑ VAGUE) = 'YES'",
+                    "¬ (↓3 VAGUE)",
+                    "(↓1 VAGUE) =c 'YES'",
+                ],
+            ))
 
         # --- N from NOUN (toy PRED; Phase 5 will lexicalise properly) ---
         # Phase 5c §8 follow-on (Commit 6): also expose the noun's

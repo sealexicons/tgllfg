@@ -3366,6 +3366,33 @@
 - text: Tuwing tagulan ay pumunta ako.
   construction: 'season: tuwing-PP ay-fronted'
   expected: parse
+- text: Kumain ako ng maraming isda.
+  construction: 'vague: marami-ng + N (OBJ)'
+  expected: parse
+- text: Kumain ako ng kaunting isda.
+  construction: 'vague: kaunti-ng + N (OBJ)'
+  expected: parse
+- text: Kumain ako ng konting isda.
+  construction: 'vague: konti-ng + N (OBJ)'
+  expected: parse
+- text: Kumain ako ng kakaunting isda.
+  construction: 'vague: kakaunti-ng + N (OBJ)'
+  expected: parse
+- text: Pumunta ako sa ilan na bata.
+  construction: 'vague: ilan + na + N (DAT)'
+  expected: parse
+- text: Pumunta ako sa iilan na bata.
+  construction: 'vague: iilan + na + N (DAT)'
+  expected: parse
+- text: Pumunta ako sa karamihan na bata.
+  construction: 'vague: karamihan + na + N (DAT)'
+  expected: parse
+- text: Kumakain ang maraming bata.
+  construction: 'vague: marami in SUBJ'
+  expected: parse
+- text: Kumakain ang karamihan na bata.
+  construction: 'vague: karamihan + na in SUBJ'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

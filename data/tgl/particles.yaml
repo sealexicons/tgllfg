@@ -111,6 +111,53 @@
   pos: Q
   feats: {QUANT: OTHER}
 
+# === Phase 5f Commit 15: vague cardinals (Group H1 item 1) =================
+# Vague cardinals — quantifiers without an exact CARDINAL_VALUE.
+# Like cardinals (Phase 5f Commit 1) they attach as NP-internal
+# modifiers via the linker (parallel to the cardinal-NP-modifier
+# rule generalised to Q heads). Unlike cardinals they ride
+# ``QUANT`` (with values like MANY / FEW / VERY_FEW / MOST) instead
+# of CARDINAL_VALUE. The ``VAGUE: "YES"`` feature gates the new
+# Phase 5f Commit 15 vague-NP-modifier rule and is also used in a
+# negation guard on the existing Phase 5b ``Q + NP[GEN]`` partitive
+# rule, scoping that rule to ``lahat`` / ``iba`` (the linker form
+# is the only Group H1 path for vague Qs).
+#
+# Reduplication-derived ``iilan`` (from ``isa``) and ``ka-…-an``
+# derived ``karamihan`` are listed as attested forms; productive
+# reduplication / ``ka-…-an`` morphology for vague cardinals is
+# deferred (out of scope for Group H1). The count-mass distinction
+# (``marami`` + count vs ``marami`` + mass — both grammatical with
+# no morphological alternation; S&O 1972 §4.7) is lex-internal,
+# not a syntactic split, so the lex entry is uniform.
+#
+# Linker note: ``ilan`` / ``iilan`` / ``karamihan`` are consonant-
+# final and use the standalone ``na`` linker (``ilan na bata``).
+# The contracted ``ilang bata`` form (irregular bound -ng on a
+# consonant-final stem) is not covered — it would require a
+# tokenizer-level pre-pass for the irregular contraction. Deferred.
+- surface: ilan
+  pos: Q
+  feats: {QUANT: FEW, VAGUE: "YES"}
+- surface: marami
+  pos: Q
+  feats: {QUANT: MANY, VAGUE: "YES"}
+- surface: kaunti
+  pos: Q
+  feats: {QUANT: FEW, VAGUE: "YES"}
+- surface: konti
+  pos: Q
+  feats: {QUANT: FEW, VAGUE: "YES"}
+- surface: kakaunti
+  pos: Q
+  feats: {QUANT: VERY_FEW, VAGUE: "YES"}
+- surface: iilan
+  pos: Q
+  feats: {QUANT: FEW, VAGUE: "YES"}
+- surface: karamihan
+  pos: Q
+  feats: {QUANT: MOST, VAGUE: "YES"}
+
 # === Phase 4 §7.6: psych control predicates ==============================
 # Pseudo-verbal predicates that select an XCOMP complement clause and
 # take a GEN-marked experiencer. They have no verbal morphology

@@ -317,6 +317,21 @@ def disambiguate_homophone_clitics(
             # to clause-end as the ALREADY enclitic.
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif prev is not None and any(
+            ma.pos == "Q" and ma.feats.get("VAGUE") == "YES"
+            for ma in prev
+        ):
+            # Phase 5f Commit 15: vague-cardinal Q followed by ``na``
+            # is the linker for the consonant-final vague cardinals
+            # (``ilan na bata``, ``iilan na bata``, ``karamihan na
+            # bata``). Vowel-final vague Qs (``marami``, ``kaunti``,
+            # ``konti``, ``kakaunti``) use the bound ``-ng`` linker
+            # which has no clitic homophone, so this branch matters
+            # only for the consonant-final ``ilan`` / ``iilan`` /
+            # ``karamihan``. Gated on ``VAGUE: YES`` so non-vague Qs
+            # (``lahat``, ``iba``) — which never use the linker form
+            # in Phase 5f scope — keep their existing behaviour.
+            out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+        elif prev is not None and any(
             ma.pos in ("DET", "ADP") and ma.feats.get("DEM") is True
             for ma in prev
         ):

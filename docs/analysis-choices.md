@@ -7378,3 +7378,194 @@ call below the dead assignment. Pre-existing from Phase 5f
 Commit 4 (``ff4de03``). Cleaned up here so ``hatch run check``
 passes ahead of the Phase 5f Group EFG PR.
 
+## Phase 5f Commit 15: vague cardinals (Group H1 item 1)
+
+**Date:** 2026-05-03. **Status:** active. 7 Q lex entries +
+6 new NP-level grammar rules + 2 new N-level rules + 1 gating
+addition on the existing Phase 5b partitive rule + 1 new
+disambiguator branch. Refs: plan §11.1 Group H item 1; S&O
+1972 §4.7; R&B 1986; Phase 4 §7.8 (existing ``lahat`` /
+``iba`` Q-class consumed unchanged); Phase 5b §7.8 follow-on
+(existing pre-NP partitive consumed with a vague-blocking
+gate); Phase 5f Commit 1 (cardinal-NP-modifier rule consumed
+as the structural template).
+
+Opens Group H1 (vague + approximators + numeric comparatives)
+with the largest sub-item, vague cardinals. Group H is plan
+§11.1's "extensions to §7.8": Phase 4 §7.8 wired only ``lahat``
+and ``iba`` as Q-class entries; Group H closes the inventory
+gap. The plan §11.1 Group H header summarises the engineering
+strategy: "the grammar rule is the Group A cardinal-NP-modifier
+rule generalised to any NUM / Q head" — this commit lands the
+Q variant of that rule.
+
+### Lex change
+
+Seven Q entries in ``data/tgl/particles.yaml``:
+
+* ``ilan``      — ``Q[QUANT=FEW, VAGUE="YES"]``
+* ``marami``    — ``Q[QUANT=MANY, VAGUE="YES"]``
+* ``kaunti``    — ``Q[QUANT=FEW, VAGUE="YES"]``
+* ``konti``     — ``Q[QUANT=FEW, VAGUE="YES"]``
+* ``kakaunti``  — ``Q[QUANT=VERY_FEW, VAGUE="YES"]``
+* ``iilan``     — ``Q[QUANT=FEW, VAGUE="YES"]``
+* ``karamihan`` — ``Q[QUANT=MOST, VAGUE="YES"]``
+
+The string-quoted ``"YES"`` is essential: bare ``YES`` is
+parsed by YAML 1.1 as Python boolean ``True``, which would
+not match the ``=c 'YES'`` constraining equation in the new
+grammar rules. The existing ``CARDINAL: "YES"`` / ``ORDINAL:
+"YES"`` entries follow the same convention — Group A authors
+hit the same trap. (Discovered during Commit 15 development.
+Worth promoting to a lex-authoring note in plan §11.2 or
+docs/diagnostics.md as a recurring pitfall.)
+
+### Why Q, not NUM[VAGUE]?
+
+The plan describes vague cardinals as quantifiers without an
+exact value, contrasting them with the precise numeric
+cardinals. Two implementations were viable:
+
+1. **NUM[VAGUE=YES]** — a sub-class of NUM. Reuses the
+   existing cardinal-NP-modifier rule path with a relaxed
+   constraint.
+2. **Q[VAGUE=YES]** — a sub-class of Q (the existing class
+   for ``lahat`` / ``iba``). Adds a parallel rule with a Q
+   daughter.
+
+Option 2 won. Reasons:
+
+* **Semantic alignment.** ``marami`` / ``ilan`` etc. don't
+  participate in arithmetic, fractions, ordinals, decimals,
+  or any of the constructions in Groups A-D. They quantify
+  rather than count. Grouping them with ``lahat`` / ``iba``
+  reflects the actual distribution.
+* **No NUM features.** Vague cardinals carry no
+  CARDINAL_VALUE / ORDINAL_VALUE / NUM (sg/pl). Pretending
+  they're NUM and then suppressing those features via
+  constraints is more bookkeeping than benefit.
+* **Plan endorsement.** §11.1 Group H literally says "any
+  NUM / Q head" — both are anticipated. Q is the cleaner
+  fit for vague cardinals; NUM remains for cardinals,
+  ordinals, fractions, decimals, percentages, multiplicative
+  ratios.
+
+Reduplication-derived ``iilan`` (from ``isa``) and ``ka-…-an``
+derived ``karamihan`` are listed as attested forms; productive
+reduplication / ``ka-…-an`` morphology for vague cardinals is
+deferred (out of scope for Group H1). The count-mass
+distinction (``marami`` + count vs ``marami`` + mass — both
+grammatical, no morphological alternation; S&O 1972 §4.7) is
+lex-internal, not a syntactic split, so the lex entry is
+uniform.
+
+### Grammar change
+
+**6 NP-level rules** (3 cases × 2 linker variants):
+
+```
+NP[CASE=X] → DET/ADP[CASE=X] Q PART[LINK=NA|NG] N
+Equations:
+  (↑) = ↓1                          # CASE / MARKER from outer marker
+  (↑ PRED) = ↓4 PRED                # head N supplies PRED
+  (↑ LEMMA) = ↓4 LEMMA              # ... and LEMMA
+  (↑ QUANT) = ↓2 QUANT              # Q lifts QUANT to NP
+  (↑ VAGUE) = 'YES'                 # mark NP for downstream consumers
+  ¬ (↓4 VAGUE)                      # block chained vague Qs
+  (↓2 VAGUE) =c 'YES'               # gate to vague Qs only
+```
+
+The constraining equation ``(↓2 VAGUE) =c 'YES'`` is the load-
+bearing piece — without it, the non-conflict matcher would
+match ``lahat`` / ``iba`` (which have no VAGUE) by absence and
+land them in the linker form, over-coverage no plan calls for.
+Same fix-pattern as the cardinal rule's
+``(↓2 CARDINAL) =c 'YES'`` (Phase 5f Commit 1) and the ordinal
+rule's ``(↓2 ORDINAL) =c 'YES'`` (Phase 5f Commit 7).
+
+The chained-vague block ``¬ (↓4 VAGUE)`` mirrors the cardinal
+rule's ``¬ (↓4 CARDINAL_VALUE)``: ``*ang maraming kaunting
+bata`` ("many few children"?) doesn't compose because the head
+N (which is the matrix of the inner vague-Q rule) carries
+VAGUE=YES, which the outer rule rejects.
+
+**2 N-level rules** (parang etc.):
+
+```
+N → Q PART[LINK=NA|NG] N
+```
+
+Mirrors the Phase 5f Commit 1 N-level cardinal companion. The
+Phase 5e Commit 26 ``parang isang aso`` rule selects an N
+daughter, so the N-level companion is needed for ``parang
+maraming aso`` "like many dogs" to compose. (Not explicitly
+tested in this commit — sweep coverage is at NP level — but
+the rule mechanically fires.)
+
+### Existing partitive: gating with `¬ (↓2 VAGUE)`
+
+The Phase 5b §7.8 follow-on partitive rule (``DET/ADP Q
+NP[GEN]``) had no VAGUE constraint. With the new vague Qs
+added, that rule would fire on ``ang marami ng bata`` — a non-
+standard surface. The plan H1 description explicitly restricts
+vague cardinals to "the linker" form. So the existing
+partitive gets a new constraining equation
+``¬ (↓2 VAGUE)`` on each of its 3 case variants, scoping the
+partitive to non-vague Qs (currently ``lahat`` / ``iba``). The
+DAT-NP partitive variant of vague Qs (``marami sa kanila``
+"many of them") is a separate construction — DAT-NP, not
+GEN-NP — and is deferred.
+
+### Disambiguator: linker after consonant-final vague Q
+
+The pre-parse ``disambiguate_homophone_clitics`` step in
+``src/tgllfg/clitics/placement.py`` chooses between the two
+readings of ``na``: linker (``LINK=NA``) vs ALREADY clitic
+(``CLITIC_CLASS=2P``, ``ASPECT_PART=ALREADY``). The choice is
+left-context-driven: NOUN / NUM[CARDINAL=YES, ORDINAL=YES] /
+DET[DEM=YES] before ``na`` ⇒ linker; VERB / PRON before
+``na`` ⇒ clitic.
+
+Vague Q before ``na`` was previously unhandled — the fall-
+through "leave both readings" path didn't help because the
+placement pass greedily moves any kept-clitic ``na`` to the
+Wackernagel cluster, leaving ``[Q] [N]`` without a linker
+between them. The new branch detects ``Q[VAGUE=YES]`` before
+``na`` and drops the clitic reading, parallel to the existing
+NUM branches. Gated on ``VAGUE=YES`` so the ``lahat`` / ``iba``
+distribution (which doesn't use the linker form in Phase 5f
+scope) is unaffected.
+
+This affects only the consonant-final vague Qs (``ilan``,
+``iilan``, ``karamihan``); vowel-final ones (``marami``,
+``kaunti``, ``konti``, ``kakaunti``) use the bound ``-ng``
+linker which has no clitic homophone, so ``maraming bata``
+splits cleanly via ``split_linker_ng`` regardless of the
+disambiguator.
+
+### Negative fixtures (per §11.2)
+
+* ``*ang maraming kaunting bata`` — chained vague Qs blocked by
+  ``¬ (↓4 VAGUE)``.
+* ``*ang marami ng bata`` — vague-Q in GEN-NP partitive blocked
+  by the new ``¬ (↓2 VAGUE)`` gate on the existing Phase 5b
+  rule.
+
+### Out of scope for this commit
+
+* **DAT-NP partitive for vague Qs** (``marami sa kanila``
+  "many of them") — separate construction; not in Group H1
+  scope. Defer.
+* **Contracted ``ilang bata`` form** (irregular bound ``-ng``
+  on the consonant-final stem ``ilan``) — non-standard
+  contraction; would need a tokenizer pre-pass for the
+  irregular split. Defer.
+* **Float for vague Qs** (``Kumain sila marami``) — the
+  existing Phase 4 §7.8 ``S → S Q`` float rule fires on vague
+  Qs unmodified, but the binding semantics differ from
+  ``lahat`` float (vague selects a subset; ``lahat`` asserts
+  about the whole). Mechanically composes; semantically a
+  follow-on if corpus pressure surfaces a need.
+* **VAGUE projection to outer NPs (POSS, etc.)** — same NP-
+  from-N projection limitation as cardinal-modifier features.
+

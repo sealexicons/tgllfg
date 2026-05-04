@@ -1492,6 +1492,21 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
              f"season: noong + {s} as PAST PP", "parse")
     _add(out, "tuwing tagulan ay pumunta ako",
          "season: tuwing-PP ay-fronted", "parse")
+    # Phase 5f Commit 15: vague cardinals (Group H1 item 1).
+    vague_vowel = [("marami", "many"), ("kaunti", "few"),
+                   ("konti", "few"), ("kakaunti", "very-few")]
+    vague_cons = [("ilan", "few"), ("iilan", "few"),
+                  ("karamihan", "most")]
+    for lemma, _ in vague_vowel:
+        _add(out, f"kumain ako ng {lemma}ng isda",
+             f"vague: {lemma}-ng + N (OBJ)", "parse")
+    for lemma, _ in vague_cons:
+        _add(out, f"pumunta ako sa {lemma} na bata",
+             f"vague: {lemma} + na + N (DAT)", "parse")
+    _add(out, "kumakain ang maraming bata",
+         "vague: marami in SUBJ", "parse")
+    _add(out, "kumakain ang karamihan na bata",
+         "vague: karamihan + na in SUBJ", "parse")
     return out
 
 
