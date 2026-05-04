@@ -1,4 +1,4 @@
-# tgllfg/cfg/discourse_rules.py
+# tgllfg/cfg/discourse.py
 
 """Discourse-level adjuncts: clause-final ADJUNCT (PP, AdvP, etc.).
 

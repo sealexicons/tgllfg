@@ -1,4 +1,4 @@
-# tgllfg/cfg/clitic_rules.py
+# tgllfg/cfg/clitic.py
 
 """Clitic absorption rules: 2P enclitics, floated quantifiers, kita fusion.
 
@@ -23,8 +23,8 @@ module owns:
   with synthetic SUBJ / OBJ / ADJUNCT mappings.
 
 The composer in :mod:`tgllfg.cfg.grammar` calls this registrar
-third, after :mod:`tgllfg.cfg.np_rules` and
-:mod:`tgllfg.cfg.clause_rules`, and before the negation /
+third, after :mod:`tgllfg.cfg.nominal` and
+:mod:`tgllfg.cfg.clause`, and before the negation /
 extraction / control / discourse registrars — see the plan's
 "Migration strategy" §H.
 """

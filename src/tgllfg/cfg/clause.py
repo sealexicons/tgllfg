@@ -1,4 +1,4 @@
-# tgllfg/cfg/clause_rules.py
+# tgllfg/cfg/clause.py
 
 """Clausal rules: V-initial S frames + predicative clauses.
 
@@ -27,7 +27,7 @@ module owns:
   plain (non-causative) DV with two GEN arguments.
 
 The composer in :mod:`tgllfg.cfg.grammar` calls this registrar
-second, immediately after :mod:`tgllfg.cfg.np_rules` and before the
+second, immediately after :mod:`tgllfg.cfg.nominal` and before the
 clitic / negation / extraction / control / discourse registrars —
 see the plan's "Migration strategy" §H.
 """

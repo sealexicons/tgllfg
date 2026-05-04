@@ -3,9 +3,9 @@
 This is the gate the post-Phase-5f ``feature/refactor-grammar-package``
 branch (see ``docs/refactor-grammar-package.md``) uses to prove that
 splitting ``src/tgllfg/cfg/grammar.py`` into per-area modules
-(``np_rules.py`` / ``clause_rules.py`` / ``clitic_rules.py`` /
-``negation_rules.py`` / ``extraction_rules.py`` / ``control_rules.py``
-/ ``discourse_rules.py``) preserves the ranker's behaviour exactly.
+(``nominal.py`` / ``clause.py`` / ``clitic.py`` /
+``negation.py`` / ``extraction.py`` / ``control.py``
+/ ``discourse.py``) preserves the ranker's behaviour exactly.
 
 For every sentence in ``tests/tgllfg/data/coverage_corpus.yaml`` the
 script captures the **top-1 parse** (after the ranker's sort) as a

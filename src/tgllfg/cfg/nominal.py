@@ -1,4 +1,4 @@
-# tgllfg/cfg/np_rules.py
+# tgllfg/cfg/nominal.py
 
 """NP rules: determiners, possessives, demonstratives, quantifiers.
 

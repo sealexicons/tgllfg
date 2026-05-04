@@ -47,26 +47,26 @@ src/tgllfg/cfg/
 ├── _helpers.py             # shared utilities: _eqs, _cardinal_case_marker,
 │                            # other constants used across rule modules
 ├── grammar.py              # composes Grammar; calls per-module registrars
-├── np_rules.py             # determiners, possessives, demonstratives,
+├── nominal.py             # determiners, possessives, demonstratives,
 │                            # quantifiers (cardinal / ordinal / vague-Q /
 │                            # universal / distrib-poss / whole / measure-N
 │                            # / mga / approximator / numeric-comparator
 │                            # frames / decimal NUM); ADJ rules land here
 │                            # in Phase 5g+
-├── clause_rules.py         # V-initial S frames + predicative clauses
+├── clause.py         # V-initial S frames + predicative clauses
 │                            # (parang comparative, predicative-cardinal,
 │                            # arithmetic predicates)
-├── clitic_rules.py         # 2P clitic absorption (S → S PART[CLITIC_CLASS=
+├── clitic.py         # 2P clitic absorption (S → S PART[CLITIC_CLASS=
 │                            # 2P]); float (S → S Q for lahat / pareho /
 │                            # kapwa)
-├── negation_rules.py       # hindi clausal negation (§7.2) + huwag
+├── negation.py       # hindi clausal negation (§7.2) + huwag
 │                            # MOOD=IMP lift (Commit 25)
-├── extraction_rules.py     # ay-inversion + S_GAP_* + relativization +
+├── extraction.py     # ay-inversion + S_GAP_* + relativization +
 │                            # AdvP / PP fronting; Phase 6 FU/LDD lands
 │                            # here
-├── control_rules.py        # control complement (S_XCOMP) + control wrap
+├── control.py        # control complement (S_XCOMP) + control wrap
 │                            # rules + raising inside control
-└── discourse_rules.py      # clause-final ADJUNCTs (FREQUENCY AdvP from
+└── discourse.py      # clause-final ADJUNCTs (FREQUENCY AdvP from
                              # Commit 5; temporal-frame PP from Commit 13;
                              # future discourse-level constructions)
 ```
@@ -98,8 +98,8 @@ Other private helpers may surface during the migration; add to
 
 The reviewer's listing keeps each per-area module flat (no
 subpackages) for the initial refactor. Sub-splitting along
-domain boundaries (e.g., ``np_rules/det.py`` /
-``np_rules/quant.py`` / ``np_rules/adj.py`` once Phase 5g
+domain boundaries (e.g., ``nominal/det.py`` /
+``nominal/quant.py`` / ``nominal/adj.py`` once Phase 5g
 adjective work lands) is a follow-up if and when:
 
 * A module exceeds ~1000 lines, OR
@@ -109,10 +109,10 @@ adjective work lands) is a follow-up if and when:
   (adjective inventory, clausal nominalisation, etc.) that
   more than doubles a module.
 
-For the initial refactor, only ``np_rules.py`` is at risk
+For the initial refactor, only ``nominal.py`` is at risk
 (estimated ~95 rules); explicit deferred follow-up.
 
-The ``extraction_rules.py`` (estimated ~50 rules) is just
+The ``extraction.py`` (estimated ~50 rules) is just
 under the threshold; if Phase 6 FU/LDD adds substantially,
 sub-split into ``extraction/ay.py`` /
 ``extraction/gap.py`` / ``extraction/rc.py`` /
@@ -122,68 +122,68 @@ sub-split into ``extraction/ay.py`` /
 
 | Rule (representative) | Source file |
 |------------------------|--------------|
-| Cardinal NP-modifier (Commit 1) | np_rules.py |
-| Ordinal NP-modifier (Commit 7) | np_rules.py |
-| Predicative cardinal (Commit 4) | clause_rules.py |
-| Decimal NUM rule (Commit 6) | np_rules.py |
-| Arithmetic predicate (Commit 9) | clause_rules.py |
+| Cardinal NP-modifier (Commit 1) | nominal.py |
+| Ordinal NP-modifier (Commit 7) | nominal.py |
+| Predicative cardinal (Commit 4) | clause.py |
+| Decimal NUM rule (Commit 6) | nominal.py |
+| Arithmetic predicate (Commit 9) | clause.py |
 | Clock-time NOUNs / time-of-day (Commits 10 / 11) | (lex only — no grammar) |
-| Minute composition (Commit 12) | np_rules.py |
-| Temporal-frame PP (Commit 13) | discourse_rules.py |
-| ``mga`` time approximation (Commit 13 bundled) | np_rules.py |
-| Seasons (Commit 14) | (lex only) + np_rules.py SEM_CLASS=SEASON variant of the Commit 13 PP rule, in discourse_rules.py |
-| Vague-Q-modifier (Commit 15) | np_rules.py |
-| Approximator wraps (Commit 16) | np_rules.py |
-| Numeric-comparator frames (Commit 17) | np_rules.py |
-| Measure-N rule (Commit 18) | np_rules.py |
+| Minute composition (Commit 12) | nominal.py |
+| Temporal-frame PP (Commit 13) | discourse.py |
+| ``mga`` time approximation (Commit 13 bundled) | nominal.py |
+| Seasons (Commit 14) | (lex only) + nominal.py SEM_CLASS=SEASON variant of the Commit 13 PP rule, in discourse.py |
+| Vague-Q-modifier (Commit 15) | nominal.py |
+| Approximator wraps (Commit 16) | nominal.py |
+| Numeric-comparator frames (Commit 17) | nominal.py |
+| Measure-N rule (Commit 18) | nominal.py |
 | Distributive ``tig-`` (Commit 19) | (lex only — no grammar) |
-| Universal ``bawat`` / ``kada`` (Commit 20) | np_rules.py |
-| Distributive-possessive (Commit 21) | np_rules.py |
-| Wholes ``buo`` (Commit 22) | np_rules.py |
-| Dual ``pareho`` / ``kapwa`` (Commit 23) | (lex only; consumes float in clitic_rules.py) |
-| FREQUENCY AdvP clause-final (Commit 5) | discourse_rules.py |
+| Universal ``bawat`` / ``kada`` (Commit 20) | nominal.py |
+| Distributive-possessive (Commit 21) | nominal.py |
+| Wholes ``buo`` (Commit 22) | nominal.py |
+| Dual ``pareho`` / ``kapwa`` (Commit 23) | (lex only; consumes float in clitic.py) |
+| FREQUENCY AdvP clause-final (Commit 5) | discourse.py |
 
 ### Where each pre-Phase-5f rule lands
 
-* **Phase 4 §7.1 V-initial S frames** → clause_rules.py
-* **Phase 4 §7.2 negation** → negation_rules.py
-* **Phase 4 §7.3 adverbial enclitics** → clitic_rules.py
-* **Phase 4 §7.4 ay-inversion** → extraction_rules.py
-* **Phase 4 §7.5 SUBJ-gapped clauses + relativization** → extraction_rules.py
-* **Phase 4 §7.6 control complement + control wrap** → control_rules.py
-* **Phase 4 §7.8 NP shells / dems / NP-poss / float / pre-NP partitive** → np_rules.py (NP rules) + clitic_rules.py (float)
-* **Phase 5b §7.8 follow-on partitive** → np_rules.py
-* **Phase 5d Commit 3 post-modifier dem** → np_rules.py
-* **Phase 5d Commit 5 non-pivot ay-fronting** → extraction_rules.py
-* **Phase 5d Commit 6 possessive-linker RC** → extraction_rules.py
-* **Phase 5d Commit 7 raising inside control** → control_rules.py
-* **Phase 5e Commit 1 pa-OV / pa-DV ay-fronting** → extraction_rules.py
-* **Phase 5e Commit 2 multi-GEN-NP ay-fronting** → extraction_rules.py
-* **Phase 5e Commit 3 AdvP / PP categorial inventory + fronting** → extraction_rules.py
-* **Phase 5e Commit 5 headless / free relatives** → extraction_rules.py
-* **Phase 5e Commits 16 / 17 pre-modifier dem** → np_rules.py
-* **Phase 5e Commit 18 / 19 dual-binding wrap** → extraction_rules.py
-* **Phase 5e Commit 25 huwag MOOD lift** → negation_rules.py
-* **Phase 5e Commit 26 parang comparative** → clause_rules.py
+* **Phase 4 §7.1 V-initial S frames** → clause.py
+* **Phase 4 §7.2 negation** → negation.py
+* **Phase 4 §7.3 adverbial enclitics** → clitic.py
+* **Phase 4 §7.4 ay-inversion** → extraction.py
+* **Phase 4 §7.5 SUBJ-gapped clauses + relativization** → extraction.py
+* **Phase 4 §7.6 control complement + control wrap** → control.py
+* **Phase 4 §7.8 NP shells / dems / NP-poss / float / pre-NP partitive** → nominal.py (NP rules) + clitic.py (float)
+* **Phase 5b §7.8 follow-on partitive** → nominal.py
+* **Phase 5d Commit 3 post-modifier dem** → nominal.py
+* **Phase 5d Commit 5 non-pivot ay-fronting** → extraction.py
+* **Phase 5d Commit 6 possessive-linker RC** → extraction.py
+* **Phase 5d Commit 7 raising inside control** → control.py
+* **Phase 5e Commit 1 pa-OV / pa-DV ay-fronting** → extraction.py
+* **Phase 5e Commit 2 multi-GEN-NP ay-fronting** → extraction.py
+* **Phase 5e Commit 3 AdvP / PP categorial inventory + fronting** → extraction.py
+* **Phase 5e Commit 5 headless / free relatives** → extraction.py
+* **Phase 5e Commits 16 / 17 pre-modifier dem** → nominal.py
+* **Phase 5e Commit 18 / 19 dual-binding wrap** → extraction.py
+* **Phase 5e Commit 25 huwag MOOD lift** → negation.py
+* **Phase 5e Commit 26 parang comparative** → clause.py
 
 ### Rough rule counts (post-decomposition)
 
 | Module | Rule count | Notes |
 |--------|-----------:|-------|
-| np_rules | ~95 | densest (most NP + Phase 5f Q-modifier rules) |
-| extraction_rules | ~50 | S_GAP_* + ay-fronting + relativization |
-| control_rules | ~20 | XCOMP + control wrap + raising |
-| clause_rules | ~15 | V-initial + predicative clauses |
-| discourse_rules | ~10 | clause-final ADJUNCT (PP, AdvP, etc.) |
-| clitic_rules | ~5 | 2P clitics + float |
-| negation_rules | ~5 | hindi + huwag |
+| nominal | ~95 | densest (most NP + Phase 5f Q-modifier rules) |
+| extraction | ~50 | S_GAP_* + ay-fronting + relativization |
+| control | ~20 | XCOMP + control wrap + raising |
+| clause | ~15 | V-initial + predicative clauses |
+| discourse | ~10 | clause-final ADJUNCT (PP, AdvP, etc.) |
+| clitic | ~5 | 2P clitics + float |
+| negation | ~5 | hindi + huwag |
 | **grammar.py** | 0 (composer) | calls registrars in order |
 | **total** | **~200** | matches current 201 |
 
 Counts are approximate; the migration may surface candidates for
-re-grouping. ``np_rules.py`` is the largest single module — if it
+re-grouping. ``nominal.py`` is the largest single module — if it
 exceeds ~1000 lines after migration, consider splitting along
-distribution boundaries (``np_rules/det.py``, ``np_rules/quant.py``,
+distribution boundaries (``nominal/det.py``, ``nominal/quant.py``,
 etc.) in a follow-up. Initial migration keeps it as one file.
 
 ## How
@@ -215,34 +215,34 @@ etc.) in a follow-up. Initial migration keeps it as one file.
 
    ```python
    from . import (
-       clause_rules,
-       clitic_rules,
-       control_rules,
-       discourse_rules,
-       extraction_rules,
-       negation_rules,
-       np_rules,
+       clause,
+       clitic,
+       control,
+       discourse,
+       extraction,
+       negation,
+       nominal,
    )
 
    class Grammar:
        def __init__(self) -> None:
            rules: list[Rule] = []
-           np_rules.register_rules(rules)
-           clause_rules.register_rules(rules)
-           clitic_rules.register_rules(rules)
-           negation_rules.register_rules(rules)
-           extraction_rules.register_rules(rules)
-           control_rules.register_rules(rules)
-           discourse_rules.register_rules(rules)
+           nominal.register_rules(rules)
+           clause.register_rules(rules)
+           clitic.register_rules(rules)
+           negation.register_rules(rules)
+           extraction.register_rules(rules)
+           control.register_rules(rules)
+           discourse.register_rules(rules)
            self.rules = rules
    ```
 
    Order matters — see "Risk considerations" below.
 
 4. **Per-module extraction, one commit each.** For each module,
-   in order ``np_rules`` → ``clause_rules`` → ``clitic_rules`` →
-   ``negation_rules`` → ``extraction_rules`` → ``control_rules``
-   → ``discourse_rules``:
+   in order ``nominal`` → ``clause`` → ``clitic`` →
+   ``negation`` → ``extraction`` → ``control``
+   → ``discourse``:
 
    1. Create the new ``*_rules.py`` file with a stub
       ``register_rules`` function.
@@ -258,7 +258,7 @@ etc.) in a follow-up. Initial migration keeps it as one file.
 5. **Final cleanup commit.** Once all modules extracted,
    ``grammar.py`` should be ~30 lines (Grammar class +
    imports + composer). Any rule that doesn't fit a clean
-   module stays in clause_rules.py (the catch-all for clausal
+   module stays in clause.py (the catch-all for clausal
    defaults) or grammar.py if it's truly cross-cutting.
 
 6. **PR ``Engineering — split grammar.py into per-area
@@ -300,7 +300,7 @@ etc.) in a follow-up. Initial migration keeps it as one file.
 * **Cross-module references.** Some constants are shared:
   * ``_cardinal_case_marker`` (used in Commits 1 / 7 / 15 / 20
     / 21 / 22) → move to a private module-level constant in
-    ``np_rules.py`` (the only consumer); export if other
+    ``nominal.py`` (the only consumer); export if other
     modules surface a need.
   * ``_eqs`` helper (if it exists) → keep in ``grammar.py`` or
     move to a private utilities module ``cfg/_helpers.py``.
@@ -318,11 +318,11 @@ etc.) in a follow-up. Initial migration keeps it as one file.
   ``git bisect`` on a regression after the refactor should be
   able to pinpoint a specific extraction.
 
-* **np_rules.py size.** This module gets the largest share
+* **nominal.py size.** This module gets the largest share
   (~95 rules). If it grows past ~1000 lines as new
   constructions land in Phase 5g+ (adjectives), revisit a
-  sub-split (``np_rules/det.py``, ``np_rules/quant.py``,
-  ``np_rules/adj.py``). Initial refactor keeps it monolithic.
+  sub-split (``nominal/det.py``, ``nominal/quant.py``,
+  ``nominal/adj.py``). Initial refactor keeps it monolithic.
 
 ## When
 
@@ -355,5 +355,5 @@ The plan §18 entry suggests "between Phase 5f close and Phase
   feature names as-is.
 * **Type-hint upgrades.** No type-hint changes beyond what
   module split requires.
-* **Sub-splitting np_rules.py** along det/quant/adj boundaries
+* **Sub-splitting nominal.py** along det/quant/adj boundaries
   — defer until size demands it.

@@ -1,4 +1,4 @@
-# tgllfg/cfg/extraction_rules.py
+# tgllfg/cfg/extraction.py
 
 """Extraction rules: ay-inversion, S_GAP family, relativization, fronting.
 

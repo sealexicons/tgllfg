@@ -1,4 +1,4 @@
-# tgllfg/cfg/negation_rules.py
+# tgllfg/cfg/negation.py
 
 """Clausal negation rules: ``hindi`` declarative + ``huwag`` imperative.
 
@@ -17,8 +17,8 @@ onto a full inner ``S``. After the post-Phase-5f grammar split (see
   morphology.
 
 The composer in :mod:`tgllfg.cfg.grammar` calls this registrar
-fourth, after :mod:`tgllfg.cfg.np_rules` /
-:mod:`tgllfg.cfg.clause_rules` / :mod:`tgllfg.cfg.clitic_rules`,
+fourth, after :mod:`tgllfg.cfg.nominal` /
+:mod:`tgllfg.cfg.clause` / :mod:`tgllfg.cfg.clitic`,
 and before extraction / control / discourse — see the plan's
 "Migration strategy" §H.
 """

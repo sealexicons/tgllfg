@@ -1,4 +1,4 @@
-# tgllfg/cfg/control_rules.py
+# tgllfg/cfg/control.py
 
 """Control rules: ``S_XCOMP`` complement, raising, control wrap.
 

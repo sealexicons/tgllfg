@@ -31,9 +31,9 @@ Module organisation (post-Phase-5f split, see
 ``docs/refactor-grammar-package.md``): ``grammar.py`` defines the
 ``Rule`` dataclass and the ``Grammar`` composer class. The
 ~200 individual rule appends live in seven per-area modules
-colocated in ``cfg/`` — :mod:`np_rules`, :mod:`clause_rules`,
-:mod:`clitic_rules`, :mod:`negation_rules`, :mod:`extraction_rules`,
-:mod:`control_rules`, :mod:`discourse_rules`. Each exports a single
+colocated in ``cfg/`` — :mod:`nominal`, :mod:`clause`,
+:mod:`clitic`, :mod:`negation`, :mod:`extraction`, :mod:`control`,
+:mod:`discourse`. Each exports a single
 ``register_rules(rules)`` function; ``Grammar.load_default`` calls
 them in order. Per-area linguistic context (negation overlays, the
 ``S_GAP`` / ``S_XCOMP`` gap-category designs, etc.) lives in the
@@ -63,23 +63,23 @@ class Grammar:
         # ``Rule`` from this module, so they must be loaded after
         # ``Rule`` is defined.
         from . import (
-            clause_rules,
-            clitic_rules,
-            control_rules,
-            discourse_rules,
-            extraction_rules,
-            negation_rules,
-            np_rules,
+            clause,
+            clitic,
+            control,
+            discourse,
+            extraction,
+            negation,
+            nominal,
         )
 
         rules: list[Rule] = []
 
-        np_rules.register_rules(rules)
-        clause_rules.register_rules(rules)
-        clitic_rules.register_rules(rules)
-        negation_rules.register_rules(rules)
-        extraction_rules.register_rules(rules)
-        control_rules.register_rules(rules)
-        discourse_rules.register_rules(rules)
+        nominal.register_rules(rules)
+        clause.register_rules(rules)
+        clitic.register_rules(rules)
+        negation.register_rules(rules)
+        extraction.register_rules(rules)
+        control.register_rules(rules)
+        discourse.register_rules(rules)
 
         return Grammar(rules)
