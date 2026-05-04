@@ -17,7 +17,7 @@ Lex (data/tgl/particles.yaml):
   equation. The existing ``CARDINAL: "YES"`` / ``ORDINAL:
   "YES"`` entries follow the same convention.
 
-Grammar (src/tgllfg/cfg/grammar.py):
+Grammar (src/tgllfg/cfg/nominal.py):
 
 * 6 new NP-level rules ``NP[CASE=X] → DET/ADP[CASE=X]
   Q PART[LINK] N`` (3 cases × 2 linker variants), plus 2

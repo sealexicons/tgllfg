@@ -13,7 +13,7 @@ Lex (data/tgl/particles.yaml):
 
 * ``mga`` PART with ``PLURAL_MARKER: YES``.
 
-Grammar (src/tgllfg/cfg/grammar.py):
+Grammar (src/tgllfg/cfg/nominal.py):
 
 * New N rule: ``N → PART N`` with constraining equations
   ``(↓1 PLURAL_MARKER) =c 'YES'`` (particle is mga) and

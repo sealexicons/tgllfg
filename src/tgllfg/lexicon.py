@@ -293,7 +293,7 @@ BASE: dict[str, list[LexicalEntry]] = {
     "kain": [
         # AV intransitive: actor pivot, no OBJ ("Kumain ang aso").
         # Note: morph_constraints omits TR so this entry also matches
-        # MorphAnalyses for verbs declared TR in roots.yaml — the
+        # MorphAnalyses for verbs declared TR in verbs.yaml — the
         # grammar's intransitive S → V NP[NOM] rule is what restricts
         # use of this template to the 2-token surface.
         _entry(
@@ -457,7 +457,7 @@ BASE: dict[str, list[LexicalEntry]] = {
     # locative argument. The intransitive entry covers bare "Lumakad
     # ang bata" (no destination); the locative entry covers "Lumakad
     # ang bata sa palengke" and exercises the oblique classifier
-    # (sa-NP moves out of ADJUNCT into OBL-LOC). roots.yaml declares
+    # (sa-NP moves out of ADJUNCT into OBL-LOC). verbs.yaml declares
     # lakad as INTR with the um affix class.
     "lakad": [
         _entry(
@@ -512,7 +512,7 @@ BASE: dict[str, list[LexicalEntry]] = {
     ],
     # tapon — throw away. mag- AV class (no -um-); naturally takes IV
     # for the conveyed-theme reading ("itinapon ang basura"). i_oblig
-    # is added to its affix_class in roots.yaml so the IV form
+    # is added to its affix_class in verbs.yaml so the IV form
     # generates.
     "tapon": [
         _entry(
@@ -720,7 +720,7 @@ BASE["bili"].append(LexicalEntry(
 # Phase 5b: three-arg IV-BEN variants with explicit PATIENT. Both
 # the AGENT and the PATIENT are demoted to typed OBJ-θ slots
 # (OBJ-AGENT, OBJ-PATIENT) by the LMT engine; the multi-GEN-NP
-# grammar rules in cfg/grammar.py bind them positionally
+# grammar rules in cfg/clause.py bind them positionally
 # (first ng-NP after V → AGENT, second → PATIENT).
 BASE["gawa"].append(LexicalEntry(
     lemma="gawa",
@@ -807,7 +807,7 @@ BASE["sulat"].append(LexicalEntry(
 # parallel to Phase 5b's three-arg IV-BEN. Both AGENT and
 # PATIENT demote to typed OBJ-θ slots (OBJ-AGENT, OBJ-PATIENT)
 # by the LMT engine; the multi-GEN-NP grammar rules in
-# cfg/grammar.py (Phase 5b, voice-restricted to V[VOICE=IV]
+# cfg/clause.py (Phase 5b, voice-restricted to V[VOICE=IV]
 # without APPL constraint) bind them positionally — first
 # ng-NP after V → AGENT, second → PATIENT.
 #
@@ -899,7 +899,7 @@ BASE.setdefault("inom", []).append(LexicalEntry(
 # Phase 5b: three-arg pa-OV-direct variants with explicit PATIENT.
 # Both CAUSER and PATIENT are demoted to typed OBJ-θ slots
 # (OBJ-CAUSER, OBJ-PATIENT) by the LMT engine; the multi-GEN-NP
-# grammar rules in cfg/grammar.py bind them positionally
+# grammar rules in cfg/clause.py bind them positionally
 # (first ng-NP after V → CAUSER, second → PATIENT).
 BASE["kain"].append(LexicalEntry(
     lemma="kain",

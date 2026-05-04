@@ -57,8 +57,8 @@ def find_matrix_lex_entry(
     against each candidate's ``pred`` + ``morph_constraints``.
 
     Only morph features that the grammar percolates to the matrix
-    f-structure are considered (see ``cfg/grammar.py``
-    ``_PERCOLATE_FROM_V``: PRED, VOICE, ASPECT, MOOD, LEX-ASTRUCT).
+    f-structure are considered (see ``cfg/_helpers.py``
+    ``_VERB_PERCOLATION``: PRED, VOICE, ASPECT, MOOD, LEX-ASTRUCT).
     Constraints on non-percolated features (TR, APPL, CAUS,
     CTRL_CLASS) live on the V's sub-projection and aren't visible
     here; we ignore them and rely on (PRED, VOICE) plus

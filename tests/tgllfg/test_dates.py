@@ -3,7 +3,7 @@
 Adds month NOUNs, day-of-week NOUNs, and temporal-frame
 markers (``tuwing`` / ``noong``) for date constructions.
 
-Lex (data/tgl/roots.yaml):
+Lex (data/tgl/nouns.yaml):
 
 * 12 Spanish month names (``enero`` .. ``disyembre``) as
   NOUN with SEM_CLASS=MONTH and MONTH_VALUE (1-12).
@@ -18,7 +18,7 @@ Lex (data/tgl/particles.yaml):
 * ``tuwing`` (every) — PART with TIME_FRAME=PERIODIC.
 * ``noong`` (last / past) — PART with TIME_FRAME=PAST.
 
-Grammar (src/tgllfg/cfg/grammar.py):
+Grammar (src/tgllfg/cfg/discourse.py):
 
 * New PP rule: ``PP → PART N`` with constraining equations
   ``(↓1 TIME_FRAME)`` (existential — PART has TIME_FRAME)

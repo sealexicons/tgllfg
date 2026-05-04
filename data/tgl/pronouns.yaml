@@ -91,13 +91,13 @@
 #
 # The lex entry carries only the ``KITA: YES`` marker; the actual
 # person/number/case feats for the two argument slots are set by
-# the grammar rules in src/tgllfg/cfg/grammar.py (Phase 5e Commit
+# the grammar rules in src/tgllfg/cfg/clitic.py (Phase 5e Commit
 # 20 section). This keeps the lex flat (the loader doesn't support
 # nested feats in pronouns.yaml) while letting the grammar route
 # the dual binding into SUBJ and OBJ-AGENT.
 #
 # Note: ``kita`` also exists as a verb root (kita = "see, meet";
-# see data/tgl/roots.yaml). The morph analyzer returns BOTH
+# see data/tgl/verbs.yaml). The morph analyzer returns BOTH
 # analyses; the chart parser picks the PRON path when the syntactic
 # context calls for a clitic.
 - surface: kita

@@ -70,7 +70,7 @@ def _sa_np_candidates(adjunct: frozenset) -> list[FStructure]:
 # slots. Both sets are deliberately small — a real corpus-driven
 # classifier would consult a richer noun ontology, but the
 # project's seed lexicon doesn't yet carry that information.
-# Listed lemmas come from :file:`data/tgl/roots.yaml`.
+# Listed lemmas come from :file:`data/tgl/nouns.yaml`.
 _PLACE_LEMMAS: frozenset[str] = frozenset({
     "palengke", "eskwela", "bahay", "simbahan", "tindahan",
     "parke",

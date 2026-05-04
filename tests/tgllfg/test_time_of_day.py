@@ -3,7 +3,7 @@
 
 Lex-only addition. 5 new entries:
 
-* Time-of-day NOUNs (data/tgl/roots.yaml):
+* Time-of-day NOUNs (data/tgl/nouns.yaml):
   - ``umaga`` (morning), ``tanghali`` (noon), ``hapon``
     (afternoon). All NOUN with SEM_CLASS=TIME.
 * Native time deictics (data/tgl/particles.yaml):

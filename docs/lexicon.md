@@ -126,7 +126,7 @@ matter).
 **Project-owned (the common case):** add to the YAML, re-seed.
 
 ```yaml
-# data/tgl/roots.yaml
+# data/tgl/verbs.yaml
 - citation: linis
   pos: VERB
   gloss: clean

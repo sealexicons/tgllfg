@@ -22,7 +22,7 @@ Implementation:
 * New BASE entries for kain and bili reciprocal with PRED
   ``EAT-TOGETHER <SUBJ>`` and ``BUY-EXCHANGE <SUBJ>``.
 * ``mag_an`` registered in kain's and bili's affix_class lists
-  in ``data/tgl/roots.yaml``.
+  in ``data/tgl/verbs.yaml``.
 
 Ambiguity: the plain AV-intr lex entry (no MOOD constraint)
 matches reciprocal MorphAnalyses too (per the parser's

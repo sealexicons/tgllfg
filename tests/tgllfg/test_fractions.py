@@ -1,7 +1,7 @@
 """Phase 5f Commit 8: fractions.
 
 Lex-only addition. Adds half / quarter / part NOUN entries to
-``data/tgl/roots.yaml``:
+``data/tgl/nouns.yaml``:
 
 * ``kalahati`` "half" — native form, SEM_CLASS=FRACTION.
 * ``kapat`` "quarter" — native form, SEM_CLASS=FRACTION.

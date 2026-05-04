@@ -82,7 +82,7 @@ class TestPredTemplateNonThematic:
 
 class TestRaisingMorph:
     """Both surfaces carry VERB[CTRL_CLASS=RAISING] (from
-    particles.yaml) AND NOUN (from roots.yaml). The grammar's
+    particles.yaml) AND NOUN (from nouns.yaml). The grammar's
     syntactic constraints pick the right reading per context."""
 
     def test_mukha_has_verb_and_noun_analyses(self) -> None:

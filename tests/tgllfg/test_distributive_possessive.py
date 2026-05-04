@@ -21,7 +21,7 @@ Single-token forms per the precedent set in Phase 5f Commits
 14 / 16 / 18 / 19; canonical hyphenated ``kani-kaniya`` /
 ``kanya-kanya`` awaits a tokenizer pre-pass.
 
-Grammar (src/tgllfg/cfg/grammar.py):
+Grammar (src/tgllfg/cfg/nominal.py):
 
 * 6 case-marked NP rules:
     NP[CASE=X] → DET/ADP[CASE=X] Q[DISTRIB_POSS=YES]

@@ -1,0 +1,1419 @@
+# data/tgl/verbs.yaml
+#
+# Tagalog seed verb lexicon (split from data/tgl/roots.yaml,
+# 2026-05-04, see docs/refactor-grammar-and-roots.md). Each verb
+# declares its `affix_class` — the paradigm patterns it participates
+# in. Generation only fires for cells whose affix_class is in the
+# root's list, so a -um- only root never produces ungrammatical
+# mag-/mang- forms.
+#
+# Affix-class vocabulary (Phase 2 supported set):
+#
+#   um         — AV with -um- infix
+#   mag        — AV with mag-/nag- prefix
+#   mang       — AV with mang-/nang- distributive + nasal substitution
+#   maka       — AV with naka-/maka- abilitative (MOOD=ABIL)
+#   in_oblig   — OV with -in suffix / -in- realis infix
+#   an_oblig   — DV with -an suffix
+#   i_oblig    — IV with i- prefix
+#
+# Other R&B-attested classes (ipag-, ipang-, magpa-, ika-, magka-,
+# pag- -an, ma-/ma- -an, maki-, magsi-) are not yet in the engine
+# and are deferred to a Phase 2C / Phase 4 follow-on. Where R&B
+# records additional classes for a root, they're noted in comments
+# but not encoded.
+#
+# Citations: Ramos & Bautista 1986 (R&B), Schachter & Otanes 1972
+# (S&O), Kroeger 1993 ch. 4. R&B page numbers in comments where the
+# verb's full paradigm is documented.
+
+# === Control verbs (CTRL_CLASS) ==========================================
+# Verbs that select an XCOMP complement clause introduced by the
+# linker (`na` / `-ng`). The `feats: {CTRL_CLASS: INTRANS|TRANS}`
+# field (Phase 4 §7.6) flags the verb's class for the grammar's
+# control wrap rules in cfg/control.py. Inflected control verbs
+# (regular AV / OV / DV paradigms) live here; the uninflected
+# pseudo-verb psych predicates (gusto / ayaw / kaya) live in
+# particles.yaml because they have no verbal morphology to drive
+# paradigm generation.
+
+- citation: payag
+  pos: VERB
+  gloss: agree
+  transitivity: INTR
+  # AV-only intransitive control verb: pumayag (PFV) / pumapayag
+  # (IPFV) / papayag (CTPL). The complement is an XCOMP introduced
+  # by the linker; matrix SUBJ controls the embedded SUBJ.
+  affix_class: [um, maka]
+  feats: {CTRL_CLASS: INTRANS}
+
+- citation: pilit
+  pos: VERB
+  gloss: force, compel
+  transitivity: TR
+  # Transitive control: pivot is forcee (matrix SUBJ in OV/DV);
+  # GEN-NP is forcer (matrix OBJ). pinilit = OV PFV.
+  affix_class: [um, in_oblig, an_oblig, maka]
+  feats: {CTRL_CLASS: TRANS}
+
+- citation: utos
+  pos: VERB
+  gloss: order, command
+  transitivity: TR
+  # DV pivot is recipient/orderee. inutusan = "ordered someone".
+  affix_class: [um, in_oblig, an_oblig, maka]
+  feats: {CTRL_CLASS: TRANS}
+
+
+# === Inflectional verbs ==================================================
+# Verb roots in alphabetical order by citation form. Each entry's
+# `affix_class` list (Phase 2 vocabulary: um / mag / mang / maka /
+# in_oblig / an_oblig / i_oblig, plus applicative / causative /
+# reciprocal extensions) determines which paradigm cells fire for
+# that root. R&B page numbers are cited inline where the verb's
+# full paradigm is documented. Phase 2C "bulk verb scale-up A/B/C"
+# section markers from the pre-reorder layout are dropped here —
+# they were commit-organised, not linguistic, and any historical
+# mapping is recoverable from `git log --follow data/tgl/verbs.yaml`.
+
+# -- additional -um- / OV transitives --
+- citation: abot
+  pos: VERB
+  gloss: reach, hand to
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, an_oblig, maka]
+
+- citation: akyat
+  pos: VERB
+  gloss: climb
+  transitivity: TR
+  # R&B 5: -um- / -in. Ambitransitive — climbing is intransitive
+  # (umakyat) but "to climb something" is transitive (akyatin); we
+  # tag as TR to enable the OV/DV/IV cells.
+  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka]
+
+- citation: alis
+  pos: VERB
+  gloss: depart, leave
+  transitivity: INTR
+  # R&B 11: -um-. Vowel-initial root: -um- prefixes ("umalis").
+  affix_class: [um, maka]
+
+# -- additional mag- class --
+- citation: aral
+  pos: VERB
+  gloss: study, learn
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: asikaso
+  pos: VERB
+  gloss: attend to, take care of
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: awit
+  pos: VERB
+  gloss: sing
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: ayos
+  pos: VERB
+  gloss: arrange, fix
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: baba
+  pos: VERB
+  gloss: go down, descend
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+
+- citation: balak
+  pos: VERB
+  gloss: plan, intend
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: balik
+  pos: VERB
+  gloss: come back, return
+  transitivity: INTR
+  # R&B 20: mag- / -um- / -an. Both -um- and mag- in AV.
+  affix_class: [um, mag, an_oblig, maka]
+
+- citation: balot
+  pos: VERB
+  gloss: wrap, cover
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: baon
+  pos: VERB
+  gloss: bury, immerse
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: basa
+  pos: VERB
+  gloss: read
+  transitivity: TR
+  # R&B 24: -um- / -in / -an.
+  # Phase 4 §7.7: pa_in (pinabasa "made-read") and magpa
+  # (nagpabasa "had-read", biclausal causative). Phase 5d
+  # Commit 2: pa_an (pinabasahan "read-at"; locative-pivot
+  # causative DV).
+  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an]
+
+- citation: bati
+  pos: VERB
+  gloss: greet
+  transitivity: TR
+  # -um- / -in.
+  affix_class: [um, in_oblig, maka]
+
+- citation: bawas
+  pos: VERB
+  gloss: subtract, reduce
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: bayad
+  pos: VERB
+  gloss: pay
+  transitivity: TR
+  # mag- / -an. /d/ → /r/ intervocalic on suffix attachment:
+  # bayad + -an → bayaran (Phase 2C).
+  affix_class: [mag, an_oblig, maka]
+  sandhi_flags: [d_to_r]
+
+- citation: bayo
+  pos: VERB
+  gloss: pound (rice, pestle-style)
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: bigat
+  pos: VERB
+  gloss: be heavy
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
+- citation: bigay
+  pos: VERB
+  gloss: give
+  transitivity: TR
+  # mag- AV; OV/DV/IV forms exist but require non-trivial sandhi
+  # deferred to Phase 2C.
+  affix_class: [mag, maka]
+
+- citation: bihis
+  pos: VERB
+  gloss: dress, change clothes
+  transitivity: INTR
+  # R&B 34: mag- / i- / -an.
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
+- citation: bilang
+  pos: VERB
+  gloss: count
+  transitivity: TR
+  # R&B 35: -um- / -in / -an.
+  affix_class: [um, in_oblig, an_oblig, maka]
+
+- citation: bili
+  pos: VERB
+  gloss: buy
+  transitivity: TR
+  # R&B 37: -um- / -in / -an / i- / ipang-. mang- distributive
+  # ("mamili" — to shop). +maka- abilitative. Phase 4 §7.7: ipag
+  # (ipinagbili "sold-for", benefactive applicative IV). Phase 5c
+  # §7.7 follow-on: ipang (ipinambili "instrument-bought",
+  # instrumental applicative IV).
+  # Phase 5e Commit 12: mag_an (nagbilihan "exchanged in trade",
+  # reciprocal / social). Phase 5e Commit 14: mang_retain
+  # (mambili — retain-pattern AV variant alongside mamili).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipag, ipang, mag_an, mang_retain]
+
+- citation: bilis
+  pos: VERB
+  gloss: be quick
+  transitivity: INTR
+  affix_class: [um, mag, ma, maka]
+
+- citation: bingi
+  pos: VERB
+  gloss: be deaf
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: bisita
+  pos: VERB
+  gloss: visit
+  transitivity: TR
+  affix_class: [mag, an_oblig, maka]
+
+- citation: buhat
+  pos: VERB
+  gloss: lift, carry
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, i_oblig, maka]
+
+- citation: buhos
+  pos: VERB
+  gloss: pour
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: bukas
+  pos: VERB
+  gloss: open
+  transitivity: TR
+  # mag- / -an.
+  affix_class: [mag, an_oblig, maka]
+
+- citation: bulag
+  pos: VERB
+  gloss: be blind
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: bunot
+  pos: VERB
+  gloss: pull out, draw
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: butas
+  pos: VERB
+  gloss: pierce, perforate
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: daan
+  pos: VERB
+  gloss: pass by
+  transitivity: INTR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: dagdag
+  pos: VERB
+  gloss: add to
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: dakot
+  pos: VERB
+  gloss: scoop with the hand
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: dala
+  pos: VERB
+  gloss: carry, bring
+  transitivity: TR
+  # R&B 49: mag- / -in / -an / ipag-.
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: dalaw
+  pos: VERB
+  gloss: visit
+  transitivity: TR
+  # R&B 51: -um- / -in.
+  affix_class: [um, in_oblig, maka]
+
+- citation: dali
+  pos: VERB
+  gloss: hurry, do quickly
+  transitivity: INTR
+  affix_class: [mag, maka]
+
+- citation: dama
+  pos: VERB
+  gloss: feel, sense
+  transitivity: TR
+  # /d/ → /r/ intervocalic flagged; CV-redup of dama gives "dadama"
+  # which surfaces as "darama" under the rule.
+  affix_class: [um, mag, in_oblig, maka]
+  sandhi_flags: [d_to_r]
+
+- citation: dami
+  pos: VERB
+  gloss: increase in quantity
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
+- citation: damo
+  pos: VERB
+  gloss: pluck grass
+  transitivity: INTR
+  # mang- distributive: "manamo" (mang- + damo, d→n).
+  affix_class: [mang, maka]
+
+- citation: dapa
+  pos: VERB
+  gloss: lie face down
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: dasal
+  pos: VERB
+  gloss: pray
+  transitivity: INTR
+  affix_class: [mag, maka]
+
+- citation: dating
+  pos: VERB
+  gloss: arrive
+  transitivity: INTR
+  # -um-. /d/ → /r/ intervocalic: dadating → darating, dumadating →
+  # dumarating. Phase 2C automatic post-processor.
+  affix_class: [um, maka]
+  sandhi_flags: [d_to_r]
+
+- citation: dukit
+  pos: VERB
+  gloss: hollow out, gouge
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+# -- mang- distributive (additional) --
+- citation: dukot
+  pos: VERB
+  gloss: snatch, take by force
+  transitivity: TR
+  # mang- with /d/ → /n/: mang-+dukot → manukot.
+  affix_class: [um, mang, in_oblig, maka]
+
+- citation: dunong
+  pos: VERB
+  gloss: be wise
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: galing
+  pos: VERB
+  gloss: recover, come from
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
+- citation: galit
+  pos: VERB
+  gloss: be angry
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: gamit
+  pos: VERB
+  gloss: use
+  transitivity: TR
+  # R&B 62: -um- / -in / -an.
+  affix_class: [um, in_oblig, an_oblig, maka]
+
+- citation: ganda
+  pos: VERB
+  gloss: be beautiful
+  transitivity: INTR
+  affix_class: [um, mag, ma, maka]
+
+- citation: gawa
+  pos: VERB
+  gloss: do, make
+  transitivity: TR
+  # R&B 71: -um- / -in / -an. Phase 4 §7.7: ipag (ipinaggawa
+  # "made-for", benefactive applicative IV).
+  affix_class: [um, in_oblig, an_oblig, maka, ipag]
+
+- citation: giling
+  pos: VERB
+  gloss: grind, mill
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: ginaw
+  pos: VERB
+  gloss: be cold
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+# -- ma- non-volitional / stative --
+- citation: gising
+  pos: VERB
+  gloss: wake up
+  transitivity: INTR
+  affix_class: [um, mag, ma, maka]
+
+- citation: gulat
+  pos: VERB
+  gloss: be surprised
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: gulay
+  pos: VERB
+  gloss: pick vegetables
+  transitivity: INTR
+  # mang- distributive: "mangulay" (mang- + gulay, g→ng).
+  affix_class: [mang, maka]
+
+- citation: gupit
+  pos: VERB
+  gloss: cut with scissors
+  transitivity: TR
+  # R&B 77: -um- / -in / -an / i-.
+  affix_class: [um, in_oblig, an_oblig, i_oblig, maka]
+
+- citation: gutom
+  pos: VERB
+  gloss: be hungry
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: hagis
+  pos: VERB
+  gloss: throw, hurl
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: halo
+  pos: VERB
+  gloss: mix
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: hamon
+  pos: VERB
+  gloss: challenge
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: hampas
+  pos: VERB
+  gloss: strike, hit
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: hanap
+  pos: VERB
+  gloss: search for
+  transitivity: TR
+  # -um- / -in / -an.
+  affix_class: [um, in_oblig, an_oblig, maka]
+
+- citation: handa
+  pos: VERB
+  gloss: prepare
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: harap
+  pos: VERB
+  gloss: face
+  transitivity: TR
+  # R&B 91: -um- / -in.
+  affix_class: [um, in_oblig, maka]
+
+- citation: hatak
+  pos: VERB
+  gloss: drag, pull
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: hatid
+  pos: VERB
+  gloss: bring, deliver
+  transitivity: TR
+  # R&B 92: mag- / i- / ipag-.
+  affix_class: [mag, i_oblig, maka]
+
+# -- additional -um- / OV transitives --
+- citation: hawak
+  pos: VERB
+  gloss: hold, grip
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: higa
+  pos: VERB
+  gloss: lie down
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
+- citation: higit
+  pos: VERB
+  gloss: pull, exceed
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: higop
+  pos: VERB
+  gloss: sip
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
+
+- citation: hila
+  pos: VERB
+  gloss: pull
+  transitivity: TR
+  # -um- / -in / -an.
+  affix_class: [um, in_oblig, an_oblig, maka]
+
+- citation: hilo
+  pos: VERB
+  gloss: be dizzy
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: hingi
+  pos: VERB
+  gloss: ask for, request
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, an_oblig, maka]
+
+- citation: hintay
+  pos: VERB
+  gloss: wait
+  transitivity: TR
+  # R&B 101: mag- / -in.
+  affix_class: [mag, in_oblig, maka]
+
+- citation: hiram
+  pos: VERB
+  gloss: borrow (an object)
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: hubad
+  pos: VERB
+  gloss: undress, take off (clothes)
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: hugas
+  pos: VERB
+  gloss: wash
+  transitivity: TR
+  # R&B 109: mag- / -an / ipag- / ipang-.
+  affix_class: [mag, an_oblig, maka]
+
+- citation: huli
+  pos: VERB
+  gloss: catch
+  transitivity: TR
+  # R&B 111: -um- / -in / i- / ipang-.
+  # mang- distributive: "manghuli" → manghuli (h is sonorant; no nasal sub).
+  affix_class: [um, in_oblig, i_oblig, mang, maka]
+
+- citation: ihaw
+  pos: VERB
+  gloss: grill, broil
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: ingat
+  pos: VERB
+  gloss: be careful, take care
+  transitivity: INTR
+  affix_class: [mag, an_oblig, maka]
+
+- citation: ingay
+  pos: VERB
+  gloss: be noisy
+  transitivity: INTR
+  affix_class: [um, mag, ma, maka]
+
+- citation: inis
+  pos: VERB
+  gloss: be annoyed
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: init
+  pos: VERB
+  gloss: be hot, be heated
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: inom
+  pos: VERB
+  gloss: drink
+  transitivity: TR
+  # R&B 117: -um- / -in / -an.
+  # Phase 4 §7.7: pa_in (pininom "made-drink") and magpa
+  # (nagpainom "had-drink", biclausal causative). Phase 5d
+  # Commit 2: pa_an (pinainuman "drunk-at"; locative-pivot
+  # causative DV).
+  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an]
+
+- citation: ipon
+  pos: VERB
+  gloss: collect, save
+  transitivity: TR
+  # R&B 120: mag- / -in.
+  affix_class: [mag, in_oblig, maka]
+
+- citation: isip
+  pos: VERB
+  gloss: think
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: itak
+  pos: VERB
+  gloss: chop with a bolo
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: iyak
+  pos: VERB
+  gloss: cry, weep
+  transitivity: INTR
+  # R&B 124: -um- / -an.
+  affix_class: [um, an_oblig, maka]
+
+- citation: kabit
+  pos: VERB
+  gloss: attach, hook
+  transitivity: TR
+  # mang- with /k/ → /ng/: mang-+kabit → mangabit.
+  affix_class: [mag, mang, in_oblig, an_oblig, maka]
+
+- citation: kagat
+  pos: VERB
+  gloss: bite
+  transitivity: TR
+  affix_class: [um, in_oblig, an_oblig, maka]
+
+- citation: kain
+  pos: VERB
+  gloss: eat
+  transitivity: TR
+  # R&B 126: -um- / -in / -an. + maka- abilitative (productive).
+  # Phase 4 §7.7: pa_in (pinakain "fed", direct causative) and
+  # magpa (nagpakain "had-eat", biclausal causative). Phase 5c
+  # §7.7 follow-on: ika (ikinakain "[reason for which X] ate",
+  # reason applicative IV). Phase 5d Commit 2: pa_an
+  # (pinakainan "fed-at"; locative-pivot causative DV).
+  # Phase 5e Commit 12: mag_an (nagkainan "ate together",
+  # reciprocal / social).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an, mag_an]
+
+- citation: kanta
+  pos: VERB
+  gloss: sing
+  transitivity: INTR
+  # mag- / um- / i-.
+  affix_class: [um, mag, i_oblig, maka]
+
+# Phase 5e Commit 21: kape as denominal mag- verb. The mag-NOUN
+# pattern is productive for verbs of consumption / engagement
+# (`magkape` = drink coffee, `mag-tubig` = fetch water,
+# `magbahay` = build a house). The seed lexicon picks just `kape`
+# for the SOC hortative example `Magkape tayo` "Let's have
+# coffee"; other denominal mag-verbs lift trivially by adding the
+# same dual NOUN+VERB entry.
+- citation: kape
+  pos: VERB
+  gloss: have coffee
+  transitivity: INTR
+  affix_class: [mag]
+
+- citation: kilos
+  pos: VERB
+  gloss: move, do something
+  transitivity: INTR
+  # -um-.
+  affix_class: [um, maka]
+
+- citation: kita
+  pos: VERB
+  gloss: see, meet
+  transitivity: TR
+  affix_class: [um, ma, in_oblig, maka]
+
+- citation: kopya
+  pos: VERB
+  gloss: copy
+  transitivity: TR
+  # R&B 134: -um- / -in / -an / i-.
+  affix_class: [um, in_oblig, an_oblig, i_oblig, maka]
+
+- citation: kuha
+  pos: VERB
+  gloss: get, take
+  transitivity: TR
+  # mang- distributive ("manguha"); maka- abilitative.
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka]
+
+- citation: kuskos
+  pos: VERB
+  gloss: scrub
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: kuwento
+  pos: VERB
+  gloss: tell a story
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: laba
+  pos: VERB
+  gloss: launder, wash clothes
+  transitivity: TR
+  # R&B 137: mag- / -an.
+  affix_class: [mag, an_oblig, maka]
+
+- citation: labag
+  pos: VERB
+  gloss: oppose, violate
+  transitivity: INTR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: labas
+  pos: VERB
+  gloss: go out, exit
+  transitivity: INTR
+  affix_class: [um, mag, i_oblig, maka]
+
+# -- additional mag- transitives --
+- citation: lagay
+  pos: VERB
+  gloss: place, put
+  transitivity: TR
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
+- citation: lakad
+  pos: VERB
+  gloss: walk
+  transitivity: INTR
+  # R&B 144: -um- / -in / -an. Walks to/towards take -in/-an objects;
+  # bare walking is intransitive. /d/ → /r/ intervocalic ("lakarin"
+  # rather than "lakadin" under suffixation).
+  affix_class: [um, in_oblig, an_oblig, maka]
+  sandhi_flags: [d_to_r]
+
+- citation: lakas
+  pos: VERB
+  gloss: be strong
+  transitivity: INTR
+  affix_class: [um, mag, ma, maka]
+
+- citation: lapit
+  pos: VERB
+  gloss: approach, come near
+  transitivity: INTR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: layo
+  pos: VERB
+  gloss: move away
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+
+- citation: lihim
+  pos: VERB
+  gloss: hide, keep secret
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: linis
+  pos: VERB
+  gloss: clean
+  transitivity: TR
+  # R&B 162: mag- / -in / ipang-. The realis -in- on sonorant-initial
+  # roots surfaces as a ni- prefix (Phase 2C automatic rule), so OV
+  # PFV is "nilinis" (not "linilis") and OV IPFV is "nililinis".
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: lipad
+  pos: VERB
+  gloss: fly, travel by airplane
+  transitivity: INTR
+  # R&B 164: -um-.
+  affix_class: [um, maka]
+
+- citation: lipat
+  pos: VERB
+  gloss: transfer, move
+  transitivity: TR
+  # R&B 165, 166: -um- / -an for intransitive; mag- / i- for
+  # transitive.
+  affix_class: [um, mag, an_oblig, i_oblig, maka]
+
+- citation: lungkot
+  pos: VERB
+  gloss: be sad
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: lunok
+  pos: VERB
+  gloss: swallow
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
+
+- citation: lutas
+  pos: VERB
+  gloss: solve, settle
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: luto
+  pos: VERB
+  gloss: cook
+  transitivity: TR
+  # R&B 167: mag- / i- / -in / ipag- / pag- -an.
+  affix_class: [mag, i_oblig, in_oblig, maka]
+
+- citation: maneho
+  pos: VERB
+  gloss: drive
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+# -- sonorant-initial (exercises -in- → ni-) --
+- citation: ngiti
+  pos: VERB
+  gloss: smile
+  transitivity: INTR
+  # ng-initial: sonorant ni- variant fires for non-AV cells.
+  affix_class: [um, mag, an_oblig, maka]
+
+- citation: nguya
+  pos: VERB
+  gloss: chew
+  transitivity: TR
+  # ng-initial sonorant; ng treated as one consonant in CV-redup.
+  affix_class: [um, in_oblig, maka]
+
+# -- ma- non-volitional / state predicates --
+- citation: pagod
+  pos: VERB
+  gloss: be tired
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: pahinga
+  pos: VERB
+  gloss: rest
+  transitivity: INTR
+  affix_class: [mag, maka]
+
+- citation: palit
+  pos: VERB
+  gloss: change, exchange
+  transitivity: TR
+  # R&B 177: mag- / -an.
+  affix_class: [mag, an_oblig, maka]
+
+- citation: pasa
+  pos: VERB
+  gloss: pass (an object), hand over
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: pasok
+  pos: VERB
+  gloss: enter
+  transitivity: TR
+  # R&B 184: -um- / -in.
+  affix_class: [um, in_oblig, maka]
+
+- citation: pasyal
+  pos: VERB
+  gloss: take a walk
+  transitivity: INTR
+  # R&B 186: mag- / -an / i-.
+  affix_class: [mag, an_oblig, i_oblig, maka]
+
+- citation: patong
+  pos: VERB
+  gloss: lay on top
+  transitivity: TR
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
+- citation: pawis
+  pos: VERB
+  gloss: sweat
+  transitivity: INTR
+  affix_class: [ma, mag, maka]
+
+- citation: paypay
+  pos: VERB
+  gloss: fan
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: piga
+  pos: VERB
+  gloss: squeeze
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: pisil
+  pos: VERB
+  gloss: squeeze, press
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: pukol
+  pos: VERB
+  gloss: throw at
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, an_oblig, maka]
+
+- citation: pukpok
+  pos: VERB
+  gloss: hammer, knock
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: punas
+  pos: VERB
+  gloss: wipe
+  transitivity: TR
+  # R&B 198: mag- / -an / ipang-.
+  affix_class: [mag, an_oblig, maka]
+
+# -- intransitive motion --
+- citation: punta
+  pos: VERB
+  gloss: go to
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+
+- citation: putol
+  pos: VERB
+  gloss: cut a piece from
+  transitivity: TR
+  # R&B 204: -um- / -in / -an. mang- distributive ("namutol" /
+  # "mamumutol") also attested.
+  affix_class: [um, in_oblig, an_oblig, mang, maka]
+
+- citation: sabi
+  pos: VERB
+  gloss: say, tell
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: saing
+  pos: VERB
+  gloss: steam (rice)
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: saksak
+  pos: VERB
+  gloss: stab, thrust
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: saksi
+  pos: VERB
+  gloss: witness
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+# -- communication / state additions --
+- citation: salita
+  pos: VERB
+  gloss: speak, utter
+  transitivity: INTR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: salok
+  pos: VERB
+  gloss: scoop, ladle
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
+
+- citation: sara
+  pos: VERB
+  gloss: close
+  transitivity: TR
+  # R&B 223: mag- / i- / -an.
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
+- citation: saya
+  pos: VERB
+  gloss: be happy
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: sayaw
+  pos: VERB
+  gloss: dance
+  transitivity: INTR
+  # R&B 227: -um- / mag- / i- / -in / -an.
+  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka]
+
+- citation: sigaw
+  pos: VERB
+  gloss: shout
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: sigla
+  pos: VERB
+  gloss: be lively
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: silip
+  pos: VERB
+  gloss: peek
+  transitivity: INTR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: simula
+  pos: VERB
+  gloss: start, begin
+  transitivity: TR
+  # mag- / um-.
+  affix_class: [um, mag, maka]
+
+- citation: sipsip
+  pos: VERB
+  gloss: suck, sip
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: sira
+  pos: VERB
+  gloss: break, be broken
+  transitivity: TR
+  affix_class: [ma, mag, in_oblig, maka]
+
+- citation: subo
+  pos: VERB
+  gloss: put in mouth, feed
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, i_oblig, maka]
+
+- citation: sukat
+  pos: VERB
+  gloss: measure, fit
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: sulat
+  pos: VERB
+  gloss: write
+  transitivity: TR
+  # R&B 237: -um- / -in / i- / -an. Both -um- and mag- in AV.
+  # Phase 4 §7.7: ipag (ipinagsulat "wrote-for", benefactive IV).
+  # Phase 5c §7.7 follow-on: ika (ikinasulat "[reason for which]
+  # X wrote", reason applicative IV).
+  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, ipag, ika]
+
+- citation: sundo
+  pos: VERB
+  gloss: fetch, pick up (a person)
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: taas
+  pos: VERB
+  gloss: raise, lift up
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: tabas
+  pos: VERB
+  gloss: cut, prune
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: tabi
+  pos: VERB
+  gloss: move aside
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+
+- citation: tagal
+  pos: VERB
+  gloss: delay, take a long time
+  transitivity: INTR
+  affix_class: [mag, maka]
+
+- citation: tahi
+  pos: VERB
+  gloss: sew
+  transitivity: TR
+  # mang- distributive ("nanahi"). Phase 5c §7.7 follow-on: ipang
+  # (ipinantahi "instrument-sewn", instrumental applicative IV).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipang]
+
+- citation: taka
+  pos: VERB
+  gloss: wonder, be surprised
+  transitivity: INTR
+  affix_class: [mag, ma, maka]
+
+- citation: takbo
+  pos: VERB
+  gloss: run
+  transitivity: INTR
+  # R&B 249: -um- / -in. "tumakbo" (run); mag- gives intensive.
+  affix_class: [um, mag, maka]
+
+- citation: takip
+  pos: VERB
+  gloss: cover
+  transitivity: TR
+  # R&B 251: mag- / -an.
+  affix_class: [mag, an_oblig, maka]
+
+- citation: takot
+  pos: VERB
+  gloss: be afraid
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: tamis
+  pos: VERB
+  gloss: be sweet
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
+- citation: tanong
+  pos: VERB
+  gloss: ask
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: tao
+  pos: VERB
+  gloss: be born, become a person (figurative)
+  transitivity: INTR
+  # mang- distributive context.
+  affix_class: [um, mang, maka]
+
+- citation: tapon
+  pos: VERB
+  gloss: throw away
+  transitivity: TR
+  # Phase 4 §7.1 anchor for IV (conveyed-theme pivot, "itinapon").
+  affix_class: [mag, in_oblig, i_oblig, maka]
+
+- citation: tapos
+  pos: VERB
+  gloss: finish
+  transitivity: TR
+  # mag- / -in.
+  affix_class: [mag, in_oblig, maka]
+
+- citation: tawa
+  pos: VERB
+  gloss: laugh
+  transitivity: INTR
+  # -um-.
+  affix_class: [um, maka]
+
+- citation: tawag
+  pos: VERB
+  gloss: call
+  transitivity: TR
+  # R&B 262: -um- / -in.
+  affix_class: [um, in_oblig, maka]
+
+- citation: tawid
+  pos: VERB
+  gloss: cross (a street)
+  transitivity: TR
+  # R&B 263, 264: -um- / -in for intransitive; mag- / i- for
+  # transitive (carry across).
+  affix_class: [um, mag, in_oblig, i_oblig, maka]
+
+- citation: tayo
+  pos: VERB
+  gloss: build, erect, stand up
+  transitivity: TR
+  # R&B 266: mag- / i- / -an.
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
+- citation: tibay
+  pos: VERB
+  gloss: be durable
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: tigang
+  pos: VERB
+  gloss: be parched
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: tigil
+  pos: VERB
+  gloss: stop
+  transitivity: INTR
+  # mag- / i-.
+  affix_class: [mag, i_oblig, maka]
+
+- citation: tiis
+  pos: VERB
+  gloss: endure, suffer
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: tikim
+  pos: VERB
+  gloss: taste
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
+
+- citation: tiklop
+  pos: VERB
+  gloss: fold
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: timpla
+  pos: VERB
+  gloss: mix (a drink, a recipe)
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: tinda
+  pos: VERB
+  gloss: sell
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: tindig
+  pos: VERB
+  gloss: stand up
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+
+- citation: tingin
+  pos: VERB
+  gloss: look at
+  transitivity: TR
+  # -um- / -an.
+  affix_class: [um, an_oblig, maka]
+
+- citation: tira
+  pos: VERB
+  gloss: live, dwell
+  transitivity: INTR
+  affix_class: [um, mag, an_oblig, maka]
+
+- citation: trabaho
+  pos: VERB
+  gloss: work
+  transitivity: INTR
+  # R&B 272: mag-.
+  affix_class: [mag, maka]
+
+- citation: tugon
+  pos: VERB
+  gloss: respond, answer
+  transitivity: TR
+  affix_class: [um, mag, an_oblig, maka]
+
+- citation: tulak
+  pos: VERB
+  gloss: push
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, an_oblig, maka]
+
+- citation: tulog
+  pos: VERB
+  gloss: sleep
+  transitivity: INTR
+  # R&B 275: ma- / -an. ma- non-volitional is the primary AV class
+  # ("natulog" / "natutulog" / "matutulog", MOOD=NVOL). The colloquial
+  # mag- and -um- alternations are also kept.
+  affix_class: [um, mag, ma, maka]
+
+- citation: tulong
+  pos: VERB
+  gloss: help
+  transitivity: TR
+  # -um- / -an.
+  affix_class: [um, an_oblig, maka]
+
+- citation: tuloy
+  pos: VERB
+  gloss: continue, enter
+  transitivity: INTR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: tunaw
+  pos: VERB
+  gloss: melt, dissolve
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: tuto
+  pos: VERB
+  gloss: learn
+  transitivity: INTR
+  affix_class: [ma, mag, maka]
+
+- citation: uhaw
+  pos: VERB
+  gloss: be thirsty
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: unawa
+  pos: VERB
+  gloss: understand
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: upo
+  pos: VERB
+  gloss: sit
+  transitivity: INTR
+  # Vowel-initial: -um- and -in- prefix rather than infix.
+  affix_class: [um, ma, maka]
+
+- citation: urong
+  pos: VERB
+  gloss: recede, withdraw
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+
+- citation: usad
+  pos: VERB
+  gloss: shift, slide along
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+
+- citation: usap
+  pos: VERB
+  gloss: talk, converse
+  transitivity: INTR
+  affix_class: [mag, in_oblig, maka]
+
+- citation: utang
+  pos: VERB
+  gloss: borrow (money), owe
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: uwi
+  pos: VERB
+  gloss: go home
+  transitivity: INTR
+  # Vowel-initial: -um- prefix.
+  affix_class: [um, mag, i_oblig, maka]
+
+- citation: yakap
+  pos: VERB
+  gloss: embrace
+  transitivity: TR
+  # R&B 290: -um- / -in.
+  affix_class: [um, in_oblig, maka]
+
+- citation: yaman
+  pos: VERB
+  gloss: be wealthy
+  transitivity: INTR
+  affix_class: [um, ma, maka]

@@ -195,12 +195,12 @@ back-of-book index summarises each verb's affix-class membership
 directly. Where R&B records additional classes the engine doesn't
 yet support (`ipag-`, `ipang-`, `magpa-`, `ika-`, `magka-`,
 `pag- -an`, `ma-`, `maki-`, `magsi-`), the unsupported entries are
-omitted from `affix_class` with a comment in `roots.yaml` flagging
+omitted from `affix_class` with a comment in `verbs.yaml` flagging
 the gap.
 
 ### Citation policy
 
-Per-verb citations live as YAML comments in `data/tgl/roots.yaml`
+Per-verb citations live as YAML comments in `data/tgl/verbs.yaml`
 referencing R&B 1986 page numbers. The Ramos 1971 dictionary OCR
 and the R&B 1986 PDF live under `data/tgl/dictionaries/`
 (gitignored) for grep-verification during seed authoring; the
@@ -1802,7 +1802,7 @@ ambiguity).
 
 ### Existing nouns added: ``karayom``, ``gutom``
 
-Two seed nouns were added to ``data/tgl/roots.yaml`` to give the
+Two seed nouns were added to ``data/tgl/nouns.yaml`` to give the
 new applicatives natural test fixtures: ``karayom`` "needle"
 (instrument) and ``gutom`` "hunger" (canonical reason).
 
@@ -1866,7 +1866,7 @@ profile ``_RAISING`` has the single COMPLEMENT entry with
 ``(None, None)`` (XCOMP-stipulated, off the truth table).
 
 **(c) Grammar wrap rule.** A new pattern in
-:file:`src/tgllfg/cfg/grammar.py`:
+:file:`src/tgllfg/cfg/control.py`:
 
 ```
 S → V[CTRL_CLASS=RAISING] PART[LINK=…] S
@@ -1883,7 +1883,7 @@ matrix.
 ### Disambiguation by syntactic position
 
 Both surfaces are also nouns (``mukha`` "face", ``baka`` "cow",
-the latter pre-existing in :file:`data/tgl/roots.yaml`; ``mukha``
+the latter pre-existing in :file:`data/tgl/nouns.yaml`; ``mukha``
 added alongside Commit 5). The morph analyzer returns both
 candidates per token. The grammar's wrap-rule pattern is
 distinctive: it requires a ``V[CTRL_CLASS=RAISING]`` token in
@@ -2301,7 +2301,7 @@ OBJ-PATIENT slots.
 
 ### Lex-only commit (no grammar change)
 
-The Phase 5b multi-GEN-NP rules in :file:`cfg/grammar.py` are
+The Phase 5b multi-GEN-NP rules in :file:`cfg/clause.py` are
 voice-restricted to ``V[VOICE=IV]`` without an APPL constraint:
 
 ```
@@ -4110,7 +4110,7 @@ BUY-EXCHANGE  <SUBJ>   bili  AV MOOD=SOC
 ```
 
 **Affix-class registration**: ``mag_an`` added to ``kain``'s
-and ``bili``'s ``affix_class`` lists in ``data/tgl/roots.yaml``.
+and ``bili``'s ``affix_class`` lists in ``data/tgl/verbs.yaml``.
 
 ### Discrimination via MOOD=SOC
 
@@ -4306,7 +4306,7 @@ prefix is ``"nang"`` (realis); CTPL prefix is ``"mang"``
 
 The new ``mang_retain`` affix class is per-base. Currently only
 ``bili`` carries ``mang_retain`` in its
-``affix_class`` list (``data/tgl/roots.yaml``); other roots
+``affix_class`` list (``data/tgl/verbs.yaml``); other roots
 that admit the retain pattern (e.g., ``tahi``, ``patay``) can
 opt in by adding ``mang_retain`` to their list. Roots without
 the flag don't generate retain-pattern surfaces:
@@ -4382,7 +4382,7 @@ Three architectural / corpus considerations:
 3. **The lex-only approach is narrow.** The plan note's
    "additional senses can land as separate lex entries"
    suggests the path of least resistance: hand-author
-   ``pambili`` etc. as nouns in ``data/tgl/roots.yaml``.
+   ``pambili`` etc. as nouns in ``data/tgl/nouns.yaml``.
    That's feasible and could be done one token at a time when
    a corpus surfaces specific cases — but it doesn't merit a
    Phase 5e item by itself.
@@ -4404,7 +4404,7 @@ mood inflection — they're zero-inflected derived nouns.
 ### What it would take to lift
 
 * **Lex-only path** (when corpus pressure surfaces tokens):
-  add each form as a NOUN entry in ``data/tgl/roots.yaml``,
+  add each form as a NOUN entry in ``data/tgl/nouns.yaml``,
   e.g., ``- citation: pambili, pos: NOUN, gloss: shopping
   money / for buying``. The existing N rules and NP-formation
   rules absorb them.
@@ -4782,7 +4782,7 @@ prior commits and need no modification for Commit 18:
 ### The change: extend the wrap rule
 
 The only required change for Commit 18 is one extra iteration
-in the wrap-rule loop in ``src/tgllfg/cfg/grammar.py``:
+in the wrap-rule loop in ``src/tgllfg/cfg/extraction.py``:
 
 ```python
 for case in ("NOM", "GEN", "DAT"):
@@ -5091,7 +5091,7 @@ lex loader doesn't support nested feats, so we can't put both
 1sg-GEN and 2sg-NOM bundles in a single PRON entry).
 
 The surface ``kita`` also exists as a verb root in
-``data/tgl/roots.yaml`` (``kita`` = "see, meet"), but the verb
+``data/tgl/verbs.yaml`` (``kita`` = "see, meet"), but the verb
 is never used as a bare lemma — it always appears with affixes
 (``kumita`` AV, ``kinita`` OV, ``nakita`` NVOL). The morph
 analyzer returns the PRON analysis for bare ``kita``, and the
@@ -5100,7 +5100,7 @@ no ambiguity in practice.
 
 ### Grammar layer
 
-``src/tgllfg/cfg/grammar.py`` adds a per-voice loop that mirrors
+``src/tgllfg/cfg/clitic.py`` adds a per-voice loop that mirrors
 the standard non-AV ``voice_specs`` structure used elsewhere:
 
 ```python
@@ -6231,7 +6231,7 @@ commit partially closes).
 
 ### Lex change
 
-* **Frequency NOUNs** (``data/tgl/roots.yaml``):
+* **Frequency NOUNs** (``data/tgl/nouns.yaml``):
   ``beses`` and ``ulit`` (both with ``SEM_CLASS: FREQUENCY``;
   bidirectional synonyms). Used in periphrastic frequency
   expressions (``dalawang beses`` "twice", ``tatlong ulit``
@@ -6254,7 +6254,7 @@ commit partially closes).
 
 ### Grammar change
 
-One new rule (``src/tgllfg/cfg/grammar.py``):
+One new rule (``src/tgllfg/cfg/discourse.py``):
 
 ```
 S → S AdvP
@@ -6386,7 +6386,7 @@ infrastructure consumed unchanged).
 * ``punto`` (``data/tgl/particles.yaml``): PART with
   ``DECIMAL_SEP: "YES"``. Spanish-borrowed decimal separator;
   joins integer and fractional cardinals.
-* ``porsiyento`` (``data/tgl/roots.yaml``): NOUN with
+* ``porsiyento`` (``data/tgl/nouns.yaml``): NOUN with
   ``SEM_CLASS: PERCENTAGE``. Spanish-borrowed; Tagalog has no
   native percentage word. Used as the head N of cardinal-
   modified percentage NPs.
@@ -6609,7 +6609,7 @@ ordinal NP-modifier rules consumed unchanged); Ramos 1971.
 
 ### Lex change
 
-4 NOUN entries added to ``data/tgl/roots.yaml``:
+4 NOUN entries added to ``data/tgl/nouns.yaml``:
 
 * ``kalahati`` "half" — native form. SEM_CLASS=FRACTION.
   Bidirectional synonym of ``medya``.
@@ -6682,7 +6682,7 @@ consumed unchanged).
 ``OP`` feature:
 
 * ``dagdag`` — OP=PLUS. Coexists with the existing ``dagdag``
-  VERB root (in ``data/tgl/roots.yaml``, "add to"); the bare
+  VERB root (in ``data/tgl/verbs.yaml``, "add to"); the bare
   uninflected form is _UNK from the verbal pipeline (no
   paradigm cell emits a bare form), so adding the PART entry
   introduces no ambiguity in the verbal use cases (which
@@ -6780,7 +6780,7 @@ S&O 1972 §6.13.
 
 ### Lex change
 
-12 NOUN entries added to ``data/tgl/roots.yaml`` for the
+12 NOUN entries added to ``data/tgl/nouns.yaml`` for the
 Spanish-borrowed clock-time terms:
 
 * ``alauna`` (1 o'clock — special vowel-initial contraction:
@@ -6847,11 +6847,11 @@ S&O 1972 §6.13; Phase 5f Commits 5 + 10.
 
 ### Lex change
 
-* **Time-of-day NOUNs** (``data/tgl/roots.yaml``):
+* **Time-of-day NOUNs** (``data/tgl/nouns.yaml``):
   ``umaga`` (morning), ``tanghali`` (noon / midday),
   ``hapon`` (afternoon). All NOUN with SEM_CLASS=TIME.
   ``gabi`` (night) and ``araw`` (day / sun) already exist as
-  plain NOUN entries in roots.yaml; not modified here to keep
+  plain NOUN entries in nouns.yaml; not modified here to keep
   the diff focused — they compose via existing rules without
   the SEM_CLASS feature.
 * **Native time deictics** (``data/tgl/particles.yaml``):
@@ -6993,7 +6993,7 @@ strictly additive for downstream consumers.
 
 The plan mentioned ``kuwarto`` "quarter (of the hour)" as a
 fractional minute (``alasotso y kuwarto`` 8:15). But ``kuwarto``
-already exists as a NOUN ("room") in roots.yaml. Adding a
+already exists as a NOUN ("room") in nouns.yaml. Adding a
 duplicate ``kuwarto`` entry with SEM_CLASS=FRACTION causes
 the morph analyzer to collapse the entries — only the latest
 one is returned, shadowing the "room" reading.
@@ -7035,11 +7035,11 @@ Refs: plan §11.1 Group F; S&O 1972 §6.13; Phase 5f Commits 7
 
 ### Lex change
 
-**Months** (data/tgl/roots.yaml): 12 Spanish-borrowed month
+**Months** (data/tgl/nouns.yaml): 12 Spanish-borrowed month
 names (``enero`` ... ``disyembre``) as NOUN with
 ``SEM_CLASS: MONTH`` and ``MONTH_VALUE`` (1-12).
 
-**Days of week** (data/tgl/roots.yaml): 7 day-of-week NOUNs
+**Days of week** (data/tgl/nouns.yaml): 7 day-of-week NOUNs
 — Spanish-borrowed (``lunes``, ``martes``, ``miyerkules``,
 ``huwebes``, ``biyernes``, ``sabado``) and native
 (``linggo``). All NOUN with ``SEM_CLASS: DAY`` and
@@ -7204,7 +7204,7 @@ plan calls for it as a follow-on.
 This commit adds a ``synonyms: list[str]`` field to the ``Root``
 dataclass and YAML loader so synonymous lex citations can be
 recorded as data (not just comments). Motivated by adding
-``aklat`` "book" to ``data/tgl/roots.yaml`` as the canonical
+``aklat`` "book" to ``data/tgl/nouns.yaml`` as the canonical
 ``Sandaan ang aklat`` example (Ramos 1971: "aklát n. book.
 --syn. libró."). Both ``aklat`` and the existing ``libro``
 entries get bidirectional ``synonyms`` lists. The field is
@@ -7246,7 +7246,7 @@ temporal-frame PP rule.
 
 ### Lex change
 
-Five season NOUNs (``data/tgl/roots.yaml``):
+Five season NOUNs (``data/tgl/nouns.yaml``):
 
 * ``taginit`` — hot / dry season.
 * ``tagulan`` — rainy season.
@@ -7302,7 +7302,7 @@ Equations:
 ```
 
 gains a SEASON variant (the ``for sem_class in (...)`` loop
-in ``src/tgllfg/cfg/grammar.py`` extends to four members).
+in ``src/tgllfg/cfg/discourse.py`` extends to four members).
 This makes ``tuwing tagulan`` "every rainy season" (PERIODIC)
 and ``noong taginit`` "during the dry season" (PAST) parse
 via the same machinery as ``tuwing Lunes`` / ``noong
@@ -7610,7 +7610,7 @@ worth mentioning in plan §11.2 / docs/diagnostics.md.)
 
 ### Grammar change
 
-Three new rules in ``src/tgllfg/cfg/grammar.py``:
+Three new rules in ``src/tgllfg/cfg/nominal.py``:
 
 **1. Cardinal-NUM approximator wrap.**
 
@@ -7777,7 +7777,7 @@ Four PART entries in ``data/tgl/particles.yaml``:
 
 ### Polysemy with verb-form analyses
 
-``higit`` is also a verb root in roots.yaml (``higit`` "pull,
+``higit`` is also a verb root in verbs.yaml (``higit`` "pull,
 exceed", VERB; affix_class ``[um, mag, in_oblig, maka]``).
 ``bababa`` is generated by the paradigm engine as the AV CTPL
 of root ``baba`` "descend"; ``hihigit`` is the AV CTPL of root
@@ -7831,7 +7831,7 @@ pleasingly symmetric:
 
 ### Grammar change
 
-Four parallel rules in ``src/tgllfg/cfg/grammar.py``, generated
+Four parallel rules in ``src/tgllfg/cfg/nominal.py``, generated
 by two ``for`` loops over ``(comp_lex, comp_value)`` pairs.
 
 **Solo frame** (higit / kulang):
@@ -7930,7 +7930,7 @@ collective numerals.
 
 ### Lex change
 
-Four NOUN entries in ``data/tgl/roots.yaml``:
+Four NOUN entries in ``data/tgl/nouns.yaml``:
 
 * ``pares``    — NOUN[MEASURE="YES"]. "pair" (Spanish-borrowed).
 * ``dosena``   — NOUN[MEASURE="YES"]. "dozen" (Spanish-borrowed).
@@ -8250,7 +8250,7 @@ respective rules fire only on their target Qs.
 
 ### Grammar change
 
-Four new rules in ``src/tgllfg/cfg/grammar.py`` plus a gate
+Four new rules in ``src/tgllfg/cfg/nominal.py`` plus a gate
 addition on three existing rules.
 
 **3 case-marked NP rules** (NOM / GEN / DAT):
@@ -8420,7 +8420,7 @@ hyphenated awaits a tokenizer pre-pass.
 
 ### Grammar change
 
-Six case-marked NP rules in ``src/tgllfg/cfg/grammar.py`` (3
+Six case-marked NP rules in ``src/tgllfg/cfg/nominal.py`` (3
 cases × 2 linker variants):
 
 ```
@@ -8537,7 +8537,7 @@ Q is the cleanest choice.
 
 ### Grammar change
 
-Six case-marked NP rules in ``src/tgllfg/cfg/grammar.py`` (3
+Six case-marked NP rules in ``src/tgllfg/cfg/nominal.py`` (3
 cases × 2 linker variants):
 
 ```

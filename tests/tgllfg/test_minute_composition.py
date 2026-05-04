@@ -12,7 +12,7 @@ Lex (data/tgl/particles.yaml):
 * ``y`` PART, MINUTE_OP=Y (forward-counting "and").
 * ``menos`` PART, MINUTE_OP=MENOS (backward-counting "minus").
 
-Lex (data/tgl/roots.yaml) addendum:
+Lex (data/tgl/nouns.yaml) addendum:
 
 * ``kuwarto`` "quarter (of the hour)" added as a separate
   NOUN entry alongside the existing ``kuwarto`` "room" NOUN.
@@ -22,7 +22,7 @@ Lex (data/tgl/roots.yaml) addendum:
   SEM_CLASS=FRACTION so the minute-composition rule fires.
   Bidirectional synonym with ``kapat``.
 
-Grammar (src/tgllfg/cfg/grammar.py): 4 new N rules — 2 ops ×
+Grammar (src/tgllfg/cfg/nominal.py): 4 new N rules — 2 ops ×
 2 daughter types (cardinal NUM vs fraction NOUN). All have
 ``(↑) = ↓1`` (share with head clock-time N), constraining
 equations on SEM_CLASS=TIME (head) / MINUTE_OP (operator) /

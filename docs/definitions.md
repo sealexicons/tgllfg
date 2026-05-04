@@ -18,7 +18,7 @@ group.
 | ANTECEDENT | Quantifier antecedent                  | Phase 4 §7.8 — binding feature on a floated quantifier; `(↓ ANTECEDENT) = (↑ SUBJ)` links *lahat* to the SUBJ. |
 | AVM      | Attribute-Value Matrix                   | The shape of an f-structure.                                                                       |
 | a-structure | Argument structure                    | The thematic-role list a verb projects (e.g. `[AGENT, PATIENT]`).                                  |
-| CFG      | Context-Free Grammar                     | The c-structure layer of LFG; productions live in `src/tgllfg/cfg/grammar.py`.                     |
+| CFG      | Context-Free Grammar                     | The c-structure layer of LFG; productions live in seven per-area modules under `src/tgllfg/cfg/` (`nominal`, `clause`, `clitic`, `negation`, `extraction`, `control`, `discourse`); `cfg/grammar.py` composes them.                     |
 | COMP     | Clausal complement                       | Closed sentential argument; governable.                                                            |
 | c-structure | Constituent structure                 | Phrase-structure tree produced by the parser.                                                      |
 | f-structure | Functional structure                  | AVM produced by unification; carries grammatical functions.                                        |
@@ -86,7 +86,7 @@ group.
 | RECPFV   | Recent perfective          | "Just-completed" aspect (`katatapos`-style); Phase 4 §7.2.                                         |
 | SOC      | Social mood                | "Common" or social-deontic mood; Phase 4 §7.2.                                                     |
 | STAT     | Stative                    | Subset of NVOL / `ma-` semantics (e.g. *natulog*).                                                 |
-| TR       | Transitivity               | Lemma feature taking TR (transitive) / INTR (intransitive); from `roots.yaml`.                     |
+| TR       | Transitivity               | Lemma feature taking TR (transitive) / INTR (intransitive); from `verbs.yaml`.                     |
 | INTR     | Intransitive               | Value of TR.                                                                                       |
 
 ### Case / nominal features
@@ -144,7 +144,7 @@ group.
 | CAUS     | Causative                          | `DIRECT`, `INDIRECT`, `∅`                    | `pa-` direct vs biclausal indirect.              |
 | CTRL_CLASS | Control class                    | `PSYCH`, `INTRANS`, `TRANS`, `NONE`          | Phase 4 §7.6 — discriminates control-verb subtypes for the SUBJ-binding equation. |
 
-### Affix-class labels (`roots.yaml` `affix_class:`)
+### Affix-class labels (`verbs.yaml` `affix_class:`)
 
 | Label      | Expansion                                                                                  |
 |------------|--------------------------------------------------------------------------------------------|
@@ -157,7 +157,7 @@ group.
 | mang       | mang- distributive AV class with nasal substitution.                                       |
 | um         | -um- AV class (e.g. *kumain*).                                                             |
 
-### Per-root sandhi flags (`roots.yaml` `sandhi_flags:`)
+### Per-root sandhi flags (`verbs.yaml` `sandhi_flags:`)
 
 | Flag                  | Effect                                                                                                |
 |-----------------------|-------------------------------------------------------------------------------------------------------|
@@ -268,23 +268,23 @@ appear in the bottom section.
 
 | Component                              | Where                                          | Reference(s)                                    |
 |----------------------------------------|------------------------------------------------|-------------------------------------------------|
-| Four-voice analysis (AV/OV/DV/IV)      | `src/tgllfg/cfg/grammar.py`                    | Kroeger 1993 chs. 1, 4.                         |
+| Four-voice analysis (AV/OV/DV/IV)      | `src/tgllfg/cfg/clause.py`                     | Kroeger 1993 chs. 1, 4.                         |
 | Subjecthood diagnostics                | `docs/analysis-choices.md` §1                  | Kroeger 1993 chs. 2–3.                          |
 | Objecthood diagnostics                 | `docs/analysis-choices.md` §1                  | Kroeger 1993 chs. 2–3.                          |
-| OBJ-uniform analysis (ng-non-pivot → OBJ) | `src/tgllfg/cfg/grammar.py`                 | Kroeger 1993 ch. 2; vs. older OBL-AG analysis (Schachter & Otanes 1972 ch. 5). |
+| OBJ-uniform analysis (ng-non-pivot → OBJ) | `src/tgllfg/cfg/clause.py`                  | Kroeger 1993 ch. 2; vs. older OBL-AG analysis (Schachter & Otanes 1972 ch. 5). |
 | `mang-` distributive paradigm          | `data/tgl/paradigms.yaml`                      | Kroeger 1993 §4.4.                              |
 | `maka-` abilitative                    | `data/tgl/paradigms.yaml`                      | Kroeger 1993 §4.5.                              |
 | `ma-` non-volitional / stative         | `data/tgl/paradigms.yaml`                      | Schachter & Otanes 1972 §5.27; Kroeger 1993 §4.5. |
-| Affix-class membership per verb        | `data/tgl/roots.yaml`                          | Ramos & Bautista 1986 (per-verb index).         |
+| Affix-class membership per verb        | `data/tgl/verbs.yaml`                          | Ramos & Bautista 1986 (per-verb index).         |
 | Verb paradigm tables                   | `tests/tgllfg/test_morph_paradigms.py`         | Ramos & Bautista 1986; Schachter & Otanes 1972 ch. 5. |
-| Ang-NP as pivot / SUBJ                 | `src/tgllfg/cfg/grammar.py`                    | Kroeger 1993 chs. 2–3.                          |
+| Ang-NP as pivot / SUBJ                 | `src/tgllfg/cfg/clause.py`                     | Kroeger 1993 chs. 2–3.                          |
 | Voice-alias mapping (S&O ↔ Kroeger)    | `data/tgl/voice_aliases.yaml`                  | Kroeger 1993 §1.3 (reduction); Schachter & Otanes 1972 §§5.20–5.30 (focus inventory). |
 | Wackernagel 2P clitic placement        | `src/tgllfg/clitics/` (Phase 4 §7.3)           | Wackernagel 1892; Schachter & Otanes 1972 ch. 6; Kroeger 1993 §3.2. |
-| *Ay*-inversion / topicalization        | `src/tgllfg/cfg/grammar.py` (Phase 4 §7.4)     | Schachter & Otanes 1972 §6.5; Kroeger 1993 §3.6. |
-| SUBJ-only relativization               | `src/tgllfg/cfg/grammar.py` (Phase 4 §7.5)     | Kroeger 1993 ch. 5; Bresnan 2001 ch. 5.         |
-| Equi / functional control              | `src/tgllfg/cfg/grammar.py` (Phase 4 §7.6)     | Bresnan 1982 ("Control and Complementation"); Kroeger 1993 §6.1. |
-| Subject-to-subject raising             | `src/tgllfg/cfg/grammar.py` (Phase 4 §7.6)     | Bresnan 2001 ch. 12; Kroeger 1993 §6.2.         |
-| `pa-` causative                        | `src/tgllfg/cfg/grammar.py` (Phase 4 §7.7)     | Schachter & Otanes 1972 §5.30; Kroeger 1993 §4.5. |
+| *Ay*-inversion / topicalization        | `src/tgllfg/cfg/extraction.py` (Phase 4 §7.4)  | Schachter & Otanes 1972 §6.5; Kroeger 1993 §3.6. |
+| SUBJ-only relativization               | `src/tgllfg/cfg/extraction.py` (Phase 4 §7.5)  | Kroeger 1993 ch. 5; Bresnan 2001 ch. 5.         |
+| Equi / functional control              | `src/tgllfg/cfg/control.py` (Phase 4 §7.6)     | Bresnan 1982 ("Control and Complementation"); Kroeger 1993 §6.1. |
+| Subject-to-subject raising             | `src/tgllfg/cfg/control.py` (Phase 4 §7.6)     | Bresnan 2001 ch. 12; Kroeger 1993 §6.2.         |
+| `pa-` causative                        | `src/tgllfg/cfg/clause.py` (Phase 4 §7.7)      | Schachter & Otanes 1972 §5.30; Kroeger 1993 §4.5. |
 
 ### Database / engineering
 
@@ -348,7 +348,7 @@ these entries.
   Bautista. 1986. *Handbook of Tagalog Verbs: Inflections, Modes, and
   Aspects*. University of Hawaii Press. (User holds a purchased
   electronic copy under `data/tgl/dictionaries/`, gitignored. Cited
-  inline in `data/tgl/roots.yaml` as "R&B" with page numbers.)
+  inline in `data/tgl/verbs.yaml` as "R&B" with page numbers.)
 - **Robinson 1965.** Robinson, J. A. 1965. "A Machine-Oriented Logic
   Based on the Resolution Principle." *Journal of the ACM* 12(1): 23–41.
 - **Schachter & Otanes 1972.** Schachter, Paul and Fe T. Otanes. 1972.

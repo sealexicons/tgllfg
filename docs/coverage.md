@@ -326,7 +326,7 @@ has ``NUM[CARDINAL=YES]`` as LHS.
 ### cardinal-percent (3 sentences, 100%)
 
 Phase 5f Commit 6: percentages. Spanish-borrowed ``porsiyento``
-"percent" (``data/tgl/roots.yaml`` with
+"percent" (``data/tgl/nouns.yaml`` with
 ``SEM_CLASS=PERCENTAGE``) is a NOUN; the existing Phase 5f
 Commit 1 cardinal-NP-modifier rule fires on
 ``dalawampung porsiyento`` "20%", ``sandaan na porsiyento``
@@ -792,7 +792,7 @@ list (see `docs/analysis-choices.md`):
   introduced for Phase 5c §7.7 ipang- IV-INSTR / ika-
   IV-REASON applicatives). New ``mang_retain`` affix class
   with PFV / IPFV / CTPL paradigm cells; per-base flagging via
-  ``affix_class: [mang_retain]`` in roots.yaml. Currently only
+  ``affix_class: [mang_retain]`` in verbs.yaml. Currently only
   ``bili`` carries the flag — ``nambili`` / ``nambibili`` /
   ``mambibili`` parse alongside the existing ``namili`` /
   ``namimili`` / ``mamimili`` drop forms; both routes to the

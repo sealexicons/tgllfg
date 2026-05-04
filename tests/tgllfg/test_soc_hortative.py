@@ -16,7 +16,7 @@ The lift has two pieces:
   AV-mag-SOC cell emits ``mag-`` + base (no redup) with
   ``MOOD=SOC`` for any mag-class root. Generates ``maglinis``,
   ``magbigay``, ``magsulat``, ``magsayaw``, ``magkape``, etc.
-* **Denominal verb** (``data/tgl/roots.yaml``): ``kape`` is
+* **Denominal verb** (``data/tgl/verbs.yaml``): ``kape`` is
   added as a dual NOUN+VERB (mag-class) so the canonical
   example ``Magkape tayo`` parses. The mag-NOUN denominal
   pattern is productive in Tagalog; this commit picks just
