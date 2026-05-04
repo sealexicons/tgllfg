@@ -251,6 +251,128 @@
   pos: PART
   feats: {COMP_PHRASE: HIHIGIT}
 
+# === Phase 5f Commit 19: distributive tig- (Group H2 item 5) ===============
+# Productive ``tig-`` prefix on cardinals derives a distributive
+# numeral with ``DISTRIB: "YES"``. Per plan §11.1 Group H item 5
+# (S&O 1972 §4.5): ``tig-isa`` "one each", ``tig-dalawa`` "two
+# each", ``tig-tatlo`` "three each", etc. The form is productive
+# in principle (could combine with any cardinal stem), but per
+# the plan we choose "either a new ``tig_distrib`` morph class or
+# per-form lex" — per-form lex is simpler and matches the
+# precedent set by Phase 5f Commit 3 compound cardinals (also
+# productive in principle, hand-authored in practice).
+#
+# Each entry is also CARDINAL=YES so the existing Phase 5f
+# Commit 1 cardinal NP-modifier rule consumes it unchanged
+# (``tigisang aklat`` "one-each book" composes via the standard
+# NP-modifier path with DISTRIB riding on the daughter NUM).
+# The matrix-NP doesn't lift DISTRIB (same NP-from-N projection
+# limitation as MEASURE / APPROX / COMP).
+#
+# Hyphenation note: the canonical orthography is ``tig-isa``,
+# ``tig-dalawa``, etc. The tokenizer (``\w+|\S``) splits
+# hyphens, so the canonical surfaces tokenise as 3 tokens
+# (``tig``, ``-``, ``isa``). The seed lex stores single-token
+# forms (``tigisa``, ``tigdalawa``, ...) — same precedent as
+# Phase 5f Commit 14 seasons (``taginit``), Commit 16
+# approximators (``humigitkumulang``), and Commit 18 collectives
+# (``daandaan``). Canonical hyphenated awaits a tokenizer
+# pre-pass.
+#
+# Out of scope for this commit:
+#
+# * Productive ``tig_distrib`` morph class — per-form lex is
+#   sufficient for the 1-10 range; productive class would
+#   generate higher cardinals + Spanish-borrowed bases (``tig-
+#   sandaan``, ``tig-uno``) and is a separate paradigm-engine
+#   extension.
+# * Distributive predicate construction (``Tig-isa silang
+#   aklat`` "they each have one book") — verbless predicate
+#   with a linker-attached complement N. Analytically distinct
+#   from the NP-modifier composition this commit covers;
+#   deferred.
+- surface: tigisa
+  pos: NUM
+  feats: {CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE: "1", NUM: PL}
+- surface: tigdalawa
+  pos: NUM
+  feats: {CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE: "2", NUM: PL}
+- surface: tigtatlo
+  pos: NUM
+  feats: {CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE: "3", NUM: PL}
+- surface: tigapat
+  pos: NUM
+  feats: {CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE: "4", NUM: PL}
+- surface: tiglima
+  pos: NUM
+  feats: {CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE: "5", NUM: PL}
+- surface: tiganim
+  pos: NUM
+  feats: {CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE: "6", NUM: PL}
+- surface: tigpito
+  pos: NUM
+  feats: {CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE: "7", NUM: PL}
+- surface: tigwalo
+  pos: NUM
+  feats: {CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE: "8", NUM: PL}
+- surface: tigsiyam
+  pos: NUM
+  feats: {CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE: "9", NUM: PL}
+- surface: tigsampu
+  pos: NUM
+  feats: {CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE: "10", NUM: PL}
+
+# === Phase 5f Commit 20: universal `bawat` / `kada` (Group H2 item 6) ======
+# Pre-N universal quantifiers — closes Group H2 (Group H sub-PR
+# 2 of 3). Plan §11.1 Group H item 6 (S&O 1972 §4.7; R&B 1986):
+#
+#   bawat bata  "every child"
+#   bawat isa   "every one"
+#   kada bata   "every child" (Spanish-borrowed colloquial
+#                synonym of bawat)
+#
+# Both are Q heads with ``UNIV: "YES"``. Unlike ``lahat`` /
+# ``iba`` (Phase 4 §7.8 partitive Q heads taking GEN-NP) and
+# unlike the vague Qs (Phase 5f Commit 15 taking linker + N),
+# universals take a **bare N** complement (no linker, no DET
+# between Q and N). This is the third Q-distribution Phase 5f
+# has now covered:
+#
+#   Q + NP[GEN]              partitive (lahat / iba; Phase 5b)
+#   Q + PART[LINK] + N        vague-Q-modifier (Phase 5f Commit 15)
+#   Q + N                    universal (this commit)
+#
+# The new grammar rules (Phase 5f Commit 20 in
+# src/tgllfg/cfg/grammar.py) parallel Phase 5f Commit 15 except
+# the linker daughter is dropped. Three case-marked variants
+# (DET/ADP[CASE=X] Q[UNIV=YES] N) plus one bare-NOM variant
+# (Q[UNIV=YES] N) for surfaces like ``Bawat bata ay kumakain.``
+# where bawat itself functions as the determiner-equivalent.
+#
+# The existing Phase 5b partitive rules gain ``¬ (↓2 UNIV)``
+# (parallel to the Phase 5f Commit 15 ``¬ (↓2 VAGUE)`` gate)
+# so universals only take the bare-N form (the partitive
+# ``*ang bawat ng bata`` is non-standard and shouldn't compose).
+#
+# Out of scope for this commit:
+#
+# * ``bawat isa`` / ``bawat dalawa`` (Q + NUM as quantifier
+#   over a number) — needs a parallel Q + NUM rule. Defer.
+# * Q-quantification over a non-N head (``bawat sa kanila``
+#   "every of them" with a DAT-NP complement) — additive but
+#   structurally distinct.
+# * Floated universals (``Kumakain ang bata bawat`` "the
+#   children eat each one"?) — not idiomatic for ``bawat``;
+#   the existing Phase 4 §7.8 ``S → S Q`` float rule would
+#   mechanically fire but the result isn't natural Tagalog.
+#   Defer.
+- surface: bawat
+  pos: Q
+  feats: {QUANT: EVERY, UNIV: "YES"}
+- surface: kada
+  pos: Q
+  feats: {QUANT: EVERY, UNIV: "YES"}
+
 # === Phase 4 §7.6: psych control predicates ==============================
 # Pseudo-verbal predicates that select an XCOMP complement clause and
 # take a GEN-marked experiencer. They have no verbal morphology

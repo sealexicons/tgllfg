@@ -3435,6 +3435,75 @@
 - text: Bumili ako ng higit sa apat na aklat.
   construction: 'comparator: higit + consonant-final cardinal (apat na)'
   expected: parse
+- text: Bumili ako ng isang pares ng sapatos.
+  construction: 'collective: pares + GEN-NP (one pair of shoes)'
+  expected: parse
+- text: Bumili ako ng isang dosena ng itlog.
+  construction: 'collective: dosena + GEN-NP (one dozen eggs)'
+  expected: parse
+- text: Bumili ako ng isang dosenang itlog.
+  construction: 'collective: dosena + linker (measure-N rule)'
+  expected: parse
+- text: Bumili ako ng isang pares na sapatos.
+  construction: 'collective: pares + na linker'
+  expected: parse
+- text: Bumili ako ng daandaan na aklat.
+  construction: 'collective: daandaan (hundreds) + na'
+  expected: parse
+- text: Bumili ako ng libulibong tao.
+  construction: 'collective: libulibo (thousands) + -ng'
+  expected: parse
+- text: Bumili ako ng tigisang aklat.
+  construction: 'distrib: tigisa + -ng + N'
+  expected: parse
+- text: Bumili ako ng tigdalawang aklat.
+  construction: 'distrib: tigdalawa + -ng + N'
+  expected: parse
+- text: Bumili ako ng tigtatlong aklat.
+  construction: 'distrib: tigtatlo + -ng + N'
+  expected: parse
+- text: Bumili ako ng tiglimang aklat.
+  construction: 'distrib: tiglima + -ng + N'
+  expected: parse
+- text: Bumili ako ng tigpitong aklat.
+  construction: 'distrib: tigpito + -ng + N'
+  expected: parse
+- text: Bumili ako ng tigsampung aklat.
+  construction: 'distrib: tigsampu + -ng + N'
+  expected: parse
+- text: Bumili ako ng tigapat na aklat.
+  construction: 'distrib: tigapat + na + N'
+  expected: parse
+- text: Bumili ako ng tiganim na aklat.
+  construction: 'distrib: tiganim + na + N'
+  expected: parse
+- text: Bumili ako ng tigsiyam na aklat.
+  construction: 'distrib: tigsiyam + na + N'
+  expected: parse
+- text: Kumakain ang tigisang bata.
+  construction: 'distrib: tigisa in SUBJ'
+  expected: parse
+- text: Tigisa sila.
+  construction: 'distrib: tigisa as predicative-cardinal'
+  expected: parse
+- text: Kumakain ang bawat bata.
+  construction: 'universal: bawat in NOM SUBJ'
+  expected: parse
+- text: Kumain ako ng bawat aklat.
+  construction: 'universal: bawat in GEN OBJ'
+  expected: parse
+- text: Pumunta ako sa bawat bata.
+  construction: 'universal: bawat in DAT ADJUNCT'
+  expected: parse
+- text: Bawat bata ay kumakain.
+  construction: 'universal: bawat bare-NOM ay-fronted'
+  expected: parse
+- text: Kumakain ang kada bata.
+  construction: 'universal: kada (colloquial) in NOM SUBJ'
+  expected: parse
+- text: Kada bata ay kumakain.
+  construction: 'universal: kada bare-NOM ay-fronted'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

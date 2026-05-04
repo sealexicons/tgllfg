@@ -1535,6 +1535,48 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "comparator: higit in SUBJ", "parse")
     _add(out, "bumili ako ng higit sa apat na aklat",
          "comparator: higit + consonant-final cardinal (apat na)", "parse")
+    # Phase 5f Commit 18: collective numerals (Group H2 item 4).
+    _add(out, "bumili ako ng isang pares ng sapatos",
+         "collective: pares + GEN-NP (one pair of shoes)", "parse")
+    _add(out, "bumili ako ng isang dosena ng itlog",
+         "collective: dosena + GEN-NP (one dozen eggs)", "parse")
+    _add(out, "bumili ako ng isang dosenang itlog",
+         "collective: dosena + linker (measure-N rule)", "parse")
+    _add(out, "bumili ako ng isang pares na sapatos",
+         "collective: pares + na linker", "parse")
+    _add(out, "bumili ako ng daandaan na aklat",
+         "collective: daandaan (hundreds) + na", "parse")
+    _add(out, "bumili ako ng libulibong tao",
+         "collective: libulibo (thousands) + -ng", "parse")
+    # Phase 5f Commit 19: distributive tig- (Group H2 item 5).
+    distrib_vowel = [("tigisa", "1"), ("tigdalawa", "2"),
+                     ("tigtatlo", "3"), ("tiglima", "5"),
+                     ("tigpito", "7"), ("tigsampu", "10")]
+    distrib_cons = [("tigapat", "4"), ("tiganim", "6"),
+                    ("tigsiyam", "9")]
+    for lemma, _ in distrib_vowel:
+        _add(out, f"bumili ako ng {lemma}ng aklat",
+             f"distrib: {lemma} + -ng + N", "parse")
+    for lemma, _ in distrib_cons:
+        _add(out, f"bumili ako ng {lemma} na aklat",
+             f"distrib: {lemma} + na + N", "parse")
+    _add(out, "kumakain ang tigisang bata",
+         "distrib: tigisa in SUBJ", "parse")
+    _add(out, "tigisa sila",
+         "distrib: tigisa as predicative-cardinal", "parse")
+    # Phase 5f Commit 20: universal bawat / kada (Group H2 item 6).
+    _add(out, "kumakain ang bawat bata",
+         "universal: bawat in NOM SUBJ", "parse")
+    _add(out, "kumain ako ng bawat aklat",
+         "universal: bawat in GEN OBJ", "parse")
+    _add(out, "pumunta ako sa bawat bata",
+         "universal: bawat in DAT ADJUNCT", "parse")
+    _add(out, "bawat bata ay kumakain",
+         "universal: bawat bare-NOM ay-fronted", "parse")
+    _add(out, "kumakain ang kada bata",
+         "universal: kada (colloquial) in NOM SUBJ", "parse")
+    _add(out, "kada bata ay kumakain",
+         "universal: kada bare-NOM ay-fronted", "parse")
     return out
 
 

@@ -7911,3 +7911,432 @@ consumers (LMT, semantics, normalization).
   works mechanically with the frame rules. Not explicitly
   tested but no special handling needed.
 
+## Phase 5f Commit 18: collective numerals (Group H2 item 4)
+
+**Date:** 2026-05-03. **Status:** active. 4 NOUN lex entries
++ 1 new grammar rule (with 2 linker variants). Refs: plan
+§11.1 Group H item 4 (collective numerals); S&O 1972 §4.5;
+R&B 1986; Phase 5f Commit 1 (cardinal NP-modifier rule
+consumed unchanged for the GEN-complement form and as the
+outer modifier for the LINKER-complement form); Phase 4 §7.8
+(NP-internal possessive consumed unchanged for the GEN-
+complement form); Phase 5f Commit 14 / Commit 16 (single-
+token hyphenation precedent for canonical ``daan-daan`` /
+``libu-libo`` reduplicated forms).
+
+Opens Group H2 (collective numerals + distributive ``tig-`` +
+universal ``bawat`` / ``kada``) with the largest sub-item:
+collective numerals.
+
+### Lex change
+
+Four NOUN entries in ``data/tgl/roots.yaml``:
+
+* ``pares``    — NOUN[MEASURE="YES"]. "pair" (Spanish-borrowed).
+* ``dosena``   — NOUN[MEASURE="YES"]. "dozen" (Spanish-borrowed).
+* ``daandaan`` — NOUN[MEASURE="YES", COLL_VALUE=HUNDREDS].
+                  "hundreds" (canonical orthography
+                  ``daan-daan``).
+* ``libulibo`` — NOUN[MEASURE="YES", COLL_VALUE=THOUSANDS].
+                  "thousands" (canonical ``libu-libo``).
+
+The string-quoted ``"YES"`` on MEASURE follows the same
+recurring-pitfall convention as previous Phase 5f commits:
+bare ``YES`` parses as Python boolean and fails the
+``=c 'YES'`` constraining equation.
+
+Hyphenation note: the canonical orthography for the
+reduplicated forms is ``daan-daan`` and ``libu-libo``. The
+tokenizer (``\w+|\S``) splits hyphens, so the canonical
+surfaces tokenise as 3 tokens. The single-token forms
+(``daandaan``, ``libulibo``) follow the same precedent as
+seasons (``taginit``) and approximators
+(``humigitkumulang``). The hyphenated form awaits a tokenizer
+pre-pass.
+
+### Two complement forms: GEN vs LINKER
+
+Tagalog measure phrases admit two structurally distinct
+complement forms, with somewhat different head-choice
+implications:
+
+**GEN-complement form** (composes via existing rules):
+
+```
+isang pares ng sapatos          "one pair of shoes"
+└──────────┬───────┘
+           NP[CASE=GEN]
+            ├─ NP[CASE=GEN]: ``isang pares`` (head=pares, CV=1)
+            └─ NP[CASE=GEN]: ``ng sapatos`` (POSS)
+```
+
+The cardinal-modifier rule fires on ``isang pares`` (head=
+pares); the NP-internal possessive rule attaches ``ng
+sapatos`` as POSS. Head is the measure NOUN.
+
+**LINKER-complement form** (uses the new measure-N rule):
+
+```
+isang dosenang itlog            "one dozen eggs"
+└────────────────┬───┘
+                  NP[CASE=GEN]
+                   ├─ ``isa``   NUM[CARDINAL=YES, CV=1]
+                   ├─ ``-ng``    PART[LINK=NG]
+                   └─ ``dosenang itlog``   N (via measure-N rule)
+                                            ├─ ``dosena`` N[MEASURE=YES]
+                                            ├─ ``-ng``     PART[LINK=NG]
+                                            └─ ``itlog``   N
+                       result: PRED + LEMMA = itlog;
+                                MEASURE_HEAD = dosena;
+                                MEASURE = YES.
+```
+
+The inner measure-N rule produces N with the *measured* N as
+the head (PRED + LEMMA = itlog); the measure NOUN's lemma
+rides as ``MEASURE_HEAD``. The cardinal-modifier rule
+consumes the resulting N unchanged.
+
+This head-choice asymmetry between GEN-form and LINKER-form
+reflects a real Tagalog distinction: the GEN form quantifies
+the measure ("a pair, of shoes"), while the LINKER form
+quantifies the measured ("a dozen eggs"). Both are
+grammatical for both lex items; the analysis-choices
+implication is that downstream consumers (LMT, semantic
+normalisation) must walk both paths.
+
+### Grammar change
+
+A single new rule with 2 linker variants:
+
+```
+N → N PART[LINK=NA|NG] N
+Equations:
+  (↑ PRED) = ↓3 PRED                # head = measured (right) N
+  (↑ LEMMA) = ↓3 LEMMA
+  (↑ MEASURE_HEAD) = ↓1 LEMMA       # measure NOUN's lemma rides
+  (↑ MEASURE) = 'YES'               # propagate upward
+  (↓1 MEASURE) =c 'YES'             # gate to measure NOUNs
+  ¬ (↓3 MEASURE)                    # block chained measures
+```
+
+The constraining equation ``(↓1 MEASURE) =c 'YES'`` is the
+load-bearing piece — without it, the rule would fire on any
+``N PART[LINK] N`` sequence (over-generation: ``bata na
+aklat`` "child book"?). The ``¬ (↓3 MEASURE)`` block rejects
+chained measures (``*isang dosenang dosenang itlog``).
+
+### Why a new measure-N rule rather than just lex
+
+The GEN-complement form composes via existing rules, but the
+LINKER-complement form is more idiomatic for native speakers
+of Tagalog. Without the measure-N rule, the LINKER form
+either fails to parse or composes via accidentally-permissive
+fallbacks (e.g., the parser's robustness path treating
+``dosenang`` as _UNK and absorbing it). Adding the targeted
+rule makes the parse principled and gives downstream
+consumers the right structural / featural information.
+
+### Negative fixtures (per §11.2)
+
+* ``*isang batang aklat`` — bata is a regular NOUN with no
+  MEASURE feature; the linker-form measure-N rule's gate
+  fails, so no comparator-style composition occurs.
+* ``*isang dosenang dosenang itlog`` — chained measure NOUNs
+  blocked by ``¬ (↓3 MEASURE)``.
+
+### Out of scope for this commit
+
+* **Hyphenated ``daan-daan`` / ``libu-libo``** orthography —
+  needs the same tokenizer pre-pass deferred for Phase 5f
+  Commit 14 seasons / Commit 16 ``humigit-kumulang``.
+* **Productive ``card_redup`` morph class** for higher-order
+  reduplicated multiples (``milyong-milyon`` "millions",
+  ``bilyong-bilyon`` "billions") — per plan §11.1 Group H
+  item 4: lex per attested form; productive class deferred.
+* **MEASURE percolation to the matrix NP** — same NP-from-N
+  projection limitation as cardinal-modifier features (Commit
+  1). Tests walk down to verify CARDINAL_VALUE + LEMMA on the
+  matrix NP plus a parse path with the right measure-N inner
+  composition.
+* **Other measure NOUNs** (``baso`` "cup" → ``isang basong
+  tubig`` "one cup of water", ``piraso`` "piece" → ``isang
+  pirasong papel`` "one piece of paper", ``tasa`` "cup",
+  etc.) — extending the MEASURE lex inventory is additive
+  but not in plan §11.1 Group H scope. Defer.
+
+## Phase 5f Commit 19: distributive ``tig-`` (Group H2 item 5)
+
+**Date:** 2026-05-03. **Status:** active. 10 NUM lex entries.
+No new grammar rules. Refs: plan §11.1 Group H item 5
+(distributive ``tig-``); S&O 1972 §4.5; R&B 1986; Phase 5f
+Commit 1 (cardinal NP-modifier rule consumed unchanged via
+the ``(↓2 CARDINAL) =c 'YES'`` constraint); Phase 5f Commit 1
+disambiguator branch for ``na`` after NUM[CARDINAL=YES]
+(consumed unchanged for consonant-final distributives);
+Phase 5f Commit 4 (predicative-cardinal rule absorbs
+``Tigisa sila.``).
+
+The plan §11.1 Group H thesis ("the Group A cardinal-NP-
+modifier rule generalised to any NUM / Q head") collects its
+NUM-side dividends here: the distributive NUMs added in this
+commit slot directly into the Phase 5f Commit 1 cardinal
+NP-modifier rule because the constraint
+``(↓2 CARDINAL) =c 'YES'`` is satisfied. No new rule needed.
+
+### Lex change
+
+Ten NUM entries in ``data/tgl/particles.yaml``, all with
+``CARDINAL: "YES"``, ``DISTRIB: "YES"``, ``CARDINAL_VALUE``
+matching the base stem (1-10), and ``NUM: PL``:
+
+* tigisa, tigdalawa, tigtatlo, tigapat, tiglima, tiganim,
+  tigpito, tigwalo, tigsiyam, tigsampu.
+
+Each entry inherits the cardinal value from its base stem so
+the existing cardinal NP-modifier rule consumes it; DISTRIB=
+YES additionally marks the daughter NUM for downstream
+consumers (LMT, semantics, ranker) that distinguish
+distributives from regular cardinals.
+
+The string-quoted ``"YES"`` on both CARDINAL and DISTRIB
+follows the recurring-pitfall convention.
+
+### Why CARDINAL=YES on distributives?
+
+A distributive numeral semantically denotes a count, just
+distributively (one each, two each, ...). Structurally it
+behaves exactly like a cardinal — appearing in NP-modifier,
+predicative, and other contexts where cardinals appear. The
+existing rules' ``(↓ CARDINAL) =c 'YES'`` constraints all fire
+on distributives because the morphological + syntactic
+distribution is the same. DISTRIB is the additional feature
+that downstream consumers can use to detect "each-ness"
+without reanalyzing the structure.
+
+The alternative — making distributives a separate POS or a
+NUM[CARDINAL=NO, DISTRIB=YES] — would force every consuming
+rule to be extended with a parallel DISTRIB branch. That's
+needlessly invasive for what's structurally just a flavour
+of cardinal.
+
+### Why per-form lex (not productive ``tig_distrib`` morph class)?
+
+Plan §11.1 Group H item 5 explicitly admits both options:
+"Either a new ``tig_distrib`` morph class or per-form lex."
+Per-form lex covers the 1-10 range used in S&O 1972 §4.5's
+canonical examples; productive class would generate:
+
+* Higher cardinals (``tig-sandaan`` "a hundred each", ``tig-
+  sanlibo`` "a thousand each").
+* Spanish-borrowed bases (``tig-uno``, ``tig-dos``).
+* Compound cardinals (``tig-labindalawa`` "twelve each").
+
+These are all real Tagalog forms but adding them is an
+additive scope — productive ``tig_distrib`` is a paradigm-
+engine extension, not a grammar / lex extension. Per the
+established Phase 5f precedent (compound cardinals in
+Commit 3, season ``tag-`` compounds in Commit 14, collective
+``card_redup`` in Commit 18), productive paradigm extension
+is deferred to a separate paradigm-engine pass when corpus
+pressure surfaces a need.
+
+### Hyphenation
+
+The canonical orthography is ``tig-isa``, ``tig-dalawa``,
+etc. with an internal hyphen. Same tokenizer issue as Phase
+5f Commits 14 / 16 / 18: ``\w+|\S`` splits hyphens. Single-
+token forms (``tigisa`` etc.) are the pragmatic precedent.
+Canonical hyphenated awaits a tokenizer pre-pass.
+
+### Composition with existing rules
+
+The cardinal NP-modifier rule (Phase 5f Commit 1) fires
+unchanged on distributives:
+
+```
+NP[CASE=GEN] → ADP[CASE=GEN] NUM[CARDINAL=YES] PART[LINK] N
+```
+
+For ``Bumili ako ng tigisang aklat.``:
+* ``ng`` ADP[CASE=GEN]
+* ``tigisa`` NUM[CARDINAL=YES, DISTRIB=YES, CV=1]
+* ``-ng`` PART[LINK=NG]
+* ``aklat`` N
+* Output: NP[CASE=GEN, LEMMA=aklat, CV=1] (DISTRIB stays on
+  the inner NUM — same NP-from-N projection limitation as
+  cardinal-modifier features).
+
+Consonant-final distributives (``tigapat``, ``tiganim``,
+``tigsiyam``) use the standalone ``na`` linker; the Phase 5f
+Commit 1 disambiguator branch for ``na`` after NUM[CARDINAL=
+YES] keeps it as the linker (vs the ALREADY clitic). No new
+disambiguator branch needed.
+
+The predicative-cardinal rule (Phase 5f Commit 4) also
+absorbs distributives: ``Tigisa sila.`` parses as S with
+PRED='CARDINAL <SUBJ>', SUBJ=sila, CV=1.
+
+### Negative fixtures (per §11.2)
+
+* ``*Bumili ako ng tigisa.`` — bare distributive NUM without
+  a head N. The cardinal-modifier rule requires a 4-daughter
+  RHS (DET/ADP NUM LINK N); without the linker + N daughters,
+  the OBJ-NP composition fails.
+
+### Out of scope for this commit
+
+* **Productive ``tig_distrib`` morph class** — see "Why per-
+  form lex" above. Defer.
+* **Distributive predicate construction** (``Tigisang aklat
+  sila`` / ``Tigisa silang aklat`` "they each have one
+  book") — verbless predicate with a linker-attached
+  complement N. Analytically distinct from the NP-modifier
+  composition this commit covers; needs a new S frame rule.
+  S&O 1972 §4.5 describes the structure; deferred to a
+  later commit.
+* **DISTRIB percolation to the matrix NP** — same NP-from-N
+  projection limitation as MEASURE / APPROX / COMP. Tests
+  walk down to verify CARDINAL_VALUE preservation; DISTRIB
+  rides on the inner NUM for downstream consumers.
+* **Hyphenated ``tig-isa`` / ``tig-dalawa``** — needs the
+  same tokenizer pre-pass deferred for Phase 5f Commits 14
+  / 16 / 18.
+
+## Phase 5f Commit 20: universal ``bawat`` / ``kada`` (Group H2 item 6)
+
+**Date:** 2026-05-03. **Status:** active. 2 Q lex entries
++ 4 new grammar rules + 1 gating addition on the existing
+Phase 5b partitive rules. Refs: plan §11.1 Group H item 6
+(universal ``bawat``); S&O 1972 §4.7; R&B 1986; Phase 4 §7.8
+(existing Q-class infrastructure consumed unchanged for the
+``QUANT`` projection); Phase 5b §7.8 follow-on (existing pre-
+NP partitive consumed with universal-blocking gate); Phase 5f
+Commit 15 (vague-Q-modifier rule consumed as the structural
+template for the case-marked variants — same shape minus the
+linker daughter).
+
+Closes Group H2 (collective + distributive + universal).
+
+### Lex change
+
+Two Q entries in ``data/tgl/particles.yaml``:
+
+* ``bawat`` — Q[QUANT=EVERY, UNIV="YES"]. Native universal.
+* ``kada``  — Q[QUANT=EVERY, UNIV="YES"]. Spanish-borrowed
+  colloquial synonym.
+
+Same shape; the analyzer returns each as a single Q analysis
+(no polysemy with the verb / paradigm-engine since neither
+``bawat`` nor ``kada`` is generated by the paradigm engine).
+
+### Three Q-distributions, now all covered
+
+With this commit, Phase 5f has covered the three syntactic
+distributions of Q heads in Tagalog:
+
+| Distribution | Surface example | Rule | Phase |
+|--------------|------------------|------|-------|
+| Partitive (Q + GEN-NP) | ``ang lahat ng bata`` "all of the children" | ``NP[CASE=X] → DET/ADP Q NP[CASE=GEN]`` | Phase 5b §7.8 follow-on |
+| Vague-Q-modifier (Q + linker + N) | ``ang maraming bata`` "many children" | ``NP[CASE=X] → DET/ADP Q PART[LINK] N`` (gated on VAGUE=YES) | Phase 5f Commit 15 |
+| Universal (Q + bare N) | ``ang bawat bata`` "every child" | ``NP[CASE=X] → DET/ADP Q N`` (gated on UNIV=YES) | This commit |
+
+Each Q lex entry has a feature (no feature for partitive Qs;
+VAGUE=YES for vague Qs; UNIV=YES for universals) that gates
+its rule. The negative gates ``¬ (↓2 VAGUE)`` and
+``¬ (↓2 UNIV)`` on the partitive ensure non-partitive Qs
+don't accidentally fire there. The constraining equations
+``(↓2 VAGUE) =c 'YES'`` and ``(↓2 UNIV) =c 'YES'`` ensure the
+respective rules fire only on their target Qs.
+
+### Grammar change
+
+Four new rules in ``src/tgllfg/cfg/grammar.py`` plus a gate
+addition on three existing rules.
+
+**3 case-marked NP rules** (NOM / GEN / DAT):
+
+```
+NP[CASE=X] → DET/ADP[CASE=X] Q N
+Equations:
+  (↑) = ↓1                          # CASE / MARKER from outer marker
+  (↑ PRED) = ↓3 PRED                # head N supplies PRED
+  (↑ LEMMA) = ↓3 LEMMA              # ... and LEMMA
+  (↑ QUANT) = ↓2 QUANT              # Q's QUANT lifts
+  (↑ UNIV) = 'YES'                  # mark NP for downstream consumers
+  ¬ (↓3 UNIV)                        # block chained universals
+  (↓2 UNIV) =c 'YES'                # gate to UNIV Q heads
+```
+
+The output NP carries ``UNIV='YES'`` and ``QUANT=EVERY``
+(or whatever the lex sets). Unlike the cardinal NP-modifier
+rule (Phase 5f Commit 1), there's no PART[LINK] daughter —
+universals take a bare N complement.
+
+**1 bare-NOM rule** (for surfaces where bawat itself functions
+as the determiner-equivalent):
+
+```
+NP[CASE=NOM] → Q N
+Equations:
+  (↑ PRED) = ↓2 PRED
+  (↑ LEMMA) = ↓2 LEMMA
+  (↑ QUANT) = ↓1 QUANT
+  (↑ UNIV) = 'YES'
+  (↑ CASE) = 'NOM'
+  ¬ (↓2 UNIV)
+  (↓1 UNIV) =c 'YES'
+```
+
+This rule covers ``Bawat bata ay kumakain.`` style surfaces
+where bawat starts the sentence without a preceding ang. The
+existing Phase 4 §7.4 ay-inversion rule consumes the
+resulting NP as TOPIC.
+
+**Gate addition** to the existing Phase 5b ``Q + NP[GEN]``
+partitive rules (3 case variants, all extended): each gains
+``¬ (↓2 UNIV)`` parallel to the existing ``¬ (↓2 VAGUE)``
+gate (Phase 5f Commit 15). Universals only take the bare-N
+form; the partitive ``*ang bawat ng bata`` is non-standard.
+
+### Why no linker between Q and N for universals?
+
+Tagalog's universal quantifiers ``bawat`` and ``kada`` are
+phonologically and syntactically distinctive: they precede
+the head N directly without an intervening linker (S&O 1972
+§4.7 records both as "preposed quantifiers" with bare-N
+complements). The vague-Q distribution
+(``maraming bata``, ``maraming aklat``) requires the linker;
+the universal distribution forbids it. This is the exact
+distribution that the new rules' shape captures: same
+``DET/ADP Q ... N`` skeleton, no linker daughter.
+
+The plan §11.1 Group H item 6 phrasing — "Pre-N quantifier
+with the linker; structurally a Q head. Lex (``bawat``) plus
+composition with the Group A NP-modifier rule" — is slightly
+inaccurate on the linker point; the canonical surfaces
+(``bawat bata``, ``kada bata``) don't include a linker. The
+implementation here matches the canonical surfaces.
+
+### Negative fixtures (per §11.2)
+
+* ``*ang bawat kada bata`` — chained universals blocked by
+  ``¬ (↓3 UNIV)``.
+* ``*ang bawat ng bata`` — universal in GEN-NP partitive
+  blocked by the new ``¬ (↓2 UNIV)`` gate on the Phase 5b
+  partitive rules.
+
+### Out of scope for this commit
+
+* **``bawat isa`` / ``bawat dalawa``** (Q + NUM as quantifier
+  over a number) — needs a parallel Q + NUM rule (mirroring
+  the Q + N rule but with NUM as the daughter category).
+  Additive but not in this commit's scope.
+* **Q-quantification over a non-N head** (``bawat sa
+  kanila`` "every of them" with a DAT-NP complement) —
+  structurally distinct (Q + DAT-NP); deferred.
+* **Floated universals** — the existing Phase 4 §7.8
+  ``S → S Q`` float rule mechanically fires on UNIV Qs but
+  the result isn't natural Tagalog (``Kumakain ang bata
+  bawat`` is non-standard). Not explicitly tested or
+  documented as supported.
+
