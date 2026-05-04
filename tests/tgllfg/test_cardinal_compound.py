@@ -6,11 +6,12 @@ syntactic distribution as the simple cardinals from Commits 1-2;
 the cardinal-NP-modifier rules fire on these unchanged.
 
 Orthography: single-token spellings throughout (``labingisa``
-not ``labing-isa``; ``apatnapu`` not ``apat na pu``). Hyphenated
-and three-word variants are attested in modern Tagalog but
-require either a tokenizer pre-pass or NUM-internal grammar
-rules — both deferred to follow-on commits (see plan §11.1
-Group A item 3 and §18).
+not ``labing-isa``; ``apatnapu`` not ``apat na pu``). The
+post-Phase-5f deferrals PR added ``merge_hyphen_compounds`` so
+the canonical hyphenated form ``labing-isa`` now collapses to
+``labingisa`` before parsing. Three-word variants
+(``labing isa``, ``apat na pu``) still require NUM-internal
+grammar rules — deferred separately (plan §11.1 Group A item 3).
 
 Tests cover:
 

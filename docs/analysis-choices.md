@@ -436,7 +436,7 @@ rule explosion.
 
 ### Order within the cluster
 
-`data/tgl/clitic_order.yaml` tabulates priorities for known
+`data/tgl/clitics.yaml` tabulates priorities for known
 clitics, following Schachter & Otanes 1972 §6.7. Priorities are
 integers, lower-sorts-first. Pronouns occupy priority < 100; the
 adverbial cluster is 100-200, internally ordered as

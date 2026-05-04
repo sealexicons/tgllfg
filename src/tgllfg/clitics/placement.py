@@ -23,7 +23,7 @@ Algorithm
 3. Remove the remaining clitics from their original positions,
    leaving a cluster-free skeleton.
 4. Insert all moved clitics immediately after the anchor, sorted
-   by the priority loaded from ``data/tgl/clitic_order.yaml``.
+   by the priority loaded from ``data/tgl/clitics.yaml``.
    Clitics not in the priority table sort after the listed ones
    (priority = ``DEFAULT_PRIORITY``).
 
@@ -65,9 +65,9 @@ class CliticOrder:
 
 
 def load_clitic_order(data_dir: Path | None = None) -> CliticOrder:
-    """Load the priority table from ``clitic_order.yaml``."""
+    """Load the priority table from ``clitics.yaml``."""
     base = Path(data_dir) if data_dir is not None else _DEFAULT_DATA_DIR
-    path = base / "clitic_order.yaml"
+    path = base / "clitics.yaml"
     if not path.exists():
         return CliticOrder(priorities={})
     with path.open(encoding="utf-8") as fh:
@@ -78,7 +78,7 @@ def load_clitic_order(data_dir: Path | None = None) -> CliticOrder:
     for i, rec in enumerate(loaded):
         if "surface" not in rec or "priority" not in rec:
             raise ValueError(
-                f"{path}[{i}]: clitic_order entry must have 'surface' and 'priority'"
+                f"{path}[{i}]: clitics entry must have 'surface' and 'priority'"
             )
         priorities[str(rec["surface"]).lower()] = int(rec["priority"])
     return CliticOrder(priorities=priorities)
@@ -471,7 +471,7 @@ def reorder_clitics(
       as members of the matrix's ``ADJ`` set.
 
     Within each group, clitics are sorted by the priority table
-    loaded from ``data/tgl/clitic_order.yaml``. Clitics not in the
+    loaded from ``data/tgl/clitics.yaml``. Clitics not in the
     table sort after listed ones (priority = ``DEFAULT_PRIORITY``).
 
     Tokens that are not clitics keep their relative order. The

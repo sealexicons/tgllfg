@@ -52,12 +52,15 @@ Tests cover:
 
 Out of scope (deferred follow-on commits):
 
-* Day-month abbreviated form (``Mayo 5``) — needs digit
-  tokenizer.
+* Day-month abbreviated form (``Mayo 5``) — addressed by the
+  post-Phase-5f deferrals PR via the digit tokenization in
+  ``Analyzer.analyze_one`` plus a new compound-N rule
+  in ``cfg/nominal.py``.
 * Elided-N date formula (``ang ikalima ng Enero`` without
   ``araw``) — needs ordinal-as-N rule.
-* Year expressions (``noong 1990``) — needs digit
-  tokenization.
+* Year expressions (``noong 1990``) — addressed by the
+  post-Phase-5f deferrals PR via the digit tokenization plus
+  a new year-PP rule in ``cfg/discourse.py``.
 * MONTH_VALUE / DAY_VALUE on the matrix NP/PP — same
   NP-from-N projection limitation as cardinal-modifier
   features.

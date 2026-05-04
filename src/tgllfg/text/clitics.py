@@ -26,13 +26,25 @@ _VOWEL_NG_END = re.compile(r"^(.+[aeiouAEIOU])ng$")
 
 
 def split_enclitics(tokens: list[Token]) -> list[Token]:
+    """Split annotated enclitic attachments of the form
+    ``host=enclitic`` (e.g. ``kumain=na``) into two tokens. The
+    split fires only when the host is non-empty AND the suffix is a
+    known enclitic from :data:`ENCLITICS`; otherwise the token is
+    preserved unchanged. This guards against eating the standalone
+    ``=`` symbol (the digit-tokenization closing deferral added it
+    as a symbolic equality PART for arithmetic) and against the
+    pre-2026-05-04 silent drop of the post-``=`` portion when it
+    wasn't a recognised enclitic.
+    """
     out: list[Token] = []
     for t in tokens:
         if "=" in t.surface:
             base, after = t.surface.split("=", 1)
-            out.append(Token(base, base.lower(), t.start, t.start+len(base)))
-            if after in ENCLITICS:
+            if base and after in ENCLITICS:
+                out.append(Token(base, base.lower(), t.start, t.start+len(base)))
                 out.append(Token(after, after.lower(), t.start+len(base)+1, t.end))
+            else:
+                out.append(t)
         else:
             out.append(t)
     return out
@@ -49,6 +61,14 @@ def split_linker_ng(tokens: list[Token]) -> list[Token]:
       (``bumibilang``, ``darating``, ...).
     * Else, if the stem (surface without trailing ``ng``) is a known
       surface, split into stem + synthetic ``-ng`` token.
+    * Else, if the n-restored stem (the stem with trailing ``n``
+      appended) is a known surface, split into the n-restored stem
+      + synthetic ``-ng`` token. This covers the 1sg / 1pl.excl /
+      1pl.incl DAT pronoun preposed forms ``aking`` / ``aming`` /
+      ``ating`` (from ``akin`` / ``amin`` / ``atin`` via
+      n-deletion sandhi before the bound ``-ng`` linker — Phase 5f
+      closing deferral on the generic preposed-possessor
+      construction).
     * Else, leave intact (will fall through to ``_UNK``).
 
     The synthetic linker token uses surface ``-ng`` so its morph
@@ -68,10 +88,26 @@ def split_linker_ng(tokens: list[Token]) -> list[Token]:
             out.append(t)
             continue
         stem = m.group(1)
-        if not analyzer.is_known_surface(stem.lower()):
-            out.append(t)
+        if analyzer.is_known_surface(stem.lower()):
+            stem_end = t.start + len(stem)
+            out.append(Token(
+                surface=stem, norm=stem.lower(),
+                start=t.start, end=stem_end,
+            ))
+            out.append(Token(surface="-ng", norm="-ng", start=stem_end, end=t.end))
             continue
-        stem_end = t.start + len(stem)
-        out.append(Token(surface=stem, norm=stem.lower(), start=t.start, end=stem_end))
-        out.append(Token(surface="-ng", norm="-ng", start=stem_end, end=t.end))
+        # n-deletion sandhi fallback: ``aking`` → ``akin`` + ``-ng``
+        # (only fires for the irregular 1sg / 1pl.excl / 1pl.incl
+        # DAT pronouns where the linker form drops the stem-final
+        # ``n`` rather than being purely additive).
+        n_restored = stem + "n"
+        if analyzer.is_known_surface(n_restored.lower()):
+            stem_end = t.start + len(stem)
+            out.append(Token(
+                surface=n_restored, norm=n_restored.lower(),
+                start=t.start, end=stem_end,
+            ))
+            out.append(Token(surface="-ng", norm="-ng", start=stem_end, end=t.end))
+            continue
+        out.append(t)
     return out

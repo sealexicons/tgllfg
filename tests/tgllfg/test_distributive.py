@@ -18,7 +18,10 @@ Lex (data/tgl/particles.yaml):
 * All carry CARDINAL: "YES", DISTRIB: "YES", CARDINAL_VALUE
   (1-10 matching the base stem), NUM: PL.
 * Single-token forms (canonical orthography is hyphenated
-  ``tig-isa`` etc.; tokenizer pre-pass deferred per the
+  ``tig-isa`` etc.; the post-Phase-5f deferrals PR added
+  ``merge_hyphen_compounds`` so the canonical hyphenated
+  forms now collapse to the single-token lex entries before
+  parsing. Originally deferred for the
   precedent set in Phase 5f Commit 14 / 16 / 18).
 
 Grammar: no new rules. The existing Phase 5f Commit 1
@@ -56,17 +59,19 @@ Out of scope (deferred follow-on commits):
   ``tig-uno``); paradigm-engine extension. Defer.
 * Distributive predicate construction (``Tigisang aklat
   sila`` / ``Tigisa silang aklat`` "they each have one
-  book") — verbless predicate with a linker-attached
-  complement N. Analytically distinct from the NP-modifier
-  composition this commit covers; needs a new S frame rule.
-  Defer to a later commit.
+  book") — addressed by the post-Phase-5f deferrals PR's
+  predicative-distributive S rule in ``cfg/clause.py``
+  (constrained on ``DISTRIB=YES``). Tested directly in
+  ``test_q_clitic_predicate.py``. Originally deferred to a later
+  commit.
 * DISTRIB percolation to the matrix NP — same NP-from-N
   projection limitation as MEASURE / APPROX / COMP. Tests
   walk down to verify CARDINAL_VALUE preservation on the
   matrix; DISTRIB rides on the inner NUM for downstream
   consumers.
 * Hyphenated ``tig-isa`` / ``tig-dalawa`` orthography —
-  needs the same tokenizer pre-pass deferred for Phase 5f
+  addressed by the post-Phase-5f deferrals PR via
+  ``merge_hyphen_compounds``. Originally deferred for Phase 5f
   Commits 14 / 16 / 18.
 """
 

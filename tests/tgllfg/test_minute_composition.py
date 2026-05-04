@@ -82,21 +82,26 @@ class TestMinuteOperatorMorph:
         assert cands
         assert cands[0].feats.get("MINUTE_OP") == "MENOS"
 
-    def test_kuwarto_room_only(self) -> None:
-        # ``kuwarto`` "quarter (of the hour)" polysemy is deferred
-        # — the morph analyzer collapses duplicate (lemma, pos)
-        # entries, so a separate FRACTION reading would shadow the
-        # "room" reading. ``alasotso y kuwarto`` parsing is
-        # therefore deferred until either the analyzer supports
-        # multiple lex entries per (lemma, pos), or a dedicated
-        # CLOCK-FRACTION sub-class is added. For now, kuwarto
-        # remains the existing "room" NOUN.
+    def test_kuwarto_polysemy(self) -> None:
+        """``kuwarto`` carries TWO NOUN readings: the original "room"
+        (no SEM_CLASS) and the new "quarter (of the hour)"
+        (SEM_CLASS=FRACTION). The Phase 5f closing deferral on
+        multiple lex entries per ``(lemma, pos)`` (2026-05-04)
+        added the second reading; the morph analyzer's noun index
+        is now list-valued so both surface together. The chart
+        parser selects between them by syntactic context — the
+        minute-composition rule's
+        ``(↓3 SEM_CLASS) =c 'FRACTION'`` constraint fires the
+        clock-fraction reading; NP-modifier rules consume the
+        room reading."""
         toks = tokenize("kuwarto")
         ml = analyze_tokens(toks)
-        cands = [c for c in ml[0] if c.pos == "NOUN"]
-        assert cands
-        # Only the "room" reading: no SEM_CLASS=FRACTION.
-        assert cands[0].feats.get("SEM_CLASS") != "FRACTION"
+        nouns = [c for c in ml[0] if c.pos == "NOUN"]
+        assert len(nouns) == 2, f"expected 2 NOUN readings, got {nouns}"
+        sem_classes = {n.feats.get("SEM_CLASS") for n in nouns}
+        assert sem_classes == {None, "FRACTION"}, (
+            f"unexpected SEM_CLASS set: {sem_classes}"
+        )
 
 
 # === Cardinal minute composition (forward) ================================
@@ -138,17 +143,17 @@ class TestFractionalMinute:
         rs = parse_text("Pumunta ako sa alasotso y medya.", n_best=10)
         assert rs, "no parse"
 
-    def test_alasotso_y_kuwarto_deferred(self) -> None:
-        # ``alasotso y kuwarto`` (8:15) — kuwarto's clock-fraction
-        # reading is deferred; see test_kuwarto_room_only for why.
-        # The minute-composition rule's
-        # ``(↓3 SEM_CLASS) =c 'FRACTION'`` doesn't fire on kuwarto
-        # since kuwarto only has the "room" reading.
+    def test_alasotso_y_kuwarto(self) -> None:
+        """``alasotso y kuwarto`` "8:15" — the clock-fraction
+        reading of ``kuwarto`` is now active alongside the "room"
+        reading. The Phase 5f closing deferral on multiple lex
+        entries per ``(lemma, pos)`` (2026-05-04) made the noun
+        index list-valued so both readings surface; the minute-
+        composition rule's
+        ``(↓3 SEM_CLASS) =c 'FRACTION'`` constraint selects the
+        clock-fraction reading here."""
         rs = parse_text("Pumunta ako sa alasotso y kuwarto.", n_best=10)
-        # No minute-composition parse; either no parse or a
-        # different (non-minute) parse path.
-        # We just verify the call doesn't crash.
-        assert isinstance(rs, list)
+        assert rs, "no parse"
 
     def test_alauna_y_medya(self) -> None:
         # 1:30

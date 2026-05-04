@@ -106,7 +106,7 @@ def test_placement_cluster_priority_pron_before_adv() -> None:
 
 
 def test_placement_adv_priority_within_cluster() -> None:
-    """Adverbial cluster sorts by clitic_order.yaml priority. ``na``
+    """Adverbial cluster sorts by clitics.yaml priority. ``na``
     (100) before ``ba`` (120)."""
     a = _analyse("Kinain ba na ang isda.")
     out = reorder_clitics(a)

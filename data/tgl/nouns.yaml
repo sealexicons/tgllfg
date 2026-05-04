@@ -706,6 +706,21 @@
   gloss: quarter
   feats: {SEM_CLASS: FRACTION}
 
+# Polysemic second entry: ``kuwarto`` "quarter (of the hour)"
+# coexists with the "room" reading that lives in the Common
+# nouns section. Both reach the chart parser as separate
+# MorphAnalyses on the same surface, and the syntactic context
+# selects: the minute-composition rule's
+# ``(↓3 SEM_CLASS) =c 'FRACTION'`` constraint (Phase 5f Commit
+# 12 in cfg/nominal.py) fires this entry; NP-internal
+# modifier rules consume the "room" entry. (Phase 5f closing
+# deferral on multiple lex entries per ``(lemma, pos)``,
+# 2026-05-04.)
+- citation: kuwarto
+  pos: NOUN
+  gloss: quarter (of the hour, Spanish-borrowed; clock-time fraction)
+  feats: {SEM_CLASS: FRACTION}
+
 - citation: medya
   pos: NOUN
   gloss: half (Spanish-borrowed; canonical in clock-time register)

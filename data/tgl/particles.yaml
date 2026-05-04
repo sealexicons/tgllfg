@@ -915,9 +915,27 @@
 # Phase 5f Commit 6 NUM-internal grammar rule
 # (``NUM → NUM PART[DECIMAL_SEP] NUM``); doesn't carry CASE or
 # any other particle features. (R&G 1981 dialogue corpus, prices.)
+#
+# ``.`` is the symbolic decimal separator (digit tokenization
+# closing deferral, 2026-05-04) — same shape, slots into the same
+# rule with ``5 . 3`` / ``5.3`` (the tokenizer's ``\\w+|\\S`` regex
+# emits the dot as its own token in either spacing). The dot also
+# carries ``ORTHOGRAPHIC_TERMINATOR=YES`` so the dedicated S-level
+# absorption rule (in ``cfg/discourse.py``) consumes a sentence-
+# final ``.`` without polluting the matrix f-structure. Question
+# mark and exclamation get the same treatment.
 - surface: punto
   pos: PART
   feats: {DECIMAL_SEP: "YES"}
+- surface: "."
+  pos: PART
+  feats: {DECIMAL_SEP: "YES", ORTHOGRAPHIC_TERMINATOR: "YES"}
+- surface: "?"
+  pos: PART
+  feats: {ORTHOGRAPHIC_TERMINATOR: "YES"}
+- surface: "!"
+  pos: PART
+  feats: {ORTHOGRAPHIC_TERMINATOR: "YES"}
 
 # === Phase 5f Commit 7: ordinals 1st-10th ================================
 # Hand-authored single-token lex for the high-frequency ordinals.
@@ -997,9 +1015,17 @@
 # arithmetic-operator positions. Same coexistence pattern as
 # ``na`` (LINK vs ASPECT_PART).
 #
-# Symbol-form arithmetic (``2 + 3 = 5``) is a tokenizer expansion
-# track and is §18 out-of-scope; this commit covers only the
-# word-form register. (R&B 1986 §3 glances at this register;
+# Symbol-form arithmetic (``5 + 3 = 8``, ``6 / 2 = 3``) is
+# enabled by the Phase 5f closing deferral on digit tokenization
+# (post-PR follow-on, 2026-05-04): ``+`` / ``-`` / ``*`` / ``/``
+# are PART entries with the same ``OP`` feature as their word-form
+# counterparts, and ``=`` carries ``LINK=AY`` to slot into the
+# existing arithmetic rule's ``PART[LINK=AY]`` daughter (where
+# ``ay`` was the original equality marker). The plus / minus /
+# times rule is shared with the word-form path; symbolic division
+# uses a parallel 5-daughter rule (the word-form ``hati sa Y`` has
+# 6 daughters because of the DAT divisor marker; symbolic
+# ``X / Y = Z`` has none). (R&B 1986 §3 glances at this register;
 # S&O 1972 doesn't cover it.)
 - surface: dagdag
   pos: PART
@@ -1013,6 +1039,22 @@
 - surface: hati
   pos: PART
   feats: {OP: DIVIDE}
+# Symbolic forms (digit tokenization closing deferral, 2026-05-04).
+- surface: "+"
+  pos: PART
+  feats: {OP: PLUS}
+- surface: "-"
+  pos: PART
+  feats: {OP: MINUS}
+- surface: "*"
+  pos: PART
+  feats: {OP: TIMES}
+- surface: "/"
+  pos: PART
+  feats: {OP: DIVIDE, SYMBOLIC: "YES"}
+- surface: "="
+  pos: PART
+  feats: {LINK: AY}
 
 # === Phase 5f Commit 11: native time deictics (Group E item 5) ===========
 # ``kanina`` "earlier today" and ``kamakalawa`` "day before

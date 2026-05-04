@@ -63,6 +63,28 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # --- Phase 5f closing deferral: year expression PP -----------
+    #
+    # ``noong 1990`` "in 1990", ``tuwing 2026`` "every 2026" — a
+    # temporal-frame PART followed by a digit-form NUM. Parallels
+    # the four SEM_CLASS variants above but admits a NUM in place
+    # of N. The constraining equation ``(↓2 DIGIT_FORM) =c 'YES'``
+    # restricts to digit-form numerics (a word-form numeric like
+    # ``noong sandaan-siyamnapung`` "in 190" is theoretically
+    # parseable but isn't the natural register and isn't exercised
+    # by the seed corpus). The CARDINAL_VALUE lifts to ``YEAR`` on
+    # the matrix PP. (Phase 5f closing deferral, 2026-05-04.)
+    rules.append(Rule(
+        "PP",
+        ["PART", "NUM[CARDINAL=YES]"],
+        [
+            "(↑) = ↓1",
+            "(↑ YEAR) = ↓2 CARDINAL_VALUE",
+            "(↓1 TIME_FRAME)",
+            "(↓2 DIGIT_FORM) =c 'YES'",
+        ],
+    ))
+
     # Clause-final temporal-frame PP attachment:
     # ``Pumunta ako tuwing Lunes.`` "I went every Monday."
     # ``Pumunta kami noong Pebrero.`` "We went in February."

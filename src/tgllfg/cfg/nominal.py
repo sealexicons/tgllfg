@@ -675,6 +675,48 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 5f closing deferral: generic preposed-possessor
+    # (``kanyang aklat`` / ``aking aklat`` / ``kanilang aklat``) -----
+    #
+    # Common Tagalog NP-internal possessive surface form: a DAT
+    # pronoun pre-modifies the head noun via the linker
+    # (``kanyang aklat`` "his/her book", ``aming bahay`` "our
+    # house", ``kanilang sapatos`` "their shoes"). Structurally
+    # parallel to Phase 5f Commit 21 distributive-possessive
+    # (``kanikaniyang aklat``) but with a regular DAT pronoun in
+    # place of the reduplicated possessive Q. The matrix NP
+    # carries ``POSS = ↓2``, mirroring the Phase 4 §7.8 post-N
+    # possessive rule's POSS slot for the GEN-NP possessor (cf.
+    # ``aklat ng nanay`` "the mother's book").
+    #
+    # The 1sg / 1pl.excl / 1pl.incl forms (``aking`` /
+    # ``aming`` / ``ating``) involve an irregular n-deletion
+    # sandhi before the bound ``-ng`` linker; the
+    # :func:`split_linker_ng` n-restoration fallback (in
+    # ``text/clitics.py``) reconstructs the underlying ``akin`` /
+    # ``amin`` / ``atin`` PRON before this rule fires.
+    #
+    # Three case-marked variants × 2 linker variants = 6 rules,
+    # following the Phase 5f Commit 15 vague-Q-modifier template.
+    # No bare-NOM variant (the canonical preposed-possessor
+    # surface always has a host N which itself needs a determiner
+    # in argument position — ``Aking aklat ito.`` is a predicative
+    # construction handled by the existing predicative-NP rules).
+    for case, marker in _cardinal_case_marker.items():
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                f"NP[CASE={case}]",
+                [marker, "PRON[CASE=DAT]", f"PART[LINK={link}]", "N"],
+                [
+                    "(↑) = ↓1",
+                    "(↑ PRED) = ↓4 PRED",
+                    "(↑ LEMMA) = ↓4 LEMMA",
+                    "(↑ POSS) = ↓2",
+                    "¬ (↑ POSS-EXTRACTED)",
+                ],
+            ))
+
+
     # --- Phase 5f Commit 22: wholes `buo` / `buong`
     # (Group H3 item 8) -----------------------------------------
     #
@@ -1083,3 +1125,35 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↓3 SEM_CLASS) =c 'FRACTION'",
             ],
         ))
+
+    # --- Phase 5f closing deferral: day-of-month form (Mayo 5) ----
+    #
+    # ``Mayo 5`` "May 5" — a MONTH NOUN compounded with a DOM
+    # digit. Composed via this N-internal rule; the resulting N
+    # projects ``SEM_CLASS=MONTH`` from the head so the existing
+    # temporal-frame PP rule (``PP → PART N`` with
+    # ``(↓2 SEM_CLASS) =c 'MONTH'`` from ``cfg/discourse.py``)
+    # admits ``tuwing Mayo 5`` "every May 5" and
+    # ``noong Mayo 5`` "on May 5" unchanged.
+    #
+    # The DOM digit lifts to ``DAY_OF_MONTH`` on the matrix N.
+    # Constraining ``(↓2 DIGIT_FORM) =c 'YES'`` restricts the
+    # rule to digit-form DOM (``Mayo 5``); a word-form DOM
+    # (``Mayo lima``) is grammatical but rare and not exercised
+    # by the seed corpus — the digit form is the canonical
+    # written register for dates.
+    #
+    # Companion to the year-expression PP rule in
+    # ``cfg/discourse.py`` (Phase 5f closing deferral). The
+    # combined ``noong Mayo 5, 1990`` "on May 5, 1990" is
+    # deferred — comma tokenization not yet supported.
+    rules.append(Rule(
+        "N",
+        ["N", "NUM[CARDINAL=YES]"],
+        [
+            "(↑) = ↓1",
+            "(↑ DAY_OF_MONTH) = ↓2 CARDINAL_VALUE",
+            "(↓1 SEM_CLASS) =c 'MONTH'",
+            "(↓2 DIGIT_FORM) =c 'YES'",
+        ],
+    ))

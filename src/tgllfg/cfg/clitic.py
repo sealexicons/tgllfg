@@ -52,6 +52,94 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5f closing deferral: clause-initial dual Q ---
+    #
+    # ``Pareho silang kumain.`` "they both ate" — clause-initial
+    # form of the floated dual quantifier (cf. ``Kumain sila
+    # pareho.`` which already parses via the float rule above).
+    # S&O 1972 §4.7 lists this as the canonical surface for
+    # ``pareho`` / ``kapwa`` quantification over a NOM-pronoun
+    # subject; the float form is an alternant. The Q binds the
+    # PRON via ``ANTECEDENT`` exactly as in the float case.
+    #
+    # Three variants for AV verb arity (intransitive, transitive,
+    # ditransitive). Non-AV variants are deferred — the patient-
+    # pivot construction (``Pareho silang kinain ng leon`` "they
+    # were both eaten by the lion") is rarer and adds voice
+    # interaction beyond the canonical AV registers in the seed
+    # corpus.
+    for link in ("NA", "NG"):
+        # AV intransitive: ``Pareho silang kumain.``
+        rules.append(Rule(
+            "S",
+            [
+                "Q[DUAL=YES]",
+                "PRON[CASE=NOM]",
+                f"PART[LINK={link}]",
+                "V[VOICE=AV]",
+            ],
+            [
+                "(↑ PRED) = ↓4 PRED",
+                "(↑ VOICE) = ↓4 VOICE",
+                "(↑ ASPECT) = ↓4 ASPECT",
+                "(↑ MOOD) = ↓4 MOOD",
+                "(↑ LEX-ASTRUCT) = ↓4 LEX-ASTRUCT",
+                "(↑ SUBJ) = ↓2",
+                "↓1 ∈ (↑ ADJ)",
+                "(↓1 ANTECEDENT) = (↑ SUBJ)",
+                "(↓1 DUAL) =c 'YES'",
+            ],
+        ))
+        # AV transitive: ``Pareho silang kumain ng isda.``
+        rules.append(Rule(
+            "S",
+            [
+                "Q[DUAL=YES]",
+                "PRON[CASE=NOM]",
+                f"PART[LINK={link}]",
+                "V[VOICE=AV]",
+                "NP[CASE=GEN]",
+            ],
+            [
+                "(↑ PRED) = ↓4 PRED",
+                "(↑ VOICE) = ↓4 VOICE",
+                "(↑ ASPECT) = ↓4 ASPECT",
+                "(↑ MOOD) = ↓4 MOOD",
+                "(↑ LEX-ASTRUCT) = ↓4 LEX-ASTRUCT",
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ) = ↓5",
+                "↓1 ∈ (↑ ADJ)",
+                "(↓1 ANTECEDENT) = (↑ SUBJ)",
+                "(↓1 DUAL) =c 'YES'",
+            ],
+        ))
+        # AV ditransitive: ``Pareho silang kumain ng isda sa palengke.``
+        rules.append(Rule(
+            "S",
+            [
+                "Q[DUAL=YES]",
+                "PRON[CASE=NOM]",
+                f"PART[LINK={link}]",
+                "V[VOICE=AV]",
+                "NP[CASE=GEN]",
+                "NP[CASE=DAT]",
+            ],
+            [
+                "(↑ PRED) = ↓4 PRED",
+                "(↑ VOICE) = ↓4 VOICE",
+                "(↑ ASPECT) = ↓4 ASPECT",
+                "(↑ MOOD) = ↓4 MOOD",
+                "(↑ LEX-ASTRUCT) = ↓4 LEX-ASTRUCT",
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ) = ↓5",
+                "↓6 ∈ (↑ ADJUNCT)",
+                "↓1 ∈ (↑ ADJ)",
+                "(↓1 ANTECEDENT) = (↑ SUBJ)",
+                "(↓1 DUAL) =c 'YES'",
+            ],
+        ))
+
+
     # --- Phase 4 §7.3: adverbial enclitics as clausal ADJ members ---
     #
     # The pre-parse clitic-placement pass moves adverbial enclitics
@@ -65,10 +153,19 @@ def register_rules(rules: list[Rule]) -> None:
     # ``CLITIC_CLASS=2P`` distinguishes Wackernagel enclitics from
     # the other PART tokens (linkers, the ``hindi`` negation
     # particle).
+    # The constraining equation enforces strict CLITIC_CLASS=2P
+    # matching: the chart's non-conflict matcher would otherwise
+    # accept any PART that simply lacks the CLITIC_CLASS feature
+    # (e.g. linker ``na``/``-ng``, decimal ``.`` / ``punto``,
+    # arithmetic operators) and absorb them into ADJ at clause-
+    # final position. The strict ``=c`` ensures only genuine 2P
+    # enclitics fire here. (Tightened 2026-05-04 alongside the
+    # digit tokenization closing deferral, which exposed the
+    # latent looseness via the new ``.`` PART.)
     rules.append(Rule(
         "S",
         ["S", "PART[CLITIC_CLASS=2P]"],
-        ["(↑) = ↓1", "↓2 ∈ (↑ ADJ)"],
+        ["(↑) = ↓1", "↓2 ∈ (↑ ADJ)", "(↓2 CLITIC_CLASS) =c '2P'"],
     ))
 
 

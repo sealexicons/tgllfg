@@ -146,6 +146,52 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5f closing deferral: predicative distributive cardinal ---
+    #
+    # ``Tigisang aklat sila.`` "they each have one book" — a
+    # distributive cardinal predicating a possessed-N relation
+    # over a NOM pronoun. Companion to the clause-initial dual Q
+    # rule in ``cfg/clitic.py`` (covers both Phase 5f Commits 19 +
+    # 23 plan §18 deferrals). The float-form alternant
+    # ``Bumili sila ng tigisang aklat.`` already parses via the
+    # NP-modifier rules.
+    #
+    # F-structure shape:
+    #
+    #   PRED            = 'CARDINAL <SUBJ, OBJ>'
+    #   SUBJ            = the NOM-pivot pronoun (the possessors)
+    #   OBJ             = the bare N (the per-possessor count)
+    #   CARDINAL_VALUE  = the count from the cardinal
+    #   DISTRIB         = 'YES'
+    #   NUM             = the cardinal's NUM
+    #
+    # Constraining ``(↓1 DISTRIB) =c 'YES'`` restricts the rule
+    # to genuinely distributive cardinals (``tigisa`` /
+    # ``tigdalawa`` / ...) rather than firing on plain cardinals
+    # (``isa`` / ``dalawa`` / ...) which would overgenerate to
+    # ``Isang aklat sila.`` with no distributive reading.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            [
+                "NUM[CARDINAL=YES]",
+                f"PART[LINK={link}]",
+                "N",
+                "NP[CASE=NOM]",
+            ],
+            [
+                "(↑ PRED) = 'CARDINAL <SUBJ, OBJ>'",
+                "(↑ SUBJ) = ↓4",
+                "(↑ OBJ) = ↓3",
+                "(↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE",
+                "(↑ NUM) = ↓1 NUM",
+                "(↑ DISTRIB) = 'YES'",
+                "(↓1 CARDINAL) =c 'YES'",
+                "(↓1 DISTRIB) =c 'YES'",
+            ],
+        ))
+
+
     # --- Phase 5f Commit 9: arithmetic predicates (Group D) -----
     #
     # Word-form arithmetic: ``Dalawa dagdag tatlo ay lima``
@@ -218,6 +264,39 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 CARDINAL) =c 'YES'",
             "(↓4 CARDINAL) =c 'YES'",
             "(↓6 CARDINAL) =c 'YES'",
+        ],
+    ))
+    # Symbolic division: ``X / Y = Z``. Parallel 5-daughter rule
+    # for the ``/`` PART form (no DAT marker before the divisor).
+    # Companion to the ``+`` / ``-`` / ``*`` / ``=`` symbolic
+    # operators added in particles.yaml under the digit
+    # tokenization closing deferral; those three slot into the
+    # word-form 5-daughter rule above unchanged. The constraining
+    # ``(↓2 SYMBOLIC) =c 'YES'`` keeps this rule from firing on
+    # word-form ``hati`` (which lacks ``SYMBOLIC=YES``); ``hati``
+    # without ``sa`` is ungrammatical Tagalog and the existing
+    # negative test ``*Anim hati dalawa ay tatlo`` confirms it
+    # shouldn't parse. (Phase 5f closing deferral, 2026-05-04.)
+    rules.append(Rule(
+        "S",
+        [
+            "NUM[CARDINAL=YES]",
+            "PART",
+            "NUM[CARDINAL=YES]",
+            "PART[LINK=AY]",
+            "NUM[CARDINAL=YES]",
+        ],
+        [
+            "(↑ PRED) = 'ARITHMETIC'",
+            "(↑ OP) = 'DIVIDE'",
+            "(↑ OPERAND_1) = ↓1 CARDINAL_VALUE",
+            "(↑ OPERAND_2) = ↓3 CARDINAL_VALUE",
+            "(↑ RESULT) = ↓5 CARDINAL_VALUE",
+            "(↓2 OP) =c 'DIVIDE'",
+            "(↓2 SYMBOLIC) =c 'YES'",
+            "(↓1 CARDINAL) =c 'YES'",
+            "(↓3 CARDINAL) =c 'YES'",
+            "(↓5 CARDINAL) =c 'YES'",
         ],
     ))
 
