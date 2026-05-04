@@ -1548,6 +1548,22 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "collective: daandaan (hundreds) + na", "parse")
     _add(out, "bumili ako ng libulibong tao",
          "collective: libulibo (thousands) + -ng", "parse")
+    # Phase 5f Commit 19: distributive tig- (Group H2 item 5).
+    distrib_vowel = [("tigisa", "1"), ("tigdalawa", "2"),
+                     ("tigtatlo", "3"), ("tiglima", "5"),
+                     ("tigpito", "7"), ("tigsampu", "10")]
+    distrib_cons = [("tigapat", "4"), ("tiganim", "6"),
+                    ("tigsiyam", "9")]
+    for lemma, _ in distrib_vowel:
+        _add(out, f"bumili ako ng {lemma}ng aklat",
+             f"distrib: {lemma} + -ng + N", "parse")
+    for lemma, _ in distrib_cons:
+        _add(out, f"bumili ako ng {lemma} na aklat",
+             f"distrib: {lemma} + na + N", "parse")
+    _add(out, "kumakain ang tigisang bata",
+         "distrib: tigisa in SUBJ", "parse")
+    _add(out, "tigisa sila",
+         "distrib: tigisa as predicative-cardinal", "parse")
     return out
 
 

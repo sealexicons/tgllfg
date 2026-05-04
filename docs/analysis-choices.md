@@ -8064,3 +8064,141 @@ consumers the right structural / featural information.
   etc.) — extending the MEASURE lex inventory is additive
   but not in plan §11.1 Group H scope. Defer.
 
+## Phase 5f Commit 19: distributive ``tig-`` (Group H2 item 5)
+
+**Date:** 2026-05-03. **Status:** active. 10 NUM lex entries.
+No new grammar rules. Refs: plan §11.1 Group H item 5
+(distributive ``tig-``); S&O 1972 §4.5; R&B 1986; Phase 5f
+Commit 1 (cardinal NP-modifier rule consumed unchanged via
+the ``(↓2 CARDINAL) =c 'YES'`` constraint); Phase 5f Commit 1
+disambiguator branch for ``na`` after NUM[CARDINAL=YES]
+(consumed unchanged for consonant-final distributives);
+Phase 5f Commit 4 (predicative-cardinal rule absorbs
+``Tigisa sila.``).
+
+The plan §11.1 Group H thesis ("the Group A cardinal-NP-
+modifier rule generalised to any NUM / Q head") collects its
+NUM-side dividends here: the distributive NUMs added in this
+commit slot directly into the Phase 5f Commit 1 cardinal
+NP-modifier rule because the constraint
+``(↓2 CARDINAL) =c 'YES'`` is satisfied. No new rule needed.
+
+### Lex change
+
+Ten NUM entries in ``data/tgl/particles.yaml``, all with
+``CARDINAL: "YES"``, ``DISTRIB: "YES"``, ``CARDINAL_VALUE``
+matching the base stem (1-10), and ``NUM: PL``:
+
+* tigisa, tigdalawa, tigtatlo, tigapat, tiglima, tiganim,
+  tigpito, tigwalo, tigsiyam, tigsampu.
+
+Each entry inherits the cardinal value from its base stem so
+the existing cardinal NP-modifier rule consumes it; DISTRIB=
+YES additionally marks the daughter NUM for downstream
+consumers (LMT, semantics, ranker) that distinguish
+distributives from regular cardinals.
+
+The string-quoted ``"YES"`` on both CARDINAL and DISTRIB
+follows the recurring-pitfall convention.
+
+### Why CARDINAL=YES on distributives?
+
+A distributive numeral semantically denotes a count, just
+distributively (one each, two each, ...). Structurally it
+behaves exactly like a cardinal — appearing in NP-modifier,
+predicative, and other contexts where cardinals appear. The
+existing rules' ``(↓ CARDINAL) =c 'YES'`` constraints all fire
+on distributives because the morphological + syntactic
+distribution is the same. DISTRIB is the additional feature
+that downstream consumers can use to detect "each-ness"
+without reanalyzing the structure.
+
+The alternative — making distributives a separate POS or a
+NUM[CARDINAL=NO, DISTRIB=YES] — would force every consuming
+rule to be extended with a parallel DISTRIB branch. That's
+needlessly invasive for what's structurally just a flavour
+of cardinal.
+
+### Why per-form lex (not productive ``tig_distrib`` morph class)?
+
+Plan §11.1 Group H item 5 explicitly admits both options:
+"Either a new ``tig_distrib`` morph class or per-form lex."
+Per-form lex covers the 1-10 range used in S&O 1972 §4.5's
+canonical examples; productive class would generate:
+
+* Higher cardinals (``tig-sandaan`` "a hundred each", ``tig-
+  sanlibo`` "a thousand each").
+* Spanish-borrowed bases (``tig-uno``, ``tig-dos``).
+* Compound cardinals (``tig-labindalawa`` "twelve each").
+
+These are all real Tagalog forms but adding them is an
+additive scope — productive ``tig_distrib`` is a paradigm-
+engine extension, not a grammar / lex extension. Per the
+established Phase 5f precedent (compound cardinals in
+Commit 3, season ``tag-`` compounds in Commit 14, collective
+``card_redup`` in Commit 18), productive paradigm extension
+is deferred to a separate paradigm-engine pass when corpus
+pressure surfaces a need.
+
+### Hyphenation
+
+The canonical orthography is ``tig-isa``, ``tig-dalawa``,
+etc. with an internal hyphen. Same tokenizer issue as Phase
+5f Commits 14 / 16 / 18: ``\w+|\S`` splits hyphens. Single-
+token forms (``tigisa`` etc.) are the pragmatic precedent.
+Canonical hyphenated awaits a tokenizer pre-pass.
+
+### Composition with existing rules
+
+The cardinal NP-modifier rule (Phase 5f Commit 1) fires
+unchanged on distributives:
+
+```
+NP[CASE=GEN] → ADP[CASE=GEN] NUM[CARDINAL=YES] PART[LINK] N
+```
+
+For ``Bumili ako ng tigisang aklat.``:
+* ``ng`` ADP[CASE=GEN]
+* ``tigisa`` NUM[CARDINAL=YES, DISTRIB=YES, CV=1]
+* ``-ng`` PART[LINK=NG]
+* ``aklat`` N
+* Output: NP[CASE=GEN, LEMMA=aklat, CV=1] (DISTRIB stays on
+  the inner NUM — same NP-from-N projection limitation as
+  cardinal-modifier features).
+
+Consonant-final distributives (``tigapat``, ``tiganim``,
+``tigsiyam``) use the standalone ``na`` linker; the Phase 5f
+Commit 1 disambiguator branch for ``na`` after NUM[CARDINAL=
+YES] keeps it as the linker (vs the ALREADY clitic). No new
+disambiguator branch needed.
+
+The predicative-cardinal rule (Phase 5f Commit 4) also
+absorbs distributives: ``Tigisa sila.`` parses as S with
+PRED='CARDINAL <SUBJ>', SUBJ=sila, CV=1.
+
+### Negative fixtures (per §11.2)
+
+* ``*Bumili ako ng tigisa.`` — bare distributive NUM without
+  a head N. The cardinal-modifier rule requires a 4-daughter
+  RHS (DET/ADP NUM LINK N); without the linker + N daughters,
+  the OBJ-NP composition fails.
+
+### Out of scope for this commit
+
+* **Productive ``tig_distrib`` morph class** — see "Why per-
+  form lex" above. Defer.
+* **Distributive predicate construction** (``Tigisang aklat
+  sila`` / ``Tigisa silang aklat`` "they each have one
+  book") — verbless predicate with a linker-attached
+  complement N. Analytically distinct from the NP-modifier
+  composition this commit covers; needs a new S frame rule.
+  S&O 1972 §4.5 describes the structure; deferred to a
+  later commit.
+* **DISTRIB percolation to the matrix NP** — same NP-from-N
+  projection limitation as MEASURE / APPROX / COMP. Tests
+  walk down to verify CARDINAL_VALUE preservation; DISTRIB
+  rides on the inner NUM for downstream consumers.
+* **Hyphenated ``tig-isa`` / ``tig-dalawa``** — needs the
+  same tokenizer pre-pass deferred for Phase 5f Commits 14
+  / 16 / 18.
+
