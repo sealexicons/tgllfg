@@ -2377,6 +2377,70 @@ class Grammar:
             ],
         ))
 
+        # --- Phase 5f Commit 17: numeric comparatives (Group H1
+        # item 3) -----------------------------------------------------
+        #
+        # ``higit sa sampu`` "more than ten", ``kulang sa sampu``
+        # "less than ten", ``hindi bababa sa sampu`` "no less than
+        # ten / at least ten", ``hindi hihigit sa sampu`` "no more
+        # than ten / at most ten". Four idiomatic phrase patterns
+        # that wrap a NUM[CARDINAL=YES] standard via the DAT marker
+        # ``sa`` and modify a NUM head with COMP feature.
+        #
+        # Per plan §11.1 Group H item 3: "These compose existing
+        # constituents (negation hindi, the NEG-headed copula in
+        # bababa / hihigit, DAT-NP sa NUM) plus a small frame rule
+        # for the NUM modifier." The "small frame rule" is realised
+        # here as four parallel rules each gated on a specific
+        # COMP_PHRASE lex tag.
+        #
+        # Each rule's output is NUM (preserving CARDINAL=YES,
+        # CARDINAL_VALUE, NUM=PL/SG via shared-fstruct ``(↑) = ↓N``
+        # on the inner NUM daughter) plus a new ``COMP`` feature
+        # set explicitly to GT / LT / GE / LE — the ``hindi
+        # bababa`` / ``hindi hihigit`` patterns set GE / LE
+        # respectively because the negation flips the underlying
+        # head's semantics. The matrix-NP cardinal-modifier rule
+        # (Phase 5f Commit 1) then consumes the wrapped NUM
+        # unchanged.
+        #
+        # Solo patterns (higit / kulang): 3 daughters
+        # ``PART ADP[CASE=DAT] NUM[CARDINAL=YES]``. Negated
+        # patterns (hindi bababa / hindi hihigit): 4 daughters
+        # ``PART[POLARITY=NEG] PART ADP[CASE=DAT] NUM[CARDINAL=YES]``.
+        #
+        # Constraints follow the established Phase 5f pattern:
+        # ``(↓N COMP_PHRASE) =c 'X'`` gates each rule to its
+        # specific lex tag; ``(↓ CASE) =c 'DAT'`` enforces ``sa``
+        # rather than ``ng`` / ``ang``; ``(↓ CARDINAL) =c 'YES'``
+        # enforces a genuinely cardinal NUM (parallel to Commit 1
+        # / 16's cardinal gate).
+        for comp_lex, comp_value in (("HIGIT", "GT"), ("KULANG", "LT")):
+            rules.append(Rule(
+                "NUM",
+                ["PART", "ADP", "NUM"],
+                [
+                    "(↑) = ↓3",
+                    f"(↑ COMP) = '{comp_value}'",
+                    f"(↓1 COMP_PHRASE) =c '{comp_lex}'",
+                    "(↓2 CASE) =c 'DAT'",
+                    "(↓3 CARDINAL) =c 'YES'",
+                ],
+            ))
+        for comp_lex, comp_value in (("BABABA", "GE"), ("HIHIGIT", "LE")):
+            rules.append(Rule(
+                "NUM",
+                ["PART", "PART", "ADP", "NUM"],
+                [
+                    "(↑) = ↓4",
+                    f"(↑ COMP) = '{comp_value}'",
+                    "(↓1 POLARITY) =c 'NEG'",
+                    f"(↓2 COMP_PHRASE) =c '{comp_lex}'",
+                    "(↓3 CASE) =c 'DAT'",
+                    "(↓4 CARDINAL) =c 'YES'",
+                ],
+            ))
+
         # --- Phase 5f Commit 13: temporal-frame PP (Group F item 5)
         #
         # ``tuwing Lunes`` "every Monday", ``noong Pebrero`` "in

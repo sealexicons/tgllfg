@@ -1523,6 +1523,18 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "approx: halos + cardinal in SUBJ", "parse")
     _add(out, "bumili ako ng halos apat na aklat",
          "approx: halos + consonant-final cardinal (apat na)", "parse")
+    # Phase 5f Commit 17: numeric comparatives (Group H1 item 3).
+    for comp, gloss in (("higit", "more-than"), ("kulang", "less-than")):
+        _add(out, f"bumili ako ng {comp} sa sampung aklat",
+             f"comparator: {comp} sa NUM ({gloss})", "parse")
+    _add(out, "bumili ako ng hindi bababa sa sampung aklat",
+         "comparator: hindi bababa sa NUM (at-least)", "parse")
+    _add(out, "bumili ako ng hindi hihigit sa sampung aklat",
+         "comparator: hindi hihigit sa NUM (at-most)", "parse")
+    _add(out, "kumakain ang higit sa sampung bata",
+         "comparator: higit in SUBJ", "parse")
+    _add(out, "bumili ako ng higit sa apat na aklat",
+         "comparator: higit + consonant-final cardinal (apat na)", "parse")
     return out
 
 

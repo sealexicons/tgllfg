@@ -3417,6 +3417,24 @@
 - text: Bumili ako ng halos apat na aklat.
   construction: 'approx: halos + consonant-final cardinal (apat na)'
   expected: parse
+- text: Bumili ako ng higit sa sampung aklat.
+  construction: 'comparator: higit sa NUM (more-than)'
+  expected: parse
+- text: Bumili ako ng kulang sa sampung aklat.
+  construction: 'comparator: kulang sa NUM (less-than)'
+  expected: parse
+- text: Bumili ako ng hindi bababa sa sampung aklat.
+  construction: 'comparator: hindi bababa sa NUM (at-least)'
+  expected: parse
+- text: Bumili ako ng hindi hihigit sa sampung aklat.
+  construction: 'comparator: hindi hihigit sa NUM (at-most)'
+  expected: parse
+- text: Kumakain ang higit sa sampung bata.
+  construction: 'comparator: higit in SUBJ'
+  expected: parse
+- text: Bumili ako ng higit sa apat na aklat.
+  construction: 'comparator: higit + consonant-final cardinal (apat na)'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment
