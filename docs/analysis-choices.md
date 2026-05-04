@@ -8340,3 +8340,396 @@ implementation here matches the canonical surfaces.
   bawat`` is non-standard). Not explicitly tested or
   documented as supported.
 
+## Phase 5f Commit 21: distributive-possessive ``kani-kaniya`` / ``kanya-kanya`` (Group H3 item 7)
+
+**Date:** 2026-05-04. **Status:** active. 2 Q lex entries +
+7 new grammar rules + 1 gating addition on the existing
+Phase 5b partitive rules. Refs: plan §11.1 Group H item 7
+(distributive-possessive); S&O 1972 §6.13; R&B 1986; Phase 5f
+Commit 15 (vague-Q-modifier rule consumed as the structural
+template); Phase 5f Commit 20 (universal Q rule's bare-NOM
+companion consumed as a structural template); existing PRON-
+poss machinery referenced by the plan but not directly
+consumed (the construction is Q-based not PRON-based).
+
+Opens Group H3 (the final Phase 5f sub-PR).
+
+### Lex change
+
+Two Q entries in ``data/tgl/particles.yaml``:
+
+* ``kanikaniya`` — Q[QUANT=EACH_OWN, DISTRIB_POSS="YES"].
+  Reduplication of ``kaniya`` (alternate form of ``kanya``);
+  the i-vowel reflects the reduplication pattern.
+* ``kanyakanya`` — Q[QUANT=EACH_OWN, DISTRIB_POSS="YES"]. Full
+  reduplication of ``kanya``.
+
+Both forms are functionally equivalent. The two orthographic
+variants are both attested in standard Tagalog (R&B 1986).
+
+### Why Q (not PRON)?
+
+The plan §11.1 Group H item 7 describes these as "reduplicated
+possessive pronoun with distributive force ... Composes from
+existing PRON-poss machinery + the linker." The plan's PRON
+framing reflects the morphological etymology (reduplication of
+``kanya`` "his/her" / ``kaniya``) — but the syntactic
+distribution is Q-like:
+
+* Pre-N quantifier slot (between case-marker and head N).
+* Linker required between Q and N.
+* Cannot postpose like a possessor (``aklat ko`` "my book"
+  works; ``*aklat kanyakanya`` doesn't).
+* Can stand alone in NOM with no DET (parallel to ``bawat
+  bata``).
+
+The existing PRON-poss machinery is the postposed-possessor
+rule (``NP → NP NP[CASE=GEN]``) which fires on a GEN-NP
+attaching to an existing NP. The distributive-possessive
+construction is the inverse — preposed Q + linker + N. So
+the plan's "PRON-poss machinery" reuse is structural in
+spirit (the f-structure puts the reduplicated form in a
+possessor-like role) but the rule shape is Q-modifier-like.
+
+Implementation choice: treat as Q[DISTRIB_POSS=YES]. The
+``DISTRIB_POSS`` feature distinguishes this Q-distribution
+from the four already covered (partitive / vague-modifier /
+universal / bare-NOM-universal):
+
+| Distribution | Lex feature | Rule | Phase |
+|--------------|--------------|------|-------|
+| Partitive | (none) | ``DET/ADP Q NP[GEN]`` | Phase 5b |
+| Vague-modifier | VAGUE=YES | ``DET/ADP Q LINK N`` | Phase 5f Commit 15 |
+| Universal | UNIV=YES | ``DET/ADP Q N`` | Phase 5f Commit 20 |
+| Bare-NOM universal | UNIV=YES | ``Q N`` | Phase 5f Commit 20 |
+| Distributive-possessive | DISTRIB_POSS=YES | ``DET/ADP Q LINK N`` | This commit |
+| Bare-NOM distrib-poss | DISTRIB_POSS=YES | ``Q LINK N`` | This commit |
+
+The new distributive-possessive rule shape coincides with the
+vague-Q-modifier rule shape (both ``DET/ADP Q LINK N``) but
+with different gating constraints. Two parallel rules with
+different gates rather than one disjunctive rule.
+
+### Hyphenation
+
+Canonical orthography is ``kani-kaniya`` and ``kanya-kanya``.
+Same tokenizer issue as Commits 14 / 16 / 18 / 19: ``\w+|\S``
+splits hyphens. Single-token forms (``kanikaniya``,
+``kanyakanya``) are the established precedent. Canonical
+hyphenated awaits a tokenizer pre-pass.
+
+### Grammar change
+
+Six case-marked NP rules in ``src/tgllfg/cfg/grammar.py`` (3
+cases × 2 linker variants):
+
+```
+NP[CASE=X] → DET/ADP[CASE=X] Q PART[LINK=NA|NG] N
+Equations:
+  (↑) = ↓1                            # CASE / MARKER from outer marker
+  (↑ PRED) = ↓4 PRED                  # head N supplies PRED
+  (↑ LEMMA) = ↓4 LEMMA
+  (↑ QUANT) = ↓2 QUANT                # Q's QUANT lifts (= 'EACH_OWN')
+  (↑ DISTRIB_POSS) = 'YES'            # mark NP for downstream consumers
+  ¬ (↓4 DISTRIB_POSS)                 # block chained
+  (↓2 DISTRIB_POSS) =c 'YES'          # gate to DISTRIB_POSS Q heads
+```
+
+Plus 2 bare-NOM rules (NA / NG linker variants) for surfaces
+where the distributive-possessive Q functions as the
+determiner-equivalent (``Kanyakanyang aklat ay binili
+nila.``):
+
+```
+NP[CASE=NOM] → Q PART[LINK=NA|NG] N
+Equations:
+  (↑ PRED) = ↓3 PRED
+  (↑ LEMMA) = ↓3 LEMMA
+  (↑ QUANT) = ↓1 QUANT
+  (↑ DISTRIB_POSS) = 'YES'
+  (↑ CASE) = 'NOM'
+  ¬ (↓3 DISTRIB_POSS)
+  (↓1 DISTRIB_POSS) =c 'YES'
+```
+
+Gate addition on existing Phase 5b ``Q + NP[GEN]`` partitive
+rules (3 case variants): each gains ``¬ (↓2 DISTRIB_POSS)``
+(parallel to the existing ``¬ (↓2 VAGUE)`` and
+``¬ (↓2 UNIV)`` gates from Commits 15 + 20).
+
+### Negative fixtures (per §11.2)
+
+* ``*kanikaniyang kanyakanyang aklat`` — chained
+  distributive-possessives blocked by ``¬ (↓4 DISTRIB_POSS)``.
+* ``*ng kanyakanya ng aklat`` — DISTRIB_POSS in GEN-NP
+  partitive blocked by the new ``¬ (↓2 DISTRIB_POSS)`` gate.
+
+### Out of scope for this commit
+
+* **Standalone use** (``Kanya-kanya na lang.`` "It's each
+  one's own now.") — idiomatic; needs separate handling.
+* **Productive reduplication of arbitrary pronouns**
+  (``akin-akin``, ``inyo-inyo``) — restricted in standard
+  Tagalog to 3rd-person; per-form lex sufficient.
+* **Generic preposed-possessor construction**
+  (``kanyang aklat`` "his/her book", ``aking aklat`` "my
+  book") — additive but structurally distinct (PRON[CASE=DAT]
+  + LINK + N rather than Q + LINK + N). Worth a separate
+  commit; defer.
+* **Hyphenated ``kani-kaniya`` / ``kanya-kanya``** —
+  needs the same tokenizer pre-pass deferred for Commits 14
+  / 16 / 18 / 19.
+
+## Phase 5f Commit 22: wholes ``buo`` / ``buong`` (Group H3 item 8)
+
+**Date:** 2026-05-04. **Status:** active. 1 Q lex entry + 8
+new grammar rules + 1 gating addition on the existing Phase
+5b partitive rules. Refs: plan §11.1 Group H item 8 (wholes);
+S&O 1972 §4.7; R&B 1986; Phase 5f Commit 15 (vague-Q-modifier
+rule consumed as the structural template); Phase 5f Commit 21
+(distributive-possessive bare-NOM rule consumed as a
+structural template); Phase 4 split_linker_ng (consumed
+unchanged for the bound ``-ng`` form).
+
+### Lex change
+
+One Q entry in ``data/tgl/particles.yaml``:
+
+* ``buo`` — Q[QUANT=WHOLE, WHOLE="YES"]. Citation form,
+  vowel-final. The bound ``-ng`` linker form ``buong`` is
+  produced by the existing split_linker_ng pre-pass once
+  ``buo`` is a known surface in the morph index.
+
+### POS choice: Q rather than ADJ
+
+The plan §11.1 Group H item 8 description — "Pre-N modifier
+with linker (``buo`` + ``-ng``); lex (``buo``) plus the
+Group A rule" — doesn't specify the POS. Two options:
+
+1. **ADJ**: ``buo`` is an adjective ("whole, entire") that
+   modifies a head N via the linker. This would feed an
+   adjective-modifier rule (which doesn't yet exist; it
+   lands with Phase 5g).
+2. **Q**: ``buo`` is a totality quantifier (quantifies over
+   the entirety of the entity, not a property like color or
+   size). Plan groups it under Group H quantifiers.
+   Linker-modifier distribution matches the established Q
+   template (Commits 15 / 20 / 21).
+
+This commit chose option 2 (Q). Rationale:
+
+* Semantic role is totality quantification, not property
+  attribution. ``buo`` doesn't gradate (``*mas buo`` "more
+  whole" is non-canonical) — adjectives typically gradate.
+* Plan groups it under Group H, alongside other quantifiers
+  (universals, vague, distributives).
+* The linker-modifier rule template is already established
+  for Q heads (Commits 15 / 20 / 21).
+* Predicate-Adj path doesn't exist yet (Phase 5g). Adding
+  ``buo`` as ADJ now would require either deferring lex+rule
+  to Phase 5g, or adding ad-hoc machinery here.
+
+A future Phase 5g may revisit the Q-vs-ADJ classification of
+``buo`` (and similar totality quantifiers like ``ilang``
+"some / a few" — already added as Q[VAGUE=YES] in Commit 15)
+once the adjective infrastructure exists. For Phase 5f scope,
+Q is the cleanest choice.
+
+### Grammar change
+
+Six case-marked NP rules in ``src/tgllfg/cfg/grammar.py`` (3
+cases × 2 linker variants):
+
+```
+NP[CASE=X] → DET/ADP[CASE=X] Q PART[LINK=NA|NG] N
+Equations:
+  (↑) = ↓1
+  (↑ PRED) = ↓4 PRED
+  (↑ LEMMA) = ↓4 LEMMA
+  (↑ QUANT) = ↓2 QUANT
+  (↑ WHOLE) = 'YES'
+  ¬ (↓4 WHOLE)
+  (↓2 WHOLE) =c 'YES'
+```
+
+Two bare-NOM rules (NA / NG variants) for surfaces where
+``buo`` functions as the determiner-equivalent
+(``Buong pamilya ay kumakain.``):
+
+```
+NP[CASE=NOM] → Q PART[LINK=NA|NG] N
+Equations:
+  (↑ PRED) = ↓3 PRED
+  (↑ LEMMA) = ↓3 LEMMA
+  (↑ QUANT) = ↓1 QUANT
+  (↑ WHOLE) = 'YES'
+  (↑ CASE) = 'NOM'
+  ¬ (↓3 WHOLE)
+  (↓1 WHOLE) =c 'YES'
+```
+
+Gate addition: each of the 3 existing Phase 5b ``Q +
+NP[GEN]`` partitive rules gains ``¬ (↓2 WHOLE)``. Wholes
+only take the linker-N form; ``*ang buo ng bata`` is non-
+standard.
+
+The NA linker variant of the new rules is included for
+symmetry — ``buo`` is vowel-final so only NG fires in
+practice. If a future consonant-final WHOLE entry is added
+(unlikely; ``buo`` is the only canonical form), the NA
+variant is ready.
+
+### Negative fixtures (per §11.2)
+
+* ``*ang buong buong bata`` — chained wholes blocked by
+  ``¬ (↓4 WHOLE)``.
+* ``*ang buo ng bata`` — WHOLE in GEN-NP partitive blocked
+  by the new ``¬ (↓2 WHOLE)`` gate.
+
+### Out of scope for this commit
+
+* **Predicative use** (``Buo ang bata.`` "The child is
+  whole / intact") — would parse via a future predicate-Q
+  rule. Defer.
+* **Floated ``buo``** (``Kumain ang bata buo``) —
+  mechanically fires via the existing Phase 4 §7.8 ``S → S
+  Q`` float rule but not idiomatic for ``buo``. Not
+  explicitly tested.
+* **ADJ-vs-Q reanalysis** — Phase 5g may revisit the
+  classification once adjective infrastructure exists.
+
+## Phase 5f Commit 23: dual ``pareho`` / ``kapwa`` (Group H3 item 9; closes Phase 5f)
+
+**Date:** 2026-05-04. **Status:** active. 2 Q lex entries.
+NO new grammar rules — both consume the existing Phase 4
+§7.8 ``S → S Q`` float rule unchanged. 1 gating addition on
+the existing Phase 5b partitive rules. Refs: plan §11.1
+Group H item 9 (dual); S&O 1972 §4.7; R&B 1986; Phase 4 §7.8
+(existing float rule consumed unchanged); Phase 5b §7.8
+follow-on (existing partitive consumed with new dual-blocking
+gate).
+
+Closes **Phase 5f**.
+
+### Lex change
+
+Two Q entries in ``data/tgl/particles.yaml``:
+
+* ``pareho`` — Q[QUANT=BOTH, DUAL="YES"]. Native dual.
+* ``kapwa``  — Q[QUANT=BOTH, DUAL="YES"]. Formal dual.
+
+### Polysemy with future Phase 5h equative-predicate reading
+
+``pareho`` also has an equative-predicate reading
+(``Pareho ang kanilang sapatos.`` "their shoes are the same"),
+which belongs in Phase 5h (gradable / equative comparison)
+per the plan §11.1 Group H item 9. This commit covers only
+the floated-quantifier reading. Following the Phase 5f Commit
+17 bababa / hihigit precedent, the equative reading will be
+added as a separate ``(lemma, pos)`` entry when Phase 5h
+lands — the morph analyzer's different-POS handling supports
+the polysemy without collision.
+
+### Float rule consumes unchanged
+
+The existing Phase 4 §7.8 ``S → S Q`` rule:
+
+```
+S → S Q
+Equations:
+  (↑) = ↓1
+  ↓2 ∈ (↑ ADJ)
+  (↓2 ANTECEDENT) = (↑ SUBJ)
+```
+
+attaches Q at clause-final position as a member of the
+matrix's ADJ set with binding to SUBJ. With pareho / kapwa as
+Q, the rule fires on:
+
+* ``Kumain sila pareho.`` → ADJ contains pareho
+  f-structure (LEMMA, QUANT=BOTH, DUAL=YES); ANTECEDENT →
+  matrix SUBJ (sila).
+* ``Kumain ang bata kapwa.`` → similar shape.
+
+The matrix's ADJ-member carries the full Q lex f-structure
+including DUAL=YES, so downstream consumers (LMT, semantics)
+can detect the dual marking via the standard ADJ traversal.
+
+### Gate addition on partitive
+
+Each of the 3 existing Phase 5b ``Q + NP[GEN]`` partitive
+rules gains ``¬ (↓2 DUAL)`` (parallel to existing VAGUE /
+UNIV / DISTRIB_POSS / WHOLE gates). Duals only float; the
+partitive ``*ang pareho ng bata`` is non-standard.
+
+With this commit, the partitive rule has 5 negative gates
+(VAGUE / UNIV / DISTRIB_POSS / WHOLE / DUAL). All five are
+the canonical Q-feature flavours added in Phase 5f.
+
+### Why no rule for the clause-initial form?
+
+The plan §11.1 Group H item 9 canonical example is ``Pareho
+silang kumain.`` "they both ate" — Q clause-initial with
+PRON-clitic + linker + V. This surface is structurally
+distinct from the float construction and would require a new
+S frame rule. Possible structures:
+
+```
+S → Q[DUAL=YES] PRON[NOM] PART[LINK] V
+  (↑ PRED) = 'DUAL <SUBJ>'
+  (↑ SUBJ) = ↓2
+  (↑ DUAL) = 'YES'
+  (↑ XCOMP) = ↓4
+  (↓4 SUBJ) = (↑ SUBJ)   # control
+```
+
+— pareho as predicate-Q with linker-attached XCOMP. But this
+is analytically more involved than the float consumption, and
+the same proposition is expressed by the clause-final float
+form (``Kumain sila pareho.``) which already parses. For
+Phase 5f scope, that's adequate. Deferred.
+
+### Negative fixtures (per §11.2)
+
+* ``*ang pareho ng aklat`` — DUAL in GEN-NP partitive
+  blocked by new ``¬ (↓2 DUAL)`` gate.
+* ``*ang kapwa ng aklat`` — same blocking.
+
+### Out of scope for this commit
+
+* **Clause-initial form** (``Pareho silang kumain.``) — see
+  "Why no rule" above.
+* **Equative predicate** of ``pareho`` (``Pareho ang
+  kanilang sapatos.``) — Phase 5h scope.
+* **Number agreement** with the SUBJ — semantically a dual Q
+  requires a plural antecedent (``*Kumain siya pareho.`` is
+  semantically odd). The float rule's ``ANTECEDENT`` binding
+  sets up the link but no agreement check is performed.
+  Adding agreement is a follow-on; out of scope for this
+  commit.
+
+### Phase 5f close
+
+This commit completes the Phase 5f §11.1 deliverables:
+
+| Group | Items | Phase 5f Commits | Status |
+|-------|-------|-------------------|--------|
+| A | Cardinals (native, Spanish, compound, predicative, multiplicative, decimals/percentages) | 1-6 | merged in PR #12 |
+| B | Ordinals 1-10 | 7 | merged in PR #13 |
+| C | Fractions | 8 | merged in PR #13 |
+| D | Arithmetic predicates | 9 | merged in PR #14 |
+| E | Times (clock + time-of-day + deictics + minute composition + mga approximation) | 10-13 | merged in PR #15 |
+| F | Dates (months + days + date formula) | 13 | merged in PR #15 |
+| G | Seasons | 14 | merged in PR #15 |
+| H1 | Vague + approximators + numeric comparatives | 15-17 | merged in PR #16 |
+| H2 | Collective + distributive ``tig-`` + universal ``bawat``/``kada`` | 18-20 | merged in PR #17 |
+| H3 | Distributive-possessive + wholes + dual | 21-23 | this PR |
+
+Phase 5f total: ~23 commits across 9 PRs (including the prep
+PR #11). Test count: ~3653 (start of 5f) → ~4337 (end of 5f),
++684 unit + parametrized tests. Coverage corpus:
+~1085 → ~1212 sentences, 99.5% parse rate maintained
+throughout. Next: Phase 5g (gradable adjectives + comparison
++ degree, plan §12). Per the effort protocol, the cutover
+will need a deliberate pause-and-verify before starting.
+

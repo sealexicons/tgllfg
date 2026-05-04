@@ -1577,6 +1577,36 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "universal: kada (colloquial) in NOM SUBJ", "parse")
     _add(out, "kada bata ay kumakain",
          "universal: kada bare-NOM ay-fronted", "parse")
+    # Phase 5f Commit 21: distributive-possessive (Group H3 item 7).
+    for q in ("kanikaniya", "kanyakanya"):
+        _add(out, f"bumili ako ng {q}ng aklat",
+             f"distrib-poss: {q} + linker + N (GEN OBJ)", "parse")
+    _add(out, "pumunta ako sa kanyakanyang bahay",
+         "distrib-poss: kanyakanya + linker + N (DAT)", "parse")
+    _add(out, "kanyakanyang aklat ay binili nila",
+         "distrib-poss: kanyakanya bare-NOM ay-fronted", "parse")
+    _add(out, "kanikaniyang aklat ay binili nila",
+         "distrib-poss: kanikaniya bare-NOM ay-fronted", "parse")
+    # Phase 5f Commit 22: wholes buo / buong (Group H3 item 8).
+    _add(out, "kumakain ang buong bata",
+         "whole: buo + linker + N (NOM SUBJ)", "parse")
+    _add(out, "kumain ako ng buong araw",
+         "whole: buo + linker + N (GEN OBJ)", "parse")
+    _add(out, "pumunta ako sa buong pamilya",
+         "whole: buo + linker + N (DAT)", "parse")
+    _add(out, "buong pamilya ay kumakain",
+         "whole: buo bare-NOM ay-fronted (pamilya)", "parse")
+    _add(out, "buong bata ay kumakain",
+         "whole: buo bare-NOM ay-fronted (bata)", "parse")
+    # Phase 5f Commit 23: dual pareho / kapwa (Group H3 item 9).
+    _add(out, "kumain sila pareho",
+         "dual: pareho float (clause-final, PRON SUBJ)", "parse")
+    _add(out, "kumain sila kapwa",
+         "dual: kapwa float (formal)", "parse")
+    _add(out, "kumain ang bata pareho",
+         "dual: pareho float with nominal SUBJ", "parse")
+    _add(out, "kumain ang bata kapwa",
+         "dual: kapwa float with nominal SUBJ", "parse")
     return out
 
 

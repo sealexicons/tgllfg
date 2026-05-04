@@ -504,6 +504,9 @@ class Grammar:
                 "(↑ QUANT) = ↓2 QUANT",
                 "¬ (↓2 VAGUE)",
                 "¬ (↓2 UNIV)",
+                "¬ (↓2 DISTRIB_POSS)",
+                "¬ (↓2 WHOLE)",
+                "¬ (↓2 DUAL)",
             ],
         ))
         rules.append(Rule(
@@ -515,6 +518,9 @@ class Grammar:
                 "(↑ QUANT) = ↓2 QUANT",
                 "¬ (↓2 VAGUE)",
                 "¬ (↓2 UNIV)",
+                "¬ (↓2 DISTRIB_POSS)",
+                "¬ (↓2 WHOLE)",
+                "¬ (↓2 DUAL)",
             ],
         ))
         rules.append(Rule(
@@ -526,6 +532,9 @@ class Grammar:
                 "(↑ QUANT) = ↓2 QUANT",
                 "¬ (↓2 VAGUE)",
                 "¬ (↓2 UNIV)",
+                "¬ (↓2 DISTRIB_POSS)",
+                "¬ (↓2 WHOLE)",
+                "¬ (↓2 DUAL)",
             ],
         ))
 
@@ -652,6 +661,120 @@ class Grammar:
                 "(↓1 UNIV) =c 'YES'",
             ],
         ))
+
+        # --- Phase 5f Commit 21: distributive-possessive
+        # `kani-kaniya` / `kanya-kanya` (Group H3 item 7) ------------
+        #
+        # ``kanikaniyang ganda`` "each one's beauty",
+        # ``kanyakanyang aklat`` "each their own book". A
+        # reduplicated possessive Q with distributive force takes a
+        # linker + N complement, producing an NP marked with
+        # ``DISTRIB_POSS=YES``. Plan §11.1 Group H item 7 (S&O 1972
+        # §6.13).
+        #
+        # Rule shape mirrors Phase 5f Commit 15 vague-Q-modifier:
+        # ``DET/ADP Q PART[LINK] N``. The constraining equation
+        # ``(↓2 DISTRIB_POSS) =c 'YES'`` gates the rule to
+        # kanikaniya / kanyakanya; non-distributive-possessive Q
+        # heads (lahat / iba / vague / universal) match by absence
+        # without it.
+        #
+        # Three case-marked variants (NOM / GEN / DAT) × 2 linker
+        # variants (NA / NG) = 6 NP-level rules. Plus 1 bare-NOM
+        # variant (``Kanyakanyang aklat sila.`` "They each have
+        # their own book.") for surfaces where the distributive-
+        # possessive Q functions as the determiner-equivalent.
+        for case, marker in _cardinal_case_marker.items():
+            for link in ("NA", "NG"):
+                rules.append(Rule(
+                    f"NP[CASE={case}]",
+                    [marker, "Q", f"PART[LINK={link}]", "N"],
+                    [
+                        "(↑) = ↓1",
+                        "(↑ PRED) = ↓4 PRED",
+                        "(↑ LEMMA) = ↓4 LEMMA",
+                        "(↑ QUANT) = ↓2 QUANT",
+                        "(↑ DISTRIB_POSS) = 'YES'",
+                        "¬ (↓4 DISTRIB_POSS)",
+                        "(↓2 DISTRIB_POSS) =c 'YES'",
+                    ],
+                ))
+
+        # Bare-NOM rule (distributive-possessive Q can stand alone
+        # as an NP without a DET — kanyakanya acts as its own
+        # determiner-equivalent in the distributive-possessive
+        # construction).
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "NP[CASE=NOM]",
+                ["Q", f"PART[LINK={link}]", "N"],
+                [
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                    "(↑ QUANT) = ↓1 QUANT",
+                    "(↑ DISTRIB_POSS) = 'YES'",
+                    "(↑ CASE) = 'NOM'",
+                    "¬ (↓3 DISTRIB_POSS)",
+                    "(↓1 DISTRIB_POSS) =c 'YES'",
+                ],
+            ))
+
+        # --- Phase 5f Commit 22: wholes `buo` / `buong`
+        # (Group H3 item 8) -----------------------------------------
+        #
+        # ``buong bata`` "whole / entire child", ``buong araw``
+        # "whole day", ``buong pamilya`` "entire family". A
+        # totality Q head takes a linker + N complement, producing
+        # an NP marked with ``WHOLE=YES``. Plan §11.1 Group H item
+        # 8 (S&O 1972 §4.7).
+        #
+        # Rule shape mirrors Phase 5f Commit 15 vague-Q-modifier
+        # and Commit 21 distributive-possessive: ``DET/ADP Q
+        # PART[LINK] N``. The constraining equation
+        # ``(↓2 WHOLE) =c 'YES'`` gates the rule to ``buo``;
+        # non-WHOLE Q heads (lahat / iba / vague / universal /
+        # distributive-possessive) match by absence on WHOLE
+        # without it.
+        #
+        # 6 case-marked variants (3 cases × 2 linker variants —
+        # ``buo`` is vowel-final so only the NG variant fires in
+        # practice; the NA variant is included for symmetry and
+        # to support any future consonant-final WHOLE entries).
+        # Plus 2 bare-NOM variants for surfaces like ``Buong araw
+        # ay nag-aral siya.``
+        for case, marker in _cardinal_case_marker.items():
+            for link in ("NA", "NG"):
+                rules.append(Rule(
+                    f"NP[CASE={case}]",
+                    [marker, "Q", f"PART[LINK={link}]", "N"],
+                    [
+                        "(↑) = ↓1",
+                        "(↑ PRED) = ↓4 PRED",
+                        "(↑ LEMMA) = ↓4 LEMMA",
+                        "(↑ QUANT) = ↓2 QUANT",
+                        "(↑ WHOLE) = 'YES'",
+                        "¬ (↓4 WHOLE)",
+                        "(↓2 WHOLE) =c 'YES'",
+                    ],
+                ))
+
+        # Bare-NOM rule (totality Q can stand alone as an NP
+        # without a DET — ``buong araw`` standalone in ay-fronted
+        # position, etc.).
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "NP[CASE=NOM]",
+                ["Q", f"PART[LINK={link}]", "N"],
+                [
+                    "(↑ PRED) = ↓3 PRED",
+                    "(↑ LEMMA) = ↓3 LEMMA",
+                    "(↑ QUANT) = ↓1 QUANT",
+                    "(↑ WHOLE) = 'YES'",
+                    "(↑ CASE) = 'NOM'",
+                    "¬ (↓3 WHOLE)",
+                    "(↓1 WHOLE) =c 'YES'",
+                ],
+            ))
 
         # --- Phase 5f Commit 18: measure-N rule (Group H2 item 4) ---
         #

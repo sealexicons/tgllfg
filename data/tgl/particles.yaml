@@ -373,6 +373,138 @@
   pos: Q
   feats: {QUANT: EVERY, UNIV: "YES"}
 
+# === Phase 5f Commit 21: distributive-possessive (Group H3 item 7) =========
+# Reduplicated possessive pronouns with distributive force —
+# ``kani-kaniyang ganda`` "each one's beauty",
+# ``kanya-kanyang aklat`` "each their own book". Two
+# orthographic variants attested:
+#
+#   kani-kaniya  — reduplication of ``kaniya`` (alternate
+#                  form of ``kanya``); the i-vowel reflects
+#                  the reduplication pattern.
+#   kanya-kanya  — full reduplication of ``kanya``.
+#
+# Both forms are functionally equivalent: distributive-
+# possessive Q heads. The plan §11.1 Group H item 7 (S&O 1972
+# §6.13) describes them as "reduplicated possessive pronoun
+# with distributive force ... Composes from existing PRON-poss
+# machinery + the linker".
+#
+# Implementation: treat the reduplicated forms as Q[DISTRIB_POSS=
+# "YES"] rather than PRON. The syntactic distribution is
+# Q-like (preposed quantifier with linker complement),
+# matching the shape established by Phase 5f Commit 15 vague-Q-
+# modifier and Commit 20 universal. The PRON-derived semantics
+# (each-one's-own) ride as the QUANT atom and the
+# DISTRIB_POSS feature.
+#
+# Hyphenation note: same tokenizer issue as Commits 14 / 16 /
+# 18 / 19 — ``\w+|\S`` splits hyphens. Single-token forms
+# (``kanikaniya``, ``kanyakanya``) follow the established
+# precedent. Canonical hyphenated awaits a tokenizer pre-pass.
+#
+# Out of scope for this commit:
+#
+# * Standalone use (``Kanya-kanya na lang.`` "It's each one's
+#   own now.") — idiomatic; needs separate handling.
+# * Productive reduplication of arbitrary pronouns
+#   (``akin-akin``, ``inyo-inyo``) — the attested distributive-
+#   possessive paradigm is restricted to the 3rd-person forms
+#   (kanya / kaniya); per-form lex is sufficient.
+# * Generic preposed-possessor construction (``kanyang aklat``
+#   "his/her book", ``aking aklat`` "my book") — additive but
+#   structurally different (PRON[DAT] + LINK + N, not
+#   distributive). Defer.
+- surface: kanikaniya
+  pos: Q
+  feats: {QUANT: EACH_OWN, DISTRIB_POSS: "YES"}
+- surface: kanyakanya
+  pos: Q
+  feats: {QUANT: EACH_OWN, DISTRIB_POSS: "YES"}
+
+# === Phase 5f Commit 22: wholes `buo` / `buong` (Group H3 item 8) ==========
+# Pre-N totality quantifier — ``buong bata`` "whole / entire
+# child", ``buong araw`` "whole day", ``buong pamilya`` "entire
+# family". Plan §11.1 Group H item 8 (S&O 1972 §4.7; R&B 1986).
+#
+# Single lex entry ``buo`` (the citation form, vowel-final).
+# The bound ``-ng`` linker form ``buong`` is produced by the
+# Phase 4 split_linker_ng pre-pass once ``buo`` is a known
+# surface. The construction ``buong N`` parses as
+# ``buo + -ng + N`` via a new Phase 5f Commit 22 grammar rule
+# (Q[WHOLE=YES] + linker + N — same template as Phase 5f
+# Commit 15 vague-Q-modifier and Commit 21 distributive-
+# possessive, gated on a different feature).
+#
+# POS choice: Q rather than ADJ. Semantically ``buo`` is a
+# totality quantifier (it quantifies over the entirety of the
+# entity, not a property like color or size). The plan groups
+# it under Group H quantifiers, and the linker-modifier
+# distribution matches the established Q template. Treating
+# ``buo`` as ADJ would force it through the (Phase 5g)
+# adjective-modifier path, which doesn't exist yet and which
+# would conflate genuine adjectives with totality quantifiers.
+#
+# Out of scope for this commit:
+#
+# * Predicative use (``Buo ang bata.`` "The child is whole /
+#   intact") — would parse via a future predicate-Q rule;
+#   defer.
+# * Floated ``buo`` (``Kumain ang bata buo`` "the whole
+#   child ate") — would mechanically fire via the existing
+#   Phase 4 §7.8 ``S → S Q`` float rule; not idiomatic for
+#   ``buo``, deferred.
+- surface: buo
+  pos: Q
+  feats: {QUANT: WHOLE, WHOLE: "YES"}
+
+# === Phase 5f Commit 23: dual `pareho` / `kapwa` (Group H3 item 9) ==========
+# Closes Phase 5f. Plan §11.1 Group H item 9 (S&O 1972 §4.7;
+# R&B 1986). Two Q[DUAL=YES] entries — ``pareho`` "both /
+# alike" and ``kapwa`` "both" (more formal):
+#
+#   Kumain sila pareho.   "they both ate"  (clause-final
+#                          float; this commit's target form)
+#   Kumain sila kapwa.    "they both ate"  (formal variant)
+#
+# Both consume the existing Phase 4 §7.8 ``S → S Q`` float
+# rule unchanged — the float rule attaches Q at clause-final
+# position as a member of the matrix's ADJ set with binding
+# ``(↓2 ANTECEDENT) = (↑ SUBJ)``. The matrix's ADJ-member
+# carries the Q lex's full f-structure (LEMMA, QUANT=BOTH,
+# DUAL=YES). No new grammar required for the float use.
+#
+# Polysemy: ``pareho`` also has an equative-predicate reading
+# (``Pareho ang kanilang sapatos`` "their shoes are the same"),
+# which belongs in Phase 5h (gradable / equative comparison)
+# per the plan. This commit covers only the floated-quantifier
+# use; the equative-predicate use will be added as a separate
+# (lemma, pos) entry when Phase 5h lands. Polysemy via
+# different POS is the established pattern (Phase 5f Commit 17
+# bababa / hihigit precedent).
+#
+# Out of scope for this commit:
+#
+# * **Clause-initial form** ``Pareho silang kumain.`` "they
+#   both ate" — same surface-meaning as ``Kumain sila pareho.``
+#   but with Q clause-initial. Plan §11.1 Group H item 9
+#   describes this as the canonical surface, but parsing it
+#   requires a new S frame rule (``S → Q[DUAL=YES] PRON[NOM]
+#   PART[LINK] V``) modelling pareho as a clause-initial
+#   predicate-like Q with linker-attached V complement.
+#   Analytically distinct from the float construction this
+#   commit covers; deferred to a later commit. Both surfaces
+#   express the same proposition, so Phase 5f scope is
+#   adequately covered by the float form.
+# * **Equative predicate** ``Pareho ang kanilang sapatos.``
+#   "their shoes are the same" — Phase 5h scope.
+- surface: pareho
+  pos: Q
+  feats: {QUANT: BOTH, DUAL: "YES"}
+- surface: kapwa
+  pos: Q
+  feats: {QUANT: BOTH, DUAL: "YES"}
+
 # === Phase 4 §7.6: psych control predicates ==============================
 # Pseudo-verbal predicates that select an XCOMP complement clause and
 # take a GEN-marked experiencer. They have no verbal morphology
