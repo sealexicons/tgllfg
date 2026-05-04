@@ -2276,7 +2276,8 @@ class Grammar:
             ],
         ))
 
-        # --- Phase 5f Commit 14: mga time approximation (Group E item 3)
+        # --- Phase 5f Commit 13 (bundled): mga time approximation
+        # (Group E item 3) -------------------------------------------
         #
         # ``mga alasotso`` "around 8 o'clock", ``mga alauna``
         # "around 1 o'clock", ``sa mga alastres`` "at around 3
@@ -2294,9 +2295,10 @@ class Grammar:
         #   (↓2 SEM_CLASS) =c 'TIME'      — head is clock-time
         #
         # Plural marking on regular nouns (``ang mga aklat`` "the
-        # books") and cardinal approximation (``mga sampu`` "around
-        # ten") use the same ``mga`` lex entry but are separate
-        # constructions; deferred follow-ons.
+        # books") is a separate construction; deferred. Cardinal
+        # approximation (``mga sampu`` "around ten") was deferred
+        # in Commit 13 and is lifted by the parallel NUM rule
+        # below in Phase 5f Commit 16 (Group H1 item 2).
         rules.append(Rule(
             "N",
             ["PART", "N"],
@@ -2305,6 +2307,73 @@ class Grammar:
                 "(↑ APPROX) = 'YES'",
                 "(↓1 PLURAL_MARKER) =c 'YES'",
                 "(↓2 SEM_CLASS) =c 'TIME'",
+            ],
+        ))
+
+        # --- Phase 5f Commit 16: approximators (Group H1 item 2) ----
+        #
+        # ``halos sampu`` "almost ten", ``halos lahat`` "almost
+        # all", ``halos maraming bata`` "almost many children",
+        # ``humigitkumulang sampu`` "approximately ten", and
+        # ``mga sampu`` "around ten" — a closed-class set of
+        # approximator pre-modifiers wrap a NUM (CARDINAL=YES) or
+        # Q head and add ``APPROX=YES`` to the result.
+        #
+        # Three rules total:
+        #
+        # 1. ``NUM → PART[APPROX=YES] NUM[CARDINAL=YES]`` wraps a
+        #    cardinal NUM. Output is NUM (preserving CARDINAL=YES
+        #    + CARDINAL_VALUE), so the matrix-NP cardinal-modifier
+        #    rule (Phase 5f Commit 1) consumes it directly:
+        #    ``Bumili ako ng halos sampung aklat.`` parses as
+        #    ``[halos sampu]ng aklat`` with CARDINAL_VALUE=10 +
+        #    APPROX=YES on the matrix NP.
+        # 2. ``Q → PART[APPROX=YES] Q`` wraps a quantifier. Output
+        #    is Q (preserving QUANT + VAGUE), so the existing
+        #    Phase 5b partitive (``Q + NP[GEN]``) and Phase 5f
+        #    Commit 15 vague-Q-modifier rules consume it:
+        #    ``halos lahat ng bata`` partitive,
+        #    ``halos maraming bata`` linker form.
+        # 3. ``NUM → PART[PLURAL_MARKER=YES] NUM[CARDINAL=YES]``
+        #    extends the Phase 5f Commit 13 mga rule from TIME
+        #    NOUNs to cardinal NUMs. ``mga sampu`` "around ten"
+        #    is the target; same surface uses the same lex entry,
+        #    different rule.
+        #
+        # The constraining equation ``(↓1 APPROX) =c 'YES'`` (rules
+        # 1 + 2) gates the daughter to actual approximator PARTs
+        # (``halos`` / ``humigitkumulang``); ``(↓1 PLURAL_MARKER)
+        # =c 'YES'`` (rule 3) gates to ``mga``. The
+        # ``(↓2 CARDINAL) =c 'YES'`` constraint on rules 1 + 3
+        # enforces the daughter is a genuinely cardinal NUM
+        # (parallel to Commit 1's cardinal NP-modifier rule).
+        rules.append(Rule(
+            "NUM",
+            ["PART", "NUM"],
+            [
+                "(↑) = ↓2",
+                "(↑ APPROX) = 'YES'",
+                "(↓1 APPROX) =c 'YES'",
+                "(↓2 CARDINAL) =c 'YES'",
+            ],
+        ))
+        rules.append(Rule(
+            "Q",
+            ["PART", "Q"],
+            [
+                "(↑) = ↓2",
+                "(↑ APPROX) = 'YES'",
+                "(↓1 APPROX) =c 'YES'",
+            ],
+        ))
+        rules.append(Rule(
+            "NUM",
+            ["PART", "NUM"],
+            [
+                "(↑) = ↓2",
+                "(↑ APPROX) = 'YES'",
+                "(↓1 PLURAL_MARKER) =c 'YES'",
+                "(↓2 CARDINAL) =c 'YES'",
             ],
         ))
 

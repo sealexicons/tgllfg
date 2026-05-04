@@ -158,6 +158,42 @@
   pos: Q
   feats: {QUANT: MOST, VAGUE: "YES"}
 
+# === Phase 5f Commit 16: approximators (Group H1 item 2) ===================
+# Approximators — closed-class pre-modifiers that wrap a NUM or Q
+# head and add ``APPROX: YES`` to the result. ``halos`` "almost /
+# nearly" and ``humigit-kumulang`` "approximately / more or less"
+# are the canonical pair (S&O 1972 §4.7; R&B 1986). Per plan
+# §11.1 Group H item 2: "Modifies a NUM or Q head" — see the
+# Phase 5f Commit 16 grammar rules in src/tgllfg/cfg/grammar.py
+# for the structural realisation.
+#
+# This commit also broadens the Phase 5f Commit 13 ``mga`` time-
+# approximation rule (``N → PART[mga] N[SEM_CLASS=TIME]``) to
+# numerals via a parallel ``NUM → PART[mga] NUM[CARDINAL=YES]``
+# rule. Same lex entry; new rule. ``mga sampu`` "around ten" is
+# the target. (Plural marking on regular nouns and DAY / MONTH
+# approximation remain deferred per Commit 13.)
+#
+# Hyphenation note: ``humigit-kumulang`` is canonically
+# hyphenated. The current tokenizer (``\w+|\S``) splits hyphens,
+# so a tokenizer pre-pass would be needed to recognise the
+# canonical form as a single lex item. For now the seed lex
+# stores the single-token form ``humigitkumulang`` (parallel to
+# the Phase 5f Commit 14 seasons treatment of ``tag-init`` /
+# ``taginit``). The hyphenated form is deferred.
+#
+# Out of scope for this commit:
+#
+# * ``malapit sa NUM`` "close to N" — multi-word approximator
+#   with a DAT-NP complement. Analytically more involved than
+#   the simple pre-modifier; deferred.
+- surface: halos
+  pos: PART
+  feats: {APPROX: "YES"}
+- surface: humigitkumulang
+  pos: PART
+  feats: {APPROX: "YES"}
+
 # === Phase 4 §7.6: psych control predicates ==============================
 # Pseudo-verbal predicates that select an XCOMP complement clause and
 # take a GEN-marked experiencer. They have no verbal morphology

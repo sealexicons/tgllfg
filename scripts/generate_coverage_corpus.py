@@ -1507,6 +1507,22 @@ def _cardinal_corpus() -> list[dict[str, Any]]:
          "vague: marami in SUBJ", "parse")
     _add(out, "kumakain ang karamihan na bata",
          "vague: karamihan + na in SUBJ", "parse")
+    # Phase 5f Commit 16: approximators (Group H1 item 2).
+    for approx in ("halos", "humigitkumulang"):
+        _add(out, f"bumili ako ng {approx} sampung aklat",
+             f"approx: {approx} + cardinal NP-modifier (OBJ)", "parse")
+    _add(out, "bumili ako ng mga sampung aklat",
+         "approx: broader mga + cardinal NP-modifier", "parse")
+    _add(out, "kumakain ang mga tatlong bata",
+         "approx: broader mga + cardinal in SUBJ", "parse")
+    _add(out, "kumakain ang halos lahat ng bata",
+         "approx: halos + lahat partitive", "parse")
+    _add(out, "bumili ako ng halos maraming aklat",
+         "approx: halos + vague-Q linker", "parse")
+    _add(out, "kumakain ang halos sampung bata",
+         "approx: halos + cardinal in SUBJ", "parse")
+    _add(out, "bumili ako ng halos apat na aklat",
+         "approx: halos + consonant-final cardinal (apat na)", "parse")
     return out
 
 

@@ -3393,6 +3393,30 @@
 - text: Kumakain ang karamihan na bata.
   construction: 'vague: karamihan + na in SUBJ'
   expected: parse
+- text: Bumili ako ng halos sampung aklat.
+  construction: 'approx: halos + cardinal NP-modifier (OBJ)'
+  expected: parse
+- text: Bumili ako ng humigitkumulang sampung aklat.
+  construction: 'approx: humigitkumulang + cardinal NP-modifier (OBJ)'
+  expected: parse
+- text: Bumili ako ng mga sampung aklat.
+  construction: 'approx: broader mga + cardinal NP-modifier'
+  expected: parse
+- text: Kumakain ang mga tatlong bata.
+  construction: 'approx: broader mga + cardinal in SUBJ'
+  expected: parse
+- text: Kumakain ang halos lahat ng bata.
+  construction: 'approx: halos + lahat partitive'
+  expected: parse
+- text: Bumili ako ng halos maraming aklat.
+  construction: 'approx: halos + vague-Q linker'
+  expected: parse
+- text: Kumakain ang halos sampung bata.
+  construction: 'approx: halos + cardinal in SUBJ'
+  expected: parse
+- text: Bumili ako ng halos apat na aklat.
+  construction: 'approx: halos + consonant-final cardinal (apat na)'
+  expected: parse
 - text: Kumain ng aso ang.
   construction: 'robustness: incomplete NP'
   expected: fragment

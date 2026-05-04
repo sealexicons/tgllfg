@@ -7569,3 +7569,176 @@ disambiguator.
 * **VAGUE projection to outer NPs (POSS, etc.)** — same NP-
   from-N projection limitation as cardinal-modifier features.
 
+## Phase 5f Commit 16: approximators (Group H1 item 2)
+
+**Date:** 2026-05-03. **Status:** active. 2 PART lex entries
++ 3 new grammar rules. Refs: plan §11.1 Group H item 2; S&O
+1972 §4.7; R&B 1986; Phase 5f Commit 13 (mga rule consumed
+with parallel NUM extension); Phase 5f Commit 1 (cardinal
+NP-modifier rule consumed unchanged; cardinal NUMs flow
+through the new wrap rule); Phase 5b (partitive) and Phase 5f
+Commit 15 (vague-Q-modifier) consumed unchanged for the Q
+wrap. docs/analysis-choices.md "Phase 5f Commit 13 (bundled):
+mga" entry — the cardinal-approximation deferral noted there
+is lifted in this commit.
+
+### Lex change
+
+Two PART entries in ``data/tgl/particles.yaml``:
+
+* ``halos`` — PART[APPROX="YES"]. "almost / nearly".
+* ``humigitkumulang`` — PART[APPROX="YES"]. "approximately /
+  more or less". Stored as the single-token form.
+
+Hyphenation note: the canonical orthography is
+``humigit-kumulang``. The tokenizer (``\w+|\S``) splits
+hyphens, so the canonical surface tokenises as 3 tokens
+(``humigit``, ``-``, ``kumulang``) — and ``humigit`` happens
+to also analyse as the AV PFV form of the verb root ``higit``
+"exceed" (an unrelated coincidence that would create
+ambiguous parses if unguarded). The single-token form
+``humigitkumulang`` sidesteps both issues. Same pragmatic
+precedent as Phase 5f Commit 14 seasons (``taginit`` for
+canonical ``tag-init``); the canonical hyphenated form awaits
+a tokenizer pre-pass.
+
+The string-quoted ``"YES"`` in the lex entry matters for the
+same reason as Phase 5f Commit 15: bare ``YES`` parses as
+Python boolean ``True``, which would not match the
+``=c 'YES'`` constraining equation. (Same recurring pitfall;
+worth mentioning in plan §11.2 / docs/diagnostics.md.)
+
+### Grammar change
+
+Three new rules in ``src/tgllfg/cfg/grammar.py``:
+
+**1. Cardinal-NUM approximator wrap.**
+
+```
+NUM → PART[APPROX=YES] NUM[CARDINAL=YES]
+Equations:
+  (↑) = ↓2                          # share daughter NUM's f-structure
+  (↑ APPROX) = 'YES'                # add APPROX feature
+  (↓1 APPROX) =c 'YES'              # gate to APPROX-marked PART
+  (↓2 CARDINAL) =c 'YES'            # gate to cardinal NUM
+```
+
+The output category is NUM (preserving CARDINAL=YES,
+CARDINAL_VALUE, NUM=PL/SG), so the matrix-NP cardinal-
+modifier rule (Phase 5f Commit 1) consumes the wrapped NUM
+unchanged. ``halos sampu`` "almost ten" produces NUM[CARDINAL=
+YES, CARDINAL_VALUE=10, APPROX=YES, NUM=PL]; the cardinal-
+modifier rule's ``(↓2 CARDINAL) =c 'YES'`` constraint matches,
+the matrix NP gains CARDINAL_VALUE=10, and APPROX rides on
+the inner NUM.
+
+**2. Q-approximator wrap.**
+
+```
+Q → PART[APPROX=YES] Q
+Equations:
+  (↑) = ↓2
+  (↑ APPROX) = 'YES'
+  (↓1 APPROX) =c 'YES'
+```
+
+Output is Q (preserving QUANT, VAGUE), so the existing Phase
+5b ``Q + NP[GEN]`` partitive (``halos lahat ng bata`` "almost
+all of the children") and the Phase 5f Commit 15 vague-Q-
+modifier (``halos maraming bata`` "almost many children")
+consume the wrapped Q unchanged. The Q rule has no daughter-
+gating constraint beyond ``(↓1 APPROX) =c 'YES'`` — any Q
+(lahat / iba / vague) can be wrapped.
+
+**3. Broader mga: extension to cardinal NUMs.**
+
+```
+NUM → PART[PLURAL_MARKER=YES] NUM[CARDINAL=YES]
+Equations:
+  (↑) = ↓2
+  (↑ APPROX) = 'YES'
+  (↓1 PLURAL_MARKER) =c 'YES'
+  (↓2 CARDINAL) =c 'YES'
+```
+
+Parallel to the Phase 5f Commit 13 ``N → PART[mga] N`` rule
+(time approximation), this rule extends ``mga`` to cardinal
+NUMs. Same lex entry (``mga`` with PLURAL_MARKER=YES); same
+APPROX=YES output; different daughter category (NUM not N).
+
+The Commit 13 doc note explicitly flagged this follow-on
+("Cardinal approximation (``mga sampu`` "around ten") use the
+same ``mga`` lex entry but are separate constructions;
+deferred follow-ons"); this commit lifts that deferral. The
+in-source comment on the Commit 13 N rule has been updated
+to point at the new NUM rule.
+
+### Why three rules, not one with disjunction
+
+The grammar engine doesn't currently support disjunction in
+RHS categories or constraining equations. Three flat rules
+each gated on a different combination of features is the
+cleanest expression. The three are structurally similar (same
+shared-fstruct pattern; same APPROX=YES output) but the
+gating differs:
+
+| Rule | Daughter PART feature | Daughter content category gate |
+|------|------------------------|--------------------------------|
+| 1 (halos cardinal) | APPROX=YES | CARDINAL=YES on NUM |
+| 2 (halos Q) | APPROX=YES | (no gate; any Q) |
+| 3 (mga cardinal) | PLURAL_MARKER=YES | CARDINAL=YES on NUM |
+
+A future grammar-engine extension supporting feature-
+disjunction in constraining equations (``(↓1 APPROX) =c 'YES'
+| (↓1 PLURAL_MARKER) =c 'YES'``) would let rules 1 and 3
+collapse into one. Out of scope here.
+
+### Cardinal-NP-modifier rule consumes the wrap unchanged
+
+The matrix-NP cardinal-modifier rule (Phase 5f Commit 1)
+specifies ``NUM[CARDINAL=YES]`` as its daughter category. The
+wrap rule's output is exactly that category — same surface,
+new APPROX feature. So ``halos sampu`` slots in wherever
+``sampu`` does:
+
+* ``Bumili ako ng halos sampung aklat.`` — OBJ position.
+* ``Kumakain ang halos sampung bata.`` — SUBJ position.
+* ``Pumunta ako sa halos sampung bahay.`` — DAT position.
+* ``Halos sampu ang aklat ko.`` — predicative position
+  (Phase 5f Commit 4 predicative-cardinal rule).
+
+The matrix NP (or matrix predicate clause, in the predicative
+case) doesn't lift APPROX from the daughter NUM — same NP-
+from-N projection limitation as cardinal-modifier features.
+Tests walk down to the inner NUM to verify APPROX=YES.
+
+### Negative fixtures (per §11.2)
+
+* ``*Pumunta ako sa halos bata.`` — ``bata`` is N (not NUM/Q
+  with APPROX gating). The wrap rules' constraining equations
+  fail; no parse composes ``halos`` as an approximator
+  modifier on ``bata``.
+* ``*Pumunta ako halos.`` — bare ``halos`` with no NUM/Q
+  daughter. The wrap rules require a daughter; without one
+  the rule doesn't fire.
+
+### Out of scope for this commit
+
+* **Hyphenated ``humigit-kumulang`` orthography** — needs the
+  same tokenizer pre-pass deferred for Phase 5f Commit 14
+  seasons.
+* **``malapit sa NUM``** "close to N" — multi-word
+  approximator with a DAT-NP complement
+  (``malapit sa sampu`` "close to ten"). Analytically more
+  involved than the simple pre-modifier; the head ``malapit``
+  is an adjective and the construction needs an
+  ADJ + DAT-NP frame rule. Deferred to a later commit.
+* **APPROX percolation to the matrix NP** — same NP-from-N
+  projection limitation as cardinal-modifier features
+  (Commit 1) and SEASON percolation (Commit 14). Could be
+  lifted by extending the Commit 1 / Commit 7 / Commit 15
+  NP-modifier rules to lift APPROX explicitly; out of scope
+  for this commit.
+* **mga DAY / MONTH approximation** — non-idiomatic; flagged
+  out-of-scope in Commit 13 and remains so.
+
