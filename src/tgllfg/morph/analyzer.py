@@ -41,6 +41,7 @@ This prevents a ``-um-`` only root like ``kain`` from generating
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 
 from ..common import MorphAnalysis, Token
@@ -58,6 +59,16 @@ from .sandhi import (
     nasal_assim_prefix,
     nasal_substitute,
 )
+
+# Phase 5f closing deferral (digit tokenization): a bare digit string
+# (``5``, ``1990``, ``42``) analyses as a cardinal NUM, parallel to
+# the word-form cardinals (``isa`` / ``dalawa`` / ``tatlo`` / ...) in
+# ``data/tgl/particles.yaml``. The same NP-internal modifier /
+# predicative-cardinal / arithmetic-predicate / decimal-NUM rules
+# that consume ``CARDINAL=YES`` daughters then accept the digit form
+# unchanged. ASCII digits only (``\d`` would also match Arabic-Indic
+# / Devanagari digits, which the corpus doesn't use).
+_DIGIT_RE = re.compile(r"^[0-9]+$")
 
 
 def generate_form(root: Root, cell: ParadigmCell) -> str:
@@ -132,10 +143,23 @@ class Analyzer:
 
     def analyze_one(self, token: Token) -> list[MorphAnalysis]:
         """Return all analyses for a single token, in priority order:
-        particles, pronouns, verb forms, nouns. Falls back to a
-        single ``_UNK`` analysis if nothing matches."""
+        digit-form cardinal, particles, pronouns, verb forms, nouns.
+        Falls back to a single ``_UNK`` analysis if nothing matches.
+        """
         n = token.norm
         out: list[MorphAnalysis] = []
+        if _DIGIT_RE.match(n):
+            value = int(n)
+            out.append(MorphAnalysis(
+                lemma=n,
+                pos="NUM",
+                feats={
+                    "CARDINAL": "YES",
+                    "CARDINAL_VALUE": n,
+                    "DIGIT_FORM": "YES",
+                    "NUM": "SG" if value == 1 else "PL",
+                },
+            ))
         if n in self._index.particles:
             out.extend(self._index.particles[n])
         if n in self._index.pronouns:
