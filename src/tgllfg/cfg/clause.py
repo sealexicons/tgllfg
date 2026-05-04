@@ -146,6 +146,52 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5f closing deferral: predicative distributive cardinal ---
+    #
+    # ``Tigisang aklat sila.`` "they each have one book" — a
+    # distributive cardinal predicating a possessed-N relation
+    # over a NOM pronoun. Companion to the clause-initial dual Q
+    # rule in ``cfg/clitic.py`` (covers both Phase 5f Commits 19 +
+    # 23 plan §18 deferrals). The float-form alternant
+    # ``Bumili sila ng tigisang aklat.`` already parses via the
+    # NP-modifier rules.
+    #
+    # F-structure shape:
+    #
+    #   PRED            = 'CARDINAL <SUBJ, OBJ>'
+    #   SUBJ            = the NOM-pivot pronoun (the possessors)
+    #   OBJ             = the bare N (the per-possessor count)
+    #   CARDINAL_VALUE  = the count from the cardinal
+    #   DISTRIB         = 'YES'
+    #   NUM             = the cardinal's NUM
+    #
+    # Constraining ``(↓1 DISTRIB) =c 'YES'`` restricts the rule
+    # to genuinely distributive cardinals (``tigisa`` /
+    # ``tigdalawa`` / ...) rather than firing on plain cardinals
+    # (``isa`` / ``dalawa`` / ...) which would overgenerate to
+    # ``Isang aklat sila.`` with no distributive reading.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            [
+                "NUM[CARDINAL=YES]",
+                f"PART[LINK={link}]",
+                "N",
+                "NP[CASE=NOM]",
+            ],
+            [
+                "(↑ PRED) = 'CARDINAL <SUBJ, OBJ>'",
+                "(↑ SUBJ) = ↓4",
+                "(↑ OBJ) = ↓3",
+                "(↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE",
+                "(↑ NUM) = ↓1 NUM",
+                "(↑ DISTRIB) = 'YES'",
+                "(↓1 CARDINAL) =c 'YES'",
+                "(↓1 DISTRIB) =c 'YES'",
+            ],
+        ))
+
+
     # --- Phase 5f Commit 9: arithmetic predicates (Group D) -----
     #
     # Word-form arithmetic: ``Dalawa dagdag tatlo ay lima``
