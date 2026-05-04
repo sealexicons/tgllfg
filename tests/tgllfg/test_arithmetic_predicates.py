@@ -16,7 +16,7 @@ Lex (data/tgl/particles.yaml): 4 operator PARTs:
   NOUN reading in periphrastic-frequency NP positions).
 * ``hati`` PART, OP=DIVIDE.
 
-Grammar (src/tgllfg/cfg/grammar.py): 4 S rules:
+Grammar (src/tgllfg/cfg/clause.py): 4 S rules:
 
 * Plus / minus / times: ``S → NUM[CARDINAL=YES] PART
   NUM[CARDINAL=YES] PART[LINK=AY] NUM[CARDINAL=YES]`` (5

@@ -15,7 +15,7 @@ Lex (data/tgl/nouns.yaml):
   split by the current tokenizer (``\\w+|\\S``); a tokenizer
   pre-pass to glue the hyphenated forms is deferred.
 
-Grammar (src/tgllfg/cfg/grammar.py):
+Grammar (src/tgllfg/cfg/discourse.py):
 
 * Phase 5f Commit 13 temporal-frame PP rule
   (``PP → PART N`` with ``(↓1 TIME_FRAME)`` and

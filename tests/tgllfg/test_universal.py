@@ -11,7 +11,7 @@ Lex (data/tgl/particles.yaml):
 * ``kada``  — Q[QUANT=EVERY, UNIV="YES"]. Spanish-borrowed
   colloquial synonym of ``bawat``. Same f-structure shape.
 
-Grammar (src/tgllfg/cfg/grammar.py):
+Grammar (src/tgllfg/cfg/nominal.py):
 
 * 3 case-marked NP rules:
     NP[CASE=X] → DET/ADP[CASE=X] Q[UNIV=YES] N

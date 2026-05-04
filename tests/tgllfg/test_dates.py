@@ -18,7 +18,7 @@ Lex (data/tgl/particles.yaml):
 * ``tuwing`` (every) — PART with TIME_FRAME=PERIODIC.
 * ``noong`` (last / past) — PART with TIME_FRAME=PAST.
 
-Grammar (src/tgllfg/cfg/grammar.py):
+Grammar (src/tgllfg/cfg/discourse.py):
 
 * New PP rule: ``PP → PART N`` with constraining equations
   ``(↓1 TIME_FRAME)`` (existential — PART has TIME_FRAME)

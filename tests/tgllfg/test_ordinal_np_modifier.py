@@ -19,7 +19,7 @@ Lex (data/tgl/particles.yaml): 11 ordinal entries:
   ``ikapito`` (7th), ``ikawalo`` (8th), ``ikasiyam`` (9th),
   ``ikasampu`` (10th)
 
-Grammar (src/tgllfg/cfg/grammar.py): 6 NP-level ordinal-modifier
+Grammar (src/tgllfg/cfg/nominal.py): 6 NP-level ordinal-modifier
 rules (3 cases × 2 linker variants), plus a constraining
 equation ``(↓2 ORDINAL) =c 'YES'`` so the rule fires only on
 true ordinals (parallel to the cardinal rules' new

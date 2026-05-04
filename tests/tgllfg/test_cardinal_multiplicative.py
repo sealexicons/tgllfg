@@ -20,7 +20,7 @@ This commit lands:
 * Lex (data/tgl/particles.yaml): 10 ``maka-`` cardinals
   (``makaisa`` ... ``makasampu``) as ADV with
   ``ADV_TYPE=FREQUENCY`` and ``MULTIPLIER_VALUE``.
-* Grammar (src/tgllfg/cfg/grammar.py): one new rule
+* Grammar (src/tgllfg/cfg/nominal.py): one new rule
   ``S → S AdvP`` constraining to ``ADV_TYPE=FREQUENCY``,
   attaching the AdvP to the matrix's ADJUNCT set. Closes part
   of the Phase 5e Commit 3 deferral on bare AdvP placement —

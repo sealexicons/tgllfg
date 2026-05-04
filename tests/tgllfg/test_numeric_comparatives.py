@@ -28,7 +28,7 @@ Lex (data/tgl/particles.yaml):
                   Polysemous with the verb-form analysis (AV
                   CTPL of root ``higit`` "exceed").
 
-Grammar (src/tgllfg/cfg/grammar.py):
+Grammar (src/tgllfg/cfg/nominal.py):
 
 * 2 solo-frame rules (higit / kulang):
     NUM → PART[COMP_PHRASE] ADP[CASE=DAT] NUM[CARDINAL=YES]

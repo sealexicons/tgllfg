@@ -23,7 +23,7 @@ POS choice — Q rather than ADJ — reflects:
   template (Phase 5f Commits 15 / 20 / 21).
 * Predicate-Adj path doesn't exist yet (Phase 5g).
 
-Grammar (src/tgllfg/cfg/grammar.py):
+Grammar (src/tgllfg/cfg/nominal.py):
 
 * 6 case-marked NP rules:
     NP[CASE=X] → DET/ADP[CASE=X] Q[WHOLE=YES] PART[LINK] N

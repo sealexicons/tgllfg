@@ -91,7 +91,7 @@
 #
 # The lex entry carries only the ``KITA: YES`` marker; the actual
 # person/number/case feats for the two argument slots are set by
-# the grammar rules in src/tgllfg/cfg/grammar.py (Phase 5e Commit
+# the grammar rules in src/tgllfg/cfg/clitic.py (Phase 5e Commit
 # 20 section). This keeps the lex flat (the loader doesn't support
 # nested feats in pronouns.yaml) while letting the grammar route
 # the dual binding into SUBJ and OBJ-AGENT.

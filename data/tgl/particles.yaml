@@ -164,7 +164,7 @@
 # nearly" and ``humigit-kumulang`` "approximately / more or less"
 # are the canonical pair (S&O 1972 §4.7; R&B 1986). Per plan
 # §11.1 Group H item 2: "Modifies a NUM or Q head" — see the
-# Phase 5f Commit 16 grammar rules in src/tgllfg/cfg/grammar.py
+# Phase 5f Commit 16 grammar rules in src/tgllfg/cfg/nominal.py
 # for the structural realisation.
 #
 # This commit also broadens the Phase 5f Commit 13 ``mga`` time-
@@ -343,7 +343,7 @@
 #   Q + N                    universal (this commit)
 #
 # The new grammar rules (Phase 5f Commit 20 in
-# src/tgllfg/cfg/grammar.py) parallel Phase 5f Commit 15 except
+# src/tgllfg/cfg/nominal.py) parallel Phase 5f Commit 15 except
 # the linker daughter is dropped. Three case-marked variants
 # (DET/ADP[CASE=X] Q[UNIV=YES] N) plus one bare-NOM variant
 # (Q[UNIV=YES] N) for surfaces like ``Bawat bata ay kumakain.``
@@ -548,7 +548,7 @@
 # behaviour — `parang` and `tila` typically appear WITHOUT a
 # following linker (`Parang umuulan`, `Tila kumain ang bata`),
 # whereas mukha takes the bound `-ng` linker (`Mukhang umuulan`).
-# A second matrix wrap rule in cfg/grammar.py admits the no-linker
+# A second matrix wrap rule in cfg/control.py admits the no-linker
 # form for V[CTRL_CLASS=RAISING]. `yata` "supposedly" is also
 # evidential but is a Wackernagel 2P clitic in Tagalog (already
 # seeded as PART[is_clitic=true] below) — not a raising verb.
@@ -557,7 +557,7 @@
 # "The child is like a dog") from tila's evidential-only reading.
 # Both keep CTRL_CLASS=RAISING_BARE for the existing evidential
 # (Phase 5d Commit 1) form `Parang umuulan` / `Tila umuulan`. The
-# comparative grammar rule (cfg/grammar.py) constrains on
+# comparative grammar rule (cfg/clause.py) constrains on
 # `(↓1 COMPARATIVE) =c 'YES'` to fire only on parang (not tila).
 - surface: parang
   pos: VERB
@@ -682,7 +682,7 @@
 # Cardinals as NP-internal modifiers via the linker
 # (``isang bata`` "one child", ``tatlong libro`` "three books").
 # CARDINAL=YES gates the cardinal-NP-modifier rule (see
-# src/tgllfg/cfg/grammar.py Phase 5f Commit 1). CARDINAL_VALUE is
+# src/tgllfg/cfg/nominal.py Phase 5f Commit 1). CARDINAL_VALUE is
 # quoted so PyYAML returns a string — the lex-equation pipeline
 # filters non-string atomic values (see Phase 5e Commit 16/26
 # YAML-boolean-trap memo), so unquoted integers would be dropped
@@ -925,7 +925,7 @@
 # via the linker, ``ang ikalawang anak`` "the second child"), but
 # with ``ORDINAL=YES`` and ``ORDINAL_VALUE`` features instead of
 # CARDINAL=YES / CARDINAL_VALUE. The Phase 5f Commit 7 ordinal-
-# NP-modifier rules (src/tgllfg/cfg/grammar.py) parallel the
+# NP-modifier rules (src/tgllfg/cfg/nominal.py) parallel the
 # Commit 1 cardinal rules.
 #
 # ``una`` (1st) is suppletive — not ``*ikaisa``. ``ikalawa`` and
@@ -1038,7 +1038,7 @@
 # ``alasotso menos singko`` "7:55". The ``y`` operator counts
 # forward (adds minutes); ``menos`` counts backward (subtracts).
 # Both PARTs feed the Phase 5f Commit 12 minute-composition
-# grammar rules (src/tgllfg/cfg/grammar.py).
+# grammar rules (src/tgllfg/cfg/nominal.py).
 - surface: y
   pos: PART
   feats: {MINUTE_OP: "Y"}

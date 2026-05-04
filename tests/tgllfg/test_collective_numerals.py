@@ -22,7 +22,7 @@ Lex (data/tgl/nouns.yaml):
                   "thousands" (canonical orthography
                   ``libu-libo``).
 
-Grammar (src/tgllfg/cfg/grammar.py):
+Grammar (src/tgllfg/cfg/nominal.py):
 
 * ``N → N PART[LINK] N`` (2 rule variants for NA / NG linker)
   with constraining equations:

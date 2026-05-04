@@ -720,7 +720,7 @@ BASE["bili"].append(LexicalEntry(
 # Phase 5b: three-arg IV-BEN variants with explicit PATIENT. Both
 # the AGENT and the PATIENT are demoted to typed OBJ-θ slots
 # (OBJ-AGENT, OBJ-PATIENT) by the LMT engine; the multi-GEN-NP
-# grammar rules in cfg/grammar.py bind them positionally
+# grammar rules in cfg/clause.py bind them positionally
 # (first ng-NP after V → AGENT, second → PATIENT).
 BASE["gawa"].append(LexicalEntry(
     lemma="gawa",
@@ -807,7 +807,7 @@ BASE["sulat"].append(LexicalEntry(
 # parallel to Phase 5b's three-arg IV-BEN. Both AGENT and
 # PATIENT demote to typed OBJ-θ slots (OBJ-AGENT, OBJ-PATIENT)
 # by the LMT engine; the multi-GEN-NP grammar rules in
-# cfg/grammar.py (Phase 5b, voice-restricted to V[VOICE=IV]
+# cfg/clause.py (Phase 5b, voice-restricted to V[VOICE=IV]
 # without APPL constraint) bind them positionally — first
 # ng-NP after V → AGENT, second → PATIENT.
 #
@@ -899,7 +899,7 @@ BASE.setdefault("inom", []).append(LexicalEntry(
 # Phase 5b: three-arg pa-OV-direct variants with explicit PATIENT.
 # Both CAUSER and PATIENT are demoted to typed OBJ-θ slots
 # (OBJ-CAUSER, OBJ-PATIENT) by the LMT engine; the multi-GEN-NP
-# grammar rules in cfg/grammar.py bind them positionally
+# grammar rules in cfg/clause.py bind them positionally
 # (first ng-NP after V → CAUSER, second → PATIENT).
 BASE["kain"].append(LexicalEntry(
     lemma="kain",

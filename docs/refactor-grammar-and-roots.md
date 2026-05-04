@@ -438,3 +438,64 @@ generation iterates ``MorphData.roots`` and indexes synthesised
 inflected forms — a re-order shouldn't matter (the index is keyed
 by (lemma, pos) tuples, and there are no duplicates), but the
 parse baseline is the authoritative check.
+
+## Outcome
+
+Implementation landed in 13 commits on
+``feature/refactor-grammar-package`` (2026-05-04):
+
+* Commit 1 — baseline ``parses.baseline.pkl`` capture +
+  ``scripts/check_parses_unchanged.py`` (the zero-ranker-diff gate
+  used on every subsequent commit).
+* Commit 2 — extract ``cfg/_helpers.py`` (``_eqs`` +
+  ``_VERB_PERCOLATION``).
+* Commits 3-9 — extract the seven per-area rule modules in this
+  order: ``nominal`` (originally ``np_rules``, 95 rules) →
+  ``clause`` (20 rules) → ``clitic`` (5 rules) → ``negation`` (2
+  rules) → ``extraction`` (46 rules) → ``control`` (30 rules) →
+  ``discourse`` (3 rules). ``grammar.py`` shrinks from 3250 lines
+  to 85 (composer + ``Rule`` dataclass + module docstring).
+* Commit 10 — drop the ``_rules`` suffix from filenames
+  (``np_rules.py`` → ``nominal.py``; the others have their bare
+  stem).
+* Commit 11 — split ``data/tgl/roots.yaml`` into ``verbs.yaml``
+  (204 entries) + ``nouns.yaml`` (207 entries); pulled the
+  misplaced "Phase 4 §7.6: control verbs" sub-section back into
+  the verb file; rename plan doc to
+  ``docs/refactor-grammar-and-roots.md``.
+* Commit 12 — reorder per-POS yaml entries: alphabetical for
+  most sections; chronological for months / days; by-N for
+  collective numerals; canonical-first preserved for seasons.
+* Commit 13 — sweep stale ``cfg/grammar.py`` references
+  throughout docs / tests / source comments to point at the new
+  per-area modules.
+
+Final ``cfg/`` layout:
+
+| File | Lines | Rules |
+|---|---:|---:|
+| ``__init__.py`` | 26 | (re-exports) |
+| ``_helpers.py`` | 40 | (utilities) |
+| ``compile.py`` | 209 | (unchanged) |
+| ``grammar.py`` | 85 | 0 (composer + Rule + Grammar) |
+| ``nominal.py`` | 1085 | 95 |
+| ``clause.py`` | 471 | 20 |
+| ``clitic.py`` | 180 | 5 |
+| ``negation.py`` | 128 | 2 |
+| ``extraction.py`` | 942 | 46 |
+| ``control.py`` | 541 | 30 |
+| ``discourse.py`` | 117 | 3 |
+| **total** | **3824** | **201** |
+
+Final ``data/tgl/`` lexicon split:
+
+* ``verbs.yaml`` — 204 entries (3 control verbs + 201
+  inflectional, alphabetical).
+* ``nouns.yaml`` — 207 entries across 11 sections (common /
+  frequency-multiplier / percentage / fractions / clock-time /
+  time-of-day / months / days / seasons / collective-numerals /
+  proper-name placeholders).
+
+Zero-diff invariant held on every commit: 4334 pytest pass count
+unchanged from Commit 1 onward, lint clean, zero ranker-output
+diff against the baseline.

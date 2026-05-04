@@ -15,7 +15,7 @@ Lex (data/tgl/particles.yaml):
   split by the current tokenizer; tokenizer pre-pass deferred
   (parallel to the Phase 5f Commit 14 seasons treatment).
 
-Grammar (src/tgllfg/cfg/grammar.py):
+Grammar (src/tgllfg/cfg/nominal.py):
 
 * ``NUM → PART[APPROX=YES] NUM[CARDINAL=YES]`` — wraps a
   cardinal NUM with APPROX=YES while preserving CARDINAL=YES,

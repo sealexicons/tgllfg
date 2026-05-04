@@ -1866,7 +1866,7 @@ profile ``_RAISING`` has the single COMPLEMENT entry with
 ``(None, None)`` (XCOMP-stipulated, off the truth table).
 
 **(c) Grammar wrap rule.** A new pattern in
-:file:`src/tgllfg/cfg/grammar.py`:
+:file:`src/tgllfg/cfg/control.py`:
 
 ```
 S → V[CTRL_CLASS=RAISING] PART[LINK=…] S
@@ -2301,7 +2301,7 @@ OBJ-PATIENT slots.
 
 ### Lex-only commit (no grammar change)
 
-The Phase 5b multi-GEN-NP rules in :file:`cfg/grammar.py` are
+The Phase 5b multi-GEN-NP rules in :file:`cfg/clause.py` are
 voice-restricted to ``V[VOICE=IV]`` without an APPL constraint:
 
 ```
@@ -4782,7 +4782,7 @@ prior commits and need no modification for Commit 18:
 ### The change: extend the wrap rule
 
 The only required change for Commit 18 is one extra iteration
-in the wrap-rule loop in ``src/tgllfg/cfg/grammar.py``:
+in the wrap-rule loop in ``src/tgllfg/cfg/extraction.py``:
 
 ```python
 for case in ("NOM", "GEN", "DAT"):
@@ -5100,7 +5100,7 @@ no ambiguity in practice.
 
 ### Grammar layer
 
-``src/tgllfg/cfg/grammar.py`` adds a per-voice loop that mirrors
+``src/tgllfg/cfg/clitic.py`` adds a per-voice loop that mirrors
 the standard non-AV ``voice_specs`` structure used elsewhere:
 
 ```python
@@ -6254,7 +6254,7 @@ commit partially closes).
 
 ### Grammar change
 
-One new rule (``src/tgllfg/cfg/grammar.py``):
+One new rule (``src/tgllfg/cfg/discourse.py``):
 
 ```
 S → S AdvP
@@ -7302,7 +7302,7 @@ Equations:
 ```
 
 gains a SEASON variant (the ``for sem_class in (...)`` loop
-in ``src/tgllfg/cfg/grammar.py`` extends to four members).
+in ``src/tgllfg/cfg/discourse.py`` extends to four members).
 This makes ``tuwing tagulan`` "every rainy season" (PERIODIC)
 and ``noong taginit`` "during the dry season" (PAST) parse
 via the same machinery as ``tuwing Lunes`` / ``noong
@@ -7610,7 +7610,7 @@ worth mentioning in plan §11.2 / docs/diagnostics.md.)
 
 ### Grammar change
 
-Three new rules in ``src/tgllfg/cfg/grammar.py``:
+Three new rules in ``src/tgllfg/cfg/nominal.py``:
 
 **1. Cardinal-NUM approximator wrap.**
 
@@ -7831,7 +7831,7 @@ pleasingly symmetric:
 
 ### Grammar change
 
-Four parallel rules in ``src/tgllfg/cfg/grammar.py``, generated
+Four parallel rules in ``src/tgllfg/cfg/nominal.py``, generated
 by two ``for`` loops over ``(comp_lex, comp_value)`` pairs.
 
 **Solo frame** (higit / kulang):
@@ -8250,7 +8250,7 @@ respective rules fire only on their target Qs.
 
 ### Grammar change
 
-Four new rules in ``src/tgllfg/cfg/grammar.py`` plus a gate
+Four new rules in ``src/tgllfg/cfg/nominal.py`` plus a gate
 addition on three existing rules.
 
 **3 case-marked NP rules** (NOM / GEN / DAT):
@@ -8420,7 +8420,7 @@ hyphenated awaits a tokenizer pre-pass.
 
 ### Grammar change
 
-Six case-marked NP rules in ``src/tgllfg/cfg/grammar.py`` (3
+Six case-marked NP rules in ``src/tgllfg/cfg/nominal.py`` (3
 cases × 2 linker variants):
 
 ```
@@ -8537,7 +8537,7 @@ Q is the cleanest choice.
 
 ### Grammar change
 
-Six case-marked NP rules in ``src/tgllfg/cfg/grammar.py`` (3
+Six case-marked NP rules in ``src/tgllfg/cfg/nominal.py`` (3
 cases × 2 linker variants):
 
 ```

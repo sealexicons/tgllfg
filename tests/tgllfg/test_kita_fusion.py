@@ -10,7 +10,7 @@ Otanes 1972 §3.2; Kroeger 1993 §2.2) — the alternative form
 
 The lex entry in ``data/tgl/pronouns.yaml`` carries the marker
 ``KITA: YES`` plus ``is_clitic: True``; the grammar rules in
-``src/tgllfg/cfg/grammar.py`` (Phase 5e Commit 20 section) supply
+``src/tgllfg/cfg/clitic.py`` (Phase 5e Commit 20 section) supply
 the dual binding via atomic-value equations on
 ``(↑ SUBJ ...)`` and ``(↑ <obj_target> ...)`` for the 2sg
 SUBJ and 1sg actor respectively. The typed actor slot per voice
