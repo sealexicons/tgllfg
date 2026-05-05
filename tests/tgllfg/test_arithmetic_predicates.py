@@ -60,7 +60,7 @@ Tests cover:
 from __future__ import annotations
 
 from tgllfg.morph import analyze_tokens
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 from tgllfg.text import tokenize
 
 

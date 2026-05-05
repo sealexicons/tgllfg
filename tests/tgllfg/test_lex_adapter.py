@@ -137,7 +137,7 @@ async def test_analyzer_from_default_with_db_backend(
     monkeypatch.setenv(DATABASE_URL_ENV, postgres_container.get_connection_url())
 
     analyzer = await asyncio.to_thread(Analyzer.from_default)
-    from tgllfg.common import Token
+    from tgllfg.core.common import Token
 
     analyses = analyzer.analyze_one(Token(surface="kumain", norm="kumain", start=0, end=6))
     assert any("VOICE" in a.feats and a.feats.get("VOICE") == "AV" for a in analyses)

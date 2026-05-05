@@ -29,10 +29,10 @@ These tests cover:
 
 from __future__ import annotations
 
-from tgllfg.common import FStructure
+from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens
 from tgllfg.morph.sandhi import nasal_assim_prefix
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 from tgllfg.text import tokenize
 
 

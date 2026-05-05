@@ -23,7 +23,7 @@ lives in :mod:`test_lmt_pipeline_integration`.
 
 from __future__ import annotations
 
-from tgllfg.common import FStructure, LexicalEntry
+from tgllfg.core.common import FStructure, LexicalEntry
 from tgllfg.fstruct import Diagnostic
 from tgllfg.lmt import lmt_check
 
@@ -267,7 +267,7 @@ class TestExistingParsesNoNewBlocking:
     promotion logic doesn't accidentally block them."""
 
     def test_ov_transitive_parse_survives(self) -> None:
-        from tgllfg.pipeline import parse_text
+        from tgllfg.core.pipeline import parse_text
         results = parse_text("Kinain ng aso ang isda.")
         assert results, "OV-tr parse was suppressed"
         # After the Phase 5b OBJ-θ-in-grammar alignment, no
@@ -277,19 +277,19 @@ class TestExistingParsesNoNewBlocking:
         assert not any(d.is_blocking() for d in diags)
 
     def test_dv_transitive_parse_survives(self) -> None:
-        from tgllfg.pipeline import parse_text
+        from tgllfg.core.pipeline import parse_text
         results = parse_text("Sinulatan ng bata ang ina.")
         assert results, "DV-tr parse was suppressed"
         assert not any(d.is_blocking() for d in results[0][3])
 
     def test_iv_conveyed_parse_survives(self) -> None:
-        from tgllfg.pipeline import parse_text
+        from tgllfg.core.pipeline import parse_text
         results = parse_text("Itinapon ng bata ang basura.")
         assert results, "IV-CONVEY parse was suppressed"
         assert not any(d.is_blocking() for d in results[0][3])
 
     def test_av_intransitive_clean(self) -> None:
-        from tgllfg.pipeline import parse_text
+        from tgllfg.core.pipeline import parse_text
         results = parse_text("Kumain ang aso.")
         assert results
         # No diagnostics at all.
@@ -301,7 +301,7 @@ class TestExistingParsesNoNewBlocking:
         # The lakad locative parse with OBL-LOC has no SUBJ mismatch
         # and no biuniqueness violation, so the promotion logic
         # doesn't suppress it.
-        from tgllfg.pipeline import parse_text
+        from tgllfg.core.pipeline import parse_text
         results = parse_text("Lumakad ang bata sa palengke.")
         # Find the OBL-LOC parse.
         obl_parse = next(

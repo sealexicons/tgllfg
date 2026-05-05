@@ -33,11 +33,11 @@ from __future__ import annotations
 
 import pytest
 
-from tgllfg.common import FStructure
+from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens
 from tgllfg.text import tokenize, split_enclitics, split_linker_ng
 from tgllfg.clitics import disambiguate_homophone_clitics
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 
 
 def _first_parse(text: str) -> FStructure | None:

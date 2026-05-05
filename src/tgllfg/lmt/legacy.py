@@ -27,7 +27,7 @@ Intransitive (no OBJ) — ``[ACTOR]``: ACTOR → SUBJ.
 
 from __future__ import annotations
 
-from ..common import AStructure, FStructure
+from ..core.common import AStructure, FStructure
 
 
 def apply_lmt(f: FStructure) -> AStructure:

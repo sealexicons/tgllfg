@@ -1,6 +1,6 @@
 # tgllfg/examples/demo.py
 
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 from tgllfg.renderers import render_c, render_f, render_a
 
 if __name__ == "__main__":

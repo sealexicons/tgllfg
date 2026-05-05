@@ -29,7 +29,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import dataclass
 
-from ..common import CNode, FStructure
+from ..core.common import CNode, FStructure
 from .graph import Diagnostic
 
 

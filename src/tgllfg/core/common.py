@@ -1,12 +1,13 @@
-# tgllfg/common.py
+# tgllfg/core/common.py
 
 """Foundational data types shared across the tgllfg pipeline.
 
 These are the value-bearing records passed between stages
 (tokenizer, morphology, lexicon, parser, unifier, LMT, renderers).
-The package's `__init__.py` re-exports them as the public surface;
-new code should import from here directly when working inside the
-package, and from `tgllfg` when consuming it.
+The :mod:`tgllfg.core` package's ``__init__.py`` re-exports them
+as the public surface of the core layer; new code should import
+from here directly when working inside the package, and from
+``tgllfg.core`` when consuming it.
 """
 
 from __future__ import annotations

@@ -8,7 +8,7 @@ live in ``test_lmt_oblique_pipeline.py``.
 
 from __future__ import annotations
 
-from tgllfg.common import FStructure
+from tgllfg.core.common import FStructure
 from tgllfg.lmt import Role, classify_oblique_slots
 
 

@@ -14,14 +14,14 @@ from __future__ import annotations
 
 from typing import Any
 
-from tgllfg.common import AStructure, FStructure, LexicalEntry
+from tgllfg.core.common import AStructure, FStructure, LexicalEntry
 from tgllfg.fstruct import Diagnostic
 from tgllfg.lmt.check import (
     _retag_diagnostics,
     _walk_xcomp_subs,
     apply_lmt_with_check,
 )
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 
 
 def _first(text: str) -> tuple[Any, FStructure, AStructure, list[Diagnostic]]:
@@ -214,7 +214,7 @@ class TestSyntheticEmbeddedMismatch:
 
         # Synthesize lex_items containing both entries (PRED-keyed
         # matching is enough for find_matrix_lex_entry).
-        from tgllfg.common import MorphAnalysis
+        from tgllfg.core.common import MorphAnalysis
         ma_matrix = MorphAnalysis(lemma="zzz", pos="VERB", feats={"VOICE": "AV"})
         ma_embedded = MorphAnalysis(lemma="qqq", pos="VERB", feats={"VOICE": "AV"})
         lex_items = [
@@ -265,7 +265,7 @@ class TestSyntheticEmbeddedMismatch:
             "SUBJ": FStructure(feats={"PRED": "S"}, id=10),
             "XCOMP": empty_xcomp,
         }, id=1)
-        from tgllfg.common import MorphAnalysis
+        from tgllfg.core.common import MorphAnalysis
         ma = MorphAnalysis(lemma="zzz", pos="VERB", feats={"VOICE": "AV"})
         lex_items = [[(ma, matrix_le)]]
         _astr, diags = apply_lmt_with_check(f, lex_items)

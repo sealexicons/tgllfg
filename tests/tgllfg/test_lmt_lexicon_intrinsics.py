@@ -13,9 +13,9 @@ from __future__ import annotations
 
 import pytest
 
-from tgllfg.common import LexicalEntry, MorphAnalysis
+from tgllfg.core.common import LexicalEntry, MorphAnalysis
 from tgllfg.fstruct.checks import parse_pred_template
-from tgllfg.lexicon import BASE, _synthesize_verb_entry
+from tgllfg.core.lexicon import BASE, _synthesize_verb_entry
 from tgllfg.lmt import (
     IntrinsicFeatures,
     Role,

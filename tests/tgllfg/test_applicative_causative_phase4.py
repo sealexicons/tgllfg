@@ -35,9 +35,9 @@ from __future__ import annotations
 
 import pytest
 
-from tgllfg.common import FStructure, Token
+from tgllfg.core.common import FStructure, Token
 from tgllfg.morph.analyzer import _get_default
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 
 
 def _first(text: str) -> FStructure:

@@ -46,7 +46,7 @@ from pathlib import Path
 
 import yaml
 
-from tgllfg.common import MorphAnalysis
+from tgllfg.core.common import MorphAnalysis
 
 DEFAULT_PRIORITY: int = 999
 

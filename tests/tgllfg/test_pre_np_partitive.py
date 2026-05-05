@@ -21,9 +21,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from tgllfg.common import AStructure, FStructure
+from tgllfg.core.common import AStructure, FStructure
 from tgllfg.fstruct import Diagnostic
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 
 
 def _first(text: str) -> tuple[Any, FStructure, AStructure, list[Diagnostic]]:

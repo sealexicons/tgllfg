@@ -54,9 +54,9 @@ Tests:
 from __future__ import annotations
 
 from tgllfg.clitics import reorder_clitics
-from tgllfg.common import FStructure
+from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 from tgllfg.text import split_enclitics, split_linker_ng, tokenize
 
 

@@ -39,7 +39,7 @@ from __future__ import annotations
 
 from collections.abc import Iterator, Sequence
 
-from ..common import AStructure, FStructure, LexicalEntry, MorphAnalysis
+from ..core.common import AStructure, FStructure, LexicalEntry, MorphAnalysis
 from ..fstruct import Diagnostic
 from ..fstruct.checks import is_governable_gf, parse_pred_template
 from .common import intrinsics_for, stipulated_gfs_for

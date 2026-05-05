@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import pytest
 
-from tgllfg.common import Token
+from tgllfg.core.common import Token
 from tgllfg.morph import (
     AdjectiveCell,
     Analyzer,

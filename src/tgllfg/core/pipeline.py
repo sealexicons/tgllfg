@@ -29,15 +29,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .cfg import Grammar
-from .clitics import reorder_clitics
+from ..cfg import Grammar
+from ..clitics import reorder_clitics
 from .common import AStructure, CNode, FStructure
-from .fstruct import Diagnostic, lfg_well_formed, solve
+from ..fstruct import Diagnostic, lfg_well_formed, solve
 from .lexicon import lookup_lexicon
-from .lmt import apply_lmt_with_check
-from .morph import analyze_tokens
-from .parse import parse_with_annotations
-from .text import (
+from ..lmt import apply_lmt_with_check
+from ..morph import analyze_tokens
+from ..parse import parse_with_annotations
+from ..text import (
     merge_hyphen_compounds,
     split_enclitics,
     split_linker_ng,

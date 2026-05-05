@@ -42,7 +42,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
-from ..common import FStructure
+from ..core.common import FStructure
 from ..fstruct import Diagnostic
 from .common import Role
 

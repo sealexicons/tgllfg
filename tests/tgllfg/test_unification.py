@@ -4,7 +4,7 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from tgllfg.common import CNode, FStructure
+from tgllfg.core.common import CNode, FStructure
 from tgllfg.fstruct import (
     AtomValue,
     ComplexValue,
@@ -311,7 +311,7 @@ class TestOrchestration:
         # The percolation test in test_pv_features_percolate.py runs the
         # full pipeline; this is a redundant guard at the unification
         # layer to make a §4.2 regression visible immediately.
-        from tgllfg.pipeline import parse_text
+        from tgllfg.core.pipeline import parse_text
         results = parse_text("Kinain ng aso ang isda.")
         assert len(results) >= 1
         _, f, _, _ = results[0]

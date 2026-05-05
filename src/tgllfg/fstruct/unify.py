@@ -40,7 +40,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
 
-from ..common import CNode, FStructure
+from ..core.common import CNode, FStructure
 from .equations import (
     Atom,
     ConstrainingEquation,

@@ -35,7 +35,7 @@ Issues = "https://github.com/skynavga/tgllfg/issues"
 Source = "https://github.com/skynavga/tgllfg"
 
 [tool.hatch.version]
-path = "src/tgllfg/__about__.py"
+path = "src/tgllfg/__version__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
@@ -60,7 +60,7 @@ source_pkgs = ["tgllfg", "tests"]
 branch = true
 parallel = true
 omit = [
-  "src/tgllfg/__about__.py",
+  "src/tgllfg/__version__.py",
 ]
 
 [tool.coverage.paths]

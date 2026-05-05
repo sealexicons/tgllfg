@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tgllfg.common import LexicalEntry, MorphAnalysis
+from tgllfg.core.common import LexicalEntry, MorphAnalysis
 from tgllfg.parse import (
     PackedForest,
     parse_with_annotations,
@@ -229,7 +229,7 @@ class TestDemoGrammar:
         # Black-box: the full pipeline parses the demo sentence and
         # produces the c-/f-/a- structures the percolation test expects.
         # Phase 4: grammar is flat (S → V NP NP), no VP intermediate.
-        from tgllfg.pipeline import parse_text
+        from tgllfg.core.pipeline import parse_text
         results = parse_text("Kinain ng aso ang isda.")
         assert len(results) >= 1
         ctree, _, _, _ = results[0]
@@ -239,7 +239,7 @@ class TestDemoGrammar:
         ]
 
     def test_demo_c_tree_has_lex_equations(self) -> None:
-        from tgllfg.pipeline import parse_text
+        from tgllfg.core.pipeline import parse_text
         results = parse_text("Kinain ng aso ang isda.")
         ctree, _, _, _ = results[0]
         v = ctree.children[0]  # Phase 4 flat S: V is the first child of S.
