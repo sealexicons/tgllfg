@@ -17,10 +17,80 @@
 # against ``MorphAnalysis.pos``, attribute names live in equation
 # strings — but every code reader confuses them once.
 #
+# Phase 5g Commit 4 expands the seed inventory from 6 (Commit 1)
+# to 30, covering size / quality / sensory / evaluative dimensions.
+# Several roots also exist in ``verbs.yaml`` as INTR "be X" stative
+# verbs (``ganda``, ``bilis``, ``ingay``, ``init``, ``lakas``,
+# ``saya``, ``lungkot``, ``yaman``) or as TR/INTR verbs with a
+# distinct sense (``baba`` "go down", ``linis`` "clean (TR)"). The
+# additive policy leaves verbs.yaml untouched — the verbal entries
+# produce inchoative / stative-verb surfaces (``gumanda``,
+# ``naganda``, ``bumaba``, etc.) that don't collide with the
+# adjectival ``ma + root`` surface produced here.
+#
 # Citations: R&B 1986, S&O 1972 §5, Ramos dictionary entries for
 # adjective roots.
 
-# === Seed inventory (Commit 1; Commit 4 expands to ~30) =================
+# === Size dimension =====================================================
+
+- citation: laki
+  pos: ADJ
+  gloss: big, large
+  affix_class: [ma_adj]
+
+- citation: liit
+  pos: ADJ
+  gloss: small
+  affix_class: [ma_adj]
+  # R&G 1981 §12.9 integration benchmark — produces ``maliit``
+  # for ``Maliit ang bahay.`` "The house is small".
+
+- citation: taas
+  pos: ADJ
+  gloss: high, tall
+  affix_class: [ma_adj]
+  # R&G 1981 §12.9 integration benchmark — produces ``mataas``
+  # for ``Mataas ang bundok.`` "The mountain is high". Note:
+  # ``taas`` also exists in verbs.yaml as TR "raise, lift up"
+  # (different sense); both citations coexist as separate roots
+  # in the analyzer's index.
+
+- citation: baba
+  pos: ADJ
+  gloss: low
+  affix_class: [ma_adj]
+  # ``mababa``. Also a verb root in verbs.yaml meaning "go down,
+  # descend" (``bumaba`` etc.) — distinct sense.
+
+- citation: haba
+  pos: ADJ
+  gloss: long
+  affix_class: [ma_adj]
+
+- citation: ikli
+  pos: ADJ
+  gloss: short (in length)
+  affix_class: [ma_adj]
+  # ``maikli``. Distinct from ``mababa`` "low" and from the
+  # stature-short ``mapandak``.
+
+- citation: lapad
+  pos: ADJ
+  gloss: wide, broad
+  affix_class: [ma_adj]
+
+- citation: kapal
+  pos: ADJ
+  gloss: thick
+  affix_class: [ma_adj]
+
+- citation: nipis
+  pos: ADJ
+  gloss: thin
+  affix_class: [ma_adj]
+
+
+# === Quality dimension ==================================================
 
 - citation: ganda
   pos: ADJ
@@ -44,23 +114,6 @@
   # R&G 1981 §12.9 integration benchmark — produces ``matanda``
   # for ``Matanda siya.`` "She is old".
 
-- citation: liit
-  pos: ADJ
-  gloss: small
-  affix_class: [ma_adj]
-  # R&G 1981 §12.9 integration benchmark — produces ``maliit``
-  # for ``Maliit ang bahay.`` "The house is small".
-
-- citation: taas
-  pos: ADJ
-  gloss: high, tall
-  affix_class: [ma_adj]
-  # R&G 1981 §12.9 integration benchmark — produces ``mataas``
-  # for ``Mataas ang bundok.`` "The mountain is high". Note:
-  # ``taas`` also exists in verbs.yaml as TR "raise, lift up"
-  # (different sense); both citations coexist as separate roots
-  # in the analyzer's index.
-
 - citation: bilis
   pos: ADJ
   gloss: quick, fast
@@ -68,3 +121,105 @@
   # ``mabilis`` "quick / fast"; combined with the linker also
   # serves as the manner-adverb form (``mabilis na tumakbo``
   # "ran quickly" — Phase 5g Commit 5).
+
+- citation: bait
+  pos: ADJ
+  gloss: kind, well-behaved
+  affix_class: [ma_adj]
+
+- citation: sipag
+  pos: ADJ
+  gloss: diligent, industrious
+  affix_class: [ma_adj]
+
+- citation: tamad
+  pos: ADJ
+  gloss: lazy
+  affix_class: [ma_adj]
+
+- citation: tapang
+  pos: ADJ
+  gloss: brave
+  affix_class: [ma_adj]
+
+- citation: lakas
+  pos: ADJ
+  gloss: strong
+  affix_class: [ma_adj]
+  # Also in verbs.yaml as INTR "be strong"; additive twin.
+
+- citation: hina
+  pos: ADJ
+  gloss: weak
+  affix_class: [ma_adj]
+
+- citation: linis
+  pos: ADJ
+  gloss: clean
+  affix_class: [ma_adj]
+  # ``linis`` is also in verbs.yaml as TR "clean" (the verbal
+  # action of cleaning) — distinct from the adjectival "clean
+  # (state)".
+
+
+# === Sensory dimension ==================================================
+
+- citation: init
+  pos: ADJ
+  gloss: hot
+  affix_class: [ma_adj]
+  # Also in verbs.yaml as INTR "be hot, be heated"; additive twin.
+
+- citation: lamig
+  pos: ADJ
+  gloss: cold
+  affix_class: [ma_adj]
+
+- citation: sarap
+  pos: ADJ
+  gloss: delicious, tasty
+  affix_class: [ma_adj]
+
+- citation: ingay
+  pos: ADJ
+  gloss: noisy
+  affix_class: [ma_adj]
+  # Also in verbs.yaml as INTR "be noisy"; additive twin.
+
+- citation: bango
+  pos: ADJ
+  gloss: fragrant
+  affix_class: [ma_adj]
+
+- citation: baho
+  pos: ADJ
+  gloss: smelly, foul
+  affix_class: [ma_adj]
+
+
+# === Evaluative dimension ===============================================
+
+- citation: saya
+  pos: ADJ
+  gloss: happy, joyful
+  affix_class: [ma_adj]
+  # Also in verbs.yaml as INTR "be happy"; additive twin.
+
+- citation: lungkot
+  pos: ADJ
+  gloss: sad
+  affix_class: [ma_adj]
+  # Also in verbs.yaml as INTR "be sad"; additive twin.
+
+- citation: yaman
+  pos: ADJ
+  gloss: wealthy, rich
+  affix_class: [ma_adj]
+  # Also in verbs.yaml as INTR "be wealthy"; additive twin.
+
+- citation: hirap
+  pos: ADJ
+  gloss: poor, difficult
+  affix_class: [ma_adj]
+  # ``mahirap`` carries both readings (poor / difficult)
+  # disambiguated by context.
