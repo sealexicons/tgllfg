@@ -290,7 +290,15 @@ class Analyzer:
             if not _affix_class_match(cell.affix_class, root.affix_class):
                 continue
             surface = generate_form(root, cell).lower()
-            feats: dict[str, object] = {"PREDICATIVE": "YES"}
+            # LEMMA mirrors the noun convention (lex token carries
+            # ``LEMMA`` in feats so the grammar's
+            # ``(↑ LEMMA) = ↓ LEMMA`` percolation surfaces the lex's
+            # bare-root lemma in NP-modifier and predicative-adj
+            # f-structures).
+            feats: dict[str, object] = {
+                "PREDICATIVE": "YES",
+                "LEMMA": root.citation,
+            }
             # Per-cell feats may extend / override the intrinsic
             # PREDICATIVE (e.g., a future non-predicative manner-only
             # cell could set PREDICATIVE: NO).

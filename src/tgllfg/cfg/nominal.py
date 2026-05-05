@@ -1157,3 +1157,66 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 DIGIT_FORM) =c 'YES'",
         ],
     ))
+
+
+    # --- Phase 5g Commit 2: NP-internal ADJ modifier ------------
+    #
+    # Pre-N (``maganda na bata`` / ``magandang bata``) and post-N
+    # (``bata na maganda`` / ``batang maganda``) adjective
+    # modifiers, both linker-mediated. Four rules total:
+    #
+    #   N → ADJ PART[LINK=NA] N    pre-N, consonant-final adj
+    #   N → ADJ PART[LINK=NG] N    pre-N, vowel-final adj (-ng)
+    #   N → N PART[LINK=NA] ADJ    post-N, consonant-final N
+    #   N → N PART[LINK=NG] ADJ    post-N, vowel-final N (-ng)
+    #
+    # Multi-modifier composition (``mabilis na maganda na bata``
+    # "quick beautiful child") falls out of right-recursion in
+    # the pre-N rules: the rightmost daughter is N, and an
+    # adj-modified N is itself N. The two adjectives both end
+    # up in the matrix N's ``ADJ-MOD`` set.
+    #
+    # **Why ``ADJ-MOD`` rather than the canonical ``ADJ``
+    # attribute.** This codebase uses ``ADJ`` as a set-valued
+    # f-attribute for clausal adjuncts (adverbial clitics in
+    # ``cfg/clitic.py``, sentential PP/AdvP fronting in
+    # ``cfg/extraction.py``) and as the host slot for relative
+    # clauses on NPs. Lifting the head N's adjunct set to the
+    # matrix NP via ``(↑ ADJ) = ↓2 ADJ`` would pre-create an
+    # empty AVM on every NP whose head N has no modifier — and
+    # subsequent ``↓ ∈ (↑ ADJ)`` set-adds (e.g., from the RC
+    # wrap rule) would then clash with that empty AVM at the
+    # ``add_to_set`` call. Using a Phase-5g-specific attribute
+    # name (``ADJ-MOD``) sidesteps the clash because no other
+    # rule writes to it. Tests for NP-internal adj modifiers
+    # check ``feats["ADJ-MOD"]`` rather than ``feats["ADJ"]``.
+    #
+    # The category ``ADJ`` in the rule's RHS is the lex
+    # preterminal POS (the analyzer's ``MorphAnalysis.pos`` for
+    # ADJ-class roots), entirely separate from the f-attribute
+    # ``ADJ`` / ``ADJ-MOD`` namespace.
+    #
+    # The N-level rule (no NP / no case) lets the existing
+    # NP-from-N projection at lines 64-90 case-mark adj-modified
+    # Ns freely (``ang magandang bata`` / ``ng magandang bata``
+    # / ``sa magandang bata``). Avoids the 6-NP-rule explosion
+    # that the cardinal NP-modifier (Phase 5f Commit 1) used.
+    for link in ("NA", "NG"):
+        # Pre-N: the adjective sits before the head N.
+        rules.append(Rule(
+            "N",
+            ["ADJ", f"PART[LINK={link}]", "N"],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ-MOD)",
+            ],
+        ))
+        # Post-N: the head N comes first.
+        rules.append(Rule(
+            "N",
+            ["N", f"PART[LINK={link}]", "ADJ"],
+            [
+                "(↑) = ↓1",
+                "↓3 ∈ (↑ ADJ-MOD)",
+            ],
+        ))

@@ -331,6 +331,32 @@ def disambiguate_homophone_clitics(
             # (``lahat``, ``iba``) — which never use the linker form
             # in Phase 5f scope — keep their existing behaviour.
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+        elif (
+            prev is not None
+            and any(ma.pos == "ADJ" for ma in prev)
+            and _next_content_is_n_or_adj(analyses, i)
+        ):
+            # Phase 5g Commit 2: ADJ followed by ``na`` followed by
+            # NOUN / N / ADJ is the linker for the NP-internal
+            # adjective modifier rules — pre-N (``mabilis na bata``
+            # "quick child") and adj-chain (``mabilis na magandang
+            # bata`` "quick beautiful child", inner step). The
+            # right-context check is what distinguishes this from
+            # the predicative-adj clause ``Maganda na ka`` /
+            # ``Maganda na ang bata`` (next content is PRON / DET,
+            # not N or ADJ — those keep both readings and let the
+            # placement pass treat ``na`` as the ALREADY clitic).
+            #
+            # Vowel-final adjectives (``maganda``, ``matalino``)
+            # take the bound ``-ng`` linker (split off by
+            # ``split_linker_ng``), which has no clitic homophone,
+            # so this branch matters only for consonant-final
+            # adjectives (``mabilis``, ``malusog``, ``masarap``,
+            # ``masipag``, etc.).
+            #
+            # Phase 5g Commit 5 (manner-adverb) extends this to
+            # the VERB right-context (``mabilis na tumakbo``).
+            out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif prev is not None and any(
             ma.pos in ("DET", "ADP") and ma.feats.get("DEM") is True
             for ma in prev
@@ -448,6 +474,32 @@ def _next_content_is_verb(
             look += 1
             continue
         return False
+    return False
+
+
+def _next_content_is_n_or_adj(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """Look ahead from position ``i + 1`` and return True if the
+    first non-punctuation token is NOUN / N / ADJ.
+
+    Used by Phase 5g Commit 2's ADJ + ``na`` + (NOUN|ADJ) linker
+    branch in :func:`disambiguate_homophone_clitics` to discriminate
+    NP-internal adjective modification (linker) from predicative-adj
+    clauses with the ALREADY clitic.
+    """
+    look = i + 1
+    while look < len(analyses):
+        cands = analyses[look]
+        poss = {ma.pos for ma in cands}
+        # Skip orthographic-terminator punctuation tokens to keep
+        # the heuristic robust against trailing punctuation in tests.
+        if poss == {"PART"} and all(
+            (ma.lemma in (".", "?", "!", ",")) for ma in cands
+        ):
+            look += 1
+            continue
+        return bool(poss & {"NOUN", "N", "ADJ"})
     return False
 
 
