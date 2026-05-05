@@ -3689,3 +3689,62 @@
   construction: 'rg: OV-PFV NVOL (kita)'
   expected: parse
   source: Ramos & Goulet 1981
+
+# === Phase 5g: adjectival modification =================================
+#
+# Roadmap §12.9 R&G "Ang Manok" integration benchmark — 4 of the
+# 7 simple sentences are pure adjective predicates that Phase 5g
+# unblocks: Matanda siya / Maliit ang bahay / Mataas ang bundok
+# (predicative) plus a modifier-form fixture (lalaking matanda
+# substitutes for OOV "mamang matanda"). The remaining Phase 5g
+# entries below pin the rule slate from Commits 2 / 3 / 5 / 6.
+
+- text: Matanda siya.
+  construction: 'rg-12.9: predicative-adj (tanda) + PRON SUBJ'
+  expected: parse
+  source: Ramos & Goulet 1981 §12.9
+- text: Maliit ang bahay.
+  construction: 'rg-12.9: predicative-adj (liit) + ang-NP SUBJ'
+  expected: parse
+  source: Ramos & Goulet 1981 §12.9
+- text: Mataas ang bundok.
+  construction: 'rg-12.9: predicative-adj (taas) + ang-NP SUBJ'
+  expected: parse
+  source: Ramos & Goulet 1981 §12.9
+- text: Tumakbo ang lalaking matanda.
+  construction: 'rg-12.9: post-N adj modifier (lalaki + ng + matanda; substitutes for OOV mamang matanda)'
+  expected: parse
+  source: Ramos & Goulet 1981 §12.9
+- text: Maganda ang bata.
+  construction: 'phase5g: predicative-adj (ganda)'
+  expected: parse
+- text: Mabilis na tumakbo ang bata.
+  construction: 'phase5g: manner-adverb (consonant-final adj na linker + V)'
+  expected: parse
+- text: Magandang kumain ang bata.
+  construction: 'phase5g: manner-adverb (vowel-final adj -ng + V)'
+  expected: parse
+- text: Kumain ang magandang bata.
+  construction: 'phase5g: pre-N adj modifier (vowel-final adj -ng)'
+  expected: parse
+- text: Kumain ang mabilis na bata.
+  construction: 'phase5g: pre-N adj modifier (consonant-final adj na)'
+  expected: parse
+- text: Kumain ang batang maganda.
+  construction: 'phase5g: post-N adj modifier (vowel-final N -ng)'
+  expected: parse
+- text: Kumain ang aklat na maganda.
+  construction: 'phase5g: post-N adj modifier (consonant-final N na)'
+  expected: parse
+- text: Kumain ang mabilis na magandang bata.
+  construction: 'phase5g: multi-modifier (right-recursive pre-N chain)'
+  expected: parse
+- text: Kumain itong magandang bata.
+  construction: 'phase5g: pre-modifier dem PROX + adj-mod N'
+  expected: parse
+- text: Hindi maganda ang bata.
+  construction: 'phase5g: predicative-adj + negation'
+  expected: parse
+- text: Maganda na ang bata.
+  construction: 'phase5g: predicative-adj + ALREADY clitic'
+  expected: parse
