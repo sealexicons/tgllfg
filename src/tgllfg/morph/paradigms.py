@@ -117,6 +117,30 @@ class ParadigmCell:
 
 
 @dataclass
+class AdjectiveCell:
+    """One cell of the adjectival derivation paradigm.
+
+    Adjectives are not voice / aspect / mood-marked (the analytical
+    commitment of Phase 5g §12.1 — ``ma-`` adjectives are POS=ADJ
+    with ``[PREDICATIVE+]``, not stative VERBs), so this dataclass
+    is smaller than :class:`ParadigmCell`. The seed cell is the
+    productive ``ma-`` prefix that derives ``maganda`` from ``ganda``;
+    Phase 5h is expected to add ``pinaka-`` superlative,
+    ``napaka-`` intensifier, and ``kasing-`` / ``sing-`` equative
+    cells using the same dataclass.
+    """
+    affix_class: str = ""   # filter: cell only fires for ADJ roots
+                            # whose affix_class list contains this string.
+    operations: list[Operation] = field(default_factory=list)
+    notes: str = ""
+    # Per-cell lex features merged into every generated MorphAnalysis.
+    # The analyzer always sets ``PREDICATIVE: YES`` on ADJ-derived
+    # forms (the intrinsic-PREDICATIVE commitment); per-cell feats
+    # may extend / override.
+    feats: dict[str, object] = field(default_factory=dict)
+
+
+@dataclass
 class Particle:
     """A function word: determiner, adposition, polarity marker, linker, etc."""
     surface: str
@@ -156,12 +180,14 @@ class MorphData:
     """The fully-loaded morphological lexicon, ready to drive analysis."""
     roots: list[Root] = field(default_factory=list)
     paradigm_cells: list[ParadigmCell] = field(default_factory=list)
+    adjective_cells: list[AdjectiveCell] = field(default_factory=list)
     particles: list[Particle] = field(default_factory=list)
     pronouns: list[Pronoun] = field(default_factory=list)
     sandhi_rules: list[SandhiRule] = field(default_factory=list)
 
 
 __all__ = [
+    "AdjectiveCell",
     "MorphData",
     "Operation",
     "ParadigmCell",

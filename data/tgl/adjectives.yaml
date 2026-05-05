@@ -1,0 +1,70 @@
+# data/tgl/adjectives.yaml
+#
+# Adjective roots — Phase 5g §12.1 inventory. Each entry's citation
+# is the bare root; the productive ``ma-`` paradigm in
+# ``adj_paradigms.yaml`` derives the surface adjective form
+# (``ganda`` → ``maganda``, ``talino`` → ``matalino``).
+#
+# Analytical commitment (roadmap §12.1): ``ma-`` adjectives are
+# ``POS=ADJ`` with ``[PREDICATIVE+]``, NOT stative VERBs. The
+# verbal-paradigm absence facts (``*pumagmaganda``,
+# ``*magagaganda``, ``*magpamaganda``) ground the commitment.
+#
+# Naming-collision warning: the grammar code uses ``ADJ`` as the
+# LFG f-attribute name for the adjunct set (``↓ ∈ (↑ ADJ)``). The
+# Phase 5g ``ADJ`` is a category / POS string. The two namespaces
+# don't intersect at the unifier level — category strings scan
+# against ``MorphAnalysis.pos``, attribute names live in equation
+# strings — but every code reader confuses them once.
+#
+# Citations: R&B 1986, S&O 1972 §5, Ramos dictionary entries for
+# adjective roots.
+
+# === Seed inventory (Commit 1; Commit 4 expands to ~30) =================
+
+- citation: ganda
+  pos: ADJ
+  gloss: beautiful
+  affix_class: [ma_adj]
+  # Note: ``ganda`` is also a verb root in verbs.yaml (gloss
+  # "be beautiful" with affix_class [um, mag, ma, maka], producing
+  # ``gumanda`` "become beautiful" and other inchoative / spurious
+  # surfaces). The verbal entry is left untouched in Phase 5g —
+  # see plan §4 for the additive policy.
+
+- citation: talino
+  pos: ADJ
+  gloss: intelligent
+  affix_class: [ma_adj]
+
+- citation: tanda
+  pos: ADJ
+  gloss: old
+  affix_class: [ma_adj]
+  # R&G 1981 §12.9 integration benchmark — produces ``matanda``
+  # for ``Matanda siya.`` "She is old".
+
+- citation: liit
+  pos: ADJ
+  gloss: small
+  affix_class: [ma_adj]
+  # R&G 1981 §12.9 integration benchmark — produces ``maliit``
+  # for ``Maliit ang bahay.`` "The house is small".
+
+- citation: taas
+  pos: ADJ
+  gloss: high, tall
+  affix_class: [ma_adj]
+  # R&G 1981 §12.9 integration benchmark — produces ``mataas``
+  # for ``Mataas ang bundok.`` "The mountain is high". Note:
+  # ``taas`` also exists in verbs.yaml as TR "raise, lift up"
+  # (different sense); both citations coexist as separate roots
+  # in the analyzer's index.
+
+- citation: bilis
+  pos: ADJ
+  gloss: quick, fast
+  affix_class: [ma_adj]
+  # ``mabilis`` "quick / fast"; combined with the linker also
+  # serves as the manner-adverb form (``mabilis na tumakbo``
+  # "ran quickly" — Phase 5g Commit 5).

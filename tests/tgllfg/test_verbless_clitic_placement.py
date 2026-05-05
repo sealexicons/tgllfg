@@ -63,25 +63,28 @@ class TestVerblessAdvEnclitic:
     def test_maganda_na_ka(self) -> None:
         # ``Maganda na ka.`` → ``maganda ka . na``
         # (PRON `ka` post-anchor cluster; adv `na` at clause-end).
+        # Phase 5g: ``maganda`` analyses as ADJ with lemma ``ganda``,
+        # mirroring the verbal-paradigm convention (``kumain`` →
+        # ``kain``); the placement order itself is unchanged.
         out = _pipeline("Maganda na ka.")
-        assert out == ["maganda", "ka", ".", "na"]
+        assert out == ["ganda", "ka", ".", "na"]
 
     def test_maganda_na_ka_ba(self) -> None:
         # Two adv enclitics + PRON.
         out = _pipeline("Maganda na ka ba.")
         # PRON in cluster, both advs at clause-end (priority order).
-        assert out == ["maganda", "ka", ".", "na", "ba"]
+        assert out == ["ganda", "ka", ".", "na", "ba"]
 
     def test_maganda_ba_ka(self) -> None:
         # adv before PRON in input.
         out = _pipeline("Maganda ba ka.")
-        assert out == ["maganda", "ka", ".", "ba"]
+        assert out == ["ganda", "ka", ".", "ba"]
 
     def test_maganda_ka_ba(self) -> None:
         # Already in canonical order — no actual reorder needed but
         # the pass still recognises the anchor and keeps it stable.
         out = _pipeline("Maganda ka ba.")
-        assert out == ["maganda", "ka", ".", "ba"]
+        assert out == ["ganda", "ka", ".", "ba"]
 
 
 # === Verbless + pre-anchor NEG hoisting ====================================
@@ -95,19 +98,20 @@ class TestVerblessNegHoist:
     def test_hindi_ka_maganda(self) -> None:
         # ``Hindi ka maganda.`` → ``hindi maganda ka .``
         # (`hindi` pre-anchor stays; `ka` hoists to post-anchor).
+        # Phase 5g: ``maganda`` lemma is ``ganda``.
         out = _pipeline("Hindi ka maganda.")
-        assert out == ["hindi", "maganda", "ka", "."]
+        assert out == ["hindi", "ganda", "ka", "."]
 
     def test_hindi_na_ka_maganda(self) -> None:
         # NEG + adv + PRON before predicate.
         out = _pipeline("Hindi na ka maganda.")
         # `hindi` pre-anchor; `maganda` anchor; `ka` post-anchor;
         # `na` adv at clause-end.
-        assert out == ["hindi", "maganda", "ka", ".", "na"]
+        assert out == ["hindi", "ganda", "ka", ".", "na"]
 
     def test_hindi_ba_ka_maganda(self) -> None:
         out = _pipeline("Hindi ba ka maganda.")
-        assert out == ["hindi", "maganda", "ka", ".", "ba"]
+        assert out == ["hindi", "ganda", "ka", ".", "ba"]
 
 
 # === Anchor selection rules ===============================================
@@ -116,12 +120,13 @@ class TestVerblessNegHoist:
 class TestVerblessAnchorSelection:
     """The anchor is the first non-clitic, non-NEG-PART,
     non-punctuation token. Various predicate-head categories
-    (NOUN, ADJ-_UNK, ADP, DET) all qualify."""
+    (NOUN, ADJ, ADP, DET) all qualify."""
 
-    def test_anchor_is_unk_adj(self) -> None:
-        # ``maganda`` is _UNK in current lex but still the anchor.
+    def test_anchor_is_adj(self) -> None:
+        # ``maganda`` is ADJ (Phase 5g) with lemma ``ganda`` — the
+        # anchor selection still picks the first content token.
         out = _pipeline("Maganda na ka.")
-        assert out[0] == "maganda"
+        assert out[0] == "ganda"
 
     def test_anchor_is_noun(self) -> None:
         # ``Bata ka.`` "You're a child." NOUN anchor. ``ka`` is

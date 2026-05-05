@@ -46,6 +46,7 @@ from dataclasses import dataclass, field
 
 from ..common import MorphAnalysis, Token
 from .paradigms import (
+    AdjectiveCell,
     MorphData,
     Operation,
     ParadigmCell,
@@ -71,7 +72,7 @@ from .sandhi import (
 _DIGIT_RE = re.compile(r"^[0-9]+$")
 
 
-def generate_form(root: Root, cell: ParadigmCell) -> str:
+def generate_form(root: Root, cell: ParadigmCell | AdjectiveCell) -> str:
     """Apply ``cell.operations`` to ``root.citation`` in YAML-declared
     order and return the resulting surface form.
 
@@ -79,6 +80,11 @@ def generate_form(root: Root, cell: ParadigmCell) -> str:
     stage: ``high_vowel_deletion`` modifies suffix attachment;
     ``d_to_r`` runs as a post-processor over the final form so it
     catches both intra-stem and stem-suffix intervocalic /d/.
+
+    Accepts both :class:`ParadigmCell` (verbal) and
+    :class:`AdjectiveCell` (Phase 5g adjectival derivation) — both
+    expose an ``operations`` attribute, and the operation vocabulary
+    is shared.
     """
     flags = set(root.sandhi_flags)
     base = root.citation
@@ -112,13 +118,15 @@ def _apply(op: Operation, base: str, flags: set[str]) -> str:
 @dataclass
 class _Index:
     """Surface-keyed lookup tables built once per analyzer instance.
-    All four are list-valued: a single surface can carry multiple
-    analyses (e.g. ``na`` is both the linker and the aspectual 2P
-    enclitic, and ``kuwarto`` carries both "room" and "quarter-of-
-    hour" NOUN readings — Phase 5f closing deferral on multiple lex
-    entries per ``(lemma, pos)`` tuple)."""
+    All list-valued tables permit multiple analyses per surface (e.g.
+    ``na`` is both the linker and the aspectual 2P enclitic, and
+    ``kuwarto`` carries both "room" and "quarter-of-hour" NOUN readings
+    — Phase 5f closing deferral on multiple lex entries per ``(lemma,
+    pos)`` tuple). Phase 5g adds the ``adjectives`` table for
+    productively-derived ADJ surfaces (``maganda``, ``matanda``, etc.)."""
     verb_forms: dict[str, list[MorphAnalysis]] = field(default_factory=dict)
     nouns: dict[str, list[MorphAnalysis]] = field(default_factory=dict)
+    adjectives: dict[str, list[MorphAnalysis]] = field(default_factory=dict)
     particles: dict[str, list[MorphAnalysis]] = field(default_factory=dict)
     pronouns: dict[str, MorphAnalysis] = field(default_factory=dict)
 
@@ -144,9 +152,11 @@ class Analyzer:
         return cls(resolve_morph_data())
 
     def analyze_one(self, token: Token) -> list[MorphAnalysis]:
-        """Return all analyses for a single token, in priority order:
-        digit-form cardinal, particles, pronouns, verb forms, nouns.
-        Falls back to a single ``_UNK`` analysis if nothing matches.
+        """Return all analyses for a single token, in enumeration order:
+        digit-form cardinal, particles, pronouns, verb forms,
+        adjectives, nouns. Falls back to a single ``_UNK`` analysis if
+        nothing matches. Order here is presentational — the ranker
+        decides priority among the multi-analysis output.
         """
         n = token.norm
         out: list[MorphAnalysis] = []
@@ -168,6 +178,8 @@ class Analyzer:
             out.append(self._index.pronouns[n])
         if n in self._index.verb_forms:
             out.extend(self._index.verb_forms[n])
+        if n in self._index.adjectives:
+            out.extend(self._index.adjectives[n])
         if n in self._index.nouns:
             out.extend(self._index.nouns[n])
         if not out:
@@ -185,6 +197,7 @@ class Analyzer:
             norm in idx.particles
             or norm in idx.pronouns
             or norm in idx.verb_forms
+            or norm in idx.adjectives
             or norm in idx.nouns
         )
 
@@ -254,6 +267,48 @@ class Analyzer:
                         feats=noun_feats,
                     ),
                 )
+            elif r.pos == "ADJ":
+                self._index_adjective_paradigms(r)
+
+    def _index_adjective_paradigms(self, root: Root) -> None:
+        """Index the surfaces produced by every matching adjective cell.
+
+        Phase 5g §12.1: ADJ-pos roots productively derive surfaces via
+        adjective-paradigm cells (the seed is ``ma-`` prefixation;
+        Phase 5h adds ``pinaka-``, ``napaka-``, ``kasing-``). Every
+        derived surface carries the intrinsic ``PREDICATIVE: YES``
+        feature, the analytical commitment that lets the predicative-adj
+        clause rule fire on a feature rather than a POS.
+
+        The bare-root surface (e.g., ``ganda`` for the root that
+        produces ``maganda``) is intentionally NOT indexed as ADJ —
+        bare roots are nouns ("beauty") in this analysis, and the
+        paradigm-driven derivation is what produces the adjectival
+        surface.
+        """
+        for cell in self._data.adjective_cells:
+            if not _affix_class_match(cell.affix_class, root.affix_class):
+                continue
+            surface = generate_form(root, cell).lower()
+            feats: dict[str, object] = {"PREDICATIVE": "YES"}
+            # Per-cell feats may extend / override the intrinsic
+            # PREDICATIVE (e.g., a future non-predicative manner-only
+            # cell could set PREDICATIVE: NO).
+            for k, v in cell.feats.items():
+                feats[k] = v
+            # Per-root feats ride into every generated form (parallel
+            # to verb roots' CTRL_CLASS / APPL / CAUS handling). For
+            # ADJ this is where future SEM_CLASS values (SIZE / COLOUR
+            # / EVALUATIVE / ...) will land.
+            for k, v in root.feats.items():
+                feats.setdefault(k, v)
+            self._index.adjectives.setdefault(surface, []).append(
+                MorphAnalysis(
+                    lemma=root.citation,
+                    pos="ADJ",
+                    feats=feats,
+                ),
+            )
 
     def _index_verb_paradigms(self, root: Root) -> None:
         for cell in self._data.paradigm_cells:
