@@ -334,18 +334,27 @@ def disambiguate_homophone_clitics(
         elif (
             prev is not None
             and any(ma.pos == "ADJ" for ma in prev)
-            and _next_content_is_n_or_adj(analyses, i)
+            and _next_content_is_n_adj_or_v(analyses, i)
         ):
-            # Phase 5g Commit 2: ADJ followed by ``na`` followed by
-            # NOUN / N / ADJ is the linker for the NP-internal
-            # adjective modifier rules — pre-N (``mabilis na bata``
-            # "quick child") and adj-chain (``mabilis na magandang
-            # bata`` "quick beautiful child", inner step). The
-            # right-context check is what distinguishes this from
-            # the predicative-adj clause ``Maganda na ka`` /
-            # ``Maganda na ang bata`` (next content is PRON / DET,
-            # not N or ADJ — those keep both readings and let the
-            # placement pass treat ``na`` as the ALREADY clitic).
+            # Phase 5g Commit 2 / Commit 5: ADJ followed by ``na``
+            # followed by NOUN / N / ADJ / VERB is the linker for
+            # adjectival modification or manner-adverb composition:
+            #
+            # * NP-internal modifier (Commit 2): pre-N
+            #   (``mabilis na bata`` "quick child") and adj-chain
+            #   (``mabilis na magandang bata`` "quick beautiful
+            #   child", inner step). Right context is N / NOUN / ADJ.
+            # * Manner-adverb (Commit 5): ``mabilis na tumakbo``
+            #   "ran quickly" — the ADJ + linker + V composition
+            #   that gives the predicative-adj its adverbial
+            #   reading. Right context is VERB.
+            #
+            # The right-context check is what distinguishes these
+            # linker uses from the predicative-adj clause
+            # ``Maganda na ka`` / ``Maganda na ang bata`` (next
+            # content is PRON / DET — those keep both readings and
+            # let the placement pass treat ``na`` as the ALREADY
+            # clitic).
             #
             # Vowel-final adjectives (``maganda``, ``matalino``)
             # take the bound ``-ng`` linker (split off by
@@ -353,9 +362,6 @@ def disambiguate_homophone_clitics(
             # so this branch matters only for consonant-final
             # adjectives (``mabilis``, ``malusog``, ``masarap``,
             # ``masipag``, etc.).
-            #
-            # Phase 5g Commit 5 (manner-adverb) extends this to
-            # the VERB right-context (``mabilis na tumakbo``).
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif prev is not None and any(
             ma.pos in ("DET", "ADP") and ma.feats.get("DEM") is True
@@ -477,16 +483,22 @@ def _next_content_is_verb(
     return False
 
 
-def _next_content_is_n_or_adj(
+def _next_content_is_n_adj_or_v(
     analyses: list[list[MorphAnalysis]], i: int
 ) -> bool:
     """Look ahead from position ``i + 1`` and return True if the
-    first non-punctuation token is NOUN / N / ADJ.
+    first non-punctuation token is NOUN / N / ADJ / VERB.
 
-    Used by Phase 5g Commit 2's ADJ + ``na`` + (NOUN|ADJ) linker
-    branch in :func:`disambiguate_homophone_clitics` to discriminate
-    NP-internal adjective modification (linker) from predicative-adj
-    clauses with the ALREADY clitic.
+    Used by the Phase 5g ADJ + ``na`` + content-word linker branch
+    in :func:`disambiguate_homophone_clitics`:
+
+    * NOUN / N / ADJ — Commit 2 NP-internal adjective modification.
+    * VERB — Commit 5 manner-adverb composition (``mabilis na
+      tumakbo``).
+
+    Discriminates these linker uses from the predicative-adj
+    clause's ALREADY clitic (``Maganda na ka`` — right context
+    PRON; ``Maganda na ang bata`` — right context DET).
     """
     look = i + 1
     while look < len(analyses):
@@ -499,7 +511,7 @@ def _next_content_is_n_or_adj(
         ):
             look += 1
             continue
-        return bool(poss & {"NOUN", "N", "ADJ"})
+        return bool(poss & {"NOUN", "N", "ADJ", "VERB"})
     return False
 
 
