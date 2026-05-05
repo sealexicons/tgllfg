@@ -150,7 +150,7 @@ def _cmd_parse(args: argparse.Namespace) -> None:
     fragment summaries to help debug the failure. ``--strict``
     suppresses fragment output (empty stdout, exit 0).
     """
-    from tgllfg.pipeline import parse_text_with_fragments
+    from tgllfg.core.pipeline import parse_text_with_fragments
 
     result = parse_text_with_fragments(args.sentence, n_best=args.n_best)
 

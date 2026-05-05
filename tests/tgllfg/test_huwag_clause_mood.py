@@ -48,7 +48,7 @@ These tests cover:
 
 from __future__ import annotations
 
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 
 
 # === Huwag clauses get CLAUSE-MOOD=IMP ====================================

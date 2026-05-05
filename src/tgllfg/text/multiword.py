@@ -27,7 +27,7 @@ this layer (productive ``tag-`` / ``tig-`` / ``card_redup`` /
 
 from __future__ import annotations
 
-from ..common import Token
+from ..core.common import Token
 
 
 def merge_hyphen_compounds(tokens: list[Token]) -> list[Token]:

@@ -19,9 +19,9 @@ from typing import Any
 
 import pytest
 
-from tgllfg.common import FStructure
+from tgllfg.core.common import FStructure
 from tgllfg.morph import Analyzer, generate_form, load_morph_data
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 
 
 def _first(text: str) -> tuple[Any, FStructure, Any, list[Any]]:
@@ -65,7 +65,7 @@ def test_recpfv_generates(root: str, surface: str) -> None:
 def test_recpfv_analyses_back() -> None:
     """``kakakain`` analyses back to (kain, AV, RECPFV)."""
     a = Analyzer.from_default()
-    from tgllfg.common import Token
+    from tgllfg.core.common import Token
 
     out = a.analyze_one(Token(surface="kakakain", norm="kakakain", start=0, end=8))
     matches = [

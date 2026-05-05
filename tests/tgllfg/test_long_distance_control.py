@@ -33,8 +33,8 @@ These tests cover:
 from __future__ import annotations
 
 from tgllfg.clitics.placement import disambiguate_homophone_clitics
-from tgllfg.common import FStructure, MorphAnalysis
-from tgllfg.pipeline import parse_text
+from tgllfg.core.common import FStructure, MorphAnalysis
+from tgllfg.core.pipeline import parse_text
 
 
 def _first(text: str) -> tuple[FStructure, list]:

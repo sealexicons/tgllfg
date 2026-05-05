@@ -47,7 +47,7 @@ from typing import Any
 
 import yaml
 
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 from tgllfg.renderers import render_a, render_c, render_f
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent

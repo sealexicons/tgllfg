@@ -22,9 +22,9 @@ from __future__ import annotations
 from typing import Any
 
 from tgllfg.clitics import CliticOrder, reorder_clitics
-from tgllfg.common import FStructure, MorphAnalysis
+from tgllfg.core.common import FStructure, MorphAnalysis
 from tgllfg.morph import analyze_tokens
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 from tgllfg.text import split_enclitics, tokenize
 
 

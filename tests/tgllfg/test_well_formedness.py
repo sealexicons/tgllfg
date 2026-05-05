@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from tgllfg.common import FStructure
+from tgllfg.core.common import FStructure
 from tgllfg.fstruct import (
     PredTemplate,
     is_governable_gf,
@@ -266,7 +266,7 @@ class TestReentrancy:
 
 class TestDemoWellFormed:
     def test_demo_passes(self) -> None:
-        from tgllfg.pipeline import parse_text
+        from tgllfg.core.pipeline import parse_text
         results = parse_text("Kinain ng aso ang isda.")
         assert len(results) >= 1
         ctree, f, a, diags = results[0]
@@ -281,7 +281,7 @@ class TestPipelineFiltering:
         # Build a c-tree by hand whose equations introduce a governable
         # GF (OBL-AG) that the PRED template doesn't name. The pipeline
         # should suppress this parse.
-        from tgllfg.common import CNode
+        from tgllfg.core.common import CNode
         from tgllfg.fstruct import lfg_well_formed
         from tgllfg.fstruct import solve
 

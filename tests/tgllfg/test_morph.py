@@ -4,7 +4,7 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from tgllfg.common import Token
+from tgllfg.core.common import Token
 from tgllfg.morph import (
     Analyzer,
     MorphData,
@@ -498,7 +498,7 @@ class TestAnalyzerWithCustomData:
 
 class TestDemoStillPasses:
     def test_kinain_sentence(self) -> None:
-        from tgllfg.pipeline import parse_text
+        from tgllfg.core.pipeline import parse_text
         results = parse_text("Kinain ng aso ang isda.")
         assert len(results) >= 1
         _, f, _, _ = results[0]

@@ -20,7 +20,7 @@ import io
 from contextlib import redirect_stderr, redirect_stdout
 
 from tgllfg.cli import main as cli_main
-from tgllfg.pipeline import (
+from tgllfg.core.pipeline import (
     Fragment,
     ParseResult,
     parse_text,
@@ -96,7 +96,7 @@ def test_ranker_prefers_smaller_tree() -> None:
     """The first parse has the smallest depth."""
     out = parse_text("Kumain ang aso ng isda.")
     assert len(out) >= 2
-    from tgllfg.pipeline import _count_nodes
+    from tgllfg.core.pipeline import _count_nodes
     depths = [_count_nodes(c) for c, _, _, _ in out]
     assert depths == sorted(depths)
 

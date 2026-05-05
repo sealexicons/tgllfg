@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import re
 
-from ..common import Token
+from ..core.common import Token
 
 ENCLITICS = {"na", "pa", "ba", "din", "rin", "yata", "man", "daw", "raw", "lang"}
 

@@ -1,13 +1,17 @@
-# tgllfg/renderers.py
+# tgllfg/renderers/text.py
 
-"""Pretty-printers for c-, f-, and a-structures.
+"""Pretty-printers for c-, f-, and a-structures (text / JSON output).
 
 The f-structure renderer walks the graph projection produced by
-:mod:`tgllfg.unify`. Sub-f-structures appear as nested ``FStructure``
+:mod:`tgllfg.fstruct`. Sub-f-structures appear as nested ``FStructure``
 objects and set values appear as ``frozenset``s of projected values.
 Reentrancy (the same canonical node reachable by two paths) is
 detected by ``FStructure.id`` and rendered as a back-reference on
 second visit.
+
+Future renderer formats (GraphViz dot, HTML, …) live in sibling
+modules under :mod:`tgllfg.renderers`; this module owns the
+text / JSON output flavour.
 """
 
 from __future__ import annotations
@@ -15,7 +19,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from .common import AStructure, CNode, FStructure
+from ..core.common import AStructure, CNode, FStructure
 
 
 def render_c(node: CNode, indent: int = 0) -> str:

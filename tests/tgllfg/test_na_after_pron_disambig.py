@@ -23,8 +23,8 @@ synthesizer enhancement that emits ``<SUBJ>`` alongside
 
 from __future__ import annotations
 
-from tgllfg.common import FStructure
-from tgllfg.pipeline import parse_text
+from tgllfg.core.common import FStructure
+from tgllfg.core.pipeline import parse_text
 
 
 def _find_poss_rc_parse(text: str, head_lemma: str, rc_pred_part: str) -> FStructure | None:

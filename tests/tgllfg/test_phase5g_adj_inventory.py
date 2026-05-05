@@ -32,9 +32,9 @@ from __future__ import annotations
 
 import pytest
 
-from tgllfg.common import FStructure, Token
+from tgllfg.core.common import FStructure, Token
 from tgllfg.morph import Analyzer, load_morph_data
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 
 
 def _tok(s: str) -> Token:

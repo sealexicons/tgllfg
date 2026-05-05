@@ -15,8 +15,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from tgllfg.common import FStructure
-from tgllfg.pipeline import parse_text
+from tgllfg.core.common import FStructure
+from tgllfg.core.pipeline import parse_text
 
 
 def _first(text: str) -> tuple[Any, FStructure, Any, list[Any]]:

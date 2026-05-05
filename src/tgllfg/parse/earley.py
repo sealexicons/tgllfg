@@ -58,7 +58,7 @@ from ..cfg import (
     compile_grammar,
     matches,
 )
-from ..common import CNode, LexicalEntry, MorphAnalysis
+from ..core.common import CNode, LexicalEntry, MorphAnalysis
 
 
 # Treat morph POS tag VERB as the grammar category V; nothing else

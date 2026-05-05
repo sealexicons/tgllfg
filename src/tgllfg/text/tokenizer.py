@@ -2,7 +2,7 @@
 
 import re
 
-from ..common import Token
+from ..core.common import Token
 
 _WORD = re.compile(r"\w+|\S")
 

@@ -25,7 +25,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from tgllfg.pipeline import parse_text_with_fragments
+from tgllfg.core.pipeline import parse_text_with_fragments
 
 _CORPUS_PATH = (
     Path(__file__).resolve().parent / "data" / "coverage_corpus.yaml"

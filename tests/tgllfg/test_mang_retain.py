@@ -25,9 +25,9 @@ flag; other roots can opt in by adding ``mang_retain`` to their
 
 from __future__ import annotations
 
-from tgllfg.common import Token
+from tgllfg.core.common import Token
 from tgllfg.morph.analyzer import _get_default
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 
 
 def _surface_to_features(surface: str) -> dict[str, object]:

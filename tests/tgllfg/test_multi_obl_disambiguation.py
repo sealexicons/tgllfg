@@ -32,14 +32,14 @@ These tests cover:
 
 from __future__ import annotations
 
-from tgllfg.common import FStructure
+from tgllfg.core.common import FStructure
 from tgllfg.lmt.oblique_classifier import (
     _ANIMATE_LEMMAS,
     _PLACE_LEMMAS,
     _gf_prefers_class,
     _semantic_class,
 )
-from tgllfg.pipeline import parse_text
+from tgllfg.core.pipeline import parse_text
 
 
 def _first(text: str) -> tuple[FStructure, list]:

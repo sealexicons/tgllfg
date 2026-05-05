@@ -27,8 +27,8 @@ choice.
 
 from __future__ import annotations
 
-from tgllfg.common import FStructure
-from tgllfg.pipeline import parse_text
+from tgllfg.core.common import FStructure
+from tgllfg.core.pipeline import parse_text
 
 
 def _find(

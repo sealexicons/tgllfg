@@ -49,7 +49,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Mapping
 
-from ..common import LexicalEntry
+from ..core.common import LexicalEntry
 from ..fstruct import Diagnostic
 
 
