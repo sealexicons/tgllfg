@@ -46,7 +46,6 @@ from dataclasses import dataclass, field
 
 from ..common import MorphAnalysis, Token
 from .paradigms import (
-    AdjectiveCell,
     MorphData,
     Operation,
     ParadigmCell,
@@ -72,7 +71,7 @@ from .sandhi import (
 _DIGIT_RE = re.compile(r"^[0-9]+$")
 
 
-def generate_form(root: Root, cell: ParadigmCell | AdjectiveCell) -> str:
+def generate_form(root: Root, cell: ParadigmCell) -> str:
     """Apply ``cell.operations`` to ``root.citation`` in YAML-declared
     order and return the resulting surface form.
 
@@ -81,10 +80,12 @@ def generate_form(root: Root, cell: ParadigmCell | AdjectiveCell) -> str:
     ``d_to_r`` runs as a post-processor over the final form so it
     catches both intra-stem and stem-suffix intervocalic /d/.
 
-    Accepts both :class:`ParadigmCell` (verbal) and
-    :class:`AdjectiveCell` (Phase 5g adjectival derivation) — both
-    expose an ``operations`` attribute, and the operation vocabulary
-    is shared.
+    Accepts any :class:`ParadigmCell` (the base) or its subclasses
+    (:class:`VerbalCell` for verbal-paradigm cells,
+    :class:`AdjectiveCell` for Phase 5g adjective derivation). The
+    function only consumes ``cell.operations``, which lives on the
+    base, so the operation-application engine is shared across both
+    paradigm families.
     """
     flags = set(root.sandhi_flags)
     base = root.citation

@@ -22,11 +22,11 @@ from .paradigms import (
     AdjectiveCell,
     MorphData,
     Operation,
-    ParadigmCell,
     Particle,
     Pronoun,
     Root,
     SandhiRule,
+    VerbalCell,
 )
 
 # Default location: <repo-root>/data/tgl. Resolved relative to this
@@ -112,8 +112,8 @@ def _load_roots(path: Path) -> list[Root]:
     return out
 
 
-def _load_paradigm_cells(path: Path) -> list[ParadigmCell]:
-    out: list[ParadigmCell] = []
+def _load_paradigm_cells(path: Path) -> list[VerbalCell]:
+    out: list[VerbalCell] = []
     for i, rec in enumerate(_read_yaml(path)):
         where = f"{path}[{i}]"
         ops_raw = rec.get("operations", [])
@@ -127,7 +127,7 @@ def _load_paradigm_cells(path: Path) -> list[ParadigmCell]:
         feats_raw = rec.get("feats", {})
         if not isinstance(feats_raw, dict):
             raise ValueError(f"{where}: 'feats' must be a mapping")
-        out.append(ParadigmCell(
+        out.append(VerbalCell(
             voice=_require(rec, "voice", where),
             aspect=_require(rec, "aspect", where),
             mood=rec.get("mood", "IND"),

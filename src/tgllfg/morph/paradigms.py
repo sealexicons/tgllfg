@@ -98,46 +98,72 @@ class Operation:
 
 @dataclass
 class ParadigmCell:
-    """One cell of a verbal paradigm."""
-    voice: str              # AV / OV / DV / IV
-    aspect: str             # PFV / IPFV / CTPL
-    mood: str = "IND"
-    transitivity: str = ""  # filter: cell only fires for roots with this transitivity
-    affix_class: str = ""   # filter: cell only fires for roots whose affix_class
-                            # list contains this string. Empty means "applies to
-                            # roots whose affix_class is also empty" (legacy default).
+    """Common base for paradigm cells.
+
+    Shared attributes for both verbal-paradigm cells (voice / aspect
+    / mood / transitivity-bearing — :class:`VerbalCell`) and
+    adjective-derivation cells (Phase 5g — :class:`AdjectiveCell`).
+    The analyzer's :func:`tgllfg.morph.analyzer.generate_form` takes
+    the base class so the operation-application engine is shared.
+
+    The four shared fields are:
+
+    * ``affix_class`` — filter: cell only fires for roots whose
+      ``affix_class`` list contains this string. Empty means
+      "applies to roots whose affix_class is also empty" (legacy
+      default for the original AV/OV/DV/IV-um/in/an/i paradigms).
+    * ``operations`` — ordered list of :class:`Operation` applied
+      to the root in YAML-declared order; the analyzer doesn't
+      reorder them.
+    * ``notes`` — optional free-text rationale / citation; not
+      consumed by the engine.
+    * ``feats`` — per-cell lex features merged into every generated
+      MorphAnalysis; string-valued entries become grammar-visible
+      category features. Phase 4 §7.7 introduced ``APPL`` and
+      ``CAUS``; subclasses contribute their own per-cell feature
+      conventions.
+    """
+    affix_class: str = ""
     operations: list[Operation] = field(default_factory=list)
     notes: str = ""
-    # Per-cell lex features that the analyzer copies into the
-    # generated MorphAnalysis. Phase 4 §7.7 introduces ``APPL`` and
-    # ``CAUS`` to encode applicative type (BEN / INSTR / REASON /
-    # CONVEY) and causative type (DIRECT / INDIRECT). String-valued
-    # entries become grammar-visible category features.
     feats: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass
-class AdjectiveCell:
+class VerbalCell(ParadigmCell):
+    """One cell of a verbal paradigm.
+
+    Adds voice / aspect / mood / transitivity to the
+    :class:`ParadigmCell` base. Voice and aspect are required at the
+    YAML loader level (:func:`tgllfg.morph.loader._load_paradigm_cells`
+    calls ``_require``); the dataclass defaults are empty strings to
+    comply with dataclass-inheritance ordering (non-default fields
+    can't follow default ones).
+    """
+    voice: str = ""              # AV / OV / DV / IV
+    aspect: str = ""             # PFV / IPFV / CTPL / RECPFV
+    mood: str = "IND"
+    transitivity: str = ""       # TR / INTR — filter: cell only
+                                 # fires for roots with this
+                                 # transitivity, when non-empty.
+
+
+@dataclass
+class AdjectiveCell(ParadigmCell):
     """One cell of the adjectival derivation paradigm.
 
-    Adjectives are not voice / aspect / mood-marked (the analytical
-    commitment of Phase 5g §12.1 — ``ma-`` adjectives are POS=ADJ
-    with ``[PREDICATIVE+]``, not stative VERBs), so this dataclass
-    is smaller than :class:`ParadigmCell`. The seed cell is the
-    productive ``ma-`` prefix that derives ``maganda`` from ``ganda``;
-    Phase 5h is expected to add ``pinaka-`` superlative,
-    ``napaka-`` intensifier, and ``kasing-`` / ``sing-`` equative
-    cells using the same dataclass.
+    Phase 5g §12.1 analytical commitment: ``ma-`` adjectives are
+    ``POS=ADJ`` with intrinsic ``[PREDICATIVE+]``, NOT stative VERBs.
+    Adjectives are not voice / aspect / mood-marked, so this subclass
+    adds no attributes beyond the :class:`ParadigmCell` base — the
+    seed ``ma-`` cell is fully expressible with ``affix_class``,
+    ``operations``, and (optionally) ``feats``. Phase 5h is expected
+    to add ``pinaka-`` superlative, ``napaka-`` intensifier, and
+    ``kasing-`` / ``sing-`` equative cells using this same subclass
+    (and may add Phase 5h-specific fields here if a derivation needs
+    them).
     """
-    affix_class: str = ""   # filter: cell only fires for ADJ roots
-                            # whose affix_class list contains this string.
-    operations: list[Operation] = field(default_factory=list)
-    notes: str = ""
-    # Per-cell lex features merged into every generated MorphAnalysis.
-    # The analyzer always sets ``PREDICATIVE: YES`` on ADJ-derived
-    # forms (the intrinsic-PREDICATIVE commitment); per-cell feats
-    # may extend / override.
-    feats: dict[str, object] = field(default_factory=dict)
+    pass
 
 
 @dataclass
@@ -179,7 +205,7 @@ class SandhiRule:
 class MorphData:
     """The fully-loaded morphological lexicon, ready to drive analysis."""
     roots: list[Root] = field(default_factory=list)
-    paradigm_cells: list[ParadigmCell] = field(default_factory=list)
+    paradigm_cells: list[VerbalCell] = field(default_factory=list)
     adjective_cells: list[AdjectiveCell] = field(default_factory=list)
     particles: list[Particle] = field(default_factory=list)
     pronouns: list[Pronoun] = field(default_factory=list)
@@ -195,4 +221,5 @@ __all__ = [
     "Pronoun",
     "Root",
     "SandhiRule",
+    "VerbalCell",
 ]

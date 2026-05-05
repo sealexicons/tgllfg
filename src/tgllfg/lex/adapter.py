@@ -18,11 +18,11 @@ from tgllfg.lex.cache import LexCache
 from tgllfg.morph.paradigms import (
     MorphData,
     Operation,
-    ParadigmCell,
     Particle,
     Pronoun,
     Root,
     SandhiRule,
+    VerbalCell,
 )
 
 
@@ -50,7 +50,7 @@ def cache_to_morph_data(cache: LexCache, iso_code: str = "tgl") -> MorphData:
     ]
 
     paradigm_cells = [
-        ParadigmCell(
+        VerbalCell(
             voice=cell.voice,
             aspect=cell.aspect,
             mood=cell.mood,

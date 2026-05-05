@@ -11,6 +11,7 @@ from .paradigms import (
     Pronoun,
     Root,
     SandhiRule,
+    VerbalCell,
 )
 
 __all__ = [
@@ -23,6 +24,7 @@ __all__ = [
     "Pronoun",
     "Root",
     "SandhiRule",
+    "VerbalCell",
     "analyze_tokens",
     "generate_form",
     "load_morph_data",
