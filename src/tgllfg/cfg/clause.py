@@ -548,3 +548,57 @@ def register_rules(rules: list[Rule]) -> None:
             "↓5 ∈ (↑ ADJUNCT)",
         ),
     ))
+
+
+    # --- Phase 5g Commit 3: predicative adjective clause ---------
+    #
+    # ``Maganda ang bata.`` "The child is beautiful."
+    # ``Matanda siya.`` "She is old."   (R&G 1981 §12.9 benchmark)
+    # ``Maliit ang bahay.`` "The house is small."   (R&G 1981 §12.9)
+    # ``Mataas ang bundok.`` "The mountain is high."   (R&G 1981 §12.9)
+    #
+    # Verbless adj-pred clause: an ADJ head with intrinsic
+    # ``PREDICATIVE=YES`` (set by the analyzer's adjective indexer
+    # for all forms produced by the productive ``ma-`` paradigm)
+    # plus a NOM-NP / NOM-PRON pivot. Structurally analogous to
+    # the Phase 5e Commit 26 ``parang`` comparative and the
+    # Phase 5f Commit 4 predicative-cardinal: a non-V matrix
+    # predicate selecting a SUBJ ang-NP.
+    #
+    # F-structure shape:
+    #
+    #   PRED         = 'ADJ <SUBJ>'
+    #   ADJ_LEMMA    = the adjective's lemma (bare root —
+    #                  ``ganda``, ``tanda``, ``talino``, ...)
+    #   PREDICATIVE  = 'YES'
+    #   SUBJ         = the NOM-NP / NOM-PRON pivot
+    #
+    # The PRED template ``ADJ <SUBJ>`` parallels other predicative
+    # rules' literal-PRED convention (``CARDINAL <SUBJ>`` for
+    # predicative cardinals, ``LIKE <SUBJ, OBJ>`` for parang). The
+    # adjective's identity is preserved on the matrix via
+    # ``ADJ_LEMMA`` (a Phase-5g-specific attribute name to avoid
+    # the ambiguity of plain ``LEMMA`` on a clausal f-structure).
+    #
+    # The constraining equation ``(↓1 PREDICATIVE) =c 'YES'`` is
+    # belt-and-braces — the rule's RHS already filters on
+    # ``ADJ[PREDICATIVE=YES]`` at the category-pattern level — but
+    # makes the analytical commitment explicit and guards against
+    # future lex entries with PREDICATIVE=NO (modifier-only
+    # adjectives, if introduced).
+    #
+    # No VOICE / ASPECT / MOOD: an adjective predicate isn't a
+    # verb and doesn't carry verbal morphology (the analytical
+    # commitment of roadmap §12.1 — ``*pumagmaganda`` etc. are
+    # ungrammatical).
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE=YES]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 PREDICATIVE) =c 'YES'",
+        ],
+    ))
