@@ -12,10 +12,10 @@ script to refresh after grammar / lexicon changes.
 
 | Outcome   | Count | Share |
 |-----------|------:|------:|
-| **parse**    | 1208 | 99.5% |
+| **parse**    | 1223 | 99.5% |
 | **fragment** |    4 |  0.3% |
 | **fail**     |    2 |  0.2% |
-| **TOTAL**    | 1214 |       |
+| **TOTAL**    | 1229 |       |
 
 The plan §7.10 deliverable target was ~80% full-parse rate. We
 exceed that comfortably; the remaining 0.7% are intentional
@@ -64,6 +64,8 @@ out-of-scope items documented below.
 | classic            |    12 |        0 |    0 |    12 | 100% |
 | quantifier         |    12 |        0 |    0 |    12 | 100% |
 | comparative        |     7 |        0 |    0 |     7 | 100% |
+| phase5g            |    11 |        0 |    0 |    11 | 100% |
+| rg-12.9            |     4 |        0 |    0 |     4 | 100% |
 | robustness         |     0 |        2 |    2 |     4 |   0% |
 
 ## What's in each section
@@ -699,6 +701,77 @@ physical layout is its own task.
 
 §7.8 floated quantifier `lahat` / `iba` across intransitive and
 transitive clauses.
+
+### phase5g — adjectival modification (11 sentences, 100%)
+
+Phase 5g (roadmap §12.1). Eleven fixtures pinning the rule
+slate from Commits 2 / 3 / 5 / 6:
+
+* **Predicative-adj clause** (Commit 3) — ``Maganda ang bata.``
+  ``S → ADJ[PREDICATIVE=YES] NP[CASE=NOM]`` with PRED template
+  ``ADJ <SUBJ>``, ADJ_LEMMA preserved on the matrix S.
+* **NP-internal pre-N modifier** (Commit 2) —
+  ``Kumain ang magandang bata.`` (vowel-final adj + bound -ng);
+  ``Kumain ang mabilis na bata.`` (consonant-final adj +
+  standalone na). Right-recursive: an adj-modified N is itself
+  N, so the cardinal-modifier and dem rules chain through it
+  unchanged.
+* **NP-internal post-N modifier** (Commit 2) —
+  ``Kumain ang batang maganda.`` (vowel-final N head);
+  ``Kumain ang aklat na maganda.`` (consonant-final N head).
+* **Multi-modifier composition** (Commit 2) —
+  ``Kumain ang mabilis na magandang bata.`` "the quick
+  beautiful child".
+* **Manner-adverb** (Commit 5) —
+  ``Mabilis na tumakbo ang bata.`` "the child ran quickly";
+  ``Magandang kumain ang bata.`` "the child ate beautifully".
+  S-level rule ``S → ADJ PART[LINK=NA/NG] S`` adds the
+  manner adjective to the matrix's ADJ adjunct set.
+* **Pre-modifier dem on adj-mod head** (Commit 6) —
+  ``Kumain itong magandang bata.`` "ate this beautiful child".
+  No new rule — the Phase 5e Commit 16 dem rule consumes the
+  Phase 5g adj-modified N transparently.
+* **Composition with existing infrastructure** —
+  ``Hindi maganda ang bata.`` (negation × predicative-adj);
+  ``Maganda na ang bata.`` (predicative-adj × ALREADY 2P
+  clitic).
+
+The disambiguator's ADJ + ``na`` + content-word linker branch
+(``_adj_na_right_context_is_linker_target``) admits NOUN / N /
+ADJ / VERB / DEM-DET as right-context targets across these
+constructions; predicative-adj clauses with the ALREADY clitic
+(right context PRON or plain DET DEM=NO) preserve both readings
+and the placement pass treats ``na`` as the clitic.
+
+Out of scope for Phase 5g (deferred): ay-inversion of adj-pred
+clauses (``Ang bata ay maganda.``); reduplicated intensives
+(``maganda-ganda`` "rather beautiful" — Phase 5h);
+``napaka-`` / ``mas`` / ``pinaka-`` derivations (Phase 5h);
+colour terms (``puti`` / ``itim`` / ``pula`` — bare adjectives
+that don't take ``ma-``); ``ka-`` exclamative (``Kaganda!``).
+
+### rg-12.9 — Ramos & Goulet 1981 §12.9 integration benchmark (4 sentences, 100%)
+
+Roadmap §12.9 names the R&G "Ang Manok" combined sentence as a
+multi-phase integration benchmark. Phase 5g unblocks the
+adjectival subset — 4 of the 7 simples plus a modifier-form
+substitute:
+
+* ``Matanda siya.`` "She is old." — predicative-adj (R&G
+  simple 2).
+* ``Maliit ang bahay.`` "The house is small." — predicative-adj
+  (simple 4).
+* ``Mataas ang bundok.`` "The mountain is high." —
+  predicative-adj (simple 6).
+* ``Tumakbo ang lalaking matanda.`` "The old man ran." —
+  post-N adj modifier; substitutes for the OOV
+  ``mamang matanda`` "old man" subphrase from the combined
+  sentence (``mama`` "man" not in seed lex).
+
+The remaining three R&G simples need Phase 5j existentials
+(``May``, ``Nasa``) and additional lex (``mama``, ``mag-isa``,
+``tuktok``, ``bukid``) to land. The combined sentence becomes
+parsable end-to-end at the close of Phase 5j.
 
 ### robustness (4 sentences, 0%)
 

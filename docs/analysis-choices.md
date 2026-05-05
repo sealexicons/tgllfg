@@ -8733,3 +8733,348 @@ throughout. Next: Phase 5g (gradable adjectives + comparison
 + degree, plan §12). Per the effort protocol, the cutover
 will need a deliberate pause-and-verify before starting.
 
+
+## Phase 5g Commit 1: ADJ analyzer dispatch + productive ma- derivation
+
+**Date:** 2026-05-05. **Status:** active. New ``AdjectiveCell``
+schema, new ``data/tgl/adjectives.yaml`` + ``adj_paradigms.yaml``,
+analyzer ``ADJ`` branch + ``_index.adjectives`` table. Refs:
+plan §12.1 (analytical commitment); R&G 1981 §12.9
+(integration benchmark anchors); S&O 1972 §5; Kroeger 1993 ch. 4.
+
+Opens **Phase 5g** (adjectival modification, plan §12.1).
+Adds the analyzer-layer scaffolding for the analytical
+commitment that ``ma-`` adjectives are ``POS=ADJ`` with
+intrinsic ``[PREDICATIVE+]``, NOT stative VERBs. Grammar-rule
+layer follows in Commits 2 / 3 / 5 / 6.
+
+### Schema additions
+
+``src/tgllfg/morph/paradigms.py`` — new ``AdjectiveCell``
+dataclass parallel to ``ParadigmCell`` but without
+voice / aspect / mood fields. ``MorphData`` gains an
+``adjective_cells`` field. (Refactored later this PR into a
+proper ``ParadigmCell`` base + ``VerbalCell`` / ``AdjectiveCell``
+subclasses — see the next entry.)
+
+``src/tgllfg/morph/loader.py`` — loads ``adjectives.yaml`` into
+``MorphData.roots`` (appended after verbs / nouns) and
+``adj_paradigms.yaml`` into ``MorphData.adjective_cells``.
+
+``src/tgllfg/morph/analyzer.py`` — ``_Index.adjectives`` table;
+``_index_adjective_paradigms(root)`` walks every matching
+adjective cell and indexes the generated surface;
+``analyze_one`` consults ``_index.adjectives`` between
+verb_forms and nouns; ``is_known_surface`` includes the new
+table.
+
+### Productive ma- paradigm
+
+``data/tgl/adj_paradigms.yaml`` — single seed cell:
+
+```
+affix_class: ma_adj
+operations: [{op: prefix, value: "ma"}]
+```
+
+Phase 5h is expected to add ``pinaka-`` superlative,
+``napaka-`` intensifier, and ``kasing-`` / ``sing-`` equative
+cells using this same dataclass.
+
+The ``ma_adj`` affix class is intentionally distinct from the
+verbal ``ma`` affix class — the verbal ``ma-`` non-volitional /
+stative paradigm produces ``na-`` (PFV: ``naganda``),
+``na-CV-`` (IPFV: ``nagaganda``), ``ma-CV-`` (CTPL:
+``magaganda``) but NEVER the bare ``ma + root`` surface that
+adjectives use. The two paradigms are non-overlapping,
+mirroring the analytical commitment that ``ma-`` adjectives
+lack the verbal paradigm.
+
+### Lex inventory (seed)
+
+``data/tgl/adjectives.yaml`` — 6 ADJ roots: ``ganda``,
+``talino``, ``tanda``, ``liit``, ``taas``, ``bilis``. Three
+of these (``tanda``, ``talino``, ``liit``) are entirely new
+lemmas; the other three coexist with their existing VERB
+entries in ``verbs.yaml`` — Phase 5g's additive policy doesn't
+touch the verbal entries.
+
+### Lemma policy
+
+Lemma is the bare root (``maganda`` → lemma ``ganda``),
+paralleling the verbal convention. The bare root surface
+itself is intentionally NOT indexed as ADJ — bare ``ganda`` is
+a noun ("beauty") and the productive paradigm produces the
+adjectival surface.
+
+
+## Phase 5g refactor: ParadigmCell base class extracted
+
+**Date:** 2026-05-05. **Status:** active. Refactor only — no
+new linguistic content. Refs: Phase 5g Commit 1 (introduced
+the union); type-system clean-up.
+
+The Commit 1 ``generate_form`` signature used a
+``ParadigmCell | AdjectiveCell`` union. The refactor replaces
+the union with a proper class hierarchy:
+
+* ``ParadigmCell`` — common base with the four shared fields
+  (``affix_class``, ``operations``, ``notes``, ``feats``).
+* ``VerbalCell(ParadigmCell)`` — adds voice / aspect / mood /
+  transitivity. Voice / aspect default to empty strings to
+  satisfy the dataclass-inheritance rule (non-default fields
+  can't follow default ones); the YAML loader's ``_require``
+  enforces non-empty at parse time.
+* ``AdjectiveCell(ParadigmCell)`` — empty subclass; Phase 5g
+  needs nothing beyond the base, though Phase 5h's ``napaka-``
+  / ``pinaka-`` cells may add fields.
+
+``MorphData.paradigm_cells`` retyped ``list[VerbalCell]``.
+Construction sites updated: ``morph/loader.py``,
+``lex/adapter.py``, ``tests/test_morph.py``.
+
+
+## Phase 5g Commit 2: NP-internal ADJ modifier rules + na disambiguator
+
+**Date:** 2026-05-05. **Status:** active. 4 N-level
+modifier rules + ``disambiguate_homophone_clitics`` extension.
+Refs: plan §12.1; Phase 5e Commit 16 (pre-modifier dem
+chain expectation); Phase 4 §7.5 (the linker f-attribute
+namespace).
+
+### Grammar rules
+
+Four N-level rules in ``cfg/nominal.py``:
+
+```
+N → ADJ PART[LINK=NA] N      (pre-N, consonant-final adj)
+N → ADJ PART[LINK=NG] N      (pre-N, vowel-final adj)
+N → N PART[LINK=NA] ADJ      (post-N, consonant-final N)
+N → N PART[LINK=NG] ADJ      (post-N, vowel-final N)
+```
+
+Each writes the adjective lex daughter to the matrix N's
+``ADJ-MOD`` set via ``↓ ∈ (↑ ADJ-MOD)``; the matrix shares
+structure with the head N via ``(↑) = ↓3`` (pre-N) or
+``(↑) = ↓1`` (post-N). The N-level scope lets the existing
+NP-from-N projection case-mark adj-modified Ns freely without
+per-case rule explosion.
+
+Multi-modifier composition (``mabilis na magandang bata``)
+falls out of right-recursion in the pre-N rules — the
+rightmost daughter is N, and an adj-modified N is itself N.
+
+### Why ``ADJ-MOD`` rather than ``ADJ``
+
+This codebase uses the f-attribute ``ADJ`` for clausal
+adjuncts (adverbial 2P clitics in ``cfg/clitic.py``,
+sentential PP / AdvP fronting in ``cfg/extraction.py``) and
+as the host slot for relative clauses on NPs. Lifting the
+head N's adjunct set to the matrix NP via
+``(↑ ADJ) = ↓2 ADJ`` would pre-create an empty AVM on every
+NP whose head N has no modifier (the unifier's
+``resolve_path`` defaults to ``ComplexValue``); subsequent
+``↓ ∈ (↑ ADJ)`` set-adds (e.g., from the RC wrap rule) then
+clash at ``add_to_set`` (FStructure-vs-set type mismatch).
+
+Using a Phase-5g-specific attribute name (``ADJ-MOD``)
+sidesteps the clash because no other rule writes to it. The
+category ``ADJ`` in the rule's RHS is the lex preterminal POS,
+entirely separate from the f-attribute namespace.
+
+### NP-level visibility deferred
+
+The current commit leaves the modifier on the head N's
+f-structure but does not propagate it to the matrix NP.
+Tests verify rule firing via c-tree shape rather than
+f-structure inspection. NP-level lift is filed for a future
+commit — the clean fix is for the NP rule to share f-structure
+with N (``(↑) = ↓2`` plus explicit DET feature lifts), a
+substantial refactor with broad blast radius.
+
+### Disambiguator extension (clitics/placement.py)
+
+Added an ADJ + ``na`` + (NOUN | N | ADJ) right-context branch
+to ``disambiguate_homophone_clitics`` selecting the linker
+reading. The right-context check distinguishes NP-modifier
+contexts (next content is NOUN / N / ADJ) from
+predicative-adj clauses (``Maganda na ka`` /
+``Maganda na ang bata`` — next content is PRON / DET, those
+keep both readings and the placement pass treats ``na`` as
+the ALREADY clitic).
+
+Vowel-final adjectives take the bound ``-ng`` linker (no
+clitic homophone), so this branch matters only for
+consonant-final adjectives.
+
+
+## Phase 5g Commit 3: predicative adjective clause
+
+**Date:** 2026-05-05. **Status:** active. 1 new clausal rule.
+Refs: plan §12.1 analytical commitment; Phase 5e Commit 26
+(``parang`` comparative — structural template); Phase 5f
+Commit 4 (predicative cardinal — same literal-PRED
+convention).
+
+```
+S → ADJ[PREDICATIVE=YES] NP[CASE=NOM]
+    (↑ PRED) = 'ADJ <SUBJ>'
+    (↑ SUBJ) = ↓2
+    (↑ ADJ_LEMMA) = ↓1 LEMMA
+    (↑ PREDICATIVE) = 'YES'
+    (↓1 PREDICATIVE) =c 'YES'
+```
+
+The verbless adj-pred clause that delivers Phase 5g's
+user-facing payload — surfaces like ``Maganda ang bata.``
+"The child is beautiful." (previously zero parses) now have a
+complete sentence parse.
+
+The PRED template ``ADJ <SUBJ>`` parallels other predicative
+rules' literal-PRED convention (``CARDINAL <SUBJ>`` for
+predicative cardinals, ``LIKE <SUBJ, OBJ>`` for parang). The
+adjective's identity is preserved on the matrix S via
+``ADJ_LEMMA`` (a Phase-5g-specific attribute name to avoid
+overloading plain ``LEMMA`` on a clausal f-structure).
+``PREDICATIVE`` is also lifted to the matrix as a clause-type
+marker.
+
+The constraining equation ``(↓1 PREDICATIVE) =c 'YES'`` is
+belt-and-braces — the rule's RHS already filters on
+``ADJ[PREDICATIVE=YES]`` at the category-pattern level — but
+makes the analytical commitment explicit and guards against
+future lex entries with PREDICATIVE=NO (modifier-only
+adjectives, if introduced later).
+
+Composes cleanly with the existing negation rule
+(``Hindi maganda ang bata.``), the aspectual ``na`` ALREADY
+clitic (``Maganda na ang bata.`` / ``Matanda na siya.``), and
+the existing ``NP[CASE=NOM] → PRON[CASE=NOM]`` projection
+(``Maganda ka.``, ``Matanda siya.``).
+
+R&G 1981 §12.9 integration benchmark — Phase 5g unblocks 4 of
+the 7 simple sentences in roadmap §12.9's "Ang Manok"
+benchmark: ``Matanda siya``, ``Maliit ang bahay``, ``Mataas
+ang bundok``, plus a modifier-form fixture (``Tumakbo ang
+lalaking matanda`` substitutes for OOV ``mamang matanda``).
+
+Out of scope for Phase 5g (deferred):
+
+* **ay-inversion of adj-pred** (``Ang bata ay maganda.``):
+  Phase 4 §7.4 ay-fronting was built for V pivots; extending
+  to ADJ pivots is a separate commit.
+* **Multi-modifier predicate** (``Mabilis at maganda ang
+  bata.``): needs Phase 5k coordination.
+* **Comparison / intensification** (``Mas maganda ...`` etc.):
+  Phase 5h.
+
+
+## Phase 5g Commit 4: lex inventory expansion to 30 adjectives
+
+**Date:** 2026-05-05. **Status:** active. Lex-only — 24 new
+ADJ entries. Refs: plan §12.1 (~30-50 inventory target).
+
+Expanded ``data/tgl/adjectives.yaml`` from 6 (Commit 1) to 30
+entries spanning four dimensions:
+
+* **Size** (9): ``laki``, ``liit``, ``taas``, ``baba``,
+  ``haba``, ``ikli``, ``lapad``, ``kapal``, ``nipis``.
+* **Quality** (11): ``ganda``, ``talino``, ``tanda``, ``bilis``,
+  ``bait``, ``sipag``, ``tamad``, ``tapang``, ``lakas``,
+  ``hina``, ``linis``.
+* **Sensory** (6): ``init``, ``lamig``, ``sarap``, ``ingay``,
+  ``bango``, ``baho``.
+* **Evaluative** (4): ``saya``, ``lungkot``, ``yaman``,
+  ``hirap``.
+
+Eight roots also exist in ``verbs.yaml`` as INTR "be X"
+stative verbs or as TR / INTR verbs with a distinct sense
+(``baba`` "go down, descend"; ``linis`` "clean (TR)"). The
+Phase 5g additive policy leaves verbs.yaml untouched — the
+ADJ entries produce the bare ``ma + root`` surface that the
+verbal NVOL paradigm doesn't generate (verbal NVOL ``ma``
+cells always reduplicate or use ``na-`` prefix).
+
+Colour deferred — common Tagalog colour terms (``puti``,
+``itim``, ``pula``, ``dilaw``) are bare adjectives that
+don't take ``ma-`` morphology; they need a separate paradigm
+or a non-paradigmatic ADJ-class entry, lands separately
+(Phase 5h with intensifiers, where ``napaka-`` derivations of
+colour terms appear).
+
+
+## Phase 5g Commit 5: manner-adverb (S-level adjective adjunct)
+
+**Date:** 2026-05-05. **Status:** active. 2 new clausal rules
++ disambiguator extension to VERB right-context. Refs: plan
+§12.1 ("the same lex / linker machinery covers it").
+
+```
+S → ADJ PART[LINK=NA] S
+S → ADJ PART[LINK=NG] S
+    (↑) = ↓3
+    ↓1 ∈ (↑ ADJ)
+```
+
+The matrix S shares its f-structure with the inner verbal S,
+so VOICE / ASPECT / MOOD / SUBJ / OBJ all percolate to the
+matrix; the adjective lex daughter is added to the matrix's
+ADJ adjunct set — the same slot that hosts 2P clitic adjuncts
+and sentential PP / AdvP fronting.
+
+### Why S-level rather than V-level
+
+The roadmap-natural shape would be ``V → ADJ PART V`` — modify
+the verb directly. But ``V`` is currently a lex preterminal:
+tokens with ``pos: VERB`` match SCAN against the ``V`` slot in
+V-headed clausal frames. Per ``compile.py``, "Categories that
+ever appear as a rule LHS are non-terminals; everything else
+is a lex preterminal during SCAN." Adding a ``V`` LHS would
+promote V to non-terminal and break SCAN for every existing
+V-headed rule. The S-level attachment is semantically
+equivalent (manner adverbs scope over the verbal proposition;
+LFG conventionally permits S-level attachment for adjuncts)
+and avoids the preterminal-vs-non-terminal collision.
+
+### Disambiguator extension
+
+The Commit 2 ADJ + ``na`` + content-word linker branch
+extended its right-context whitelist to also include VERB.
+Helper renamed: ``_next_content_is_n_or_adj`` →
+``_next_content_is_n_adj_or_v``. Without the extension, the
+placement pass would hoist ``na`` to clause-end as the ALREADY
+2P clitic and the manner-adverb composition (``Mabilis na
+tumakbo siya.``) would fail.
+
+
+## Phase 5g Commit 6: dem × adj-modified-N composition + disambiguator extension
+
+**Date:** 2026-05-05. **Status:** active. NO new grammar
+rules — empirical verification that the existing dem rules
+chain through Phase 5g adj-modifiers. Disambiguator
+right-context whitelist extended to DEM-DET. Refs: Phase 5e
+Commit 16 (pre-modifier dem); Phase 5d Commit 3 (post-modifier
+dem); plan §12.1.
+
+The Phase 5e Commit 16 pre-modifier dem rules
+(``NP → DET[DEM=YES] PART[LINK] N``) and the Phase 5d Commit 3
+post-modifier dem rules (``NP → NP PART[LINK] DET[DEM=YES]``)
+both took bare N (or bare NP) at their head slot. The
+Phase 5g Commit 2 modifier rules are right-recursive — an
+adj-modified N is itself N — so the dem rules chain through
+adj modifiers unchanged. Verified empirically.
+
+### Disambiguator extension
+
+The one disambiguator gap that surfaced: post-modifier dem
+on a consonant-final adj head (``ang batang mabait na ito``
+"this kind child") has right-context DEM-DET, which the
+Commit 5 whitelist (NOUN / N / ADJ / VERB) didn't cover. The
+helper was renamed and extended to also admit DET / ADP with
+``DEM=YES``:
+
+``_adj_na_right_context_is_linker_target`` — admits NOUN / N
+/ ADJ / VERB / DEM-DET. Plain DET (DEM=NO) right contexts
+continue to fall through, preserving the predicative-adj
+clause's ALREADY-clitic reading.
+
