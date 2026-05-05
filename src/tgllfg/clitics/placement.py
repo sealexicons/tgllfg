@@ -331,6 +331,47 @@ def disambiguate_homophone_clitics(
             # (``lahat``, ``iba``) — which never use the linker form
             # in Phase 5f scope — keep their existing behaviour.
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+        elif (
+            prev is not None
+            and any(ma.pos == "ADJ" for ma in prev)
+            and _adj_na_right_context_is_linker_target(analyses, i)
+        ):
+            # Phase 5g Commits 2 / 5 / 6: ADJ followed by ``na``
+            # followed by a linker-admitting target is the linker
+            # rather than the ALREADY clitic. Three sub-cases:
+            #
+            # * NP-internal modifier (Commit 2): right context
+            #   is NOUN / N / ADJ. ``mabilis na bata`` "quick child";
+            #   ``mabilis na magandang bata`` "quick beautiful child"
+            #   (inner step of a multi-modifier chain).
+            # * Manner-adverb (Commit 5): right context is VERB.
+            #   ``mabilis na tumakbo`` "ran quickly" — the
+            #   ADJ + linker + V composition that gives the
+            #   predicative-adj its adverbial reading.
+            # * Post-modifier demonstrative on adj-modified head
+            #   (Commit 6): right context is a DEM-DET. ``ang
+            #   batang mabait na ito`` "this kind child" — the
+            #   inner NP ``ang batang mabait`` projects from a
+            #   post-N adj-modified N (``bata + -ng + mabait``);
+            #   the post-modifier-dem rule then wraps with
+            #   ``mabait + na + ito`` (consonant-final ``mabait``
+            #   takes standalone ``na``).
+            #
+            # The right-context check distinguishes these linker
+            # uses from the predicative-adj clause's ALREADY
+            # clitic (``Maganda na ka`` / ``Maganda na ang bata``
+            # — right context PRON / plain DET DEM=NO; the
+            # disambiguator falls through to the default
+            # both-readings branch and the placement pass treats
+            # ``na`` as ALREADY).
+            #
+            # Vowel-final adjectives (``maganda``, ``matalino``)
+            # take the bound ``-ng`` linker (split off by
+            # ``split_linker_ng``), which has no clitic homophone,
+            # so this branch matters only for consonant-final
+            # adjectives (``mabilis``, ``malusog``, ``masarap``,
+            # ``masipag``, ``mabait``, ...).
+            out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif prev is not None and any(
             ma.pos in ("DET", "ADP") and ma.feats.get("DEM") is True
             for ma in prev
@@ -447,6 +488,52 @@ def _next_content_is_verb(
         if is_neg_part and "VERB" not in poss:
             look += 1
             continue
+        return False
+    return False
+
+
+def _adj_na_right_context_is_linker_target(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """Look ahead from position ``i + 1`` and return True if the
+    first non-punctuation token is a Phase-5g linker-admitting
+    target after an ADJ + ``na`` left context.
+
+    Linker-admitting right contexts:
+
+    * NOUN / N / ADJ — NP-internal adjective modification
+      (Commit 2: ``mabilis na bata``, ``mabilis na magandang bata``).
+    * VERB — manner-adverb composition (Commit 5: ``mabilis na
+      tumakbo``).
+    * DET / ADP with ``DEM=YES`` — post-modifier demonstrative on
+      an adj-modified head (Commit 6: ``ang batang mabait na ito``).
+
+    Plain DET / ADP / PRON / clause-end right contexts are NOT
+    linker-admitting; the disambiguator's default-both-readings
+    fallthrough lets the placement pass treat ``na`` as the
+    ALREADY clitic in those cases (predicative-adj clauses,
+    ``Maganda na ang bata`` / ``Maganda na ka``).
+    """
+    look = i + 1
+    while look < len(analyses):
+        cands = analyses[look]
+        poss = {ma.pos for ma in cands}
+        # Skip orthographic-terminator punctuation tokens to keep
+        # the heuristic robust against trailing punctuation in tests.
+        if poss == {"PART"} and all(
+            (ma.lemma in (".", "?", "!", ",")) for ma in cands
+        ):
+            look += 1
+            continue
+        if poss & {"NOUN", "N", "ADJ", "VERB"}:
+            return True
+        # DEM-DET / DEM-ADP right context: post-modifier dem on
+        # an adj-modified head NP (``ang batang mabait na ito``).
+        if any(
+            ma.pos in ("DET", "ADP") and ma.feats.get("DEM") is True
+            for ma in cands
+        ):
+            return True
         return False
     return False
 

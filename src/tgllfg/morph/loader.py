@@ -19,13 +19,14 @@ from typing import Any
 import yaml
 
 from .paradigms import (
+    AdjectiveCell,
     MorphData,
     Operation,
-    ParadigmCell,
     Particle,
     Pronoun,
     Root,
     SandhiRule,
+    VerbalCell,
 )
 
 # Default location: <repo-root>/data/tgl. Resolved relative to this
@@ -46,13 +47,16 @@ def load_morph_data(data_dir: Path | None = None) -> MorphData:
     return MorphData(
         # The seed lexicon is split by POS: verbs.yaml first (so the
         # paradigm-generating VERB roots get indexed in their original
-        # order), then nouns.yaml. Together they reproduce the
-        # iteration order of the pre-split data/tgl/roots.yaml.
+        # order), then nouns.yaml, then adjectives.yaml. Together they
+        # reproduce the iteration order of the pre-split
+        # data/tgl/roots.yaml plus the Phase 5g adjective additions.
         roots=(
             _load_roots(base / "verbs.yaml")
             + _load_roots(base / "nouns.yaml")
+            + _load_roots(base / "adjectives.yaml")
         ),
         paradigm_cells=_load_paradigm_cells(base / "paradigms.yaml"),
+        adjective_cells=_load_adjective_cells(base / "adj_paradigms.yaml"),
         particles=_load_particles(base / "particles.yaml"),
         pronouns=_load_pronouns(base / "pronouns.yaml"),
         sandhi_rules=_load_sandhi_rules(base / "sandhi.yaml"),
@@ -108,8 +112,8 @@ def _load_roots(path: Path) -> list[Root]:
     return out
 
 
-def _load_paradigm_cells(path: Path) -> list[ParadigmCell]:
-    out: list[ParadigmCell] = []
+def _load_paradigm_cells(path: Path) -> list[VerbalCell]:
+    out: list[VerbalCell] = []
     for i, rec in enumerate(_read_yaml(path)):
         where = f"{path}[{i}]"
         ops_raw = rec.get("operations", [])
@@ -123,11 +127,35 @@ def _load_paradigm_cells(path: Path) -> list[ParadigmCell]:
         feats_raw = rec.get("feats", {})
         if not isinstance(feats_raw, dict):
             raise ValueError(f"{where}: 'feats' must be a mapping")
-        out.append(ParadigmCell(
+        out.append(VerbalCell(
             voice=_require(rec, "voice", where),
             aspect=_require(rec, "aspect", where),
             mood=rec.get("mood", "IND"),
             transitivity=rec.get("transitivity", ""),
+            affix_class=rec.get("affix_class", ""),
+            operations=operations,
+            notes=rec.get("notes", ""),
+            feats=dict(feats_raw),
+        ))
+    return out
+
+
+def _load_adjective_cells(path: Path) -> list[AdjectiveCell]:
+    out: list[AdjectiveCell] = []
+    for i, rec in enumerate(_read_yaml(path)):
+        where = f"{path}[{i}]"
+        ops_raw = rec.get("operations", [])
+        if not isinstance(ops_raw, list):
+            raise ValueError(f"{where}: 'operations' must be a list")
+        operations = [
+            Operation(op=_require(o, "op", f"{where}.operations[{j}]"),
+                      value=o.get("value", ""))
+            for j, o in enumerate(ops_raw)
+        ]
+        feats_raw = rec.get("feats", {})
+        if not isinstance(feats_raw, dict):
+            raise ValueError(f"{where}: 'feats' must be a mapping")
+        out.append(AdjectiveCell(
             affix_class=rec.get("affix_class", ""),
             operations=operations,
             notes=rec.get("notes", ""),

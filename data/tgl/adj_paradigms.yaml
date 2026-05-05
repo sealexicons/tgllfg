@@ -1,0 +1,35 @@
+# data/tgl/adj_paradigms.yaml
+#
+# Adjective derivation cells — Phase 5g §12.1. Each cell pairs an
+# ``affix_class`` filter (which root opt-ins) with a list of
+# operations applied to the root citation in YAML-declared order.
+# The analyzer (:mod:`tgllfg.morph.analyzer`) sets
+# ``PREDICATIVE: YES`` on every derived ADJ surface intrinsically;
+# per-cell ``feats`` may extend / override.
+#
+# Phase 5g seeds the productive ``ma-`` cell. Phase 5h is expected
+# to add ``pinaka-`` superlative, ``napaka-`` intensifier, and
+# ``kasing-`` / ``sing-`` equative cells using this same dataclass.
+#
+# Citations: S&O 1972 §5, Kroeger 1993 ch. 4 — the analytical
+# treatment of ``ma-`` adjectival derivation as distinct from
+# the ``ma-`` verbal non-volitional / stative paradigm.
+
+- affix_class: ma_adj
+  operations:
+    - {op: prefix, value: "ma"}
+  notes: |
+    Productive ma- adjective derivation. Applies to ADJ roots
+    declaring ``affix_class: [ma_adj]``. Surface is plain
+    concatenation: ``ma-`` + root → ``maganda`` / ``matalino`` /
+    ``matanda`` / ``maliit`` / ``mataas`` / ``mabilis``. No nasal
+    substitution, no reduplication, no vowel-hiatus repair —
+    Tagalog ``ma-`` adjective formation is among the most
+    morphologically transparent productive prefixes in the
+    language.
+
+    Distinct from the verbal ``ma-`` non-volitional / stative
+    cells (paradigms.yaml AV-PFV/IPFV/CTPL with MOOD=NVOL),
+    which always reduplicate (CTPL: ``magaganda``) or use
+    ``na-`` for realis (``naganda``). The bare ``ma + root``
+    surface is reserved for the adjectival reading.

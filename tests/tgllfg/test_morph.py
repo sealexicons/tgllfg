@@ -9,10 +9,10 @@ from tgllfg.morph import (
     Analyzer,
     MorphData,
     Operation,
-    ParadigmCell,
     Particle,
     Pronoun,
     Root,
+    VerbalCell,
     analyze_tokens,
     generate_form,
     load_morph_data,
@@ -473,7 +473,7 @@ class TestAnalyzerWithCustomData:
     def test_minimal_data(self) -> None:
         data = MorphData(
             roots=[Root(citation="rud", pos="VERB", transitivity="TR")],
-            paradigm_cells=[ParadigmCell(
+            paradigm_cells=[VerbalCell(
                 voice="OV", aspect="PFV", mood="IND", transitivity="TR",
                 operations=[Operation(op="infix", value="in")],
             )],

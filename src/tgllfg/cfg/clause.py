@@ -548,3 +548,108 @@ def register_rules(rules: list[Rule]) -> None:
             "↓5 ∈ (↑ ADJUNCT)",
         ),
     ))
+
+
+    # --- Phase 5g Commit 3: predicative adjective clause ---------
+    #
+    # ``Maganda ang bata.`` "The child is beautiful."
+    # ``Matanda siya.`` "She is old."   (R&G 1981 §12.9 benchmark)
+    # ``Maliit ang bahay.`` "The house is small."   (R&G 1981 §12.9)
+    # ``Mataas ang bundok.`` "The mountain is high."   (R&G 1981 §12.9)
+    #
+    # Verbless adj-pred clause: an ADJ head with intrinsic
+    # ``PREDICATIVE=YES`` (set by the analyzer's adjective indexer
+    # for all forms produced by the productive ``ma-`` paradigm)
+    # plus a NOM-NP / NOM-PRON pivot. Structurally analogous to
+    # the Phase 5e Commit 26 ``parang`` comparative and the
+    # Phase 5f Commit 4 predicative-cardinal: a non-V matrix
+    # predicate selecting a SUBJ ang-NP.
+    #
+    # F-structure shape:
+    #
+    #   PRED         = 'ADJ <SUBJ>'
+    #   ADJ_LEMMA    = the adjective's lemma (bare root —
+    #                  ``ganda``, ``tanda``, ``talino``, ...)
+    #   PREDICATIVE  = 'YES'
+    #   SUBJ         = the NOM-NP / NOM-PRON pivot
+    #
+    # The PRED template ``ADJ <SUBJ>`` parallels other predicative
+    # rules' literal-PRED convention (``CARDINAL <SUBJ>`` for
+    # predicative cardinals, ``LIKE <SUBJ, OBJ>`` for parang). The
+    # adjective's identity is preserved on the matrix via
+    # ``ADJ_LEMMA`` (a Phase-5g-specific attribute name to avoid
+    # the ambiguity of plain ``LEMMA`` on a clausal f-structure).
+    #
+    # The constraining equation ``(↓1 PREDICATIVE) =c 'YES'`` is
+    # belt-and-braces — the rule's RHS already filters on
+    # ``ADJ[PREDICATIVE=YES]`` at the category-pattern level — but
+    # makes the analytical commitment explicit and guards against
+    # future lex entries with PREDICATIVE=NO (modifier-only
+    # adjectives, if introduced).
+    #
+    # No VOICE / ASPECT / MOOD: an adjective predicate isn't a
+    # verb and doesn't carry verbal morphology (the analytical
+    # commitment of roadmap §12.1 — ``*pumagmaganda`` etc. are
+    # ungrammatical).
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE=YES]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 PREDICATIVE) =c 'YES'",
+        ],
+    ))
+
+
+    # --- Phase 5g Commit 5: manner-adverb (S-level) -----------
+    #
+    # ``Mabilis na tumakbo siya.`` "She ran quickly."
+    # ``Magandang kumain ang bata.`` "The child ate beautifully."
+    # ``Malakas na sumigaw siya.`` "He shouted loudly."
+    #
+    # The same lex / linker machinery that drives NP-internal
+    # adjective modification (Phase 5g Commit 2) also produces the
+    # manner-adverb form: an adjective + linker + verbal clause
+    # where the adjective modifies the verb's manner. Per roadmap
+    # §12.1: "Manner adverb form (``mabilis na tumakbo`` "ran
+    # quickly") is the predicative-adj surface used adverbially;
+    # the same lex / linker machinery covers it."
+    #
+    # **S-level attachment.** The rule wraps the inner verbal S
+    # with an outer S that adds the adjective as an adjunct of
+    # the matrix proposition. ``(↑) = ↓3`` shares the inner S's
+    # f-structure (so VOICE / ASPECT / MOOD / SUBJ / OBJ / etc.
+    # all percolate to the matrix); ``↓1 ∈ (↑ ADJ)`` adds the
+    # manner adjective as a member of the matrix S's adjunct set.
+    # The rule does NOT add a V-level non-terminal (``V →
+    # ADJ PART V``) because V is currently a lex preterminal and
+    # introducing a V-LHS rule would break the parser's SCAN
+    # (categories that ever appear as a rule LHS become
+    # non-terminals; tokens with ``pos: VERB`` would no longer
+    # match SCAN's V slot in V-headed clausal frames).
+    #
+    # Two link variants — ``na`` for consonant-final adjectives
+    # (``mabilis na``) and the bound ``-ng`` for vowel-final
+    # adjectives (``magandang``, split by ``split_linker_ng``).
+    #
+    # The adjective sits on the matrix S's ``ADJ`` set alongside
+    # any 2P clitic adjuncts (``na`` ALREADY, ``pa`` STILL,
+    # ``ba`` Q-PARTICLE) and sentential PP / AdvP adjuncts. This
+    # is the same slot the relativization wrap rules use for RC
+    # attachment — adjuncts of the matrix proposition.
+    #
+    # No PRED override: the matrix S's PRED comes from the inner
+    # S (the verbal predicate). The manner-adverb's identity is
+    # accessible by traversing the matrix's ADJ adjunct set.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            ["ADJ", f"PART[LINK={link}]", "S"],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ)",
+            ],
+        ))

@@ -3,6 +3,7 @@
 from .analyzer import Analyzer, analyze_tokens, generate_form
 from .loader import load_morph_data
 from .paradigms import (
+    AdjectiveCell,
     MorphData,
     Operation,
     ParadigmCell,
@@ -10,9 +11,11 @@ from .paradigms import (
     Pronoun,
     Root,
     SandhiRule,
+    VerbalCell,
 )
 
 __all__ = [
+    "AdjectiveCell",
     "Analyzer",
     "MorphData",
     "Operation",
@@ -21,6 +24,7 @@ __all__ = [
     "Pronoun",
     "Root",
     "SandhiRule",
+    "VerbalCell",
     "analyze_tokens",
     "generate_form",
     "load_morph_data",
