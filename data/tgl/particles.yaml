@@ -583,7 +583,7 @@
   clitic_class: 2P
 - surface: ba
   pos: PART
-  feats: {QUESTION: true}
+  feats: {QUESTION: "YES", Q_TYPE: YES_NO}
   is_clitic: true
   clitic_class: 2P
 - surface: daw

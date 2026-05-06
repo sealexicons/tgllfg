@@ -726,7 +726,7 @@ class TestDemonstratives:
 class TestEnclitics:
     @pytest.mark.parametrize("surface,key,value", [
         ("pa",   "ASPECT_PART", "STILL"),
-        ("ba",   "QUESTION",    True),
+        ("ba",   "QUESTION",    "YES"),
         ("daw",  "EVID",        "REPORT"),
         ("raw",  "EVID",        "REPORT"),
         ("din",  "ADV",         "ALSO"),
