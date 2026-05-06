@@ -334,7 +334,7 @@ def disambiguate_homophone_clitics(
         elif (
             prev is not None
             and any(ma.pos == "ADJ" for ma in prev)
-            and _adj_na_right_context_is_linker_target(analyses, i)
+            and _na_right_context_is_linker_target(analyses, i)
         ):
             # Phase 5g Commits 2 / 5 / 6: ADJ followed by ``na``
             # followed by a linker-admitting target is the linker
@@ -371,6 +371,34 @@ def disambiguate_homophone_clitics(
             # so this branch matters only for consonant-final
             # adjectives (``mabilis``, ``malusog``, ``masarap``,
             # ``masipag``, ``mabait``, ...).
+            out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+        elif (
+            prev is not None
+            and any(
+                ma.pos == "PART" and ma.feats.get("INTENSIFIER") == "YES"
+                for ma in prev
+            )
+            and _na_right_context_is_linker_target(analyses, i)
+        ):
+            # Phase 5h Commit 5: particle intensifier (``lubos`` /
+            # ``sobra`` / ``masyado`` / ``medyo`` with
+            # ``INTENSIFIER: YES``) followed by ``na`` followed by an
+            # ADJ is the linker for the intensifier-ADJ wrapper rule
+            # in cfg/nominal.py (``Lubos na maganda ang bata``).
+            # Without this branch, the default-both-readings
+            # fallthrough lets reorder_clitics treat ``na`` as the
+            # ALREADY clitic and move it to clause-final position,
+            # breaking the wrapper-rule's adjacent PART-PART-ADJ
+            # pattern.
+            #
+            # Vowel-final intensifiers (``sobra``, ``talaga``,
+            # ``masyado``, ``medyo``) take the bound ``-ng`` linker
+            # (split off by ``split_linker_ng`` once each particle is
+            # a known surface — no clitic homophone), so this branch
+            # matters only for consonant-final ``lubos`` and the rare
+            # alternative free-``na`` forms of the vowel-final
+            # particles. (``medyo`` also admits a zero-linker variant
+            # via its dedicated rule in cfg/nominal.py.)
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif prev is not None and any(
             ma.pos in ("DET", "ADP") and ma.feats.get("DEM") is True
@@ -492,21 +520,31 @@ def _next_content_is_verb(
     return False
 
 
-def _adj_na_right_context_is_linker_target(
+def _na_right_context_is_linker_target(
     analyses: list[list[MorphAnalysis]], i: int
 ) -> bool:
     """Look ahead from position ``i + 1`` and return True if the
-    first non-punctuation token is a Phase-5g linker-admitting
-    target after an ADJ + ``na`` left context.
+    first non-punctuation token is a linker-admitting target.
+
+    Used by two disambiguator branches: ADJ + ``na`` (Phase 5g
+    Commits 2 / 5 / 6 — adjective modification, manner-adverb,
+    post-modifier dem) and PART[INTENSIFIER=YES] + ``na`` (Phase 5h
+    Commit 5 — particle intensifiers ``lubos`` / ``sobra`` /
+    ``masyado`` / ``medyo`` taking ``na`` linker before an ADJ).
+    The check is right-context-only; the caller supplies the
+    left-context constraint.
 
     Linker-admitting right contexts:
 
     * NOUN / N / ADJ — NP-internal adjective modification
-      (Commit 2: ``mabilis na bata``, ``mabilis na magandang bata``).
-    * VERB — manner-adverb composition (Commit 5: ``mabilis na
-      tumakbo``).
+      (Phase 5g Commit 2: ``mabilis na bata``, ``mabilis na
+      magandang bata``); Phase 5h Commit 5 intensifier + na + ADJ
+      (``lubos na maganda``).
+    * VERB — manner-adverb composition (Phase 5g Commit 5:
+      ``mabilis na tumakbo``).
     * DET / ADP with ``DEM=YES`` — post-modifier demonstrative on
-      an adj-modified head (Commit 6: ``ang batang mabait na ito``).
+      an adj-modified head (Phase 5g Commit 6: ``ang batang mabait
+      na ito``).
 
     Plain DET / ADP / PRON / clause-end right contexts are NOT
     linker-admitting; the disambiguator's default-both-readings

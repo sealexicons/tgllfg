@@ -1282,3 +1282,120 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 COMP_DEGREE) =c 'COMPARATIVE'",
         ],
     ))
+
+
+    # --- Phase 5h Commit 5: particle-intensifier ADJ-wrappers ----
+    #
+    # ``Sobrang maganda ang bata.``     "The child is too beautiful."
+    # ``Talagang maganda ang bata.``    "The child is really beautiful."
+    # ``Lubos na maganda ang bata.``    "The child is completely beautiful."
+    # ``Masyadong mainit ang sopas.``   "The soup is too hot."
+    # ``Medyo maganda ang bata.``       "The child is somewhat beautiful."
+    #
+    # Five new PARTs (sobra / medyo / talaga / lubos / masyado —
+    # added in particles.yaml in this commit) each carry
+    # ``INTENSIFIER: YES`` plus a per-particle ``INTENSITY`` tag
+    # (EXCESSIVE / MODERATE / EMPHATIC / COMPLETE / EXCESSIVE
+    # respectively). Each takes the linker (NA or bound -ng) and
+    # an ADJ complement; ``medyo`` colloquially also appears without
+    # a linker.
+    #
+    # **Equation analysis** (mirrors the Phase 5h Commit 3
+    # comparative-mas wrapper — same shape, plus an
+    # ``INTENSITY``-lift that carries the per-particle semantic
+    # tag onto the wrapped ADJ):
+    #
+    # * ``(↑) = ↓3`` shares the inner ADJ's f-structure with the
+    #   wrapped output (same as Phase 5g manner-adverb / Commit 3
+    #   comparative wrapper).
+    # * ``(↑ COMP_DEGREE) = 'INTENSIVE'`` writes INTENSIVE onto
+    #   the matrix. Unification clash on already-degree-marked
+    #   ADJs handles ``*sobrang pinakamaganda`` (more most beautiful)
+    #   correctly. Note: if inner is ``napakaganda`` (also INTENSIVE),
+    #   identity write succeeds → ``Sobrang napakaganda ang bahay``
+    #   parses as a "double intensifier" (attested colloquially).
+    # * ``(↑ INTENSITY) = ↓1 INTENSITY`` lifts the particle's
+    #   semantic tag onto the matrix.
+    # * ``(↑ INTENSIFIER) = 'YES'`` and ``(↓1 INTENSIFIER) =c 'YES'``
+    #   — defining + constraining belt-and-braces (matches the
+    #   Phase 5g convention).
+    #
+    # **Why both NA and NG link variants**: identical to Phase 5g
+    # manner-adverb / NP-modifier link handling. Vowel-final
+    # particles (``sobra``, ``talaga``, ``masyado``, ``medyo``) take
+    # the bound ``-ng`` (split by ``split_linker_ng`` at the
+    # pre-parse stage); consonant-final particles (``lubos``) take
+    # the free ``na``. The bound-``-ng`` and free-``na`` forms both
+    # surface as ``PART[LINK=NG]`` and ``PART[LINK=NA]`` after
+    # the pre-pass, so the rule is parameterised over both link
+    # variants.
+    #
+    # **Top-1 flip risk** (Phase 5h plan §7.2): pre-state probes
+    # showed ``Sobrang maganda ang bata`` / ``Talagang maganda
+    # ang bata`` / ``Lubos na maganda ang bata`` parsing today by
+    # silently dropping the _UNK intensifier. After this commit
+    # the same surfaces parse with the intensifier consumed by
+    # the new wrapper, producing a richer f-structure (matrix
+    # carries INTENSIFIER=YES, COMP_DEGREE=INTENSIVE,
+    # INTENSITY=<tag>). Audit before merging: none of the 1229
+    # baseline corpus entries contain the surfaces ``sobra``,
+    # ``sobrang``, ``medyo``, ``talaga``, ``talagang``, ``lubos``,
+    # ``masyado``, or ``masyadong`` (verified by grep).
+    # **Belt-and-braces ``=c`` constraints on both PART daughters**:
+    # the category-pattern matcher is non-conflict (compile.py
+    # ::matches), so ``PART[INTENSIFIER=YES]`` matches any PART
+    # without an INTENSIFIER feature by absorption, and similarly
+    # ``PART[LINK=NA]`` matches any PART without LINK. Without the
+    # explicit constraining equations, ``Lubos na mas matalino
+    # siya`` would parse: ``mas`` (PART[COMP_DEGREE=COMPARATIVE],
+    # no LINK) would absorb the ``PART[LINK=NA]`` slot. The two
+    # ``=c`` equations close the leak — same pattern as Phase 5h
+    # Commit 3's ``(↓1 POLARITY) =c 'NEG'`` fix on the hindi-
+    # negation rule.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "ADJ",
+            [
+                "PART[INTENSIFIER=YES]",
+                f"PART[LINK={link}]",
+                "ADJ",
+            ],
+            [
+                "(↑) = ↓3",
+                "(↑ INTENSIFIER) = 'YES'",
+                "(↑ COMP_DEGREE) = 'INTENSIVE'",
+                "(↑ INTENSITY) = ↓1 INTENSITY",
+                "(↓1 INTENSIFIER) =c 'YES'",
+                f"(↓2 LINK) =c '{link}'",
+            ],
+        ))
+
+
+    # --- Phase 5h Commit 5: ``medyo`` zero-linker variant ---------
+    #
+    # ``Medyo maganda ang bata.`` "The child is somewhat beautiful."
+    #
+    # Per S&O 1972 / Schachter 1985: ``medyo`` colloquially appears
+    # WITHOUT a linker (in addition to the with-linker form covered
+    # by the rule above). The zero-linker variant is restricted to
+    # ``INTENSITY=MODERATE`` (the medyo-specific feature) so the
+    # ``sobra`` / ``talaga`` / ``lubos`` / ``masyado`` paths still
+    # require the linker — this avoids overgeneralising to
+    # ``*sobra ganda`` (without linker) which is ungrammatical.
+    #
+    # The constraining ``(↓1 INTENSITY) =c 'MODERATE'`` filters to
+    # ``medyo`` only at the equation layer; the category pattern
+    # ``PART[INTENSITY=MODERATE]`` filters at the matcher layer
+    # (belt-and-braces).
+    rules.append(Rule(
+        "ADJ",
+        ["PART[INTENSITY=MODERATE]", "ADJ"],
+        [
+            "(↑) = ↓2",
+            "(↑ INTENSIFIER) = 'YES'",
+            "(↑ COMP_DEGREE) = 'INTENSIVE'",
+            "(↑ INTENSITY) = ↓1 INTENSITY",
+            "(↓1 INTENSITY) =c 'MODERATE'",
+            "(↓1 INTENSIFIER) =c 'YES'",
+        ],
+    ))

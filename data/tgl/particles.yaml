@@ -1176,3 +1176,56 @@
 - surface: kaysa
   pos: PART
   feats: {COMP_PHRASE: KAYSA}
+
+# === Phase 5h Commit 5: particle intensifiers (Group A degree markers) ===
+# Free-word degree markers that wrap an ADJ via the linker (or, for
+# ``medyo``, optionally without a linker). Each carries
+# ``INTENSIFIER: YES`` plus a per-particle ``INTENSITY`` tag for
+# downstream consumers (ranker / classifier).
+#
+# Surface forms:
+#
+#   sobrang ganda     "too / overly beautiful"   (sobra + bound -ng)
+#   sobra na ganda    "too / overly beautiful"   (rare; with NA linker)
+#   medyo maganda     "somewhat beautiful"        (medyo + zero linker)
+#   medyo na maganda  "somewhat beautiful"        (with NA linker, less common)
+#   talagang maganda  "really / truly beautiful"  (talaga + bound -ng)
+#   lubos na maganda  "completely beautiful"      (lubos + NA linker)
+#   masyadong mainit  "too hot"                   (masyado + bound -ng)
+#   masyado na mainit "too hot"                   (with NA linker)
+#
+# The bound ``-ng`` forms are produced by ``split_linker_ng`` at
+# the pre-parse stage once each particle is a known surface — no
+# extra entries needed.
+#
+# The grammar rule that consumes these PARTs (in ``cfg/nominal.py``)
+# is the intensifier-ADJ wrapper:
+#
+#   ADJ → PART[INTENSIFIER=YES] PART[LINK=NA] ADJ
+#   ADJ → PART[INTENSIFIER=YES] PART[LINK=NG] ADJ
+#   ADJ → PART[INTENSITY=MODERATE] ADJ      (medyo zero-linker)
+#
+# Pre-state (verified 2026-05-05): all five surfaces were ``_UNK``;
+# ``Sobrang maganda ang bata.``, ``Talagang maganda ang bata.``,
+# ``Lubos na maganda ang bata.`` "parsed" today by silently dropping
+# the unknown intensifier (``_strip_non_content``) and treating the
+# residue. After this commit, the proper PART entries trigger the
+# intensifier-ADJ wrapper and the matrix carries
+# ``INTENSIFIER: YES`` / ``INTENSITY: <tag>``. Top-1 changes for any
+# baseline-corpus entry containing these surfaces are flagged in
+# this commit's audit.
+- surface: sobra
+  pos: PART
+  feats: {INTENSIFIER: "YES", INTENSITY: EXCESSIVE}
+- surface: medyo
+  pos: PART
+  feats: {INTENSIFIER: "YES", INTENSITY: MODERATE}
+- surface: talaga
+  pos: PART
+  feats: {INTENSIFIER: "YES", INTENSITY: EMPHATIC}
+- surface: lubos
+  pos: PART
+  feats: {INTENSIFIER: "YES", INTENSITY: COMPLETE}
+- surface: masyado
+  pos: PART
+  feats: {INTENSIFIER: "YES", INTENSITY: EXCESSIVE}
