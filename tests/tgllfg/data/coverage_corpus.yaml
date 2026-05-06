@@ -3748,3 +3748,97 @@
 - text: Maganda na ang bata.
   construction: 'phase5g: predicative-adj + ALREADY clitic'
   expected: parse
+
+# === Phase 5h: comparison and degree ====================================
+#
+# Roadmap §12.1 + plan-of-record §7.3. Spans the rule slate from
+# Commits 1-7: superlative / intensive (Commit 1), equative
+# (Commit 2), comparative mas (Commit 3), kaysa (Commit 4),
+# particle intensifiers (Commit 5), equative two-NP (Commit 6),
+# comparative-Q (Commit 7). Each entry pins the f-structure that
+# the new rule produces; baseline-check fails if any later commit
+# perturbs it.
+
+# --- Comparative (Commit 3: mas + ADJ) ----------------------
+- text: Mas matalino siya.
+  construction: 'phase5h: comparative-ADJ wrapper (mas) + PRON SUBJ'
+  expected: parse
+- text: Mas mabilis ang kabayo.
+  construction: 'phase5h: comparative-ADJ wrapper (mas) + ang-NP SUBJ'
+  expected: parse
+
+# --- Comparative + kaysa (Commit 4) -------------------------
+- text: Mas matalino siya kaysa kay Maria.
+  construction: 'phase5h: comparative + kaysa kay (HUMAN proper-noun standard)'
+  expected: parse
+- text: Mas matalino siya kaysa sa bata.
+  construction: 'phase5h: comparative + kaysa sa (default DAT standard)'
+  expected: parse
+
+# --- Superlative (Commit 1: pinaka-) ------------------------
+- text: Pinakamaganda ang bata.
+  construction: 'phase5h: pinaka- superlative predicative'
+  expected: parse
+- text: Pinakamatalino siya.
+  construction: 'phase5h: pinaka- superlative + PRON SUBJ'
+  expected: parse
+- text: Tumakbo ang pinakamabilis na kabayo.
+  construction: 'phase5h: pinaka- superlative as NP-modifier'
+  expected: parse
+
+# --- Intensive (Commit 1: napaka-) --------------------------
+- text: Napakaganda ang bahay.
+  construction: 'phase5h: napaka- intensive predicative'
+  expected: parse
+
+# --- Equative one-NP (Commit 2 lex) -------------------------
+- text: Pareho ang kanilang sapatos.
+  construction: 'phase5h: pareho equative-identity predicative + possessive'
+  expected: parse
+- text: Magkapareho ang kanilang sapatos.
+  construction: 'phase5h: magkapareho formal equative + possessive'
+  expected: parse
+- text: Magkaiba ang kanilang sapatos.
+  construction: 'phase5h: magkaiba contrastive predicative + possessive'
+  expected: parse
+
+# --- Equative two-NP (Commit 6) -----------------------------
+- text: Kasingganda si Maria si Ana.
+  construction: 'phase5h: kasing- equative two-NOM standard frame'
+  expected: parse
+- text: Singganda si Maria si Ana.
+  construction: 'phase5h: sing- equative two-NOM standard frame (colloquial doublet)'
+  expected: parse
+- text: Kasingganda ng bahay mo ang bahay ko.
+  construction: 'phase5h: kasing- equative GEN-standard + NOM-comparee'
+  expected: parse
+
+# --- Particle intensifiers (Commit 5) -----------------------
+- text: Sobrang maganda ang bata.
+  construction: 'phase5h: sobra (EXCESSIVE) + bound -ng linker + ADJ'
+  expected: parse
+- text: Talagang maganda ang bata.
+  construction: 'phase5h: talaga (EMPHATIC) + bound -ng linker + ADJ'
+  expected: parse
+- text: Lubos na maganda ang bata.
+  construction: 'phase5h: lubos (COMPLETE) + free na linker + ADJ'
+  expected: parse
+- text: Masyadong mainit ang tubig.
+  construction: 'phase5h: masyado (EXCESSIVE) + bound -ng linker + ADJ'
+  expected: parse
+- text: Medyo maganda ang bata.
+  construction: 'phase5h: medyo (MODERATE) + zero-linker + ADJ'
+  expected: parse
+
+# --- Negation × intensifier (Commit 8 composition test) -----
+- text: Hindi masyadong mainit ang tubig.
+  construction: 'phase5h: canonical "not very" — hindi + masyado + ADJ'
+  expected: parse
+
+# --- Comparative-Q (Commit 7) -------------------------------
+- text: Bumili ng mas maraming aklat ang lalaki.
+  construction: 'phase5h: mas + Q[VAGUE] NP-modifier in OBJ position'
+  expected: parse
+- text: Kumain ang mas maraming bata.
+  construction: 'phase5h: mas + Q[VAGUE] NP-modifier in SUBJ position'
+  expected: parse
