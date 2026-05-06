@@ -1285,6 +1285,77 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5j Commit 4: locative existential (nasa) -----------
+    #
+    #   ``Nasa labas ang aso.``         "The dog is outside."
+    #   ``Nasa bundok ang bahay.``      "The house is on the
+    #                                    mountain." (R&G simple #5)
+    #   ``Nasa bahay si Maria.``        "Maria is at the house."
+    #   ``Nasa tuktok ng bundok ang bahay.``
+    #                                   "The house is on top of the
+    #                                    mountain." (R&G simple #7)
+    #
+    # ``nasa`` is etymologically ``na`` + ``sa`` (locative case
+    # marker) but synchronically a fixed locative-existential
+    # clause-typer. The first internal slot is the locative ground
+    # (the entity at which the figure is located); the second is
+    # the NOM-NP pivot (the figure / theme being located).
+    #
+    # F-structure shape:
+    #
+    #   PRED         = 'LOC <SUBJ>'
+    #   SUBJ         = the NOM-NP figure (the post-ground daughter)
+    #   LOCATION     = the locative ground N (with optional GEN-NP
+    #                  possessor — ``tuktok ng bundok``)
+    #   CLAUSE_TYPE  = 'LOC_EXISTENTIAL'
+    #
+    # Two rules: a base form for bare-N grounds (``Nasa labas
+    # ang aso``) and a possessor variant for N + GEN-NP grounds
+    # (``Nasa tuktok ng bundok ang bahay``). The two-rule split is
+    # preferred over a single rule with optional GEN-NP because the
+    # parser's category-pattern matching can't express "optional"
+    # daughters; the alternative would be a recursive intermediate
+    # non-terminal, which is more invasive than necessary for a
+    # phase-local construction. Mirrors the V-headed-frame
+    # convention of explicit per-shape rules.
+    #
+    # PRED is ``'LOC <SUBJ>'`` (one-place over the figure) — same
+    # GF-named-PRED-template convention as Phase 5g
+    # ``'ADJ <SUBJ>'`` and Phase 5j Commit 2 ``'EXIST <SUBJ>'``.
+    # The locative ground rides on a dedicated ``LOCATION``
+    # feature (not in the PRED's argument list) because ``nasa``
+    # is structurally a clause-typer, not a binary predicate
+    # over the LFG GF inventory; the LOCATION feature mirrors the
+    # Phase 5h Commit 4 ``ROLE='STANDARD'`` convention for
+    # comparison standards.
+    rules.append(Rule(
+        "S",
+        ["PART[LOC_EXISTENTIAL=YES]", "N", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'LOC <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ LOCATION) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
+            "(↓1 LOC_EXISTENTIAL) =c 'YES'",
+        ],
+    ))
+
+    # Possessor-of-ground variant: ``Nasa tuktok ng bundok ang
+    # bahay`` — locative ground is N + GEN-NP (left-associative
+    # possessor); the GEN-NP rides on the ground's POSS feature.
+    rules.append(Rule(
+        "S",
+        ["PART[LOC_EXISTENTIAL=YES]", "N", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'LOC <SUBJ>'",
+            "(↑ SUBJ) = ↓4",
+            "(↑ LOCATION) = ↓2",
+            "(↓2 POSS) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
+            "(↓1 LOC_EXISTENTIAL) =c 'YES'",
+        ],
+    ))
+
     # Clause-final DAT-NP ADJUNCT lift, gated on existential
     # clauses. ``May tao sa labas`` / ``Mayroong tao sa labas`` —
     # the locative-PP composes by adjoining a clause-final
