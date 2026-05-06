@@ -56,12 +56,25 @@ def register_rules(rules: list[Rule]) -> None:
     # declarative negator). The huwag-specific rule below then
     # handles ``huwag`` (PART[MOOD=IMP, POLARITY=NEG]) without
     # rule competition.
+    # Phase 5h Commit 3 follow-on: the original rule relied solely on
+    # the category pattern ``PART[POLARITY=NEG]`` to filter the
+    # particle daughter. Per ``compile.py::matches``, category-pattern
+    # matching is non-conflict — a particle without a ``POLARITY``
+    # feature absorbs the constraint and matches inappropriately. So
+    # ``halos`` (PART[APPROX=YES]) / ``tuwing`` (PART[TIME_FRAME=PERIODIC])
+    # / new Phase 5h ``mas`` (PART[COMP_DEGREE=COMPARATIVE]) all
+    # silently triggered phantom negation parses (``Halos kumain ang
+    # bata`` parsed with POLARITY=NEG). Adding the explicit
+    # ``(↓1 POLARITY) =c 'NEG'`` constraining equation closes the leak
+    # — same belt-and-braces pattern Phase 5g Commit 3 used on the
+    # predicative-adj rule's ``PREDICATIVE`` filter.
     rules.append(Rule(
         "S",
         ["PART[POLARITY=NEG]", "S"],
         [
             "(↑) = ↓2",
             "(↑ POLARITY) = 'NEG'",
+            "(↓1 POLARITY) =c 'NEG'",
             "¬ (↓1 MOOD)",
         ],
     ))

@@ -1115,3 +1115,117 @@
 - surface: mga
   pos: PART
   feats: {PLURAL_MARKER: "YES"}
+
+# === Phase 5h Commit 3: comparative ``mas`` (Group A degree marker) ======
+# Roadmap §12.1: pre-ADJ degree marker producing a comparative-
+# wrapped adjective. ``mas matalino`` "more intelligent" is the
+# canonical surface; the wrapped ADJ is itself an ADJ, so it
+# composes with the existing Phase 5g predicative-adj clause rule
+# (``Mas matalino siya``) and NP-internal modifier rules
+# (``mas matalinong bata``) without further changes — the
+# ``ADJ → PART[COMP_DEGREE=COMPARATIVE] ADJ`` wrapper rule in
+# ``cfg/nominal.py`` lifts this single PART entry into both
+# constructions.
+#
+# Phase 5h Commit 4 adds the ``kaysa`` comparison-complement
+# wrapper for ``Mas matalino siya kaysa kay Maria``.
+# Phase 5h Commit 7 generalises this rule to wrap Q[VAGUE=YES]
+# heads (``mas marami`` / ``mas kaunti``) — quantifier-comparison
+# rather than ADJ-comparison.
+#
+# Pre-state (verified 2026-05-05): ``mas`` was ``_UNK``;
+# ``Mas matalino siya.`` "parsed" via the parser's
+# ``_strip_non_content`` that silently drops ``_UNK``-only tokens,
+# producing a single parse of the residue ``Matalino siya.``.
+# Once this entry lands, ``mas`` is a known PART and the strip no
+# longer fires; the new wrapper rule consumes the PART and produces
+# a comparative-wrapped ADJ. Top-1 changes for any baseline-corpus
+# entry containing ``mas`` are flagged in this commit's audit.
+- surface: mas
+  pos: PART
+  feats: {COMP_DEGREE: COMPARATIVE}
+
+# === Phase 5h Commit 4: comparison complement ``kaysa`` (Group A) =======
+# Roadmap §12.1: ``kaysa`` introduces the comparison standard in
+# the comparative frame ``Mas X kaysa kay Y`` / ``Mas X kaysa sa Y``
+# "more X than Y". The standard NP is structured by the existing
+# ``kay`` (HUMAN) / ``sa`` (default) ADP machinery — no new NP
+# rules needed. ``kaysa`` itself is a single PART entry with
+# ``COMP_PHRASE: KAYSA`` (mirroring the Phase 5f Commit 17 numeric
+# comparator family ``higit`` / ``kulang`` / ``bababa`` / ``hihigit``,
+# all carrying ``COMP_PHRASE`` tags).
+#
+# The grammar rule that consumes this PART is in ``cfg/clause.py``:
+#
+#     S → S PART[COMP_PHRASE=KAYSA] NP[CASE=DAT]
+#
+# Adjoins the kaysa-headed phrase to the matrix S's ADJUNCT set
+# with ``ROLE: STANDARD``. Composes with the Phase 5h Commit 3
+# comparative-ADJ wrapper unchanged: ``Mas matalino siya kaysa kay
+# Maria`` is parsed as the inner S ``Mas matalino siya`` plus the
+# adjoined ``kaysa kay Maria``.
+#
+# The plan does NOT constrain the inner S to carry ``COMP_DEGREE:
+# COMPARATIVE``. Tagalog usage typically pairs ``kaysa`` with
+# ``mas`` (or another degree marker), but bare comparisons
+# (``Matalino si Maria kaysa kay Juan``) are attested in colloquial
+# register; the permissive rule accepts both. Tightening to require
+# COMPARATIVE on the inner predicate is deferred — it would need
+# COMP_DEGREE to be lifted onto the matrix S by the predicative-adj
+# clause rule, which currently keeps it on the ADJ daughter.
+- surface: kaysa
+  pos: PART
+  feats: {COMP_PHRASE: KAYSA}
+
+# === Phase 5h Commit 5: particle intensifiers (Group A degree markers) ===
+# Free-word degree markers that wrap an ADJ via the linker (or, for
+# ``medyo``, optionally without a linker). Each carries
+# ``INTENSIFIER: YES`` plus a per-particle ``INTENSITY`` tag for
+# downstream consumers (ranker / classifier).
+#
+# Surface forms:
+#
+#   sobrang ganda     "too / overly beautiful"   (sobra + bound -ng)
+#   sobra na ganda    "too / overly beautiful"   (rare; with NA linker)
+#   medyo maganda     "somewhat beautiful"        (medyo + zero linker)
+#   medyo na maganda  "somewhat beautiful"        (with NA linker, less common)
+#   talagang maganda  "really / truly beautiful"  (talaga + bound -ng)
+#   lubos na maganda  "completely beautiful"      (lubos + NA linker)
+#   masyadong mainit  "too hot"                   (masyado + bound -ng)
+#   masyado na mainit "too hot"                   (with NA linker)
+#
+# The bound ``-ng`` forms are produced by ``split_linker_ng`` at
+# the pre-parse stage once each particle is a known surface — no
+# extra entries needed.
+#
+# The grammar rule that consumes these PARTs (in ``cfg/nominal.py``)
+# is the intensifier-ADJ wrapper:
+#
+#   ADJ → PART[INTENSIFIER=YES] PART[LINK=NA] ADJ
+#   ADJ → PART[INTENSIFIER=YES] PART[LINK=NG] ADJ
+#   ADJ → PART[INTENSITY=MODERATE] ADJ      (medyo zero-linker)
+#
+# Pre-state (verified 2026-05-05): all five surfaces were ``_UNK``;
+# ``Sobrang maganda ang bata.``, ``Talagang maganda ang bata.``,
+# ``Lubos na maganda ang bata.`` "parsed" today by silently dropping
+# the unknown intensifier (``_strip_non_content``) and treating the
+# residue. After this commit, the proper PART entries trigger the
+# intensifier-ADJ wrapper and the matrix carries
+# ``INTENSIFIER: YES`` / ``INTENSITY: <tag>``. Top-1 changes for any
+# baseline-corpus entry containing these surfaces are flagged in
+# this commit's audit.
+- surface: sobra
+  pos: PART
+  feats: {INTENSIFIER: "YES", INTENSITY: EXCESSIVE}
+- surface: medyo
+  pos: PART
+  feats: {INTENSIFIER: "YES", INTENSITY: MODERATE}
+- surface: talaga
+  pos: PART
+  feats: {INTENSIFIER: "YES", INTENSITY: EMPHATIC}
+- surface: lubos
+  pos: PART
+  feats: {INTENSIFIER: "YES", INTENSITY: COMPLETE}
+- surface: masyado
+  pos: PART
+  feats: {INTENSIFIER: "YES", INTENSITY: EXCESSIVE}

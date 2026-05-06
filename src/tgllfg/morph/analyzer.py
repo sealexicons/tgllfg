@@ -269,15 +269,59 @@ class Analyzer:
                     ),
                 )
             elif r.pos == "ADJ":
-                self._index_adjective_paradigms(r)
+                # Phase 5h §4.2: dispatch on affix_class. Roots with a
+                # non-empty list go through the productive paradigm
+                # (``ma_adj`` family — Phase 5g + 5h Commits 1, 2);
+                # roots with an empty list (``pareho``,
+                # ``magkapareho``, ``magkaiba`` — non-productive
+                # equative-identity predicates) get the bare citation
+                # indexed directly. The two paths are kept separate
+                # because the legacy ``_affix_class_match`` treats an
+                # empty cell_class as a wildcard, which would otherwise
+                # cause a bare-cell with ``affix_class: ""`` to fire on
+                # every root including the productive ``ma_adj`` ones.
+                if r.affix_class:
+                    self._index_adjective_paradigms(r)
+                else:
+                    self._index_adjective_bare_root(r)
+
+    def _index_adjective_bare_root(self, root: Root) -> None:
+        """Index the bare citation as ADJ for non-productive roots.
+
+        Phase 5h §4.2: ADJ entries declared with ``affix_class: []``
+        (e.g., ``pareho`` "same/alike", ``magkapareho`` "alike",
+        ``magkaiba`` "different") have no productive ``ma-`` /
+        ``pinaka-`` / ``napaka-`` / ``kasing-`` / ``sing-`` derivation
+        — the bare citation IS the adjectival surface. Lemma policy:
+        ``LEMMA == root.citation``, surface == citation.lower(). The
+        intrinsic ``PREDICATIVE: YES`` flag matches the productive
+        cells so the same Phase 5g predicative-adj clause rule fires
+        on these surfaces unchanged. Per-root ``feats`` (``EQUATIVE``,
+        ``COMP_DEGREE``) ride into every generated MorphAnalysis via
+        ``setdefault`` — same merge convention as
+        :meth:`_index_adjective_paradigms`.
+        """
+        feats: dict[str, object] = {
+            "PREDICATIVE": "YES",
+            "LEMMA": root.citation,
+        }
+        for k, v in root.feats.items():
+            feats.setdefault(k, v)
+        self._index.adjectives.setdefault(root.citation.lower(), []).append(
+            MorphAnalysis(
+                lemma=root.citation,
+                pos="ADJ",
+                feats=feats,
+            ),
+        )
 
     def _index_adjective_paradigms(self, root: Root) -> None:
         """Index the surfaces produced by every matching adjective cell.
 
         Phase 5g §12.1: ADJ-pos roots productively derive surfaces via
         adjective-paradigm cells (the seed is ``ma-`` prefixation;
-        Phase 5h adds ``pinaka-``, ``napaka-``, ``kasing-``). Every
-        derived surface carries the intrinsic ``PREDICATIVE: YES``
+        Phase 5h adds ``pinaka-``, ``napaka-``, ``kasing-``, ``sing-``).
+        Every derived surface carries the intrinsic ``PREDICATIVE: YES``
         feature, the analytical commitment that lets the predicative-adj
         clause rule fire on a feature rather than a POS.
 
@@ -285,7 +329,10 @@ class Analyzer:
         produces ``maganda``) is intentionally NOT indexed as ADJ —
         bare roots are nouns ("beauty") in this analysis, and the
         paradigm-driven derivation is what produces the adjectival
-        surface.
+        surface. Non-productive ADJ entries (``pareho``,
+        ``magkapareho``, ``magkaiba``) take the
+        :meth:`_index_adjective_bare_root` path instead and DO have
+        their citation indexed.
         """
         for cell in self._data.adjective_cells:
             if not _affix_class_match(cell.affix_class, root.affix_class):

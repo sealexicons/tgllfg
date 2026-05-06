@@ -1220,3 +1220,236 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓3 ∈ (↑ ADJ-MOD)",
             ],
         ))
+
+
+    # --- Phase 5h Commit 3: comparative ``mas`` ADJ-wrapper -----
+    #
+    # ``Mas matalino siya.`` "She is more intelligent."
+    # ``Mas mabilis ang kabayo.`` "The horse is faster."
+    # ``mas matalinong bata`` "more intelligent child" (NP-modifier).
+    #
+    # The PART ``mas`` (lex feat ``COMP_DEGREE: COMPARATIVE`` —
+    # added in particles.yaml in this commit) wraps an ADJ to
+    # produce another ADJ marked ``COMP_DEGREE: COMPARATIVE``. The
+    # output is itself an ADJ, so the same Phase 5g rules consume
+    # it: the predicative-adj clause rule fires on
+    # ``Mas matalino siya``; the NP-internal modifier rules fire on
+    # ``mas matalinong bata``. No new clause / NP rules.
+    #
+    # **Equation analysis**:
+    #
+    # * ``(↑) = ↓2`` shares the inner ADJ's f-structure with the
+    #   wrapped output. The inner ADJ's PRED, PREDICATIVE,
+    #   ADJ_LEMMA, and any per-cell feats all percolate to the
+    #   matrix.
+    # * ``(↑ COMP_DEGREE) = 'COMPARATIVE'`` writes COMPARATIVE
+    #   onto the shared f-structure. If the inner ADJ already
+    #   carries a different COMP_DEGREE (e.g.,
+    #   ``pinakamaganda`` carries SUPERLATIVE), unification fails —
+    #   ``*mas pinakamaganda`` "more most beautiful" is correctly
+    #   ungrammatical.
+    # * ``(↓1 COMP_DEGREE) =c 'COMPARATIVE'`` constrains the PART
+    #   daughter. Belt-and-braces with the category-pattern
+    #   ``PART[COMP_DEGREE=COMPARATIVE]``; the category matcher
+    #   already filters, but the explicit constraint matches
+    #   the Phase 5e parang / Phase 5g predicative-adj convention.
+    #
+    # **Why this rule is in nominal.py rather than its own
+    # ``cfg/degree.py``**: the wrapped ADJ is consumed by both
+    # NP-modifier rules (above this block) and the Phase 5g
+    # predicative-adj clause rule. ADJ-wrapping rules sit in the
+    # nominal area as a category-rewrite that feeds both clausal
+    # and nominal contexts. Phase 5h Commit 5's intensifier-ADJ
+    # wrapper joins this same area; if the wrapper-rule cluster
+    # grows beyond ~3-4 rules, a dedicated ``cfg/degree.py``
+    # split is reasonable.
+    #
+    # **Top-1 flip risk** (Phase 5h plan §7.2): pre-state probe
+    # showed ``Mas matalino siya.`` parsed today via
+    # ``_strip_non_content`` silently dropping ``mas`` (a _UNK
+    # token); after this commit, the same surface parses with
+    # ``mas`` consumed by the new wrapper, producing a richer
+    # f-structure (matrix carries COMP_DEGREE: COMPARATIVE).
+    # Audit before merging: none of the 1229 baseline corpus
+    # entries contain ``mas`` (verified by grep on
+    # tests/tgllfg/data/coverage_corpus.yaml).
+    rules.append(Rule(
+        "ADJ",
+        ["PART[COMP_DEGREE=COMPARATIVE]", "ADJ"],
+        [
+            "(↑) = ↓2",
+            "(↑ COMP_DEGREE) = 'COMPARATIVE'",
+            "(↓1 COMP_DEGREE) =c 'COMPARATIVE'",
+        ],
+    ))
+
+
+    # --- Phase 5h Commit 5: particle-intensifier ADJ-wrappers ----
+    #
+    # ``Sobrang maganda ang bata.``     "The child is too beautiful."
+    # ``Talagang maganda ang bata.``    "The child is really beautiful."
+    # ``Lubos na maganda ang bata.``    "The child is completely beautiful."
+    # ``Masyadong mainit ang sopas.``   "The soup is too hot."
+    # ``Medyo maganda ang bata.``       "The child is somewhat beautiful."
+    #
+    # Five new PARTs (sobra / medyo / talaga / lubos / masyado —
+    # added in particles.yaml in this commit) each carry
+    # ``INTENSIFIER: YES`` plus a per-particle ``INTENSITY`` tag
+    # (EXCESSIVE / MODERATE / EMPHATIC / COMPLETE / EXCESSIVE
+    # respectively). Each takes the linker (NA or bound -ng) and
+    # an ADJ complement; ``medyo`` colloquially also appears without
+    # a linker.
+    #
+    # **Equation analysis** (mirrors the Phase 5h Commit 3
+    # comparative-mas wrapper — same shape, plus an
+    # ``INTENSITY``-lift that carries the per-particle semantic
+    # tag onto the wrapped ADJ):
+    #
+    # * ``(↑) = ↓3`` shares the inner ADJ's f-structure with the
+    #   wrapped output (same as Phase 5g manner-adverb / Commit 3
+    #   comparative wrapper).
+    # * ``(↑ COMP_DEGREE) = 'INTENSIVE'`` writes INTENSIVE onto
+    #   the matrix. Unification clash on already-degree-marked
+    #   ADJs handles ``*sobrang pinakamaganda`` (more most beautiful)
+    #   correctly. Note: if inner is ``napakaganda`` (also INTENSIVE),
+    #   identity write succeeds → ``Sobrang napakaganda ang bahay``
+    #   parses as a "double intensifier" (attested colloquially).
+    # * ``(↑ INTENSITY) = ↓1 INTENSITY`` lifts the particle's
+    #   semantic tag onto the matrix.
+    # * ``(↑ INTENSIFIER) = 'YES'`` and ``(↓1 INTENSIFIER) =c 'YES'``
+    #   — defining + constraining belt-and-braces (matches the
+    #   Phase 5g convention).
+    #
+    # **Why both NA and NG link variants**: identical to Phase 5g
+    # manner-adverb / NP-modifier link handling. Vowel-final
+    # particles (``sobra``, ``talaga``, ``masyado``, ``medyo``) take
+    # the bound ``-ng`` (split by ``split_linker_ng`` at the
+    # pre-parse stage); consonant-final particles (``lubos``) take
+    # the free ``na``. The bound-``-ng`` and free-``na`` forms both
+    # surface as ``PART[LINK=NG]`` and ``PART[LINK=NA]`` after
+    # the pre-pass, so the rule is parameterised over both link
+    # variants.
+    #
+    # **Top-1 flip risk** (Phase 5h plan §7.2): pre-state probes
+    # showed ``Sobrang maganda ang bata`` / ``Talagang maganda
+    # ang bata`` / ``Lubos na maganda ang bata`` parsing today by
+    # silently dropping the _UNK intensifier. After this commit
+    # the same surfaces parse with the intensifier consumed by
+    # the new wrapper, producing a richer f-structure (matrix
+    # carries INTENSIFIER=YES, COMP_DEGREE=INTENSIVE,
+    # INTENSITY=<tag>). Audit before merging: none of the 1229
+    # baseline corpus entries contain the surfaces ``sobra``,
+    # ``sobrang``, ``medyo``, ``talaga``, ``talagang``, ``lubos``,
+    # ``masyado``, or ``masyadong`` (verified by grep).
+    # **Belt-and-braces ``=c`` constraints on both PART daughters**:
+    # the category-pattern matcher is non-conflict (compile.py
+    # ::matches), so ``PART[INTENSIFIER=YES]`` matches any PART
+    # without an INTENSIFIER feature by absorption, and similarly
+    # ``PART[LINK=NA]`` matches any PART without LINK. Without the
+    # explicit constraining equations, ``Lubos na mas matalino
+    # siya`` would parse: ``mas`` (PART[COMP_DEGREE=COMPARATIVE],
+    # no LINK) would absorb the ``PART[LINK=NA]`` slot. The two
+    # ``=c`` equations close the leak — same pattern as Phase 5h
+    # Commit 3's ``(↓1 POLARITY) =c 'NEG'`` fix on the hindi-
+    # negation rule.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "ADJ",
+            [
+                "PART[INTENSIFIER=YES]",
+                f"PART[LINK={link}]",
+                "ADJ",
+            ],
+            [
+                "(↑) = ↓3",
+                "(↑ INTENSIFIER) = 'YES'",
+                "(↑ COMP_DEGREE) = 'INTENSIVE'",
+                "(↑ INTENSITY) = ↓1 INTENSITY",
+                "(↓1 INTENSIFIER) =c 'YES'",
+                f"(↓2 LINK) =c '{link}'",
+            ],
+        ))
+
+
+    # --- Phase 5h Commit 5: ``medyo`` zero-linker variant ---------
+    #
+    # ``Medyo maganda ang bata.`` "The child is somewhat beautiful."
+    #
+    # Per S&O 1972 / Schachter 1985: ``medyo`` colloquially appears
+    # WITHOUT a linker (in addition to the with-linker form covered
+    # by the rule above). The zero-linker variant is restricted to
+    # ``INTENSITY=MODERATE`` (the medyo-specific feature) so the
+    # ``sobra`` / ``talaga`` / ``lubos`` / ``masyado`` paths still
+    # require the linker — this avoids overgeneralising to
+    # ``*sobra ganda`` (without linker) which is ungrammatical.
+    #
+    # The constraining ``(↓1 INTENSITY) =c 'MODERATE'`` filters to
+    # ``medyo`` only at the equation layer; the category pattern
+    # ``PART[INTENSITY=MODERATE]`` filters at the matcher layer
+    # (belt-and-braces).
+    rules.append(Rule(
+        "ADJ",
+        ["PART[INTENSITY=MODERATE]", "ADJ"],
+        [
+            "(↑) = ↓2",
+            "(↑ INTENSIFIER) = 'YES'",
+            "(↑ COMP_DEGREE) = 'INTENSIVE'",
+            "(↑ INTENSITY) = ↓1 INTENSITY",
+            "(↓1 INTENSITY) =c 'MODERATE'",
+            "(↓1 INTENSIFIER) =c 'YES'",
+        ],
+    ))
+
+
+    # --- Phase 5h Commit 7: comparative Q-wrapper ---------------
+    #
+    # ``mas maraming aklat`` "more books" — comparative quantification
+    # over the existing Phase 5f vague-Q heads. The Phase 5h Commit 3
+    # ``mas`` PART (lex feat ``COMP_DEGREE: COMPARATIVE``) wraps a
+    # ``Q[VAGUE=YES]`` head (``marami``, ``kaunti``, ``konti``,
+    # ``kakaunti``, ``ilan``, ``iilan``) to produce a comparative-Q.
+    # The wrapped Q rides into the existing Phase 5f Commit 15
+    # vague-Q NP-modifier rule unchanged: ``mas maraming aklat``
+    # parses as ``NP → Q[COMP_DEGREE=COMPARATIVE] PART[LINK] N``.
+    #
+    # **Equation analysis** (mirrors the Phase 5h Commit 3
+    # comparative-ADJ wrapper):
+    #
+    # * ``(↑) = ↓2`` shares the inner Q's f-structure with the
+    #   wrapped output (PRED, LEMMA, QUANT, VAGUE all percolate).
+    # * ``(↑ COMP_DEGREE) = 'COMPARATIVE'`` writes COMPARATIVE
+    #   onto the matrix.
+    # * ``(↓1 COMP_DEGREE) =c 'COMPARATIVE'`` belt-and-braces
+    #   constraint on the PART daughter (matches Commit 3
+    #   convention).
+    # * ``(↓2 VAGUE) =c 'YES'`` belt-and-braces constraint on the
+    #   Q daughter — closes the same kind of non-conflict-matcher
+    #   leak Commits 3 and 5 closed (without it, a Q without
+    #   VAGUE would absorb the slot).
+    #
+    # **Why a sibling rule rather than overloading the Commit 3
+    # ADJ-wrapper**: the Q and ADJ wrappers have different
+    # downstream consumers — Q feeds the NP-modifier and the (not-
+    # yet-built) predicative-Q rule; ADJ feeds the predicative-adj
+    # clause rule and the NP-internal ADJ-modifier rules. Modest
+    # rule duplication is preferable to category-pattern
+    # overloading.
+    #
+    # **What's NOT in scope this commit**: predicative-Q clause
+    # (``Mas marami ang aklat.`` "There are more books.") — would
+    # need a new clausal rule analogous to the Phase 5f Commit 4
+    # predicative-cardinal rule (``Tatlo ang aklat.``). Cardinal
+    # comparison via ``mas`` (``*Mas tatlo``) is correctly
+    # ungrammatical: cardinals carry ``CARDINAL: YES``, not
+    # ``VAGUE: YES``, so the rule's category-pattern + ``=c``
+    # constraint does not fire on them.
+    rules.append(Rule(
+        "Q",
+        ["PART[COMP_DEGREE=COMPARATIVE]", "Q[VAGUE=YES]"],
+        [
+            "(↑) = ↓2",
+            "(↑ COMP_DEGREE) = 'COMPARATIVE'",
+            "(↓1 COMP_DEGREE) =c 'COMPARATIVE'",
+            "(↓2 VAGUE) =c 'YES'",
+        ],
+    ))

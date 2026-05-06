@@ -1,19 +1,26 @@
 # data/tgl/adj_paradigms.yaml
 #
-# Adjective derivation cells — Phase 5g §12.1. Each cell pairs an
-# ``affix_class`` filter (which root opt-ins) with a list of
-# operations applied to the root citation in YAML-declared order.
-# The analyzer (:mod:`tgllfg.morph.analyzer`) sets
-# ``PREDICATIVE: YES`` on every derived ADJ surface intrinsically;
-# per-cell ``feats`` may extend / override.
+# Adjective derivation cells — Phase 5g §12.1, extended by
+# Phase 5h §12.1. Each cell pairs an ``affix_class`` filter (which
+# root opt-ins) with a list of operations applied to the root
+# citation in YAML-declared order. The analyzer
+# (:mod:`tgllfg.morph.analyzer`) sets ``PREDICATIVE: YES`` and
+# ``LEMMA: <root.citation>`` on every derived ADJ surface
+# intrinsically; per-cell ``feats`` may extend / override.
 #
-# Phase 5g seeds the productive ``ma-`` cell. Phase 5h is expected
-# to add ``pinaka-`` superlative, ``napaka-`` intensifier, and
-# ``kasing-`` / ``sing-`` equative cells using this same dataclass.
+# All three Phase 5h productive cells fire on the same opt-in as
+# the seed Phase 5g cell — ``affix_class: ma_adj`` — so any root
+# that takes ``ma-`` adjectivisation also unlocks ``pinaka-``
+# superlative, ``napaka-`` intensive, and (Commit 2) ``kasing-``
+# / ``sing-`` equative derivations without per-root edits.
 #
 # Citations: S&O 1972 §5, Kroeger 1993 ch. 4 — the analytical
 # treatment of ``ma-`` adjectival derivation as distinct from
-# the ``ma-`` verbal non-volitional / stative paradigm.
+# the ``ma-`` verbal non-volitional / stative paradigm. R&B 1986
+# and R&G 1981 §6 cover the Phase 5h degree-marking morphology
+# (``pinaka-``, ``napaka-``, ``kasing-``, ``sing-``).
+
+# === Phase 5g: bare ``ma-`` adjective ===================================
 
 - affix_class: ma_adj
   operations:
@@ -33,3 +40,89 @@
     which always reduplicate (CTPL: ``magaganda``) or use
     ``na-`` for realis (``naganda``). The bare ``ma + root``
     surface is reserved for the adjectival reading.
+
+# === Phase 5h: degree-marking productive prefixes =======================
+#
+# The two cells below mirror the Phase 5g ``ma_adj`` cell's
+# productive opt-in: every root carrying ``affix_class: [ma_adj]``
+# unlocks both. Phase 5h Commit 1 lands these two; Commit 2 adds
+# ``kasing-`` / ``sing-`` equative cells (same opt-in, same shape).
+
+- affix_class: ma_adj
+  operations:
+    - {op: prefix, value: "ma"}
+    - {op: prefix, value: "pinaka"}
+  feats: {COMP_DEGREE: SUPERLATIVE}
+  notes: |
+    Productive pinaka- superlative. Attaches to the
+    already-ma-prefixed ADJ stem: ``pinaka`` + ``ma`` + ``ganda``
+    → ``pinakamaganda`` "most beautiful". Operation order matters:
+    prefix ``ma`` first, then prefix ``pinaka``, mirroring the
+    morphological layering — the superlative scopes over the
+    adjectival stem, not over the bare root. Cited per S&O 1972
+    §5 / R&B 1986. The ``COMP_DEGREE: SUPERLATIVE`` feature rides
+    into every generated surface so the (eventual) ranker /
+    semantic-classifier can read off the degree marking.
+
+- affix_class: ma_adj
+  operations:
+    - {op: prefix, value: "napaka"}
+  feats: {COMP_DEGREE: INTENSIVE, INTENSIFIER: "YES"}
+  notes: |
+    Productive napaka- intensifier. Attaches to the bare ADJ
+    root (no ``ma-``): ``napaka`` + ``ganda`` → ``napakaganda``
+    "very beautiful". Cited per S&O 1972 §5 / R&G 1981 §6 / R&B
+    1986. The "very ADJ" semantics is morphologically encoded —
+    the surface composes with the existing predicative-adj
+    clause rule (Phase 5g Commit 3) and the NP-internal modifier
+    rules (Phase 5g Commit 2) without any new syntactic
+    intensifier rule. Both ``COMP_DEGREE: INTENSIVE`` and the
+    redundant ``INTENSIFIER: YES`` flag are set so downstream
+    consumers can branch on either.
+
+- affix_class: ma_adj
+  operations:
+    - {op: prefix, value: "kasing"}
+  feats: {COMP_DEGREE: EQUATIVE}
+  notes: |
+    Productive kasing- equative. Attaches to the bare ADJ root:
+    ``kasing`` + ``ganda`` → ``kasingganda`` "as beautiful (as)";
+    ``kasing`` + ``linis`` → ``kasinglinis`` "as clean (as)".
+    Modern Tagalog has no adjective-stem reduplication for
+    ``kasing-``; the archaic CV-reduplicated form
+    (``kasing-da-dali`` "just as easy" — S&O 1972 §5) is
+    deferred to a §18 entry. The two-NP standard-of-comparison
+    construction (``Kasingganda si Maria si Ana``) needs a
+    separate frame analysis and lands in Phase 5h Commit 6.
+
+- affix_class: ma_adj
+  operations:
+    - {op: prefix, value: "sing"}
+  feats: {COMP_DEGREE: EQUATIVE}
+  notes: |
+    Colloquial doublet of ``kasing-``. Same productive opt-in
+    (``ma_adj``); distinct surface (``sing`` + ``ganda`` →
+    ``singganda``). Cited per S&O 1972 §5 as the "shortened
+    equative" — sociolinguistically more frequent in spoken
+    register; both forms accepted in writing.
+
+# === Phase 5h: bare-citation indexer for non-productive ADJ roots ======
+#
+# Phase 5h Commit 2 adds three lexicalised, non-productive ADJ
+# entries to ``adjectives.yaml``: ``pareho`` (equative-identity
+# predicate, polysemous with the Phase 5f Commit 23 ``Q[DUAL=YES]``
+# float-quantifier reading), ``magkapareho`` (formal equative),
+# and ``magkaiba`` (contrastive). These declare ``affix_class: []``
+# — they have no productive ``ma-`` / ``pinaka-`` / ``napaka-`` /
+# ``kasing-`` / ``sing-`` derivation; the bare citation IS the
+# adjectival surface.
+#
+# The indexer dispatches on ``r.affix_class``: ADJ roots with a
+# non-empty list go through ``_index_adjective_paradigms`` (cells
+# above); ADJ roots with an empty list go through
+# ``_index_adjective_bare_root`` which indexes the citation directly
+# with the root's per-root feats (``EQUATIVE``, ``COMP_DEGREE``).
+# A YAML "bare cell" with ``affix_class: ""`` would NOT work — the
+# legacy ``_affix_class_match`` treats an empty cell_class as a
+# wildcard ("fires on any root"), so it would inappropriately
+# generate bare-root surfaces for every ``ma_adj`` root too.

@@ -223,3 +223,55 @@
   affix_class: [ma_adj]
   # ``mahirap`` carries both readings (poor / difficult)
   # disambiguated by context.
+
+
+# === Phase 5h Commit 2: equative-identity predicates ====================
+#
+# Three lexicalised, non-productive ADJ entries: the bare citation
+# IS the adjectival surface (no ``ma-`` / ``pinaka-`` / ``napaka-``
+# / ``kasing-`` / ``sing-`` derivation; e.g. ``*mapareho`` is
+# ungrammatical). They all declare ``affix_class: []`` so the
+# bare-citation cell in ``adj_paradigms.yaml`` fires on them
+# (legacy "both empty" affix-class match) and the productive
+# Phase 5g/5h cells skip them. Per-root ``feats`` (``EQUATIVE`` /
+# ``COMP_DEGREE``) ride into the generated MorphAnalysis.
+#
+# ``pareho`` is polysemous with the Phase 5f Commit 23
+# ``particles.yaml`` entry (``Q[QUANT=BOTH, DUAL=YES]`` —
+# floated-quantifier reading); the analyzer indexes both
+# analyses against the same surface and rule context
+# disambiguates. Established polysemy pattern (Phase 5f Commit 17
+# ``bababa`` / ``hihigit`` precedent: same surface, two POS
+# readings, rule context disambiguates).
+
+- citation: pareho
+  pos: ADJ
+  gloss: same, alike (equative-identity predicate)
+  affix_class: []
+  feats: {EQUATIVE: "YES", COMP_DEGREE: EQUATIVE}
+  # Polysemous with particles.yaml's Q[QUANT=BOTH, DUAL=YES]
+  # entry. The ADJ analysis fires the predicative-adj clause
+  # rule (Phase 5g Commit 3) for ``Pareho ang kanilang sapatos``
+  # "their shoes are the same"; the Q analysis fires the float
+  # rule (Phase 4 §7.8) for ``Kumain sila pareho`` "they both ate".
+
+- citation: magkapareho
+  pos: ADJ
+  gloss: alike, equal (formal equative-identity predicate)
+  affix_class: []
+  feats: {EQUATIVE: "YES", COMP_DEGREE: EQUATIVE}
+  # Lexicalised; ``magka-`` is a productive prefix family but is
+  # not separately decomposed here. ``Magkapareho ang kanilang
+  # sapatos`` "their shoes are alike".
+
+- citation: magkaiba
+  pos: ADJ
+  gloss: different (contrastive-identity predicate)
+  affix_class: []
+  feats: {EQUATIVE: "YES", COMP_DEGREE: CONTRASTIVE}
+  # Lexicalised contrastive equative ("different from each
+  # other"). ``Magkaiba ang kanilang sapatos`` "their shoes are
+  # different". The ``EQUATIVE: YES`` flag groups it with
+  # pareho / magkapareho structurally even though the semantic
+  # value is CONTRASTIVE rather than EQUATIVE — a single feature
+  # for the "identity-comparing predicate" family.
