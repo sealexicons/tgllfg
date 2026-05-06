@@ -1399,3 +1399,57 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 INTENSIFIER) =c 'YES'",
         ],
     ))
+
+
+    # --- Phase 5h Commit 7: comparative Q-wrapper ---------------
+    #
+    # ``mas maraming aklat`` "more books" — comparative quantification
+    # over the existing Phase 5f vague-Q heads. The Phase 5h Commit 3
+    # ``mas`` PART (lex feat ``COMP_DEGREE: COMPARATIVE``) wraps a
+    # ``Q[VAGUE=YES]`` head (``marami``, ``kaunti``, ``konti``,
+    # ``kakaunti``, ``ilan``, ``iilan``) to produce a comparative-Q.
+    # The wrapped Q rides into the existing Phase 5f Commit 15
+    # vague-Q NP-modifier rule unchanged: ``mas maraming aklat``
+    # parses as ``NP → Q[COMP_DEGREE=COMPARATIVE] PART[LINK] N``.
+    #
+    # **Equation analysis** (mirrors the Phase 5h Commit 3
+    # comparative-ADJ wrapper):
+    #
+    # * ``(↑) = ↓2`` shares the inner Q's f-structure with the
+    #   wrapped output (PRED, LEMMA, QUANT, VAGUE all percolate).
+    # * ``(↑ COMP_DEGREE) = 'COMPARATIVE'`` writes COMPARATIVE
+    #   onto the matrix.
+    # * ``(↓1 COMP_DEGREE) =c 'COMPARATIVE'`` belt-and-braces
+    #   constraint on the PART daughter (matches Commit 3
+    #   convention).
+    # * ``(↓2 VAGUE) =c 'YES'`` belt-and-braces constraint on the
+    #   Q daughter — closes the same kind of non-conflict-matcher
+    #   leak Commits 3 and 5 closed (without it, a Q without
+    #   VAGUE would absorb the slot).
+    #
+    # **Why a sibling rule rather than overloading the Commit 3
+    # ADJ-wrapper**: the Q and ADJ wrappers have different
+    # downstream consumers — Q feeds the NP-modifier and the (not-
+    # yet-built) predicative-Q rule; ADJ feeds the predicative-adj
+    # clause rule and the NP-internal ADJ-modifier rules. Modest
+    # rule duplication is preferable to category-pattern
+    # overloading.
+    #
+    # **What's NOT in scope this commit**: predicative-Q clause
+    # (``Mas marami ang aklat.`` "There are more books.") — would
+    # need a new clausal rule analogous to the Phase 5f Commit 4
+    # predicative-cardinal rule (``Tatlo ang aklat.``). Cardinal
+    # comparison via ``mas`` (``*Mas tatlo``) is correctly
+    # ungrammatical: cardinals carry ``CARDINAL: YES``, not
+    # ``VAGUE: YES``, so the rule's category-pattern + ``=c``
+    # constraint does not fire on them.
+    rules.append(Rule(
+        "Q",
+        ["PART[COMP_DEGREE=COMPARATIVE]", "Q[VAGUE=YES]"],
+        [
+            "(↑) = ↓2",
+            "(↑ COMP_DEGREE) = 'COMPARATIVE'",
+            "(↓1 COMP_DEGREE) =c 'COMPARATIVE'",
+            "(↓2 VAGUE) =c 'YES'",
+        ],
+    ))
