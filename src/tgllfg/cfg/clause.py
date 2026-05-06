@@ -895,3 +895,58 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 WH) =c 'YES'",
         ],
     ))
+
+
+    # --- Phase 5i Commit 4: adverbial wh fronting ----------------
+    #
+    # ``Saan ka pumunta?``    "Where did you go?"
+    # ``Kailan ka kumain?``   "When did you eat?"
+    # ``Bakit ka kumain?``    "Why did you eat?"
+    # ``Paano ka kumain?``    "How did you eat?"
+    #
+    # Sentence-initial wh-ADV (saan / kailan / bakit / paano /
+    # papaano) marks the matrix as a wh-Q whose interrogated
+    # constituent is an adjunct of the underlying clause. The
+    # wh-ADV adjoins to the matrix S's ADJUNCT set; the inner S
+    # is the residue verbal clause.
+    #
+    # Parallels Phase 5g Commit 5 manner-adverb (``mabilis na
+    # tumakbo``) — same shape ``S → ADV-like S`` with the ADV
+    # lifted into ADJUNCT — but without the linker daughter (wh-
+    # ADVs are sentence-initial particles, not linker-bound
+    # modifiers).
+    #
+    # F-structure shape:
+    #
+    #   PRED         = inner S's PRED (verbal predicate)
+    #   SUBJ / OBJ   = inner S's GFs
+    #   Q_TYPE       = 'WH'                 (matrix flagged as wh-Q)
+    #   WH_LEMMA     = the wh-ADV's LEMMA   (saan / kailan / ...)
+    #   ADJUNCT      ⊇ {<wh-ADV f-struct with ADV_TYPE>}
+    #
+    # The wh-ADV's ``ADV_TYPE`` (LOCATION / TIME / REASON /
+    # MANNER) percolates onto the ADJUNCT member's f-structure
+    # via the lex feats; consumers (ranker / classifier) can
+    # read it off the adjunct without traversing back to the
+    # c-tree.
+    #
+    # **Top-1 flip-risk closure**: pre-Phase-5i probes (Commit 1
+    # plan-of-record §3) showed ``Saan ka pumunta?`` parsing
+    # today (1 parse — silently dropping ``saan`` and parsing
+    # the residue ``Pumunta ka.``). After Commit 1's lex add,
+    # the strip stopped firing and the sentence returned 0
+    # parses. This commit's rule restores the parse path with
+    # the proper wh-Q matrix. Audit confirmed: zero baseline
+    # corpus entries contain any wh-ADV (Commit 1 audit), so no
+    # baseline flips.
+    rules.append(Rule(
+        "S",
+        ["ADV[WH=YES]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↓1 WH) =c 'YES'",
+        ],
+    ))
