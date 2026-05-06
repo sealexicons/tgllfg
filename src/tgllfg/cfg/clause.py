@@ -897,6 +897,39 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5i Commit 6: cleft-style wh-N pivot --------------
+    #
+    # ``Aling bata ang kumain?``       "Which child ate?"
+    # ``Aling aklat ang kinain mo?``   "Which book did you eat?"
+    # ``Aling lalaki ang bumili ng aklat?``
+    #     "Which man bought the book?"
+    #
+    # Sibling to Commit 2's PRON cleft. The wh-pivot here is an
+    # N (``aling bata`` etc.) produced by the Phase 5i Commit 6
+    # wh-Q companion rule in cfg/nominal.py. The N's WH=YES +
+    # WH_LEMMA features (lifted from the Q daughter) gate this
+    # rule. Same Q_TYPE=WH + WH_LEMMA matrix-feature pattern as
+    # the PRON cleft.
+    #
+    # Why N (not NP) at the predicate slot: the Phase 5i Commit 6
+    # wh-Q companion produces an N (matching the Phase 5f Commit
+    # 15 N-level companion's category); there's no NP shell that
+    # admits wh-N standalone (no case marker). The cleft rule
+    # takes N directly. The headless-RC SUBJ is NP[CASE=NOM] as
+    # in the PRON cleft.
+    rules.append(Rule(
+        "S",
+        ["N[WH=YES]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 WH_LEMMA",
+            "(↓1 WH) =c 'YES'",
+        ],
+    ))
+
+
     # --- Phase 5i Commit 4: adverbial wh fronting ----------------
     #
     # ``Saan ka pumunta?``    "Where did you go?"

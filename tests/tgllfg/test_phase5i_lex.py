@@ -154,17 +154,22 @@ class TestQuantitativeWh:
         assert q.feats.get("QUANT") == "HOW_MUCH"
         assert q.feats.get("VAGUE") == "YES"
 
-    def test_aling_pre_n_selector(self) -> None:
-        """``aling`` is the bound-``-ng`` form for pre-N use. Indexed
-        as Q[WH=YES, VAGUE=YES] directly (not via split_linker_ng)."""
+    def test_aling_pre_n_selector_via_split(self) -> None:
+        """``aling`` is the bound-``-ng`` form for pre-N use. Phase
+        5i Commit 6 dropped the standalone ``aling`` lex entry so
+        ``split_linker_ng`` splits it into ``alin`` (Q-WH) + ``-ng``
+        (PART[LINK=NG]). This is a smoke check for the split.
+        ``aling`` standalone (no split) returns _UNK; the split is
+        enacted at the pre-parse stage."""
         analyzer = Analyzer.from_default()
         out = analyzer.analyze_one(_tok("aling"))
-        qs = [a for a in out if a.pos == "Q"]
-        assert len(qs) == 1
-        q = qs[0]
-        assert q.feats.get("WH") == "YES"
-        assert q.feats.get("VAGUE") == "YES"
-        assert q.feats.get("LEMMA") == "alin"
+        # Without the pre-parse split, aling is _UNK now.
+        # The split happens in split_linker_ng before analysis.
+        assert all(a.pos == "_UNK" for a in out), (
+            f"expected aling as bare token to be _UNK after Phase 5i "
+            f"Commit 6 (split_linker_ng splits to alin + -ng); "
+            f"got {[(a.pos, a.lemma, dict(a.feats)) for a in out]}"
+        )
 
 
 class TestAlinPolysemy:

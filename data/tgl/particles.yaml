@@ -1285,18 +1285,16 @@
 - surface: magkano
   pos: Q
   feats: {WH: "YES", QUANT: HOW_MUCH, VAGUE: "YES", LEMMA: magkano}
-# aling: pre-N selector (with bound -ng linker on a vowel-final stem;
-# `alin` + bound `-ng` -> `aling`). The Phase 5f Commit 15 vague-Q
-# NP-modifier rule consumes Q[VAGUE=YES] PART[LINK] N; the wh
-# variant rides this rule via WH=YES on the same Q slot.
-- surface: aling
-  pos: Q
-  feats: {WH: "YES", VAGUE: "YES", LEMMA: alin}
-# alin-Q: the bare-form polysemy partner with the PRON entry in
+# alin: bare-form polysemy partner with the PRON entry in
 # pronouns.yaml. Used standalone in predicative-Q contexts
-# (deferred per plan §9.2 predicative-Q clause; for Phase 5i,
-# ``Alin ang aklat?`` parses via the Phase 5i cleft-style wh-
-# fronting rule consuming the PRON reading).
+# (``Alin ang aklat?`` parses via the Phase 5i cleft-style wh-
+# fronting rule consuming the PRON reading) and as the pre-N
+# selector head with bound ``-ng`` linker (``aling bata`` →
+# ``alin`` + ``-ng`` + ``bata`` after ``split_linker_ng``).
+# Phase 5i Commit 6 dropped the explicit ``aling`` entry so the
+# pre-pass splits the bound form; without that split, the Phase
+# 5f Commit 15 vague-Q NP-modifier rule (which expects three
+# daughters: marker + Q + PART[LINK] + N) couldn't fire.
 - surface: alin
   pos: Q
   feats: {WH: "YES", VAGUE: "YES", LEMMA: alin}

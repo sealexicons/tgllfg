@@ -3555,8 +3555,19 @@
   notes: xyzqwerty stripped, but residue lacks NOM-NP
 - text: Aso ang isda.
   construction: 'robustness: no verb'
-  expected: fail
-  notes: no V → no rule predictions; no fragments either
+  expected: fragment
+  notes: |
+    NP-NP predicative-N construction (deferred §18). Phase 5i
+    Commit 6 added a wh-N-cleft rule (``S → N[WH=YES]
+    NP[CASE=NOM]``) that predicts N at clause-initial position.
+    The Earley chart now records a completed N state for ``aso``
+    (and the inner NP[CASE=NOM] for ``ang isda``); fragment
+    extraction returns these. Pre-Phase-5i this entry was
+    expected: fail (no rule predicted N clause-initially); the
+    flip to ``expected: fragment`` is a side-effect of the
+    Phase 5i Commit 6 rule's broader N-prediction. The
+    intended-failure semantics is preserved (no complete
+    parse).
 - text: Kumain ng.
   construction: 'robustness: incomplete GEN-NP'
   expected: fail

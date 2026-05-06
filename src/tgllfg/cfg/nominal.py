@@ -618,6 +618,44 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 5i Commit 6: wh-Q + N companion (wh-N for cleft) ---
+    #
+    # ``aling bata`` "which child" — wh-Q-modified N. The Phase 5f
+    # Commit 15 vague-Q N-level companion above lifts QUANT and
+    # VAGUE but not WH; non-wh Qs (lahat / iba / marami / etc.)
+    # don't carry WH so a single rule with ``(↑ WH) = ↓1 WH`` would
+    # create an empty FStructure on matrix WH for them (same
+    # baseline-perturbation pattern Phase 5i Commit 5 closed by
+    # splitting into two parallel rules).
+    #
+    # This wh-Q variant constrains on ``Q[VAGUE=YES, WH=YES]`` so
+    # it fires only on Phase 5i wh-Q heads (``alin`` / ``ilan``-WH
+    # / ``magkano``). The matrix N gets WH=YES + WH_LEMMA from the
+    # Q daughter, on top of the QUANT / VAGUE lifts the non-wh rule
+    # already provides. Phase 5i Commit 6's wh-N-cleft rule (in
+    # cfg/clause.py) consumes the resulting N[WH=YES].
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "N",
+            [
+                "Q[VAGUE=YES, WH=YES]",
+                f"PART[LINK={link}]",
+                "N",
+            ],
+            [
+                "(↑ PRED) = ↓3 PRED",
+                "(↑ LEMMA) = ↓3 LEMMA",
+                "(↑ QUANT) = ↓1 QUANT",
+                "(↑ VAGUE) = 'YES'",
+                "(↑ WH) = 'YES'",
+                "(↑ WH_LEMMA) = ↓1 LEMMA",
+                "¬ (↓3 VAGUE)",
+                "(↓1 VAGUE) =c 'YES'",
+                "(↓1 WH) =c 'YES'",
+            ],
+        ))
+
+
     # --- Phase 5f Commit 20: universal `bawat` / `kada`
     # NP-internal modifier (Group H2 item 6) ---------------------
     #
