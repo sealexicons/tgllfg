@@ -1229,3 +1229,93 @@
 - surface: masyado
   pos: PART
   feats: {INTENSIFIER: "YES", INTENSITY: EXCESSIVE}
+
+# === Phase 5i Commit 1: wh-words (adverbial + Q + comp + tag) ============
+#
+# Roadmap §12.1 / plan-of-record §4.2-4.4. Wh-words that fall outside
+# the PRON paradigm (those live in pronouns.yaml). Four sub-clusters:
+#
+# (a) Adverbial wh (saan / kailan / bakit / paano / papaano) — wh-ADV
+#     with WH=YES + ADV_TYPE classification. Phase 5i Commit 4 adds
+#     the wh-ADV fronting rule that consumes these.
+#
+# (b) Quantitative + selectional wh (magkano / aling / alin-Q /
+#     ilan-WH polysemy) — wh on Q heads. ``magkano`` is amount-wh;
+#     ``aling`` is the bound-``-ng`` form for pre-N modifier use;
+#     ``alin`` here is the Q-WH polysemy with the PRON entry in
+#     pronouns.yaml; ``ilan`` adds a polysemous WH variant alongside
+#     the Phase 5f Commit 15 vague-quantifier reading.
+#
+# (c) Complementizer ``kung`` (Phase 5i Commit 8 indirect-Q
+#     embedding under control verbs).
+#
+# (d) Tag-Q particle ``di`` (Phase 5i Commit 7 ``di ba?`` tag).
+#
+# Pre-state (verified 2026-05-06): all eleven new surfaces were
+# ``_UNK`` (except ``ilan`` which had its non-WH Q reading). Same
+# silent-drop flip-risk pattern as Phase 5h Commits 3 / 5: once
+# these entries land, the strip stops and the new fronting / wrap
+# rules in Commits 2 / 4 / 7 / 8 must consume them. Audit before
+# Commits 2 / 4: none of the corpus's 1251 baseline entries contain
+# wh-words.
+#
+# Citations: S&O 1972 §6 (interrogatives), R&B 1986 (chapter on
+# question formation), R&G 1981 §8.
+
+# (a) Adverbial wh — ADV with WH=YES + per-wh ADV_TYPE
+- surface: saan
+  pos: ADV
+  feats: {WH: "YES", ADV_TYPE: LOCATION, LEMMA: saan}
+- surface: kailan
+  pos: ADV
+  feats: {WH: "YES", ADV_TYPE: TIME, LEMMA: kailan}
+- surface: bakit
+  pos: ADV
+  feats: {WH: "YES", ADV_TYPE: REASON, LEMMA: bakit}
+- surface: paano
+  pos: ADV
+  feats: {WH: "YES", ADV_TYPE: MANNER, LEMMA: paano}
+- surface: papaano
+  pos: ADV
+  feats: {WH: "YES", ADV_TYPE: MANNER, LEMMA: papaano}
+
+# (b) Quantitative + selectional wh — Q heads
+# magkano: amount-wh, never takes a count complement (`magkano ang
+# halaga` "how much is the price?")
+- surface: magkano
+  pos: Q
+  feats: {WH: "YES", QUANT: HOW_MUCH, VAGUE: "YES", LEMMA: magkano}
+# aling: pre-N selector (with bound -ng linker on a vowel-final stem;
+# `alin` + bound `-ng` -> `aling`). The Phase 5f Commit 15 vague-Q
+# NP-modifier rule consumes Q[VAGUE=YES] PART[LINK] N; the wh
+# variant rides this rule via WH=YES on the same Q slot.
+- surface: aling
+  pos: Q
+  feats: {WH: "YES", VAGUE: "YES", LEMMA: alin}
+# alin-Q: the bare-form polysemy partner with the PRON entry in
+# pronouns.yaml. Used standalone in predicative-Q contexts
+# (deferred per plan §9.2 predicative-Q clause; for Phase 5i,
+# ``Alin ang aklat?`` parses via the Phase 5i cleft-style wh-
+# fronting rule consuming the PRON reading).
+- surface: alin
+  pos: Q
+  feats: {WH: "YES", VAGUE: "YES", LEMMA: alin}
+# ilan-WH: polysemy partner with the Phase 5f vague-Q reading
+# (Q[QUANT=FEW, VAGUE=YES]). The wh variant has its own QUANT
+# value (HOW_MANY); rule context disambiguates between ``Ilan
+# ang aklat?`` (wh) and ``ilan ng aklat`` (vague — "a few books").
+- surface: ilan
+  pos: Q
+  feats: {WH: "YES", QUANT: HOW_MANY, VAGUE: "YES", LEMMA: ilan}
+
+# (c) Complementizer for indirect questions
+- surface: kung
+  pos: PART
+  feats: {COMP_TYPE: INTERROG, LEMMA: kung}
+
+# (d) Tag-Q particle (colloquial shortening of ``hindi``)
+# Phase 5i Commit 7 builds ``di ba?`` from ``di`` + 2P-clitic ``ba``
+# in a sentence-final tag rule.
+- surface: di
+  pos: PART
+  feats: {NEG_TAG: "YES", LEMMA: di}

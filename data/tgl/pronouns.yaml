@@ -103,3 +103,34 @@
 - surface: kita
   feats: {KITA: YES}
   is_clitic: true
+
+# === Phase 5i Commit 1: pronominal wh-words ============================
+# Roadmap §12.1 / plan-of-record §4.1. Wh-PRONs that fill NP slots in
+# Tagalog questions. Each carries ``WH: "YES"`` plus the standard
+# PRON case feat so the existing Phase 4 NP-from-PRON shells
+# (``NP[CASE=NOM] → PRON[CASE=NOM]`` etc.) consume them unchanged.
+# The Phase 5i wh-fronting rules (Commit 2) constrain on ``WH=YES``
+# to fire on these PRONs only.
+#
+# Pronominal wh inventory (S&O 1972 §6 / R&B 1986):
+#
+#   sino    "who"             — NOM, HUMAN
+#   ano     "what"            — NOM (also fills OBL position in-situ)
+#   kanino  "whose / to whom" — DAT, HUMAN (possessor / recipient wh)
+#   alin    "which one"       — NOM (standalone form; pre-N selector
+#                                ``aling`` lives in particles.yaml as Q-WH)
+#
+# Pre-state (verified 2026-05-06): all four were ``_UNK``. The
+# parser's ``_strip_non_content`` silently dropped them, producing
+# bogus parses for sentences like ``Saan ka pumunta?`` (saan _UNK,
+# residue ``Pumunta ka.`` parsed as AV-intransitive). Once these
+# entries land, the strip stops and Commit 2's wh-fronting rule
+# consumes the PRON.
+- surface: sino
+  feats: {WH: "YES", CASE: NOM, HUMAN: True, LEMMA: sino}
+- surface: ano
+  feats: {WH: "YES", CASE: NOM, LEMMA: ano}
+- surface: kanino
+  feats: {WH: "YES", CASE: DAT, HUMAN: True, LEMMA: kanino}
+- surface: alin
+  feats: {WH: "YES", CASE: NOM, LEMMA: alin}
