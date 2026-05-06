@@ -1125,3 +1125,130 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 CASE) =c 'DAT'",
         ],
     ))
+
+    # --- Phase 5j Commit 2: positive existential clause ---------
+    #
+    #   ``May aklat.``               "There is a book."
+    #   ``May tao sa labas.``        "There's someone outside."
+    #   ``Mayroong tao sa labas.``   "There's someone outside."
+    #                                (mayroon + bound -ng linker
+    #                                 split pre-parse)
+    #
+    # Per roadmap §12.1: ``may`` / ``mayroon`` are clause-typing
+    # predicates, NOT V-headed verbal frames. They head a dedicated
+    # existential clause-type with their own constituent shape
+    # (existential PART + bare-N). No voice / aspect / mood —
+    # these clause-typers carry no verbal morphology, paralleling
+    # the Phase 5g predicative-ADJ clause and Phase 5f Commit 4
+    # predicative-cardinal: a non-V matrix predicate carrying a
+    # literal PRED template.
+    #
+    # The daughter is bare ``N`` (NOUN-headed projection from
+    # nominal.py's ``N → NOUN`` rule), NOT a determiner-marked
+    # ``NP[CASE=...]``. Tagalog existentials take indefinite bare
+    # nominals — ``*May ang aklat`` is ungrammatical (the ang-
+    # determiner forces definiteness, which clashes with the
+    # existential's indefinite-introducer semantics). Adjective-
+    # modified Ns (``May matandang aklat``, "there's an old
+    # book") fall out via the Phase 5g NP-internal modifier
+    # rules at ``nominal.py:1299-1317`` which project to ``N``.
+    #
+    # F-structure shape:
+    #
+    #   PRED         = 'EXIST <SUBJ>'
+    #   SUBJ         = the existence-asserted N (with PRED /
+    #                  LEMMA projected from the head NOUN)
+    #   CLAUSE_TYPE  = 'EXISTENTIAL'
+    #   POLARITY     = 'POS'
+    #
+    # SUBJ-not-THEME on the PRED template: this codebase's PRED
+    # templates list GFs (SUBJ / OBJ / OBL), not thematic roles
+    # (THEME / AGENT / etc.) — thematic roles live in the
+    # a-structure projection (Phase 4 architecture). Mirrors
+    # Phase 5g predicative-ADJ ``'ADJ <SUBJ>'`` and Phase 5f
+    # Commit 4 ``'CARDINAL <SUBJ>'``. The Subject Condition
+    # (LMT step 6, ``check_subject_condition``) requires every
+    # PRED-bearing f-structure to have a SUBJ; treating the
+    # existence-asserted N as SUBJ satisfies this without a
+    # special-case carve-out for existentials.
+    #
+    # Locative-PP composition (``May tao sa labas``) falls out of
+    # this rule + the existing Phase 4 §7.7 sa-PP-as-ADJUNCT
+    # machinery: the matrix S consumed by sa-PP attachment lifts
+    # the locative-PP to the matrix ADJUNCT set. No dedicated
+    # locative-PP rule needed for ``may`` (cf. ``nasa`` in
+    # Commit 4 which is a separate clause-type with the locative
+    # ground promoted to LOCATION argument).
+    #
+    # The constraining equations ``(↓1 EXISTENTIAL) =c 'YES'`` and
+    # ``(↓1 POLARITY) =c 'POS'`` are belt-and-braces — the rule's
+    # category-pattern matchers already filter on
+    # ``PART[EXISTENTIAL=YES, POLARITY=POS]`` — but make the
+    # analytical commitment explicit and guard against future PART
+    # entries with the same EXISTENTIAL flag but different POLARITY
+    # (e.g., a hypothetical INTERROG-existential).
+    rules.append(Rule(
+        "S",
+        ["PART[EXISTENTIAL=YES, POLARITY=POS]", "N"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+        ],
+    ))
+
+    # Linker variant: vowel-final ``mayroon`` carries bound ``-ng``
+    # before its complement (``Mayroong tao``). After
+    # ``split_linker_ng`` strips the bound linker, the structural
+    # shape is ``mayroon`` + ``-ng`` + ``N``. Same f-structure as
+    # the base rule above; the linker daughter is a syntactic
+    # carrier with no semantic content (parallels Phase 5h's
+    # particle-intensifier-with-linker rule pattern).
+    #
+    # ``may`` is consonant-final and never takes the bound linker —
+    # ``*Mayng tao`` is ungrammatical — so the rule's
+    # ``(↓1 LEMMA) =c 'mayroon'`` constraint isn't strictly needed
+    # (``may`` would never appear before a PART[LINK=NG] in well-
+    # formed input). The linker variant fires opportunistically.
+    rules.append(Rule(
+        "S",
+        ["PART[EXISTENTIAL=YES, POLARITY=POS]", "PART[LINK=NG]", "N"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+            "(↓2 LINK) =c 'NG'",
+        ],
+    ))
+
+    # Clause-final DAT-NP ADJUNCT lift, gated on existential
+    # clauses. ``May tao sa labas`` / ``Mayroong tao sa labas`` —
+    # the locative-PP composes by adjoining a clause-final
+    # NP[CASE=DAT] to an existential matrix S as an ADJUNCT
+    # member.
+    #
+    # The constraining equation ``(↓1 CLAUSE_TYPE) =c
+    # 'EXISTENTIAL'`` gates the rule to existential matrices
+    # only — V-headed frames already embed their DAT-NP daughters
+    # explicitly (each V-frame in this file includes
+    # ``NP[CASE=DAT]`` as a daughter and adds it to ADJUNCT), so a
+    # general ``S → S NP[CASE=DAT]`` rule would create spurious
+    # ambiguity (``Kumain ang aso sa labas`` would have two parses:
+    # the V-frame's embedded DAT and a wrap parse on top of a
+    # smaller V-only matrix). The EXISTENTIAL gate prevents that
+    # cross-fire.
+    rules.append(Rule(
+        "S",
+        ["S", "NP[CASE=DAT]"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓1 CLAUSE_TYPE) =c 'EXISTENTIAL'",
+        ],
+    ))
