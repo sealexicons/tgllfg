@@ -198,33 +198,34 @@ class TestModalCtrlClassDistinct:
 # === Commit 7 watchpoint: documented temporary regression ==========
 
 
-class TestCommit7Watchpoint:
-    """``Hindi ka dapat kumain.`` parsed pre-Commit-6 as
-    ``EAT <SUBJ>`` with POLARITY=NEG (silent-dropping ``dapat``).
-    After Commit 6 the strip stops firing on ``dapat`` and the
-    sentence returns 0 parses (temporary regression). Commit 7's
-    modal control wrap will restore the parse with the proper
-    modal-headed matrix.
+class TestNoLinkerModalIsZeroParses:
+    """``Hindi ka dapat kumain.`` (no explicit linker between
+    ``dapat`` and ``kumain``) parsed pre-Commit-6 as ``EAT
+    <SUBJ>`` POLARITY=NEG via silent-dropping ``dapat``. Post-
+    Commit-6 the strip stops firing and the sentence returns 0
+    parses — and **stays at 0** post-Commit-7 too, because the
+    canonical Tagalog modal+complement form requires the linker
+    (``Hindi ka dapat na kumain.``). The no-linker form is
+    marginal / colloquial and not supported by the Phase 5j
+    Commit 7 modal control wrap (which requires
+    ``PART[LINK=NA|NG]`` between the modal V and the embedded
+    S_XCOMP).
 
-    This test asserts the **post-Commit-6, pre-Commit-7** state
-    explicitly — it documents the flip-risk surface and will be
-    superseded by Commit 7's positive-existence assertion when
-    that commit lands. **If this test fails after Commit 7, that
-    means the Commit 7 wrap fired and this test's contract is
-    obsolete; flip the assertion to ``>= 1`` parses with the
-    expected modal-PRED matrix shape.**
+    This test pins the post-Commit-6 / post-Commit-7 0-parse
+    behavior. The **with-linker** counterpart
+    ``Hindi ka dapat na kumain.`` parses correctly post-Commit-7
+    — covered by Phase 5j Commit 7 tests
+    (``test_phase5j_modal_control.py``).
     """
 
-    def test_hindi_ka_dapat_kumain_temporarily_zero_parses(self) -> None:
+    def test_no_linker_form_is_zero_parses(self) -> None:
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("Hindi ka dapat kumain.")
-        # Commit 6: 0 parses (silent-drop stopped firing; no
-        # rule consumes ``dapat`` yet). Commit 7 will restore
-        # this to >= 1 parse with PRED='DAPAT <SUBJ, XCOMP>'.
         assert len(parses) == 0, (
-            "Hindi ka dapat kumain. should have 0 parses post-"
-            "Commit-6 / pre-Commit-7. If you're seeing parses "
-            "here, the Commit 7 modal control wrap may have "
-            "fired — flip this test's assertion to verify the "
-            "modal-PRED matrix shape."
+            "Hindi ka dapat kumain. (no linker) should have 0 "
+            "parses — the canonical form requires the linker "
+            "(Hindi ka dapat NA kumain.). If you're seeing "
+            "parses here, the modal control wrap may have been "
+            "extended to a no-linker variant — verify the "
+            "matrix-PRED shape and update this test."
         )

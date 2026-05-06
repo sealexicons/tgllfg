@@ -375,6 +375,82 @@ def register_rules(rules: list[Rule]) -> None:
             ),
         ))
 
+    # --- Phase 5j Commit 7: modal control wrap -----------------------
+    #
+    # Closed-class modal predicates (Phase 5j Commit 6: dapat /
+    # puwede / pwede / puede / maaari / kailangan) take a SUBJ
+    # clitic + linker + S_XCOMP. Subject control: matrix SUBJ is
+    # structure-shared with the embedded SUBJ via the standard
+    # ``(↑ SUBJ) = (↑ XCOMP REL-PRO)`` binding (same shape as the
+    # PSYCH wrap above, distinguished only by CTRL_CLASS=MODAL).
+    #
+    # Two case variants for the matrix SUBJ:
+    #
+    # * **NOM-actor pattern** (``Dapat akong kumain.`` "I should
+    #   eat"): ``dapat`` / ``puwede`` / ``maaari`` take NOM-marked
+    #   actors as matrix SUBJ — same shape as the Phase 5c §7.6
+    #   intransitive-control wrap.
+    # * **GEN-experiencer pattern** (``Kailangan kong kumain.``
+    #   "I need to eat"): ``kailangan`` takes a GEN-marked
+    #   experiencer (parallel to PSYCH ``gusto`` / ``ayaw`` /
+    #   ``kaya``).
+    #
+    # Both rules carry the ``(↓1 CTRL_CLASS) =c 'MODAL'`` filter so
+    # they don't cross-fire on PSYCH (gusto / ayaw / kaya) or
+    # KNOW (alam) predicates. The two case variants admit both
+    # canonical patterns; for modals where both readings are
+    # marginal-but-acceptable (e.g., ``Dapat kong kumain.`` /
+    # ``Kailangan akong kumain.``), both rules will fire and produce
+    # parallel parses — no harm, since the ranker / classifier
+    # can disambiguate downstream by lemma + case combination.
+    #
+    # **Flip-restoration**: ``Hindi ka dapat kumain.`` (the
+    # documented Phase 5j flip-risk surface — see plan §3 / §6)
+    # parsed pre-Commit-6 as ``EAT <SUBJ>`` POLARITY=NEG by
+    # silently dropping ``dapat``. Commit 6 stopped the silent-
+    # drop (1→0 parses regression). This commit's modal control
+    # wrap restores the parse path with the proper modal-headed
+    # matrix structure (PRED=DAPAT, POLARITY=NEG, XCOMP holding
+    # the embedded ``kumain``). The Phase 4 §7.2 hindi-wrap
+    # composes onto the matrix S unchanged.
+    for link in ("NA", "NG"):
+        # NOM-actor variant (dapat / puwede / maaari).
+        rules.append(Rule(
+            "S",
+            [
+                "V[CTRL_CLASS=MODAL]",
+                "NP[CASE=NOM]",
+                f"PART[LINK={link}]",
+                "S_XCOMP",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ XCOMP) = ↓4",
+                "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                "(↓1 CTRL_CLASS) =c 'MODAL'",
+                "(↓1 MODAL) =c 'YES'",
+            ),
+        ))
+        # GEN-experiencer variant (kailangan; also marginally
+        # acceptable for dapat / puwede / maaari in some
+        # registers).
+        rules.append(Rule(
+            "S",
+            [
+                "V[CTRL_CLASS=MODAL]",
+                "NP[CASE=GEN]",
+                f"PART[LINK={link}]",
+                "S_XCOMP",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ XCOMP) = ↓4",
+                "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                "(↓1 CTRL_CLASS) =c 'MODAL'",
+                "(↓1 MODAL) =c 'YES'",
+            ),
+        ))
+
     # Phase 5i Commit 8: indirect-question embedding under KNOW-
     # class predicates (``alam``). The matrix predicate takes a
     # CLOSED sentential complement (COMP), not an open XCOMP — the

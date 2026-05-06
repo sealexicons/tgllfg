@@ -617,6 +617,13 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_INTRANS_CONTROL,
         ),
     ],
+    # Single canonical entry; the ``pwede`` and ``puede``
+    # orthographic variants in particles.yaml carry
+    # ``LEMMA: puwede`` so the morph analyzer sets their
+    # ``MorphAnalysis.lemma`` to ``puwede`` (Phase 5j Commit 7
+    # variant-collapse mechanic in
+    # ``src/tgllfg/morph/analyzer.py``). Lookup then routes all
+    # three surfaces through this entry.
     "puwede": [
         LexicalEntry(
             lemma="puwede",
