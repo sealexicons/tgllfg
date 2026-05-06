@@ -1115,3 +1115,32 @@
 - surface: mga
   pos: PART
   feats: {PLURAL_MARKER: "YES"}
+
+# === Phase 5h Commit 3: comparative ``mas`` (Group A degree marker) ======
+# Roadmap §12.1: pre-ADJ degree marker producing a comparative-
+# wrapped adjective. ``mas matalino`` "more intelligent" is the
+# canonical surface; the wrapped ADJ is itself an ADJ, so it
+# composes with the existing Phase 5g predicative-adj clause rule
+# (``Mas matalino siya``) and NP-internal modifier rules
+# (``mas matalinong bata``) without further changes — the
+# ``ADJ → PART[COMP_DEGREE=COMPARATIVE] ADJ`` wrapper rule in
+# ``cfg/nominal.py`` lifts this single PART entry into both
+# constructions.
+#
+# Phase 5h Commit 4 adds the ``kaysa`` comparison-complement
+# wrapper for ``Mas matalino siya kaysa kay Maria``.
+# Phase 5h Commit 7 generalises this rule to wrap Q[VAGUE=YES]
+# heads (``mas marami`` / ``mas kaunti``) — quantifier-comparison
+# rather than ADJ-comparison.
+#
+# Pre-state (verified 2026-05-05): ``mas`` was ``_UNK``;
+# ``Mas matalino siya.`` "parsed" via the parser's
+# ``_strip_non_content`` that silently drops ``_UNK``-only tokens,
+# producing a single parse of the residue ``Matalino siya.``.
+# Once this entry lands, ``mas`` is a known PART and the strip no
+# longer fires; the new wrapper rule consumes the PART and produces
+# a comparative-wrapped ADJ. Top-1 changes for any baseline-corpus
+# entry containing ``mas`` are flagged in this commit's audit.
+- surface: mas
+  pos: PART
+  feats: {COMP_DEGREE: COMPARATIVE}

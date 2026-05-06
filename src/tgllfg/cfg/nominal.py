@@ -1220,3 +1220,65 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓3 ∈ (↑ ADJ-MOD)",
             ],
         ))
+
+
+    # --- Phase 5h Commit 3: comparative ``mas`` ADJ-wrapper -----
+    #
+    # ``Mas matalino siya.`` "She is more intelligent."
+    # ``Mas mabilis ang kabayo.`` "The horse is faster."
+    # ``mas matalinong bata`` "more intelligent child" (NP-modifier).
+    #
+    # The PART ``mas`` (lex feat ``COMP_DEGREE: COMPARATIVE`` —
+    # added in particles.yaml in this commit) wraps an ADJ to
+    # produce another ADJ marked ``COMP_DEGREE: COMPARATIVE``. The
+    # output is itself an ADJ, so the same Phase 5g rules consume
+    # it: the predicative-adj clause rule fires on
+    # ``Mas matalino siya``; the NP-internal modifier rules fire on
+    # ``mas matalinong bata``. No new clause / NP rules.
+    #
+    # **Equation analysis**:
+    #
+    # * ``(↑) = ↓2`` shares the inner ADJ's f-structure with the
+    #   wrapped output. The inner ADJ's PRED, PREDICATIVE,
+    #   ADJ_LEMMA, and any per-cell feats all percolate to the
+    #   matrix.
+    # * ``(↑ COMP_DEGREE) = 'COMPARATIVE'`` writes COMPARATIVE
+    #   onto the shared f-structure. If the inner ADJ already
+    #   carries a different COMP_DEGREE (e.g.,
+    #   ``pinakamaganda`` carries SUPERLATIVE), unification fails —
+    #   ``*mas pinakamaganda`` "more most beautiful" is correctly
+    #   ungrammatical.
+    # * ``(↓1 COMP_DEGREE) =c 'COMPARATIVE'`` constrains the PART
+    #   daughter. Belt-and-braces with the category-pattern
+    #   ``PART[COMP_DEGREE=COMPARATIVE]``; the category matcher
+    #   already filters, but the explicit constraint matches
+    #   the Phase 5e parang / Phase 5g predicative-adj convention.
+    #
+    # **Why this rule is in nominal.py rather than its own
+    # ``cfg/degree.py``**: the wrapped ADJ is consumed by both
+    # NP-modifier rules (above this block) and the Phase 5g
+    # predicative-adj clause rule. ADJ-wrapping rules sit in the
+    # nominal area as a category-rewrite that feeds both clausal
+    # and nominal contexts. Phase 5h Commit 5's intensifier-ADJ
+    # wrapper joins this same area; if the wrapper-rule cluster
+    # grows beyond ~3-4 rules, a dedicated ``cfg/degree.py``
+    # split is reasonable.
+    #
+    # **Top-1 flip risk** (Phase 5h plan §7.2): pre-state probe
+    # showed ``Mas matalino siya.`` parsed today via
+    # ``_strip_non_content`` silently dropping ``mas`` (a _UNK
+    # token); after this commit, the same surface parses with
+    # ``mas`` consumed by the new wrapper, producing a richer
+    # f-structure (matrix carries COMP_DEGREE: COMPARATIVE).
+    # Audit before merging: none of the 1229 baseline corpus
+    # entries contain ``mas`` (verified by grep on
+    # tests/tgllfg/data/coverage_corpus.yaml).
+    rules.append(Rule(
+        "ADJ",
+        ["PART[COMP_DEGREE=COMPARATIVE]", "ADJ"],
+        [
+            "(↑) = ↓2",
+            "(↑ COMP_DEGREE) = 'COMPARATIVE'",
+            "(↓1 COMP_DEGREE) =c 'COMPARATIVE'",
+        ],
+    ))
