@@ -319,14 +319,24 @@ class TestEquativePredicativeParse:
     def test_equative_identity_predicative(
         self, sentence: str, lemma: str
     ) -> None:
+        # Note (Phase 5h Commit 6): ``X ang aklat ko`` and
+        # ``X ang aklat ng kapatid niya`` are structurally ambiguous
+        # between (a) the single-NP predicative reading where the
+        # GEN-clitic / GEN-NP is an embedded possessor on the SUBJ
+        # ang-NP, and (b) the two-NP equative-standard reading where
+        # the GEN is a separate STANDARD adjunct. Both readings have
+        # the same matrix-level PRED / ADJ_LEMMA / PREDICATIVE; the
+        # f-structure differs only in whether ADJUNCT contains an
+        # EQUATIVE_STANDARD member. Tests assert the matrix-level
+        # invariants and accept either parse count.
         parses = parse_text(sentence)
-        assert len(parses) == 1, (
-            f"expected one parse for {sentence!r}; got {len(parses)}"
+        assert len(parses) >= 1, (
+            f"expected at least one parse for {sentence!r}; got 0"
         )
-        _ctree, fstruct, _astr, _diags = parses[0]
-        assert fstruct.feats.get("PRED") == "ADJ <SUBJ>"
-        assert fstruct.feats.get("ADJ_LEMMA") == lemma
-        assert fstruct.feats.get("PREDICATIVE") == "YES"
+        for _ctree, fstruct, _astr, _diags in parses:
+            assert fstruct.feats.get("PRED") == "ADJ <SUBJ>"
+            assert fstruct.feats.get("ADJ_LEMMA") == lemma
+            assert fstruct.feats.get("PREDICATIVE") == "YES"
 
     @pytest.mark.parametrize("sentence,lemma", [
         ("Kasingganda ang bahay.",  "ganda"),

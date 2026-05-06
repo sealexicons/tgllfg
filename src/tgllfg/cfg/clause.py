@@ -604,6 +604,122 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5h Commit 6: equative two-NP standard frames -----
+    #
+    # ``Kasingganda ni Maria si Ana.``
+    #     "Ana is as beautiful as Maria."
+    # ``Kasingganda ng bahay mo ang bahay ko.``
+    #     "My house is as beautiful as your house."
+    # ``Kasingganda si Maria si Ana.``
+    #     "Maria is as beautiful as Ana." (two-NOM colloquial form)
+    #
+    # The kasing- / sing- equative cells (Phase 5h Commit 2) produce
+    # ADJ surfaces with ``COMP_DEGREE: EQUATIVE``. The Phase 5g
+    # predicative-adj clause rule (above) handles single-NP
+    # predicatives (``Kasingganda ang bahay``); these three rules
+    # handle the two-NP standard-of-comparison construction where
+    # the comparee is NOM-marked and the standard is GEN- or NOM-
+    # marked.
+    #
+    # **Why three rules**: Tagalog freely permits the two NPs to
+    # appear in either order (NOM-then-GEN or GEN-then-NOM), and
+    # the two-NOM variant is a separate pattern. Rule duplication
+    # is preferred over a single permissive rule because the
+    # SUBJ ↔ NP mapping is order-dependent (the comparee is the
+    # NOM-NP regardless of position; the standard is whichever
+    # daughter is non-comparee).
+    #
+    # **Standard NP analysis**: the comparison standard rides on
+    # the matrix's ADJUNCT set with ``ROLE: EQUATIVE_STANDARD``.
+    # This parallels Phase 5h Commit 4's ``kaysa`` rule, which uses
+    # ``ROLE: STANDARD`` on the kaysa-NP. The two ROLE values are
+    # distinct because the constructions are analytically separate:
+    # ``kaysa`` introduces an oblique standard for graded comparison
+    # (with ``mas``), while the equative standard sits directly in
+    # the predicate's argument position without an oblique marker.
+    #
+    # **Constraining equation** ``(↓1 COMP_DEGREE) =c 'EQUATIVE'``
+    # restricts these rules to equative-marked ADJ heads
+    # (``kasingganda``, ``singganda``, ``pareho``, ``magkapareho``,
+    # ``magkaiba``). Other-degree-marked ADJs (SUPERLATIVE,
+    # COMPARATIVE, INTENSIVE, CONTRASTIVE) parse the single-NP
+    # predicative form via the Phase 5g rule above; the two-NP
+    # frames do not fire on them.
+    #
+    # **Why not a NP[CASE=DAT] standard variant**: the
+    # ``Kasingganda kay Maria si Ana`` (DAT-standard) form is
+    # marginal in modern Tagalog per S&O 1972 / R&B 1986; GEN
+    # standard is canonical, two-NOM is colloquial. If corpus
+    # pressure surfaces DAT-standard usage, a fourth rule lands
+    # as a Phase 5h follow-on.
+
+    # NOM comparee + GEN standard: ``Pareho ng sapatos ni Maria
+    # ang sapatos ni Ana`` — "Ana's shoes are the same as Maria's
+    # shoes". Order (NOM, GEN) variant.
+    rules.append(Rule(
+        "S",
+        [
+            "ADJ[COMP_DEGREE=EQUATIVE]",
+            "NP[CASE=NOM]",
+            "NP[CASE=GEN]",
+        ],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
+            "↓3 ∈ (↑ ADJUNCT)",
+            "(↓3 ROLE) = 'EQUATIVE_STANDARD'",
+        ],
+    ))
+
+    # GEN standard + NOM comparee: ``Kasingganda ni Maria si Ana`` —
+    # canonical Schachter-Otanes shape. Order (GEN, NOM) variant.
+    rules.append(Rule(
+        "S",
+        [
+            "ADJ[COMP_DEGREE=EQUATIVE]",
+            "NP[CASE=GEN]",
+            "NP[CASE=NOM]",
+        ],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 ROLE) = 'EQUATIVE_STANDARD'",
+        ],
+    ))
+
+    # Two-NOM: ``Kasingganda si Maria si Ana`` — colloquial form
+    # where both arguments take the NOM proper-noun marker. The
+    # plan §5.6 first-NP-as-comparee convention applies: ↓2 is
+    # the SUBJ, ↓3 is the standard.
+    rules.append(Rule(
+        "S",
+        [
+            "ADJ[COMP_DEGREE=EQUATIVE]",
+            "NP[CASE=NOM]",
+            "NP[CASE=NOM]",
+        ],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
+            "↓3 ∈ (↑ ADJUNCT)",
+            "(↓3 ROLE) = 'EQUATIVE_STANDARD'",
+        ],
+    ))
+
+
     # --- Phase 5g Commit 5: manner-adverb (S-level) -----------
     #
     # ``Mabilis na tumakbo siya.`` "She ran quickly."
