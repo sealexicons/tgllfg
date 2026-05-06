@@ -9337,3 +9337,396 @@ hindi+pareho/magkaiba/magkapareho, hindi+pinaka-/napaka-, and
 the canonical ``Hindi masyadong X`` "not very" construction
 called out in plan §1).
 
+
+## Phase 5i Commit 1: wh-word lex inventory
+
+**Date:** 2026-05-06. **Status:** active. Lex-only — wh-PRONs,
+wh-ADVs, wh-Qs, the ``kung`` complementizer, the ``di`` tag
+particle, plus a YAML-string conversion on ``ba``'s
+``QUESTION`` feature. Refs: plan §4.
+
+Pronominal wh in ``data/tgl/pronouns.yaml``:
+``sino`` PRON[WH=YES, CASE=NOM, HUMAN=True];
+``ano`` PRON[WH=YES, CASE=NOM]; ``kanino`` PRON[WH=YES,
+CASE=DAT, HUMAN=True]; ``alin`` PRON[WH=YES, CASE=NOM].
+
+Adverbial wh in ``data/tgl/particles.yaml``: ``saan``
+(LOCATION), ``kailan`` (TIME), ``bakit`` (REASON), ``paano``
+(MANNER), ``papaano`` (MANNER doublet) — all
+ADV[WH=YES, ADV_TYPE=...].
+
+Quantitative wh in ``data/tgl/particles.yaml``: ``magkano``
+Q[WH=YES, QUANT=HOW_MUCH, VAGUE=YES]; ``alin`` (Q-polysemy
+partner; the standalone PRON ``alin`` is in pronouns.yaml).
+``ilan`` polysemy: pre-existing Q[QUANT=FEW, VAGUE=YES]
+(non-wh) plus a new wh entry Q[WH=YES, QUANT=HOW_MANY,
+VAGUE=YES] — both kept; rule context disambiguates.
+
+Complementizer ``kung`` PART[COMP_TYPE=INTERROG]; tag particle
+``di`` PART[NEG_TAG=YES].
+
+### YAML-string convention for category-pattern matchers
+
+The pre-existing ``ba`` lex entry carried ``QUESTION: true``
+(YAML boolean). Category-pattern matchers parse the value as
+the string ``"true"`` rather than Python ``True``, so the
+pattern ``PART[QUESTION=YES]`` would not have matched.
+Converted to ``QUESTION: "YES"`` and updated the morph
+test (``test_morph.py:729``). The convention is now uniform:
+features used in category-pattern matching live as quoted
+strings.
+
+
+## Phase 5i Commit 2: cleft-style wh-fronting (NOM PRON)
+
+**Date:** 2026-05-06. **Status:** active. 1 new clausal rule.
+Refs: plan §5.1; Phase 5e Commit 26 (``parang`` literal-PRED
+template); Phase 5f Commit 4 (predicative-cardinal); Phase 5g
+Commit 3 (predicative-adj).
+
+```
+S → PRON[WH=YES, CASE=NOM] NP[CASE=NOM]
+    (↑ PRED) = 'WH <SUBJ>'
+    (↑ SUBJ) = ↓2
+    (↑ Q_TYPE) = 'WH'
+    (↑ WH_LEMMA) = ↓1 LEMMA
+    (↓1 WH) =c 'YES'
+```
+
+The canonical Tagalog wh-Q analysis: a verbless cleft with the
+wh-PRON as the cleft-pivot and the NOM-NP as a headless RC.
+``Sino ang kumain?`` parses with PRED=``WH <SUBJ>``,
+WH_LEMMA=sino, SUBJ=the headless RC ``ang kumain``.
+
+### Why literal-PRED rather than a lexicalised wh-PRED
+
+Each wh-PRON's lemma carries the wh-content (sino / ano /
+alin); the matrix PRED encodes "this is a wh-Q with one
+argument" as a literal template. Consumers (ranker / classifier
+/ semantics) read ``WH_LEMMA`` for the specific wh-word.
+
+### Why CASE=NOM in the pattern (excluding kanino)
+
+``kanino`` carries CASE=DAT; the NOM-only cleft excludes it
+deliberately. The DAT-pivot cleft was added in Commit 9 as a
+separate rule.
+
+
+## Phase 5i Commit 3: in-situ wh-PRON shells
+
+**Date:** 2026-05-06. **Status:** active. 2 new NP shells in
+``cfg/nominal.py``. Refs: plan §5.2.
+
+```
+NP[CASE=GEN] → ADP[CASE=GEN] PRON[WH=YES]
+NP[CASE=DAT] → ADP[CASE=DAT] PRON[WH=YES]
+```
+
+Each shell binds the PRON daughter to the matrix NP via
+``(↑) = ↓2``. The wh-PRON fills an OBJ / ADJUNCT slot in-situ;
+the matrix Q_TYPE is NOT lifted (per plan §5.2 deferral).
+Consumers detect Q-ness by f-structure inspection — any PRON
+with WH=YES inside the c-tree marks the matrix as a question
+without an explicit Q_TYPE flag.
+
+### Why no matrix Q_TYPE lift
+
+Lifting Q_TYPE through arbitrary depth (e.g., from inside a
+DAT-NP nested in an ADJUNCT set) would require functional-
+uncertainty equations or post-pass f-structure inspection.
+The pre-state confirms callers can already detect WH=YES on
+the embedded PRON; the explicit matrix Q_TYPE is left for a
+future commit if corpus pressure surfaces.
+
+
+## Phase 5i Commit 4: adverbial-wh fronting
+
+**Date:** 2026-05-06. **Status:** active. 1 new clausal rule.
+Refs: plan §5.3.
+
+```
+S → ADV[WH=YES] S
+    (↑) = ↓2
+    (↑ Q_TYPE) = 'WH'
+    (↑ WH_LEMMA) = ↓1 LEMMA
+    ↓1 ∈ (↑ ADJUNCT)
+    (↓1 WH) =c 'YES'
+```
+
+Sentence-initial wh-ADV (saan / kailan / bakit / paano /
+papaano) marks the matrix as a wh-Q whose interrogated
+constituent is an adjunct of the underlying verbal clause.
+The wh-ADV adjoins to the matrix S's ADJUNCT set; the inner
+S is the residue verbal clause (with its own SUBJ — typically
+a 2P clitic like ``ka``).
+
+### ADV_TYPE-derived ROLE percolation
+
+Each wh-ADV's ``ADV_TYPE`` (LOCATION / TIME / REASON / MANNER)
+percolates onto the ADJUNCT member's f-structure via the lex
+feats. Consumers can read it off the adjunct without
+traversing back to the c-tree.
+
+
+## Phase 5i Commit 5: yes/no Q matrix-feature lift
+
+**Date:** 2026-05-06. **Status:** active. Split the Phase 4
+§7.3 2P-clitic absorption rule in ``cfg/clitic.py``. Refs:
+plan §5.4; Phase 4 §7.3.
+
+The pre-existing single rule for 2P-clitic absorption fires
+on every CLITIC_CLASS=2P PART (ba / pa / na / din / etc.).
+Adding ``(↑ Q_TYPE) = ↓2 Q_TYPE`` as a defining equation
+would pollute the matrix S's f-structure with empty Q_TYPE
+slots for non-Q clitics (cascading to 19+ baseline entries
+during Commit 5 development).
+
+The split: two sibling rules with mutually-exclusive
+constraints —
+
+1. **Generic absorption** (any 2P clitic except ba):
+   ``S → S PART[CLITIC_CLASS=2P]`` with ``¬ (↓2 QUESTION)``.
+2. **Ba-only absorption** (yes/no Q-clitic):
+   ``S → S PART[CLITIC_CLASS=2P, QUESTION=YES]`` with
+   ``(↑ Q_TYPE) = 'YES_NO'`` literal write.
+
+The ba rule fires only when QUESTION=YES on the clitic. The
+generic rule's negation constraint excludes ba, preventing
+cross-firing. The two-rule split avoids the
+defining-equation pollution that a single-rule lift would
+create. ``Kumain ka ba ng kanin?`` parses with
+Q_TYPE=YES_NO.
+
+
+## Phase 5i Commit 6: aling pre-N selector + wh-N cleft
+
+**Date:** 2026-05-06. **Status:** active. Three pieces: lex
+deletion, new N-level companion rule, new clause-level cleft
+rule. Refs: plan §5.5; Phase 5f Commit 15 (vague-Q
+NP-modifier — leveraged for aling).
+
+### Drop standalone aling Q lex entry
+
+The Commit 1 plan added ``aling`` Q[WH=YES, VAGUE=YES] as a
+unified surface. ``split_linker_ng`` keeps a known full surface
+intact rather than splitting; this prevented ``aling bata``
+from decomposing into ``alin`` + ``-ng`` + ``bata``. Dropping
+the standalone ``aling`` Q entry lets ``split_linker_ng``
+fire (``alin`` exists as a known PRON / Q surface) — the
+``-ng`` linker becomes a separate token, and the existing
+Phase 5f Commit 15 vague-Q NP-modifier rule consumes the
+result.
+
+### Wh-Q + N companion rule (cfg/nominal.py)
+
+```
+N → Q[VAGUE=YES, WH=YES] PART[LINK=NA|NG] N
+    (↑) = ↓3
+    (↑ WH) = 'YES'
+    (↑ WH_LEMMA) = ↓1 LEMMA
+    (↑ QUANT) = ↓1 QUANT
+    (↑ VAGUE) = 'YES'
+    (↓2 LINK) =c '...'  (per linker variant)
+    (↓1 WH) =c 'YES'
+```
+
+Sibling to the existing non-wh vague-Q companion (Phase 5f
+Commit 15). The constraint ``Q[VAGUE=YES, WH=YES]`` excludes
+non-wh vague Qs (lahat / iba / marami) — they continue to fire
+only the non-wh companion.
+
+### Wh-N cleft (cfg/clause.py)
+
+```
+S → N[WH=YES] NP[CASE=NOM]
+    (↑ PRED) = 'WH <SUBJ>'
+    (↑ SUBJ) = ↓2
+    (↑ Q_TYPE) = 'WH'
+    (↑ WH_LEMMA) = ↓1 WH_LEMMA
+    (↓1 WH) =c 'YES'
+```
+
+Sibling to Commit 2 PRON-cleft, but with N (rather than PRON)
+at the predicate slot. ``Aling bata ang kumain?`` parses with
+WH_LEMMA=alin lifted from the wh-N daughter.
+
+### Aso ang isda. corpus flip side-effect
+
+The wh-N cleft predicts N at clause-initial position. The
+Earley chart now records completed N states for any sentence-
+initial noun, even non-wh ones. The corpus entry ``Aso ang
+isda.`` (a non-wh NP-NP predicative-N construction, deferred
+§18) flipped from ``expected: fail`` to ``expected: fragment``
+because the chart now has completed N (``aso``) and
+NP[CASE=NOM] (``ang isda``) states that fragment extraction
+returns. Documented in the corpus entry's notes block.
+
+
+## Phase 5i Commit 7: tag question ``di ba?``
+
+**Date:** 2026-05-06. **Status:** active. 1 new clausal rule.
+Refs: plan §5.6.
+
+```
+S → S PART[NEG_TAG=YES] PART[QUESTION=YES, CLITIC_CLASS=2P]
+    (↑) = ↓1
+    ↓3 ∈ (↑ ADJ)
+    (↑ Q_TYPE) = 'TAG'
+    (↓2 NEG_TAG) =c 'YES'
+    (↓3 QUESTION) =c 'YES'
+```
+
+Single combined rule rather than two sub-rules
+(``S → S PART[di]`` + Commit 5 ba-Q rule). The two-rule
+alternative would chain (creating Q_TYPE clash on the matrix
+when both fire) or each fire independently (leaving ``di``
+orphaned if only the ba rule matched). Combining both clitics
+into one rule with ``Q_TYPE='TAG'`` cleanly subsumes the
+construction.
+
+The yes/no Q-rule (Commit 5) would otherwise match ``ba`` here
+and write ``Q_TYPE='YES_NO'``; the matrix-Q_TYPE clash rejects
+that parse (TAG ≠ YES_NO at the unifier), leaving only the
+tag-Q reading as the surviving parse.
+
+
+## Phase 5i Commit 8: indirect-Q embedding via kung — COMP not XCOMP
+
+**Date:** 2026-05-06. **Status:** active. New non-terminal +
+new wrap rule + new lex entry. Refs: plan §5.7; Phase 4 §7.6
+control complement; Phase 5c §7.6 follow-on.
+
+### S_INTERROG_COMP non-terminal
+
+```
+S_INTERROG_COMP → PART[COMP_TYPE=INTERROG] S[Q_TYPE=WH]
+    (↑) = ↓2
+    (↑ COMP_TYPE) = 'INTERROG'
+    (↓1 COMP_TYPE) =c 'INTERROG'
+    (↓2 Q_TYPE) =c 'WH'
+```
+
+Lifts the inner S f-structure and adds COMP_TYPE=INTERROG.
+The belt-and-braces ``=c`` constraints close non-conflict-
+matcher leaks on both the complementizer's COMP_TYPE and the
+inner clause's Q_TYPE.
+
+### Matrix wrap for KNOW-class predicates
+
+```
+S → V[CTRL_CLASS=KNOW] NP[CASE=GEN] S_INTERROG_COMP
+    (↑ SUBJ) = ↓2
+    (↑ COMP) = ↓3
+    (↓1 CTRL_CLASS) =c 'KNOW'
+    (↓3 COMP_TYPE) =c 'INTERROG'
+```
+
+Plus verb percolation (PRED / VOICE / ASPECT / MOOD /
+LEX-ASTRUCT). The GEN-NP experiencer is matrix SUBJ (the same
+NOM→SUBJ deviation as PSYCH); the indirect-Q clause is matrix
+COMP. No linker between matrix and complement — ``alam`` is a
+stative and ``kung`` is the complementizer.
+
+### Why CTRL_CLASS=KNOW (not PSYCH)
+
+The pre-existing PSYCH wrap requires linker + S_XCOMP open
+complement. Adding ``alam`` with CTRL_CLASS=PSYCH would let
+the existing PSYCH rule cross-fire (semantically odd:
+``Alam kong kumain`` "I want / am-able to eat"). The fresh
+KNOW class keeps the indirect-Q wrap mutually exclusive with
+the PSYCH open-XCOMP wrap.
+
+### Why COMP rather than XCOMP
+
+The plan-of-record §5.7 used ``XCOMP`` loosely. The actual LFG
+slot is ``COMP`` (closed sentential complement) because the
+embedded clause has its own SUBJ (the wh-pivot of the
+indirect-Q) and there is no SUBJ-control / linker. Using COMP
+preserves the f-structure invariant: XCOMP is SUBJ-controlled
+by definition; COMP is closed. PRED template ``KNOW <SUBJ,
+COMP>`` reflects this; the deviation from the plan's loose
+naming is documented in the commit message and here.
+
+
+## Phase 5i Commit 9: kanino / magkano / ilan-WH integration
+
+**Date:** 2026-05-06. **Status:** active. 3 new clausal rules.
+Refs: plan §6 Commit 9 row; Phase 5f Commit 15 (vague-Q
+NP-modifier — leveraged for ilan-WH polysemy via Commit 6).
+
+Three sibling rules in ``cfg/clause.py``:
+
+### Predicative-Q cleft
+
+```
+S → Q[WH=YES] NP[CASE=NOM]
+    (↑ PRED) = 'WH <SUBJ>'
+    (↑ SUBJ) = ↓2
+    (↑ Q_TYPE) = 'WH'
+    (↑ WH_LEMMA) = ↓1 LEMMA
+    (↓1 WH) =c 'YES'
+```
+
+Fires on ``magkano`` (HOW_MUCH), ``ilan`` WH-polysemy
+(HOW_MANY), and the ``alin`` Q-polysemy partner.
+
+### DAT-pivot cleft
+
+```
+S → PRON[WH=YES, CASE=DAT] NP[CASE=NOM]
+    (↑ PRED) = 'WH <SUBJ>'
+    (↑ SUBJ) = ↓2
+    (↑ Q_TYPE) = 'WH'
+    (↑ WH_LEMMA) = ↓1 LEMMA
+    (↓1 WH)   =c 'YES'
+    (↓1 CASE) =c 'DAT'
+```
+
+Sibling to Commit 2 NOM-cleft, with CASE=DAT discriminating
+against sino / ano / alin. Targets ``Kanino ang aklat?``
+"Whose is the book?".
+
+### DAT-wh fronting
+
+```
+S → PRON[WH=YES, CASE=DAT] S
+    (↑) = ↓2
+    (↑ Q_TYPE) = 'WH'
+    (↑ WH_LEMMA) = ↓1 LEMMA
+    ↓1 ∈ (↑ ADJUNCT)
+    (↓1 WH)   =c 'YES'
+    (↓1 CASE) =c 'DAT'
+```
+
+Sibling to Commit 4 adverbial-wh fronting, with PRON.
+Targets ``Kanino ka pumunta?`` "To whom did you go?".
+
+### alin polysemy harmless redundancy
+
+``alin`` is lex-polysemous: both PRON[WH=YES, CASE=NOM]
+(Commit 1) and Q[WH=YES, VAGUE=YES] (Commit 1 polysemy
+partner). ``Alin ang aklat?`` produces two parses post-Commit-9
+— one via Commit 2's PRON-cleft, one via Commit 9's Q-cleft —
+which share the same f-structure (PRED='WH <SUBJ>',
+WH_LEMMA='alin'). Tests admit ``>= 1`` parses to allow the
+redundancy.
+
+### Closes Commit 2's TestKaninoNotMatched deferral
+
+Commit 2's PRON-cleft constrained on CASE=NOM, deliberately
+excluding kanino (CASE=DAT). The original
+``TestKaninoNotMatched::test_kanino_no_cleft_parse`` asserted
+zero wh-parses for ``Kanino ang aklat?``. Commit 9's DAT-pivot
+cleft closes the deferral; the test was renamed to
+``TestKaninoNotMatchedByNomCleft::test_kanino_dat_cleft_fires``
+and flipped to assert WH_LEMMA=kanino with at least one
+Q_TYPE=WH parse.
+
+### In-situ kanino — no matrix Q_TYPE lift
+
+``Pumunta ka kanino?`` parses today (kanino fills a DAT-NP
+ADJUNCT slot via the existing nominal shells). The matrix
+does NOT carry Q_TYPE=WH — the in-situ case follows Commit 3's
+deferral. Consumers can inspect the ADJUNCT set's wh-PRON
+member to detect the Q-ness.
+
