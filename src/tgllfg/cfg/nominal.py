@@ -90,6 +90,63 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5i Commit 3: in-situ wh-PRON in case-marked NP ---
+    #
+    # ``Kumain ka ng ano?``    "You ate (some) what?" (echo / casual)
+    # ``Bumili ka ng ano?``    "You bought (some) what?"
+    # ``Sumulat ka kay kanino?`` "You wrote to whom?"
+    #
+    # The Phase 5i Commit 1 wh-PRONs (``sino`` / ``ano`` / ``alin`` /
+    # ``kanino``) carry their lex-declared CASE (NOM for the first
+    # three; DAT for kanino). Cleft-style fronting (Commit 2) consumes
+    # them in NOM-pivot position; in-situ wh appears in case-marked
+    # argument position, requiring an ADP wrapper. These two shell
+    # rules admit ``ng + PRON[WH=YES]`` → NP[CASE=GEN] and
+    # ``sa/kay + PRON[WH=YES]`` → NP[CASE=DAT].
+    #
+    # Without these rules, ``Kumain ka ng ano?`` fails: the existing
+    # NP[CASE=GEN] shell expects an N (NOUN-headed) daughter, not a
+    # PRON; and the PRON-only shell ``NP[CASE=NOM] → PRON[CASE=NOM]``
+    # produces NOM, not GEN. The wh-PRONs are NP-fillers in disguise
+    # — case-flexible when wrapped with the appropriate marker.
+    #
+    # F-structure shape: matrix shares the ADP's f-structure
+    # (``(↑) = ↓1`` so CASE comes from the wrapper); matrix gets a
+    # synthesized PRED (parallels Phase 4 §7.8 standalone-dem PRED:
+    # 'PRO'). The wh-feature lifts onto the matrix so downstream
+    # consumers can read ``(↑ WH) = 'YES'`` off any in-situ wh-NP
+    # without traversing into the PRON daughter.
+    #
+    # The matrix-level Q_TYPE lift (marking the whole sentence as a
+    # wh-Q when any in-situ wh-NP appears) is deferred — it requires
+    # either a post-parse f-structure walk or a defining equation in
+    # every V-headed S frame; the latter is invasive. For Commit 3
+    # the in-situ form parses; Q_TYPE percolation lands as a Phase 5i
+    # follow-on if corpus pressure demands it.
+    rules.append(Rule(
+        "NP[CASE=GEN]",
+        ["ADP[CASE=GEN]", "PRON[WH=YES]"],
+        [
+            "(↑) = ↓1",
+            "(↑ PRED) = 'WH-PRO'",
+            "(↑ WH) = ↓2 WH",
+            "(↑ WH_LEMMA) = ↓2 LEMMA",
+            "(↓2 WH) =c 'YES'",
+        ],
+    ))
+    rules.append(Rule(
+        "NP[CASE=DAT]",
+        ["ADP[CASE=DAT]", "PRON[WH=YES]"],
+        [
+            "(↑) = ↓1",
+            "(↑ PRED) = 'WH-PRO'",
+            "(↑ WH) = ↓2 WH",
+            "(↑ WH_LEMMA) = ↓2 LEMMA",
+            "(↓2 WH) =c 'YES'",
+        ],
+    ))
+
+
     # --- Phase 4 §7.8: standalone demonstrative pronouns ---
     #
     # ``Kumain iyon`` ("That one ate"). The demonstrative serves
