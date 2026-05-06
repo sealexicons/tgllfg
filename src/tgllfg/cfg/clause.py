@@ -653,3 +653,66 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓1 ∈ (↑ ADJ)",
             ],
         ))
+
+
+    # --- Phase 5h Commit 4: kaysa comparison-complement -------
+    #
+    # ``Mas matalino siya kaysa kay Maria.``
+    #     "She is more intelligent than Maria."
+    # ``Mas mabilis ang kabayo kaysa sa aso.``
+    #     "The horse is faster than the dog."
+    # ``Mas maganda ang bahay kaysa sa kapatid niya.``
+    #     "Her house is more beautiful than her sibling's."
+    #
+    # The PART ``kaysa`` (lex feat ``COMP_PHRASE: KAYSA`` — added in
+    # particles.yaml in this commit) heads a comparison-complement
+    # phrase that adjoins to the matrix S as an ADJUNCT member with
+    # ``ROLE: STANDARD``. The DAT-NP daughter is structured by the
+    # existing Phase 4 ``kay`` (HUMAN) / ``sa`` (default) ADP
+    # machinery, so ``kaysa kay Maria`` and ``kaysa sa kapatid``
+    # are both well-formed without new NP rules.
+    #
+    # Structurally analogous to the Phase 5f Commit 17 numeric
+    # comparator family (``higit sa N`` / ``kulang sa N`` /
+    # ``bababa sa N`` / ``hihigit sa N``) — same ``COMP_PHRASE``
+    # feature namespace, same wrap-an-NP-in-DAT-case pattern. The
+    # difference is the comparison domain: numeric comparators
+    # wrap a NUM head's standard, kaysa wraps the comparative-ADJ
+    # clause's standard.
+    #
+    # **Equation analysis**:
+    #
+    # * ``(↑) = ↓1`` — matrix S inherits the inner S's f-structure
+    #   (PRED, SUBJ, ADJ_LEMMA, COMP_DEGREE, etc., all percolate
+    #   through). The kaysa-headed adjunct rides on top of this
+    #   shared f-structure.
+    # * ``↓3 ∈ (↑ ADJUNCT)`` — the standard NP joins the matrix's
+    #   ADJUNCT set. The grammar's ranker / classifier can find
+    #   the comparison standard by walking the ADJUNCT set looking
+    #   for ROLE=STANDARD members.
+    # * ``(↓3 ROLE) = 'STANDARD'`` — the standard NP carries
+    #   ROLE: STANDARD on its f-structure so it's distinguishable
+    #   from other ADJUNCT members (locative DAT-NPs, manner
+    #   adverbs, etc.).
+    # * ``(↓2 COMP_PHRASE) =c 'KAYSA'`` — belt-and-braces
+    #   constraint on the PART daughter (matches the Phase 5f
+    #   Commit 17 / Phase 5h Commit 3 ``=c`` pattern).
+    #
+    # The plan does NOT constrain the inner S to carry
+    # ``COMP_DEGREE: COMPARATIVE``. Tagalog usage typically pairs
+    # ``kaysa`` with ``mas``, but bare comparisons
+    # (``Matalino si Maria kaysa kay Juan``) are attested
+    # colloquially; the permissive rule accepts both. Tightening
+    # would need COMP_DEGREE to be lifted onto the matrix S by
+    # the Phase 5g predicative-adj clause rule (which currently
+    # keeps it on the ADJ daughter); deferred.
+    rules.append(Rule(
+        "S",
+        ["S", "PART[COMP_PHRASE=KAYSA]", "NP[CASE=DAT]"],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ ADJUNCT)",
+            "(↓3 ROLE) = 'STANDARD'",
+            "(↓2 COMP_PHRASE) =c 'KAYSA'",
+        ],
+    ))

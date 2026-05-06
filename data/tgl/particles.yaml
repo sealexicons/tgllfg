@@ -1144,3 +1144,35 @@
 - surface: mas
   pos: PART
   feats: {COMP_DEGREE: COMPARATIVE}
+
+# === Phase 5h Commit 4: comparison complement ``kaysa`` (Group A) =======
+# Roadmap §12.1: ``kaysa`` introduces the comparison standard in
+# the comparative frame ``Mas X kaysa kay Y`` / ``Mas X kaysa sa Y``
+# "more X than Y". The standard NP is structured by the existing
+# ``kay`` (HUMAN) / ``sa`` (default) ADP machinery — no new NP
+# rules needed. ``kaysa`` itself is a single PART entry with
+# ``COMP_PHRASE: KAYSA`` (mirroring the Phase 5f Commit 17 numeric
+# comparator family ``higit`` / ``kulang`` / ``bababa`` / ``hihigit``,
+# all carrying ``COMP_PHRASE`` tags).
+#
+# The grammar rule that consumes this PART is in ``cfg/clause.py``:
+#
+#     S → S PART[COMP_PHRASE=KAYSA] NP[CASE=DAT]
+#
+# Adjoins the kaysa-headed phrase to the matrix S's ADJUNCT set
+# with ``ROLE: STANDARD``. Composes with the Phase 5h Commit 3
+# comparative-ADJ wrapper unchanged: ``Mas matalino siya kaysa kay
+# Maria`` is parsed as the inner S ``Mas matalino siya`` plus the
+# adjoined ``kaysa kay Maria``.
+#
+# The plan does NOT constrain the inner S to carry ``COMP_DEGREE:
+# COMPARATIVE``. Tagalog usage typically pairs ``kaysa`` with
+# ``mas`` (or another degree marker), but bare comparisons
+# (``Matalino si Maria kaysa kay Juan``) are attested in colloquial
+# register; the permissive rule accepts both. Tightening to require
+# COMPARATIVE on the inner predicate is deferred — it would need
+# COMP_DEGREE to be lifted onto the matrix S by the predicative-adj
+# clause rule, which currently keeps it on the ADJ daughter.
+- surface: kaysa
+  pos: PART
+  feats: {COMP_PHRASE: KAYSA}
