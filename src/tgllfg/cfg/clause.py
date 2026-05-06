@@ -930,6 +930,52 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5i Commit 7: tag question `di ba?` ----------------
+    #
+    # ``Maganda ang bata, di ba?``    "The child is beautiful, isn't it?"
+    # ``Kumain ka, di ba?``           "You ate, didn't you?"
+    # ``Mas matalino siya, di ba?``   "She's more intelligent, isn't she?"
+    #
+    # The sentence-final tag ``di ba`` is the canonical Tagalog
+    # tag-question marker, asking the addressee to confirm the
+    # preceding statement. ``di`` is the colloquial shortening of
+    # ``hindi`` (negation); ``ba`` is the yes/no Q clitic. Together
+    # they form a fixed sentence-final tag with QUESTION + NEG_TAG
+    # semantics.
+    #
+    # Tokenization: the comma is stripped pre-parse (orthographic
+    # terminator family). The chart sees ``S + di + ba``. ``ba``'s
+    # 2P-clitic placement is a no-op here (it's already at clause-
+    # final position post-comma).
+    #
+    # Single combined rule (rather than two rules `S → S PART[di]`
+    # + Phase 5i Commit 5 ba-Q rule): the two-rule alternative
+    # would either chain (creating Q_TYPE clash on the matrix when
+    # both fire) or each fire independently (leaving `di` orphaned
+    # if only the ba rule matched). Combining both clitics into
+    # one rule with Q_TYPE=TAG cleanly subsumes the construction.
+    #
+    # The yes/no Q-rule in cfg/clitic.py would otherwise match
+    # `ba` here and write Q_TYPE=YES_NO; the matrix-Q_TYPE clash
+    # rejects that parse (TAG ≠ YES_NO at the unifier), leaving
+    # only the tag-Q reading as the surviving parse.
+    rules.append(Rule(
+        "S",
+        [
+            "S",
+            "PART[NEG_TAG=YES]",
+            "PART[QUESTION=YES, CLITIC_CLASS=2P]",
+        ],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ ADJ)",
+            "(↑ Q_TYPE) = 'TAG'",
+            "(↓2 NEG_TAG) =c 'YES'",
+            "(↓3 QUESTION) =c 'YES'",
+        ],
+    ))
+
+
     # --- Phase 5i Commit 4: adverbial wh fronting ----------------
     #
     # ``Saan ka pumunta?``    "Where did you go?"
