@@ -1335,3 +1335,40 @@
 - surface: di
   pos: PART
   feats: {NEG_TAG: "YES", LEMMA: di}
+
+# === Phase 5j Commit 1: existential clause-typers =========================
+#
+# ``may`` / ``mayroon`` (positive existential), ``wala`` (negative
+# existential), ``nasa`` (locative existential). Per roadmap §12.1
+# these are clause-typing predicates, NOT V-headed verbal frames —
+# they get PART lex with diagnostic feats and dedicated grammar rules
+# in ``cfg/clause.py`` (Phase 5j Commits 2-5). Each surface carries
+# YAML-string ``"YES"`` for category-pattern-matching consistency
+# with Phase 5h / 5i (boolean YAML breaks the matchers).
+#
+# ``mayroon`` is etymologically ``may`` + ``doon`` "there"; in
+# modern Tagalog they are interchangeable in the bare existential
+# (``May tao``, ``Mayroong tao``), but ``mayroon`` is preferred
+# before clitics / linker-bound complements. Both get the same
+# {EXISTENTIAL: "YES", POLARITY: POS} feats.
+#
+# ``wala`` is vowel-final and triggers bound ``-ng`` linker
+# (``Walang aklat``); ``split_linker_ng`` strips the linker once
+# ``wala`` is a known surface.
+#
+# ``nasa`` is etymologically ``na`` + ``sa`` (the locative case
+# marker) but synchronically a fixed clause-typer with its own
+# ``LOC_EXISTENTIAL: "YES"`` flag and a dedicated three-daughter
+# rule shape (Commit 4).
+- surface: may
+  pos: PART
+  feats: {EXISTENTIAL: "YES", POLARITY: POS, LEMMA: may}
+- surface: mayroon
+  pos: PART
+  feats: {EXISTENTIAL: "YES", POLARITY: POS, LEMMA: mayroon}
+- surface: wala
+  pos: PART
+  feats: {EXISTENTIAL: "YES", POLARITY: NEG, LEMMA: wala}
+- surface: nasa
+  pos: PART
+  feats: {LOC_EXISTENTIAL: "YES", LEMMA: nasa}

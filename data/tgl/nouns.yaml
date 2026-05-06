@@ -995,6 +995,27 @@
   feats: {MEASURE: "YES", COLL_VALUE: THOUSANDS}
 
 
+# === Phase 5j Commit 1: locative / existential supporting nouns =========
+# Three NOUN entries that surface inside Phase 5j locative-existential
+# / locative-PP composition contexts. ``labas`` pairs with the existing
+# Phase 4 §7.7 sa-PP machinery to form the locative ground in ``May
+# tao sa labas`` / ``Nasa labas ang aso``. ``tuktok`` and ``bukid``
+# unblock R&G "Ang Manok" simples #5 and #7 (``Nasa tuktok ng bundok
+# ang bahay`` and the ``sa bukid`` adjunct).
+
+- citation: labas
+  pos: NOUN
+  gloss: outside
+
+- citation: tuktok
+  pos: NOUN
+  gloss: top
+
+- citation: bukid
+  pos: NOUN
+  gloss: field / countryside
+
+
 # === Proper-name placeholders ============================================
 # Test-fixture proper names. Alphabetical by citation.
 
