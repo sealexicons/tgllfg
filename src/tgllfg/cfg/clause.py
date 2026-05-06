@@ -1356,6 +1356,132 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5j Commit 5: HAVE construction --------------------
+    #
+    # Tagalog has no separate HAVE verb. The HAVE reading is the
+    # existential predicate (Commit 2 / 3) + a possessor-NP that
+    # binds to the existence-asserted N's POSSESSOR feature.
+    #
+    # Surface patterns (4 rules total):
+    #
+    # Positive HAVE — postposed possessor (no internal linker):
+    #   ``May aklat ako.``        "I have a book."  (clitic-PRON)
+    #   ``May aklat si Maria.``   "Maria has a book."  (full-NP)
+    #
+    # Positive HAVE — internal clitic possessor (with bound -ng):
+    #   ``May akong aklat.``      "I have a book."
+    #
+    # Negative HAVE — postposed possessor (wala + bound -ng):
+    #   ``Walang aklat ako.``     "I don't have a book."
+    #   ``Walang aklat si Maria.`` "Maria doesn't have a book."
+    #
+    # Negative HAVE — internal clitic possessor:
+    #   ``Wala akong aklat.``     "I don't have a book."
+    #
+    # The asymmetry between positive (no bound -ng on may) and
+    # negative (bound -ng on wala) is surface-level: ``may`` is
+    # consonant-final and never takes the bound linker; ``wala``
+    # is vowel-final and ALWAYS takes it before its complement.
+    # The internal-clitic and postposed patterns reflect different
+    # surface positions of the possessor — Tagalog admits both.
+    #
+    # Possessor binding via ``(↑ SUBJ POSSESSOR) = ↓X`` rather
+    # than via OBLIQUE thematic role: Tagalog HAVE is structurally
+    # an existential ("exists X possessed by Y"), not a transitive
+    # ("Y has X"). The POSSESSOR feature on the SUBJ N captures
+    # this while keeping the matrix CLAUSE_TYPE as EXISTENTIAL
+    # and the matrix PRED as the literal ``'EXIST <SUBJ>'``.
+    # ``(↑ HAVE) = 'YES'`` lifts the HAVE-reading flag for
+    # downstream consumers.
+    #
+    # Internal-clitic rules constrain the possessor daughter to
+    # PRON (not NP[CASE=NOM]) — full-NP-with-internal-linker
+    # patterns like ``*May Mariang aklat`` are marginal in modern
+    # Tagalog and would compete with NP-internal POSS rules.
+    # The PRON gate avoids this cross-fire.
+
+    # Commit 5a: positive HAVE — postposed possessor.
+    rules.append(Rule(
+        "S",
+        ["PART[EXISTENTIAL=YES, POLARITY=POS]", "N", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ SUBJ POSSESSOR) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+        ],
+    ))
+
+    # Commit 5b: positive HAVE — internal clitic possessor.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=POS]",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "N",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓4",
+            "(↑ SUBJ POSSESSOR) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+            "(↓3 LINK) =c 'NG'",
+        ],
+    ))
+
+    # Commit 5c: negative HAVE — postposed possessor (wala + bound -ng).
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=NEG]",
+            "PART[LINK=NG]",
+            "N",
+            "NP[CASE=NOM]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ SUBJ POSSESSOR) = ↓4",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 LINK) =c 'NG'",
+        ],
+    ))
+
+    # Commit 5d: negative HAVE — internal clitic possessor.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=NEG]",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "N",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓4",
+            "(↑ SUBJ POSSESSOR) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓3 LINK) =c 'NG'",
+        ],
+    ))
+
     # Clause-final DAT-NP ADJUNCT lift, gated on existential
     # clauses. ``May tao sa labas`` / ``Mayroong tao sa labas`` —
     # the locative-PP composes by adjoining a clause-final
