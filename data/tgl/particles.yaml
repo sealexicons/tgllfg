@@ -524,6 +524,24 @@
   pos: VERB
   feats: {CTRL_CLASS: PSYCH}
 
+# Phase 5i Commit 8: indirect-Q embedding ``alam`` "know". Like
+# the psych pseudo-verbs above, ``alam`` is uninflected (no voice
+# / aspect / mood) and takes a GEN-marked experiencer (``Alam ko
+# X`` "I know X"). Unlike PSYCH, its complement is a CLOSED
+# sentential complement (COMP), not an open XCOMP — the embedded
+# clause has its own SUBJ (the wh-pivot), and there's no
+# SUBJ-control / linker between matrix and embedded. The ``KNOW``
+# control class keeps it from cross-firing on the existing
+# PSYCH wrap rules (which require a linker + S_XCOMP open
+# complement). PRED template ``KNOW <SUBJ, COMP>`` lives in
+# core/lexicon.py. Phase 5i Commit 8 only admits indirect-Q
+# (interrogative) complements; declarative-COMP factive
+# embedding (``Alam kong kumain ang aso`` "I know that the dog
+# ate") is Phase 5+ scope — see roadmap §18.
+- surface: alam
+  pos: VERB
+  feats: {CTRL_CLASS: KNOW}
+
 # Phase 5c §7.6 follow-on (Commit 5): raising verbs. Like the
 # psych pseudo-verbs above, they're closed-class, uninflected,
 # select an XCOMP. Unlike psych, they have no thematic SUBJ —
