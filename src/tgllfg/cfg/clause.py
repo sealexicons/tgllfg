@@ -930,6 +930,73 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5i Commit 9: predicative-Q cleft + DAT-pivot cleft -
+    #
+    # Two further cleft variants for Q-headed and DAT-marked
+    # wh-pivots, sibling to Commits 2 and 6.
+    #
+    # (a) Predicative-Q cleft for amount / count wh:
+    #
+    #   ``Magkano ang isda?``     "How much is the fish?"
+    #   ``Ilan ang aklat?``       "How many are the books?"
+    #   ``Alin ang aklat?``       (Q reading; PRON reading via Commit 2)
+    #
+    # The cleft-pivot is a Q[WH=YES] head (magkano /
+    # ilan-WH / alin-Q). The headless-RC NP[CASE=NOM] is the SUBJ.
+    # Same f-structure shape as Commit 2's PRON cleft —
+    # PRED=``WH <SUBJ>``, Q_TYPE=WH, WH_LEMMA from the Q's LEMMA
+    # field. The polysemy partner ``ilan`` Q[QUANT=FEW, VAGUE=YES]
+    # (no WH=YES) is excluded by the ``=c 'YES'`` constraint;
+    # non-conflict matching at the chart level is closed by the
+    # f-structure unifier.
+    #
+    # The Q-cleft and the PRON-cleft (Commit 2) cannot both fire
+    # on the same surface, since wh-PRONs and wh-Qs have
+    # disjoint POS in the lex (PRON vs Q). ``alin`` is the only
+    # surface lexed as both (Commit 1 polysemy); it produces two
+    # parses — one via PRON-cleft, one via Q-cleft — which
+    # share the same f-structure (both write
+    # ``PRED='WH <SUBJ>'``, ``WH_LEMMA='alin'``). Tests admit
+    # ``>= 1`` parses for ``Alin ang aklat?``.
+    rules.append(Rule(
+        "S",
+        ["Q[WH=YES]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↓1 WH) =c 'YES'",
+        ],
+    ))
+
+    # (b) DAT-pivot cleft for ``kanino``:
+    #
+    #   ``Kanino ang aklat?``     "Whose is the book?" / "To whom
+    #                              does the book belong?"
+    #
+    # The cleft-pivot is a DAT-marked wh-PRON; the headless-RC
+    # NP[CASE=NOM] is the SUBJ. Same shape as Commit 2's NOM-PRON
+    # cleft, but with CASE=DAT discriminating against sino / ano
+    # / alin (CASE=NOM) — those continue to fire only the
+    # NOM-PRON cleft. The semantics of the DAT cleft is
+    # possessor / recipient wh; we don't lexicalise this in the
+    # PRED template (still ``WH <SUBJ>``) — the WH_LEMMA carries
+    # the lexical content (kanino vs sino).
+    rules.append(Rule(
+        "S",
+        ["PRON[WH=YES, CASE=DAT]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↓1 WH) =c 'YES'",
+            "(↓1 CASE) =c 'DAT'",
+        ],
+    ))
+
+
     # --- Phase 5i Commit 7: tag question `di ba?` ----------------
     #
     # ``Maganda ang bata, di ba?``    "The child is beautiful, isn't it?"
@@ -1027,5 +1094,34 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ WH_LEMMA) = ↓1 LEMMA",
             "↓1 ∈ (↑ ADJUNCT)",
             "(↓1 WH) =c 'YES'",
+        ],
+    ))
+
+    # Phase 5i Commit 9: DAT-wh fronting (sibling to Commit 4).
+    #
+    #   ``Kanino ka pumunta?``        "To whom did you go?"
+    #   ``Kanino ka bumili ng aklat?`` "From whom did you buy a book?"
+    #
+    # ``kanino`` is a DAT-marked wh-PRON; when sentence-initial
+    # over a residue clause it's an ADJUNCT wh-fronting (mirror of
+    # adverbial-wh fronting). The matrix carries Q_TYPE=WH +
+    # WH_LEMMA=kanino; the wh-PRON joins the matrix ADJUNCT set.
+    #
+    # No conflict with the Commit 9 DAT-pivot cleft above: the
+    # cleft requires ``NP[CASE=NOM]`` as the second daughter (the
+    # headless RC), and ``ang aklat`` (a bare NP) does not parse
+    # as ``S`` — verified pre-state. The fronting rule fires only
+    # when the residue is a verb-headed clause with its own SUBJ
+    # (e.g., ``ka pumunta``).
+    rules.append(Rule(
+        "S",
+        ["PRON[WH=YES, CASE=DAT]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↓1 WH) =c 'YES'",
+            "(↓1 CASE) =c 'DAT'",
         ],
     ))

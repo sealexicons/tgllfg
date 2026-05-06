@@ -120,24 +120,23 @@ class TestHeadlessRcInWhCleft:
 # === DAT-marked wh-PRONs are NOT in the NOM-only rule ================
 
 
-class TestKaninoNotMatched:
-    """``kanino`` carries CASE=DAT, so the NOM-only cleft rule
-    doesn't fire on it. ``Kanino ang aklat?`` "Whose book is it?"
-    needs a separate DAT-pivot frame (deferred to a later commit)."""
+class TestKaninoNotMatchedByNomCleft:
+    """``kanino`` carries CASE=DAT, so Commit 2's NOM-only cleft
+    rule does not fire on it. The DAT-pivot cleft was added in
+    Phase 5i Commit 9 (separate rule); this test now verifies
+    that the Commit 9 DAT-cleft fires (the deferred frame is
+    closed). Pre-Commit-9 this test asserted ``wh_parses == []``;
+    flipped 2026-05-06 with the Commit 9 rule add."""
 
-    def test_kanino_no_cleft_parse(self) -> None:
+    def test_kanino_dat_cleft_fires(self) -> None:
         parses = parse_text("Kanino ang aklat?")
-        # No parse with the new cleft rule (CASE=NOM constraint
-        # blocks kanino which is CASE=DAT). Other rules may
-        # produce a parse, but no Q_TYPE=WH parse from the new rule.
         wh_parses = [
             p for p in parses
             if p[1].feats.get("Q_TYPE") == "WH"
         ]
-        assert wh_parses == [], (
-            f"unexpected wh-Q parse for Kanino ang aklat?; "
-            f"got {[p[1].feats for p in wh_parses]}"
-        )
+        assert len(wh_parses) >= 1
+        _ct, fs, _astr, _diags = wh_parses[0]
+        assert fs.feats.get("WH_LEMMA") == "kanino"
 
 
 # === Non-wh PRONs do not fire the rule (=c WH constraint) ==============
