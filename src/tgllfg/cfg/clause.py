@@ -1227,6 +1227,64 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5j Commit 3: negative existential clause ---------
+    #
+    #   ``Walang aklat.``         "There's no book."
+    #   ``Walang tao.``           "There's no one."
+    #   ``Walang tao sa labas.``  "There's no one outside."
+    #
+    # Negative-polarity counterpart of the Commit 2 positive
+    # existential. ``wala`` is vowel-final and ALWAYS takes bound
+    # ``-ng`` before its complement (``*Wala aklat.`` is ungrammatical
+    # in the existential reading; the bound-linker form ``Walang
+    # aklat.`` is the canonical surface). After ``split_linker_ng``
+    # strips the bound linker, the structural shape is ``wala``
+    # + ``-ng`` + ``N`` — so the linker variant is the primary
+    # entry point for ``wala``.
+    #
+    # The bare-N variant (``S → PART[EXISTENTIAL=YES, POLARITY=NEG]
+    # N``) is included for parity with Commit 2's positive base
+    # rule and to admit edge cases where ``wala`` appears without
+    # the linker (e.g., ``Wala.`` standalone, "There is none.")
+    # when followed by a non-NP complement). For well-formed
+    # ``wala`` + N input, the linker variant always fires; the
+    # bare-N variant is benign.
+    #
+    # F-structure shape mirrors the positive existential exactly,
+    # with ``POLARITY = 'NEG'`` instead of POS. The matrix
+    # CLAUSE_TYPE='EXISTENTIAL' makes the Phase 5j Commit 2 clause-
+    # final DAT-lift rule (``S → S NP[CASE=DAT]`` with
+    # ``(↓1 CLAUSE_TYPE) =c 'EXISTENTIAL'``) compose with negative
+    # existentials too — no separate locative rule needed.
+    rules.append(Rule(
+        "S",
+        ["PART[EXISTENTIAL=YES, POLARITY=NEG]", "N"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'NEG'",
+        ],
+    ))
+
+    # Linker variant for ``wala`` + bound ``-ng`` + N (the canonical
+    # negative-existential surface ``Walang aklat`` etc.).
+    rules.append(Rule(
+        "S",
+        ["PART[EXISTENTIAL=YES, POLARITY=NEG]", "PART[LINK=NG]", "N"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 LINK) =c 'NG'",
+        ],
+    ))
+
     # Clause-final DAT-NP ADJUNCT lift, gated on existential
     # clauses. ``May tao sa labas`` / ``Mayroong tao sa labas`` —
     # the locative-PP composes by adjoining a clause-final
