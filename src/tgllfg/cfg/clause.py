@@ -832,3 +832,66 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 COMP_PHRASE) =c 'KAYSA'",
         ],
     ))
+
+
+    # --- Phase 5i Commit 2: cleft-style wh-fronting (NOM pivot) ---
+    #
+    # ``Sino ang kumain?``           "Who ate?"
+    # ``Sino ang kumain ng kanin?``  "Who ate the rice?"
+    # ``Ano ang kinain mo?``         "What did you eat?"
+    # ``Alin ang kinain mo?``        "Which one did you eat?"
+    #
+    # The wh-PRON is the matrix predicate; the NOM-NP is a
+    # headless relative clause functioning as the matrix SUBJ
+    # (``ang kumain ng kanin`` "the one who ate the rice"). This
+    # is the canonical Tagalog wh-Q analysis per S&O 1972 §6 and
+    # R&B 1986: a verbless cleft with the wh-PRON as the
+    # cleft-pivot.
+    #
+    # F-structure shape:
+    #
+    #   PRED       = 'WH <SUBJ>'
+    #   SUBJ       = the headless-RC NP[CASE=NOM]
+    #   Q_TYPE     = 'WH'                    (matrix flagged as wh-Q)
+    #   WH_LEMMA   = the wh-PRON's LEMMA     (sino / ano / alin)
+    #
+    # Structurally analogous to:
+    #   - Phase 5e Commit 26 ``parang`` comparative (literal-PRED
+    #     predicative with two NP-class daughters)
+    #   - Phase 5f Commit 4 predicative cardinal (``Tatlo ang
+    #     aklat`` — literal-PRED with NOM-NP pivot)
+    #   - Phase 5g Commit 3 predicative-adj (``Maganda ang bata``
+    #     — literal-PRED with PREDICATIVE-feature head)
+    #
+    # The category-pattern ``PRON[WH=YES, CASE=NOM]`` filters the
+    # head to NOM-marked wh-PRONs (sino / ano / alin). Restricting
+    # to NOM keeps DAT-marked ``kanino`` "to whom" out of this
+    # rule — a separate DAT-pivot frame is needed for that
+    # construction (deferred to a Phase 5i follow-on commit if
+    # corpus pressure surfaces).
+    #
+    # Belt-and-braces ``=c`` on the WH feature is the same leak-
+    # closing pattern Phase 5h established (Commits 3 / 5 / 7):
+    # the category-pattern matcher is non-conflict, so a PRON
+    # without WH would absorb the slot via shared-key absence.
+    # ``(↓1 WH) =c 'YES'`` makes the WH constraint binding.
+    #
+    # **Top-1 flip risk** (plan §7.2): Pre-Phase-5i probes showed
+    # the cleft-style sentences (``Sino ang kumain?`` etc.) all
+    # parsing 0 today (the wh-PRONs were _UNK; the strip dropped
+    # them; the residue ``Ang kumain?`` failed to parse without
+    # a verb-headed clause). After Commits 1 + 2, these sentences
+    # parse 1+. The 1251-entry baseline corpus contains zero
+    # wh-questions (audit confirmed at Commit 1), so no baseline
+    # entries flip.
+    rules.append(Rule(
+        "S",
+        ["PRON[WH=YES, CASE=NOM]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↓1 WH) =c 'YES'",
+        ],
+    ))
