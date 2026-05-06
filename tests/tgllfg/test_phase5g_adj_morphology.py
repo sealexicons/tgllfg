@@ -160,9 +160,21 @@ class TestMorphDataLoading:
         ma_adj_cells = [
             c for c in data.adjective_cells if c.affix_class == "ma_adj"
         ]
-        assert len(ma_adj_cells) == 1
-        cell = ma_adj_cells[0]
-        assert cell.operations == [Operation(op="prefix", value="ma")]
+        # Phase 5g seeded one bare ``ma-`` cell; Phase 5h Commit 1
+        # adds ``pinaka-`` superlative and ``napaka-`` intensive
+        # cells that reuse the same productive opt-in (``ma_adj``).
+        # Phase 5h Commit 2 adds two more (``kasing-`` / ``sing-``).
+        # Identify the bare cell by operations and assert on it
+        # specifically; assert the rest are well-formed by structure.
+        bare_ma_cells = [
+            c for c in ma_adj_cells
+            if c.operations == [Operation(op="prefix", value="ma")]
+        ]
+        assert len(bare_ma_cells) == 1, (
+            f"expected exactly one bare ``ma-`` adjective cell; "
+            f"got {len(bare_ma_cells)} (total ma_adj cells: "
+            f"{len(ma_adj_cells)})"
+        )
 
 
 # === Affix-class filter (seed cell only fires for ma_adj roots) ==========

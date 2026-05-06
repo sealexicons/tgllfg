@@ -1,11 +1,17 @@
 # tgllfg/core/__init__.py
 
-"""Core data types, in-process lexicon, and parse pipeline.
+"""Core data types and in-process lexicon.
 
-Re-exports the foundational records and entry points that callers
-inside and outside the package import as the public surface of the
-core layer. Implementations live in sibling modules — keep this file
-exports-only.
+Re-exports the foundational records (data shapes shared across the
+pipeline) and the in-process verb lexicon. The end-to-end parse
+pipeline (:mod:`tgllfg.core.pipeline`) is intentionally NOT
+re-exported here — pipeline imports :mod:`tgllfg.morph`, and
+:mod:`tgllfg.morph.analyzer` imports back into
+:mod:`tgllfg.core.common`, so re-exporting pipeline at the package
+level creates a circular import on the morph-first import path
+(``from tgllfg.morph import Analyzer``). Callers that need the
+pipeline use the explicit path ``from tgllfg.core.pipeline import
+parse_text``.
 """
 
 from .common import (
@@ -18,12 +24,6 @@ from .common import (
     Token,
 )
 from .lexicon import BASE, lookup_lexicon
-from .pipeline import (
-    Fragment,
-    ParseResult,
-    parse_text,
-    parse_text_with_fragments,
-)
 
 __all__ = [
     "AStructure",
@@ -31,12 +31,8 @@ __all__ = [
     "CNode",
     "FStructure",
     "FeatureValue",
-    "Fragment",
     "LexicalEntry",
     "MorphAnalysis",
-    "ParseResult",
     "Token",
     "lookup_lexicon",
-    "parse_text",
-    "parse_text_with_fragments",
 ]
