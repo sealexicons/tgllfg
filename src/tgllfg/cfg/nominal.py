@@ -90,6 +90,63 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5i Commit 3: in-situ wh-PRON in case-marked NP ---
+    #
+    # ``Kumain ka ng ano?``    "You ate (some) what?" (echo / casual)
+    # ``Bumili ka ng ano?``    "You bought (some) what?"
+    # ``Sumulat ka kay kanino?`` "You wrote to whom?"
+    #
+    # The Phase 5i Commit 1 wh-PRONs (``sino`` / ``ano`` / ``alin`` /
+    # ``kanino``) carry their lex-declared CASE (NOM for the first
+    # three; DAT for kanino). Cleft-style fronting (Commit 2) consumes
+    # them in NOM-pivot position; in-situ wh appears in case-marked
+    # argument position, requiring an ADP wrapper. These two shell
+    # rules admit ``ng + PRON[WH=YES]`` → NP[CASE=GEN] and
+    # ``sa/kay + PRON[WH=YES]`` → NP[CASE=DAT].
+    #
+    # Without these rules, ``Kumain ka ng ano?`` fails: the existing
+    # NP[CASE=GEN] shell expects an N (NOUN-headed) daughter, not a
+    # PRON; and the PRON-only shell ``NP[CASE=NOM] → PRON[CASE=NOM]``
+    # produces NOM, not GEN. The wh-PRONs are NP-fillers in disguise
+    # — case-flexible when wrapped with the appropriate marker.
+    #
+    # F-structure shape: matrix shares the ADP's f-structure
+    # (``(↑) = ↓1`` so CASE comes from the wrapper); matrix gets a
+    # synthesized PRED (parallels Phase 4 §7.8 standalone-dem PRED:
+    # 'PRO'). The wh-feature lifts onto the matrix so downstream
+    # consumers can read ``(↑ WH) = 'YES'`` off any in-situ wh-NP
+    # without traversing into the PRON daughter.
+    #
+    # The matrix-level Q_TYPE lift (marking the whole sentence as a
+    # wh-Q when any in-situ wh-NP appears) is deferred — it requires
+    # either a post-parse f-structure walk or a defining equation in
+    # every V-headed S frame; the latter is invasive. For Commit 3
+    # the in-situ form parses; Q_TYPE percolation lands as a Phase 5i
+    # follow-on if corpus pressure demands it.
+    rules.append(Rule(
+        "NP[CASE=GEN]",
+        ["ADP[CASE=GEN]", "PRON[WH=YES]"],
+        [
+            "(↑) = ↓1",
+            "(↑ PRED) = 'WH-PRO'",
+            "(↑ WH) = ↓2 WH",
+            "(↑ WH_LEMMA) = ↓2 LEMMA",
+            "(↓2 WH) =c 'YES'",
+        ],
+    ))
+    rules.append(Rule(
+        "NP[CASE=DAT]",
+        ["ADP[CASE=DAT]", "PRON[WH=YES]"],
+        [
+            "(↑) = ↓1",
+            "(↑ PRED) = 'WH-PRO'",
+            "(↑ WH) = ↓2 WH",
+            "(↑ WH_LEMMA) = ↓2 LEMMA",
+            "(↓2 WH) =c 'YES'",
+        ],
+    ))
+
+
     # --- Phase 4 §7.8: standalone demonstrative pronouns ---
     #
     # ``Kumain iyon`` ("That one ate"). The demonstrative serves
@@ -557,6 +614,44 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ VAGUE) = 'YES'",
                 "¬ (↓3 VAGUE)",
                 "(↓1 VAGUE) =c 'YES'",
+            ],
+        ))
+
+
+    # --- Phase 5i Commit 6: wh-Q + N companion (wh-N for cleft) ---
+    #
+    # ``aling bata`` "which child" — wh-Q-modified N. The Phase 5f
+    # Commit 15 vague-Q N-level companion above lifts QUANT and
+    # VAGUE but not WH; non-wh Qs (lahat / iba / marami / etc.)
+    # don't carry WH so a single rule with ``(↑ WH) = ↓1 WH`` would
+    # create an empty FStructure on matrix WH for them (same
+    # baseline-perturbation pattern Phase 5i Commit 5 closed by
+    # splitting into two parallel rules).
+    #
+    # This wh-Q variant constrains on ``Q[VAGUE=YES, WH=YES]`` so
+    # it fires only on Phase 5i wh-Q heads (``alin`` / ``ilan``-WH
+    # / ``magkano``). The matrix N gets WH=YES + WH_LEMMA from the
+    # Q daughter, on top of the QUANT / VAGUE lifts the non-wh rule
+    # already provides. Phase 5i Commit 6's wh-N-cleft rule (in
+    # cfg/clause.py) consumes the resulting N[WH=YES].
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "N",
+            [
+                "Q[VAGUE=YES, WH=YES]",
+                f"PART[LINK={link}]",
+                "N",
+            ],
+            [
+                "(↑ PRED) = ↓3 PRED",
+                "(↑ LEMMA) = ↓3 LEMMA",
+                "(↑ QUANT) = ↓1 QUANT",
+                "(↑ VAGUE) = 'YES'",
+                "(↑ WH) = 'YES'",
+                "(↑ WH_LEMMA) = ↓1 LEMMA",
+                "¬ (↓3 VAGUE)",
+                "(↓1 VAGUE) =c 'YES'",
+                "(↓1 WH) =c 'YES'",
             ],
         ))
 

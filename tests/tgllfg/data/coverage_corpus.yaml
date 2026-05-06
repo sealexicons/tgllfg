@@ -3555,8 +3555,19 @@
   notes: xyzqwerty stripped, but residue lacks NOM-NP
 - text: Aso ang isda.
   construction: 'robustness: no verb'
-  expected: fail
-  notes: no V → no rule predictions; no fragments either
+  expected: fragment
+  notes: |
+    NP-NP predicative-N construction (deferred §18). Phase 5i
+    Commit 6 added a wh-N-cleft rule (``S → N[WH=YES]
+    NP[CASE=NOM]``) that predicts N at clause-initial position.
+    The Earley chart now records a completed N state for ``aso``
+    (and the inner NP[CASE=NOM] for ``ang isda``); fragment
+    extraction returns these. Pre-Phase-5i this entry was
+    expected: fail (no rule predicted N clause-initially); the
+    flip to ``expected: fragment`` is a side-effect of the
+    Phase 5i Commit 6 rule's broader N-prediction. The
+    intended-failure semantics is preserved (no complete
+    parse).
 - text: Kumain ng.
   construction: 'robustness: incomplete GEN-NP'
   expected: fail
@@ -3841,4 +3852,91 @@
   expected: parse
 - text: Kumain ang mas maraming bata.
   construction: 'phase5h: mas + Q[VAGUE] NP-modifier in SUBJ position'
+  expected: parse
+
+# === Phase 5i: interrogatives ===========================================
+#
+# Roadmap §12.1 + plan-of-record §7.3. Spans the rule slate from
+# Commits 1-9: wh-word lex (Commit 1), cleft-style PRON wh-fronting
+# (Commit 2), in-situ wh-PRON shells (Commit 3), adverbial-wh
+# fronting (Commit 4), yes/no Q_TYPE lift (Commit 5), wh-N cleft
+# + aling pre-N selector (Commit 6), tag-Q (Commit 7), indirect-Q
+# embedding (Commit 8), kanino / magkano / ilan-WH integration
+# (Commit 9). Each entry pins the f-structure that the new rule
+# produces; baseline-check fails if any later commit perturbs it.
+
+# --- Cleft-style PRON wh-fronting (Commit 2) ----------------
+- text: Sino ang kumain?
+  construction: 'phase5i: cleft-style wh-fronting (NOM PRON)'
+  expected: parse
+- text: Ano ang kinain mo?
+  construction: 'phase5i: cleft-style wh-fronting + AV-OV inner clause'
+  expected: parse
+- text: Sino ang kumain ng kanin?
+  construction: 'phase5i: cleft-style wh-fronting + GEN-obj inner clause'
+  expected: parse
+
+# --- Wh-N cleft via aling pre-N (Commit 6) ------------------
+- text: Aling bata ang kumain?
+  construction: 'phase5i: wh-N cleft via aling pre-N selector'
+  expected: parse
+
+# --- In-situ wh (Commit 3) ----------------------------------
+- text: Kumain ka ng ano?
+  construction: 'phase5i: in-situ wh-PRON in GEN-OBJ slot'
+  expected: parse
+
+# --- Adverbial wh fronting (Commit 4) -----------------------
+- text: Saan ka pumunta?
+  construction: 'phase5i: adverbial wh fronting (saan / LOCATION)'
+  expected: parse
+- text: Kailan ka kumain?
+  construction: 'phase5i: adverbial wh fronting (kailan / TIME)'
+  expected: parse
+- text: Bakit ka kumain?
+  construction: 'phase5i: adverbial wh fronting (bakit / REASON)'
+  expected: parse
+- text: Paano ka kumain?
+  construction: 'phase5i: adverbial wh fronting (paano / MANNER)'
+  expected: parse
+
+# --- Yes/no Q (Commit 5) ------------------------------------
+- text: Kumain ka ba?
+  construction: 'phase5i: yes/no Q + ba 2P clitic + Q_TYPE=YES_NO'
+  expected: parse
+- text: Kumain ka ba ng kanin?
+  construction: 'phase5i: yes/no Q + ba clitic + GEN-obj'
+  expected: parse
+- text: Maganda ba ang bata?
+  construction: 'phase5i: yes/no Q over predicative-adj clause'
+  expected: parse
+
+# --- Tag question di ba? (Commit 7) -------------------------
+- text: Maganda ang bata, di ba?
+  construction: 'phase5i: tag-Q (di ba) over predicative-adj'
+  expected: parse
+- text: Hindi ba maganda ang bata?
+  construction: 'phase5i: yes/no Q + Hindi-negation (Hindi ba ...)'
+  expected: parse
+
+# --- Indirect-Q embedding via kung (Commit 8) ---------------
+- text: Hindi ko alam kung sino ang kumain.
+  construction: 'phase5i: indirect-Q via kung + KNOW-class predicate alam + outer negation'
+  expected: parse
+- text: Alam ko kung saan pumunta si Maria.
+  construction: 'phase5i: indirect-Q with adverbial-wh inside (saan)'
+  expected: parse
+
+# --- Predicative-Q + DAT-pivot (Commit 9) -------------------
+- text: Magkano ang isda?
+  construction: 'phase5i: predicative-Q cleft (magkano / amount-wh)'
+  expected: parse
+- text: Ilan ang aklat?
+  construction: 'phase5i: predicative-Q cleft (ilan WH-polysemy / count-wh)'
+  expected: parse
+- text: Kanino ang aklat?
+  construction: 'phase5i: DAT-pivot cleft (kanino / possessor wh)'
+  expected: parse
+- text: Kanino ka pumunta?
+  construction: 'phase5i: DAT-wh fronting (kanino over residue verbal clause)'
   expected: parse

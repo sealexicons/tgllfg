@@ -832,3 +832,296 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 COMP_PHRASE) =c 'KAYSA'",
         ],
     ))
+
+
+    # --- Phase 5i Commit 2: cleft-style wh-fronting (NOM pivot) ---
+    #
+    # ``Sino ang kumain?``           "Who ate?"
+    # ``Sino ang kumain ng kanin?``  "Who ate the rice?"
+    # ``Ano ang kinain mo?``         "What did you eat?"
+    # ``Alin ang kinain mo?``        "Which one did you eat?"
+    #
+    # The wh-PRON is the matrix predicate; the NOM-NP is a
+    # headless relative clause functioning as the matrix SUBJ
+    # (``ang kumain ng kanin`` "the one who ate the rice"). This
+    # is the canonical Tagalog wh-Q analysis per S&O 1972 §6 and
+    # R&B 1986: a verbless cleft with the wh-PRON as the
+    # cleft-pivot.
+    #
+    # F-structure shape:
+    #
+    #   PRED       = 'WH <SUBJ>'
+    #   SUBJ       = the headless-RC NP[CASE=NOM]
+    #   Q_TYPE     = 'WH'                    (matrix flagged as wh-Q)
+    #   WH_LEMMA   = the wh-PRON's LEMMA     (sino / ano / alin)
+    #
+    # Structurally analogous to:
+    #   - Phase 5e Commit 26 ``parang`` comparative (literal-PRED
+    #     predicative with two NP-class daughters)
+    #   - Phase 5f Commit 4 predicative cardinal (``Tatlo ang
+    #     aklat`` — literal-PRED with NOM-NP pivot)
+    #   - Phase 5g Commit 3 predicative-adj (``Maganda ang bata``
+    #     — literal-PRED with PREDICATIVE-feature head)
+    #
+    # The category-pattern ``PRON[WH=YES, CASE=NOM]`` filters the
+    # head to NOM-marked wh-PRONs (sino / ano / alin). Restricting
+    # to NOM keeps DAT-marked ``kanino`` "to whom" out of this
+    # rule — a separate DAT-pivot frame is needed for that
+    # construction (deferred to a Phase 5i follow-on commit if
+    # corpus pressure surfaces).
+    #
+    # Belt-and-braces ``=c`` on the WH feature is the same leak-
+    # closing pattern Phase 5h established (Commits 3 / 5 / 7):
+    # the category-pattern matcher is non-conflict, so a PRON
+    # without WH would absorb the slot via shared-key absence.
+    # ``(↓1 WH) =c 'YES'`` makes the WH constraint binding.
+    #
+    # **Top-1 flip risk** (plan §7.2): Pre-Phase-5i probes showed
+    # the cleft-style sentences (``Sino ang kumain?`` etc.) all
+    # parsing 0 today (the wh-PRONs were _UNK; the strip dropped
+    # them; the residue ``Ang kumain?`` failed to parse without
+    # a verb-headed clause). After Commits 1 + 2, these sentences
+    # parse 1+. The 1251-entry baseline corpus contains zero
+    # wh-questions (audit confirmed at Commit 1), so no baseline
+    # entries flip.
+    rules.append(Rule(
+        "S",
+        ["PRON[WH=YES, CASE=NOM]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↓1 WH) =c 'YES'",
+        ],
+    ))
+
+
+    # --- Phase 5i Commit 6: cleft-style wh-N pivot --------------
+    #
+    # ``Aling bata ang kumain?``       "Which child ate?"
+    # ``Aling aklat ang kinain mo?``   "Which book did you eat?"
+    # ``Aling lalaki ang bumili ng aklat?``
+    #     "Which man bought the book?"
+    #
+    # Sibling to Commit 2's PRON cleft. The wh-pivot here is an
+    # N (``aling bata`` etc.) produced by the Phase 5i Commit 6
+    # wh-Q companion rule in cfg/nominal.py. The N's WH=YES +
+    # WH_LEMMA features (lifted from the Q daughter) gate this
+    # rule. Same Q_TYPE=WH + WH_LEMMA matrix-feature pattern as
+    # the PRON cleft.
+    #
+    # Why N (not NP) at the predicate slot: the Phase 5i Commit 6
+    # wh-Q companion produces an N (matching the Phase 5f Commit
+    # 15 N-level companion's category); there's no NP shell that
+    # admits wh-N standalone (no case marker). The cleft rule
+    # takes N directly. The headless-RC SUBJ is NP[CASE=NOM] as
+    # in the PRON cleft.
+    rules.append(Rule(
+        "S",
+        ["N[WH=YES]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 WH_LEMMA",
+            "(↓1 WH) =c 'YES'",
+        ],
+    ))
+
+
+    # --- Phase 5i Commit 9: predicative-Q cleft + DAT-pivot cleft -
+    #
+    # Two further cleft variants for Q-headed and DAT-marked
+    # wh-pivots, sibling to Commits 2 and 6.
+    #
+    # (a) Predicative-Q cleft for amount / count wh:
+    #
+    #   ``Magkano ang isda?``     "How much is the fish?"
+    #   ``Ilan ang aklat?``       "How many are the books?"
+    #   ``Alin ang aklat?``       (Q reading; PRON reading via Commit 2)
+    #
+    # The cleft-pivot is a Q[WH=YES] head (magkano /
+    # ilan-WH / alin-Q). The headless-RC NP[CASE=NOM] is the SUBJ.
+    # Same f-structure shape as Commit 2's PRON cleft —
+    # PRED=``WH <SUBJ>``, Q_TYPE=WH, WH_LEMMA from the Q's LEMMA
+    # field. The polysemy partner ``ilan`` Q[QUANT=FEW, VAGUE=YES]
+    # (no WH=YES) is excluded by the ``=c 'YES'`` constraint;
+    # non-conflict matching at the chart level is closed by the
+    # f-structure unifier.
+    #
+    # The Q-cleft and the PRON-cleft (Commit 2) cannot both fire
+    # on the same surface, since wh-PRONs and wh-Qs have
+    # disjoint POS in the lex (PRON vs Q). ``alin`` is the only
+    # surface lexed as both (Commit 1 polysemy); it produces two
+    # parses — one via PRON-cleft, one via Q-cleft — which
+    # share the same f-structure (both write
+    # ``PRED='WH <SUBJ>'``, ``WH_LEMMA='alin'``). Tests admit
+    # ``>= 1`` parses for ``Alin ang aklat?``.
+    rules.append(Rule(
+        "S",
+        ["Q[WH=YES]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↓1 WH) =c 'YES'",
+        ],
+    ))
+
+    # (b) DAT-pivot cleft for ``kanino``:
+    #
+    #   ``Kanino ang aklat?``     "Whose is the book?" / "To whom
+    #                              does the book belong?"
+    #
+    # The cleft-pivot is a DAT-marked wh-PRON; the headless-RC
+    # NP[CASE=NOM] is the SUBJ. Same shape as Commit 2's NOM-PRON
+    # cleft, but with CASE=DAT discriminating against sino / ano
+    # / alin (CASE=NOM) — those continue to fire only the
+    # NOM-PRON cleft. The semantics of the DAT cleft is
+    # possessor / recipient wh; we don't lexicalise this in the
+    # PRED template (still ``WH <SUBJ>``) — the WH_LEMMA carries
+    # the lexical content (kanino vs sino).
+    rules.append(Rule(
+        "S",
+        ["PRON[WH=YES, CASE=DAT]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↓1 WH) =c 'YES'",
+            "(↓1 CASE) =c 'DAT'",
+        ],
+    ))
+
+
+    # --- Phase 5i Commit 7: tag question `di ba?` ----------------
+    #
+    # ``Maganda ang bata, di ba?``    "The child is beautiful, isn't it?"
+    # ``Kumain ka, di ba?``           "You ate, didn't you?"
+    # ``Mas matalino siya, di ba?``   "She's more intelligent, isn't she?"
+    #
+    # The sentence-final tag ``di ba`` is the canonical Tagalog
+    # tag-question marker, asking the addressee to confirm the
+    # preceding statement. ``di`` is the colloquial shortening of
+    # ``hindi`` (negation); ``ba`` is the yes/no Q clitic. Together
+    # they form a fixed sentence-final tag with QUESTION + NEG_TAG
+    # semantics.
+    #
+    # Tokenization: the comma is stripped pre-parse (orthographic
+    # terminator family). The chart sees ``S + di + ba``. ``ba``'s
+    # 2P-clitic placement is a no-op here (it's already at clause-
+    # final position post-comma).
+    #
+    # Single combined rule (rather than two rules `S → S PART[di]`
+    # + Phase 5i Commit 5 ba-Q rule): the two-rule alternative
+    # would either chain (creating Q_TYPE clash on the matrix when
+    # both fire) or each fire independently (leaving `di` orphaned
+    # if only the ba rule matched). Combining both clitics into
+    # one rule with Q_TYPE=TAG cleanly subsumes the construction.
+    #
+    # The yes/no Q-rule in cfg/clitic.py would otherwise match
+    # `ba` here and write Q_TYPE=YES_NO; the matrix-Q_TYPE clash
+    # rejects that parse (TAG ≠ YES_NO at the unifier), leaving
+    # only the tag-Q reading as the surviving parse.
+    rules.append(Rule(
+        "S",
+        [
+            "S",
+            "PART[NEG_TAG=YES]",
+            "PART[QUESTION=YES, CLITIC_CLASS=2P]",
+        ],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ ADJ)",
+            "(↑ Q_TYPE) = 'TAG'",
+            "(↓2 NEG_TAG) =c 'YES'",
+            "(↓3 QUESTION) =c 'YES'",
+        ],
+    ))
+
+
+    # --- Phase 5i Commit 4: adverbial wh fronting ----------------
+    #
+    # ``Saan ka pumunta?``    "Where did you go?"
+    # ``Kailan ka kumain?``   "When did you eat?"
+    # ``Bakit ka kumain?``    "Why did you eat?"
+    # ``Paano ka kumain?``    "How did you eat?"
+    #
+    # Sentence-initial wh-ADV (saan / kailan / bakit / paano /
+    # papaano) marks the matrix as a wh-Q whose interrogated
+    # constituent is an adjunct of the underlying clause. The
+    # wh-ADV adjoins to the matrix S's ADJUNCT set; the inner S
+    # is the residue verbal clause.
+    #
+    # Parallels Phase 5g Commit 5 manner-adverb (``mabilis na
+    # tumakbo``) — same shape ``S → ADV-like S`` with the ADV
+    # lifted into ADJUNCT — but without the linker daughter (wh-
+    # ADVs are sentence-initial particles, not linker-bound
+    # modifiers).
+    #
+    # F-structure shape:
+    #
+    #   PRED         = inner S's PRED (verbal predicate)
+    #   SUBJ / OBJ   = inner S's GFs
+    #   Q_TYPE       = 'WH'                 (matrix flagged as wh-Q)
+    #   WH_LEMMA     = the wh-ADV's LEMMA   (saan / kailan / ...)
+    #   ADJUNCT      ⊇ {<wh-ADV f-struct with ADV_TYPE>}
+    #
+    # The wh-ADV's ``ADV_TYPE`` (LOCATION / TIME / REASON /
+    # MANNER) percolates onto the ADJUNCT member's f-structure
+    # via the lex feats; consumers (ranker / classifier) can
+    # read it off the adjunct without traversing back to the
+    # c-tree.
+    #
+    # **Top-1 flip-risk closure**: pre-Phase-5i probes (Commit 1
+    # plan-of-record §3) showed ``Saan ka pumunta?`` parsing
+    # today (1 parse — silently dropping ``saan`` and parsing
+    # the residue ``Pumunta ka.``). After Commit 1's lex add,
+    # the strip stopped firing and the sentence returned 0
+    # parses. This commit's rule restores the parse path with
+    # the proper wh-Q matrix. Audit confirmed: zero baseline
+    # corpus entries contain any wh-ADV (Commit 1 audit), so no
+    # baseline flips.
+    rules.append(Rule(
+        "S",
+        ["ADV[WH=YES]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↓1 WH) =c 'YES'",
+        ],
+    ))
+
+    # Phase 5i Commit 9: DAT-wh fronting (sibling to Commit 4).
+    #
+    #   ``Kanino ka pumunta?``        "To whom did you go?"
+    #   ``Kanino ka bumili ng aklat?`` "From whom did you buy a book?"
+    #
+    # ``kanino`` is a DAT-marked wh-PRON; when sentence-initial
+    # over a residue clause it's an ADJUNCT wh-fronting (mirror of
+    # adverbial-wh fronting). The matrix carries Q_TYPE=WH +
+    # WH_LEMMA=kanino; the wh-PRON joins the matrix ADJUNCT set.
+    #
+    # No conflict with the Commit 9 DAT-pivot cleft above: the
+    # cleft requires ``NP[CASE=NOM]`` as the second daughter (the
+    # headless RC), and ``ang aklat`` (a bare NP) does not parse
+    # as ``S`` — verified pre-state. The fronting rule fires only
+    # when the residue is a verb-headed clause with its own SUBJ
+    # (e.g., ``ka pumunta``).
+    rules.append(Rule(
+        "S",
+        ["PRON[WH=YES, CASE=DAT]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↓1 WH) =c 'YES'",
+            "(↓1 CASE) =c 'DAT'",
+        ],
+    ))

@@ -162,10 +162,49 @@ def register_rules(rules: list[Rule]) -> None:
     # enclitics fire here. (Tightened 2026-05-04 alongside the
     # digit tokenization closing deferral, which exposed the
     # latent looseness via the new ``.`` PART.)
+    # Phase 5i Commit 5: yes/no Q_TYPE lift for ``ba``.
+    #
+    # Two parallel absorption rules with disjoint pre-conditions:
+    #
+    # * Rule A (the original Phase 4 §7.3): generic 2P clitics
+    #   without QUESTION (na ALREADY, pa STILL, daw REPORT, rin ALSO,
+    #   lang, nga, pala, kasi, ...). Constraining ``¬ (↓2 QUESTION)``
+    #   excludes ``ba``.
+    # * Rule B (Phase 5i Commit 5): ``ba`` (PART[QUESTION=true,
+    #   Q_TYPE=YES_NO]) — same shape as Rule A plus a literal
+    #   ``(↑ Q_TYPE) = 'YES_NO'`` lift onto the matrix S.
+    #
+    # The two-rule split is cleaner than a single rule with a
+    # defining equation ``(↑ Q_TYPE) = ↓2 Q_TYPE``: the equation
+    # creates an empty FStructure on the matrix when ↓2 lacks
+    # Q_TYPE, perturbing the f-structure rendering for every
+    # non-ba 2P-clitic absorption (baseline test failures across
+    # ~20 corpus entries).
+    #
+    # The lifted matrix-level Q_TYPE pairs with Phase 5i Commits 2
+    # / 4 wh-fronting (which set ``Q_TYPE: WH``) so downstream
+    # consumers have a uniform clausal-Q-type marker (YES_NO /
+    # WH / TAG).
     rules.append(Rule(
         "S",
         ["S", "PART[CLITIC_CLASS=2P]"],
-        ["(↑) = ↓1", "↓2 ∈ (↑ ADJ)", "(↓2 CLITIC_CLASS) =c '2P'"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJ)",
+            "(↓2 CLITIC_CLASS) =c '2P'",
+            "¬ (↓2 QUESTION)",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["S", "PART[CLITIC_CLASS=2P, QUESTION=YES]"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJ)",
+            "(↓2 CLITIC_CLASS) =c '2P'",
+            "(↓2 QUESTION) =c 'YES'",
+            "(↑ Q_TYPE) = 'YES_NO'",
+        ],
     ))
 
 

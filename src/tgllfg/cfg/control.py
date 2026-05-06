@@ -375,6 +375,62 @@ def register_rules(rules: list[Rule]) -> None:
             ),
         ))
 
+    # Phase 5i Commit 8: indirect-question embedding under KNOW-
+    # class predicates (``alam``). The matrix predicate takes a
+    # CLOSED sentential complement (COMP), not an open XCOMP — the
+    # embedded clause has its own SUBJ (the wh-pivot of the
+    # indirect-Q), so there's no SUBJ-control / linker. The
+    # complement itself is an ``S_INTERROG_COMP`` non-terminal:
+    # the ``kung`` complementizer plus an embedded wh-Q clause.
+    # Roadmap §12.1 / plan-of-record §5.7.
+    #
+    # Analytical note: the plan-of-record §5.7 used ``XCOMP`` in
+    # the LHS / equations loosely (re-using the open-complement
+    # name). The actual LFG slot is ``COMP`` because the embedded
+    # clause is not subject-controlled — a closed complement, with
+    # its own SUBJ. PRED template ``KNOW <SUBJ, COMP>`` reflects
+    # this. Documented in docs/analysis-choices.md "Phase 5i §5.7".
+    #
+    # The S_INTERROG_COMP non-terminal lifts its inner S
+    # f-structure (``(↑) = ↓2``) and adds ``COMP_TYPE=INTERROG``;
+    # the inner S must already carry ``Q_TYPE=WH`` (from a Phase
+    # 5i Commit 2 / 4 / 6 wh-fronting / wh-N-cleft rule). The
+    # belt-and-braces ``=c`` constraints lock down both the
+    # complementizer's COMP_TYPE and the inner clause's Q_TYPE,
+    # closing any non-conflict-matcher leaks.
+    rules.append(Rule(
+        "S_INTERROG_COMP",
+        ["PART[COMP_TYPE=INTERROG]", "S[Q_TYPE=WH]"],
+        [
+            "(↑) = ↓2",
+            "(↑ COMP_TYPE) = 'INTERROG'",
+            "(↓1 COMP_TYPE) =c 'INTERROG'",
+            "(↓2 Q_TYPE) =c 'WH'",
+        ],
+    ))
+    # Matrix wrap: ``Alam ko + S_INTERROG_COMP``. The GEN-NP
+    # experiencer is matrix SUBJ (the same NOM→SUBJ deviation as
+    # PSYCH); the indirect-Q clause is matrix COMP. No linker
+    # between matrix and complement — ``alam`` is a stative
+    # predicate and ``kung`` is the complementizer. The
+    # ``CTRL_CLASS=KNOW`` filter keeps gusto / ayaw / kaya from
+    # cross-firing into this rule (their CTRL_CLASS=PSYCH is
+    # distinct).
+    rules.append(Rule(
+        "S",
+        [
+            "V[CTRL_CLASS=KNOW]",
+            "NP[CASE=GEN]",
+            "S_INTERROG_COMP",
+        ],
+        _eqs(
+            "(↑ SUBJ) = ↓2",
+            "(↑ COMP) = ↓3",
+            "(↓1 CTRL_CLASS) =c 'KNOW'",
+            "(↓3 COMP_TYPE) =c 'INTERROG'",
+        ),
+    ))
+
     # **Intransitive control** (payag): NOM-marked agent is
     # matrix SUBJ; AV verb. PRED ``AGREE <SUBJ, XCOMP>``.
     for link in ("NA", "NG"):

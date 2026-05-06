@@ -848,7 +848,108 @@ predicative-N clause (``Mas maraming aklat ako.`` "I have more
 books"); DAT-standard equative variant (``Kasingganda kay Maria
 si Ana``).
 
-### robustness (4 sentences, 0%)
+### phase5i — interrogatives (20 sentences, 100%)
+
+Phase 5i (roadmap §12.1). Twenty fixtures pinning the rule
+slate from Commits 1-9 — every Tagalog question construction
+covered by the phase: cleft, in-situ, adverbial fronting, yes/no,
+tag, indirect, predicative-Q, DAT-pivot, DAT-fronting.
+
+* **Wh-word lex inventory** (Commit 1) — pronominal wh
+  (``sino`` / ``ano`` / ``kanino`` / ``alin``) in
+  ``data/tgl/pronouns.yaml`` with case feats; adverbial wh
+  (``saan`` / ``kailan`` / ``bakit`` / ``paano`` / ``papaano``)
+  in ``particles.yaml`` with ADV_TYPE; quantitative
+  (``magkano``) and selectional (``aling``) Q-WH heads;
+  ``ilan`` polysemy (vague Q[QUANT=FEW] vs WH Q[QUANT=HOW_MANY]);
+  ``kung`` complementizer (COMP_TYPE=INTERROG); ``di`` tag
+  particle (NEG_TAG=YES); ``ba`` QUESTION feature converted
+  from boolean to string ``"YES"`` for category-pattern
+  matching.
+* **Cleft-style PRON wh-fronting** (Commit 2) —
+  ``S → PRON[WH=YES, CASE=NOM] NP[CASE=NOM]``. ``Sino ang
+  kumain?`` parses as a verbless cleft with the wh-PRON as
+  the matrix predicate (PRED=``WH <SUBJ>``, Q_TYPE=WH,
+  WH_LEMMA=sino). The NOM-NP is a headless RC. Mirrors the
+  Phase 5e parang and Phase 5f predicative-cardinal
+  literal-PRED conventions.
+* **In-situ wh-PRON shells** (Commit 3) —
+  ``NP[CASE=GEN] → ADP[CASE=GEN] PRON[WH=YES]`` and the DAT
+  variant. ``Kumain ka ng ano?`` "You ate what?" — the wh-PRON
+  fills the OBJ slot via the existing NP shells, with no
+  matrix Q_TYPE lift (consumers detect Q-ness by f-structure
+  inspection).
+* **Adverbial-wh fronting** (Commit 4) — ``S → ADV[WH=YES] S``.
+  ``Saan ka pumunta?`` "Where did you go?" — the wh-ADV
+  adjoins to the matrix S's ADJUNCT set with the
+  ADV_TYPE-derived ROLE (LOCATION / TIME / REASON / MANNER);
+  the inner S is the residue verbal clause.
+* **Yes/no Q matrix lift** (Commit 5) — split the existing
+  Phase 4 §7.3 2P-clitic absorption rule into two: a generic
+  rule (with ``¬ (↓2 QUESTION)`` constraint) and a ba-only
+  rule that lifts ``Q_TYPE='YES_NO'`` onto the matrix. The
+  split avoids the defining-equation pollution that
+  ``(↑ Q_TYPE) = ↓2 Q_TYPE`` would create on non-ba clitic
+  absorptions.
+* **Aling pre-N selector + wh-N cleft** (Commit 6) — drop
+  standalone ``aling`` Q lex entry so ``split_linker_ng``
+  splits ``aling`` → ``alin`` + ``-ng``; add wh-Q + N
+  companion rule (``N → Q[VAGUE=YES, WH=YES] PART[LINK] N``)
+  lifting WH=YES onto the matrix N; add wh-N cleft
+  (``S → N[WH=YES] NP[CASE=NOM]``). ``Aling bata ang kumain?``
+  parses as a wh-N-headed cleft with WH_LEMMA=alin.
+* **Tag question ``di ba?``** (Commit 7) — single combined
+  rule ``S → S PART[NEG_TAG=YES] PART[QUESTION=YES,
+  CLITIC_CLASS=2P]``. ``Maganda ang bata, di ba?`` parses
+  with Q_TYPE=TAG (mutually exclusive with the matrix-Q_TYPE
+  values WH and YES_NO).
+* **Indirect-Q embedding** (Commit 8) — ``alam`` "know" added
+  as CTRL_CLASS=KNOW pseudo-verb (parallel to gusto/ayaw/kaya's
+  PSYCH but with closed COMP not open XCOMP).
+  ``S_INTERROG_COMP → PART[COMP_TYPE=INTERROG] S[Q_TYPE=WH]``;
+  matrix wrap ``S → V[CTRL_CLASS=KNOW] NP[CASE=GEN]
+  S_INTERROG_COMP``. ``Hindi ko alam kung sino ang kumain.``
+  parses with PRED=``KNOW <SUBJ, COMP>``, COMP.Q_TYPE=WH.
+* **kanino / magkano / ilan-WH integration** (Commit 9) —
+  predicative-Q cleft (``S → Q[WH=YES] NP[CASE=NOM]``) for
+  amount / count wh-Qs; DAT-pivot cleft (``S → PRON[WH=YES,
+  CASE=DAT] NP[CASE=NOM]``) for kanino "whose"; DAT-wh
+  fronting (``S → PRON[WH=YES, CASE=DAT] S``) for kanino over
+  a residue clause. ``Magkano ang isda?`` / ``Ilan ang aklat?``
+  / ``Kanino ang aklat?`` / ``Kanino ka pumunta?`` all parse
+  with Q_TYPE=WH + corresponding WH_LEMMA.
+
+The rule additions live in ``cfg/clause.py`` (most of the new
+clausal rules), ``cfg/control.py`` (S_INTERROG_COMP non-terminal
++ matrix wrap for indirect-Q), ``cfg/clitic.py`` (split 2P
+absorption), and ``cfg/nominal.py`` (wh-Q + N companion + DAT
+in-situ shells). Lex additions in ``data/tgl/pronouns.yaml``,
+``data/tgl/particles.yaml``, and a new ``alam`` lex entry in
+``data/tgl/particles.yaml`` + corresponding ``LexicalEntry`` in
+``src/tgllfg/core/lexicon.py``.
+
+Q_TYPE matrix taxonomy — three mutually-exclusive matrix flag
+values:
+
+* ``WH`` — from cleft (PRON or N), adverbial fronting, DAT
+  cleft, predicative-Q cleft.
+* ``YES_NO`` — from the ba-only 2P-clitic absorption split-rule.
+* ``TAG`` — from the sentence-final ``di ba`` tag rule.
+
+Out of scope for Phase 5i (deferred — see ``§18``):
+alternative-Q (``Tao ka o multo?``); wh-as-indefinites
+(``walang ano man`` "nothing"); long-distance wh-extraction;
+``paano`` as prefix (``paanong + V``); reduplicated wh-plural
+(``ano-ano`` / ``kanino-kanino``); in-situ Q_TYPE matrix lift;
+``sa kanino`` DAT-marker cleft; non-wh predicative-Q
+(``Marami ang aklat.``); bare-form colloquial indirect-Q
+(``kung sino kumain`` without ``ang``); yes/no indirect-Q
+(``kung kumain ang aso``); other KNOW-class predicates
+(``akala`` / ``isip`` / ``naririnig``); declarative-COMP
+factive embedding (``Alam kong kumain ang aso``); ay-inversion
+of wh-Q.
+
+### robustness (4 sentences, partial)
 
 §7.9 robustness — these are **intentional partial / failure
 cases** to verify the fragment-extraction pipeline:
@@ -856,8 +957,13 @@ cases** to verify the fragment-extraction pipeline:
 - `Kumain ng aso ang.` → 1+ fragments (incomplete NP after `ang`).
 - `Kumain xyzqwerty ng aso.` → fragments (garbage word stripped,
   but residue lacks NOM-NP for full parse).
-- `Aso ang isda.` → fail (no V → no rule predictions, no
-  fragments either; expected behaviour).
+- `Aso ang isda.` → fragment (NP-NP predicative-N construction;
+  flipped from `fail` to `fragment` post-Phase-5i Commit 6 wh-N
+  cleft rule, which broadened N-prediction at clause-initial
+  position. The Earley chart records completed N states for
+  ``aso`` (via the bare-N path) and NP[CASE=NOM] for ``ang isda``;
+  fragment extraction returns these. The full predicative-N
+  parse is still deferred — see §18).
 - `Kumain ng.` → fail (`ng` without N → no completed NP states).
 
 ## What's intentionally **not** covered

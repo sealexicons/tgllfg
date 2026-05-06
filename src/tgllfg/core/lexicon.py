@@ -575,6 +575,25 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_PSYCH_CONTROL,
         ),
     ],
+    # Phase 5i Commit 8: indirect-Q embedding ``alam`` "know".
+    # Distinct CTRL_CLASS=KNOW (not PSYCH) so it doesn't cross-fire
+    # on the existing PSYCH wrap rules (linker + S_XCOMP open
+    # complement). PRED ``KNOW <SUBJ, COMP>`` — the complement is a
+    # CLOSED COMP (closed sentential complement with its own SUBJ),
+    # not XCOMP (open / SUBJ-controlled). The same a-structure /
+    # intrinsic-classification skeleton as PSYCH applies (an
+    # experiencer GEN-NP + a propositional complement); only the
+    # syntactic GF mapping (COMP vs XCOMP) and PRED template differ.
+    "alam": [
+        LexicalEntry(
+            lemma="alam",
+            pred="KNOW <SUBJ, COMP>",
+            a_structure=["EXPERIENCER", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "KNOW"},
+            gf_defaults={"EXPERIENCER": "SUBJ", "COMPLEMENT": "COMP"},
+            intrinsic_classification=_PSYCH_CONTROL,
+        ),
+    ],
     # Intransitive control (payag → pumayag, pumapayag, papayag):
     # AV-only, NOM-NP is matrix SUBJ. AGREE <SUBJ, XCOMP>.
     "payag": [
