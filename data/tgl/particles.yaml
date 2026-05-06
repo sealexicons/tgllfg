@@ -1372,3 +1372,59 @@
 - surface: nasa
   pos: PART
   feats: {LOC_EXISTENTIAL: "YES", LEMMA: nasa}
+
+# === Phase 5j Commit 6: modal verbs =======================================
+#
+# Closed-class modal predicates that select an XCOMP complement
+# clause. Like the Phase 4 §7.6 psych predicates and Phase 5i ``alam``,
+# they're uninflected (no voice / aspect / mood — ``*nagdadapat``
+# etc. are ungrammatical), so they live here as ``pos: VERB``
+# entries with the ``MODAL: "YES"`` flag and a fresh
+# ``CTRL_CLASS: MODAL`` to keep the Commit 7 modal control wrap
+# from cross-firing on existing PSYCH / KNOW / RAISING control
+# rules.
+#
+# Surface-variant collapse: ``puwede`` / ``pwede`` / ``puede`` are
+# three orthographic variants of the same lemma (``puwede`` is
+# canonical; ``pwede`` is the most common written form; ``puede``
+# is older / Spanish-influenced spelling). All three indexed
+# under LEMMA=puwede so the Commit 7 control wrap fires uniformly
+# regardless of input spelling.
+#
+# ``kailangan`` polysemy: the modal ("need / must") and a noun
+# ("need", as in ``ang kailangan ko`` "what I need"). Two
+# separate entries — one VERB[MODAL=YES], one NOUN. Single
+# surface, two readings; rule context disambiguates.
+#
+# Subject control: modals take a SUBJ (the actor / experiencer)
+# and an XCOMP whose SUBJ is structure-shared with the matrix
+# SUBJ (``Dapat akong kumain`` "I should eat" — the embedded
+# kumain's SUBJ is the same as the matrix's SUBJ). The Commit 7
+# control wrap implements this with ``(↑ XCOMP SUBJ) = (↑ SUBJ)``.
+#
+# Pre-state: pre-Commit-6 the parser silently dropped these as
+# _UNK; ``Hindi ka dapat kumain.`` parses today as ``EAT <SUBJ>``
+# with POLARITY=NEG (with ``dapat`` silently dropped). After
+# Commit 6 the strip stops firing and the sentence returns 0
+# parses (temporary regression); after Commit 7's modal control
+# wrap fires, the sentence returns 1 parse with PRED=MODAL,
+# POLARITY=NEG, and an embedded XCOMP. This is the documented
+# Phase 5j flip-risk surface (plan-of-record §3 / §6 / §7.2).
+- surface: dapat
+  pos: VERB
+  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: dapat}
+- surface: puwede
+  pos: VERB
+  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: puwede}
+- surface: pwede
+  pos: VERB
+  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: puwede}
+- surface: puede
+  pos: VERB
+  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: puwede}
+- surface: maaari
+  pos: VERB
+  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: maaari}
+- surface: kailangan
+  pos: VERB
+  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: kailangan}

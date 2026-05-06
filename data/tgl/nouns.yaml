@@ -1015,6 +1015,18 @@
   pos: NOUN
   gloss: field / countryside
 
+# Phase 5j Commit 6: ``kailangan`` polysemous noun reading.
+# The modal ("need / must") lives in particles.yaml as a VERB
+# entry; this is the noun reading ("need / requirement", as in
+# ``ang kailangan ko`` "what I need"). Two separate lex entries,
+# one surface, rule context disambiguates — same precedent as
+# Phase 5h ``pareho`` (predicative-ADJ vs Q-floated) and
+# Phase 5i ``alin`` / ``ilan`` (PRON / Q polysemy).
+
+- citation: kailangan
+  pos: NOUN
+  gloss: need / requirement
+
 
 # === Proper-name placeholders ============================================
 # Test-fixture proper names. Alphabetical by citation.
