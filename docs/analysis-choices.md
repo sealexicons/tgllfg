@@ -9078,3 +9078,262 @@ helper was renamed and extended to also admit DET / ADP with
 continue to fall through, preserving the predicative-adj
 clause's ALREADY-clitic reading.
 
+## Phase 5h Commit 1: pinaka- superlative + napaka- intensive cells
+
+**Date:** 2026-05-05. **Status:** active. Two new cells in
+``data/tgl/adj_paradigms.yaml``; no grammar / analyzer code
+changes. Refs: plan §4.3, §6 Commit 1.
+
+The Phase 5g ``AdjectiveCell`` schema accepts both new cells
+unchanged. Each opts into the same ``affix_class: ma_adj`` filter
+as the Phase 5g bare-``ma-`` cell, so every ``ma_adj``-declaring
+ADJ root unlocks both new derivations without per-root edits.
+Operation-order matters for ``pinaka-``: prefix ``ma`` first,
+then prefix ``pinaka``, so the surface is ``pinakamaganda`` (not
+``*pinakaganda``). ``napaka-`` attaches to the bare root directly
+(``napakaganda``).
+
+Per-cell ``feats`` ride into every generated MorphAnalysis via
+the analyzer's existing ``setdefault`` merge: pinaka- surfaces
+carry ``COMP_DEGREE: SUPERLATIVE``; napaka- surfaces carry
+``COMP_DEGREE: INTENSIVE`` plus a redundant ``INTENSIFIER: YES``
+flag for downstream consumers to branch on.
+
+### core/__init__.py circular-import fix (folded in)
+
+The PR #23 refactor's ``core/__init__.py`` re-exported the
+pipeline submodule, creating a circular import on the morph-first
+import path (``from tgllfg.morph import Analyzer`` triggered
+``core/__init__.py`` which loaded pipeline which loaded morph
+which was mid-init). pytest's collection ordering happened to
+avoid it, but bare ``python -c "from tgllfg.morph import X"``
+raised ImportError. Dropping the unused pipeline re-export from
+``core/__init__.py`` closes the cycle without changing any caller
+(the rewrite in PR #23 produced explicit
+``from tgllfg.core.pipeline import parse_text`` everywhere).
+
+## Phase 5h Commit 2: kasing-/sing- equative cells + bare-citation indexer + equative-identity lex entries
+
+**Date:** 2026-05-05. **Status:** active. Three pieces, all
+additive. Refs: plan §4.2, §4.3, §6 Commit 2.
+
+Two productive cells (``kasing-``, ``sing-`` equative) plus
+three lexicalised bare-surface ADJ entries (``pareho``,
+``magkapareho``, ``magkaiba``) require an analyzer split: ADJ
+roots with non-empty ``affix_class`` go through the existing
+``_index_adjective_paradigms`` (productive cells only); roots
+with ``affix_class: []`` go through a new
+``_index_adjective_bare_root`` that indexes the citation
+directly with the root's per-root ``feats``.
+
+### Why a Python-side split rather than a YAML "bare cell"
+
+The legacy ``_affix_class_match`` treats an empty cell's
+``affix_class`` as a wildcard ("fires on any root" — preserved
+for the pre-affix-class-existed AV/OV/DV/IV paradigms). A YAML
+"bare cell" with ``affix_class: ""`` would inappropriately fire
+on every root, including the productive ``ma_adj`` family,
+generating bare-root surfaces for ``ganda`` / ``talino`` etc. and
+breaking the Phase 5g lemma policy (bare roots NOT indexed as
+ADJ). The Python-side dispatch on ``r.affix_class`` keeps the
+two paths clean.
+
+### `pareho` polysemy
+
+``pareho`` already had a ``Q[QUANT=BOTH, DUAL=YES]`` analysis in
+``particles.yaml`` (Phase 5f Commit 23 floated-quantifier reading).
+The new ``adjectives.yaml`` entry adds an
+``ADJ[PREDICATIVE=YES, EQUATIVE=YES, COMP_DEGREE=EQUATIVE]``
+analysis. The analyzer indexes both readings against the same
+surface; rule context disambiguates: float-Q
+(``Kumain sila pareho``) fires the Phase 4 §7.8 ``S → S Q``
+rule; predicative-equative (``Pareho ang aklat``) fires the
+Phase 5g predicative-adj clause rule. Established polysemy
+pattern (Phase 5f Commit 17 ``bababa`` / ``hihigit`` precedent —
+same surface, different POS, rule context disambiguates).
+
+## Phase 5h Commit 3: comparative `mas` PART + ADJ-wrapper rule
+
+**Date:** 2026-05-05. **Status:** active. New PART in
+``particles.yaml``; new wrapper rule in ``cfg/nominal.py``;
+tightening of the Phase 4 hindi-negation rule. Refs: plan §4.1,
+§5.1, §6 Commit 3.
+
+The wrapper ``ADJ → PART[COMP_DEGREE=COMPARATIVE] ADJ`` fires
+``mas matalino`` → comparative-ADJ. The wrapped ADJ is itself an
+ADJ, so the Phase 5g predicative-adj clause rule and NP-internal
+modifier rules consume it unchanged — no new clausal / NP rules.
+
+### Unification-clash semantics
+
+``(↑) = ↓2`` shares the inner ADJ's f-structure with the
+wrapped output, then ``(↑ COMP_DEGREE) = 'COMPARATIVE'`` writes
+COMPARATIVE. If the inner ADJ already carries SUPERLATIVE
+(``pinakamaganda``) / INTENSIVE (``napakaganda``) / EQUATIVE
+(``kasingganda``) / CONTRASTIVE (``magkaiba``), unification
+fails — ``*mas pinakamaganda`` etc. are correctly rejected.
+
+### hindi-negation rule tightening
+
+The Phase 4 ``S → PART[POLARITY=NEG] S`` rule's category-pattern
+filter ``PART[POLARITY=NEG]`` matched any PART without POLARITY
+via non-conflict matching. Pre-state probes showed
+``Halos kumain ang bata`` and ``Tuwing kumain ang bata`` parsing
+with bogus ``POLARITY: NEG``. Adding ``mas`` (PART without
+POLARITY) would have created the same leak for
+``Mas matalino siya``. Fix: add the explicit
+``(↓1 POLARITY) =c 'NEG'`` constraining equation, matching the
+Phase 5g Commit 3 belt-and-braces ``=c`` pattern. Closes a
+latent bug; no test had been asserting on the phantom NEG
+parses.
+
+## Phase 5h Commit 4: kaysa comparison-complement
+
+**Date:** 2026-05-05. **Status:** active. New PART
+(``kaysa``) and new clausal rule. Refs: plan §4.1, §5.5, §6
+Commit 4.
+
+``S → S PART[COMP_PHRASE=KAYSA] NP[CASE=DAT]`` adjoins the
+kaysa-headed phrase to the matrix S's ADJUNCT set with
+``ROLE: STANDARD``. ``COMP_PHRASE: KAYSA`` mirrors the Phase 5f
+Commit 17 numeric-comparator family (``higit`` / ``kulang`` /
+``bababa`` / ``hihigit`` all carry ``COMP_PHRASE`` tags).
+
+### Permissive on inner-S COMP_DEGREE
+
+The rule does NOT constrain the inner S to carry
+``COMP_DEGREE: COMPARATIVE``. Tagalog usage typically pairs
+``kaysa`` with ``mas``, but bare comparisons
+(``Matalino si Maria kaysa kay Juan``) are attested colloquially.
+Tightening would need ``COMP_DEGREE`` lifted onto the matrix S
+by the Phase 5g predicative-adj clause rule (which currently
+keeps it on the ADJ daughter); deferred.
+
+## Phase 5h Commit 5: particle intensifiers + wrappers + na-disambiguator
+
+**Date:** 2026-05-05. **Status:** active. Five new PARTs, three
+new wrapper rules, and a disambiguator extension. Refs: plan
+§4.1, §5.3-5.4, §6 Commit 5.
+
+Five intensifier PARTs each carry ``INTENSIFIER: YES`` plus a
+per-particle ``INTENSITY`` tag (sobra / masyado: EXCESSIVE;
+medyo: MODERATE; talaga: EMPHATIC; lubos: COMPLETE). Three
+wrapper rules in ``cfg/nominal.py``:
+
+```
+ADJ → PART[INTENSIFIER=YES] PART[LINK=NA] ADJ
+ADJ → PART[INTENSIFIER=YES] PART[LINK=NG] ADJ
+ADJ → PART[INTENSITY=MODERATE] ADJ      (medyo zero-linker)
+```
+
+Belt-and-braces ``=c`` constraints on both PART daughters close
+the same kind of non-conflict-matcher leak Commits 3 closed:
+without ``(↓2 LINK) =c '<link>'``, ``mas`` would absorb the
+``PART[LINK=NA]`` slot and let ``Lubos na mas matalino siya``
+parse spuriously.
+
+### Disambiguator extension
+
+The Phase 5g helper
+``_adj_na_right_context_is_linker_target`` is renamed
+``_na_right_context_is_linker_target`` (right-context-only check;
+left-context supplied per caller). A new branch in
+``disambiguate_homophone_clitics`` recognises
+``PART[INTENSIFIER=YES] + na + ADJ`` as a linker context.
+Without this, ``reorder_clitics`` would hoist ``na`` to
+clause-final ALREADY-clitic position and break the wrapper-
+rule's adjacent PART-PART-ADJ pattern. Vowel-final intensifiers
+take the bound ``-ng`` (no clitic homophone), so the branch
+matters mainly for consonant-final ``lubos``.
+
+### Double-intensive permitted
+
+``Sobrang napakaganda ang bahay`` writes INTENSIVE onto an
+already-INTENSIVE inner ADJ. The unifier accepts identity writes,
+so the parse succeeds. Linguistically attested as colloquial
+"extra emphasis"; no rule additions needed to support or block.
+
+## Phase 5h Commit 6: equative two-NP standard frames
+
+**Date:** 2026-05-06. **Status:** active. Three new clausal
+rules. Refs: plan §5.6, §6 Commit 6.
+
+Three rule variants for the equative ``kasing-X`` standard
+construction: NOM+GEN, GEN+NOM, NOM+NOM. The comparee is the
+NOM-NP (matrix SUBJ); the standard rides on ADJUNCT with
+``ROLE: EQUATIVE_STANDARD`` (distinct from Commit 4's
+``ROLE: STANDARD`` — the two ROLE values reflect analytically
+separate constructions: kaysa is the oblique standard for graded
+comparison, the equative standard sits in the predicate's
+argument position).
+
+The constraining ``(↓1 COMP_DEGREE) =c 'EQUATIVE'`` restricts
+these rules to equative-marked ADJ heads (``kasing-`` / ``sing-``
++ ``pareho`` / ``magkapareho``). ``magkaiba`` carries
+``COMP_DEGREE: CONTRASTIVE`` (not EQUATIVE), so the two-NP
+frames don't fire on it — only the single-NP predicative form
+parses for magkaiba.
+
+### Why three rules rather than one
+
+Tagalog freely permits NOM-then-GEN and GEN-then-NOM order. Rule
+duplication is preferred over a single permissive rule because
+the SUBJ ↔ NP mapping is order-dependent (the comparee is the
+NOM-NP regardless of position; the standard is whichever
+daughter is non-comparee). DAT-standard variant
+(``kasing-X kay Y ang Z``) is marginal in modern Tagalog and is
+deferred.
+
+### Structural ambiguity for `Pareho ang aklat ko`
+
+The new NOM+GEN rule introduces a structural ambiguity for
+sentences like ``Pareho ang aklat ko.``: GEN-clitic ``ko`` can
+be analysed either as an embedded possessor on the SUBJ ang-NP
+(Phase 5g predicative-adj reading) or as a separate STANDARD
+adjunct (equative-frame reading). Both readings produce the
+same matrix-level PRED / ADJ_LEMMA / PREDICATIVE; the f-structure
+differs only in whether ADJUNCT carries an EQUATIVE_STANDARD
+member. Commit 2's test assertion was relaxed from ``== 1`` to
+``>= 1``.
+
+## Phase 5h Commit 7: comparative-Q wrapper rule
+
+**Date:** 2026-05-06. **Status:** active. New rule in
+``cfg/nominal.py``; sibling to the Commit 3 ADJ-wrapper. Refs:
+plan §5.2, §6 Commit 7.
+
+``Q → PART[COMP_DEGREE=COMPARATIVE] Q[VAGUE=YES]``. The wrapped
+Q carries COMPARATIVE on its f-structure (via ``(↑) = ↓2``
+share-and-write); the existing Phase 5f Commit 15 vague-Q
+NP-modifier rule consumes the wrapped Q unchanged. ``mas
+maraming aklat`` parses as a Q-modified NP with a
+COMP_DEGREE-marked Q head.
+
+### Why a sibling rule rather than overloading the ADJ-wrapper
+
+The Q and ADJ wrappers have different downstream consumers — Q
+feeds the NP-modifier and (deferred) predicative-Q rule; ADJ
+feeds the predicative-adj clause rule and the NP-internal
+ADJ-modifier rules. Modest rule duplication is preferable to
+category-pattern overloading.
+
+### Cardinal exclusion
+
+``Q[VAGUE=YES]`` excludes cardinals (``CARDINAL: YES``), so
+``*mas tatlong aklat`` is correctly ungrammatical. Cardinal
+comparison goes through the Phase 5f Commit 17 ``COMP_PHRASE``
+family (``higit sa N`` / ``kulang sa N``).
+
+## Phase 5h Commit 8: negation × Phase 5h composition tests
+
+**Date:** 2026-05-06. **Status:** active. Tests-only. Refs:
+plan §6 Commit 8.
+
+The Phase 4 hindi-negation rule (tightened in Commit 3) wraps
+every Phase 5h matrix-S output unchanged — each construction's
+matrix output is a well-formed S. The commit's test file fills
+coverage gaps left by per-Commit test files (notably:
+hindi+pareho/magkaiba/magkapareho, hindi+pinaka-/napaka-, and
+the canonical ``Hindi masyadong X`` "not very" construction
+called out in plan §1).
+

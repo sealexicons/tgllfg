@@ -773,6 +773,81 @@ The remaining three R&G simples need Phase 5j existentials
 ``tuktok``, ``bukid``) to land. The combined sentence becomes
 parsable end-to-end at the close of Phase 5j.
 
+### phase5h — comparison and degree (22 sentences, 100%)
+
+Phase 5h (roadmap §12.1). Twenty-two fixtures pinning the rule
+slate from Commits 1-7:
+
+* **Productive degree-marking morphology** (Commits 1-2) —
+  ``pinaka-`` superlative, ``napaka-`` intensive, ``kasing-`` /
+  ``sing-`` equative cells in ``data/tgl/adj_paradigms.yaml``.
+  All four cells share the Phase 5g ``ma_adj`` opt-in, so every
+  Phase 5g ADJ root unlocks four new derivations:
+  ``pinakamaganda`` "most beautiful", ``napakaganda`` "very
+  beautiful", ``kasingganda`` / ``singganda`` "as beautiful (as)".
+* **Bare-citation indexer** (Commit 2) — analyzer extension for
+  non-productive ADJ roots (``affix_class: []``). Three new
+  lex entries: ``pareho`` "same/alike" (polysemous with the
+  Phase 5f Commit 23 ``Q[QUANT=BOTH, DUAL=YES]`` floated-Q
+  reading), ``magkapareho`` "alike" (formal), ``magkaiba``
+  "different" (contrastive).
+* **Comparative-ADJ wrapper** (Commit 3) —
+  ``ADJ → PART[COMP_DEGREE=COMPARATIVE] ADJ``. ``Mas matalino
+  siya.`` parses via the wrapped ADJ + the Phase 5g predicative-
+  adj rule. Unification clash on already-degree-marked ADJs
+  rejects ``*mas pinakamaganda``. Closes the latent
+  hindi-negation rule leak (``halos`` / ``tuwing`` / ``mas`` no
+  longer absorb the ``PART[POLARITY=NEG]`` slot via non-conflict
+  matching).
+* **Comparison-complement** (Commit 4) —
+  ``S → S PART[COMP_PHRASE=KAYSA] NP[CASE=DAT]``. ``Mas matalino
+  siya kaysa kay Maria.`` adjoins the kaysa-NP to the matrix's
+  ADJUNCT set with ``ROLE: STANDARD``.
+* **Particle-intensifier wrappers** (Commit 5) —
+  ``ADJ → PART[INTENSIFIER=YES] PART[LINK=NA|NG] ADJ`` plus a
+  zero-linker variant for ``medyo``. Five new PARTs: ``sobra``
+  (EXCESSIVE), ``medyo`` (MODERATE), ``talaga`` (EMPHATIC),
+  ``lubos`` (COMPLETE), ``masyado`` (EXCESSIVE). Disambiguator
+  extension keeps ``na`` as the linker after PART[INTENSIFIER=YES]
+  rather than letting reorder_clitics hoist it.
+* **Equative two-NP frames** (Commit 6) — three S-level rules
+  for ``kasing-X NP[NOM] NP[GEN]`` / ``kasing-X NP[GEN]
+  NP[NOM]`` / ``kasing-X NP[NOM] NP[NOM]``. Standard rides on
+  ADJUNCT with ``ROLE: EQUATIVE_STANDARD`` (distinct from
+  Commit 4's ``ROLE: STANDARD``).
+* **Comparative-Q wrapper** (Commit 7) —
+  ``Q → PART[COMP_DEGREE=COMPARATIVE] Q[VAGUE=YES]``. ``mas
+  maraming aklat`` rides into the Phase 5f Commit 15 vague-Q
+  NP-modifier rule. Cardinals (``CARDINAL: YES``) excluded by
+  the rule's ``Q[VAGUE=YES]`` filter — ``*mas tatlong aklat`` is
+  correctly ungrammatical.
+* **Composition with negation** (Commit 8) —
+  ``Hindi masyadong mainit ang tubig.`` "not very hot" is the
+  canonical Tagalog construction. The Phase 4 hindi-negation rule
+  (tightened in Commit 3 with ``(↓1 POLARITY) =c 'NEG'``) wraps
+  every Phase 5h S-output unchanged.
+
+The rule additions live in ``cfg/nominal.py`` (ADJ / Q wrappers,
+intensifier variants), ``cfg/clause.py`` (kaysa, equative
+two-NP), and ``cfg/negation.py`` (the constraint tightening on
+the hindi rule). Disambiguator extension lives in
+``clitics/placement.py``: helper renamed
+``_adj_na_right_context_is_linker_target`` →
+``_na_right_context_is_linker_target`` (right-context-only
+check; left-context constraint supplied per caller); new branch
+admits ``PART[INTENSIFIER=YES] + na + ADJ``.
+
+Out of scope for Phase 5h (deferred — see ``§18``):
+ay-inversion of comparative ADJ (``Ang bata ay mas matalino``);
+reduplicated intensives (``maganda-ganda`` "rather beautiful");
+archaic ``kasing-`` adjective-stem reduplication
+(``kasing-da-dali``); ``pinaka-`` on Q heads (``pinakamadalas``
+"most often"); formal ``nang higit`` comparison; predicative-Q
+clause (``Mas marami ang aklat.`` "There are more books");
+predicative-N clause (``Mas maraming aklat ako.`` "I have more
+books"); DAT-standard equative variant (``Kasingganda kay Maria
+si Ana``).
+
 ### robustness (4 sentences, 0%)
 
 §7.9 robustness — these are **intentional partial / failure
