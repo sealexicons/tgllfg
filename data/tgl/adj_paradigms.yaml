@@ -79,3 +79,50 @@
     intensifier rule. Both ``COMP_DEGREE: INTENSIVE`` and the
     redundant ``INTENSIFIER: YES`` flag are set so downstream
     consumers can branch on either.
+
+- affix_class: ma_adj
+  operations:
+    - {op: prefix, value: "kasing"}
+  feats: {COMP_DEGREE: EQUATIVE}
+  notes: |
+    Productive kasing- equative. Attaches to the bare ADJ root:
+    ``kasing`` + ``ganda`` → ``kasingganda`` "as beautiful (as)";
+    ``kasing`` + ``linis`` → ``kasinglinis`` "as clean (as)".
+    Modern Tagalog has no adjective-stem reduplication for
+    ``kasing-``; the archaic CV-reduplicated form
+    (``kasing-da-dali`` "just as easy" — S&O 1972 §5) is
+    deferred to a §18 entry. The two-NP standard-of-comparison
+    construction (``Kasingganda si Maria si Ana``) needs a
+    separate frame analysis and lands in Phase 5h Commit 6.
+
+- affix_class: ma_adj
+  operations:
+    - {op: prefix, value: "sing"}
+  feats: {COMP_DEGREE: EQUATIVE}
+  notes: |
+    Colloquial doublet of ``kasing-``. Same productive opt-in
+    (``ma_adj``); distinct surface (``sing`` + ``ganda`` →
+    ``singganda``). Cited per S&O 1972 §5 as the "shortened
+    equative" — sociolinguistically more frequent in spoken
+    register; both forms accepted in writing.
+
+# === Phase 5h: bare-citation indexer for non-productive ADJ roots ======
+#
+# Phase 5h Commit 2 adds three lexicalised, non-productive ADJ
+# entries to ``adjectives.yaml``: ``pareho`` (equative-identity
+# predicate, polysemous with the Phase 5f Commit 23 ``Q[DUAL=YES]``
+# float-quantifier reading), ``magkapareho`` (formal equative),
+# and ``magkaiba`` (contrastive). These declare ``affix_class: []``
+# — they have no productive ``ma-`` / ``pinaka-`` / ``napaka-`` /
+# ``kasing-`` / ``sing-`` derivation; the bare citation IS the
+# adjectival surface.
+#
+# The indexer dispatches on ``r.affix_class``: ADJ roots with a
+# non-empty list go through ``_index_adjective_paradigms`` (cells
+# above); ADJ roots with an empty list go through
+# ``_index_adjective_bare_root`` which indexes the citation directly
+# with the root's per-root feats (``EQUATIVE``, ``COMP_DEGREE``).
+# A YAML "bare cell" with ``affix_class: ""`` would NOT work — the
+# legacy ``_affix_class_match`` treats an empty cell_class as a
+# wildcard ("fires on any root"), so it would inappropriately
+# generate bare-root surfaces for every ``ma_adj`` root too.

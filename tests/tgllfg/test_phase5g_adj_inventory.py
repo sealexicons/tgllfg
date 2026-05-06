@@ -145,23 +145,40 @@ class TestEvaluativeDimension:
 
 
 class TestInventoryTotals:
-    """Sanity checks on the full lexicon shape after Commit 4."""
+    """Sanity checks on the full lexicon shape after Commit 4.
 
-    def test_thirty_adj_roots(self) -> None:
+    Phase 5h Commit 2 adds three non-productive ADJ entries
+    (``pareho`` / ``magkapareho`` / ``magkaiba`` — equative-identity
+    predicates with ``affix_class: []``). The Phase 5g inventory of
+    30 ``ma_adj``-opting roots is unchanged; Phase 5h additions are
+    counted separately by affix_class to keep this test stable
+    across Phase 5g and Phase 5h+.
+    """
+
+    def test_thirty_ma_adj_roots(self) -> None:
+        """Phase 5g seeded 30 ADJ roots opting into ``ma_adj``;
+        Phase 5h Commit 2 doesn't add any more to that opt-in.
+        """
         data = load_morph_data()
-        adj_roots = [r for r in data.roots if r.pos == "ADJ"]
-        assert len(adj_roots) == 30, (
-            f"expected 30 ADJ roots in adjectives.yaml; got {len(adj_roots)}"
+        ma_adj_roots = [
+            r for r in data.roots
+            if r.pos == "ADJ" and "ma_adj" in r.affix_class
+        ]
+        assert len(ma_adj_roots) == 30, (
+            f"expected 30 ma_adj-opting ADJ roots from Phase 5g; "
+            f"got {len(ma_adj_roots)}"
         )
 
-    def test_all_inventory_lemmas_present(self) -> None:
+    def test_phase5g_inventory_lemmas_present(self) -> None:
+        """The full 30-entry Phase 5g inventory is a subset of the
+        loaded ADJ roots. Phase 5h Commit 2 entries (non-productive
+        equative-identity predicates) are allowed as extras and
+        verified separately in test_phase5h_equative.py."""
         data = load_morph_data()
         adj_lemmas = {r.citation for r in data.roots if r.pos == "ADJ"}
         expected = {entry[0] for entry in ALL_INVENTORY}
         missing = expected - adj_lemmas
-        extra = adj_lemmas - expected
-        assert not missing, f"missing ADJ lemmas: {sorted(missing)}"
-        assert not extra, f"unexpected ADJ lemmas: {sorted(extra)}"
+        assert not missing, f"missing Phase 5g ADJ lemmas: {sorted(missing)}"
 
 
 # === Multi-POS coexistence (Phase 5g additive policy) ====================
