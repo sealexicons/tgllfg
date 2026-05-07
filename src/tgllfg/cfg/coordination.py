@@ -36,7 +36,7 @@ from __future__ import annotations
 from .grammar import Rule
 
 _NP_CASES: tuple[str, ...] = ("NOM", "GEN", "DAT")
-_BINARY_CLAUSAL_COORDS: tuple[str, ...] = ("AND", "OR")
+_BINARY_CLAUSAL_COORDS: tuple[str, ...] = ("AND", "OR", "BUT")
 
 
 def register_rules(rules: list[Rule]) -> None:
@@ -230,13 +230,13 @@ def register_rules(rules: list[Rule]) -> None:
     #   (↑ COORD) = 'AND'
     #   (↓2 COORD) =c 'AND'
     #
-    # The OR variant percolates COORD='OR'. Adversatives (Commit 6
-    # — pero / ngunit / subalit, COORD=BUT) and consequence
-    # (Commit 7 — kaya, COORD=SO) reuse this binary shape; the
-    # constraining equation simply binds a different COORD value
-    # per rule. Two-rule split (AND / OR only) here keeps the
-    # commit scope tight; Commits 6-7 add four more rules with
-    # the same shape.
+    # The OR variant percolates COORD='OR'. The Phase 5k Commit 6
+    # adversative variant (pero / ngunit / subalit — all
+    # PART[COORD=BUT]) and Commit 7 consequence variant (kaya —
+    # PART[COORD=SO]) extend this binary shape via additional
+    # COORD values in :data:`_BINARY_CLAUSAL_COORDS`. The three
+    # adversative lex surfaces all carry COORD=BUT (Commit 1 lex);
+    # one rule covers all three.
     #
     # Negation × clausal coord (Commit 8 tests): the existing
     # Phase 4 §7.2 hindi-wrap composes with the inner conjunct S
