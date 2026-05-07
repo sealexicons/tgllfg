@@ -1610,4 +1610,4 @@
 # (f) Counterfactual enclitic — ``sana``
 - surface: sana
   pos: PART
-  feats: {COUNTERFACTUAL: "YES", is_clitic: true, LEMMA: sana}
+  feats: {COUNTERFACTUAL: "YES", is_clitic: true, CLITIC_CLASS: 2P, LEMMA: sana}
