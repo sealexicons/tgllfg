@@ -266,3 +266,22 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 COMP_TYPE) =c 'PURP'",
         ],
     ))
+
+    # === Phase 5l Commit 9: reason SubordClause builder ================
+    # — dahil "because"
+    #
+    # ``SubordClause → PART[COMP_TYPE=REAS] S``
+    #
+    # ``dahil`` is polysemous with the Phase 5e PREP[REASON] entry
+    # (``dahil sa NP`` "because of X"). Same disambiguation
+    # mechanic as ``para`` (Commit 8) — chart picks per immediate
+    # constituent: PREP path takes a DAT-NP, PART path takes an S.
+    rules.append(Rule(
+        "SubordClause",
+        ["PART[COMP_TYPE=REAS]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ SUBORD_TYPE) = 'REAS'",
+            "(↓1 COMP_TYPE) =c 'REAS'",
+        ],
+    ))
