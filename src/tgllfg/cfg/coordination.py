@@ -423,3 +423,56 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↓4 POLARITY) = 'NEG'",
             ],
         ))
+
+    # --- Phase 5k Commit 9: N-level binary coord ---
+    #
+    # ``N → N PART[COORD=Y] N`` for Y ∈ {AND, OR}. Two rules
+    # total. Same shape as the Commit 3 NP-level binary rules but
+    # at the bare-N level — for contexts that consume bare N as a
+    # daughter rather than NP[CASE=X]. The primary consumer is
+    # the Phase 5j HAVE construction:
+    #
+    #   ``May aklat at lapis si Maria.`` "Maria has a book and a
+    #   pencil" — the Phase 5j HAVE rule
+    #   (``S → PART[EXISTENTIAL=YES] N NP[CASE=NOM]``) takes
+    #   bare N as the existence-asserted entity. Without an
+    #   N-level coord rule the coord-N ``aklat at lapis`` cannot
+    #   parse as a single N, and HAVE × coord 0-parses.
+    #
+    # Equations (additive, NOM-N example):
+    #   ↓1 ∈ (↑ CONJUNCTS)
+    #   ↓3 ∈ (↑ CONJUNCTS)
+    #   (↑ COORD) = 'AND'
+    #   (↑ NUM) = 'PL'
+    #   (↓2 COORD) =c 'AND'
+    #
+    # No CASE on the matrix N — bare N is case-less by design.
+    # Consumed by HAVE (which sets EXISTENTIAL/CLAUSE_TYPE on
+    # its own matrix), or by the case-marker → NP projection
+    # (``ng aklat at lapis`` "of book and pencil") where the case
+    # marker contributes CASE.
+    #
+    # Ambiguity note: with N-level coord enabled,
+    # ``ng aklat at ng lapis`` admits TWO parses — one where each
+    # case-marker + N is its own NP and they NP-coord (Commit 3),
+    # and one where ``aklat at lapis`` is N-coord and only one
+    # ``ng`` is needed... but the second ``ng`` is then orphaned
+    # so the second reading fails to compose. Only the original
+    # NP-level reading survives. ``ng aklat at lapis`` (single
+    # case marker) — IS admitted via the new N-level rule.
+    for coord in ("AND", "OR"):
+        rules.append(Rule(
+            "N",
+            [
+                "N",
+                f"PART[COORD={coord}]",
+                "N",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                f"(↑ COORD) = '{coord}'",
+                "(↑ NUM) = 'PL'" if coord == "AND" else "(↑ NUM) = ↓1 NUM",
+                f"(↓2 COORD) =c '{coord}'",
+            ],
+        ))
