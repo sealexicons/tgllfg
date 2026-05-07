@@ -995,6 +995,39 @@
   feats: {MEASURE: "YES", COLL_VALUE: THOUSANDS}
 
 
+# === Phase 5j Commit 1: locative / existential supporting nouns =========
+# Three NOUN entries that surface inside Phase 5j locative-existential
+# / locative-PP composition contexts. ``labas`` pairs with the existing
+# Phase 4 §7.7 sa-PP machinery to form the locative ground in ``May
+# tao sa labas`` / ``Nasa labas ang aso``. ``tuktok`` and ``bukid``
+# unblock R&G "Ang Manok" simples #5 and #7 (``Nasa tuktok ng bundok
+# ang bahay`` and the ``sa bukid`` adjunct).
+
+- citation: labas
+  pos: NOUN
+  gloss: outside
+
+- citation: tuktok
+  pos: NOUN
+  gloss: top
+
+- citation: bukid
+  pos: NOUN
+  gloss: field / countryside
+
+# Phase 5j Commit 6: ``kailangan`` polysemous noun reading.
+# The modal ("need / must") lives in particles.yaml as a VERB
+# entry; this is the noun reading ("need / requirement", as in
+# ``ang kailangan ko`` "what I need"). Two separate lex entries,
+# one surface, rule context disambiguates — same precedent as
+# Phase 5h ``pareho`` (predicative-ADJ vs Q-floated) and
+# Phase 5i ``alin`` / ``ilan`` (PRON / Q polysemy).
+
+- citation: kailangan
+  pos: NOUN
+  gloss: need / requirement
+
+
 # === Proper-name placeholders ============================================
 # Test-fixture proper names. Alphabetical by citation.
 

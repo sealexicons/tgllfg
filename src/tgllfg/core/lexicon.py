@@ -594,6 +594,66 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_PSYCH_CONTROL,
         ),
     ],
+    # Phase 5j Commit 6: modal verbs (closed-class, uninflected,
+    # AGENT-SUBJ + XCOMP). Distinct CTRL_CLASS=MODAL keeps them
+    # from cross-firing on PSYCH (gusto / ayaw / kaya) and KNOW
+    # (alam) wrap rules. Per-lemma PRED templates so downstream
+    # consumers can distinguish the modal force (DAPAT obligation
+    # / PUWEDE permission / MAAARI possibility / KAILANGAN
+    # necessity). Subject control: matrix SUBJ is the agent /
+    # actor of the embedded predicate; ``(↑ XCOMP SUBJ) =
+    # (↑ SUBJ)`` lands in the Commit 7 control wrap.
+    #
+    # ``puwede`` / ``pwede`` / ``puede`` collapse to one canonical
+    # lemma ``puwede`` at the YAML lex layer, so a single
+    # LexicalEntry covers all three surface variants.
+    "dapat": [
+        LexicalEntry(
+            lemma="dapat",
+            pred="DAPAT <SUBJ, XCOMP>",
+            a_structure=["AGENT", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "MODAL"},
+            gf_defaults={"AGENT": "SUBJ", "COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_INTRANS_CONTROL,
+        ),
+    ],
+    # Single canonical entry; the ``pwede`` and ``puede``
+    # orthographic variants in particles.yaml carry
+    # ``LEMMA: puwede`` so the morph analyzer sets their
+    # ``MorphAnalysis.lemma`` to ``puwede`` (Phase 5j Commit 7
+    # variant-collapse mechanic in
+    # ``src/tgllfg/morph/analyzer.py``). Lookup then routes all
+    # three surfaces through this entry.
+    "puwede": [
+        LexicalEntry(
+            lemma="puwede",
+            pred="PUWEDE <SUBJ, XCOMP>",
+            a_structure=["AGENT", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "MODAL"},
+            gf_defaults={"AGENT": "SUBJ", "COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_INTRANS_CONTROL,
+        ),
+    ],
+    "maaari": [
+        LexicalEntry(
+            lemma="maaari",
+            pred="MAAARI <SUBJ, XCOMP>",
+            a_structure=["AGENT", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "MODAL"},
+            gf_defaults={"AGENT": "SUBJ", "COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_INTRANS_CONTROL,
+        ),
+    ],
+    "kailangan": [
+        LexicalEntry(
+            lemma="kailangan",
+            pred="KAILANGAN <SUBJ, XCOMP>",
+            a_structure=["AGENT", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "MODAL"},
+            gf_defaults={"AGENT": "SUBJ", "COMPLEMENT": "XCOMP"},
+            intrinsic_classification=_INTRANS_CONTROL,
+        ),
+    ],
     # Intransitive control (payag → pumayag, pumapayag, papayag):
     # AV-only, NOM-NP is matrix SUBJ. AGREE <SUBJ, XCOMP>.
     "payag": [

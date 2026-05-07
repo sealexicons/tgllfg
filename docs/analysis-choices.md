@@ -9730,3 +9730,363 @@ does NOT carry Q_TYPE=WH — the in-situ case follows Commit 3's
 deferral. Consumers can inspect the ADJUNCT set's wh-PRON
 member to detect the Q-ness.
 
+
+## Phase 5j Commit 1: existential / locative-existential lex inventory
+
+Roadmap §12.1 / plan-of-record §4.1 + §4.3. Three positive-/
+negative-existential clause-typers (``may`` / ``mayroon`` /
+``wala``) and one locative-existential clause-typer (``nasa``)
+added as ``pos: PART`` entries in ``data/tgl/particles.yaml``;
+three supporting locative / proper nouns (``labas`` / ``tuktok``
+/ ``bukid``) added as ``pos: NOUN`` entries in
+``data/tgl/nouns.yaml``.
+
+### Existentials are PART (clause-typing), not V
+
+Per roadmap §12.1: ``may`` / ``mayroon`` / ``wala`` / ``nasa``
+are clause-typing predicates, NOT V-headed verbal frames. They
+head their own constituent shapes via dedicated grammar rules
+(Commits 2-5) rather than slotting into the V-headed S frame
+family. The PART-not-V choice keeps them out of the voice /
+aspect / control machinery entirely; the existing rules don't
+need any guard-clauses for "the V isn't a real verb."
+
+YAML-string ``"YES"`` follows the Phase 5h / 5i category-pattern-
+matcher convention (boolean YAML breaks the matchers); LEMMA
+explicit on each entry; POS / NEG polarity on the existentials so
+the Commits 2 / 3 rules disambiguate via category-pattern matching
+rather than a single POS-or-NEG-disjunct rule with later runtime
+guards.
+
+### LOC_EXISTENTIAL distinct from EXISTENTIAL
+
+``nasa`` carries ``LOC_EXISTENTIAL: "YES"`` (NOT
+``EXISTENTIAL: "YES"``); ``may`` / ``mayroon`` / ``wala`` carry
+``EXISTENTIAL: "YES"`` (NOT ``LOC_EXISTENTIAL: "YES"``). The two
+clause-types are categorically distinct — Commit 4's locative
+rules don't fire on may / wala, and Commits 2 / 3 / 5
+existential rules don't fire on nasa. The matrix
+``CLAUSE_TYPE`` feature reflects this: ``EXISTENTIAL`` for the
+positive / negative / HAVE family; ``LOC_EXISTENTIAL`` for the
+nasa family.
+
+
+## Phase 5j Commit 2: positive existential clause
+
+Roadmap §12.1 / plan-of-record §5.1. Three rules in
+``cfg/clause.py``:
+
+```
+S → PART[EXISTENTIAL=YES, POLARITY=POS] N
+    (↑ PRED) = 'EXIST <SUBJ>'
+    (↑ SUBJ) = ↓2
+    (↑ CLAUSE_TYPE) = 'EXISTENTIAL'
+    (↑ POLARITY) = 'POS'
+    (↓1 EXISTENTIAL) =c 'YES'
+    (↓1 POLARITY) =c 'POS'
+
+S → PART[EXISTENTIAL=YES, POLARITY=POS] PART[LINK=NG] N
+    (same equations + bound-linker daughter for mayroon)
+
+S → S NP[CASE=DAT]
+    (↑) = ↓1
+    ↓2 ∈ (↑ ADJUNCT)
+    (↓1 CLAUSE_TYPE) =c 'EXISTENTIAL'
+```
+
+### PRED uses SUBJ, not THEME
+
+Initially drafted with PRED ``'EXIST <THEME>'`` and a THEME
+slot binding the existence-asserted N. The Subject Condition
+(LMT step 6, ``check_subject_condition``) requires every
+PRED-bearing f-structure to have a SUBJ. Treating the
+existence-asserted N as SUBJ satisfies this without a special-
+case carve-out for existentials, and matches the codebase's
+GF-named-PRED-template convention (mirrors Phase 5g
+``'ADJ <SUBJ>'`` and Phase 5f Commit 4
+``'CARDINAL <SUBJ>'``). Thematic roles live in the a-structure
+projection (Phase 4 architecture).
+
+### Daughter is bare N, not NP[CASE=...]
+
+Tagalog existentials take indefinite bare nominals. ``*May ang
+aklat`` is ungrammatical (the ang-determiner forces
+definiteness, which clashes with the existential's indefinite-
+introducer semantics). Adjective-modified Ns (``May matandang
+aklat``) fall out via the Phase 5g NP-internal modifier rules
+which project to ``N``. Cardinal-modified Ns (``May isang
+aklat``) compose via the Phase 5f Commit 1 cardinal NP-modifier
+rule.
+
+### Locative-PP via EXISTENTIAL-gated DAT-lift
+
+The plan §3 anticipated locative-PP composition would "fall
+out of the existing Phase 4 §7.7 sa-PP-as-ADJUNCT machinery."
+Reconnaissance during Commit 2 showed that machinery is per-
+frame embedded in V-headed S rules, not a general clause-final
+DAT-NP wrap. Commit 2 added a new wrap rule ``S → S
+NP[CASE=DAT]`` gated on ``(↓1 CLAUSE_TYPE) =c 'EXISTENTIAL'``
+to compose locative-PP onto existential matrices without
+spurious double-parse ambiguity on V-headed clauses (which
+already embed their own DAT-NP daughters at frame level).
+
+
+## Phase 5j Commit 3: negative existential clause
+
+Roadmap §12.1 / plan-of-record §5.2. Two rules in
+``cfg/clause.py`` mirror the Commit 2 positive rules with
+POLARITY=NEG. ``wala`` is vowel-final and always takes bound
+``-ng`` before its complement (``Walang aklat`` is canonical;
+``*Wala aklat`` is ungrammatical), so the linker variant is
+the primary entry point. The bare-N variant covers ``Wala.``
+standalone. The Commit 2 EXISTENTIAL-gated DAT-lift rule
+fires on negative matrices unchanged, so locative-PP
+composition (``Walang tao sa labas``) requires no new rule.
+
+
+## Phase 5j Commit 4: locative existential `nasa`
+
+Roadmap §12.1 / plan-of-record §5.3. Two rules in
+``cfg/clause.py``:
+
+```
+S → PART[LOC_EXISTENTIAL=YES] N NP[CASE=NOM]
+    (↑ PRED) = 'LOC <SUBJ>'
+    (↑ SUBJ) = ↓3
+    (↑ LOCATION) = ↓2
+    (↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'
+    (↓1 LOC_EXISTENTIAL) =c 'YES'
+
+S → PART[LOC_EXISTENTIAL=YES] N NP[CASE=GEN] NP[CASE=NOM]
+    (same + (↓2 POSS) = ↓3 binding for ground possessor)
+```
+
+### Two-rule split for optional GEN-NP possessor
+
+The parser's category-pattern matching can't express
+"optional" daughters; the alternative would be a recursive
+intermediate non-terminal, which is more invasive than
+necessary for a phase-local construction. Mirrors the V-headed-
+frame convention of explicit per-shape rules.
+
+### LOCATION as feature, not PRED argument
+
+PRED is one-place over the figure (``'LOC <SUBJ>'``). The
+locative ground rides on a dedicated ``LOCATION`` feature
+(not in the PRED's argument list) because ``nasa`` is
+structurally a clause-typer, not a binary predicate over the
+LFG GF inventory. This mirrors the Phase 5h Commit 4
+``ROLE='STANDARD'`` convention for comparison standards —
+features that hold thematic-role data outside the GF mapping.
+
+### R&G "Ang Manok" simples #5 and #7
+
+This commit unblocks two of the three remaining R&G 1981
+simple sentences (per roadmap §12.6):
+
+* Simple #5: ``Nasa bundok ang bahay.`` (base form)
+* Simple #7: ``Nasa tuktok ng bundok ang bahay.`` (possessor
+  variant)
+
+Simples #1 and #3 remain blocked on deferred ``nakatira``
+resultative paradigm, ``mag-isa`` ADV hyphen-tokenization, and
+``mama`` lex.
+
+
+## Phase 5j Commit 5: HAVE construction
+
+Roadmap §12.1 / plan-of-record §5.4 + §5.5. Four rules in
+``cfg/clause.py`` covering positive / negative × postposed-
+possessor / internal-clitic-possessor patterns. F-structure
+shape (all four):
+
+```
+PRED = 'EXIST <SUBJ>'
+SUBJ = the existence-asserted N
+SUBJ POSSESSOR = the possessor-NP / clitic-PRON
+CLAUSE_TYPE = 'EXISTENTIAL'
+HAVE = 'YES'
+POLARITY = 'POS' or 'NEG'
+```
+
+### POSSESSOR feature, not OBLIQUE thematic role
+
+Tagalog HAVE is structurally an existential ("exists X
+possessed by Y"), not a transitive ("Y has X"). The POSSESSOR
+feature on the SUBJ N captures this while keeping the matrix
+CLAUSE_TYPE as EXISTENTIAL and the matrix PRED as the literal
+``'EXIST <SUBJ>'``. ``(↑ HAVE) = 'YES'`` lifts the HAVE-reading
+flag for downstream consumers.
+
+### Internal-clitic rules constrain to PRON
+
+The internal-clitic rules (5b / 5d) constrain the possessor
+daughter to PRON (not NP[CASE=NOM]) — full-NP-with-internal-
+linker patterns like ``*May Mariang aklat`` are marginal in
+modern Tagalog and would compete with NP-internal POSS rules.
+The PRON gate avoids this cross-fire.
+
+### POS / NEG asymmetry is surface-level
+
+``may`` is consonant-final and never takes the bound linker;
+``wala`` is vowel-final and always takes it before its
+complement. Four rules total covering the four combinations.
+
+
+## Phase 5j Commit 6: modal verbs lex inventory + LexicalEntry
+
+Roadmap §12.1 / plan-of-record §4.2 + §4.4. Six new
+``pos: VERB`` entries in ``data/tgl/particles.yaml`` (closed-
+class predicates parallel to Phase 4 §7.6 PSYCH and Phase 5i
+``alam`` KNOW); one NOUN entry in ``data/tgl/nouns.yaml``
+(kailangan polysemy partner); four ``LexicalEntry`` entries
+in ``src/tgllfg/core/lexicon.py`` with per-modal PRED
+templates (``DAPAT`` / ``PUWEDE`` / ``MAAARI`` / ``KAILANGAN``
+``<SUBJ, XCOMP>``).
+
+### CTRL_CLASS=MODAL keeps modals isolated
+
+Modals carry ``CTRL_CLASS=MODAL`` (NOT PSYCH or KNOW or
+RAISING) so the Commit 7 modal control wrap can filter to
+modals only via ``(↓1 CTRL_CLASS) =c 'MODAL'`` and the
+existing PSYCH / KNOW / RAISING wrap rules don't cross-fire.
+
+### Surface-variant collapse via canonical lemma
+
+``puwede`` / ``pwede`` / ``puede`` are three orthographic
+variants of one canonical lemma ``puwede``. The variant
+collapse mechanic (Commit 7) reads the ``LEMMA`` feat from
+particles.yaml as the canonical lemma; ``MorphAnalysis.lemma``
+is set to ``feats.get("LEMMA", surface)`` so all three
+variants route through a single ``LexicalEntry`` keyed by
+``puwede``.
+
+### kailangan polysemy — VERB[MODAL] + NOUN
+
+``kailangan`` indexes as both a VERB[MODAL=YES] (the modal
+"need / must") and a NOUN ("need / requirement", as in
+``ang kailangan ko`` "what I need"). Two separate lex entries,
+one surface, rule context disambiguates — same precedent as
+Phase 5h ``pareho`` and Phase 5i ``alin`` / ``ilan``.
+
+### Documented temporary regression: Hindi ka dapat kumain.
+
+``Hindi ka dapat kumain.`` (no-linker form) parsed pre-
+Commit-6 as ``EAT <SUBJ>`` POLARITY=NEG via silent-dropping
+``dapat``. After Commit 6 the strip stops firing and the
+sentence returns 0 parses (1→0 regression). The canonical
+form requires the linker (``Hindi ka dapat na kumain.``); the
+no-linker form is marginal Tagalog and remains 0-parse
+post-Commit-7. The previous silent-drop reading was
+structurally wrong (the modal was being ignored).
+
+
+## Phase 5j Commit 7: modal control wrap + orthographic-variant collapse
+
+Roadmap §12.1 / plan-of-record §5.6. Two analytical moves in
+this commit.
+
+### Modal control wrap (4 rules)
+
+```
+For link in (NA, NG):
+  S → V[CTRL_CLASS=MODAL] NP[CASE=NOM] PART[LINK={link}] S_XCOMP
+      (↑ SUBJ) = ↓2
+      (↑ XCOMP) = ↓4
+      (↑ SUBJ) = (↑ XCOMP REL-PRO)
+      (↓1 CTRL_CLASS) =c 'MODAL'
+      (↓1 MODAL) =c 'YES'
+  S → V[CTRL_CLASS=MODAL] NP[CASE=GEN] PART[LINK={link}] S_XCOMP
+      (same equations)
+```
+
+Subject control via ``(↑ SUBJ) = (↑ XCOMP REL-PRO)`` — same
+shape as the Phase 4 §7.6 PSYCH wrap, distinguished only by
+CTRL_CLASS=MODAL.
+
+Two case variants:
+* **NOM-actor pattern** (``Dapat akong kumain.``): dapat /
+  puwede / maaari take NOM-marked actors.
+* **GEN-experiencer pattern** (``Kailangan kong kumain.``):
+  kailangan takes a GEN-marked experiencer (parallel to
+  PSYCH ``gusto``).
+
+Both rules carry the same equations; the daughter ``CASE``
+disambiguates which fires. For modals where both cases are
+marginal-but-acceptable, both rules fire and produce parallel
+parses — no harm.
+
+### Orthographic-variant collapse mechanic
+
+Phase 5j Commit 6 had to register three separate LexicalEntries
+for ``puwede`` / ``pwede`` / ``puede`` because
+``MorphAnalysis.lemma`` was set to the surface and
+``lookup_lexicon`` keys off the lemma attribute. Commit 7
+refactored the morph analyzer's particles indexing branch to
+use ``feats.get("LEMMA", surface)`` for the
+``MorphAnalysis.lemma`` field. The ``LEMMA`` feat in
+particles.yaml names the canonical lemma; variants then route
+to a single canonical LexicalEntry through ``lookup_lexicon``.
+
+* Before: 3 LexicalEntries (puwede + pwede + puede) with
+          identical bodies.
+* After:  1 LexicalEntry (puwede); pwede / puede surfaces
+          carry ``LEMMA: puwede`` and route via the morph
+          layer.
+
+For the majority of particles where ``LEMMA == surface`` (or no
+``LEMMA`` feat is set), the change is a no-op. The mechanism is
+now available for any future orthographic-variant family —
+saved as a memory-level reminder
+(``feedback_orthographic_variants.md``) so future variant
+introductions follow the pattern without prompting.
+
+The mechanism currently lives only in the ``particles`` branch
+of ``_build_index``. Extending to other categories (pronouns /
+nouns / verbs / adjectives) is straightforward but should land
+when an actual variant family appears in those data files.
+
+### no-linker form Hindi ka dapat kumain. is permanent 0-parse
+
+The canonical Tagalog modal+complement form requires the
+linker (``Hindi ka dapat na kumain.``). The no-linker surface
+``Hindi ka dapat kumain.`` is marginal / colloquial and
+remains 0-parse post-Commit-7. The Commit 6 test class
+``TestNoLinkerModalIsZeroParses`` pins this expectation.
+
+
+## Phase 5j Commit 8: negation × modal interactions + kailangan polysemy
+
+Roadmap §12.1 / plan-of-record §6 Commit 8. Test-only commit:
+no new grammar rules. Verifies that the Phase 4 §7.2 hindi-
+wrap composes with the Commit 7 modal control wrap unchanged
+and that the kailangan polysemy is correctly disambiguated by
+rule context.
+
+### Phase 4 hindi-wrap × non-`ka` NOM-clitic deferral
+
+A pre-existing issue surfaced during Commit 8 testing:
+``Hindi ako kumain.`` and ``Hindi siya kumain.`` (with non-``ka``
+NOM-clitics) produce 0 parses. By extension,
+``Hindi ako dapat na kumain.`` and ``Hindi siya dapat na
+kumain.`` also fail. Only the ``ka`` 2P-clitic composes
+correctly with the hindi-wrap; ``ako`` / ``siya`` are PRONs
+without ``is_clitic=True`` in the lex, and the hindi-wrap
+requires the clitic to absorb at the matrix.
+
+This is a Phase 4 §7.2 issue, not Phase 5j-specific. The
+Commit 8 tests work around it by using only ``ka`` for the
+NOM-actor patterns. Added to plan §9.2 as a Phase 5j follow-on
+target.
+
+
+## Phase 5j Commit 9: R&G "Ang Manok" simples #5 + #7 corpus integration
+
+Roadmap §12.6 / plan-of-record §8. Two corpus entries
+(``Nasa bundok ang bahay.`` and ``Nasa tuktok ng bundok ang
+bahay.``) and 8 integration tests. End of Phase 5j delivers
+5/7 R&G simples (4 from Phase 5g + 2 from Phase 5j); simples
+#1 / #3 remain blocked on deferred ``nakatira`` resultative
+/ ``mag-isa`` hyphen-split / ``mama`` lex. The combined
+essay-paragraph (R&G p. 482) needs simples #1 / #3 to land
+first; the Phase 5j follow-on closes that.

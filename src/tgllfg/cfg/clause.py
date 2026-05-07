@@ -1125,3 +1125,385 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 CASE) =c 'DAT'",
         ],
     ))
+
+    # --- Phase 5j Commit 2: positive existential clause ---------
+    #
+    #   ``May aklat.``               "There is a book."
+    #   ``May tao sa labas.``        "There's someone outside."
+    #   ``Mayroong tao sa labas.``   "There's someone outside."
+    #                                (mayroon + bound -ng linker
+    #                                 split pre-parse)
+    #
+    # Per roadmap §12.1: ``may`` / ``mayroon`` are clause-typing
+    # predicates, NOT V-headed verbal frames. They head a dedicated
+    # existential clause-type with their own constituent shape
+    # (existential PART + bare-N). No voice / aspect / mood —
+    # these clause-typers carry no verbal morphology, paralleling
+    # the Phase 5g predicative-ADJ clause and Phase 5f Commit 4
+    # predicative-cardinal: a non-V matrix predicate carrying a
+    # literal PRED template.
+    #
+    # The daughter is bare ``N`` (NOUN-headed projection from
+    # nominal.py's ``N → NOUN`` rule), NOT a determiner-marked
+    # ``NP[CASE=...]``. Tagalog existentials take indefinite bare
+    # nominals — ``*May ang aklat`` is ungrammatical (the ang-
+    # determiner forces definiteness, which clashes with the
+    # existential's indefinite-introducer semantics). Adjective-
+    # modified Ns (``May matandang aklat``, "there's an old
+    # book") fall out via the Phase 5g NP-internal modifier
+    # rules at ``nominal.py:1299-1317`` which project to ``N``.
+    #
+    # F-structure shape:
+    #
+    #   PRED         = 'EXIST <SUBJ>'
+    #   SUBJ         = the existence-asserted N (with PRED /
+    #                  LEMMA projected from the head NOUN)
+    #   CLAUSE_TYPE  = 'EXISTENTIAL'
+    #   POLARITY     = 'POS'
+    #
+    # SUBJ-not-THEME on the PRED template: this codebase's PRED
+    # templates list GFs (SUBJ / OBJ / OBL), not thematic roles
+    # (THEME / AGENT / etc.) — thematic roles live in the
+    # a-structure projection (Phase 4 architecture). Mirrors
+    # Phase 5g predicative-ADJ ``'ADJ <SUBJ>'`` and Phase 5f
+    # Commit 4 ``'CARDINAL <SUBJ>'``. The Subject Condition
+    # (LMT step 6, ``check_subject_condition``) requires every
+    # PRED-bearing f-structure to have a SUBJ; treating the
+    # existence-asserted N as SUBJ satisfies this without a
+    # special-case carve-out for existentials.
+    #
+    # Locative-PP composition (``May tao sa labas``) falls out of
+    # this rule + the existing Phase 4 §7.7 sa-PP-as-ADJUNCT
+    # machinery: the matrix S consumed by sa-PP attachment lifts
+    # the locative-PP to the matrix ADJUNCT set. No dedicated
+    # locative-PP rule needed for ``may`` (cf. ``nasa`` in
+    # Commit 4 which is a separate clause-type with the locative
+    # ground promoted to LOCATION argument).
+    #
+    # The constraining equations ``(↓1 EXISTENTIAL) =c 'YES'`` and
+    # ``(↓1 POLARITY) =c 'POS'`` are belt-and-braces — the rule's
+    # category-pattern matchers already filter on
+    # ``PART[EXISTENTIAL=YES, POLARITY=POS]`` — but make the
+    # analytical commitment explicit and guard against future PART
+    # entries with the same EXISTENTIAL flag but different POLARITY
+    # (e.g., a hypothetical INTERROG-existential).
+    rules.append(Rule(
+        "S",
+        ["PART[EXISTENTIAL=YES, POLARITY=POS]", "N"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+        ],
+    ))
+
+    # Linker variant: vowel-final ``mayroon`` carries bound ``-ng``
+    # before its complement (``Mayroong tao``). After
+    # ``split_linker_ng`` strips the bound linker, the structural
+    # shape is ``mayroon`` + ``-ng`` + ``N``. Same f-structure as
+    # the base rule above; the linker daughter is a syntactic
+    # carrier with no semantic content (parallels Phase 5h's
+    # particle-intensifier-with-linker rule pattern).
+    #
+    # ``may`` is consonant-final and never takes the bound linker —
+    # ``*Mayng tao`` is ungrammatical — so the rule's
+    # ``(↓1 LEMMA) =c 'mayroon'`` constraint isn't strictly needed
+    # (``may`` would never appear before a PART[LINK=NG] in well-
+    # formed input). The linker variant fires opportunistically.
+    rules.append(Rule(
+        "S",
+        ["PART[EXISTENTIAL=YES, POLARITY=POS]", "PART[LINK=NG]", "N"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+            "(↓2 LINK) =c 'NG'",
+        ],
+    ))
+
+    # --- Phase 5j Commit 3: negative existential clause ---------
+    #
+    #   ``Walang aklat.``         "There's no book."
+    #   ``Walang tao.``           "There's no one."
+    #   ``Walang tao sa labas.``  "There's no one outside."
+    #
+    # Negative-polarity counterpart of the Commit 2 positive
+    # existential. ``wala`` is vowel-final and ALWAYS takes bound
+    # ``-ng`` before its complement (``*Wala aklat.`` is ungrammatical
+    # in the existential reading; the bound-linker form ``Walang
+    # aklat.`` is the canonical surface). After ``split_linker_ng``
+    # strips the bound linker, the structural shape is ``wala``
+    # + ``-ng`` + ``N`` — so the linker variant is the primary
+    # entry point for ``wala``.
+    #
+    # The bare-N variant (``S → PART[EXISTENTIAL=YES, POLARITY=NEG]
+    # N``) is included for parity with Commit 2's positive base
+    # rule and to admit edge cases where ``wala`` appears without
+    # the linker (e.g., ``Wala.`` standalone, "There is none.")
+    # when followed by a non-NP complement). For well-formed
+    # ``wala`` + N input, the linker variant always fires; the
+    # bare-N variant is benign.
+    #
+    # F-structure shape mirrors the positive existential exactly,
+    # with ``POLARITY = 'NEG'`` instead of POS. The matrix
+    # CLAUSE_TYPE='EXISTENTIAL' makes the Phase 5j Commit 2 clause-
+    # final DAT-lift rule (``S → S NP[CASE=DAT]`` with
+    # ``(↓1 CLAUSE_TYPE) =c 'EXISTENTIAL'``) compose with negative
+    # existentials too — no separate locative rule needed.
+    rules.append(Rule(
+        "S",
+        ["PART[EXISTENTIAL=YES, POLARITY=NEG]", "N"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'NEG'",
+        ],
+    ))
+
+    # Linker variant for ``wala`` + bound ``-ng`` + N (the canonical
+    # negative-existential surface ``Walang aklat`` etc.).
+    rules.append(Rule(
+        "S",
+        ["PART[EXISTENTIAL=YES, POLARITY=NEG]", "PART[LINK=NG]", "N"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 LINK) =c 'NG'",
+        ],
+    ))
+
+    # --- Phase 5j Commit 4: locative existential (nasa) -----------
+    #
+    #   ``Nasa labas ang aso.``         "The dog is outside."
+    #   ``Nasa bundok ang bahay.``      "The house is on the
+    #                                    mountain." (R&G simple #5)
+    #   ``Nasa bahay si Maria.``        "Maria is at the house."
+    #   ``Nasa tuktok ng bundok ang bahay.``
+    #                                   "The house is on top of the
+    #                                    mountain." (R&G simple #7)
+    #
+    # ``nasa`` is etymologically ``na`` + ``sa`` (locative case
+    # marker) but synchronically a fixed locative-existential
+    # clause-typer. The first internal slot is the locative ground
+    # (the entity at which the figure is located); the second is
+    # the NOM-NP pivot (the figure / theme being located).
+    #
+    # F-structure shape:
+    #
+    #   PRED         = 'LOC <SUBJ>'
+    #   SUBJ         = the NOM-NP figure (the post-ground daughter)
+    #   LOCATION     = the locative ground N (with optional GEN-NP
+    #                  possessor — ``tuktok ng bundok``)
+    #   CLAUSE_TYPE  = 'LOC_EXISTENTIAL'
+    #
+    # Two rules: a base form for bare-N grounds (``Nasa labas
+    # ang aso``) and a possessor variant for N + GEN-NP grounds
+    # (``Nasa tuktok ng bundok ang bahay``). The two-rule split is
+    # preferred over a single rule with optional GEN-NP because the
+    # parser's category-pattern matching can't express "optional"
+    # daughters; the alternative would be a recursive intermediate
+    # non-terminal, which is more invasive than necessary for a
+    # phase-local construction. Mirrors the V-headed-frame
+    # convention of explicit per-shape rules.
+    #
+    # PRED is ``'LOC <SUBJ>'`` (one-place over the figure) — same
+    # GF-named-PRED-template convention as Phase 5g
+    # ``'ADJ <SUBJ>'`` and Phase 5j Commit 2 ``'EXIST <SUBJ>'``.
+    # The locative ground rides on a dedicated ``LOCATION``
+    # feature (not in the PRED's argument list) because ``nasa``
+    # is structurally a clause-typer, not a binary predicate
+    # over the LFG GF inventory; the LOCATION feature mirrors the
+    # Phase 5h Commit 4 ``ROLE='STANDARD'`` convention for
+    # comparison standards.
+    rules.append(Rule(
+        "S",
+        ["PART[LOC_EXISTENTIAL=YES]", "N", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'LOC <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ LOCATION) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
+            "(↓1 LOC_EXISTENTIAL) =c 'YES'",
+        ],
+    ))
+
+    # Possessor-of-ground variant: ``Nasa tuktok ng bundok ang
+    # bahay`` — locative ground is N + GEN-NP (left-associative
+    # possessor); the GEN-NP rides on the ground's POSS feature.
+    rules.append(Rule(
+        "S",
+        ["PART[LOC_EXISTENTIAL=YES]", "N", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'LOC <SUBJ>'",
+            "(↑ SUBJ) = ↓4",
+            "(↑ LOCATION) = ↓2",
+            "(↓2 POSS) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
+            "(↓1 LOC_EXISTENTIAL) =c 'YES'",
+        ],
+    ))
+
+    # --- Phase 5j Commit 5: HAVE construction --------------------
+    #
+    # Tagalog has no separate HAVE verb. The HAVE reading is the
+    # existential predicate (Commit 2 / 3) + a possessor-NP that
+    # binds to the existence-asserted N's POSSESSOR feature.
+    #
+    # Surface patterns (4 rules total):
+    #
+    # Positive HAVE — postposed possessor (no internal linker):
+    #   ``May aklat ako.``        "I have a book."  (clitic-PRON)
+    #   ``May aklat si Maria.``   "Maria has a book."  (full-NP)
+    #
+    # Positive HAVE — internal clitic possessor (with bound -ng):
+    #   ``May akong aklat.``      "I have a book."
+    #
+    # Negative HAVE — postposed possessor (wala + bound -ng):
+    #   ``Walang aklat ako.``     "I don't have a book."
+    #   ``Walang aklat si Maria.`` "Maria doesn't have a book."
+    #
+    # Negative HAVE — internal clitic possessor:
+    #   ``Wala akong aklat.``     "I don't have a book."
+    #
+    # The asymmetry between positive (no bound -ng on may) and
+    # negative (bound -ng on wala) is surface-level: ``may`` is
+    # consonant-final and never takes the bound linker; ``wala``
+    # is vowel-final and ALWAYS takes it before its complement.
+    # The internal-clitic and postposed patterns reflect different
+    # surface positions of the possessor — Tagalog admits both.
+    #
+    # Possessor binding via ``(↑ SUBJ POSSESSOR) = ↓X`` rather
+    # than via OBLIQUE thematic role: Tagalog HAVE is structurally
+    # an existential ("exists X possessed by Y"), not a transitive
+    # ("Y has X"). The POSSESSOR feature on the SUBJ N captures
+    # this while keeping the matrix CLAUSE_TYPE as EXISTENTIAL
+    # and the matrix PRED as the literal ``'EXIST <SUBJ>'``.
+    # ``(↑ HAVE) = 'YES'`` lifts the HAVE-reading flag for
+    # downstream consumers.
+    #
+    # Internal-clitic rules constrain the possessor daughter to
+    # PRON (not NP[CASE=NOM]) — full-NP-with-internal-linker
+    # patterns like ``*May Mariang aklat`` are marginal in modern
+    # Tagalog and would compete with NP-internal POSS rules.
+    # The PRON gate avoids this cross-fire.
+
+    # Commit 5a: positive HAVE — postposed possessor.
+    rules.append(Rule(
+        "S",
+        ["PART[EXISTENTIAL=YES, POLARITY=POS]", "N", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ SUBJ POSSESSOR) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+        ],
+    ))
+
+    # Commit 5b: positive HAVE — internal clitic possessor.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=POS]",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "N",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓4",
+            "(↑ SUBJ POSSESSOR) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+            "(↓3 LINK) =c 'NG'",
+        ],
+    ))
+
+    # Commit 5c: negative HAVE — postposed possessor (wala + bound -ng).
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=NEG]",
+            "PART[LINK=NG]",
+            "N",
+            "NP[CASE=NOM]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ SUBJ POSSESSOR) = ↓4",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 LINK) =c 'NG'",
+        ],
+    ))
+
+    # Commit 5d: negative HAVE — internal clitic possessor.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=NEG]",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "N",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓4",
+            "(↑ SUBJ POSSESSOR) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓3 LINK) =c 'NG'",
+        ],
+    ))
+
+    # Clause-final DAT-NP ADJUNCT lift, gated on existential
+    # clauses. ``May tao sa labas`` / ``Mayroong tao sa labas`` —
+    # the locative-PP composes by adjoining a clause-final
+    # NP[CASE=DAT] to an existential matrix S as an ADJUNCT
+    # member.
+    #
+    # The constraining equation ``(↓1 CLAUSE_TYPE) =c
+    # 'EXISTENTIAL'`` gates the rule to existential matrices
+    # only — V-headed frames already embed their DAT-NP daughters
+    # explicitly (each V-frame in this file includes
+    # ``NP[CASE=DAT]`` as a daughter and adds it to ADJUNCT), so a
+    # general ``S → S NP[CASE=DAT]`` rule would create spurious
+    # ambiguity (``Kumain ang aso sa labas`` would have two parses:
+    # the V-frame's embedded DAT and a wrap parse on top of a
+    # smaller V-only matrix). The EXISTENTIAL gate prevents that
+    # cross-fire.
+    rules.append(Rule(
+        "S",
+        ["S", "NP[CASE=DAT]"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓1 CLAUSE_TYPE) =c 'EXISTENTIAL'",
+        ],
+    ))

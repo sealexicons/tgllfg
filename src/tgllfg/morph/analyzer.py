@@ -232,9 +232,23 @@ class Analyzer:
             # the noun pattern from Phase 5c §8 follow-on Commit 6).
             if p.pos in ("ADV", "PREP"):
                 feats.setdefault("LEMMA", p.surface)
+            # Phase 5j Commit 7: orthographic-variant collapse.
+            # When a particle entry's ``LEMMA`` feat differs from
+            # its surface (e.g., ``surface: pwede``,
+            # ``feats: {LEMMA: puwede}``), the LEMMA feat names the
+            # canonical lemma and the analysis's ``lemma`` field
+            # adopts it. Variants then route to the same
+            # ``LexicalEntry`` in ``core/lexicon.py`` keyed by
+            # canonical lemma — no entry duplication. For the
+            # majority of entries where ``LEMMA == surface`` (or
+            # no LEMMA feat is set), this is a no-op: the
+            # canonical lemma equals the surface.
+            canonical_lemma = feats.get("LEMMA", p.surface)
+            if not isinstance(canonical_lemma, str):
+                canonical_lemma = p.surface
             self._index.particles.setdefault(p.surface.lower(), []).append(
                 MorphAnalysis(
-                    lemma=p.surface,
+                    lemma=canonical_lemma,
                     pos=p.pos,
                     feats=feats,
                 )

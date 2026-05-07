@@ -3940,3 +3940,102 @@
 - text: Kanino ka pumunta?
   construction: 'phase5i: DAT-wh fronting (kanino over residue verbal clause)'
   expected: parse
+
+# === Phase 5j Commit 9: R&G "Ang Manok" simples #5 + #7 =====
+# Two of the seven simple sentences from R&G 1981 p. 482's
+# "Ang Manok" essay-paragraph integration benchmark (per
+# tgllfg-roadmap.md §12.6). Phase 5j Commit 4 (locative
+# existential nasa) unblocks both — they parse with
+# CLAUSE_TYPE=LOC_EXISTENTIAL on the matrix. The base form
+# (#5) uses the bare-N locative-ground rule; the possessor
+# variant (#7) uses the N + GEN-NP locative-ground rule.
+- text: Nasa bundok ang bahay.
+  construction: 'phase5j: locative existential (R&G simple #5)'
+  expected: parse
+- text: Nasa tuktok ng bundok ang bahay.
+  construction: 'phase5j: locative existential with GEN-NP possessor on ground (R&G simple #7)'
+  expected: parse
+
+# === Phase 5j Commit 10: full-corpus expansion ==================
+# Phase 5j fixtures spanning existential / HAVE / locative /
+# modal / negation×modal / polysemy. The R&G simples #5 / #7
+# above (Commit 9) are part of the same Phase 5j coverage; this
+# block adds the remaining sentences from the §7.3 fixture
+# slate.
+
+# --- Positive existential (Commit 2) ----------------------------
+- text: May aklat.
+  construction: 'phase5j: positive existential (bare-N base rule)'
+  expected: parse
+- text: May tao sa labas.
+  construction: 'phase5j: positive existential + sa-PP locative ADJUNCT (clause-final DAT-lift)'
+  expected: parse
+- text: Mayroong tao sa labas.
+  construction: 'phase5j: positive existential — mayroon + bound -ng linker variant'
+  expected: parse
+
+# --- Negative existential (Commit 3) ----------------------------
+- text: Walang aklat.
+  construction: 'phase5j: negative existential (wala + bound -ng)'
+  expected: parse
+- text: Walang tao sa labas.
+  construction: 'phase5j: negative existential + sa-PP locative ADJUNCT'
+  expected: parse
+
+# --- Locative existential (Commit 4) ----------------------------
+- text: Nasa labas ang aso.
+  construction: 'phase5j: locative existential (bare-N ground, common-noun figure)'
+  expected: parse
+- text: Nasa bahay si Maria.
+  construction: 'phase5j: locative existential (bare-N ground, proper-name figure)'
+  expected: parse
+
+# --- HAVE construction (Commit 5) -------------------------------
+- text: May aklat si Maria.
+  construction: 'phase5j: HAVE — postposed full-NP possessor (positive)'
+  expected: parse
+- text: May aklat ako.
+  construction: 'phase5j: HAVE — postposed clitic-PRON possessor (positive)'
+  expected: parse
+- text: May akong aklat.
+  construction: 'phase5j: HAVE — internal clitic-PRON + bound -ng (positive)'
+  expected: parse
+- text: Walang aklat si Maria.
+  construction: 'phase5j: HAVE — postposed full-NP possessor (negative)'
+  expected: parse
+- text: Wala akong aklat.
+  construction: 'phase5j: HAVE — internal clitic-PRON + bound -ng (negative)'
+  expected: parse
+
+# --- Modal control wrap (Commit 7) ------------------------------
+- text: Dapat akong kumain.
+  construction: 'phase5j: modal — dapat (NOM-actor) + AV-intransitive XCOMP'
+  expected: parse
+- text: Puwede akong kumain.
+  construction: 'phase5j: modal — puwede (NOM-actor) + AV-intransitive XCOMP'
+  expected: parse
+- text: Pwede akong kumain.
+  construction: 'phase5j: modal — pwede (orthographic variant of puwede) routes through canonical'
+  expected: parse
+- text: Maaari akong kumain.
+  construction: 'phase5j: modal — maaari (NOM-actor) + AV-intransitive XCOMP'
+  expected: parse
+- text: Kailangan kong kumain.
+  construction: 'phase5j: modal — kailangan (GEN-experiencer) + AV-intransitive XCOMP'
+  expected: parse
+
+# --- Negation × modal + modal × transitive (Commit 8) ----------
+- text: Hindi ka dapat na kumain.
+  construction: 'phase5j: negation × modal — Hindi-wrap composes with dapat control wrap'
+  expected: parse
+- text: Hindi ko kailangang kumain.
+  construction: 'phase5j: negation × modal — Hindi-wrap composes with kailangan GEN-experiencer'
+  expected: parse
+- text: Dapat akong kumain ng kanin.
+  construction: 'phase5j: modal + transitive embedded XCOMP (kumain ng kanin)'
+  expected: parse
+
+# --- kailangan polysemy NOUN reading (Commit 8) ----------------
+- text: Maganda ang kailangan ko.
+  construction: 'phase5j: kailangan polysemy — NOUN reading inside subject NP'
+  expected: parse
