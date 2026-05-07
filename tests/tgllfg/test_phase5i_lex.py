@@ -292,18 +292,11 @@ class TestNoCollisions:
         )
 
 
-# === Strict: o (Phase 5k dependency) is still _UNK ====================
-
-
-class TestOStillUnk:
-    """The alternative-Q coordinator ``o`` "or" depends on Phase 5k
-    coordination work. Phase 5i lex commit does NOT add ``o``;
-    confirm it remains _UNK."""
-
-    def test_o_remains_unk(self) -> None:
-        analyzer = Analyzer.from_default()
-        out = analyzer.analyze_one(_tok("o"))
-        assert all(a.pos == "_UNK" for a in out), (
-            f"unexpected non-_UNK analysis for 'o'; "
-            f"got {[(a.pos, a.lemma) for a in out]}"
-        )
+# === Phase 5k Commit 1 retired the o-still-_UNK pin ===================
+#
+# The previous ``TestOStillUnk`` class pinned ``o`` as ``_UNK`` until
+# Phase 5k coordination work landed it as PART[COORD=OR]. Phase 5k
+# Commit 1 has now lex'd ``o`` (alongside ``at`` / ``pero`` / ``ngunit``
+# / ``subalit`` / ``kaya`` PART / ``,`` / ``kundi`` / ``pati`` /
+# ``lamang``); the positive assertion lives in
+# ``test_phase5k_lex.py::TestCoordinatorParts``. The pin is retired.

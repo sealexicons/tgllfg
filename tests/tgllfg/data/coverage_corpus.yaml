@@ -4039,3 +4039,88 @@
 - text: Maganda ang kailangan ko.
   construction: 'phase5j: kailangan polysemy — NOUN reading inside subject NP'
   expected: parse
+
+# === Phase 5k — coordination ====================================
+
+# --- Binary NP coord: at / o (Commit 3) -------------------------
+- text: Kumain si Maria at si Juan.
+  construction: 'phase5k: NP-coord additive at — NOM-coord SUBJ'
+  expected: parse
+- text: Kumain ng aklat at ng lapis si Maria.
+  construction: 'phase5k: NP-coord additive at — GEN-coord OBJ'
+  expected: parse
+- text: Pumunta si Maria sa palengke at sa bahay.
+  construction: 'phase5k: NP-coord additive at — DAT-coord ADJUNCT'
+  expected: parse
+- text: Kumain si Maria o si Juan.
+  construction: 'phase5k: NP-coord disjunctive o — NOM-coord SUBJ'
+  expected: parse
+
+# --- Bound-clitic 't pre-pass (Commit 2) -----------------------
+- text: Kumain si Maria't si Juan.
+  construction: 'phase5k: bound-clitic ''t pre-pass + NOM-coord'
+  expected: parse
+
+# --- Multi-conjunct NP coord (Commit 4) ------------------------
+- text: Kumain si Maria, si Juan, at si Pedro.
+  construction: 'phase5k: multi-conjunct Oxford comma + at — 3-conjunct flat NOM-coord'
+  expected: parse
+- text: Kumain si Maria, si Juan at si Pedro.
+  construction: 'phase5k: multi-conjunct non-Oxford comma — 3-conjunct flat NOM-coord'
+  expected: parse
+
+# --- Binary clausal coord (Commit 5) ---------------------------
+- text: Kumain si Maria at pumunta si Juan.
+  construction: 'phase5k: clausal additive at — local-scoping'
+  expected: parse
+- text: Kumain si Maria o tumakbo si Juan.
+  construction: 'phase5k: clausal disjunctive o'
+  expected: parse
+
+# --- Adversatives (Commit 6) -----------------------------------
+- text: Kumain si Maria pero hindi pumunta si Juan.
+  construction: 'phase5k: adversative pero — local-scoping NEG on 2nd conjunct'
+  expected: parse
+- text: Kumain si Maria ngunit hindi pumunta si Juan.
+  construction: 'phase5k: adversative ngunit — formal register'
+  expected: parse
+
+# --- Consequence kaya / kaya naman (Commit 7) ------------------
+- text: Pumunta siya, kaya kumain ako.
+  construction: 'phase5k: consequence kaya — comma-marked clausal coord'
+  expected: parse
+- text: Pumunta siya kaya naman kumain ako.
+  construction: 'phase5k: consequence kaya naman — DISCOURSE_EMPH=YES'
+  expected: parse
+
+# --- Asymmetric NP coord (Commit 8) ----------------------------
+- text: Kumain si Maria, hindi si Juan.
+  construction: 'phase5k: asymmetric NP-coord — Si Maria, hindi si Juan (COORD=BUT_NOT)'
+  expected: parse
+
+# --- Negation × clausal coord (Commit 8) -----------------------
+- text: Hindi kumain si Maria at pumunta si Juan.
+  construction: 'phase5k: negation × clausal coord — local-scoping NEG on 1st conjunct'
+  expected: parse
+
+# --- Coord × HAVE (Commit 9) -----------------------------------
+- text: May aklat at lapis si Maria.
+  construction: 'phase5k: coord × HAVE — N-level coord composes with Phase 5j HAVE (positive, full-NP possessor)'
+  expected: parse
+- text: May aklat at lapis ako.
+  construction: 'phase5k: coord × HAVE — clitic possessor'
+  expected: parse
+- text: Walang aklat at lapis si Maria.
+  construction: 'phase5k: coord × HAVE — negative HAVE'
+  expected: parse
+
+# --- Coord × cardinals / ADJ-mod / pred-ADJ (Commit 9) --------
+- text: Bumili ng dalawang aklat at ng tatlong lapis si Maria.
+  construction: 'phase5k: coord × cardinals — Phase 5f × 5k composition (cardinal-modified GEN-coord OBJ)'
+  expected: parse
+- text: Bumili si Maria ng malalaking aklat at ng maliliit na lapis.
+  construction: 'phase5k: coord × ADJ-mod — Phase 5g × 5k (ADJ-modified GEN-coord OBJ)'
+  expected: parse
+- text: Maganda si Maria at si Juan.
+  construction: 'phase5k: coord × predicative-ADJ — Phase 5g × 5k (NOM-coord SUBJ in pred-ADJ matrix)'
+  expected: parse

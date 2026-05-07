@@ -39,6 +39,7 @@ from ..morph import analyze_tokens
 from ..parse import parse_with_annotations
 from ..text import (
     merge_hyphen_compounds,
+    split_apostrophe_t,
     split_enclitics,
     split_linker_ng,
     tokenize,
@@ -108,6 +109,14 @@ def parse_text_with_fragments(
     partial f-structure and the diagnostics that prevented promotion.
     """
     toks = tokenize(text)
+    # Phase 5k Commit 2: merge the post-vowel bound clitic ``'t`` (=
+    # contracted ``at`` "and") into a synthetic ``at`` token so it
+    # routes to the Phase 5k Commit 1 PART[COORD=AND] lex entry.
+    # ``Maria't Juan`` → ``Maria`` / ``at`` / ``Juan``. Runs first
+    # so all downstream pre-passes see the canonical ``at``
+    # surface; ``at`` doesn't end in vowel + ``-ng`` so there is
+    # no interaction with :func:`split_linker_ng`.
+    toks = split_apostrophe_t(toks)
     # Phase 4 §7.5: detach the bound linker ``-ng`` from vowel-final
     # hosts (``batang`` → ``bata`` + ``-ng``) so the relativization
     # rules see a uniform ``PART[LINK=NA|NG]`` between the head NP

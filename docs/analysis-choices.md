@@ -10090,3 +10090,256 @@ bahay.``) and 8 integration tests. End of Phase 5j delivers
 / ``mag-isa`` hyphen-split / ``mama`` lex. The combined
 essay-paragraph (R&G p. 482) needs simples #1 / #3 to land
 first; the Phase 5j follow-on closes that.
+
+
+## Phase 5k Commit 1: coordinator + punctuation lex inventory
+
+Roadmap §12.1 / plan-of-record §4.1-§4.4. Ten new lex entries
+in ``data/tgl/particles.yaml`` plus an update to the Phase 5i
+tag-Q rule.
+
+### Coordinators are PART-typed clause / NP-typers
+
+Coordinators (``at``, ``o``, ``pero`` / ``ngunit`` / ``subalit``,
+``kaya``) are PART-typed lex entries with a ``COORD`` feature
+that lifts onto the matrix coord f-structure. Same precedent as
+Phase 5j PART-typed clause-typers (``may`` / ``wala`` / ``nasa``)
+— closed-class connectives go in ``data/tgl/particles.yaml``,
+not as their own lexical category. The matrix coord rules read
+``COORD`` from the daughter and mirror it on the matrix, without
+introducing a separate coord-PRED.
+
+### `kaya` polysemy: VERB[CTRL_CLASS=PSYCH] + PART[COORD=SO]
+
+Same precedent as Phase 5j ``kailangan`` (V[MODAL] + NOUN),
+Phase 5h ``pareho`` (predicative-ADJ + Q-floated), Phase 5i
+``alin`` / ``ilan``. Two YAML entries with the same surface;
+both readings are returned by the morph layer; rule context
+disambiguates without cross-fire (PSYCH wraps with
+GEN-experiencer + linker + XCOMP-V; PART[COORD=SO] sits between
+two complete S clauses).
+
+### Comma as PUNCT[PUNCT_CLASS=COMMA]
+
+Pre-Phase-5k Commit 1 the comma was ``_UNK`` and silently
+dropped by ``_strip_non_content``. Phase 5k makes the comma
+structurally meaningful (multi-conjunct, asymmetric, comma-
+marked clausal coord, tag-Q boundary) — adding the lex entry
+makes it survive the strip. The Phase 5i tag-Q rule was
+correspondingly split into a 4-daughter form (with comma) and
+the 3-daughter form (no comma); both are admitted because both
+orthographic conventions are attested.
+
+## Phase 5k Commit 2: apostrophe-t text-pass
+
+Roadmap §12.1 / plan-of-record §5 (text-pass note), §6 Commit 2.
+New ``split_apostrophe_t`` pre-pass in
+``src/tgllfg/text/clitics.py``.
+
+### Bound-clitic 't is contracted at after a vowel
+
+The bound clitic ``'t`` post-vowel is the contracted form of
+the additive coordinator ``at`` "and": ``Maria't Juan`` =
+``Maria at Juan``; ``isa't kalahati`` "one and a half";
+``apat na pu't lima`` "45". The tokenizer's ``\\w+|\\S`` regex
+splits ``Maria't`` into three tokens (``Maria`` / ``'`` / ``t``);
+the new pre-pass collapses any ``[X-vowel-final, ', t]`` triple
+into ``[X, at]`` where the synthetic ``at`` token routes to the
+Phase 5k Commit 1 PART[COORD=AND] lex entry.
+
+### Vowel-final gate prevents spurious firings
+
+``apat't lima`` is ungrammatical (apat is consonant-final); the
+canonical form is ``apat at lima`` or ``apat na pu't lima``
+(with intermediate ``na`` linker bringing the ``'`` onto the
+vowel-final ``pu``). The vowel-final gate also keeps the pass
+from firing on English contractions inside docstrings or future
+code-switching contexts.
+
+## Phase 5k Commit 3: binary NP coordination
+
+Roadmap §12.1 / plan-of-record §5.1, §5.2, §6 Commit 3. Six new
+rules in ``cfg/coordination.py`` (new module).
+
+### Coord matrix is a fresh f-structure
+
+Neither conjunct IS the matrix coord-NP; both are ELEMENTS of
+its CONJUNCTS set via the Phase 5j ``↓N ∈ (↑ SET)`` operator.
+No ``(↑) = ↓N`` lift; the matrix carries non-distributive
+features (COORD, NUM, CASE) of its own; per-conjunct features
+(PRED, LEMMA, MARKER, modifier sets, POSSESSOR) stay on each
+conjunct. No PRED on the coord matrix — coordination is
+structurally non-predicational.
+
+### CASE agreement via parallel category-pattern daughters
+
+Both conjuncts must share CASE (NOM, GEN, DAT). The rule
+``NP[CASE=X] → NP[CASE=X] PART[COORD=Y] NP[CASE=X]`` enforces
+this structurally — mismatched-CASE coord sentences fail at
+the chart layer with no rule firing. Six rules in total
+(3 cases × 2 coord values).
+
+### NUM percolation: AND-forces-PL vs OR-percolates
+
+Additive ``at`` forces NUM=PL on the matrix (semantically
+two-or-more); disjunctive ``o`` percolates NUM from the first
+conjunct via ``(↑ NUM) = ↓1 NUM``. Reflects the semantic
+difference: ``Maria at Juan`` has two referents (plural);
+``Maria o Juan`` has one underspecified referent (singular).
+
+## Phase 5k Commit 4: multi-conjunct NP coord (3-flat)
+
+Roadmap §12.1 / plan-of-record §5.3, §6 Commit 4. Six new rules
+covering Oxford and non-Oxford comma conventions.
+
+### Both Oxford and non-Oxford forms admitted
+
+``Maria, Juan, at Pedro`` (Oxford comma — 6-daughter form) and
+``Maria, Juan at Pedro`` (non-Oxford — 5-daughter form) are
+both attested in modern Tagalog written practice. Both rules
+produce the same flat 3-element CONJUNCTS set on the matrix.
+
+### Restricted to AND only and to 3 conjuncts
+
+Disjunctive 3-conjunct (``Maria, Juan, o Pedro``) is rare in
+Tagalog and deferred to a Phase 5k follow-on. 4+ conjuncts
+would compose via the binary rule wrapping a 3-conjunct sub-NP,
+producing a NESTED CONJUNCTS structure rather than the flat
+4-element set users expect; right-recursive ``NP_COMMA_LIST``
+for arbitrary arity is deferred per plan §9.2.
+
+## Phase 5k Commit 5: binary clausal coordination
+
+Roadmap §12.1 / plan-of-record §5.4, §6 Commit 5. Two new
+clausal-coord rules + LMT robustness fix.
+
+### Coord matrix has no PRED
+
+Each conjunct clause is its own f-structure (with own PRED,
+SUBJ, voice/aspect/mood); the matrix coord-S carries only
+CONJUNCTS + COORD. No PRED on the matrix is the canonical LFG
+analysis for non-asymmetric coordination — the matrix doesn't
+introduce a second-order predication; it merely organizes its
+conjuncts.
+
+### LMT robustness on PRED-less matrices
+
+The legacy LMT (``lmt/legacy.py``) previously crashed with
+``IndexError`` on PRED-less f-structures (``("" or "").split()[0]``).
+Phase 5k Commit 5 extends ``apply_lmt`` to detect the empty-PRED
+case and return an empty AStructure (``pred=""``, no roles, no
+mapping) rather than crash. This is the canonical fallback for
+non-predicational coord matrices; the Phase 5 BK engine isn't
+called on them because ``find_matrix_lex_entry`` returns None.
+
+## Phase 5k Commit 6: adversative clausal coordination
+
+Roadmap §12.1 / plan-of-record §5.5, §6 Commit 6. One new
+clausal-coord rule (added via the parametrized
+``_BINARY_CLAUSAL_COORDS`` tuple).
+
+### Three lex surfaces, one COORD value
+
+``pero`` / ``ngunit`` / ``subalit`` all carry COORD=BUT
+(everyday vs formal register). A single rule covers all three
+because the lex feature COORD=BUT is what selects the daughter,
+not the lemma. This matches the LFG convention of grouping
+morphologically-distinct synonyms under a shared functional
+value.
+
+## Phase 5k Commit 7: consequence coordination + kaya polysemy
+
+Roadmap §12.1 / plan-of-record §5.6, §6 Commit 7. SO clausal
+coord + kaya naman two-word + comma-marked variants for all
+four COORD values + naman lex.
+
+### Comma-marked clausal coord made symmetric across COORD values
+
+The comma-marked clausal coord (``Kumain si Maria, at pumunta
+si Juan.``) is the more common written form. Pre-Phase-5k
+Commit 1 commas were silently dropped; with the Commit 1 lex
+they now require structural consumption. Commit 7 adds comma-
+marked variants uniformly for AND / OR / BUT / SO so the
+parametrization stays symmetric.
+
+### kaya naman as fixed two-word coord
+
+``kaya naman`` is a discourse-emphatic variant of plain
+``kaya`` lifting DISCOURSE_EMPH=YES on the matrix.
+``naman`` is consumed as a structural daughter (the new rule
+shape ``S → S PART[COORD=SO] PART[ADV=ALSO] S``) rather than a
+movable enclitic, because the kaya-naman two-word form is
+fixed lexicalised.
+
+### naman as non-clitic PART[ADV=ALSO]
+
+``naman`` was ``_UNK`` pre-Commit 7. The plan §4.3 incorrectly
+assumed it was already enclitic; the audit caught the gap. Adds
+naman as ``pos: PART, feats: {ADV: ALSO, LEMMA: naman}`` —
+NON-clitic. Treating naman as a clitic here would trigger
+``reorder_clitics`` to pull it into one of the adjacent
+matrix-V's post-position, breaking the kaya-naman adjacency.
+Free-standing naman (``Kumain naman ako``) is a separate
+construction deferred to a follow-on.
+
+### kaya polysemy resolved without cross-fire
+
+The pre-existing PSYCH-VERB ``kaya`` ("be able to") fires only
+on ``Kaya <pron>ng V`` (4-token control-wrap shape); the new
+PART[COORD=SO] reading fires only when sandwiched between two
+complete S clauses. Audit (2026-05-07): all ~16 pre-existing
+``kaya`` corpus entries are PSYCH-control 4-token forms; none
+match the binary-S-coord shape. Baseline zero-diff confirmed.
+
+## Phase 5k Commit 8: asymmetric NP coord + negation × coord
+
+Roadmap §12.1 / plan-of-record §5.7, §5.8, §6 Commit 8.
+
+### COORD=BUT_NOT distinct from BUT
+
+Asymmetric coord (``Si Maria, hindi si Juan``) is structurally
+distinct from symmetric adversative (``X pero Y``): no symmetric
+coord PART; ``hindi`` itself fills the connective slot; the
+second conjunct is the NEGATED alternative. Marking with
+COORD=BUT_NOT (distinct from BUT) makes the asymmetry visible
+to downstream consumers.
+
+### Defining (↓4 POLARITY) = 'NEG' on the rejected conjunct
+
+The asymmetric rule sets POLARITY=NEG on the second conjunct's
+f-structure as a defining equation, marking the rejected
+alternative inside the conjunct itself rather than only on the
+matrix. The matrix's COORD=BUT_NOT and the conjunct's
+POLARITY=NEG together give downstream consumers two ways to
+detect the rejection.
+
+### Negation × clausal coord — local-scoping reading
+
+Phase 4 §7.2 hindi-wrap composes with the inner conjunct S
+unchanged (no new rule). ``Hindi kumain si Maria at pumunta si
+Juan.`` parses as ``[hindi kumain si Maria] AND [pumunta si
+Juan]`` with POLARITY=NEG only on the first conjunct. Cross-
+conjunct scoping (``Hindi [si Maria at si Juan] kumain.``
+"Neither X nor Y") is a deferred follow-on — the
+local-scoping reading is the baseline.
+
+## Phase 5k Commit 9: N-level coord + interaction tests
+
+Roadmap §12.1 / plan-of-record §6 Commit 9.
+
+### N-level coord enables coord × HAVE
+
+The Phase 5j HAVE rules take bare-N as the existence-asserted
+daughter (``S → PART[EXISTENTIAL=YES] N NP[CASE=NOM]``); the
+Phase 5k Commit 3 NP-level coord rules produce NP[CASE=X], not
+bare N. Without N-level coord ``May aklat at lapis si Maria.``
+0-parsed because ``aklat at lapis`` couldn't reduce to a single
+N. Two new rules (``N → N PART[COORD=Y] N`` for Y ∈ {AND, OR})
+restore the composition.
+
+### Bare-N matrix is case-less by design
+
+No CASE on the matrix N — bare N has no case marker. Consumed
+by HAVE (which sets EXISTENTIAL/CLAUSE_TYPE on its own matrix)
+or by the case-marker → NP projection (``ng aklat at lapis``
+"of book and pencil" — single case marker spans coord-N).

@@ -12,6 +12,13 @@
   stem is known does the split fire. The synthetic ``-ng`` token
   carries that exact surface so it cannot collide with the
   standalone case marker ``ng``.
+* :func:`split_apostrophe_t` (Phase 5k Commit 2) merges the
+  post-vowel bound-clitic ``'t`` (= contracted ``at`` "and") into a
+  synthetic ``at`` token. The tokenizer's ``\\w+|\\S`` regex splits
+  ``Maria't`` into three tokens (``Maria`` / ``'`` / ``t``); this
+  pre-pass collapses the apostrophe + ``t`` pair into one ``at``
+  token routing to the standalone Phase 5k Commit 1 ``at``
+  PART[COORD=AND] lex entry.
 """
 
 from __future__ import annotations
@@ -47,6 +54,63 @@ def split_enclitics(tokens: list[Token]) -> list[Token]:
                 out.append(t)
         else:
             out.append(t)
+    return out
+
+
+_VOWELS = "aeiouAEIOU"
+
+
+def split_apostrophe_t(tokens: list[Token]) -> list[Token]:
+    """Merge the post-vowel bound clitic ``'t`` into a synthetic
+    ``at`` token.
+
+    The bound clitic ``'t`` is the post-vowel contraction of the
+    additive coordinator ``at`` "and" (Phase 5k Commit 1
+    PART[COORD=AND]). It surfaces in:
+
+    * NP-level coordination: ``Maria't Juan`` (= ``Maria at Juan``).
+    * Coordinated cardinals: ``isa't kalahati`` "one and a half";
+      ``apat na pu't lima`` 45; ``isang daan at dalawampu`` 120
+      vs ``isang daa't dalawampu``.
+    * Other lexicalised doublets where post-vowel ``'t`` joins two
+      NPs / NUMs.
+
+    The tokenizer's ``\\w+|\\S`` regex splits ``Maria't`` (or the
+    space-separated ``Maria 't``) into three tokens:
+    ``[Maria, ', t]``. This pre-pass collapses any
+    ``[X, ', t]`` triple where ``X`` ends in a vowel into
+    ``[X, at]`` (a synthetic ``at`` token spanning the original
+    ``'`` and ``t`` positions). The synthetic token's surface is
+    ``at`` so it routes to the same Phase 5k Commit 1 ``at``
+    PART[COORD=AND] lex entry as the standalone form.
+
+    Runs before :func:`split_linker_ng` so the synthesised ``at``
+    is in place before bound-``-ng`` detection (no interaction in
+    practice — ``at`` doesn't end in ``-ng``).
+    """
+    out: list[Token] = []
+    i = 0
+    n = len(tokens)
+    while i < n:
+        host = tokens[i]
+        if (
+            i + 2 < n
+            and tokens[i + 1].surface == "'"
+            and tokens[i + 2].norm == "t"
+            and host.surface
+            and host.surface[-1] in _VOWELS
+        ):
+            out.append(host)
+            ap_start = tokens[i + 1].start
+            t_end = tokens[i + 2].end
+            out.append(Token(
+                surface="at", norm="at",
+                start=ap_start, end=t_end,
+            ))
+            i += 3
+        else:
+            out.append(host)
+            i += 1
     return out
 
 

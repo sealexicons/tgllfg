@@ -31,7 +31,16 @@ from ..core.common import AStructure, FStructure
 
 
 def apply_lmt(f: FStructure) -> AStructure:
-    pred = (f.feats.get("PRED") or "").split()[0]  # "EAT <SUBJ, OBJ>" -> "EAT"
+    pred_raw = (f.feats.get("PRED") or "").split()
+    if not pred_raw:
+        # Phase 5k Commit 5: matrix coord-S f-structures carry no
+        # PRED of their own (the predication lives on each conjunct
+        # in CONJUNCTS). The legacy heuristic has nothing useful to
+        # say about non-predicational f-structures; return an empty
+        # AStructure so downstream code doesn't crash on
+        # ``.split()[0]`` of an empty string.
+        return AStructure(pred="", roles=[], mapping={})
+    pred = pred_raw[0]  # "EAT <SUBJ, OBJ>" -> "EAT"
     voice = f.feats.get("VOICE")
     has_obj = "OBJ" in f.feats
 
