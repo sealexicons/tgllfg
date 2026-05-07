@@ -3940,3 +3940,18 @@
 - text: Kanino ka pumunta?
   construction: 'phase5i: DAT-wh fronting (kanino over residue verbal clause)'
   expected: parse
+
+# === Phase 5j Commit 9: R&G "Ang Manok" simples #5 + #7 =====
+# Two of the seven simple sentences from R&G 1981 p. 482's
+# "Ang Manok" essay-paragraph integration benchmark (per
+# tgllfg-roadmap.md §12.6). Phase 5j Commit 4 (locative
+# existential nasa) unblocks both — they parse with
+# CLAUSE_TYPE=LOC_EXISTENTIAL on the matrix. The base form
+# (#5) uses the bare-N locative-ground rule; the possessor
+# variant (#7) uses the N + GEN-NP locative-ground rule.
+- text: Nasa bundok ang bahay.
+  construction: 'phase5j: locative existential (R&G simple #5)'
+  expected: parse
+- text: Nasa tuktok ng bundok ang bahay.
+  construction: 'phase5j: locative existential with GEN-NP possessor on ground (R&G simple #7)'
+  expected: parse
