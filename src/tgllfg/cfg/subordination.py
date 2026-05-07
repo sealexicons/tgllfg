@@ -191,3 +191,54 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 COMP_TYPE) =c 'TEMP_AFTER'",
         ],
     ))
+
+    # === Phase 5l Commit 7: temporal SubordClause builders =============
+    # — habang "while" / hanggang "until" / mula nang "since"
+    #
+    # Three more temporal builders complete the temporal-subord set:
+    #
+    # ``SubordClause → PART[COMP_TYPE=TEMP_WHILE] S``  for ``habang``
+    # ``SubordClause → PART[COMP_TYPE=TEMP_UNTIL] S``  for ``hanggang``
+    # ``SubordClause → PREP[PREP_TYPE=SOURCE] PART[COMP_TYPE=TEMP_SINCE] S``
+    #     for ``mula nang`` (multi-word lexicalised subordinator)
+    #
+    # ``mula nang`` reuses the existing Phase 5e ``mula``
+    # PREP[PREP_TYPE=SOURCE] entry (no new lex needed for ``mula``)
+    # combined with the Phase 5l Commit 1 ``nang`` PART[COMP_TYPE=
+    # TEMP_SINCE] entry. PREP_TYPE=SOURCE uniquely identifies mula
+    # among PREPs (other PREPs are BENEFICIARY / TOPIC / REASON).
+    # The chart admits ``mula sa NP`` (PP) and ``mula nang S``
+    # (SubordClause) via different structural shapes — no
+    # interference.
+    rules.append(Rule(
+        "SubordClause",
+        ["PART[COMP_TYPE=TEMP_WHILE]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ SUBORD_TYPE) = 'TEMP_WHILE'",
+            "(↓1 COMP_TYPE) =c 'TEMP_WHILE'",
+        ],
+    ))
+    rules.append(Rule(
+        "SubordClause",
+        ["PART[COMP_TYPE=TEMP_UNTIL]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ SUBORD_TYPE) = 'TEMP_UNTIL'",
+            "(↓1 COMP_TYPE) =c 'TEMP_UNTIL'",
+        ],
+    ))
+    rules.append(Rule(
+        "SubordClause",
+        [
+            "PREP[PREP_TYPE=SOURCE]",
+            "PART[COMP_TYPE=TEMP_SINCE]",
+            "S",
+        ],
+        [
+            "(↑) = ↓3",
+            "(↑ SUBORD_TYPE) = 'TEMP_SINCE'",
+            "(↓1 PREP_TYPE) =c 'SOURCE'",
+            "(↓2 COMP_TYPE) =c 'TEMP_SINCE'",
+        ],
+    ))
