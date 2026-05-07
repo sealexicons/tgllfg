@@ -242,3 +242,27 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 COMP_TYPE) =c 'TEMP_SINCE'",
         ],
     ))
+
+    # === Phase 5l Commit 8: purpose SubordClause builder ==============
+    # — para / upang "in order to"
+    #
+    # ``SubordClause → PART[COMP_TYPE=PURP] S``
+    #
+    # Both purpose PARTs (para / upang — Commit 1 lex) feed this
+    # one builder. ``upang`` carries REGISTER=FORMAL on its PART
+    # f-structure (Commit 1); the register feat percolates onto
+    # the SubordClause f-structure via ``(↑) = ↓2``.
+    #
+    # ``para`` is polysemous with the Phase 5e PREP[BENEFICIARY]
+    # entry (``para sa NP`` "for X"). The chart resolves by
+    # immediate constituent — PREP path takes a DAT-NP; PART path
+    # takes an S. The two contexts don't overlap structurally.
+    rules.append(Rule(
+        "SubordClause",
+        ["PART[COMP_TYPE=PURP]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ SUBORD_TYPE) = 'PURP'",
+            "(↓1 COMP_TYPE) =c 'PURP'",
+        ],
+    ))
