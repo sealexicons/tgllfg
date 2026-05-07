@@ -360,3 +360,66 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓4 ADV) =c 'ALSO'",
         ],
     ))
+
+    # --- Phase 5k Commit 8: asymmetric NP coordination ---
+    #
+    # ``NP[CASE=X] → NP[CASE=X] PUNCT[COMMA] PART[POLARITY=NEG] NP[CASE=X]``
+    # for each case X ∈ {NOM, GEN, DAT}. Three rules total.
+    #
+    # ``Si Maria, hindi si Juan.`` "Maria, not Juan" — a comma-
+    # separated coord with the second conjunct headed by ``hindi``,
+    # producing a contrast-with-rejection reading. Distinct from
+    # symmetric ``at`` / ``o`` / ``pero`` coord because:
+    #
+    #   * The second conjunct is the NEGATED alternative — the
+    #     speaker asserts the first and rejects the second.
+    #   * No symmetric coord PART (``at``, ``o``, etc.) is present;
+    #     ``hindi`` itself fills the connective slot.
+    #   * The matrix carries COORD=BUT_NOT (asymmetric value
+    #     distinct from BUT used for symmetric adversative
+    #     pero/ngunit/subalit).
+    #
+    # Equations (NOM example):
+    #   ↓1 ∈ (↑ CONJUNCTS)
+    #   ↓4 ∈ (↑ CONJUNCTS)
+    #   (↑ COORD) = 'BUT_NOT'
+    #   (↑ CASE) = 'NOM'
+    #   (↑ NUM) = ↓1 NUM
+    #   (↓3 POLARITY) =c 'NEG'
+    #   (↓4 POLARITY) = 'NEG'
+    #
+    # NUM percolates from the first (asserted) conjunct rather
+    # than forcing PL — semantically the matrix asserts ONE
+    # referent (the first); the second is contrasted-and-rejected.
+    # Marking the second conjunct's POLARITY=NEG is a defining
+    # equation that flags the rejection on the conjunct's own
+    # f-structure for downstream consumers.
+    #
+    # The rule structurally overlaps with the Commit 4
+    # multi-conjunct rule (``NP COMMA NP AND NP``, also 5
+    # daughters). Non-conflict category-pattern matching admits
+    # both rules for ``Si Maria, hindi si Juan`` (PART[POLARITY=
+    # NEG] and PART[COORD=AND] share no keys with hindi's
+    # morph feats); the constraining equations
+    # ``(↓3 POLARITY) =c 'NEG'`` here and ``(↓4 COORD) =c 'AND'``
+    # in the multi-conjunct rule discriminate at the unifier
+    # layer — only one fires per input.
+    for case in _NP_CASES:
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [
+                f"NP[CASE={case}]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                "PART[POLARITY=NEG]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓4 ∈ (↑ CONJUNCTS)",
+                "(↑ COORD) = 'BUT_NOT'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ NUM) = ↓1 NUM",
+                "(↓3 POLARITY) =c 'NEG'",
+                "(↓4 POLARITY) = 'NEG'",
+            ],
+        ))
