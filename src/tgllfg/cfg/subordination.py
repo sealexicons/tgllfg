@@ -285,3 +285,36 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 COMP_TYPE) =c 'REAS'",
         ],
     ))
+
+    # === Phase 5l Commit 13: ay-fronted SubordClause topic ============
+    #
+    # ``S → SubordClause PART[LINK=AY] S``
+    #
+    # Discourse-level fronting of a SubordClause as the matrix
+    # TOPIC, parallel to Phase 4 §7.4 NP ay-fronting
+    # (``Si Maria ay kumain.``). The fronted SubordClause is the
+    # TOPIC of the matrix AND a member of ADJUNCT — the
+    # f-structure shape matches the non-fronted post-matrix
+    # attachment (Commit 2 rule (b)) plus the TOPIC marker.
+    #
+    # Equations:
+    #   (↑) = ↓3                   # matrix is the post-ay S
+    #   (↑ TOPIC) = ↓1             # fronted SubordClause is TOPIC
+    #   ↓1 ∈ (↑ ADJUNCT)          # also lands in ADJUNCT for
+    #                                consistency with non-fronted
+    #                                subord shape
+    #   (↓2 LINK) =c 'NA' OR ...   # ay-particle is structurally
+    #                                consumed (no daughter equation)
+    #
+    # End-to-end: ``Kung uulan ay hindi ako pupunta.`` "If it
+    # rains, then I won't go." — the fronted kung-clause is
+    # marked as discourse topic.
+    rules.append(Rule(
+        "S",
+        ["SubordClause", "PART[LINK=AY]", "S"],
+        [
+            "(↑) = ↓3",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJUNCT)",
+        ],
+    ))
