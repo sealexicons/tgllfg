@@ -158,3 +158,36 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 COMP_TYPE) =c 'CONC'",
         ],
     ))
+
+    # === Phase 5l Commit 6: temporal SubordClause builders =============
+    # — bago "before" / pagkatapos "after"
+    #
+    # ``SubordClause → PART[COMP_TYPE=TEMP_BEFORE] S``  for ``bago``
+    # ``SubordClause → PART[COMP_TYPE=TEMP_AFTER] S``   for ``pagkatapos``
+    #
+    # Each TEMP_<X> SUBORD_TYPE marks the temporal relation between
+    # the matrix and the embedded clause. The matrix attachment rules
+    # (a) and (b) above are SUBORD_TYPE-agnostic — temporal
+    # SubordClauses attach via the same rules as conditional /
+    # concessive SubordClauses. No new attachment rule needed.
+    #
+    # Commit 7 adds the remaining three temporal builders
+    # (habang TEMP_WHILE, hanggang TEMP_UNTIL, ``mula nang`` TEMP_SINCE).
+    rules.append(Rule(
+        "SubordClause",
+        ["PART[COMP_TYPE=TEMP_BEFORE]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ SUBORD_TYPE) = 'TEMP_BEFORE'",
+            "(↓1 COMP_TYPE) =c 'TEMP_BEFORE'",
+        ],
+    ))
+    rules.append(Rule(
+        "SubordClause",
+        ["PART[COMP_TYPE=TEMP_AFTER]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ SUBORD_TYPE) = 'TEMP_AFTER'",
+            "(↓1 COMP_TYPE) =c 'TEMP_AFTER'",
+        ],
+    ))
