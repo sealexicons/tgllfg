@@ -438,17 +438,20 @@ class TestRoundTrip:
 
     @given(idx=st.integers(min_value=0, max_value=20))
     @settings(max_examples=21)
-    def test_kain_round_trip(self, idx: int) -> None:
+    def test_kain_round_trip(
+        self,
+        default_data: MorphData,
+        analyzer: Analyzer,
+        idx: int,
+    ) -> None:
         # Iterate over every paradigm cell. Skip cells filtered out
         # by transitivity or affix_class for kain — those should not
         # generate a form for kain in the first place, so a "no
         # round-trip" outcome is correct rather than a failure.
-        data = load_morph_data()
-        analyzer = Analyzer(data)
-        kain = next(r for r in data.roots if r.citation == "kain")
-        if idx >= len(data.paradigm_cells):
+        if idx >= len(default_data.paradigm_cells):
             return
-        cell = data.paradigm_cells[idx]
+        cell = default_data.paradigm_cells[idx]
+        kain = next(r for r in default_data.roots if r.citation == "kain")
         if cell.transitivity and cell.transitivity != kain.transitivity:
             return
         if cell.affix_class and cell.affix_class not in kain.affix_class:
