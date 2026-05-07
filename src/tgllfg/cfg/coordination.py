@@ -36,6 +36,7 @@ from __future__ import annotations
 from .grammar import Rule
 
 _NP_CASES: tuple[str, ...] = ("NOM", "GEN", "DAT")
+_BINARY_CLAUSAL_COORDS: tuple[str, ...] = ("AND", "OR")
 
 
 def register_rules(rules: list[Rule]) -> None:
@@ -204,5 +205,59 @@ def register_rules(rules: list[Rule]) -> None:
                 f"(↑ CASE) = '{case}'",
                 "(↑ NUM) = 'PL'",
                 "(↓4 COORD) =c 'AND'",
+            ],
+        ))
+
+    # --- Phase 5k Commit 5: binary clausal coordination ---
+    #
+    # ``S → S PART[COORD=Y] S`` for each coord value Y ∈ {AND, OR}.
+    # Two rules total. Same shape as the Commit 3 binary NP-coord
+    # rules but at the S level: each conjunct clause is its own
+    # f-structure (with its own PRED, SUBJ, voice/aspect/mood),
+    # and the matrix coord-S carries a flat 2-element CONJUNCTS
+    # set + a COORD value, with NO PRED of its own.
+    #
+    # No PRED on the matrix coord-S is the canonical LFG analysis
+    # for non-asymmetric coordination — the matrix doesn't
+    # introduce a second-order predication; it merely organizes
+    # its conjuncts. The LMT subject-condition check skips
+    # PRED-less f-structures, so the matrix is admitted without
+    # complaint.
+    #
+    # Equations (additive, S-level):
+    #   ↓1 ∈ (↑ CONJUNCTS)
+    #   ↓3 ∈ (↑ CONJUNCTS)
+    #   (↑ COORD) = 'AND'
+    #   (↓2 COORD) =c 'AND'
+    #
+    # The OR variant percolates COORD='OR'. Adversatives (Commit 6
+    # — pero / ngunit / subalit, COORD=BUT) and consequence
+    # (Commit 7 — kaya, COORD=SO) reuse this binary shape; the
+    # constraining equation simply binds a different COORD value
+    # per rule. Two-rule split (AND / OR only) here keeps the
+    # commit scope tight; Commits 6-7 add four more rules with
+    # the same shape.
+    #
+    # Negation × clausal coord (Commit 8 tests): the existing
+    # Phase 4 §7.2 hindi-wrap composes with the inner conjunct S
+    # unchanged — local-scoping reading. ``Hindi kumain si Maria
+    # at uminom si Juan.`` parses as
+    # ``[hindi kumain si Maria] AND [uminom si Juan]`` with
+    # POLARITY=NEG only on the first conjunct. Cross-conjunct
+    # negation scoping (``Hindi [si Maria at si Juan] kumain.``
+    # "Neither X nor Y") is a separate rule deferred per plan §9.2.
+    for coord in _BINARY_CLAUSAL_COORDS:
+        rules.append(Rule(
+            "S",
+            [
+                "S",
+                f"PART[COORD={coord}]",
+                "S",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                f"(↑ COORD) = '{coord}'",
+                f"(↓2 COORD) =c '{coord}'",
             ],
         ))
