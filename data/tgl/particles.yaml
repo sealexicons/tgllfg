@@ -1503,3 +1503,26 @@
 - surface: lamang
   pos: PART
   feats: {ADV: ONLY, LEMMA: lamang, is_clitic: true, CLITIC_CLASS: 2P}
+
+# === Phase 5k Commit 7: `naman` discourse-emphatic particle ===============
+#
+# ``naman`` "also / on the other hand / [emphatic]" — added now so the
+# Phase 5k Commit 7 ``kaya naman`` two-word coord rule can consume it
+# structurally (``S → S PART[COORD=SO] PART[ADV=ALSO] S``).
+#
+# Non-clitic entry (NOT ``is_clitic: true`` — distinct from
+# ``din`` / ``rin``): the kaya naman two-word form is a fixed
+# lexicalised consequence connective, not a free 2P-clitic
+# placement context. Treating naman as a clitic here would
+# trigger ``reorder_clitics`` to pull naman into one of the
+# adjacent matrix-V's post-position, breaking the ``kaya naman``
+# adjacency that the Commit 7 rule expects.
+#
+# Free-standing (clitic-class) naman in ``Kumain naman ako``
+# "I ate too" is a distinct construction; if corpus pressure
+# surfaces a need for that, add a second entry with
+# ``is_clitic: true`` (parallel to din/rin) — separate slot,
+# rule context disambiguates.
+- surface: naman
+  pos: PART
+  feats: {ADV: ALSO, LEMMA: naman}

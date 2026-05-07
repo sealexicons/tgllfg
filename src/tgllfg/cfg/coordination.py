@@ -36,7 +36,7 @@ from __future__ import annotations
 from .grammar import Rule
 
 _NP_CASES: tuple[str, ...] = ("NOM", "GEN", "DAT")
-_BINARY_CLAUSAL_COORDS: tuple[str, ...] = ("AND", "OR", "BUT")
+_BINARY_CLAUSAL_COORDS: tuple[str, ...] = ("AND", "OR", "BUT", "SO")
 
 
 def register_rules(rules: list[Rule]) -> None:
@@ -246,7 +246,16 @@ def register_rules(rules: list[Rule]) -> None:
     # POLARITY=NEG only on the first conjunct. Cross-conjunct
     # negation scoping (``Hindi [si Maria at si Juan] kumain.``
     # "Neither X nor Y") is a separate rule deferred per plan §9.2.
+    # Two surface forms per coord value — without a separating
+    # comma (``Kumain si Maria at pumunta si Juan.``) and with one
+    # (``Kumain si Maria, at pumunta si Juan.`` — comma-marked, the
+    # more common written form for clausal coord). Both are
+    # attested in modern Tagalog. The comma-form lands here in
+    # Commit 7 to support the canonical ``Pumunta siya, kaya
+    # kumain ako.`` form; symmetric for AND / OR / BUT / SO so the
+    # parametrization stays uniform.
     for coord in _BINARY_CLAUSAL_COORDS:
+        # No-comma form (3 daughters).
         rules.append(Rule(
             "S",
             [
@@ -261,3 +270,93 @@ def register_rules(rules: list[Rule]) -> None:
                 f"(↓2 COORD) =c '{coord}'",
             ],
         ))
+        # Comma-marked form (4 daughters; PUNCT syncategorematic).
+        rules.append(Rule(
+            "S",
+            [
+                "S",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                f"PART[COORD={coord}]",
+                "S",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓4 ∈ (↑ CONJUNCTS)",
+                f"(↑ COORD) = '{coord}'",
+                f"(↓3 COORD) =c '{coord}'",
+            ],
+        ))
+
+    # --- Phase 5k Commit 7: `kaya naman` two-word consequence ---
+    #
+    # ``S → S PART[COORD=SO] PART[ADV=ALSO] S``
+    #
+    # Equations:
+    #   ↓1 ∈ (↑ CONJUNCTS)
+    #   ↓4 ∈ (↑ CONJUNCTS)
+    #   (↑ COORD) = 'SO'
+    #   (↑ DISCOURSE_EMPH) = 'YES'
+    #   (↓2 COORD) =c 'SO'
+    #   (↓3 ADV) =c 'ALSO'
+    #
+    # ``kaya naman`` is a discourse-emphatic variant of plain
+    # ``kaya``: "and so / and therefore" with extra emphasis. The
+    # ``naman`` 2P enclitic (PART[ADV=ALSO]) sits between ``kaya``
+    # and the second conjunct, but unlike most 2P clitics it does
+    # not get reordered to a host's post-position — the two-word
+    # ``kaya naman`` is a fixed lexicalised construction. The
+    # rule consumes ``naman`` as a structural daughter rather
+    # than letting clitic placement absorb it.
+    #
+    # The lifted ``DISCOURSE_EMPH`` feature on the matrix
+    # distinguishes ``kaya naman`` from plain ``kaya`` for
+    # downstream consumers (translation / register / ranker
+    # heuristics).
+    #
+    # Polysemy disambiguation: the existing Phase 4 §7.6
+    # VERB[CTRL_CLASS=PSYCH] ``kaya`` ("be able to") fires only on
+    # contexts with a GEN-experiencer + linker + XCOMP-V; it does
+    # NOT match a S-headed context. The new PART[COORD=SO] entry
+    # (Commit 1 lex) fires only when sandwiched between two
+    # complete S clauses. Rule context disambiguates without any
+    # cross-fire risk; corpus audit (2026-05-07) confirmed all
+    # pre-existing ``kaya`` corpus entries (~16 PSYCH control
+    # fixtures) are 4-token forms ``Kaya <pron>ng V`` that never
+    # match the binary-S-coord shape.
+    # No-comma form: ``Pumunta siya kaya naman kumain ako.``
+    rules.append(Rule(
+        "S",
+        [
+            "S",
+            "PART[COORD=SO]",
+            "PART[ADV=ALSO]",
+            "S",
+        ],
+        [
+            "↓1 ∈ (↑ CONJUNCTS)",
+            "↓4 ∈ (↑ CONJUNCTS)",
+            "(↑ COORD) = 'SO'",
+            "(↑ DISCOURSE_EMPH) = 'YES'",
+            "(↓2 COORD) =c 'SO'",
+            "(↓3 ADV) =c 'ALSO'",
+        ],
+    ))
+    # Comma-marked form: ``Pumunta siya, kaya naman kumain ako.``
+    rules.append(Rule(
+        "S",
+        [
+            "S",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "PART[COORD=SO]",
+            "PART[ADV=ALSO]",
+            "S",
+        ],
+        [
+            "↓1 ∈ (↑ CONJUNCTS)",
+            "↓5 ∈ (↑ CONJUNCTS)",
+            "(↑ COORD) = 'SO'",
+            "(↑ DISCOURSE_EMPH) = 'YES'",
+            "(↓3 COORD) =c 'SO'",
+            "(↓4 ADV) =c 'ALSO'",
+        ],
+    ))
