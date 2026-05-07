@@ -129,3 +129,32 @@ def register_rules(rules: list[Rule]) -> None:
             "↓1 ∈ (↑ ADJUNCT)",
         ],
     ))
+
+    # === Phase 5l Commit 4: concessive SubordClause builder ============
+    #
+    # ``SubordClause → PART[COMP_TYPE=CONC] S``
+    #
+    # Equations:
+    #   (↑) = ↓2                       # f-structure identity
+    #   (↑ SUBORD_TYPE) = 'CONC'      # subord-type overlay
+    #   (↓1 COMP_TYPE) =c 'CONC'      # belt-and-braces
+    #
+    # Both concessive PARTs (kahit / bagaman — Commit 1 lex) feed
+    # this builder. ``bagaman`` carries ``REGISTER=FORMAL`` on its
+    # PART f-structure (Commit 1); the register feat percolates
+    # onto the SubordClause f-structure via the ``(↑) = ↓2`` lift
+    # if any future code wants to tell the variants apart.
+    #
+    # The matrix attachment rules (a) and (b) above are SUBORD_TYPE-
+    # agnostic — concessive SubordClauses attach to their matrix
+    # via the same post-matrix / pre-matrix-comma rules as
+    # conditional SubordClauses. No new attachment rule needed.
+    rules.append(Rule(
+        "SubordClause",
+        ["PART[COMP_TYPE=CONC]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ SUBORD_TYPE) = 'CONC'",
+            "(↓1 COMP_TYPE) =c 'CONC'",
+        ],
+    ))
