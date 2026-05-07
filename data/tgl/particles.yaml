@@ -1428,3 +1428,78 @@
 - surface: kailangan
   pos: VERB
   feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: kailangan}
+
+# === Phase 5k Commit 1: coordinator + punctuation lex inventory ============
+#
+# Roadmap §12.1 / Phase 5k plan-of-record §4.1-§4.4. Lex foundation
+# for the Phase 5k coordination work: NP-level + clausal coordinators,
+# the structural comma punct, and the negative-conjunct PARTs (lex
+# only — used opportunistically by other commits).
+#
+# Coordinators are PART-typed clause-typers / NP-typers that lift
+# COORD onto the matrix without introducing a separate coord-PRED
+# (parallel to the Phase 5j PART-typed clause-typers ``may`` /
+# ``wala`` / ``nasa``). The matrix coord rule sets ``(↑ COORD)``
+# from the daughter; the conjuncts sit in a SET-valued CONJUNCTS
+# feature on the matrix.
+#
+# COORD value taxonomy (mutually exclusive):
+#   AND     — additive (``at``)
+#   OR      — disjunctive (``o``)
+#   BUT     — adversative (``pero`` / ``ngunit`` / ``subalit``)
+#   SO      — consequence (``kaya`` qua coordinator — distinct
+#             from the Phase 4 §7.6 PSYCH-verb ``kaya`` "be able
+#             to" entry above; rule context disambiguates)
+#   BUT_NOT — asymmetric (``Si Maria, hindi si Juan`` via ``hindi``)
+#
+# ``kaya`` polysemy: the existing PSYCH verb entry above (line ~523)
+# is unchanged. This new PART[COORD=SO] entry shares the surface
+# but the rule contexts (matrix S vs sister-of-S vs sister-of-NP)
+# disambiguate. Same precedent as Phase 5j ``kailangan`` (V[MODAL]
+# vs NOUN), Phase 5h ``pareho`` (predicative-ADJ vs Q-floated),
+# Phase 5i ``alin`` / ``ilan`` (PRON / Q polysemy).
+#
+# Punctuation: the structural comma is added as ``pos: PUNCT`` so
+# the multi-conjunct (Oxford comma + ``at``) and asymmetric coord
+# rules can consume it as a daughter. The tokenizer
+# (``text/tokenizer.py``, regex ``\w+|\S``) already emits ``,`` as a
+# standalone token; without this lex entry it falls through as
+# ``_UNK`` and gets silently dropped, hiding the structural role.
+#
+# Negative-conjunct PARTs (``kundi`` / ``pati`` / ``lamang``) are
+# added here for opportunistic use by later constructions —
+# correlative coordination ``hindi lang … kundi pati`` is deferred
+# to a Phase 5k follow-on or Phase 5l (per plan-of-record §1
+# / §9.2), but the lex entries cost almost nothing and unblock
+# composition with existing rules. ``lamang`` is the formal
+# of ``lang`` and is structurally identical (2P enclitic, ADV=ONLY).
+- surface: at
+  pos: PART
+  feats: {COORD: AND, LEMMA: at}
+- surface: o
+  pos: PART
+  feats: {COORD: OR, LEMMA: o}
+- surface: pero
+  pos: PART
+  feats: {COORD: BUT, LEMMA: pero}
+- surface: ngunit
+  pos: PART
+  feats: {COORD: BUT, LEMMA: ngunit}
+- surface: subalit
+  pos: PART
+  feats: {COORD: BUT, LEMMA: subalit}
+- surface: kaya
+  pos: PART
+  feats: {COORD: SO, LEMMA: kaya}
+- surface: ","
+  pos: PUNCT
+  feats: {LEMMA: ",", PUNCT_CLASS: COMMA}
+- surface: kundi
+  pos: PART
+  feats: {COORD: BUT_NOT, LEMMA: kundi}
+- surface: pati
+  pos: PART
+  feats: {ADV: ALSO_INCL, LEMMA: pati}
+- surface: lamang
+  pos: PART
+  feats: {ADV: ONLY, LEMMA: lamang, is_clitic: true, CLITIC_CLASS: 2P}

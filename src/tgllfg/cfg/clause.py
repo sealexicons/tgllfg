@@ -1010,10 +1010,18 @@ def register_rules(rules: list[Rule]) -> None:
     # they form a fixed sentence-final tag with QUESTION + NEG_TAG
     # semantics.
     #
-    # Tokenization: the comma is stripped pre-parse (orthographic
-    # terminator family). The chart sees ``S + di + ba``. ``ba``'s
-    # 2P-clitic placement is a no-op here (it's already at clause-
-    # final position post-comma).
+    # Tokenization: the comma is consumed as a structural daughter
+    # (PUNCT[PUNCT_CLASS=COMMA]). Pre-Phase-5k Commit 1 the comma was
+    # silently dropped by ``_strip_non_content`` (no lex entry → all
+    # ``_UNK`` → strip), and this rule had three daughters. Phase 5k
+    # Commit 1 added a ``,`` PUNCT lex entry to support multi-conjunct
+    # coordination (``Maria, Juan, at Pedro`` — Commit 4) and
+    # asymmetric coordination (``Si Maria, hindi si Juan`` — Commit
+    # 8); commas no longer fall through as ``_UNK``. The tag-Q rule
+    # is correspondingly updated to consume the comma daughter (no
+    # equation refers to it — purely syncategorematic, signalling
+    # the matrix-tag boundary). ``ba``'s 2P-clitic placement is a
+    # no-op here (it's already at clause-final position post-comma).
     #
     # Single combined rule (rather than two rules `S → S PART[di]`
     # + Phase 5i Commit 5 ba-Q rule): the two-rule alternative
@@ -1026,6 +1034,28 @@ def register_rules(rules: list[Rule]) -> None:
     # `ba` here and write Q_TYPE=YES_NO; the matrix-Q_TYPE clash
     # rejects that parse (TAG ≠ YES_NO at the unifier), leaving
     # only the tag-Q reading as the surviving parse.
+    # Two-rule split: the comma-marked form (canonical orthography)
+    # and the no-comma form (admitted as orthographically marginal
+    # but attested). Pre-Phase-5k Commit 1 a single 3-daughter rule
+    # covered both because commas were silent-dropped pre-parse;
+    # post-Commit-1 the two forms diverge structurally and need
+    # separate rules.
+    rules.append(Rule(
+        "S",
+        [
+            "S",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "PART[NEG_TAG=YES]",
+            "PART[QUESTION=YES, CLITIC_CLASS=2P]",
+        ],
+        [
+            "(↑) = ↓1",
+            "↓4 ∈ (↑ ADJ)",
+            "(↑ Q_TYPE) = 'TAG'",
+            "(↓3 NEG_TAG) =c 'YES'",
+            "(↓4 QUESTION) =c 'YES'",
+        ],
+    ))
     rules.append(Rule(
         "S",
         [
