@@ -109,3 +109,100 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↓2 COORD) =c 'OR'",
             ],
         ))
+
+    # --- Phase 5k Commit 4: multi-conjunct NP coord (3-flat) ---
+    #
+    # Two surface variants per case, six rules total:
+    #
+    #   Oxford comma form ("Si Maria, si Juan, at si Pedro"):
+    #     NP[CASE=X] → NP[CASE=X] PUNCT[COMMA] NP[CASE=X]
+    #                  PUNCT[COMMA] PART[COORD=AND] NP[CASE=X]
+    #
+    #   Non-Oxford form  ("Si Maria, si Juan at si Pedro"):
+    #     NP[CASE=X] → NP[CASE=X] PUNCT[COMMA] NP[CASE=X]
+    #                  PART[COORD=AND] NP[CASE=X]
+    #
+    # for each case X ∈ {NOM, GEN, DAT}. Both Oxford and non-Oxford
+    # comma conventions are attested in modern Tagalog written
+    # practice; both rules produce the same flat 3-element
+    # CONJUNCTS set. PUNCT[COMMA] daughters are syncategorematic
+    # (no equation refers to them); the matrix carries COORD=AND,
+    # NUM=PL, and the per-case CASE.
+    #
+    # Equations (Oxford NOM example, 6 daughters):
+    #   ↓1 ∈ (↑ CONJUNCTS)
+    #   ↓3 ∈ (↑ CONJUNCTS)
+    #   ↓6 ∈ (↑ CONJUNCTS)
+    #   (↑ COORD) = 'AND'
+    #   (↑ CASE) = 'NOM'
+    #   (↑ NUM) = 'PL'
+    #   (↓5 COORD) =c 'AND'
+    #
+    # Equations (non-Oxford NOM example, 5 daughters):
+    #   ↓1 ∈ (↑ CONJUNCTS)
+    #   ↓3 ∈ (↑ CONJUNCTS)
+    #   ↓5 ∈ (↑ CONJUNCTS)
+    #   (↑ COORD) = 'AND'
+    #   (↑ CASE) = 'NOM'
+    #   (↑ NUM) = 'PL'
+    #   (↓4 COORD) =c 'AND'
+    #
+    # Restricted to AND only — disjunctive ``Maria, Juan, o
+    # Pedro`` is structurally rare in Tagalog and deferred to a
+    # Phase 5k follow-on if corpus pressure surfaces.
+    #
+    # Restricted to 3 conjuncts only — 4+ conjuncts would compose
+    # via the binary rule wrapping a 3-conjunct sub-NP, which
+    # produces a NESTED CONJUNCTS structure (not a flat 4-element
+    # set). Right-recursive ``NP_COMMA_LIST`` for arbitrary arity
+    # is deferred per plan-of-record §5.3 / §9.2 until corpus
+    # pressure shows ≥4-conjunct sentences.
+    #
+    # PUNCT[COMMA] daughter consumption: the comma is now lex'd
+    # (Phase 5k Commit 1 added PUNCT[PUNCT_CLASS=COMMA]) so it
+    # survives ``_strip_non_content``. The 3-conjunct rules here
+    # are the primary structural consumer of comma daughters in
+    # Phase 5k; the asymmetric coord rule (Commit 8) is the
+    # second.
+    for case in _NP_CASES:
+        # Oxford-comma form (6 daughters).
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [
+                f"NP[CASE={case}]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                f"NP[CASE={case}]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                "PART[COORD=AND]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                "↓6 ∈ (↑ CONJUNCTS)",
+                "(↑ COORD) = 'AND'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ NUM) = 'PL'",
+                "(↓5 COORD) =c 'AND'",
+            ],
+        ))
+        # Non-Oxford form (5 daughters).
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [
+                f"NP[CASE={case}]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                f"NP[CASE={case}]",
+                "PART[COORD=AND]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                "↓5 ∈ (↑ CONJUNCTS)",
+                "(↑ COORD) = 'AND'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ NUM) = 'PL'",
+                "(↓4 COORD) =c 'AND'",
+            ],
+        ))
