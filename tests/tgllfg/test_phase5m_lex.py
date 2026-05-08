@@ -217,11 +217,17 @@ class TestEmphaticMismo:
 
 FREQUENCY_ADVERBS = [
     # (surface, freq_value, lemma)
+    # Note: the analyzer-internal form for the reduplicated
+    # ``paminsan-minsan`` is the joined form ``paminsanminsan``
+    # — the parse-pipeline merger collapses ``X-Y`` to ``XY``
+    # before lookup (Phase 5f Commit 14 precedent for ``tag-init``
+    # / ``taginit``). LEMMA preserves the user-visible
+    # hyphenated form.
     ("madalas",          "HIGH",       "madalas"),
     ("palagi",           "HABITUAL",   "palagi"),
     ("lagi",             "HABITUAL",   "lagi"),
     ("minsan",           "SOMETIMES",  "minsan"),
-    ("paminsan-minsan",  "OCCASIONAL", "paminsan-minsan"),
+    ("paminsanminsan",   "OCCASIONAL", "paminsan-minsan"),
 ]
 
 
@@ -403,7 +409,7 @@ PHASE_5M_SURFACES = [
     "samakatuwid", "gayunpaman",
     "gayon", "ganon", "bukod",
     "mismo",
-    "madalas", "palagi", "lagi", "minsan", "paminsan-minsan",
+    "madalas", "palagi", "lagi", "minsan", "paminsanminsan",
     "sinuman", "sarili",
 ]
 

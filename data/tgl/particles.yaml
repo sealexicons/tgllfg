@@ -1724,6 +1724,6 @@
 - surface: minsan
   pos: ADV
   feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: SOMETIMES, LEMMA: minsan}
-- surface: paminsan-minsan
+- surface: paminsanminsan
   pos: ADV
   feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: OCCASIONAL, LEMMA: paminsan-minsan}
