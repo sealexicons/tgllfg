@@ -137,3 +137,41 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 ADV_TYPE) =c 'FREQUENCY'",
         ],
     ))
+
+
+    # --- Phase 5m Commit 4: sentence-initial sentential ADV --------
+    #
+    # ``Siguro pumupunta siya.`` "Maybe he's going."
+    # ``Marahil hindi siya kakain.`` "Perhaps he won't eat."
+    # ``Samakatuwid kumain siya.`` "Therefore he ate." (Commit 10)
+    # ``Bukod dito kumain siya.`` "Moreover he ate." (Commit 11)
+    #
+    # A single sentence-initial PART rule covers two construction
+    # families: epistemic-modal particles (``siguro`` / ``marahil``,
+    # EPISTEMIC=PROBABLY) and discourse connectives (``samakatuwid``
+    # / ``gayunpaman``, DISCOURSE=THEREFORE / HOWEVER, plus the
+    # multi-word connectives ``gayon din`` / ``ganon din`` / ``bukod
+    # dito`` from Commit 11). Both families carry the marker feat
+    # ``DISCOURSE_POS=SENTENCE_INITIAL``, which gates the rule and
+    # excludes other PARTs (linkers, polarity, 2P clitics) from
+    # occupying this c-structure slot.
+    #
+    # F-structure shape: matrix S inherits the inner S's f-structure
+    # (PRED, SUBJ, OBJ, ASPECT, etc.) via ``(↑) = ↓2``; the
+    # sentence-initial PART joins the matrix's ADJUNCT set as a
+    # daughter member, carrying its own EPISTEMIC / DISCOURSE marker.
+    # No matrix-level lift of EPISTEMIC / DISCOURSE — downstream
+    # consumers iterate ADJUNCT to detect the modal / discourse
+    # marker. (Contrast with Phase 5l Rule C / Phase 5m Rule D which
+    # lift COUNTERFACTUAL / REGISTER to the matrix because those are
+    # clausal-mood properties; epistemic and discourse markers are
+    # inherently adjunct-scoped.)
+    rules.append(Rule(
+        "S",
+        ["PART", "S"],
+        [
+            "(↑) = ↓2",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↓1 DISCOURSE_POS) =c 'SENTENCE_INITIAL'",
+        ],
+    ))
