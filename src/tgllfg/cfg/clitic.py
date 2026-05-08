@@ -194,6 +194,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 CLITIC_CLASS) =c '2P'",
             "¬ (↓2 QUESTION)",
             "¬ (↓2 COUNTERFACTUAL)",
+            "¬ (↓2 REGISTER)",
         ],
     ))
     rules.append(Rule(
@@ -223,6 +224,45 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 CLITIC_CLASS) =c '2P'",
             "(↓2 COUNTERFACTUAL) =c 'YES'",
             "(↑ COUNTERFACTUAL) = 'YES'",
+        ],
+    ))
+    # Phase 5m Commit 2: Rule D — politeness ``po`` / ``ho`` REGISTER lift.
+    #
+    # Mirrors Rules B / C — daughter precondition is the politeness
+    # REGISTER feat (``POLITE`` for ``po``, ``COLLOQUIAL_POLITE`` for
+    # ``ho``); matrix lift is the value-copy ``(↑ REGISTER) = (↓2
+    # REGISTER)`` so the matrix S exposes the politeness register at
+    # the f-structure top level. Rule A is updated above with
+    # ``¬ (↓2 REGISTER)`` so the four paths (Rule A generic, Rule B
+    # ba, Rule C sana, Rule D po/ho) are mutually exclusive.
+    #
+    # Limitation: fragment-host position (``Salamat po``, ``Oo po``)
+    # does NOT parse — the matrix S non-terminal requires a finite
+    # predicate and there is no Phase 4 fragment-answer infrastructure
+    # for sub-S hosts. Pinned in
+    # ``test_phase5m_politeness_clitic.py::TestFragmentHostDeferred``;
+    # closure depends on adding fragment-answer matrix-S rules
+    # (Phase 5n debt-clearing or beyond).
+    rules.append(Rule(
+        "S",
+        ["S", "PART[CLITIC_CLASS=2P, REGISTER=POLITE]"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJ)",
+            "(↓2 CLITIC_CLASS) =c '2P'",
+            "(↓2 REGISTER) =c 'POLITE'",
+            "(↑ REGISTER) = 'POLITE'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["S", "PART[CLITIC_CLASS=2P, REGISTER=COLLOQUIAL_POLITE]"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJ)",
+            "(↓2 CLITIC_CLASS) =c '2P'",
+            "(↓2 REGISTER) =c 'COLLOQUIAL_POLITE'",
+            "(↑ REGISTER) = 'COLLOQUIAL_POLITE'",
         ],
     ))
 
