@@ -406,6 +406,18 @@ class Analyzer:
             # category-pattern matcher can discriminate control
             # verbs (V[CTRL_CLASS=INTRANS] vs V[CTRL_CLASS=TRANS])
             # at the rule level.
+            #
+            # Phase 5n.A Commit 3 audit (§18 L91 closure): this
+            # ``setdefault`` loop projects the root's ``feats:`` block
+            # uniformly across every paradigm cell that fires for the
+            # root's affix_class. There is no per-cell or per-affix-
+            # class filtering — if a cell didn't already set the key
+            # via the cell.feats loop above, the root value lands.
+            # Tests in test_phase5n_paradigm_feats_projection.py pin
+            # the uniform behaviour against future regressions
+            # (SAY_CLASS=YES on every sabi cell; ASK_CLASS=YES on
+            # every tanong cell; CTRL_CLASS uniform on payag /
+            # pilit / utos).
             for k, v in root.feats.items():
                 feats.setdefault(k, v)
             # Default CTRL_CLASS=NONE on verbs not declared as a
