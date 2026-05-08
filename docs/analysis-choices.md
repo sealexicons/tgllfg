@@ -10547,3 +10547,321 @@ the matrix.
 4-daughter ``S kundi pati S``; (c) no-pati 4-daughter
 ``S , kundi S``. Rules (a) and (b) lift CORREL=YES; rule (c)
 only lifts COORD=BUT_NOT.
+
+
+## Phase 5m Commit 1: discourse / register / indefinite lex inventory
+
+Roadmap §12.1 / plan-of-record §4. Twenty-five new lex entries
+across ``data/tgl/particles.yaml``, ``data/tgl/pronouns.yaml``,
+and ``data/tgl/nouns.yaml``. Eight construction families covered:
+politeness 2P clitics, modal/mood particles, discourse connectives
+(single- and multi-word components), emphatic post-N particle,
+frequency adverbs, negative-indefinite PRON, answer interjections,
+and reflexive NOUN. Lex-only commit; no grammar / analyzer changes.
+
+### YAML-boolean trap on PRED feat
+
+The first attempt at lex'ing ``opo`` used ``PRED: "'YES'"`` (5-char
+string with literal single-quotes), producing a malformed equation
+``(↑ PRED) = ''YES''`` (empty-string ''+ YES + ''). The second
+attempt ``PRED: YES`` (no quotes) parsed as Python ``True`` under
+PyYAML 1.1, then was filtered out by the lex-equation builder's
+string-only filter. The correct form is ``PRED: "YES"`` (3-char
+quoted string). Fixed retroactively in Commit 3 for opo / oho /
+sinuman.
+
+### paminsan-minsan tokenization
+
+Hyphenated reduplicated forms tokenize as three tokens
+(``paminsan`` ``-`` ``minsan``). The parse-pipeline merger collapses
+``X-Y`` to ``XY`` for analyzer lookup (Phase 5f Commit 14
+``tag-init`` precedent). The Commit 1 lex surface is the joined
+form ``paminsanminsan``; the LEMMA preserves the canonical
+hyphenated user-visible form.
+
+
+## Phase 5m Commit 2: politeness po/ho 2P-clitic absorption (Rule D)
+
+Roadmap §12.1 / plan-of-record §5.1. Adds Rule D in
+``cfg/clitic.py`` parallel to Rules B (``ba`` Q_TYPE lift) and
+C (``sana`` COUNTERFACTUAL lift):
+
+```
+S → S PART[CLITIC_CLASS=2P, REGISTER=POLITE]
+    (↑) = ↓1
+    ↓2 ∈ (↑ ADJ)
+    (↓2 CLITIC_CLASS) =c '2P'
+    (↓2 REGISTER) =c 'POLITE'
+    (↑ REGISTER) = 'POLITE'
+```
+
+A parallel rule fires on ``REGISTER=COLLOQUIAL_POLITE`` for
+``ho``. Rule A gains ``¬ (↓2 REGISTER)`` for mutual exclusion.
+The four absorption paths (A generic, B ba, C sana, D po/ho) are
+disjoint by precondition.
+
+### Plan deviation
+
+Plan §2 had asserted Rule A would lift REGISTER without
+modification. That was wrong — Rule A absorbs into ADJ but lifts
+no feats. Rule D pattern is the correct mechanic.
+
+### Fragment-host limitation pinned
+
+``Salamat po`` / ``Oo po`` / ``Hindi po`` 0-parse: no Phase 4
+fragment-answer matrix-S infrastructure for one-word noun
+fragments hosting a 2P clitic. The 2P-clitic absorption rule has
+no S to attach to. Pinned in
+``test_phase5m_politeness_clitic.py::TestFragmentHostDeferred``;
+Phase 5n debt.
+
+
+## Phase 5m Commit 3: opo/oho fragment-answer interjection rule
+
+Roadmap §12.1 / plan-of-record §1. Adds a new rule in
+``cfg/clause.py``:
+
+```
+S → PRON
+    (↑) = ↓1
+    (↑ INTERJ) =c 'YES'
+    (↑ ANSWER) =c 'AFFIRM'
+    (↑ CLAUSE_TYPE) = 'FRAGMENT_ANSWER'
+```
+
+The PRON's REGISTER (POLITE / COLLOQUIAL_POLITE) percolates to
+matrix S via ``(↑) = ↓1``. Selectional restriction is tight —
+only INTERJ=YES, ANSWER=AFFIRM PRONs fire (today: only opo /
+oho).
+
+### Plan deviation
+
+Plan §1 had said composition would happen via "the existing
+fragment-answer mechanism (parallel to oo / hindi PRON entries)".
+That was wrong — ``oo`` is not lex'd, ``hindi`` is PART
+[POLARITY=NEG] not PRON, and there was no fragment-answer rule.
+Built the 5-line rule rather than reduce scope to lex-only
+delivery.
+
+### Oo. / Hindi. deferred
+
+Standalone ``Oo.`` / ``Hindi.`` answer clauses 0-parse: ``oo`` is
+unlex'd; ``hindi`` is PART, not PRON[INTERJ=YES]. Closure path
+needs new PRON entries plus parallel ANSWER=NEG rule for hindi.
+Phase 5n debt.
+
+
+## Phase 5m Commit 4: sentence-initial sentential-ADV rule
+
+Roadmap §12.1 / plan-of-record §5.1. Adds a single rule in
+``cfg/discourse.py`` shared between modal/mood particles
+(``siguro`` / ``marahil``) and discourse connectives
+(``samakatuwid`` / ``gayunpaman``, plus the multi-word virtuals
+from Commit 11):
+
+```
+S → PART S
+    (↑) = ↓2
+    ↓1 ∈ (↑ ADJUNCT)
+    (↓1 DISCOURSE_POS) =c 'SENTENCE_INITIAL'
+```
+
+The shared ``DISCOURSE_POS=SENTENCE_INITIAL`` gate covers both
+EPISTEMIC (modal-mood) and DISCOURSE (connective) families
+without proliferating rule shapes.
+
+### EPISTEMIC / DISCOURSE stay on the ADJUNCT member
+
+The rule lifts the ``↓1`` PART into the matrix's ADJUNCT set
+without copying its EPISTEMIC / DISCOURSE feat to the matrix.
+Contrast with Phase 5l Rule C / Phase 5m Rule D which DO lift
+COUNTERFACTUAL / REGISTER — those are clausal-mood properties.
+Modal and discourse markers are inherently adjunct-scoped.
+
+### Clause-medial siguro / marahil deferred
+
+``Pumupunta siguro siya.`` (clause-medial epistemic particle) is
+attested but rare. Phase 5m's sentence-initial-only analysis
+doesn't cover it; Phase 5n inventory pass may add a polysemous
+2P-clitic entry.
+
+
+## Phase 5m Commit 5: frequency adverbs (no new grammar)
+
+Roadmap §12.1 / plan-of-record §1, §4.2. Five new ADV[ADV_TYPE=
+FREQUENCY] entries route through the existing Phase 5f Commit 5
+sentential-FREQ rule (``S → S AdvP[FREQUENCY]``). New ``FREQ_VALUE``
+feat (HIGH / HABITUAL / SOMETIMES / OCCASIONAL) is diagnostic only.
+
+### paminsan-minsan tokenization
+
+Hyphenated; lex'd at the joined form ``paminsanminsan`` so the
+merger collapses tokens before lookup. LEMMA preserves the
+canonical hyphenated form for downstream consumers.
+
+
+## Phase 5m Commit 6: reflexive sarili NP composition (no new grammar)
+
+Roadmap §12.1 / plan-of-record §1, §2 (analytical commitment 4).
+``sarili`` lex'd as NOUN[SEM_CLASS=REFLEXIVE] in
+``data/tgl/nouns.yaml``. Composes as ``D + N + GEN-PRON`` via
+existing Phase 4 NP grammar.
+
+### SEM_CLASS stays on the morph layer
+
+Like Phase 5f ``beses`` / ``ulit`` / ``doble``, the SEM_CLASS feat
+is available to grammar-rule constraining equations but is NOT
+propagated to f-structure. This matches the existing convention.
+Pinned in ``TestSemClassReflexiveOnMorph`` as a regression marker.
+
+### Anaphora resolution deferred
+
+Binding ``sarili NIYA`` to its antecedent SUBJ via inside-out
+designators is Phase 6 work. Phase 5m only does the c-structure
+composition.
+
+
+## Phase 5m Commit 7: emphatic mismo post-N rule
+
+Roadmap §12.1 / plan-of-record §5.3. Adds one rule in
+``cfg/nominal.py``:
+
+```
+NP → NP PART
+    (↑) = ↓1
+    ↓2 ∈ (↑ ADJUNCT)
+    (↓2 EMPHATIC) =c 'YES'
+    (↓2 LEMMA) =c 'mismo'
+    (↑ EMPHATIC) = 'YES'
+```
+
+Distribution: post-NP only — pre-NP attachment is ungrammatical.
+The dual constraint (EMPHATIC=YES + LEMMA=mismo) prevents cross-
+fire from the existing ``nga`` 2P clitic (also EMPHATIC, but a
+different syntactic slot).
+
+
+## Phase 5m Commit 8: indefinite kahit + wh productive
+
+Roadmap §12.1 / plan-of-record §5.4. Adds two parallel productive
+rules in ``cfg/nominal.py``:
+
+```
+PRON → PART[LEMMA=kahit] PRON[WH=YES]   (IndefPRON)
+ADV  → PART[LEMMA=kahit] ADV[WH=YES]    (IndefADV)
+    (↑) = ↓2
+    ↓1 ∈ (↑ ADJUNCT)
+    (↑ INDEF) = 'YES'
+    (↓1 LEMMA) =c 'kahit'
+    (↓2 WH) =c 'YES'
+```
+
+The ``LEMMA=kahit`` constraint excludes other CONC particles
+(``bagaman``) from firing as indef-builders. The ``WH=YES``
+constraint matches the actual lex-feat name (plan §5.4 had said
+``Q_TYPE=WH``; corrected here to match the lex).
+
+### Disambiguation with Phase 5l concessive kahit
+
+The chart picks by daughter category: S → SubordClause path
+(Phase 5l); PRON / ADV → Indef path (Phase 5m). Deterministic;
+no rule cross-fire.
+
+### Two deferrals pinned
+
+* **kahit saan / kahit kailan as clause-level adjuncts**: the
+  IndefADV rule produces ADV[INDEF=YES, ADV_TYPE=LOCATION/TIME]
+  but no clause-final LOCATION/TIME ADV adjunct rule exists today
+  (Phase 5f Commit 5 covers FREQUENCY only). Phase 5n debt.
+* **Pre-V kahit-X SUBJ** (``Kahit sino kumain.``): needs an indef-
+  PRON-as-fronted-topic rule analogous to Phase 5l SubordClause-
+  topic. Phase 5n debt.
+
+
+## Phase 5m Commit 9: negative-indefinite walang + sinuman
+
+Roadmap §12.1 / plan-of-record §1. Adds a new rule in
+``cfg/clause.py`` mirroring the existing Phase 5j ``walang N``
+rule with a PRON[INDEF=NEG_INDEF] daughter:
+
+```
+S → PART[EXISTENTIAL=YES, POLARITY=NEG]
+    PART[LINK=NG]
+    PRON[INDEF=NEG_INDEF]
+```
+
+### Plan deviation
+
+Plan §1 had said "Phase 5m only adds the lex entry for sinuman;
+no new grammar". That was wrong — the existing Phase 5j ``walang
+N`` rule constrains specifically on N daughter and doesn't admit
+PRONs. The minimum delta is one new rule.
+
+### Two deferrals pinned
+
+* **Walang sinumang dumating.**: sinuman + bound -ng + V[finite]
+  RC complement; needs PRON-headed RC infrastructure. Phase 5n
+  debt.
+* **Walang ano man.** / **anuman**: productive ``wh-PRON + man``
+  indef-builder + ``anuman`` lexicalized contracted form. Phase
+  5n debt.
+
+
+## Phase 5m Commit 10: single-word discourse connectives (no new grammar)
+
+Roadmap §12.1 / plan-of-record §5.1. The Commit 1 lex entries
+``samakatuwid`` (DISCOURSE=THEREFORE) and ``gayunpaman``
+(DISCOURSE=HOWEVER) feed the Commit 4 sentence-initial PART rule
+via the shared DISCOURSE_POS=SENTENCE_INITIAL gate. No new grammar
+in this commit.
+
+
+## Phase 5m Commit 11: multi-word discourse connectives
+
+Roadmap §12.1 / plan-of-record §5.2. Adds three multi-word
+lexicalized rules in ``cfg/discourse.py`` building virtual PART
+nodes from two-token sequences:
+
+```
+PART → PART[LEMMA=gayon] PART[LEMMA=din]   (DISCOURSE=LIKEWISE)
+PART → PART[LEMMA=ganon] PART[LEMMA=din]   (DISCOURSE=LIKEWISE)
+PART → PART[LEMMA=bukod] ADP[CASE=DAT, DEIXIS=PROX, DEM=YES]
+                                            (DISCOURSE=ALSO)
+```
+
+Each emitted virtual PART carries DISCOURSE_POS=SENTENCE_INITIAL
+so the Commit 4 rule consumes them. Same precedent as Phase 5l
+``mula nang`` (multi-word subordinator).
+
+### Mixed-POS daughters in bukod-dito
+
+``dito`` is the locative DEM (ADP), not a PART. The bukod-dito
+rule uses PART + ADP daughters. The dito daughter is identified
+via category-pattern constraints rather than a LEMMA equation —
+adding LEMMA to the existing dito ADP entry conflicts with the
+``(↑ LEMMA) = ↓3 LEMMA`` equation in the Phase 5g pre-mod
+demonstrative rule (matrix-LEMMA double-assignment).
+
+### YAML-bool trap on DEM=YES
+
+PyYAML 1.1 parses unquoted ``YES`` as Python ``True``. The
+``=c 'YES'`` constraining equation does NOT match a boolean True;
+the category-pattern matcher DOES. The bukod-dito rule uses the
+category-pattern form ``ADP[CASE=DAT, DEIXIS=PROX, DEM=YES]``.
+
+### gayon din / ganon din architectural deferral
+
+``din`` is a 2P clitic. The Phase 4 §7.3 ``reorder_clitics`` pre-
+pass moves it to clause-final position before grammar parsing,
+breaking the multi-word rule's adjacency requirement. The 3
+grammar rules are landed; closure is a pre-clitic-reorder phrase-
+recognition pass that merges ``gayon din`` / ``ganon din`` into
+single tokens. Phase 5n debt.
+
+
+## Phase 5m Commit 12: coverage corpus expansion
+
+Roadmap §12.1 / plan-of-record §7.2. +20 fixtures in
+``coverage_corpus.yaml`` sampling each Commit 2-11 family.
+Baseline recaptured: 1332 → 1352 top-1 captures (+20); 6 historic
+non-parses preserved.
