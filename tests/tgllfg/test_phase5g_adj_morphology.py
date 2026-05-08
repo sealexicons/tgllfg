@@ -132,9 +132,11 @@ class TestMultiPosCoexistence:
     def test_maganda_only_adj_not_verb(self) -> None:
         analyzer = Analyzer.from_default()
         out = analyzer.analyze_one(_tok("maganda"))
-        # The bare ``ma + root`` surface is ADJ-only — the verbal
-        # ``ma`` paradigm produces ``magaganda`` (CTPL NVOL),
-        # ``naganda`` (PFV NVOL), etc., but not bare ``maganda``.
+        # The bare ``ma + root`` surface is ADJ-only.  Phase 5n.A
+        # Commit 1 slimmed the ``ganda`` VERB entry to
+        # ``affix_class: [um]`` (inchoative ``gumanda`` retained); the
+        # earlier verbal NVOL forms (``naganda`` / ``magaganda``)
+        # are no longer produced.
         verb_analyses = [a for a in out if a.pos == "VERB"]
         adj_analyses = [a for a in out if a.pos == "ADJ"]
         assert verb_analyses == []

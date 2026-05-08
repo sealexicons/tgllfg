@@ -153,20 +153,26 @@ class TestInventoryTotals:
     30 ``ma_adj``-opting roots is unchanged; Phase 5h additions are
     counted separately by affix_class to keep this test stable
     across Phase 5g and Phase 5h+.
+
+    Phase 5n.A Commit 1 (be-X-root pruning, §18 L35) migrates 9
+    pure-adjectival roots from verbs.yaml to adjectives.yaml under
+    a new "Body / condition" section, all opting into ``ma_adj``;
+    the count rises from 30 to 39.
     """
 
-    def test_thirty_ma_adj_roots(self) -> None:
+    def test_thirtynine_ma_adj_roots(self) -> None:
         """Phase 5g seeded 30 ADJ roots opting into ``ma_adj``;
-        Phase 5h Commit 2 doesn't add any more to that opt-in.
+        Phase 5n.A Commit 1 adds 9 (bingi / bulag / galit / ginaw /
+        gulat / gutom / hilo / tibay / tigang) for a total of 39.
         """
         data = load_morph_data()
         ma_adj_roots = [
             r for r in data.roots
             if r.pos == "ADJ" and "ma_adj" in r.affix_class
         ]
-        assert len(ma_adj_roots) == 30, (
-            f"expected 30 ma_adj-opting ADJ roots from Phase 5g; "
-            f"got {len(ma_adj_roots)}"
+        assert len(ma_adj_roots) == 39, (
+            f"expected 39 ma_adj-opting ADJ roots (30 from Phase 5g "
+            f"+ 9 from Phase 5n.A Commit 1); got {len(ma_adj_roots)}"
         )
 
     def test_phase5g_inventory_lemmas_present(self) -> None:
@@ -200,13 +206,13 @@ COEXIST_ROOTS = [
 class TestVerbalCoexistence:
     """For roots shared between adjectives.yaml and verbs.yaml,
     both POS analyses are produced. The ADJ surface is the
-    productive ``ma + root``; the verbal surfaces are the ``um-`` /
-    ``mag-`` / ``ma-`` paradigm forms (typically ``gumanda``,
-    ``naganda``, ``magaganda`` etc.). The two surface families
-    don't collide because the bare ``ma + root`` form is not
-    produced by the verbal paradigm — verbal NVOL ``ma`` cells
-    always reduplicate or use ``na-`` prefix (PFV NVOL: naganda;
-    IPFV NVOL: nagaganda; CTPL NVOL: magaganda)."""
+    productive ``ma + root``; the verbal surface is the inchoative
+    ``-um-`` form (``gumanda`` "become beautiful", ``bumilis``
+    "become quick", ``lumakas`` "become strong", ``yumaman`` "become
+    wealthy"). Phase 5n.A Commit 1 slimmed these four roots'
+    ``affix_class`` to ``[um]`` so the only verbal reading is the
+    inchoative; the prior ``ma-NVOL`` cells (``naganda`` /
+    ``magaganda`` / ``mayaman`` etc.) no longer fire as VERB."""
 
     @pytest.mark.parametrize("root,adj_surface,verb_surface", COEXIST_ROOTS[:4])
     def test_inchoative_um_form_still_parses(

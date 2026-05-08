@@ -492,15 +492,12 @@ PHASE2C_MA_NVOL_FORMS = [
     ("kita",    "AV", "PFV",  "nakita"),
     ("kita",    "AV", "IPFV", "nakikita"),
     ("kita",    "AV", "CTPL", "makikita"),
-    ("gulat",   "AV", "PFV",  "nagulat"),
-    ("gulat",   "AV", "IPFV", "nagugulat"),
-    ("gulat",   "AV", "CTPL", "magugulat"),
+    # Phase 5n.A Commit 1: gulat / galit pruned — moved to ADJ
+    # (``magulat`` / ``magalit`` are now ma_adj surfaces, not verbal
+    # NVOL forms). See data/tgl/adjectives.yaml Body/condition section.
     ("takot",   "AV", "PFV",  "natakot"),
     ("takot",   "AV", "IPFV", "natatakot"),
     ("takot",   "AV", "CTPL", "matatakot"),
-    ("galit",   "AV", "PFV",  "nagalit"),
-    ("galit",   "AV", "IPFV", "nagagalit"),
-    ("galit",   "AV", "CTPL", "magagalit"),
     ("lungkot", "AV", "PFV",  "nalungkot"),
     ("lungkot", "AV", "IPFV", "nalulungkot"),
     ("lungkot", "AV", "CTPL", "malulungkot"),
@@ -660,30 +657,20 @@ PHASE2C_B_MAG_AV_FORMS = [
 
 
 PHASE2C_B_MA_NVOL_FORMS = [
+    # Phase 5n.A Commit 1: gutom / ginaw / hilo / bingi / bulag pruned
+    # — moved to ADJ. The ma_adj surfaces (``magutom`` / ``maginaw``
+    # / ``mahilo`` / ``mabingi`` / ``mabulag``) are now in
+    # data/tgl/adjectives.yaml; the verbal NVOL forms are no longer
+    # produced.
     ("pagod",  "AV", "PFV",  "napagod"),
     ("pagod",  "AV", "IPFV", "napapagod"),
     ("pagod",  "AV", "CTPL", "mapapagod"),
-    ("gutom",  "AV", "PFV",  "nagutom"),
-    ("gutom",  "AV", "IPFV", "nagugutom"),
-    ("gutom",  "AV", "CTPL", "magugutom"),
     ("uhaw",   "AV", "PFV",  "nauhaw"),
     ("uhaw",   "AV", "IPFV", "nauuhaw"),
     ("uhaw",   "AV", "CTPL", "mauuhaw"),
-    ("ginaw",  "AV", "PFV",  "naginaw"),
-    ("ginaw",  "AV", "IPFV", "nagiginaw"),
-    ("ginaw",  "AV", "CTPL", "magiginaw"),
     ("init",   "AV", "PFV",  "nainit"),
     ("init",   "AV", "IPFV", "naiinit"),
     ("init",   "AV", "CTPL", "maiinit"),
-    ("hilo",   "AV", "PFV",  "nahilo"),
-    ("hilo",   "AV", "IPFV", "nahihilo"),
-    ("hilo",   "AV", "CTPL", "mahihilo"),
-    ("bingi",  "AV", "PFV",  "nabingi"),
-    ("bingi",  "AV", "IPFV", "nabibingi"),
-    ("bingi",  "AV", "CTPL", "mabibingi"),
-    ("bulag",  "AV", "PFV",  "nabulag"),
-    ("bulag",  "AV", "IPFV", "nabubulag"),
-    ("bulag",  "AV", "CTPL", "mabubulag"),
     ("pawis",  "AV", "PFV",  "napawis"),
     ("pawis",  "AV", "IPFV", "napapawis"),
     ("pawis",  "AV", "CTPL", "mapapawis"),
@@ -794,39 +781,42 @@ PHASE2C_C_AV_FORMS = [
     ("tuto",    "AV", "PFV",  "natuto"),
     ("tuto",    "AV", "IPFV", "natututo"),
     ("tuto",    "AV", "CTPL", "matututo"),
-    ("yaman",   "AV", "PFV",  "nayaman"),
-    ("yaman",   "AV", "IPFV", "nayayaman"),
-    ("yaman",   "AV", "CTPL", "mayayaman"),
+    # Phase 5n.A Commit 1: yaman / lakas / bilis / ganda slimmed to
+    # affix_class: [um] (inchoative ``yumaman`` / ``lumakas`` /
+    # ``bumilis`` / ``gumanda`` retained); the ma-NVOL forms
+    # (``nayaman`` / ``nalakas`` / ``nabilis`` / ``naganda``) are no
+    # longer produced — the ma-adjective surfaces (``mayaman`` /
+    # ``malakas`` / ``mabilis`` / ``maganda``) ride the ma_adj cell
+    # in adjectives.yaml. Also pruned: tigang / tibay (full removal,
+    # moved to adjectives.yaml).
     ("bigat",   "AV", "PFV",  "nabigat"),
     ("bigat",   "AV", "IPFV", "nabibigat"),
     ("bigat",   "AV", "CTPL", "mabibigat"),
-    ("lakas",   "AV", "PFV",  "nalakas"),
-    ("lakas",   "AV", "IPFV", "nalalakas"),
-    ("lakas",   "AV", "CTPL", "malalakas"),
-    ("tigang",  "AV", "PFV",  "natigang"),
-    ("tigang",  "AV", "IPFV", "natitigang"),
-    ("tigang",  "AV", "CTPL", "matitigang"),
     ("dunong",  "AV", "PFV",  "nadunong"),
     ("dunong",  "AV", "IPFV", "nadudunong"),
     ("dunong",  "AV", "CTPL", "madudunong"),
-    ("bilis",   "AV", "PFV",  "nabilis"),
-    ("bilis",   "AV", "IPFV", "nabibilis"),
-    ("bilis",   "AV", "CTPL", "mabibilis"),
     ("sigla",   "AV", "PFV",  "nasigla"),
     ("sigla",   "AV", "IPFV", "nasisigla"),
     ("sigla",   "AV", "CTPL", "masisigla"),
     ("dami",    "AV", "PFV",  "nadami"),
     ("dami",    "AV", "IPFV", "nadadami"),
     ("dami",    "AV", "CTPL", "madadami"),
-    ("ganda",   "AV", "PFV",  "naganda"),
-    ("ganda",   "AV", "IPFV", "nagaganda"),
-    ("ganda",   "AV", "CTPL", "magaganda"),
     ("tamis",   "AV", "PFV",  "natamis"),
     ("tamis",   "AV", "IPFV", "natatamis"),
     ("tamis",   "AV", "CTPL", "matatamis"),
-    ("tibay",   "AV", "PFV",  "natibay"),
-    ("tibay",   "AV", "IPFV", "natitibay"),
-    ("tibay",   "AV", "CTPL", "matitibay"),
+    # Inchoative -um- forms for the slimmed inchoative-attested roots:
+    ("ganda",   "AV", "PFV",  "gumanda"),
+    ("ganda",   "AV", "IPFV", "gumaganda"),
+    ("ganda",   "AV", "CTPL", "gaganda"),
+    ("bilis",   "AV", "PFV",  "bumilis"),
+    ("bilis",   "AV", "IPFV", "bumibilis"),
+    ("bilis",   "AV", "CTPL", "bibilis"),
+    ("lakas",   "AV", "PFV",  "lumakas"),
+    ("lakas",   "AV", "IPFV", "lumalakas"),
+    ("lakas",   "AV", "CTPL", "lalakas"),
+    ("yaman",   "AV", "PFV",  "yumaman"),
+    ("yaman",   "AV", "IPFV", "yumayaman"),
+    ("yaman",   "AV", "CTPL", "yayaman"),
 ]
 
 
@@ -988,11 +978,19 @@ def test_maka_forms_carry_mood_abil(
 # === Coverage statistics =================================================
 
 def test_seed_lexicon_size() -> None:
-    """Track lexicon scale; trigger if it shrinks unexpectedly."""
+    """Track lexicon scale; trigger if it shrinks unexpectedly.
+
+    Phase 5n.A Commit 1 (be-X-root pruning, §18 L35) intentionally
+    removed 9 pure-adjectival VERB entries (bingi / bulag / galit /
+    ginaw / gulat / gutom / hilo / tibay / tigang) — they migrated
+    to adjectives.yaml. The verb threshold drops from 200 to 195
+    accordingly. Slimming ganda / bilis / lakas / yaman to
+    ``affix_class: [um]`` does not change the entry count.
+    """
     data = load_morph_data()
     verbs = [r for r in data.roots if r.pos == "VERB"]
     nouns = [r for r in data.roots if r.pos == "NOUN"]
-    assert len(verbs) >= 200, f"verb count regressed: {len(verbs)}"
+    assert len(verbs) >= 195, f"verb count regressed: {len(verbs)}"
     assert len(nouns) >= 145, f"noun count regressed: {len(nouns)}"
 
 

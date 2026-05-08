@@ -197,6 +197,79 @@
   affix_class: [ma_adj]
 
 
+# === Body / condition states ============================================
+#
+# Phase 5n.A Commit 1: nine roots migrated from verbs.yaml as part of
+# the Be-X-root verbal-paradigm pruning (§18 entry L35). Each is a
+# pure adjectival predicate ("be deaf" / "be blind" / "be hungry"
+# etc.) lexicalised in S&O 1972 §5 / R&B 1986 / Ramos 1971 with the
+# productive ``ma-`` adjectivisation; the prior verbal entries with
+# ``affix_class: [ma, maka]`` produced ungrammatical or marginal
+# stative-verb surfaces (``nabingi``, ``magagalit``, etc.) that
+# conflicted with the Phase 5g §12.1 commitment that ``ma-``
+# adjectives are POS=ADJ rather than stative VERB. The verbal
+# entries were removed; the ADJ surfaces (``mabingi`` / ``magalit``
+# / ``magutom`` / ``maginaw`` / etc.) now compose via the standard
+# ``ma_adj`` cell.
+
+- citation: bingi
+  pos: ADJ
+  gloss: deaf
+  affix_class: [ma_adj]
+  # ``mabingi``. S&O 1972 §5; previously a VERB[INTR] root with
+  # ``affix_class: [ma, maka]``.
+
+- citation: bulag
+  pos: ADJ
+  gloss: blind
+  affix_class: [ma_adj]
+  # ``mabulag``. S&O 1972 §5.
+
+- citation: galit
+  pos: ADJ
+  gloss: angry
+  affix_class: [ma_adj]
+  # ``magalit``. R&B 1986; emotion-state predicate.
+
+- citation: ginaw
+  pos: ADJ
+  gloss: cold (feeling cold)
+  affix_class: [ma_adj]
+  # ``maginaw``. Ramos 1971; body-sensation predicate (distinct from
+  # ``lamig`` which is the ambient-temperature reading).
+
+- citation: gulat
+  pos: ADJ
+  gloss: surprised, startled
+  affix_class: [ma_adj]
+  # ``magulat``. R&B 1986; emotion-state predicate.
+
+- citation: gutom
+  pos: ADJ
+  gloss: hungry
+  affix_class: [ma_adj]
+  # ``magutom``. R&B 1986; body-state predicate. Also in nouns.yaml
+  # as NOUN "hunger" (distinct sense; both citations coexist).
+
+- citation: hilo
+  pos: ADJ
+  gloss: dizzy
+  affix_class: [ma_adj]
+  # ``mahilo``. Ramos 1971; body-sensation predicate.
+
+- citation: tibay
+  pos: ADJ
+  gloss: durable, sturdy
+  affix_class: [ma_adj]
+  # ``matibay``. R&B 1986; quality predicate (object durability).
+
+- citation: tigang
+  pos: ADJ
+  gloss: parched, dry
+  affix_class: [ma_adj]
+  # ``matigang``. S&O 1972 §5; quality predicate.
+
+
 # === Evaluative dimension ===============================================
 
 - citation: saya
