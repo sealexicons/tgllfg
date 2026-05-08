@@ -1315,6 +1315,42 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # Phase 5m Commit 9: negative-indefinite-PRON variant —
+    # ``Walang sinuman.`` "There is no one." Mirrors the linker-
+    # variant N rule above with PRON[INDEF=NEG_INDEF] in the
+    # SUBJ slot. The Commit 1 lex-entry for ``sinuman`` carries
+    # INDEF=NEG_INDEF; the constraint here scopes the rule
+    # tightly so generic PRONs (siya / niya / etc.) don't fire.
+    #
+    # Coverage: ``Walang sinuman.``, ``Walang sinumang dumating.``
+    # (sinuman + linker + V — the second daughter swallows the
+    # bound -ng, then the relative-clause grammar handles
+    # ``sinumang dumating``).
+    #
+    # Plan-of-record §1 had said "Phase 5m only adds the lex
+    # entry for sinuman; no new grammar". That was wrong — the
+    # existing Phase 5j walang-N rule constrains specifically on
+    # ``N`` daughter and doesn't admit PRONs. This new rule is
+    # the minimum delta to compose ``walang sinuman``.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=NEG]",
+            "PART[LINK=NG]",
+            "PRON[INDEF=NEG_INDEF]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 LINK) =c 'NG'",
+            "(↓3 INDEF) =c 'NEG_INDEF'",
+        ],
+    ))
+
     # --- Phase 5j Commit 4: locative existential (nasa) -----------
     #
     #   ``Nasa labas ang aso.``         "The dog is outside."
