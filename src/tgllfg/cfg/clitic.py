@@ -193,6 +193,7 @@ def register_rules(rules: list[Rule]) -> None:
             "↓2 ∈ (↑ ADJ)",
             "(↓2 CLITIC_CLASS) =c '2P'",
             "¬ (↓2 QUESTION)",
+            "¬ (↓2 COUNTERFACTUAL)",
         ],
     ))
     rules.append(Rule(
@@ -204,6 +205,24 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 CLITIC_CLASS) =c '2P'",
             "(↓2 QUESTION) =c 'YES'",
             "(↑ Q_TYPE) = 'YES_NO'",
+        ],
+    ))
+    # Phase 5l Commit 5: Rule C — counterfactual ``sana`` lift.
+    #
+    # Mirrors Rule B (``ba`` Q_TYPE lift) — same shape with a
+    # COUNTERFACTUAL=YES daughter precondition and a literal
+    # ``(↑ COUNTERFACTUAL) = 'YES'`` lift onto the matrix S. Rule A
+    # is updated above with ``¬ (↓2 COUNTERFACTUAL)`` so the two
+    # paths are mutually exclusive.
+    rules.append(Rule(
+        "S",
+        ["S", "PART[CLITIC_CLASS=2P, COUNTERFACTUAL=YES]"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJ)",
+            "(↓2 CLITIC_CLASS) =c '2P'",
+            "(↓2 COUNTERFACTUAL) =c 'YES'",
+            "(↑ COUNTERFACTUAL) = 'YES'",
         ],
     ))
 

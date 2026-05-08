@@ -231,15 +231,19 @@ class TestIlanPolysemy:
 class TestComplementizerKung:
     """``kung`` is the indirect-question complementizer. Phase 5i
     Commit 8 builds the ``XCOMP → PART[COMP_TYPE=INTERROG] S[Q_TYPE=WH]``
-    rule that consumes it."""
+    rule that consumes it. Phase 5l Commit 1 adds a second ``kung``
+    PART entry with COMP_TYPE=COND for conditional subordination;
+    this test pins the INTERROG entry's continued presence."""
 
     def test_kung_indexed_as_part(self) -> None:
         analyzer = Analyzer.from_default()
         out = analyzer.analyze_one(_tok("kung"))
-        parts = [a for a in out if a.pos == "PART"]
-        assert len(parts) == 1
-        part = parts[0]
-        assert part.feats.get("COMP_TYPE") == "INTERROG"
+        interrog = [
+            a for a in out
+            if a.pos == "PART" and a.feats.get("COMP_TYPE") == "INTERROG"
+        ]
+        assert len(interrog) == 1
+        part = interrog[0]
         assert part.lemma == "kung"
 
 

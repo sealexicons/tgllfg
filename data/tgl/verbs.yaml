@@ -997,6 +997,7 @@
   gloss: say, tell
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka]
+  feats: {SAY_CLASS: "YES"}
 
 - citation: saing
   pos: VERB
@@ -1183,6 +1184,7 @@
   gloss: ask
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
+  feats: {ASK_CLASS: "YES"}
 
 - citation: tao
   pos: VERB

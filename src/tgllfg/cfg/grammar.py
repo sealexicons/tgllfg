@@ -30,11 +30,12 @@ recognised by the grammar (lex_entry templates may carry them).
 Module organisation (post-Phase-5f split, see
 ``docs/refactor-grammar-package.md``): ``grammar.py`` defines the
 ``Rule`` dataclass and the ``Grammar`` composer class. The
-individual rule appends live in eight per-area modules colocated
+individual rule appends live in nine per-area modules colocated
 in ``cfg/`` — :mod:`nominal`, :mod:`clause`, :mod:`clitic`,
 :mod:`negation`, :mod:`extraction`, :mod:`control`,
-:mod:`discourse`, :mod:`coordination` (Phase 5k). Each exports a
-single ``register_rules(rules)`` function; ``Grammar.load_default``
+:mod:`coordination` (Phase 5k), :mod:`subordination` (Phase 5l),
+:mod:`discourse`. Each exports a single ``register_rules(rules)``
+function; ``Grammar.load_default``
 calls them in order. Per-area linguistic context (negation
 overlays, the ``S_GAP`` / ``S_XCOMP`` gap-category designs, etc.)
 lives in the respective module's docstring.
@@ -71,6 +72,7 @@ class Grammar:
             extraction,
             negation,
             nominal,
+            subordination,
         )
 
         rules: list[Rule] = []
@@ -82,6 +84,7 @@ class Grammar:
         extraction.register_rules(rules)
         control.register_rules(rules)
         coordination.register_rules(rules)
+        subordination.register_rules(rules)
         discourse.register_rules(rules)
 
         return Grammar(rules)

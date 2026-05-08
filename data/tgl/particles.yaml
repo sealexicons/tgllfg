@@ -1526,3 +1526,88 @@
 - surface: naman
   pos: PART
   feats: {ADV: ALSO, LEMMA: naman}
+
+# === Phase 5l Commit 1: subordinators (PART[COMP_TYPE=X]) + sana ==========
+#
+# Subordinator lex inventory for Phase 5l (subordination). Each
+# subordinator is PART-typed with a ``COMP_TYPE`` feature that
+# names the semantic role of the subordinate clause it heads —
+# COND / CONC / TEMP_BEFORE / TEMP_AFTER / TEMP_WHILE /
+# TEMP_UNTIL / TEMP_SINCE / PURP / REAS. The Phase 5i entry
+# ``kung[COMP_TYPE=INTERROG]`` (above) is preserved; this commit
+# adds a second ``kung`` entry with COMP_TYPE=COND. The chart
+# picks the right reading from the rule context (sentence-initial
+# / matrix-adjunct vs post-V[ASK]).
+#
+# ``para`` and ``dahil`` already exist as PREP entries (Phase 5e
+# Commit 3) for ``para sa NP`` "for X" and ``dahil sa NP`` "because
+# of X". Phase 5l adds NEW PART entries for the S-taking
+# subordinator readings (``para S`` "in order to S",
+# ``dahil S`` "because S"). Polysemy is resolved by POS — the
+# chart picks PREP for NP complements, PART for S complements.
+# Same precedent as Phase 5j ``wala`` (existential PART vs
+# locative VERB).
+#
+# ``sana`` is a 2P enclitic (NOT a subordinator) that marks the
+# matrix S as counterfactual (``Pumunta sana ako`` "I would have
+# gone"). It carries ``is_clitic: true`` + a diagnostic
+# ``COUNTERFACTUAL: "YES"`` feat. Cluster priority lives in
+# ``data/tgl/clitics.yaml``.
+
+# (a) Conditional — ``kung`` / ``kapag`` / ``pag`` / ``sakali``
+- surface: kung
+  pos: PART
+  feats: {COMP_TYPE: COND, LEMMA: kung}
+- surface: kapag
+  pos: PART
+  feats: {COMP_TYPE: COND, LEMMA: kapag}
+- surface: pag
+  pos: PART
+  feats: {COMP_TYPE: COND, LEMMA: pag}
+- surface: sakali
+  pos: PART
+  feats: {COMP_TYPE: COND, LEMMA: sakali, SUBORD_VARIANT: IN_CASE}
+
+# (b) Concessive — ``kahit`` / ``bagaman``
+- surface: kahit
+  pos: PART
+  feats: {COMP_TYPE: CONC, LEMMA: kahit}
+- surface: bagaman
+  pos: PART
+  feats: {COMP_TYPE: CONC, LEMMA: bagaman, REGISTER: FORMAL}
+
+# (c) Temporal — ``bago`` / ``pagkatapos`` / ``habang`` /
+# ``hanggang`` / ``nang`` (post ``mula`` for "since")
+- surface: bago
+  pos: PART
+  feats: {COMP_TYPE: TEMP_BEFORE, LEMMA: bago}
+- surface: pagkatapos
+  pos: PART
+  feats: {COMP_TYPE: TEMP_AFTER, LEMMA: pagkatapos}
+- surface: habang
+  pos: PART
+  feats: {COMP_TYPE: TEMP_WHILE, LEMMA: habang}
+- surface: hanggang
+  pos: PART
+  feats: {COMP_TYPE: TEMP_UNTIL, LEMMA: hanggang}
+- surface: nang
+  pos: PART
+  feats: {COMP_TYPE: TEMP_SINCE, LEMMA: nang, SUBORD_VARIANT: SINCE}
+
+# (d) Purpose — ``para`` (S-taking; second entry) / ``upang``
+- surface: para
+  pos: PART
+  feats: {COMP_TYPE: PURP, LEMMA: para}
+- surface: upang
+  pos: PART
+  feats: {COMP_TYPE: PURP, LEMMA: upang, REGISTER: FORMAL}
+
+# (e) Reason — ``dahil`` (S-taking; second entry)
+- surface: dahil
+  pos: PART
+  feats: {COMP_TYPE: REAS, LEMMA: dahil}
+
+# (f) Counterfactual enclitic — ``sana``
+- surface: sana
+  pos: PART
+  feats: {COUNTERFACTUAL: "YES", is_clitic: true, CLITIC_CLASS: 2P, LEMMA: sana}

@@ -4124,3 +4124,91 @@
 - text: Maganda si Maria at si Juan.
   construction: 'phase5k: coord × predicative-ADJ — Phase 5g × 5k (NOM-coord SUBJ in pred-ADJ matrix)'
   expected: parse
+
+# === Phase 5l: subordination =================================
+# --- Conditional (Commit 2) -----------------------------------
+- text: Kung kumain si Maria, pumunta si Juan.
+  construction: 'phase5l: conditional kung — pre-matrix with comma'
+  expected: parse
+- text: Pumunta si Juan kung kumain si Maria.
+  construction: 'phase5l: conditional kung — post-matrix no comma'
+  expected: parse
+- text: Kapag pumunta si Maria, kumain si Juan.
+  construction: 'phase5l: conditional kapag — pre-matrix'
+  expected: parse
+- text: Pag kumain si Maria, pumunta si Juan.
+  construction: 'phase5l: conditional pag — colloquial shortening of kapag'
+  expected: parse
+- text: Sakali pumunta si Maria, kumain si Juan.
+  construction: 'phase5l: conditional sakali — IN_CASE variant'
+  expected: parse
+
+# --- Concessive (Commit 4) ------------------------------------
+- text: Kahit kumain si Maria, pumunta si Juan.
+  construction: 'phase5l: concessive kahit — pre-matrix'
+  expected: parse
+- text: Bagaman kumain si Maria, pumunta si Juan.
+  construction: 'phase5l: concessive bagaman — formal register'
+  expected: parse
+
+# --- Counterfactual (Commit 5) --------------------------------
+- text: Pumunta sana ako.
+  construction: 'phase5l: counterfactual sana — 2P enclitic with COUNTERFACTUAL=YES lift'
+  expected: parse
+- text: Hindi sana pumunta si Maria.
+  construction: 'phase5l: counterfactual sana — composes with hindi negation'
+  expected: parse
+
+# --- Temporal (Commits 6 + 7) ---------------------------------
+- text: Bago kumain si Maria, pumunta si Juan.
+  construction: 'phase5l: temporal bago — TEMP_BEFORE pre-matrix'
+  expected: parse
+- text: Pumunta si Juan pagkatapos kumain si Maria.
+  construction: 'phase5l: temporal pagkatapos — TEMP_AFTER post-matrix'
+  expected: parse
+- text: Habang kumain si Maria, pumunta si Juan.
+  construction: 'phase5l: temporal habang — TEMP_WHILE pre-matrix'
+  expected: parse
+- text: Kumain si Juan hanggang pumunta si Maria.
+  construction: 'phase5l: temporal hanggang — TEMP_UNTIL post-matrix'
+  expected: parse
+- text: Mula nang kumain si Maria, pumunta si Juan.
+  construction: 'phase5l: temporal mula nang — TEMP_SINCE multi-word, pre-matrix'
+  expected: parse
+
+# --- Purpose (Commit 8) ---------------------------------------
+- text: Pumunta si Juan para kumain si Maria.
+  construction: 'phase5l: purpose para — PURP post-matrix; PREP/PART polysemy resolved by S-vs-NP'
+  expected: parse
+- text: Pumunta si Juan upang kumain si Maria.
+  construction: 'phase5l: purpose upang — PURP formal register'
+  expected: parse
+
+# --- Reason (Commit 9) ----------------------------------------
+- text: Pumunta si Juan dahil kumain si Maria.
+  construction: 'phase5l: reason dahil — REAS clausal; PREP/PART polysemy resolved by S-vs-NP'
+  expected: parse
+
+# --- ay-fronted subord topic (Commit 13) ---------------------
+- text: Kung kumain si Maria ay pumunta si Juan.
+  construction: 'phase5l: ay-fronted SubordClause — TOPIC + ADJUNCT'
+  expected: parse
+
+# --- Subord interactions (Commit 13) -------------------------
+- text: Kung kumain si Maria, pumunta si Juan kahit kumain si Pedro.
+  construction: 'phase5l: subord nesting — pre-matrix COND + post-matrix CONC on same matrix'
+  expected: parse
+- text: Pumunta si Juan kung kumain si Maria dahil kumain si Pedro.
+  construction: 'phase5l: subord interactions — COND + REAS on same matrix'
+  expected: parse
+- text: Kung kumain si Maria at pumunta si Juan, kumain si Pedro.
+  construction: 'phase5l: coord-S inside subord — kung wraps a Phase 5k coord-S inner'
+  expected: parse
+
+# --- Correlative coord (Commit 14) ----------------------------
+- text: Hindi lang kumain si Maria, kundi pati pumunta si Juan.
+  construction: 'phase5l: correlative hindi lang … kundi pati — canonical 5-daughter form'
+  expected: parse
+- text: Hindi lang kumain si Maria, kundi pumunta si Juan.
+  construction: 'phase5l: correlative hindi lang … kundi (no pati) — 4-daughter form'
+  expected: parse
