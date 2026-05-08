@@ -616,12 +616,12 @@
   clitic_class: 2P
 - surface: din
   pos: PART
-  feats: {ADV: ALSO}
+  feats: {ADV: ALSO, LEMMA: din}
   is_clitic: true
   clitic_class: 2P
 - surface: rin
   pos: PART
-  feats: {ADV: ALSO}
+  feats: {ADV: ALSO, LEMMA: rin}
   is_clitic: true
   clitic_class: 2P
 - surface: lang
