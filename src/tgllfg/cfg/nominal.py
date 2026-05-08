@@ -1549,6 +1549,57 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # === Phase 5m Commit 8: indefinite ``kahit`` + wh productive =====
+    #
+    # ``kahit sino`` "anyone", ``kahit ano`` "anything",
+    # ``kahit saan`` "anywhere", ``kahit kailan`` "anytime".
+    # Productive composition of the Phase 5l ``kahit`` (PART
+    # [COMP_TYPE=CONC]) with the Phase 5i wh-PRON / wh-ADV
+    # inventory (``sino`` / ``ano`` / ``alin`` / ``saan`` /
+    # ``kailan`` / ``bakit`` / ``paano``).
+    #
+    # Two parallel rules:
+    #
+    #   PRON → PART[LEMMA=kahit] PRON[WH=YES]   (IndefPRON)
+    #   ADV  → PART[LEMMA=kahit] ADV[WH=YES]    (IndefADV)
+    #
+    # Each builds an indefinite PRON / ADV by overlaying
+    # ``INDEF=YES`` onto the inner wh-element's f-structure
+    # (``(↑) = ↓2``). The ``kahit`` daughter joins the matrix's
+    # ADJUNCT set as a member, preserving the c-structure
+    # provenance. The ``LEMMA=kahit`` constraint excludes other
+    # CONC particles (``bagaman``) from firing as indefinite-
+    # builders.
+    #
+    # Disambiguation with Phase 5l concessive ``kahit S``:
+    # the daughter category (S vs PRON/ADV) deterministically
+    # picks the right rule. ``Kahit umulan, …`` builds a
+    # SubordClause; ``Kahit sino …`` builds a PRON.
+    #
+    # Reference: R&G 1981 §6.6.
+    rules.append(Rule(
+        "PRON",
+        ["PART", "PRON"],
+        [
+            "(↑) = ↓2",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↑ INDEF) = 'YES'",
+            "(↓1 LEMMA) =c 'kahit'",
+            "(↓2 WH) =c 'YES'",
+        ],
+    ))
+    rules.append(Rule(
+        "ADV",
+        ["PART", "ADV"],
+        [
+            "(↑) = ↓2",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↑ INDEF) = 'YES'",
+            "(↓1 LEMMA) =c 'kahit'",
+            "(↓2 WH) =c 'YES'",
+        ],
+    ))
+
     # === Phase 5m Commit 7: emphatic ``mismo`` post-N attachment =====
     #
     # ``Maria mismo`` "Maria herself", ``ang bata mismo`` "the child
