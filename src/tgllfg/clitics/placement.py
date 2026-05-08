@@ -123,22 +123,38 @@ def _find_verbless_anchor(
 ) -> int | None:
     """Phase 5e Commit 22: find the placement anchor for verbless
     inputs. The anchor is the first token that's not a clitic, not
-    ``PART[POLARITY=NEG]``, and not punctuation. This covers
-    NOUN/ADJ/ADP predicate heads (``Maganda na ka``,
+    a PART (modifier / linker / negation), and not punctuation. This
+    covers NOUN/ADJ/ADP predicate heads (``Maganda na ka``,
     ``Bata ka``, ``Dito siya``) and lets the same cluster machinery
     used for verbed clauses apply uniformly.
 
+    Phase 5n.A Commit 2 (§18 L69 follow-on): the prior heuristic
+    skipped only ``PART[POLARITY=NEG]``, which matched ``hindi`` /
+    ``huwag`` but not the Phase 5h comparative ``Mas`` or the
+    Phase 5h intensifier ``Lubos`` (PART[INTENSIFIER=YES]). When
+    Commit 2 lifted ``is_clitic: true`` onto the NOM-PRONs, the
+    placement pass started picking these prefix-PARTs as the anchor
+    and hoisting the PRON to a wrong cluster slot
+    (``Mas matalino siya`` reordered to ``Mas siya matalino``,
+    breaking the predicative-comparative grammar). Skipping all
+    PART tokens (they're never predicate heads in Tagalog)
+    generalises the heuristic correctly.
+
     Returns ``None`` if no anchor is found (input is empty, all
-    clitics, or only punctuation / NEG particles). Caller falls
-    back to no-op."""
+    clitics, or only punctuation / PART). Caller falls back to
+    no-op."""
     for i, cands in enumerate(analyses):
         if not cands:
             continue
         if _is_clitic_token(cands):
             continue
-        if _is_neg_part(cands):
-            continue
         if _is_punct_token(cands):
+            continue
+        # Skip PART-only tokens — they're modifiers (negation,
+        # comparative ``mas``, intensifier ``lubos`` /
+        # ``masyado``, linkers ``-ng`` / ``na``, ``ay`` fronter,
+        # subordinators, etc.), never predicate heads.
+        if all(ma.pos == "PART" for ma in cands):
             continue
         return i
     return None
@@ -218,6 +234,41 @@ def _is_pre_linker_pron(
     next_cands = analyses[i + 1]
     return any(
         ma.pos == "PART" and ma.feats.get("LINK") == "NG"
+        for ma in next_cands
+    )
+
+
+def _is_pre_ay_pron(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is a pronominal clitic immediately
+    followed by an ``ay`` particle (``PART[LINK=AY]``).
+
+    Phase 5n.A Commit 2 (§18 L69): when ``ako`` / ``siya`` / ``tayo``
+    / ``kami`` / ``kayo`` / ``sila`` were given ``is_clitic: true``
+    in ``data/tgl/pronouns.yaml`` to fix the hindi-wrap × non-``ka``
+    NOM-clitic 0-parses (``Hindi ako kumain``), the existing
+    Wackernagel pass would otherwise hoist these PRONs out of their
+    ay-fronting topic position (``Ako ay kumain``) into the post-V
+    cluster, breaking the Phase 4 §7.4 ay-fronting rule's
+    ``[NP, ay, S]`` shape. Suppressing the move keeps the PRON in
+    sentence-initial topic position so the existing ay-fronting
+    grammar fires.
+
+    Detection: PRON-clitic at position ``i`` immediately followed
+    by a PART carrying ``LINK=AY``. The detection is
+    right-context-only and applies regardless of the PRON's
+    sentence position — so embedded ay-fronting (``Sinabi niya na
+    ako ay kumain``) is also handled, not just sentence-initial
+    topics.
+    """
+    if not _is_pron_clitic(analyses[i]):
+        return False
+    if i + 1 >= len(analyses):
+        return False
+    next_cands = analyses[i + 1]
+    return any(
+        ma.pos == "PART" and ma.feats.get("LINK") == "AY"
         for ma in next_cands
     )
 
@@ -633,6 +684,7 @@ def reorder_clitics(
         and not _is_post_noun_pron(analyses, i)
         and not _is_pre_linker_pron(analyses, i)
         and not _is_post_embedded_v_pron(analyses, i, anchor_idx)
+        and not _is_pre_ay_pron(analyses, i)
     ]
     adv_indices = [
         i for i, cands in enumerate(analyses)
