@@ -1548,3 +1548,33 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 VAGUE) =c 'YES'",
         ],
     ))
+
+    # === Phase 5m Commit 7: emphatic ``mismo`` post-N attachment =====
+    #
+    # ``Maria mismo`` "Maria herself", ``ang bata mismo`` "the child
+    # himself". The PART ``mismo`` (Commit 1 lex, EMPHATIC=YES,
+    # LEMMA=mismo) attaches as an ADJUNCT member of the NP it
+    # follows. Distribution: post-NP only — pre-NP attachment is
+    # ungrammatical in Tagalog (cf. Spanish ``mismo Juan`` is valid
+    # but the Tagalog calque inverts position).
+    #
+    # The constraining equations gate on ``EMPHATIC=YES`` AND
+    # ``LEMMA=mismo`` — the latter prevents cross-fire from other
+    # EMPHATIC=YES particles (the existing ``nga`` is EMPHATIC but
+    # is a 2P clitic, not a post-N modifier; the LEMMA constraint
+    # ensures only ``mismo`` fires here). The matrix-NP overlay
+    # ``(↑ EMPHATIC) = 'YES'`` exposes the emphatic marker at the
+    # NP top level for downstream consumers.
+    #
+    # Reference: R&G 1981 §7.3.
+    rules.append(Rule(
+        "NP",
+        ["NP", "PART"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 EMPHATIC) =c 'YES'",
+            "(↓2 LEMMA) =c 'mismo'",
+            "(↑ EMPHATIC) = 'YES'",
+        ],
+    ))
