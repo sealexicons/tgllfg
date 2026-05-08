@@ -10343,3 +10343,207 @@ No CASE on the matrix N — bare N has no case marker. Consumed
 by HAVE (which sets EXISTENTIAL/CLAUSE_TYPE on its own matrix)
 or by the case-marker → NP projection (``ng aklat at lapis``
 "of book and pencil" — single case marker spans coord-N).
+
+## Phase 5l Commit 1: subordinator + sana lex inventory
+
+Roadmap §12.1 / plan-of-record §4.1, §6 Commit 1.
+
+### kung carries two PART entries (INTERROG + COND)
+
+Phase 5i lex'd ``kung`` as ``PART[COMP_TYPE=INTERROG]`` for
+indirect-Q embedding. Phase 5l Commit 1 adds a **second** lex
+entry ``PART[COMP_TYPE=COND]`` for conditional subordination.
+Both surface in the morph analyzer's output for the bare
+``kung`` token; the chart picks the right entry from rule
+context (sentence-initial / matrix-adjunct vs post-V[ASK]).
+Same precedent as Phase 5j ``kailangan`` and Phase 5k ``kaya``
+— two lex entries with different feats; rule context
+disambiguates without cross-fire.
+
+### para and dahil polysemy by POS
+
+``para`` and ``dahil`` already exist as PREP entries (Phase 5e
+Commit 3). Phase 5l adds NEW PART entries with
+``COMP_TYPE=PURP`` and ``COMP_TYPE=REAS`` for the S-taking
+subordinator readings. Polysemy is resolved by POS — the
+chart picks PREP for NP complements, PART for S complements.
+Same precedent as Phase 5j ``wala`` (existential PART vs
+locative VERB).
+
+### sana as 2P enclitic, not subordinator
+
+``sana`` "would have / hopefully" is a 2P Wackernagel enclitic
+that marks the matrix S as counterfactual. Lex'd as
+``PART[is_clitic=true, CLITIC_CLASS=2P, COUNTERFACTUAL="YES"]``
+(CLITIC_CLASS=2P added in Commit 5 once the lift rule landed);
+cluster priority 195 in ``data/tgl/clitics.yaml``.
+
+## Phase 5l Commit 2: matrix attachment + conditional builder
+
+Roadmap §12.1 / plan-of-record §5.1, §6 Commit 2.
+
+### Subord clause as ADJUNCT with f-structure identity overlay
+
+A SubordClause is built by ``SubordClause → PART[COMP_TYPE=X] S``
+with ``(↑) = ↓2`` (the SubordClause f-structure IS the inner
+S's f-structure) plus ``(↑ SUBORD_TYPE) = '<X>'`` (the
+subord-type marker is overlaid). Then the matrix attachment
+rules (``S → S SubordClause`` post; ``S → SubordClause
+PUNCT[PUNCT_CLASS=COMMA] S`` pre) lift the SubordClause as a
+member of the matrix's ``ADJUNCT`` set.
+
+The matrix S's PRED / SUBJ / OBJ all come from its own inner
+clause; the SubordClause's f-structure (with its SUBORD_TYPE
+marker on top) joins ADJUNCT.
+
+### Pre-matrix and post-matrix produce identical f-structures
+
+Only the c-tree differs (3 daughters vs 2). The Phase 5k comma
+lex (``PUNCT[PUNCT_CLASS=COMMA]``) is the structural daughter
+for the pre-matrix form; pre-matrix subord without a comma is
+not in scope (corpus convention).
+
+### SUBORD_TYPE-agnostic matrix attachment
+
+The two attachment rules reference bare ``SubordClause`` (no
+SUBORD_TYPE constraint). Subsequent Phase 5l commits add only
+new SubordClause-builder rules; the attachers stay generic and
+admit every SUBORD_TYPE family without modification.
+
+## Phase 5l Commit 3: kung polysemy resolution (no rules)
+
+Roadmap §12.1 / plan-of-record §6 Commit 3.
+
+### Disjoint contexts prevent cross-fire
+
+``kung[INTERROG]`` is consumed only by ``cfg/control.py``
+``S_INTERROG_COMP`` (which constrains its inner S to
+``Q_TYPE=WH``); ``kung[COND]`` is consumed only by
+``cfg/subordination.py`` ``SubordClause`` (whose daughter
+pattern is ``PART[COMP_TYPE=COND]``). The two paths fire in
+disjoint syntactic contexts. There is no known sentence that
+produces both a COND and an INTERROG parse.
+
+## Phase 5l Commit 5: counterfactual sana enclitic + Rule C lift
+
+Roadmap §12.1 / plan-of-record §5.6, §6 Commit 5.
+
+### Rule C parallels Rule B (ba Q_TYPE lift)
+
+The Phase 4 §7.3 generic 2P-clitic absorption rule (Rule A)
+lands a clitic in the matrix's ADJ set; for clitics whose
+feature should ALSO appear at the clause level, a parallel
+rule with a literal ``(↑ FEAT) = 'value'`` lift fires
+instead. Phase 5i Commit 5 added Rule B for ``ba``
+(``(↑ Q_TYPE) = 'YES_NO'``); Phase 5l Commit 5 mirrors this
+with **Rule C** for ``sana``
+(``(↑ COUNTERFACTUAL) = 'YES'``). Rule A is tightened with
+``¬ (↓2 COUNTERFACTUAL)`` so the three rules are mutually
+exclusive by precondition.
+
+## Phase 5l Commits 6 / 7: temporal subord builders
+
+Roadmap §12.1 / plan-of-record §5.3, §6 Commits 6 + 7.
+
+### Five temporal SUBORD_TYPE values
+
+Each ``COMP_TYPE=TEMP_<X>`` PART feeds its own SubordClause-
+builder rule. Five SUBORD_TYPE values cover the temporal-subord
+set: TEMP_BEFORE / TEMP_AFTER / TEMP_WHILE / TEMP_UNTIL /
+TEMP_SINCE.
+
+### mula nang is a multi-word lexicalised subordinator
+
+The rule ``SubordClause → PREP[PREP_TYPE=SOURCE]
+PART[COMP_TYPE=TEMP_SINCE] S`` reuses the existing Phase 5e
+``mula`` PREP entry (PREP_TYPE=SOURCE) — no new lex for
+``mula`` — combined with the Commit 1 ``nang`` PART entry.
+``PREP_TYPE=SOURCE`` uniquely identifies ``mula`` among the
+four Phase 5e PREPs. The chart admits ``mula sa NP`` (PP) and
+``mula nang S`` (SubordClause) via different structural shapes
+— no interference.
+
+## Phase 5l Commits 8 / 9: PURP and REAS with PREP/PART polysemy
+
+Roadmap §12.1 / plan-of-record §5.4 / §5.5.
+
+### Polysemy resolution by immediate constituent
+
+``para`` (Commit 8) and ``dahil`` (Commit 9) compose with the
+right reading per immediate-constituent context: PREP path
+takes a DAT-NP; PART path takes an S. No special
+disambiguation logic needed beyond the category-pattern
+matching.
+
+## Phase 5l Commits 10 / 11: SAY_CLASS / ASK_CLASS lex tagging
+
+Roadmap §12.1 / plan-of-record §5.7, §6 Commits 10 + 11.
+
+### Indirect speech parsing deferred
+
+Plan §1 / §2 assumed the Phase 4 ``na``-linker complement
+admits a finite-S complement of report-class verbs
+(``Sinabi niya na pumunta si Maria.``). Recon revealed no such
+grammar rule exists; the canonical sentence returns 0 parses.
+Building the OV-with-na-S complement rule requires non-trivial
+interaction work — the said-thing fills the SUBJ slot but is a
+finite-S, conflicting with LFG completeness / coherence on the
+standard OV a-structure. Deferred to a Phase 5l follow-on or
+Phase 6 (functional uncertainty).
+
+Commits 10 / 11 deliver: SAY_CLASS=YES (on ``sabi``) and
+ASK_CLASS=YES (on ``tanong``) lex tagging in
+``data/tgl/verbs.yaml``, propagating onto inflected forms via
+the paradigm engine. The diagnostic feats are available for
+any future parsing rule that gates on report / ask class.
+
+### ASK-class reported-Q misanalyzes today
+
+``Tinanong niya kung sino ang kumain.`` parses via the
+Phase 5l COND-adjunct path. The correct semantic reading
+("He asked who ate") needs the Phase 5i ``S_INTERROG_COMP``
+path, which requires ``CTRL_CLASS=KNOW`` on the matrix V;
+``tanong`` carries ``CTRL_CLASS=NONE``. Pinned as a known
+limitation; flipping
+``test_phase5l_reported_q.py::TestReportedQMisanalysisDeferred``
+is the trigger for follow-on work.
+
+## Phase 5l Commit 13: ay-fronted SubordClause topic + interactions
+
+Roadmap §12.1 / plan-of-record §5 (extended at sign-off) /
+§6 Commit 13.
+
+### Ay-fronted SubordClause as TOPIC + ADJUNCT
+
+The new rule ``S → SubordClause PART[LINK=AY] S`` lifts the
+fronted SubordClause as the matrix's TOPIC and adds it as an
+ADJUNCT member, parallel to Phase 4 §7.4 NP ay-fronting.
+
+### Interaction coverage without new rules
+
+Subord nesting (depth 2), subord on coord-S matrix, coord-S
+inside subord, multiple subords on same matrix, and sana
+clitic inside a subord clause all compose without additional
+grammar — the matrix-attachment rules from Commit 2 are
+SUBORD_TYPE-agnostic and recursive, and the Phase 5k coord
+output is an S that the attachers fire on without modification.
+
+## Phase 5l Commit 14: correlative coordination
+
+Roadmap §12.1 / plan-of-record §5 (extended at sign-off) /
+§6 Commit 14.
+
+### CORREL=YES distinguishes correlative from asymmetric
+
+The matrix carries ``COORD=BUT_NOT`` (sharing the value used
+for Phase 5k asymmetric NP-coord ``X, hindi Y``) plus
+``CORREL=YES`` for the kundi-pati forms. ``pati`` is consumed
+structurally — its ALSO_INCL marker doesn't propagate onto
+the matrix.
+
+### Three rules for three structural variants
+
+(a) Canonical 5-daughter ``S , kundi pati S``; (b) no-comma
+4-daughter ``S kundi pati S``; (c) no-pati 4-daughter
+``S , kundi S``. Rules (a) and (b) lift CORREL=YES; rule (c)
+only lifts COORD=BUT_NOT.
