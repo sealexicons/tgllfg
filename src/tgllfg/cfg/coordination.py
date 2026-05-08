@@ -476,3 +476,87 @@ def register_rules(rules: list[Rule]) -> None:
                 f"(↓2 COORD) =c '{coord}'",
             ],
         ))
+
+    # === Phase 5l Commit 14: correlative coordination ==================
+    # — ``hindi lang … kundi pati`` "not only … but also"
+    #
+    # Discontinuous clausal coord: a NEG + lang-marked first
+    # clause paired with a kundi-introduced second clause.
+    # Three structural variants:
+    #
+    # 1. ``S , kundi pati S``  — canonical (comma + both PARTs)
+    # 2. ``S kundi pati S``    — no comma
+    # 3. ``S , kundi S``       — no pati
+    #
+    # The first clause is admitted as any S — typically a
+    # negated clause with a ``lang``-enclitic absorbed into
+    # ADJ (Phase 4 §7.3 + Phase 5e hindi negation), but the
+    # rules don't constrain on the NEG / lang shape; tighter
+    # gating can be added later if corpus pressure demands.
+    #
+    # The matrix carries ``COORD=BUT_NOT`` (sharing the value
+    # used for Phase 5k asymmetric coord ``X, hindi Y``) plus
+    # ``CORREL=YES`` to distinguish correlative from asymmetric.
+    # Both clauses become members of CONJUNCTS, mirroring the
+    # Phase 5k binary clausal coord f-structure.
+    #
+    # ``pati`` (Phase 5k Commit 1 lex: ``PART[ADV=ALSO_INCL]``)
+    # is consumed structurally — its ALSO_INCL marker doesn't
+    # propagate onto the matrix. The lex entry already exists;
+    # this commit just wires the grammar to consume it.
+
+    # Rule (a): canonical — comma + kundi + pati (5 daughters)
+    rules.append(Rule(
+        "S",
+        [
+            "S",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "PART[COORD=BUT_NOT]",
+            "PART[ADV=ALSO_INCL]",
+            "S",
+        ],
+        [
+            "↓1 ∈ (↑ CONJUNCTS)",
+            "↓5 ∈ (↑ CONJUNCTS)",
+            "(↑ COORD) = 'BUT_NOT'",
+            "(↑ CORREL) = 'YES'",
+            "(↓3 COORD) =c 'BUT_NOT'",
+            "(↓4 ADV) =c 'ALSO_INCL'",
+        ],
+    ))
+
+    # Rule (b): no comma — kundi + pati (4 daughters)
+    rules.append(Rule(
+        "S",
+        [
+            "S",
+            "PART[COORD=BUT_NOT]",
+            "PART[ADV=ALSO_INCL]",
+            "S",
+        ],
+        [
+            "↓1 ∈ (↑ CONJUNCTS)",
+            "↓4 ∈ (↑ CONJUNCTS)",
+            "(↑ COORD) = 'BUT_NOT'",
+            "(↑ CORREL) = 'YES'",
+            "(↓2 COORD) =c 'BUT_NOT'",
+            "(↓3 ADV) =c 'ALSO_INCL'",
+        ],
+    ))
+
+    # Rule (c): comma + kundi (no pati) — 4 daughters
+    rules.append(Rule(
+        "S",
+        [
+            "S",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "PART[COORD=BUT_NOT]",
+            "S",
+        ],
+        [
+            "↓1 ∈ (↑ CONJUNCTS)",
+            "↓4 ∈ (↑ CONJUNCTS)",
+            "(↑ COORD) = 'BUT_NOT'",
+            "(↓3 COORD) =c 'BUT_NOT'",
+        ],
+    ))
