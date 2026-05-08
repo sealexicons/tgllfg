@@ -153,8 +153,8 @@
 # answer mechanism (parallel to ``oo`` / ``hindi`` PRON entries).
 # REGISTER distinguishes them. Reference: R&B 1986 §15.4.
 - surface: sinuman
-  feats: {PRED: "'SOMEONE_NEG_INDEF'", INDEF: NEG_INDEF, NUM: SG, PERS: 3, CASE: NOM, LEMMA: sinuman}
+  feats: {PRED: SOMEONE_NEG_INDEF, INDEF: NEG_INDEF, NUM: SG, PERS: 3, CASE: NOM, LEMMA: sinuman}
 - surface: opo
-  feats: {INTERJ: "YES", ANSWER: AFFIRM, REGISTER: POLITE, LEMMA: opo}
+  feats: {PRED: "YES", INTERJ: "YES", ANSWER: AFFIRM, REGISTER: POLITE, LEMMA: opo}
 - surface: oho
-  feats: {INTERJ: "YES", ANSWER: AFFIRM, REGISTER: COLLOQUIAL_POLITE, LEMMA: oho}
+  feats: {PRED: "YES", INTERJ: "YES", ANSWER: AFFIRM, REGISTER: COLLOQUIAL_POLITE, LEMMA: oho}

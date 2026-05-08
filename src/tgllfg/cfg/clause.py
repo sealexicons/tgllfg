@@ -1537,3 +1537,35 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 CLAUSE_TYPE) =c 'EXISTENTIAL'",
         ],
     ))
+
+    # === Phase 5m Commit 3: fragment-answer interjection clause ==========
+    #
+    # ``Opo.`` "Yes (polite)", ``Oho.`` "Yes (colloquial-polite)" form
+    # one-word answer clauses. PRON entries with ``INTERJ=YES`` and
+    # ``ANSWER=AFFIRM`` (only ``opo`` / ``oho`` today) project as a
+    # complete matrix S via this rule; the PRON's REGISTER (POLITE /
+    # COLLOQUIAL_POLITE) percolates to the matrix S via ``(↑) = ↓1``.
+    # CLAUSE_TYPE=FRAGMENT_ANSWER tags the matrix as a fragment-answer
+    # clause for downstream consumers.
+    #
+    # Constraints:
+    # * ``(↑ INTERJ) =c 'YES'`` — gates to interjection PRONs only.
+    # * ``(↑ ANSWER) =c 'AFFIRM'`` — gates to affirmative answers
+    #   (no negative-answer PRON entries today; ``hindi`` is PART
+    #   [POLARITY=NEG], not PRON. ``Hindi.`` / ``Oo.`` standalone
+    #   answers stay deferred — see Phase 5n debt).
+    #
+    # This rule does NOT cover ``Salamat po.`` (NOUN fragment +
+    # politeness clitic) — that needs a separate noun-fragment matrix
+    # rule that is a more general analytical commitment, deferred to
+    # Phase 5n.
+    rules.append(Rule(
+        "S",
+        ["PRON"],
+        [
+            "(↑) = ↓1",
+            "(↑ INTERJ) =c 'YES'",
+            "(↑ ANSWER) =c 'AFFIRM'",
+            "(↑ CLAUSE_TYPE) = 'FRAGMENT_ANSWER'",
+        ],
+    ))
