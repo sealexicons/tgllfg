@@ -1315,6 +1315,42 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # Phase 5m Commit 9: negative-indefinite-PRON variant —
+    # ``Walang sinuman.`` "There is no one." Mirrors the linker-
+    # variant N rule above with PRON[INDEF=NEG_INDEF] in the
+    # SUBJ slot. The Commit 1 lex-entry for ``sinuman`` carries
+    # INDEF=NEG_INDEF; the constraint here scopes the rule
+    # tightly so generic PRONs (siya / niya / etc.) don't fire.
+    #
+    # Coverage: ``Walang sinuman.``, ``Walang sinumang dumating.``
+    # (sinuman + linker + V — the second daughter swallows the
+    # bound -ng, then the relative-clause grammar handles
+    # ``sinumang dumating``).
+    #
+    # Plan-of-record §1 had said "Phase 5m only adds the lex
+    # entry for sinuman; no new grammar". That was wrong — the
+    # existing Phase 5j walang-N rule constrains specifically on
+    # ``N`` daughter and doesn't admit PRONs. This new rule is
+    # the minimum delta to compose ``walang sinuman``.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=NEG]",
+            "PART[LINK=NG]",
+            "PRON[INDEF=NEG_INDEF]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 LINK) =c 'NG'",
+            "(↓3 INDEF) =c 'NEG_INDEF'",
+        ],
+    ))
+
     # --- Phase 5j Commit 4: locative existential (nasa) -----------
     #
     #   ``Nasa labas ang aso.``         "The dog is outside."
@@ -1535,5 +1571,37 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑) = ↓1",
             "↓2 ∈ (↑ ADJUNCT)",
             "(↓1 CLAUSE_TYPE) =c 'EXISTENTIAL'",
+        ],
+    ))
+
+    # === Phase 5m Commit 3: fragment-answer interjection clause ==========
+    #
+    # ``Opo.`` "Yes (polite)", ``Oho.`` "Yes (colloquial-polite)" form
+    # one-word answer clauses. PRON entries with ``INTERJ=YES`` and
+    # ``ANSWER=AFFIRM`` (only ``opo`` / ``oho`` today) project as a
+    # complete matrix S via this rule; the PRON's REGISTER (POLITE /
+    # COLLOQUIAL_POLITE) percolates to the matrix S via ``(↑) = ↓1``.
+    # CLAUSE_TYPE=FRAGMENT_ANSWER tags the matrix as a fragment-answer
+    # clause for downstream consumers.
+    #
+    # Constraints:
+    # * ``(↑ INTERJ) =c 'YES'`` — gates to interjection PRONs only.
+    # * ``(↑ ANSWER) =c 'AFFIRM'`` — gates to affirmative answers
+    #   (no negative-answer PRON entries today; ``hindi`` is PART
+    #   [POLARITY=NEG], not PRON. ``Hindi.`` / ``Oo.`` standalone
+    #   answers stay deferred — see Phase 5n debt).
+    #
+    # This rule does NOT cover ``Salamat po.`` (NOUN fragment +
+    # politeness clitic) — that needs a separate noun-fragment matrix
+    # rule that is a more general analytical commitment, deferred to
+    # Phase 5n.
+    rules.append(Rule(
+        "S",
+        ["PRON"],
+        [
+            "(↑) = ↓1",
+            "(↑ INTERJ) =c 'YES'",
+            "(↑ ANSWER) =c 'AFFIRM'",
+            "(↑ CLAUSE_TYPE) = 'FRAGMENT_ANSWER'",
         ],
     ))

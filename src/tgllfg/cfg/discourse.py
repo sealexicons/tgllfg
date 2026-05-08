@@ -137,3 +137,117 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 ADV_TYPE) =c 'FREQUENCY'",
         ],
     ))
+
+
+    # --- Phase 5m Commit 4: sentence-initial sentential ADV --------
+    #
+    # ``Siguro pumupunta siya.`` "Maybe he's going."
+    # ``Marahil hindi siya kakain.`` "Perhaps he won't eat."
+    # ``Samakatuwid kumain siya.`` "Therefore he ate." (Commit 10)
+    # ``Bukod dito kumain siya.`` "Moreover he ate." (Commit 11)
+    #
+    # A single sentence-initial PART rule covers two construction
+    # families: epistemic-modal particles (``siguro`` / ``marahil``,
+    # EPISTEMIC=PROBABLY) and discourse connectives (``samakatuwid``
+    # / ``gayunpaman``, DISCOURSE=THEREFORE / HOWEVER, plus the
+    # multi-word connectives ``gayon din`` / ``ganon din`` / ``bukod
+    # dito`` from Commit 11). Both families carry the marker feat
+    # ``DISCOURSE_POS=SENTENCE_INITIAL``, which gates the rule and
+    # excludes other PARTs (linkers, polarity, 2P clitics) from
+    # occupying this c-structure slot.
+    #
+    # F-structure shape: matrix S inherits the inner S's f-structure
+    # (PRED, SUBJ, OBJ, ASPECT, etc.) via ``(↑) = ↓2``; the
+    # sentence-initial PART joins the matrix's ADJUNCT set as a
+    # daughter member, carrying its own EPISTEMIC / DISCOURSE marker.
+    # No matrix-level lift of EPISTEMIC / DISCOURSE — downstream
+    # consumers iterate ADJUNCT to detect the modal / discourse
+    # marker. (Contrast with Phase 5l Rule C / Phase 5m Rule D which
+    # lift COUNTERFACTUAL / REGISTER to the matrix because those are
+    # clausal-mood properties; epistemic and discourse markers are
+    # inherently adjunct-scoped.)
+    rules.append(Rule(
+        "S",
+        ["PART", "S"],
+        [
+            "(↑) = ↓2",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↓1 DISCOURSE_POS) =c 'SENTENCE_INITIAL'",
+        ],
+    ))
+
+
+    # --- Phase 5m Commit 11: multi-word discourse connectives ------
+    #
+    # ``Gayon din kumain ang bata.``  "Likewise, the child ate."
+    # ``Ganon din kumain ang bata.``  (colloquial variant of gayon din)
+    # ``Bukod dito kumain ang bata.`` "Moreover, the child ate."
+    #
+    # Three multi-word lexicalized rules building virtual PART
+    # nodes from two-token sequences. Each emitted virtual PART
+    # carries DISCOURSE + DISCOURSE_POS=SENTENCE_INITIAL so it
+    # feeds the Commit 4 sentence-initial PART rule above; the
+    # composition surfaces uniformly with single-word connectives
+    # (Commit 10 ``samakatuwid`` / ``gayunpaman``).
+    #
+    # Heads (``gayon`` / ``ganon`` / ``bukod``) are Commit 1 lex
+    # entries with LEMMA only — no DISCOURSE feat at the lex level
+    # so they don't fire as sentence-initial connectives standalone.
+    # Tails are existing entries with LEMMA added in this commit:
+    # ``din`` (PART[ADV=ALSO, LEMMA=din]) and ``dito``
+    # (ADP[CASE=DAT, DEIXIS=PROX, DEM=YES, LEMMA=dito]).
+    #
+    # The bukod-dito rule has mixed-POS daughters (PART + ADP)
+    # because ``dito`` is the locative DEM, not a PART. Other
+    # multi-word entries use PART + PART daughters.
+    #
+    # Same precedent as Phase 5l ``mula nang`` (multi-word
+    # subordinator composing PREP[mula] + PART[nang]).
+    #
+    # Reference: R&B 1986 §15.7.
+    #
+    # gayon din → DISCOURSE=LIKEWISE
+    rules.append(Rule(
+        "PART",
+        ["PART", "PART"],
+        [
+            "(↑ DISCOURSE) = 'LIKEWISE'",
+            "(↑ DISCOURSE_POS) = 'SENTENCE_INITIAL'",
+            "(↑ LEMMA) = 'gayon_din'",
+            "(↓1 LEMMA) =c 'gayon'",
+            "(↓2 LEMMA) =c 'din'",
+        ],
+    ))
+    # ganon din → DISCOURSE=LIKEWISE (colloquial variant)
+    rules.append(Rule(
+        "PART",
+        ["PART", "PART"],
+        [
+            "(↑ DISCOURSE) = 'LIKEWISE'",
+            "(↑ DISCOURSE_POS) = 'SENTENCE_INITIAL'",
+            "(↑ LEMMA) = 'ganon_din'",
+            "(↓1 LEMMA) =c 'ganon'",
+            "(↓2 LEMMA) =c 'din'",
+        ],
+    ))
+    # bukod dito → DISCOURSE=ALSO (mixed PART + ADP daughters).
+    # The dito daughter is identified by its unique DAT/DEM/PROX
+    # feat combo via category-pattern constraints rather than by
+    # LEMMA — adding LEMMA to the existing dito ADP entry conflicts
+    # with the ``(↑ LEMMA) = ↓3 LEMMA`` equation in the Phase 5g
+    # pre-mod demonstrative NP rule (cfg/nominal.py:286), which
+    # would double-assign matrix LEMMA when ``ditong palengke``
+    # parses. The category-pattern matcher handles the YAML-1.1
+    # ``DEM: YES`` → Python ``True`` correctly (whereas an
+    # ``=c`` equation would compare against the string ``'YES'``
+    # and silently fail to match).
+    rules.append(Rule(
+        "PART",
+        ["PART", "ADP[CASE=DAT, DEIXIS=PROX, DEM=YES]"],
+        [
+            "(↑ DISCOURSE) = 'ALSO'",
+            "(↑ DISCOURSE_POS) = 'SENTENCE_INITIAL'",
+            "(↑ LEMMA) = 'bukod_dito'",
+            "(↓1 LEMMA) =c 'bukod'",
+        ],
+    ))

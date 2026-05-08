@@ -4212,3 +4212,92 @@
 - text: Hindi lang kumain si Maria, kundi pumunta si Juan.
   construction: 'phase5l: correlative hindi lang … kundi (no pati) — 4-daughter form'
   expected: parse
+
+
+# === Phase 5m: discourse / register / indefinites =============
+# Roadmap §12.1. Twenty fixtures sampling each Phase 5m
+# construction family. Politeness (Commits 2-3), modal/mood
+# (Commit 4), frequency adverbs (Commit 5), reflexive (Commit 6),
+# emphatic (Commit 7), indefinite (Commit 8), negative-indefinite
+# (Commit 9), single-word discourse connectives (Commit 10),
+# and multi-word discourse connectives (Commit 11).
+
+# --- Politeness 2P clitics (Commit 2) ----------------------------
+- text: Pumupunta po siya.
+  construction: 'phase5m: politeness po — clause-medial, REGISTER=POLITE matrix lift via Rule D'
+  expected: parse
+- text: Kumakain po ang bata.
+  construction: 'phase5m: politeness po — Rule D lift on AV-trans frame'
+  expected: parse
+- text: Pumupunta ho siya.
+  construction: 'phase5m: politeness ho — REGISTER=COLLOQUIAL_POLITE variant of Rule D'
+  expected: parse
+
+# --- Politeness answer interjections (Commit 3) ------------------
+- text: Opo.
+  construction: 'phase5m: opo — fragment-answer S → PRON[INTERJ=YES, ANSWER=AFFIRM]'
+  expected: parse
+- text: Oho.
+  construction: 'phase5m: oho — fragment-answer with REGISTER=COLLOQUIAL_POLITE'
+  expected: parse
+
+# --- Modal / mood particles (Commit 4) ---------------------------
+- text: Siguro pumupunta siya.
+  construction: 'phase5m: modal siguro — sentence-initial PART rule with EPISTEMIC=PROBABLY'
+  expected: parse
+- text: Marahil kumakain ang bata.
+  construction: 'phase5m: modal marahil — sentence-initial with REGISTER=FORMAL'
+  expected: parse
+
+# --- Frequency adverbs (Commit 5) --------------------------------
+- text: Kumakain ako madalas.
+  construction: 'phase5m: frequency madalas — clause-final FREQ AdvP, FREQ_VALUE=HIGH'
+  expected: parse
+- text: Pumupunta siya minsan.
+  construction: 'phase5m: frequency minsan — FREQ_VALUE=SOMETIMES'
+  expected: parse
+- text: Tumakbo ang aso lagi.
+  construction: 'phase5m: frequency lagi — FREQ_VALUE=HABITUAL'
+  expected: parse
+- text: Pumupunta ako paminsan-minsan.
+  construction: 'phase5m: frequency paminsan-minsan — hyphenated redup; merger collapses to paminsanminsan'
+  expected: parse
+
+# --- Reflexive (Commit 6) ----------------------------------------
+- text: Nakita niya ang sarili niya.
+  construction: 'phase5m: reflexive sarili — NOUN[SEM_CLASS=REFLEXIVE] in NOM-pivot SUBJ; binding deferred to Phase 6'
+  expected: parse
+
+# --- Emphatic (Commit 7) -----------------------------------------
+- text: Kumain si Maria mismo.
+  construction: 'phase5m: emphatic mismo — post-N adjunct, EMPHATIC=YES on matrix NP'
+  expected: parse
+- text: Tumakbo ang bata mismo.
+  construction: 'phase5m: emphatic mismo — post-N on common-N NOM-NP'
+  expected: parse
+
+# --- Indefinite kahit + wh (Commit 8) ----------------------------
+- text: Kumain kahit sino.
+  construction: 'phase5m: indefinite kahit sino — productive PRON → PART[kahit] PRON[WH=YES]'
+  expected: parse
+- text: Pumupunta kahit sino.
+  construction: 'phase5m: indefinite kahit sino — IndefPRON in V-initial frame'
+  expected: parse
+
+# --- Negative-indefinite (Commit 9) ------------------------------
+- text: Walang sinuman.
+  construction: 'phase5m: walang sinuman — neg-existential + PRON[INDEF=NEG_INDEF] daughter'
+  expected: parse
+
+# --- Discourse connectives single-word (Commit 10) ---------------
+- text: Samakatuwid kumain ang bata.
+  construction: 'phase5m: discourse samakatuwid — DISCOURSE=THEREFORE via Commit 4 sentence-initial PART rule'
+  expected: parse
+- text: Gayunpaman pumupunta siya.
+  construction: 'phase5m: discourse gayunpaman — DISCOURSE=HOWEVER'
+  expected: parse
+
+# --- Discourse connectives multi-word (Commit 11) ----------------
+- text: Bukod dito kumain ang bata.
+  construction: 'phase5m: discourse bukod dito — multi-word PART (PART + ADP); DISCOURSE=ALSO'
+  expected: parse

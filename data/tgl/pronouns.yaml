@@ -134,3 +134,27 @@
   feats: {WH: "YES", CASE: DAT, HUMAN: True, LEMMA: kanino}
 - surface: alin
   feats: {WH: "YES", CASE: NOM, LEMMA: alin}
+
+# === Phase 5m Commit 1: indefinite + answer-interjection PRONs =============
+#
+# Roadmap §12.1 (Phase 5m). Three new PRON entries.
+#
+# ``sinuman`` is the negative-indefinite "anyone / no one" used in
+# the construction ``walang sinuman ang dumating`` "nobody came",
+# composing via the existing Phase 5j ``walang NP`` existential
+# negation grammar. Distribution: NOM only (no GEN/DAT-marked
+# variants attested; defer if corpus pressure surfaces).
+# Reference: R&G 1981 §6.6.
+#
+# ``opo`` / ``oho`` are fused affirmative-answer interjections
+# (``opo`` = ``oo`` + ``po``; ``oho`` = ``oo`` + ``ho``). Lex'd
+# as PRON[INTERJ=YES, ANSWER=AFFIRM] so they compose as
+# stand-alone clause answers via the existing Phase 4 fragment-
+# answer mechanism (parallel to ``oo`` / ``hindi`` PRON entries).
+# REGISTER distinguishes them. Reference: R&B 1986 §15.4.
+- surface: sinuman
+  feats: {PRED: SOMEONE_NEG_INDEF, INDEF: NEG_INDEF, NUM: SG, PERS: 3, CASE: NOM, LEMMA: sinuman}
+- surface: opo
+  feats: {PRED: "YES", INTERJ: "YES", ANSWER: AFFIRM, REGISTER: POLITE, LEMMA: opo}
+- surface: oho
+  feats: {PRED: "YES", INTERJ: "YES", ANSWER: AFFIRM, REGISTER: COLLOQUIAL_POLITE, LEMMA: oho}

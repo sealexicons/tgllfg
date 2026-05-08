@@ -1028,6 +1028,22 @@
   gloss: need / requirement
 
 
+# === Phase 5m Commit 1: reflexive-noun ``sarili`` ========================
+# ``sarili`` "self" patterns syntactically as a NOUN, not a PRON
+# — ``ang sarili niya`` "his self / himself" is a regular ``D + N
+# + GEN-PRON`` chain via the existing Phase 4 NP grammar. Anaphora
+# resolution (binding ``sarili niya`` to its antecedent SUBJ)
+# requires functional-uncertainty / inside-out designators
+# (Phase 6); Phase 5m only does the c-structure composition.
+# SEM_CLASS=REFLEXIVE is diagnostic only — no Phase 5m grammar
+# rule gates on it. Reference: R&G 1981 §7.3.
+
+- citation: sarili
+  pos: NOUN
+  gloss: self
+  feats: {SEM_CLASS: REFLEXIVE}
+
+
 # === Proper-name placeholders ============================================
 # Test-fixture proper names. Alphabetical by citation.
 

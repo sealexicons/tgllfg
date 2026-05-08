@@ -616,12 +616,12 @@
   clitic_class: 2P
 - surface: din
   pos: PART
-  feats: {ADV: ALSO}
+  feats: {ADV: ALSO, LEMMA: din}
   is_clitic: true
   clitic_class: 2P
 - surface: rin
   pos: PART
-  feats: {ADV: ALSO}
+  feats: {ADV: ALSO, LEMMA: rin}
   is_clitic: true
   clitic_class: 2P
 - surface: lang
@@ -1611,3 +1611,119 @@
 - surface: sana
   pos: PART
   feats: {COUNTERFACTUAL: "YES", is_clitic: true, CLITIC_CLASS: 2P, LEMMA: sana}
+
+# === Phase 5m Commit 1: discourse / register / indefinite particles ========
+#
+# Roadmap §12.1 (Phase 5m). Six lex sub-blocks covering politeness
+# clitics, modal/mood particles, discourse connectives (single- and
+# multi-word components), the emphatic post-N particle ``mismo``, and
+# frequency-adverb expansion of the Phase 5f Commit 5 sentential-FREQ
+# slot. Reference: R&B 1986 §15.4 / §15.5 / §15.7; R&G 1981 §6.6 /
+# §7.3; S&O 1972 §3.5.
+#
+# (a) Politeness 2P clitics
+#
+# ``po`` (formal) and ``ho`` (colloquial-polite) are 2P enclitics
+# adding REGISTER=POLITE / COLLOQUIAL_POLITE to the matrix S via
+# the existing Phase 5i Rule A (generic 2P absorption). Distribution
+# covers both clause-medial (``Pumupunta po siya``) and clause-final
+# (``Salamat po``) positions; the Wackernagel placement logic
+# admits both. Reference: R&B 1986 §15.4.
+- surface: po
+  pos: PART
+  feats: {REGISTER: POLITE, LEMMA: po}
+  is_clitic: true
+  clitic_class: 2P
+- surface: ho
+  pos: PART
+  feats: {REGISTER: COLLOQUIAL_POLITE, LEMMA: ho}
+  is_clitic: true
+  clitic_class: 2P
+
+# (b) Modal / mood particles (sentence-initial)
+#
+# ``siguro`` (colloquial) and ``marahil`` (formal) are sentence-
+# initial epistemic particles ("maybe / perhaps"). Composes via
+# the new Phase 5m Commit 4 rule ``S → PART[DISCOURSE_POS=
+# SENTENCE_INITIAL] S`` (cfg/discourse.py). Clause-medial use
+# (``Pumupunta siguro siya``) is attested but rare; deferred per
+# Phase 5m plan §9.1 Q2. Reference: R&B 1986 §15.5.
+- surface: siguro
+  pos: PART
+  feats: {EPISTEMIC: PROBABLY, DISCOURSE_POS: SENTENCE_INITIAL, LEMMA: siguro}
+- surface: marahil
+  pos: PART
+  feats: {EPISTEMIC: PROBABLY, DISCOURSE_POS: SENTENCE_INITIAL, REGISTER: FORMAL, LEMMA: marahil}
+
+# (c) Discourse connectives — single-word (sentence-initial)
+#
+# Both feed the same sentence-initial PART rule as the modal
+# particles in (b) via DISCOURSE_POS=SENTENCE_INITIAL. The
+# DISCOURSE feat distinguishes the connective sense for downstream
+# semantics. Reference: R&B 1986 §15.7.
+- surface: samakatuwid
+  pos: PART
+  feats: {DISCOURSE: THEREFORE, DISCOURSE_POS: SENTENCE_INITIAL, LEMMA: samakatuwid}
+- surface: gayunpaman
+  pos: PART
+  feats: {DISCOURSE: HOWEVER, DISCOURSE_POS: SENTENCE_INITIAL, LEMMA: gayunpaman}
+
+# (d) Discourse connective heads — multi-word components
+#
+# ``gayon`` / ``ganon`` (LEMMA-only PARTs) feed the Phase 5m Commit
+# 11 multi-word rule ``PART[DISCOURSE=LIKEWISE] → PART[gayon|ganon]
+# PART[din]``; the existing ``din`` 2P-clitic PART (line 617) is
+# the second daughter. ``bukod`` feeds ``PART[DISCOURSE=ALSO] →
+# PART[bukod] ADP[dito]`` against the existing demonstrative
+# ``dito`` entry (line 49) — mixed-POS daughters are required
+# because ``dito`` is the locative DEM, not a PART. The virtual
+# PART output of these rules carries DISCOURSE_POS=SENTENCE_INITIAL
+# so it slots into the sentence-initial-ADV rule of (c).
+- surface: gayon
+  pos: PART
+  feats: {LEMMA: gayon}
+- surface: ganon
+  pos: PART
+  feats: {LEMMA: ganon}
+- surface: bukod
+  pos: PART
+  feats: {LEMMA: bukod}
+
+# (e) Emphatic post-N particle
+#
+# ``mismo`` "self / exactly" attaches post-N as an ADJUNCT
+# (``Maria mismo`` "Maria herself"). Distribution: post-NP only —
+# pre-NP attachment is ungrammatical in Tagalog (cf. Spanish
+# ``mismo Juan`` is valid but the Tagalog calque inverts).
+# Composes via Phase 5m Commit 7 rule ``NP → NP PART[EMPHATIC=YES,
+# LEMMA=mismo]``. Reference: R&G 1981 §7.3.
+- surface: mismo
+  pos: PART
+  feats: {EMPHATIC: "YES", LEMMA: mismo}
+
+# (f) Frequency adverbs — extends Phase 5f Commit 5 sentential-FREQ
+#
+# ``madalas`` "often", ``palagi`` "always", ``lagi`` "always
+# (clitic-host variant)", ``minsan`` "sometimes / once",
+# ``paminsan-minsan`` "occasionally" (opaque hyphenated token —
+# productive redup deferred to Phase 6). All carry ADV_TYPE=
+# FREQUENCY which routes through the existing Phase 5f Commit 5
+# rule ``S → S AdvP[FREQ]`` in cfg/discourse.py. The new FREQ_VALUE
+# feat (HIGH / HABITUAL / SOMETIMES / OCCASIONAL) is diagnostic
+# only — it doesn't gate any grammar rule. Reference: S&O 1972
+# §3.5.
+- surface: madalas
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: HIGH, LEMMA: madalas}
+- surface: palagi
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: HABITUAL, LEMMA: palagi}
+- surface: lagi
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: HABITUAL, LEMMA: lagi}
+- surface: minsan
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: SOMETIMES, LEMMA: minsan}
+- surface: paminsanminsan
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: OCCASIONAL, LEMMA: paminsan-minsan}

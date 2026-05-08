@@ -1548,3 +1548,84 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 VAGUE) =c 'YES'",
         ],
     ))
+
+    # === Phase 5m Commit 8: indefinite ``kahit`` + wh productive =====
+    #
+    # ``kahit sino`` "anyone", ``kahit ano`` "anything",
+    # ``kahit saan`` "anywhere", ``kahit kailan`` "anytime".
+    # Productive composition of the Phase 5l ``kahit`` (PART
+    # [COMP_TYPE=CONC]) with the Phase 5i wh-PRON / wh-ADV
+    # inventory (``sino`` / ``ano`` / ``alin`` / ``saan`` /
+    # ``kailan`` / ``bakit`` / ``paano``).
+    #
+    # Two parallel rules:
+    #
+    #   PRON → PART[LEMMA=kahit] PRON[WH=YES]   (IndefPRON)
+    #   ADV  → PART[LEMMA=kahit] ADV[WH=YES]    (IndefADV)
+    #
+    # Each builds an indefinite PRON / ADV by overlaying
+    # ``INDEF=YES`` onto the inner wh-element's f-structure
+    # (``(↑) = ↓2``). The ``kahit`` daughter joins the matrix's
+    # ADJUNCT set as a member, preserving the c-structure
+    # provenance. The ``LEMMA=kahit`` constraint excludes other
+    # CONC particles (``bagaman``) from firing as indefinite-
+    # builders.
+    #
+    # Disambiguation with Phase 5l concessive ``kahit S``:
+    # the daughter category (S vs PRON/ADV) deterministically
+    # picks the right rule. ``Kahit umulan, …`` builds a
+    # SubordClause; ``Kahit sino …`` builds a PRON.
+    #
+    # Reference: R&G 1981 §6.6.
+    rules.append(Rule(
+        "PRON",
+        ["PART", "PRON"],
+        [
+            "(↑) = ↓2",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↑ INDEF) = 'YES'",
+            "(↓1 LEMMA) =c 'kahit'",
+            "(↓2 WH) =c 'YES'",
+        ],
+    ))
+    rules.append(Rule(
+        "ADV",
+        ["PART", "ADV"],
+        [
+            "(↑) = ↓2",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↑ INDEF) = 'YES'",
+            "(↓1 LEMMA) =c 'kahit'",
+            "(↓2 WH) =c 'YES'",
+        ],
+    ))
+
+    # === Phase 5m Commit 7: emphatic ``mismo`` post-N attachment =====
+    #
+    # ``Maria mismo`` "Maria herself", ``ang bata mismo`` "the child
+    # himself". The PART ``mismo`` (Commit 1 lex, EMPHATIC=YES,
+    # LEMMA=mismo) attaches as an ADJUNCT member of the NP it
+    # follows. Distribution: post-NP only — pre-NP attachment is
+    # ungrammatical in Tagalog (cf. Spanish ``mismo Juan`` is valid
+    # but the Tagalog calque inverts position).
+    #
+    # The constraining equations gate on ``EMPHATIC=YES`` AND
+    # ``LEMMA=mismo`` — the latter prevents cross-fire from other
+    # EMPHATIC=YES particles (the existing ``nga`` is EMPHATIC but
+    # is a 2P clitic, not a post-N modifier; the LEMMA constraint
+    # ensures only ``mismo`` fires here). The matrix-NP overlay
+    # ``(↑ EMPHATIC) = 'YES'`` exposes the emphatic marker at the
+    # NP top level for downstream consumers.
+    #
+    # Reference: R&G 1981 §7.3.
+    rules.append(Rule(
+        "NP",
+        ["NP", "PART"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 EMPHATIC) =c 'YES'",
+            "(↓2 LEMMA) =c 'mismo'",
+            "(↑ EMPHATIC) = 'YES'",
+        ],
+    ))
