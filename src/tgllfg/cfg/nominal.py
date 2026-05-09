@@ -1392,6 +1392,74 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5n.B Commit 5: formal ``nang higit`` ADJ-wrapper (§18 L41) ---
+    #
+    # ``Nang higit matalino si Maria.``
+    #     "Maria is more intelligent." (formal register)
+    # ``Nang higit maganda ang bata.``
+    #     "The child is more beautiful."
+    # ``Nang higit matalino si Maria kaysa kay Juan.``
+    #     "Maria is more intelligent than Juan." (formal +
+    #     existing kaysa wrap)
+    #
+    # Closes §18 L41 (formal ``nang higit`` comparison; carried
+    # forward from Phase 5h §9.2 — ``mas`` is the standard /
+    # colloquial comparative, ``nang higit`` is the formal
+    # alternative). Per the §18.2 detail, two resolution paths
+    # were available: a clausal rule shape ``S → S PART[nang]
+    # PART[higit] ADJ``, or extending the Phase 5h Commit 3
+    # ``mas`` wrapper to admit the multi-word ``nang higit``
+    # particle sequence.
+    #
+    # **Resolution path chosen**: the wrapper-rule path. ``nang
+    # higit + ADJ`` produces an ADJ[COMP_DEGREE=COMPARATIVE]
+    # parallel to the ``mas + ADJ`` wrapper output, so the
+    # existing Phase 5g Commit 3 predicative-ADJ clause rule and
+    # the Phase 5h Commit 4 kaysa wrap consume the result
+    # unchanged. This keeps the comparative semantics in one
+    # place (the ADJ-wrapper layer) and avoids a separate clausal
+    # rule that would duplicate the mas / kaysa composition logic.
+    #
+    # **Equation analysis** (mirrors Phase 5h Commit 3):
+    #
+    # * ``(↑) = ↓3`` shares the inner ADJ's f-structure with the
+    #   wrapped output (PRED, PREDICATIVE, ADJ_LEMMA percolate).
+    # * ``(↑ COMP_DEGREE) = 'COMPARATIVE'`` writes COMPARATIVE
+    #   onto the matrix ADJ. Unification with an inner ADJ
+    #   already carrying SUPERLATIVE (``pinakamatalino``) fails
+    #   — ``*nang higit pinakamatalino`` correctly ungrammatical.
+    # * ``(↑ REGISTER) = 'FORMAL'`` marks the formal register
+    #   distinguishing this from the colloquial ``mas`` form.
+    # * ``(↓1 LEMMA) =c 'nang'`` constrains daughter 1 to the
+    #   ``nang`` PART (existing temporal-since lex entry — its
+    #   ``COMP_TYPE=TEMP_SINCE`` doesn't leak because ``(↑) =
+    #   ↓3`` doesn't share daughter 1's f-structure).
+    # * ``(↓2 COMP_PHRASE) =c 'HIGIT'`` constrains daughter 2 to
+    #   the ``higit`` PART (Phase 5f Commit 17 numeric-comparator
+    #   lex entry). Same lex polysemy — the comparative-clause
+    #   path here is gated by the trailing ADJ.
+    # * ``(↓3 PREDICATIVE) =c 'YES'`` belt-and-braces on the
+    #   ADJ daughter (matches Phase 5h Commit 3 / 5 convention).
+    #
+    # Polysemy safety: ``nang higit + ADJ`` and ``higit sa N``
+    # (Phase 5f Commit 17 numeric comparator) don't conflict —
+    # ``higit sa N`` requires a NUM head and a DAT-NP standard;
+    # ``nang higit + ADJ`` requires an ADJ daughter. The two
+    # paths are structurally disjoint.
+    rules.append(Rule(
+        "ADJ",
+        ["PART[LEMMA=nang]", "PART[COMP_PHRASE=HIGIT]", "ADJ"],
+        [
+            "(↑) = ↓3",
+            "(↑ COMP_DEGREE) = 'COMPARATIVE'",
+            "(↑ REGISTER) = 'FORMAL'",
+            "(↓1 LEMMA) =c 'nang'",
+            "(↓2 COMP_PHRASE) =c 'HIGIT'",
+            "(↓3 PREDICATIVE) =c 'YES'",
+        ],
+    ))
+
+
     # --- Phase 5h Commit 5: particle-intensifier ADJ-wrappers ----
     #
     # ``Sobrang maganda ang bata.``     "The child is too beautiful."
