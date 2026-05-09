@@ -1618,9 +1618,20 @@ def register_rules(rules: list[Rule]) -> None:
     # NP top level for downstream consumers.
     #
     # Reference: R&G 1981 §7.3.
+    #
+    # Phase 5n.A Commit 19 (§18 L85 follow-on): tightened the daughter
+    # category from bare ``PART`` to ``PART[LEMMA=mismo, EMPHATIC=YES]``.
+    # The bare PART version was too permissive — every NP-PART
+    # adjacency in the input (e.g., ``si Jose .`` with period PUNCT,
+    # or ``Ana at`` in coord-NP contexts) spawned a failed mismo
+    # parse path, polluting the Earley chart and blocking 5+-NP
+    # coord at the well-formedness pass. The category-level
+    # constraint adds defining-equation pressure on the predicted
+    # daughter so the parser can prune at predict-time rather than
+    # generate-and-filter at unification-time.
     rules.append(Rule(
         "NP",
-        ["NP", "PART"],
+        ["NP", "PART[LEMMA=mismo, EMPHATIC=YES]"],
         [
             "(↑) = ↓1",
             "↓2 ∈ (↑ ADJUNCT)",

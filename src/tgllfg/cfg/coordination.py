@@ -208,86 +208,114 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
-    # --- Phase 5n.A Commit 19: 4-conjunct flat NP coord (§18 L85) ---
+    # --- Phase 5n.A Commit 19: 4+-conjunct flat NP coord (§18 L85) ---
     #
     # The Phase 5k Commit 4 3-conjunct rules above produce a flat
-    # CONJUNCTS set only for exactly-3 conjuncts. This commit adds
-    # explicit 4-conjunct rules (Oxford + non-Oxford × NOM/GEN/DAT)
-    # producing flat 4-member CONJUNCTS sets.
+    # CONJUNCTS set only for exactly-3 conjuncts. This commit adds a
+    # left-recursive ``NP_LONG_LIST_<case>`` non-terminal that
+    # accumulates 3+ NPs separated by commas into one CONJUNCTS set,
+    # then a wrap rule that consumes the list + ``at`` + final NP to
+    # form a flat n-conjunct NP. The wrap fires cleanly for n=4
+    # (using the base 3-NP list); for n≥5 the recursive list builds
+    # correctly (visible in fragments) but the wrap doesn't compose
+    # to a top-level S due to a parser-level interaction (see below).
     #
-    # Tried two approaches before settling on explicit 4-conjunct:
+    # **Targeted CONJUNCTS sharing**: ``(↑ CONJUNCTS) = (↓1 CONJUNCTS)``
+    # is a defining equation that unifies the matrix's CONJUNCTS
+    # feature with the recursive daughter's CONJUNCTS. Both ends
+    # become the same set node; adding to one adds to the other.
+    # This avoids the full-f-struct sharing (``(↑) = ↓1``) that
+    # would conflict with matrix CASE/COORD/NUM equations.
     #
-    # 1. Right-recursive ``NP_LONG_LIST_<case>`` non-terminal (per
-    #    the §18 plan). The wrap rule's ``(↑) = ↓1`` equation didn't
-    #    fire cleanly with the recursive list — the parser built the
-    #    n-element list correctly (visible in fragments) but the wrap
-    #    didn't compose to a top-level S.
-    # 2. Explicit 5-conjunct rules (9 / 10 daughters). Loaded by the
-    #    grammar (verified) but didn't fire on attested 5-conjunct
-    #    surfaces — possibly an Earley state-explosion interaction
-    #    with the Phase 5m mismo NP-emphatic rule that ambiguously
-    #    matches ``Ana at`` as ``NP + PART``. Out of L85 scope to
-    #    debug.
+    # **5+-conjunct still 0-parses** despite the recursive rules
+    # being present and the recursive list being built correctly.
+    # Root cause (per drill-down): the parser's category-pattern
+    # matcher is non-conflict — at high N, every binary parse path
+    # ambiguously matches the Phase 5m mismo NP-emphatic rule
+    # (``NP → NP PART``) on each NP+PART adjacency. All 14 binary
+    # parses for 5-NP fail well-formedness with mismo constraint
+    # failures (or the 2P clitic absorption rule's CLITIC_CLASS=2P
+    # failure). 4-NP succeeds because at least one of its 5
+    # parses survives. The fix requires either parser-level
+    # support for **defining** category-pattern constraints (rather
+    # than non-conflict + late constraining) or per-rule narrower
+    # category constraints across the grammar — both broader scope
+    # than this single L85 closure.
     #
-    # 5+-conjunct surfaces remain 0-parse for now (pinned in tests as
-    # the trigger for follow-on work). The §18 entry's "4+" target
-    # is partially closed: 4-conjunct works flat; 5+-conjunct is a
-    # separate follow-on item (right-recursive non-terminal or
-    # parser-level disambiguation).
+    # The 5+-conjunct case stays pinned in tests as the trigger for
+    # the parser-level / grammar-wide tightening work.
+    #
+    # The Phase 5k 3-conjunct rules continue to fire on exactly-3-
+    # conjunct surfaces (which have ``at`` between conjunct 2 and 3);
+    # NP_LONG_LIST has no ``at`` until the wrap, so the two patterns
+    # don't collide.
     #
     # Reference: S&O 1972 §6.7 (multi-conjunct enumeration); R&G
     # 1981 §6.6.
     for case in _NP_CASES:
-        # 4-conjunct Oxford-comma form (8 daughters):
-        # NP, NP, NP, NP, at NP — wait, that's 5 NPs.
-        # Actually 4 conjuncts means 4 NPs total: A, B, C, at D.
-        # Daughters: A COMMA B COMMA C COMMA at D = 8 elements
-        # (with Oxford comma before "at"); non-Oxford = 7.
+        # NP_LONG_LIST base: exactly 3 NPs separated by commas.
         rules.append(Rule(
-            f"NP[CASE={case}]",
+            f"NP_LONG_LIST_{case}",
             [
                 f"NP[CASE={case}]",
                 "PUNCT[PUNCT_CLASS=COMMA]",
                 f"NP[CASE={case}]",
                 "PUNCT[PUNCT_CLASS=COMMA]",
-                f"NP[CASE={case}]",
-                "PUNCT[PUNCT_CLASS=COMMA]",
-                "PART[COORD=AND]",
                 f"NP[CASE={case}]",
             ],
             [
                 "↓1 ∈ (↑ CONJUNCTS)",
                 "↓3 ∈ (↑ CONJUNCTS)",
                 "↓5 ∈ (↑ CONJUNCTS)",
-                "↓8 ∈ (↑ CONJUNCTS)",
-                "(↑ COORD) = 'AND'",
-                f"(↑ CASE) = '{case}'",
-                "(↑ NUM) = 'PL'",
-                "(↓7 COORD) =c 'AND'",
             ],
         ))
-        # 4-conjunct non-Oxford form (7 daughters):
-        # A COMMA B COMMA C at D
+        # NP_LONG_LIST recursive: list + comma + NP, accumulating via
+        # targeted CONJUNCTS sharing.
+        rules.append(Rule(
+            f"NP_LONG_LIST_{case}",
+            [
+                f"NP_LONG_LIST_{case}",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+            ],
+        ))
+        # 4+-conjunct wrap (Oxford comma form): list + comma + at + NP
         rules.append(Rule(
             f"NP[CASE={case}]",
             [
-                f"NP[CASE={case}]",
+                f"NP_LONG_LIST_{case}",
                 "PUNCT[PUNCT_CLASS=COMMA]",
-                f"NP[CASE={case}]",
-                "PUNCT[PUNCT_CLASS=COMMA]",
-                f"NP[CASE={case}]",
                 "PART[COORD=AND]",
                 f"NP[CASE={case}]",
             ],
             [
-                "↓1 ∈ (↑ CONJUNCTS)",
-                "↓3 ∈ (↑ CONJUNCTS)",
-                "↓5 ∈ (↑ CONJUNCTS)",
-                "↓7 ∈ (↑ CONJUNCTS)",
+                "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
+                "↓4 ∈ (↑ CONJUNCTS)",
                 "(↑ COORD) = 'AND'",
                 f"(↑ CASE) = '{case}'",
                 "(↑ NUM) = 'PL'",
-                "(↓6 COORD) =c 'AND'",
+                "(↓3 COORD) =c 'AND'",
+            ],
+        ))
+        # 4+-conjunct wrap (non-Oxford form): list + at + NP
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [
+                f"NP_LONG_LIST_{case}",
+                "PART[COORD=AND]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                "(↑ COORD) = 'AND'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ NUM) = 'PL'",
+                "(↓2 COORD) =c 'AND'",
             ],
         ))
 
