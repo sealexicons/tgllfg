@@ -230,7 +230,18 @@ class Analyzer:
             # `AdvP → ADV` and `PP → PREP NP[CASE=DAT]` exposes the
             # head's lemma at the AdvP / PP f-structure (mirroring
             # the noun pattern from Phase 5c §8 follow-on Commit 6).
-            if p.pos in ("ADV", "PREP"):
+            #
+            # Phase 5n.B Commit 1 (§18 L42 + L52) extends the auto-
+            # LEMMA pattern to ``Q`` so the Phase 5n.B Commit 1
+            # predicative-Q clause rule (S → Q[VAGUE=YES] NP[CASE=
+            # NOM]) can lift ``Q_LEMMA`` from bare vague-Q heads
+            # (``marami`` / ``konti`` / ``kakaunti`` / ``karamihan``)
+            # that don't carry an explicit ``LEMMA`` feat in YAML.
+            # Wh-Q lex entries (``magkano`` / ``alin`` / ``ilan``-wh)
+            # already declare ``LEMMA`` explicitly per Phase 5j
+            # Commit 7's orthographic-variant convention; the
+            # ``setdefault`` is a no-op on those.
+            if p.pos in ("ADV", "PREP", "Q"):
                 feats.setdefault("LEMMA", p.surface)
             # Phase 5j Commit 7: orthographic-variant collapse.
             # When a particle entry's ``LEMMA`` feat differs from

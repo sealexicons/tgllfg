@@ -663,6 +663,86 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5n.B Commit 1: predicative-Q clause (§18 L42 + L52) ---
+    #
+    # ``Marami ang aklat.``       "There are many books."
+    # ``Konti ang isda.``         "There are few fish."
+    # ``Mas marami ang aklat.``   "There are more books." (Phase 5h
+    #                              Commit 7 mas-wrapped Q)
+    #
+    # Closes §18 deferrals L42 (``Mas marami ang aklat.`` —
+    # surfaced during Phase 5h Commit 7 implementation, pinned at
+    # 0-parse) and L52 (``Marami ang aklat.`` — non-wh predicative-
+    # Q identified during Phase 5i Commit 9 implementation). Per
+    # plan ``tgllfg-phase-5n.md`` §4.1 Commit 1 the two resolutions
+    # land in a single rule.
+    #
+    # Structurally analogous to the Phase 5g Commit 3 predicative-
+    # ADJ rule (S → ADJ[PREDICATIVE=YES] NP[CASE=NOM]) and the
+    # Phase 5f Commit 4 predicative-cardinal rule (S → NUM
+    # [CARDINAL=YES] NP[CASE=NOM]) above; the same shape with a
+    # vague-Q head as the matrix predicate.
+    #
+    # F-structure shape:
+    #
+    #   PRED        = 'Q-PREDICATIVE <SUBJ>'
+    #   Q_LEMMA     = the Q's lemma (``marami``, ``konti``,
+    #                  ``kakaunti``, ``ilan`` — both polysemy
+    #                  partners — and ``karamihan``)
+    #   QUANT       = the Q's QUANT (MANY / FEW / VERY_FEW / MOST)
+    #   PREDICATIVE = 'YES'
+    #   SUBJ        = the NOM-NP / NOM-PRON pivot
+    #
+    # The PRED template ``Q-PREDICATIVE <SUBJ>`` parallels other
+    # predicative rules' literal-PRED convention (``ADJ <SUBJ>`` for
+    # Phase 5g predicative-adj; ``CARDINAL <SUBJ>`` for Phase 5f
+    # predicative-cardinal; ``LIKE <SUBJ, OBJ>`` for Phase 5e
+    # parang). The Q's identity rides on the matrix via ``Q_LEMMA``
+    # rather than plain ``LEMMA`` (parallel to ``ADJ_LEMMA`` for
+    # the predicative-adj rule).
+    #
+    # **Disambiguation against the Phase 5i Commit 9 (a) wh-Q cleft**.
+    # The wh-Q cleft fires on ``Q[WH=YES]`` (e.g., ``Magkano ang
+    # isda?``, ``Ilan ang aklat?`` wh reading) and produces ``PRED='WH
+    # <SUBJ>'`` / ``Q_TYPE=WH``. The new predicative-Q rule must NOT
+    # fire on wh-Qs to avoid ambiguity blowup with two distinct PREDs
+    # on the same surface. The ``¬ (↓1 WH)`` neg-existential constraint
+    # enforces this — the rule fires only when WH is undefined on
+    # the Q daughter (i.e., bare ``marami`` / ``konti`` and the
+    # mas-wrapped / pinaka-wrapped variants, which inherit
+    # ``(↑) = ↓2`` from the wrapped vague-Q with no WH feat).
+    #
+    # **Polysemy partners**: ``ilan`` is double-lex'd as Q[WH=YES,
+    # QUANT=HOW_MANY, VAGUE=YES] (wh use) and Q[QUANT=FEW,
+    # VAGUE=YES] (non-wh "a few" reading). The wh entry feeds the
+    # cleft; the FEW entry feeds this predicative-Q rule.
+    #
+    # **Belt-and-braces** ``(↓1 VAGUE) =c 'YES'`` mirrors the Phase
+    # 5h Commit 7 wrapper convention — closes the same kind of
+    # non-conflict-matcher leak by constraining the f-structure
+    # daughter explicitly (rather than relying on the c-tree
+    # category-pattern alone).
+    #
+    # Cardinal contrast — ``Tatlo ang aklat.`` parses via the Phase
+    # 5f Commit 4 predicative-cardinal rule (NUM[CARDINAL=YES] head),
+    # which has no VAGUE feat and so does not fire this rule. Each
+    # predicative shape (vague-Q, cardinal, ADJ) has its own clause
+    # rule with disjoint head categories.
+    rules.append(Rule(
+        "S",
+        ["Q[VAGUE=YES]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'Q-PREDICATIVE <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_LEMMA) = ↓1 LEMMA",
+            "(↑ QUANT) = ↓1 QUANT",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 VAGUE) =c 'YES'",
+            "¬ (↓1 WH)",
+        ],
+    ))
+
+
     # --- Phase 5h Commit 6: equative two-NP standard frames -----
     #
     # ``Kasingganda ni Maria si Ana.``

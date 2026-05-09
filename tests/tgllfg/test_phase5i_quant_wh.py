@@ -96,7 +96,13 @@ class TestMagkanoPredicativeCleft:
 
 class TestIlanWhPredicativeCleft:
     """``Ilan ang X?`` "How many X?" — uses the WH polysemy of
-    ``ilan`` (Commit 1: WH variant has QUANT=HOW_MANY)."""
+    ``ilan`` (Commit 1: WH variant has QUANT=HOW_MANY).
+
+    Phase 5n.B Commit 1 (§18 L42 + L52) added a predicative-Q
+    clause rule that fires on the non-wh ``ilan`` polysemy partner
+    (Q[QUANT=FEW, VAGUE=YES]) and produces a second parse
+    ``PRED='Q-PREDICATIVE <SUBJ>'``. The wh-cleft parse remains
+    intact; consumers select the WH parse by ``Q_TYPE='WH'``."""
 
     @pytest.mark.parametrize("sentence", [
         "Ilan ang aklat?",
@@ -105,8 +111,16 @@ class TestIlanWhPredicativeCleft:
     ])
     def test_ilan_wh_cleft(self, sentence: str) -> None:
         parses = parse_text(sentence)
-        assert len(parses) == 1
-        _ct, fs, _astr, _diags = parses[0]
+        # Phase 5n.B Commit 1: the predicative-Q rule produces a
+        # parallel parse for the FEW polysemy of ``ilan``; both
+        # parses are admitted (relaxed from `== 1`).
+        assert len(parses) >= 1
+        wh_parses = [
+            p for p in parses
+            if p[1].feats.get("Q_TYPE") == "WH"
+        ]
+        assert len(wh_parses) == 1
+        _ct, fs, _astr, _diags = wh_parses[0]
         assert fs.feats.get("PRED") == "WH <SUBJ>"
         assert fs.feats.get("Q_TYPE") == "WH"
         assert fs.feats.get("WH_LEMMA") == "ilan"
