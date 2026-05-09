@@ -108,6 +108,30 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.A Commit 18 (§18 L80): clause-final EXCEPTIVE PP ---
+    #
+    # ``Kumain si Maria bukod sa Juan.`` "Maria ate besides Juan."
+    # ``Bumili ako ng aklat maliban sa lapis.`` "I bought a book
+    # except a pencil."
+    #
+    # Parallel to the TIME_FRAME PP rule above but gated on
+    # ``PREP_TYPE=EXCEPTIVE`` (the new ``bukod`` / ``maliban`` PREP
+    # entries in particles.yaml). The other Phase 5e Commit 3 PPs
+    # (BENEFICIARY / TOPIC / SOURCE / REASON) remain restricted to
+    # ay-fronting position — exceptive PPs are the natural extension
+    # that admits clause-final attachment because the exception
+    # semantically modifies the matrix proposition (parallel to
+    # temporal-frame PPs).
+    rules.append(Rule(
+        "S",
+        ["S", "PP"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 PREP_TYPE) =c 'EXCEPTIVE'",
+        ],
+    ))
+
 
     # --- Phase 5f Commit 5: clause-final FREQUENCY AdvP ---------
     #

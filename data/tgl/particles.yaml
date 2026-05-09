@@ -695,6 +695,20 @@
 - surface: dahil
   pos: PREP
   feats: {PREP_TYPE: REASON}
+# Phase 5n.A Commit 18 (§18 L80): exceptive prepositions ``bukod sa``
+# "besides" and ``maliban sa`` "except". Both subcategorise for a
+# sa-NP complement and fire on the existing
+# ``PP → PREP NP[CASE=DAT]`` rule with PREP_TYPE=EXCEPTIVE. ``bukod``
+# is polysemous with the Phase 5m discourse-connective PART (LEMMA-
+# only entry below at the discourse-connective section); the PREP
+# vs PART POS disambiguates structurally — PREP fires only with a
+# sa-NP complement. Reference: S&O 1972 §6.7; R&G 1981 §6.6.
+- surface: bukod
+  pos: PREP
+  feats: {PREP_TYPE: EXCEPTIVE, LEMMA: bukod}
+- surface: maliban
+  pos: PREP
+  feats: {PREP_TYPE: EXCEPTIVE, LEMMA: maliban}
 
 # === Phase 5f Commit 1: native cardinals 1-10 ============================
 # Cardinals as NP-internal modifiers via the linker
