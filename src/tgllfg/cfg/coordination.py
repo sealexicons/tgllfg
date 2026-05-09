@@ -208,6 +208,89 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # --- Phase 5n.A Commit 19: 4-conjunct flat NP coord (§18 L85) ---
+    #
+    # The Phase 5k Commit 4 3-conjunct rules above produce a flat
+    # CONJUNCTS set only for exactly-3 conjuncts. This commit adds
+    # explicit 4-conjunct rules (Oxford + non-Oxford × NOM/GEN/DAT)
+    # producing flat 4-member CONJUNCTS sets.
+    #
+    # Tried two approaches before settling on explicit 4-conjunct:
+    #
+    # 1. Right-recursive ``NP_LONG_LIST_<case>`` non-terminal (per
+    #    the §18 plan). The wrap rule's ``(↑) = ↓1`` equation didn't
+    #    fire cleanly with the recursive list — the parser built the
+    #    n-element list correctly (visible in fragments) but the wrap
+    #    didn't compose to a top-level S.
+    # 2. Explicit 5-conjunct rules (9 / 10 daughters). Loaded by the
+    #    grammar (verified) but didn't fire on attested 5-conjunct
+    #    surfaces — possibly an Earley state-explosion interaction
+    #    with the Phase 5m mismo NP-emphatic rule that ambiguously
+    #    matches ``Ana at`` as ``NP + PART``. Out of L85 scope to
+    #    debug.
+    #
+    # 5+-conjunct surfaces remain 0-parse for now (pinned in tests as
+    # the trigger for follow-on work). The §18 entry's "4+" target
+    # is partially closed: 4-conjunct works flat; 5+-conjunct is a
+    # separate follow-on item (right-recursive non-terminal or
+    # parser-level disambiguation).
+    #
+    # Reference: S&O 1972 §6.7 (multi-conjunct enumeration); R&G
+    # 1981 §6.6.
+    for case in _NP_CASES:
+        # 4-conjunct Oxford-comma form (8 daughters):
+        # NP, NP, NP, NP, at NP — wait, that's 5 NPs.
+        # Actually 4 conjuncts means 4 NPs total: A, B, C, at D.
+        # Daughters: A COMMA B COMMA C COMMA at D = 8 elements
+        # (with Oxford comma before "at"); non-Oxford = 7.
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [
+                f"NP[CASE={case}]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                f"NP[CASE={case}]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                f"NP[CASE={case}]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                "PART[COORD=AND]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                "↓5 ∈ (↑ CONJUNCTS)",
+                "↓8 ∈ (↑ CONJUNCTS)",
+                "(↑ COORD) = 'AND'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ NUM) = 'PL'",
+                "(↓7 COORD) =c 'AND'",
+            ],
+        ))
+        # 4-conjunct non-Oxford form (7 daughters):
+        # A COMMA B COMMA C at D
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [
+                f"NP[CASE={case}]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                f"NP[CASE={case}]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                f"NP[CASE={case}]",
+                "PART[COORD=AND]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                "↓5 ∈ (↑ CONJUNCTS)",
+                "↓7 ∈ (↑ CONJUNCTS)",
+                "(↑ COORD) = 'AND'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ NUM) = 'PL'",
+                "(↓6 COORD) =c 'AND'",
+            ],
+        ))
+
     # --- Phase 5k Commit 5: binary clausal coordination ---
     #
     # ``S → S PART[COORD=Y] S`` for each coord value Y ∈ {AND, OR}.
