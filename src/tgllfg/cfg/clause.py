@@ -507,6 +507,65 @@ def register_rules(rules: list[Rule]) -> None:
         ),
     ))
 
+    # --- Phase 5n.A Commit 27: OV-with-finite-S complement (§18 L89.2) ---
+    #
+    # SAY-class verbs in OV admit a finite-S complement bound to
+    # SUBJ. The said-thing is a full clause rather than a NOM-NP;
+    # the actor is a clitic GEN-PRON and the complementizer is
+    # ``na``. Per LFG completeness/coherence, the OV a-structure
+    # of ``sabi`` is ``<AGENT, THEME>`` with THEME mapped to SUBJ
+    # (Phase 4 LMT); the finite-S fills the THEME-as-SUBJ slot.
+    #
+    #   ``Sinabi niya na pumunta si Maria.`` "She said that Maria
+    #                                         went."
+    #   ``Sasabihin nila na bumili kami ng aklat.``
+    #                                  "They will say that we'll
+    #                                   buy a book."
+    #   + 10 more in tests/tgllfg/data/coverage_corpus.yaml
+    #     under the Phase 5n.A Commit 26 banner.
+    #
+    # Gating choices (per plan-of-record §3.5 Commit 27 drill-down):
+    #
+    # * **SAY_CLASS=YES** on ↓1 — narrow gate that preserves Phase 4
+    #   SUBJ-as-NOM-NP default for non-SAY-class OV verbs. Only
+    #   ``sabi`` carries SAY_CLASS=YES in the seed lex (Phase 5l
+    #   Commit 10); other OV verbs continue to require NOM-NP SUBJ.
+    #
+    # * **PRON[CASE=GEN]** actor (not full NP) — sidesteps the
+    #   existing N-headed RC-linker ``na`` path which misanalyzes
+    #   ``Sinabi ng lalaki na pumunta si Maria.`` as
+    #   ``[ng lalaki] [na pumunta]`` (RC-modified GEN-NP, with
+    #   Maria as the matrix SUBJ via the regular OV-2NP frame).
+    #   PRONs don't take RC linkers, so the new rule fires
+    #   unambiguously when the actor is a clitic-PRON. Full-NP
+    #   actor support is deferred (would require a tighter
+    #   constraint on the RC path).
+    #
+    # * **PART[LINK=NA]** for the complementizer — the standalone
+    #   ``na`` particle (which also has an ALREADY-clitic reading
+    #   that is rejected by the LINK=NA constraint, and a
+    #   bound-linker LINK=NG variant from ``-ng`` that doesn't
+    #   apply here). The non-conflict matcher accepts the
+    #   clitic-``na`` analysis too (since CLITIC_CLASS doesn't
+    #   conflict with LINK=NA's absence of CLITIC_CLASS), but
+    #   the constraining ``(↓3 LINK) =c 'NA'`` rejects it.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=OV, SAY_CLASS=YES]",
+            "PRON[CASE=GEN]",
+            "PART[LINK=NA]",
+            "S",
+        ],
+        _eqs(
+            "(↑ OBJ-AGENT) = ↓2",
+            "(↑ SUBJ) = ↓4",
+            "(↓1 SAY_CLASS) =c 'YES'",
+            "(↓3 LINK) =c 'NA'",
+        ),
+    ))
+
+
     # Phase 5c §8 follow-on (Commit 6): AV transitive frame
     # with two trailing sa-NPs — exercises the multi-OBL
     # semantic-disambiguation classifier. Both NP[CASE=DAT]
@@ -1545,6 +1604,82 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 EXISTENTIAL) =c 'YES'",
             "(↓1 POLARITY) =c 'NEG'",
             "(↓3 LINK) =c 'NG'",
+        ],
+    ))
+
+    # --- Phase 5n.A Commit 21: positive HAVE with leading linker (§18 L87) ---
+    #
+    # ``mayroon`` is the vowel-final variant of ``may`` and ALWAYS
+    # takes bound ``-ng`` before its complement (parallel to ``wala``
+    # in 5c / 5d above). Commits 5a / 5b above cover the consonant-
+    # final ``may`` shape (no leading linker); the ``mayroon`` HAVE
+    # readings need parallel rules with the leading PART[LINK=NG]
+    # daughter consumed structurally between the existential and
+    # the possessor / N.
+    #
+    # Surface patterns (closes §18 L87):
+    #
+    #   ``Mayroong aklat si Maria.``  "Maria has a book."
+    #                                 (postposed possessor)
+    #   ``Mayroong aklat ako.``        "I have a book."
+    #                                 (postposed clitic possessor)
+    #   ``Mayroong akong aklat.``     "I have a book."
+    #                                 (internal clitic possessor —
+    #                                  two LINK=NG daughters)
+    #
+    # 5e mirrors 5c (negative postposed with linker) with POS
+    # polarity; 5f mirrors 5b (positive internal clitic) with the
+    # extra leading linker daughter that ``mayroon`` requires. The
+    # ``(↓1 LEMMA) =c 'mayroon'`` constraint isn't strictly needed
+    # — ``may`` is consonant-final and never appears before
+    # PART[LINK=NG] in well-formed input — so the rules fire
+    # opportunistically, mirroring the Phase 5j Commit 2 linker-
+    # existential rule's analogous treatment.
+
+    # Commit 5e: positive HAVE — postposed possessor (mayroon + bound -ng).
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=POS]",
+            "PART[LINK=NG]",
+            "N",
+            "NP[CASE=NOM]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ SUBJ POSSESSOR) = ↓4",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+            "(↓2 LINK) =c 'NG'",
+        ],
+    ))
+
+    # Commit 5f: positive HAVE — internal clitic possessor with
+    # leading linker (mayroon + bound -ng + PRON + bound -ng + N).
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=POS]",
+            "PART[LINK=NG]",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "N",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓5",
+            "(↑ SUBJ POSSESSOR) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+            "(↓2 LINK) =c 'NG'",
+            "(↓4 LINK) =c 'NG'",
         ],
     ))
 

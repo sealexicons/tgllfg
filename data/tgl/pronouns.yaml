@@ -17,6 +17,20 @@
 # --- 1sg ---
 - surface: ako
   feats: {PERS: 1, NUM: SG, CASE: NOM}
+  # Phase 5n.A Commit 2 (§18 L69): is_clitic: true added for the
+  # full NOM-PRON inventory. Per Kroeger 1993 ch. 5 / S&O 1972 §3.2,
+  # ``ako`` / ``siya`` / ``tayo`` / ``kami`` / ``kayo`` / ``sila``
+  # are all 2P (Wackernagel) clitics in canonical surface position
+  # (``Kumain ako``, ``Pumupunta ako``); the prior absence of
+  # ``is_clitic: true`` on these entries blocked the Phase 4 §7.2
+  # hindi-wrap from absorbing them, leaving sentences like
+  # ``Hindi ako kumain`` / ``Hindi siya kumain`` 0-parsing despite
+  # the canonical ``Hindi ka kumain`` working. Topic-position uses
+  # (``Ako ay kumain`` ay-fronting; cleft ``Ako ang kumain``) are
+  # preserved by a placement-pass exception that suppresses the
+  # 2P move when the PRON is immediately followed by ``ay`` (see
+  # ``src/tgllfg/clitics/placement.py:_is_pre_ay_pron``).
+  is_clitic: true
 - surface: ko
   feats: {PERS: 1, NUM: SG, CASE: GEN}
   is_clitic: true
@@ -26,6 +40,7 @@
 # --- 1pl inclusive ---
 - surface: tayo
   feats: {PERS: 1, NUM: PL, CLUSV: INCL, CASE: NOM}
+  is_clitic: true
 - surface: natin
   feats: {PERS: 1, NUM: PL, CLUSV: INCL, CASE: GEN}
   is_clitic: true
@@ -35,6 +50,7 @@
 # --- 1pl exclusive ---
 - surface: kami
   feats: {PERS: 1, NUM: PL, CLUSV: EXCL, CASE: NOM}
+  is_clitic: true
 - surface: namin
   feats: {PERS: 1, NUM: PL, CLUSV: EXCL, CASE: GEN}
   is_clitic: true
@@ -44,6 +60,10 @@
 # --- 2sg ---
 - surface: ikaw
   feats: {PERS: 2, NUM: SG, CASE: NOM}
+  # ``ikaw`` is the strong / non-clitic 2sg-NOM counterpart used in
+  # topic and cleft positions (``Ikaw ay kumain``, ``Ikaw ang
+  # kumain``); no ``is_clitic`` flag — the clitic counterpart is
+  # ``ka`` below.
 - surface: ka
   feats: {PERS: 2, NUM: SG, CASE: NOM}
   is_clitic: true
@@ -56,6 +76,7 @@
 # --- 2pl ---
 - surface: kayo
   feats: {PERS: 2, NUM: PL, CASE: NOM}
+  is_clitic: true
 - surface: ninyo
   feats: {PERS: 2, NUM: PL, CASE: GEN}
   is_clitic: true
@@ -65,6 +86,7 @@
 # --- 3sg ---
 - surface: siya
   feats: {PERS: 3, NUM: SG, CASE: NOM}
+  is_clitic: true
 - surface: niya
   feats: {PERS: 3, NUM: SG, CASE: GEN}
   is_clitic: true
@@ -74,6 +96,7 @@
 # --- 3pl ---
 - surface: sila
   feats: {PERS: 3, NUM: PL, CASE: NOM}
+  is_clitic: true
 - surface: nila
   feats: {PERS: 3, NUM: PL, CASE: GEN}
   is_clitic: true
@@ -101,7 +124,7 @@
 # analyses; the chart parser picks the PRON path when the syntactic
 # context calls for a clitic.
 - surface: kita
-  feats: {KITA: YES}
+  feats: {KITA: "YES"}
   is_clitic: true
 
 # === Phase 5i Commit 1: pronominal wh-words ============================

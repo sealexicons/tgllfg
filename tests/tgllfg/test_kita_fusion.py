@@ -226,7 +226,7 @@ class TestKitaMorph:
         cands = ml[0]
         pron_cands = [c for c in cands if c.pos == "PRON"]
         assert pron_cands, "no PRON analysis for kita"
-        assert any(c.feats.get("KITA") is True for c in pron_cands)
+        assert any(c.feats.get("KITA") == "YES" for c in pron_cands)
 
 
 # === Regressions ==========================================================

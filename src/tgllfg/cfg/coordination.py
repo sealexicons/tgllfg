@@ -111,26 +111,35 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
-    # --- Phase 5k Commit 4: multi-conjunct NP coord (3-flat) ---
+    # --- Phase 5k Commit 4 + Phase 5n.A Commit 20: 3-flat coord ---
     #
-    # Two surface variants per case, six rules total:
+    # Two surface variants per case × two coord values, twelve rules
+    # total:
     #
     #   Oxford comma form ("Si Maria, si Juan, at si Pedro"):
     #     NP[CASE=X] → NP[CASE=X] PUNCT[COMMA] NP[CASE=X]
-    #                  PUNCT[COMMA] PART[COORD=AND] NP[CASE=X]
+    #                  PUNCT[COMMA] PART[COORD=Y] NP[CASE=X]
     #
     #   Non-Oxford form  ("Si Maria, si Juan at si Pedro"):
     #     NP[CASE=X] → NP[CASE=X] PUNCT[COMMA] NP[CASE=X]
-    #                  PART[COORD=AND] NP[CASE=X]
+    #                  PART[COORD=Y] NP[CASE=X]
     #
-    # for each case X ∈ {NOM, GEN, DAT}. Both Oxford and non-Oxford
-    # comma conventions are attested in modern Tagalog written
-    # practice; both rules produce the same flat 3-element
-    # CONJUNCTS set. PUNCT[COMMA] daughters are syncategorematic
-    # (no equation refers to them); the matrix carries COORD=AND,
-    # NUM=PL, and the per-case CASE.
+    # for each case X ∈ {NOM, GEN, DAT} and each coord
+    # Y ∈ {AND, OR}. Both Oxford and non-Oxford comma conventions
+    # are attested in modern Tagalog written practice; both rules
+    # produce the same flat 3-element CONJUNCTS set. PUNCT[COMMA]
+    # daughters are syncategorematic (no equation refers to them);
+    # the matrix carries the per-case CASE and per-coord COORD.
     #
-    # Equations (Oxford NOM example, 6 daughters):
+    # NUM behaviour mirrors the binary forms (lines 78–112 above):
+    # AND forces ``(↑ NUM) = 'PL'`` (semantically n referents);
+    # OR percolates ``(↑ NUM) = ↓1 NUM`` (one underspecified
+    # referent — same as the binary disjunction). The Phase 5n.A
+    # Commit 20 disjunctive form closes the §18 L86 deferral and
+    # supersedes the prior "Restricted to AND only" note from
+    # Commit 4.
+    #
+    # Equations (Oxford NOM AND example, 6 daughters):
     #   ↓1 ∈ (↑ CONJUNCTS)
     #   ↓3 ∈ (↑ CONJUNCTS)
     #   ↓6 ∈ (↑ CONJUNCTS)
@@ -139,7 +148,7 @@ def register_rules(rules: list[Rule]) -> None:
     #   (↑ NUM) = 'PL'
     #   (↓5 COORD) =c 'AND'
     #
-    # Equations (non-Oxford NOM example, 5 daughters):
+    # Equations (non-Oxford NOM AND example, 5 daughters):
     #   ↓1 ∈ (↑ CONJUNCTS)
     #   ↓3 ∈ (↑ CONJUNCTS)
     #   ↓5 ∈ (↑ CONJUNCTS)
@@ -148,63 +157,167 @@ def register_rules(rules: list[Rule]) -> None:
     #   (↑ NUM) = 'PL'
     #   (↓4 COORD) =c 'AND'
     #
-    # Restricted to AND only — disjunctive ``Maria, Juan, o
-    # Pedro`` is structurally rare in Tagalog and deferred to a
-    # Phase 5k follow-on if corpus pressure surfaces.
-    #
-    # Restricted to 3 conjuncts only — 4+ conjuncts would compose
-    # via the binary rule wrapping a 3-conjunct sub-NP, which
-    # produces a NESTED CONJUNCTS structure (not a flat 4-element
-    # set). Right-recursive ``NP_COMMA_LIST`` for arbitrary arity
-    # is deferred per plan-of-record §5.3 / §9.2 until corpus
-    # pressure shows ≥4-conjunct sentences.
+    # 4+ conjuncts: see the recursive ``NP_LONG_LIST`` infrastructure
+    # in Commit 19 / 19a below. The 3-conjunct rules here are the
+    # primary structural consumer of comma daughters in Phase 5k;
+    # the asymmetric coord rule (Commit 8) is the second.
     #
     # PUNCT[COMMA] daughter consumption: the comma is now lex'd
     # (Phase 5k Commit 1 added PUNCT[PUNCT_CLASS=COMMA]) so it
-    # survives ``_strip_non_content``. The 3-conjunct rules here
-    # are the primary structural consumer of comma daughters in
-    # Phase 5k; the asymmetric coord rule (Commit 8) is the
-    # second.
+    # survives ``_strip_non_content``.
+    _3CONJ_NUM_BY_COORD = {"AND": "'PL'", "OR": "↓1 NUM"}
     for case in _NP_CASES:
-        # Oxford-comma form (6 daughters).
+        for coord, num_rhs in _3CONJ_NUM_BY_COORD.items():
+            # Oxford-comma form (6 daughters).
+            rules.append(Rule(
+                f"NP[CASE={case}]",
+                [
+                    f"NP[CASE={case}]",
+                    "PUNCT[PUNCT_CLASS=COMMA]",
+                    f"NP[CASE={case}]",
+                    "PUNCT[PUNCT_CLASS=COMMA]",
+                    f"PART[COORD={coord}]",
+                    f"NP[CASE={case}]",
+                ],
+                [
+                    "↓1 ∈ (↑ CONJUNCTS)",
+                    "↓3 ∈ (↑ CONJUNCTS)",
+                    "↓6 ∈ (↑ CONJUNCTS)",
+                    f"(↑ COORD) = '{coord}'",
+                    f"(↑ CASE) = '{case}'",
+                    f"(↑ NUM) = {num_rhs}",
+                    f"(↓5 COORD) =c '{coord}'",
+                ],
+            ))
+            # Non-Oxford form (5 daughters).
+            rules.append(Rule(
+                f"NP[CASE={case}]",
+                [
+                    f"NP[CASE={case}]",
+                    "PUNCT[PUNCT_CLASS=COMMA]",
+                    f"NP[CASE={case}]",
+                    f"PART[COORD={coord}]",
+                    f"NP[CASE={case}]",
+                ],
+                [
+                    "↓1 ∈ (↑ CONJUNCTS)",
+                    "↓3 ∈ (↑ CONJUNCTS)",
+                    "↓5 ∈ (↑ CONJUNCTS)",
+                    f"(↑ COORD) = '{coord}'",
+                    f"(↑ CASE) = '{case}'",
+                    f"(↑ NUM) = {num_rhs}",
+                    f"(↓4 COORD) =c '{coord}'",
+                ],
+            ))
+
+    # --- Phase 5n.A Commit 19: 4+-conjunct flat NP coord (§18 L85) ---
+    #
+    # The Phase 5k Commit 4 3-conjunct rules above produce a flat
+    # CONJUNCTS set only for exactly-3 conjuncts. This commit adds a
+    # left-recursive ``NP_LONG_LIST_<case>`` non-terminal that
+    # accumulates 3+ NPs separated by commas into one CONJUNCTS set,
+    # then a wrap rule that consumes the list + ``at`` + final NP to
+    # form a flat n-conjunct NP. The wrap fires cleanly for n=4
+    # (using the base 3-NP list); for n≥5 the recursive list builds
+    # correctly (visible in fragments) but the wrap doesn't compose
+    # to a top-level S due to a parser-level interaction (see below).
+    #
+    # **Targeted CONJUNCTS sharing**: ``(↑ CONJUNCTS) = (↓1 CONJUNCTS)``
+    # is a defining equation that unifies the matrix's CONJUNCTS
+    # feature with the recursive daughter's CONJUNCTS. Both ends
+    # become the same set node; adding to one adds to the other.
+    # This avoids the full-f-struct sharing (``(↑) = ↓1``) that
+    # would conflict with matrix CASE/COORD/NUM equations.
+    #
+    # **5+-conjunct still 0-parses** despite the recursive rules
+    # being present and the recursive list being built correctly.
+    # Root cause (per drill-down): the parser's category-pattern
+    # matcher is non-conflict — at high N, every binary parse path
+    # ambiguously matches the Phase 5m mismo NP-emphatic rule
+    # (``NP → NP PART``) on each NP+PART adjacency. All 14 binary
+    # parses for 5-NP fail well-formedness with mismo constraint
+    # failures (or the 2P clitic absorption rule's CLITIC_CLASS=2P
+    # failure). 4-NP succeeds because at least one of its 5
+    # parses survives. The fix requires either parser-level
+    # support for **defining** category-pattern constraints (rather
+    # than non-conflict + late constraining) or per-rule narrower
+    # category constraints across the grammar — both broader scope
+    # than this single L85 closure.
+    #
+    # The 5+-conjunct case stays pinned in tests as the trigger for
+    # the parser-level / grammar-wide tightening work.
+    #
+    # The Phase 5k 3-conjunct rules continue to fire on exactly-3-
+    # conjunct surfaces (which have ``at`` between conjunct 2 and 3);
+    # NP_LONG_LIST has no ``at`` until the wrap, so the two patterns
+    # don't collide.
+    #
+    # Reference: S&O 1972 §6.7 (multi-conjunct enumeration); R&G
+    # 1981 §6.6.
+    for case in _NP_CASES:
+        # NP_LONG_LIST base: exactly 3 NPs separated by commas.
         rules.append(Rule(
-            f"NP[CASE={case}]",
+            f"NP_LONG_LIST_{case}",
             [
                 f"NP[CASE={case}]",
                 "PUNCT[PUNCT_CLASS=COMMA]",
                 f"NP[CASE={case}]",
                 "PUNCT[PUNCT_CLASS=COMMA]",
-                "PART[COORD=AND]",
-                f"NP[CASE={case}]",
-            ],
-            [
-                "↓1 ∈ (↑ CONJUNCTS)",
-                "↓3 ∈ (↑ CONJUNCTS)",
-                "↓6 ∈ (↑ CONJUNCTS)",
-                "(↑ COORD) = 'AND'",
-                f"(↑ CASE) = '{case}'",
-                "(↑ NUM) = 'PL'",
-                "(↓5 COORD) =c 'AND'",
-            ],
-        ))
-        # Non-Oxford form (5 daughters).
-        rules.append(Rule(
-            f"NP[CASE={case}]",
-            [
-                f"NP[CASE={case}]",
-                "PUNCT[PUNCT_CLASS=COMMA]",
-                f"NP[CASE={case}]",
-                "PART[COORD=AND]",
                 f"NP[CASE={case}]",
             ],
             [
                 "↓1 ∈ (↑ CONJUNCTS)",
                 "↓3 ∈ (↑ CONJUNCTS)",
                 "↓5 ∈ (↑ CONJUNCTS)",
+            ],
+        ))
+        # NP_LONG_LIST recursive: list + comma + NP, accumulating via
+        # targeted CONJUNCTS sharing.
+        rules.append(Rule(
+            f"NP_LONG_LIST_{case}",
+            [
+                f"NP_LONG_LIST_{case}",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+            ],
+        ))
+        # 4+-conjunct wrap (Oxford comma form): list + comma + at + NP
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [
+                f"NP_LONG_LIST_{case}",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                "PART[COORD=AND]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
+                "↓4 ∈ (↑ CONJUNCTS)",
                 "(↑ COORD) = 'AND'",
                 f"(↑ CASE) = '{case}'",
                 "(↑ NUM) = 'PL'",
-                "(↓4 COORD) =c 'AND'",
+                "(↓3 COORD) =c 'AND'",
+            ],
+        ))
+        # 4+-conjunct wrap (non-Oxford form): list + at + NP
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [
+                f"NP_LONG_LIST_{case}",
+                "PART[COORD=AND]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                "(↑ COORD) = 'AND'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ NUM) = 'PL'",
+                "(↓2 COORD) =c 'AND'",
             ],
         ))
 
@@ -558,5 +671,113 @@ def register_rules(rules: list[Rule]) -> None:
             "↓4 ∈ (↑ CONJUNCTS)",
             "(↑ COORD) = 'BUT_NOT'",
             "(↓3 COORD) =c 'BUT_NOT'",
+        ],
+    ))
+
+    # === Phase 5n.A Commit 16: multi-word coord particles (§18 L76 + L82) ====
+    #
+    # Three multi-word coord phrases combine two existing PARTs into a
+    # single virtual PART that the existing Phase 5k binary clausal /
+    # NP coord rules consume unchanged:
+    #
+    #   ``o kaya``  → COORD=OR  + UNCERTAIN=YES  ("or maybe / or perhaps")
+    #   ``at saka`` → COORD=AND + SEQUENCE=YES   ("and also / and then")
+    #   ``at nang`` → COORD=AND + RESULT=YES     ("and so / and so that")
+    #
+    # Same combining mechanic as Phase 5m Commit 11 (``gayon din`` /
+    # ``ganon din`` / ``bukod dito`` discourse connectives). The
+    # virtual PART carries the basic COORD value (OR / AND) so the
+    # existing ``S → S PART[COORD=Y] S`` and ``NP → NP PART[COORD=Y] NP``
+    # rules fire unchanged; the secondary discriminator
+    # (UNCERTAIN / SEQUENCE / RESULT) rides for downstream consumers
+    # without affecting structural composition.
+    #
+    # Lex (Phase 5k Commit 1 + Phase 5n.A Commit 16): ``o`` / ``at``
+    # exist as PART[COORD=OR] / PART[COORD=AND]; ``kaya`` exists as
+    # PART[COORD=SO] (homonym — the o-kaya rule constrains by lemma,
+    # not COORD); ``saka`` is added in this commit; ``nang`` exists
+    # as PART[COMP_TYPE=TEMP_SINCE] (the at-nang rule constrains by
+    # lemma).
+    #
+    # Reference: S&O 1972 §6.7; R&G 1981 §6.6.
+
+    # ``o kaya`` — disjunctive uncertainty
+    rules.append(Rule(
+        "PART",
+        ["PART", "PART"],
+        [
+            "(↑ COORD) = 'OR'",
+            "(↑ UNCERTAIN) = 'YES'",
+            "(↑ LEMMA) = 'o_kaya'",
+            "(↓1 LEMMA) =c 'o'",
+            "(↓2 LEMMA) =c 'kaya'",
+        ],
+    ))
+    # ``at saka`` — conjunctive sequence
+    rules.append(Rule(
+        "PART",
+        ["PART", "PART"],
+        [
+            "(↑ COORD) = 'AND'",
+            "(↑ SEQUENCE) = 'YES'",
+            "(↑ LEMMA) = 'at_saka'",
+            "(↓1 LEMMA) =c 'at'",
+            "(↓2 LEMMA) =c 'saka'",
+        ],
+    ))
+    # ``at nang`` — conjunctive consequence
+    rules.append(Rule(
+        "PART",
+        ["PART", "PART"],
+        [
+            "(↑ COORD) = 'AND'",
+            "(↑ RESULT) = 'YES'",
+            "(↑ LEMMA) = 'at_nang'",
+            "(↓1 LEMMA) =c 'at'",
+            "(↓2 LEMMA) =c 'nang'",
+        ],
+    ))
+
+    # === Phase 5n.A Commit 17: coordinated cardinals (§18 L79) ================
+    #
+    # ``apatnapu't lima`` (45) = 40 + 5; ``isang daa't dalawampu`` (120)
+    # = 100 + 20; etc. The bound ``'t`` clitic (Phase 5k Commit 2
+    # ``split_apostrophe_t``) synthesises ``at`` between the two
+    # cardinal operands, so the input reaches the grammar as
+    # ``NUM[CARDINAL=YES] PART[COORD=AND] NUM[CARDINAL=YES]``.
+    #
+    # The unifier's equation language (src/tgllfg/fstruct/equations.py)
+    # has no arithmetic primitive — Atom and Designator are the only
+    # value types. So this rule cannot compute the sum on the matrix
+    # CARDINAL_VALUE directly. Instead it follows the Phase 5f Commit 9
+    # arithmetic-predicate precedent and records OPERAND_1 / OPERAND_2 +
+    # COORD_OP=SUM; downstream consumers compute 40 + 5 = 45 from
+    # the operand feats. (A computed CARDINAL_VALUE would require either
+    # an equation-language extension or a post-unification projection
+    # pass; both are larger scope than this single L79 closure.)
+    #
+    # The rule produces NUM[CARDINAL=YES] so the existing NP-cardinal-
+    # modifier rule (Phase 5f Commit 1) consumes the coordinated
+    # cardinal as if it were a single NUM, allowing
+    # ``apatnapu't limang aklat`` to parse as a quantified NP.
+    #
+    # Reference: S&O 1972 §4 (numeral coordination); R&G 1981
+    # dialogue corpus.
+    rules.append(Rule(
+        "NUM[CARDINAL=YES]",
+        [
+            "NUM[CARDINAL=YES]",
+            "PART[COORD=AND]",
+            "NUM[CARDINAL=YES]",
+        ],
+        [
+            "(↑ CARDINAL) = 'YES'",
+            "(↑ NUM) = 'PL'",
+            "(↑ COORD_OP) = 'SUM'",
+            "(↑ OPERAND_1) = ↓1 CARDINAL_VALUE",
+            "(↑ OPERAND_2) = ↓3 CARDINAL_VALUE",
+            "(↓2 COORD) =c 'AND'",
+            "(↓1 CARDINAL) =c 'YES'",
+            "(↓3 CARDINAL) =c 'YES'",
         ],
     ))

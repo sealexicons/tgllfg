@@ -257,8 +257,21 @@ class Analyzer:
             feats = dict(pn.feats)
             if pn.is_clitic:
                 feats["is_clitic"] = True
+            # Phase 5n.A Commit 4 (§18 L74): orthographic-variant
+            # collapse extended from the particles branch (Phase 5j
+            # Commit 7) to pronouns. When a pronoun entry's ``LEMMA``
+            # feat differs from its surface (e.g., ``surface: nya``,
+            # ``feats: {LEMMA: niya}``), the LEMMA feat names the
+            # canonical lemma and the analysis's ``lemma`` field
+            # adopts it. Variants then route to the same canonical
+            # lemma — no entry duplication. For the majority of
+            # entries where ``LEMMA == surface`` (or no LEMMA feat is
+            # set), this is a no-op.
+            canonical_lemma = feats.get("LEMMA", pn.surface)
+            if not isinstance(canonical_lemma, str):
+                canonical_lemma = pn.surface
             self._index.pronouns[pn.surface.lower()] = MorphAnalysis(
-                lemma=pn.surface,
+                lemma=canonical_lemma,
                 pos="PRON",
                 feats=feats,
             )
@@ -275,9 +288,20 @@ class Analyzer:
                 # hardcoded empty.
                 noun_feats: dict[str, object] = {**r.feats}
                 noun_feats.setdefault("LEMMA", r.citation)
+                # Phase 5n.A Commit 4 (§18 L74): orthographic-variant
+                # collapse extended from the particles branch. If the
+                # NOUN root declares a ``LEMMA`` feat that differs
+                # from its citation, the analysis's ``lemma`` field
+                # adopts the canonical name (e.g., a future
+                # ``citation: kwarto, feats: {LEMMA: kuwarto}`` entry
+                # would yield analyses with lemma=kuwarto, routing
+                # all spelling variants to one canonical entry).
+                canonical_lemma = noun_feats.get("LEMMA", r.citation)
+                if not isinstance(canonical_lemma, str):
+                    canonical_lemma = r.citation
                 self._index.nouns.setdefault(r.citation.lower(), []).append(
                     MorphAnalysis(
-                        lemma=r.citation,
+                        lemma=canonical_lemma,
                         pos="NOUN",
                         feats=noun_feats,
                     ),
@@ -315,15 +339,21 @@ class Analyzer:
         ``setdefault`` — same merge convention as
         :meth:`_index_adjective_paradigms`.
         """
-        feats: dict[str, object] = {
-            "PREDICATIVE": "YES",
-            "LEMMA": root.citation,
-        }
-        for k, v in root.feats.items():
-            feats.setdefault(k, v)
+        # Phase 5n.A Commit 4 (§18 L74): build feats so root.feats's
+        # ``LEMMA`` (if any) wins over the citation default. Order:
+        #   1. start from root.feats (may carry LEMMA + SEM_CLASS etc.)
+        #   2. setdefault intrinsic ``PREDICATIVE: YES`` (overridable
+        #      by root.feats; future cell.feats override too).
+        #   3. setdefault ``LEMMA: root.citation`` as fallback.
+        feats: dict[str, object] = {**root.feats}
+        feats.setdefault("PREDICATIVE", "YES")
+        feats.setdefault("LEMMA", root.citation)
+        canonical_lemma = feats.get("LEMMA", root.citation)
+        if not isinstance(canonical_lemma, str):
+            canonical_lemma = root.citation
         self._index.adjectives.setdefault(root.citation.lower(), []).append(
             MorphAnalysis(
-                lemma=root.citation,
+                lemma=canonical_lemma,
                 pos="ADJ",
                 feats=feats,
             ),
@@ -352,29 +382,27 @@ class Analyzer:
             if not _affix_class_match(cell.affix_class, root.affix_class):
                 continue
             surface = generate_form(root, cell).lower()
-            # LEMMA mirrors the noun convention (lex token carries
-            # ``LEMMA`` in feats so the grammar's
-            # ``(↑ LEMMA) = ↓ LEMMA`` percolation surfaces the lex's
-            # bare-root lemma in NP-modifier and predicative-adj
-            # f-structures).
-            feats: dict[str, object] = {
-                "PREDICATIVE": "YES",
-                "LEMMA": root.citation,
-            }
-            # Per-cell feats may extend / override the intrinsic
-            # PREDICATIVE (e.g., a future non-predicative manner-only
-            # cell could set PREDICATIVE: NO).
+            # Phase 5n.A Commit 4 (§18 L74): same merge order as
+            # _index_adjective_bare_root + cell.feats override step.
+            # Order:
+            #   1. start from root.feats (may carry LEMMA / SEM_CLASS).
+            #   2. apply cell.feats — per-cell overrides win
+            #      (Phase 5g/5h precedent for COMP_DEGREE etc.).
+            #   3. setdefault PREDICATIVE: YES (intrinsic fallback).
+            #   4. setdefault LEMMA: root.citation (fallback).
+            # The cell can override LEMMA in principle, though no
+            # current cell does.
+            feats: dict[str, object] = {**root.feats}
             for k, v in cell.feats.items():
                 feats[k] = v
-            # Per-root feats ride into every generated form (parallel
-            # to verb roots' CTRL_CLASS / APPL / CAUS handling). For
-            # ADJ this is where future SEM_CLASS values (SIZE / COLOUR
-            # / EVALUATIVE / ...) will land.
-            for k, v in root.feats.items():
-                feats.setdefault(k, v)
+            feats.setdefault("PREDICATIVE", "YES")
+            feats.setdefault("LEMMA", root.citation)
+            canonical_lemma = feats.get("LEMMA", root.citation)
+            if not isinstance(canonical_lemma, str):
+                canonical_lemma = root.citation
             self._index.adjectives.setdefault(surface, []).append(
                 MorphAnalysis(
-                    lemma=root.citation,
+                    lemma=canonical_lemma,
                     pos="ADJ",
                     feats=feats,
                 ),
@@ -406,6 +434,18 @@ class Analyzer:
             # category-pattern matcher can discriminate control
             # verbs (V[CTRL_CLASS=INTRANS] vs V[CTRL_CLASS=TRANS])
             # at the rule level.
+            #
+            # Phase 5n.A Commit 3 audit (§18 L91 closure): this
+            # ``setdefault`` loop projects the root's ``feats:`` block
+            # uniformly across every paradigm cell that fires for the
+            # root's affix_class. There is no per-cell or per-affix-
+            # class filtering — if a cell didn't already set the key
+            # via the cell.feats loop above, the root value lands.
+            # Tests in test_phase5n_paradigm_feats_projection.py pin
+            # the uniform behaviour against future regressions
+            # (SAY_CLASS=YES on every sabi cell; ASK_CLASS=YES on
+            # every tanong cell; CTRL_CLASS uniform on payag /
+            # pilit / utos).
             for k, v in root.feats.items():
                 feats.setdefault(k, v)
             # Default CTRL_CLASS=NONE on verbs not declared as a
@@ -422,8 +462,20 @@ class Analyzer:
             # verbs.
             feats.setdefault("APPL", "NONE")
             feats.setdefault("CAUS", "NONE")
+            # Phase 5n.A Commit 4 (§18 L74): orthographic-variant
+            # collapse for paradigm-derived VERB surfaces. If the
+            # root declares a ``LEMMA`` feat that differs from its
+            # citation, the analysis's ``lemma`` field adopts the
+            # canonical name on every inflected cell — so a future
+            # alt-spelling root (e.g.,
+            # ``citation: kwento, feats: {LEMMA: kuwento}``) routes
+            # all of its mag-/in-/an-/i-/maka-derived surfaces back
+            # to one canonical lemma.
+            canonical_lemma = feats.get("LEMMA", root.citation)
+            if not isinstance(canonical_lemma, str):
+                canonical_lemma = root.citation
             analysis = MorphAnalysis(
-                lemma=root.citation,
+                lemma=canonical_lemma,
                 pos="VERB",
                 feats=feats,
             )

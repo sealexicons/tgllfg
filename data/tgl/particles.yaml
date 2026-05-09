@@ -695,6 +695,20 @@
 - surface: dahil
   pos: PREP
   feats: {PREP_TYPE: REASON}
+# Phase 5n.A Commit 18 (§18 L80): exceptive prepositions ``bukod sa``
+# "besides" and ``maliban sa`` "except". Both subcategorise for a
+# sa-NP complement and fire on the existing
+# ``PP → PREP NP[CASE=DAT]`` rule with PREP_TYPE=EXCEPTIVE. ``bukod``
+# is polysemous with the Phase 5m discourse-connective PART (LEMMA-
+# only entry below at the discourse-connective section); the PREP
+# vs PART POS disambiguates structurally — PREP fires only with a
+# sa-NP complement. Reference: S&O 1972 §6.7; R&G 1981 §6.6.
+- surface: bukod
+  pos: PREP
+  feats: {PREP_TYPE: EXCEPTIVE, LEMMA: bukod}
+- surface: maliban
+  pos: PREP
+  feats: {PREP_TYPE: EXCEPTIVE, LEMMA: maliban}
 
 # === Phase 5f Commit 1: native cardinals 1-10 ============================
 # Cardinals as NP-internal modifiers via the linker
@@ -1500,32 +1514,52 @@
 - surface: pati
   pos: PART
   feats: {ADV: ALSO_INCL, LEMMA: pati}
+# Phase 5n.A Commit 16 (§18 L82): ``saka`` "later/next/then" — lex
+# component of the ``at saka`` multi-word coord ("and also / and
+# then"). LEMMA-only entry feeds the multi-word combining rule in
+# cfg/coordination.py; the matrix output is COORD=AND with
+# SEQUENCE=YES discriminator.
+- surface: saka
+  pos: PART
+  feats: {LEMMA: saka}
 - surface: lamang
   pos: PART
   feats: {ADV: ONLY, LEMMA: lamang, is_clitic: true, CLITIC_CLASS: 2P}
 
-# === Phase 5k Commit 7: `naman` discourse-emphatic particle ===============
+# === Phase 5k Commit 7 + Phase 5n.A Commit 22: `naman` particle ==========
 #
-# ``naman`` "also / on the other hand / [emphatic]" — added now so the
-# Phase 5k Commit 7 ``kaya naman`` two-word coord rule can consume it
-# structurally (``S → S PART[COORD=SO] PART[ADV=ALSO] S``).
+# ``naman`` has two distinct lex entries:
 #
-# Non-clitic entry (NOT ``is_clitic: true`` — distinct from
-# ``din`` / ``rin``): the kaya naman two-word form is a fixed
-# lexicalised consequence connective, not a free 2P-clitic
-# placement context. Treating naman as a clitic here would
-# trigger ``reorder_clitics`` to pull naman into one of the
-# adjacent matrix-V's post-position, breaking the ``kaya naman``
-# adjacency that the Commit 7 rule expects.
+# 1. Non-clitic entry (Phase 5k Commit 7): consumed structurally by
+#    the ``kaya naman`` two-word coord rule
+#    (``S → S PART[COORD=SO] PART[ADV=ALSO] S``). Lacks
+#    ``is_clitic`` so ``reorder_clitics`` leaves it in place,
+#    preserving the fixed ``kaya naman`` adjacency.
 #
-# Free-standing (clitic-class) naman in ``Kumain naman ako``
-# "I ate too" is a distinct construction; if corpus pressure
-# surfaces a need for that, add a second entry with
-# ``is_clitic: true`` (parallel to din/rin) — separate slot,
-# rule context disambiguates.
+# 2. Clitic entry (Phase 5n.A Commit 22, closes §18 L88): a 2P
+#    enclitic parallel to ``din`` / ``rin``, also ADV=ALSO. Used
+#    in free-standing forms like ``Kumain naman ako`` "I ate
+#    too" where ``naman`` placement follows the standard 2P
+#    Wackernagel pattern.
+#
+# Both entries share ADV=ALSO. The 2P-clitic absorption rule
+# (``S → S PART[CLITIC_CLASS=2P]``) selects the clitic entry via
+# the CLITIC_CLASS=2P daughter constraint; the kaya-naman rule
+# selects the non-clitic entry via structural context (PART
+# sandwiched between two complete S clauses with leading
+# ``kaya``). Neither entry crossfires into the other's structural
+# context: the clitic entry's reorder pass moves it next to a
+# verbal host (incompatible with kaya-naman's between-Ss
+# adjacency), while the non-clitic entry has no CLITIC_CLASS so
+# the absorption rule's =c constraint rejects it.
 - surface: naman
   pos: PART
   feats: {ADV: ALSO, LEMMA: naman}
+- surface: naman
+  pos: PART
+  feats: {ADV: ALSO, LEMMA: naman}
+  is_clitic: true
+  clitic_class: 2P
 
 # === Phase 5l Commit 1: subordinators (PART[COMP_TYPE=X]) + sana ==========
 #
@@ -1554,7 +1588,22 @@
 # ``COUNTERFACTUAL: "YES"`` feat. Cluster priority lives in
 # ``data/tgl/clitics.yaml``.
 
-# (a) Conditional — ``kung`` / ``kapag`` / ``pag`` / ``sakali``
+# (a) Conditional — ``kung`` / ``kapag`` / ``pag`` / ``'pag`` / ``sakali``
+#
+# ``kapag`` is the canonical full form; ``pag`` is the colloquial
+# short form; ``'pag`` is the elision-marked spelling of the short
+# form (apostrophe = "elided ``ka``"). Phase 5n.A Commit 23 closes
+# §18 L107 by routing all short forms to LEMMA=kapag via the
+# Phase 5j Commit 7 LEMMA-collapse mechanic.
+#
+# The ``'pag`` surface is handled by the existing tokenization
+# pipeline rather than a dedicated lex entry: the tokenizer splits
+# ``'pag`` into ``'`` + ``pag`` (the ``'`` is a non-word character;
+# see ``text/tokenizer.py``), then the parser's
+# ``_strip_non_content`` filter drops the standalone apostrophe and
+# the ``pag`` entry below matches the remainder. Adding a literal
+# ``'pag`` lex entry would never fire because the tokenizer never
+# yields a single ``'pag`` token.
 - surface: kung
   pos: PART
   feats: {COMP_TYPE: COND, LEMMA: kung}
@@ -1563,16 +1612,26 @@
   feats: {COMP_TYPE: COND, LEMMA: kapag}
 - surface: pag
   pos: PART
-  feats: {COMP_TYPE: COND, LEMMA: pag}
+  feats: {COMP_TYPE: COND, LEMMA: kapag}
 - surface: sakali
   pos: PART
   feats: {COMP_TYPE: COND, LEMMA: sakali, SUBORD_VARIANT: IN_CASE}
 
-# (b) Concessive — ``kahit`` / ``bagaman``
+# (b) Concessive — ``kahit`` / ``bagaman`` / ``bagamat``
+#
+# ``bagaman`` is the canonical full form; ``bagamat`` is the
+# colloquial elided variant ("bagaman + at" → "bagamat", with
+# the ``-an`` weakening to ``-a-`` before the suffixed ``at``).
+# Phase 5n.A Commit 23 closes §18 L94 by adding ``bagamat`` as a
+# distinct surface entry with LEMMA=bagaman so the LEMMA-collapse
+# mechanic routes both surfaces to the canonical lemma.
 - surface: kahit
   pos: PART
   feats: {COMP_TYPE: CONC, LEMMA: kahit}
 - surface: bagaman
+  pos: PART
+  feats: {COMP_TYPE: CONC, LEMMA: bagaman, REGISTER: FORMAL}
+- surface: bagamat
   pos: PART
   feats: {COMP_TYPE: CONC, LEMMA: bagaman, REGISTER: FORMAL}
 
@@ -1727,3 +1786,31 @@
 - surface: paminsanminsan
   pos: ADV
   feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: OCCASIONAL, LEMMA: paminsan-minsan}
+
+# === Phase 5n.A Commit 5: mag-isa "alone" manner adverb (§18 L60) ===========
+#
+# ``mag-isa`` "alone / by oneself" is a hyphenated manner adverb that
+# the default tokenizer splits on the hyphen into three tokens
+# (``mag``, ``-``, ``isa``). The lex carries the joined form
+# ``magisa`` so the Phase 5f Commit 14 ``merge_hyphen_compounds``
+# pre-pass collapses the three tokens into one ``magisa`` token; the
+# Phase 5j Commit 7 / Phase 5n.A Commit 4 LEMMA-collapse then maps the
+# analysis's ``lemma`` field to the canonical hyphenated form
+# ``mag-isa`` so the surface variant routes to a single canonical
+# entry. Same pattern as Phase 5m Commit 5's
+# ``paminsanminsan`` / ``LEMMA: paminsan-minsan``.
+#
+# The ``MAGISA: YES`` diagnostic flag is set so future grammar rules
+# can constrain on it specifically. ADV_TYPE=MANNER aligns the entry
+# with the existing wh-MANNER ``paano`` / ``papaano`` (Phase 5i)
+# taxonomy.
+#
+# Required for R&G "Ang Manok" simple #3 (``Nakatira siyang mag-isa
+# sa bahay.`` "He lives alone in the house"). The full integration
+# parse depends on Commit 6 (``nakatira`` resultative paradigm) and
+# Commit 7 (R&G simples #1/#3 unblock with ``mama`` lex). This
+# commit lands the lex + tokenizer piece in isolation. References:
+# S&O 1972 §3.5; R&G 1981 §6.6.
+- surface: magisa
+  pos: ADV
+  feats: {ADV_TYPE: MANNER, MAGISA: "YES", LEMMA: mag-isa}

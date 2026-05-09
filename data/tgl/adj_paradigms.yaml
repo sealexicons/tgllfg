@@ -106,6 +106,56 @@
     equative" — sociolinguistically more frequent in spoken
     register; both forms accepted in writing.
 
+# === Phase 5n.A Commit 6: naka- resultative ADJ (§18 L61) ================
+#
+# The ``naka-`` resultative reading is the stative-locative ADJ
+# counterpart of the verbal ``naka-`` abilitative cell (paradigms.yaml
+# AV ABIL PFV/IPFV/CTPL — ``nakakain`` "was able to eat",
+# ``nakatira`` "was able to live", etc.). The two readings share a
+# surface (``nakatira``, ``nakaupo``, ``nakahiga``, ``nakatayo``,
+# ``nakatabi``) but differ in POS:
+#
+#   ADJ[RESULTATIVE=YES]   "be living/sitting/lying/standing/beside"
+#                          (Phase 5n.A Commit 6 — this cell).
+#   VERB[VOICE=AV, MOOD=ABIL, ASPECT=PFV/IPFV/CTPL]
+#                          "was/is/will be able to live/sit/..."
+#                          (Phase 4 §7.6 ``maka`` paradigm).
+#
+# Both analyses surface from the same input; the predicative-ADJ rule
+# (Phase 5g Commit 3) and the predicative-V rule fire in different
+# contexts, so disambiguation is structural — not a ranker tiebreak.
+# Specifically: ``Nakatira siyang mag-isa sa bahay.`` "He lives alone
+# in the house" exercises the ADJ reading; ``Hindi siya nakatira sa
+# bahay.`` "He could not live in the house" (with abilitative
+# negation) exercises the VERB reading.
+#
+# Stative-locative roots that take this cell (S&O 1972 §6 — the
+# canonical resultative inventory): ``tira`` (live), ``upo`` (sit),
+# ``higa`` (lie), ``tayo`` (stand), ``tabi`` (be beside). Each is
+# already a VERB[INTR] root in verbs.yaml (with ``maka`` in its
+# affix_class for the abilitative reading); Phase 5n.A Commit 6 adds
+# parallel ADJ entries in adjectives.yaml under the new "Resultative
+# stative-locatives" section, opting into ``naka_resultative``.
+#
+# Required for R&G "Ang Manok" simples #1 (``May isang mamang
+# nakatira sa isang bahay sa bukid.``) and #3 (``Nakatira siyang
+# mag-isa sa bahay.``) — the ``nakatira`` ADJ reading is the
+# canonical use in both. The full integration parses depend on
+# Commit 7 (``mama`` lex + composition).
+- affix_class: naka_resultative
+  operations:
+    - {op: prefix, value: "naka"}
+  feats: {RESULTATIVE: "YES"}
+  notes: |
+    Resultative naka- adjectival reading: ``naka`` + root → stative
+    locative ADJ (``nakatira`` "be living", ``nakaupo`` "be sitting",
+    ``nakahiga`` "be lying", ``nakatayo`` "be standing",
+    ``nakatabi`` "be beside"). Distinct from the verbal abilitative
+    naka- in paradigms.yaml (which produces VERB[MOOD=ABIL] cells)
+    by output category — the structural disambiguation is at
+    rule-match time. PREDICATIVE=YES rides intrinsically via the
+    ADJ indexer.
+
 # === Phase 5h: bare-citation indexer for non-productive ADJ roots ======
 #
 # Phase 5h Commit 2 adds three lexicalised, non-productive ADJ

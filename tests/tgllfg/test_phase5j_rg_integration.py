@@ -157,30 +157,41 @@ class TestRgEssaySliceComposability:
         assert loc.feats.get("LEMMA") == "bundok"
 
 
-# === Phase 5j-blocking simples (documented 0-parse) =================
+# === R&G simples #1 / #3 — unblocked by Phase 5n.A Commits 5–7 ============
+#
+# Phase 5j pinned simples #1 and #3 at 0-parse pending three
+# blockers (``nakatira`` resultative, ``mag-isa`` hyphen
+# tokenization, ``mama`` lex). All three landed in Phase 5n.A:
+#
+#   * Commit 5 — ``mag-isa`` ADV tokenizer hyphen-split (§18 L60)
+#   * Commit 6 — ``nakatira`` resultative ``naka-`` ADJ paradigm
+#                (§18 L61)
+#   * Commit 7 — ``mama`` NOUN lex + depictive secondary-predicate
+#                rule (``NP[CASE=NOM] → PRON[CASE=NOM] PART[LINK=NG]
+#                ADV[MAGISA=YES]``) (§18 L62 + L63)
+#
+# Positive integration tests for both simples now live in
+# ``test_phase5n_rg_simples.py``. The combined essay-paragraph
+# (R&G p. 482) is Commit 8's target.
 
 
-class TestBlockedRgSimples:
-    """Simples #1 and #3 remain 0-parse — documented in the
-    Phase 5j out-of-scope deferrals. They block on the deferred
-    ``nakatira`` resultative paradigm, ``mag-isa`` hyphen-
-    tokenization, and ``mama`` lex.
-
-    These tests pin the 0-parse state so future paradigm /
-    tokenizer work is detected when these simples start parsing.
-    """
+class TestRgSimples1And3UnblockedInPhase5nA:
+    """Pin that R&G simples #1 and #3 now parse, asserting the
+    Phase 5n.A Commits 5-7 chain delivered the §18 L60 / L61 /
+    L62 / L63 closures. If a future change re-breaks these,
+    this is the regression detector."""
 
     @pytest.mark.parametrize("sentence,simple_num", [
         ("May isang mamang nakatira sa isang bahay sa bukid.", 1),
         ("Nakatira siyang mag-isa sa bahay.", 3),
     ])
-    def test_blocked_simple_zero_parses(
+    def test_unblocked_simple_parses(
         self, sentence: str, simple_num: int
     ) -> None:
         parses = parse_text(sentence)
-        assert len(parses) == 0, (
-            f"R&G simple #{simple_num} {sentence!r} now parses — "
-            f"deferred Phase 5j follow-on items (nakatira / "
-            f"mag-isa / mama) may have landed. Update this test "
-            f"and add positive integration tests for the simple."
+        assert len(parses) >= 1, (
+            f"R&G simple #{simple_num} {sentence!r} regressed to "
+            f"0-parse — Phase 5n.A Commits 5-7 chain may have been "
+            f"reverted; check mag-isa ADV / nakatira ADJ / mama NOUN / "
+            f"depictive PRON+linker+ADV rule."
         )

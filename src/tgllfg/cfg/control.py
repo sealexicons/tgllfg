@@ -65,6 +65,21 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBJ) = (↑ REL-PRO)",
         ),
     ))
+    # Phase 5n.A Commit 13 (§18 L70): AV intransitive embedded
+    # clause with trailing DAT-NP as ADJUNCT, no overt GEN-OBJ.
+    # ``Dapat akong kumain sa labas.`` "I should eat outside" — the
+    # embedded ``kumain sa labas`` is AV-intransitive (no OBJ) with
+    # the locative ``sa labas`` lifted to ADJUNCT. Mirrors the
+    # 3-daughter rule above but without the GEN-OBJ daughter; the
+    # locative-PP ADJUNCT lift is structurally identical.
+    rules.append(Rule(
+        "S_XCOMP",
+        ["V[VOICE=AV]", "NP[CASE=DAT]"],
+        _eqs(
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+        ),
+    ))
     # Phase 5c §7.6 follow-on: non-AV embedded clauses, where
     # REL-PRO routes to ``OBJ-AGENT`` (the actor's typed GF in
     # OV / DV / IV). The patient / recipient / theme NOM-pivot
@@ -261,6 +276,29 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
             ),
         ))
+        # Phase 5n.A Commit 11 (§18 L67): MODAL nested control —
+        # V[CTRL_CLASS=MODAL] PART S_XCOMP. Parallel to the PSYCH /
+        # INTRANS rules above; admits modal stacking (``Dapat akong
+        # puwedeng kumain.`` "I should be able to eat") with SUBJ
+        # control re-entrant through both layers — outer-modal SUBJ
+        # = inner-modal SUBJ = innermost-action SUBJ. The existing
+        # Phase 5j Commit 7 matrix modal wrap binds the outer
+        # SUBJ NP; this rule lets the inner modal-XCOMP compose.
+        rules.append(Rule(
+            "S_XCOMP",
+            [
+                "V[CTRL_CLASS=MODAL]",
+                f"PART[LINK={link}]",
+                "S_XCOMP",
+            ],
+            _eqs(
+                "(↑ SUBJ) = (↑ REL-PRO)",
+                "(↑ XCOMP) = ↓3",
+                "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                "(↓1 CTRL_CLASS) =c 'MODAL'",
+                "(↓1 MODAL) =c 'YES'",
+            ),
+        ))
         # TRANS nested: V[CTRL_CLASS=TRANS] NP[CASE=GEN] PART
         # S_XCOMP. The GEN-NP is the forcer / orderer, mapped
         # to OBJ-AGENT (the typed slot since Phase 5b
@@ -413,6 +451,40 @@ def register_rules(rules: list[Rule]) -> None:
     # matrix structure (PRED=DAPAT, POLARITY=NEG, XCOMP holding
     # the embedded ``kumain``). The Phase 4 §7.2 hindi-wrap
     # composes onto the matrix S unchanged.
+    # Phase 5n.A Commit 12 (§18 L68): modal-as-predicate (no XCOMP).
+    # ``Hindi puwede.`` "Not allowed/possible.", ``Hindi dapat.``
+    # "Not necessary.", ``Hindi kailangan.`` "Not needed." — bare
+    # modals function as impersonal predicates with no embedded V.
+    # The PRED template shape ``MODAL <SUBJ>`` mirrors the
+    # control-wrap PRED shape, but the SUBJ is implicit (PRO) since
+    # there's no overt argument.
+    #
+    # Single-daughter rule structure: when a modal-headed input has
+    # an XCOMP, the multi-daughter modal control wrap below fires
+    # instead and consumes the XCOMP material; the bare-modal rule
+    # only matches when no XCOMP is present (no overt linker + V or
+    # NP + linker + V daughter sequence).
+    #
+    # Composes with the Phase 4 §7.2 hindi-wrap (S → PART[NEG] S)
+    # to yield ``Hindi puwede.``-style sentences.
+    # Provide impersonal-PRO fillers for both args declared by the
+    # modal's lex PRED (``PUWEDE <SUBJ, XCOMP>`` etc.) so completeness
+    # is satisfied. Linguistically: ``Hindi puwede.`` "(it) is not
+    # permitted (to do something)" — the SUBJ is the implicit
+    # forcee/agent and the XCOMP is the implicit unspecified action.
+    rules.append(Rule(
+        "S",
+        ["V[CTRL_CLASS=MODAL]"],
+        _eqs(
+            "(↑) = ↓1",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ XCOMP PRED) = 'PRO'",
+            "(↑ MODAL_STANDALONE) = 'YES'",
+            "(↓1 CTRL_CLASS) =c 'MODAL'",
+            "(↓1 MODAL) =c 'YES'",
+        ),
+    ))
+
     for link in ("NA", "NG"):
         # NOM-actor variant (dapat / puwede / maaari).
         rules.append(Rule(
@@ -506,6 +578,78 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓3 COMP_TYPE) =c 'INTERROG'",
         ),
     ))
+
+    # --- Phase 5n.A Commit 29: ASK-class reported-Q (§18 L90.2 + L92) ---
+    #
+    # ASK-class verbs (``tanong`` and its inflected forms
+    # ``tinanong`` / ``tinatanong`` / ``tatanungin`` / ``nagtanong``
+    # / ``nagtatanong`` / ``magtatanong`` / ``tumanong`` /
+    # ``tumatanong``) admit a finite-S indirect-Q complement
+    # introduced by ``kung``. Unlike KNOW (uninflected pseudo-verb
+    # with PRED='KNOW <SUBJ, COMP>'), ASK-class is fully inflected
+    # under standard transitive paradigms so the PRED template is
+    # 'TANONG <SUBJ, OBJ-AGENT>' for OV and 'TANONG <SUBJ, OBJ>'
+    # for AV. The reported-Q complement fills:
+    #
+    # * **OV pivot**: SUBJ = the asked-thing (S_INTERROG_COMP),
+    #   OBJ-AGENT = the asker (clitic GEN-PRON or full GEN-NP).
+    #   Mirrors Phase 5n.A Commit 27 SAY-class OV pattern.
+    # * **AV pivot**: SUBJ = the asker (NOM-clitic-PRON or full
+    #   NOM-NP), OBJ = the asked-thing (S_INTERROG_COMP). The
+    #   embedded clause functions as the THEME of the asking,
+    #   mapped to OBJ in AV.
+    #
+    # Example targets (closes §18 L90.2 corpus from Commit 28):
+    #
+    #   ``Tinanong niya kung sino ang kumain.``  (OV PFV / clitic-actor)
+    #   ``Tinanong ng lalaki kung saan...``      (OV PFV / full-NP-actor)
+    #   ``Nagtanong siya kung sino ang kumain.`` (AV PFV / clitic-actor)
+    #   ``Nagtanong si Maria kung saan...``      (AV PFV / full-NP-actor)
+    #
+    # Per plan-of-record §3.5 Commit 29, two rule shapes (OV and AV)
+    # × two NP types (PRON for clitic, NP for full) = 4 rules.
+    # Both clitic-PRON and full-NP actor variants are admitted; the
+    # full-NP variant doesn't suffer from the RC-linker crossfire
+    # because ``kung`` is structurally distinct from the bare ``-na``
+    # linker (the kung-clause has its own SubordClause builder
+    # context).
+    #
+    # The ASK_CLASS=YES gate restricts to ``tanong`` only; other
+    # transitive verbs continue to require NOM-NP SUBJ.
+
+    # OV reported-Q. NP[CASE=GEN] subsumes clitic-PRON via the
+    # ``NP[CASE=GEN] → PRON[CASE=GEN]`` shell in nominal.py.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=OV, ASK_CLASS=YES]",
+            "NP[CASE=GEN]",
+            "S_INTERROG_COMP",
+        ],
+        _eqs(
+            "(↑ OBJ-AGENT) = ↓2",
+            "(↑ SUBJ) = ↓3",
+            "(↓1 ASK_CLASS) =c 'YES'",
+            "(↓3 COMP_TYPE) =c 'INTERROG'",
+        ),
+    ))
+    # AV reported-Q. NP[CASE=NOM] subsumes clitic-PRON via the
+    # ``NP[CASE=NOM] → PRON[CASE=NOM]`` shell in nominal.py.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=AV, ASK_CLASS=YES]",
+            "NP[CASE=NOM]",
+            "S_INTERROG_COMP",
+        ],
+        _eqs(
+            "(↑ SUBJ) = ↓2",
+            "(↑ OBJ) = ↓3",
+            "(↓1 ASK_CLASS) =c 'YES'",
+            "(↓3 COMP_TYPE) =c 'INTERROG'",
+        ),
+    ))
+
 
     # **Intransitive control** (payag): NOM-marked agent is
     # matrix SUBJ; AV verb. PRED ``AGREE <SUBJ, XCOMP>``.

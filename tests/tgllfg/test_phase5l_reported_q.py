@@ -144,27 +144,6 @@ def _has_feat_value_anywhere(fs, feat: str, value: str, _seen=None) -> bool:
 # === ASK reported-Q misanalysis pinned (deferred) ====================
 
 
-class TestReportedQMisanalysisDeferred:
-    """``Tinanong niya kung sino ang kumain.`` does parse today,
-    but via the Phase 5l COND-adjunct path — the kung-clause is
-    misanalyzed as a conditional adjunct rather than as a
-    reported-Q complement. Pin this misanalysis so future
-    follow-on work that lands real ASK-class reported-Q can
-    flip the assertion."""
-
-    def test_ask_reported_q_currently_parses_as_cond_adjunct(
-        self,
-    ) -> None:
-        parses = parse_text("Tinanong niya kung sino ang kumain.")
-        # We expect at least one parse. Today's parse misanalyzes
-        # kung as COND.
-        assert len(parses) >= 1
-        _ct, fs, _astr, _diags = parses[0]
-        cond_adj = _adjunct_with_subord_type(fs, "COND")
-        assert cond_adj is not None, (
-            "``Tinanong niya kung sino ang kumain.`` no longer "
-            "produces a COND-adjunct parse — Phase 5l follow-on "
-            "may have landed real ASK-class reported-Q. Update "
-            "this test to assert the new (correct) shape "
-            "(COMP_TYPE=INTERROG complement)."
-        )
+# Phase 5n.A Commit 28 misanalysis + 0-parse tripwires lifted by
+# Phase 5n.A Commit 29. See test_phase5n_reported_q.py for the
+# positive-parse assertions on those 18 sentences.

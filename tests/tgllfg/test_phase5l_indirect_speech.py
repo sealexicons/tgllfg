@@ -36,7 +36,6 @@ from __future__ import annotations
 
 from tgllfg.core.common import Token
 from tgllfg.morph import Analyzer
-from tgllfg.core.pipeline import parse_text
 
 
 def _tok(s: str) -> Token:
@@ -86,18 +85,7 @@ class TestSayClassLexTagging:
 # === Pinned indirect-speech 0-parse (deferred) =======================
 
 
-class TestIndirectSpeechParseDeferred:
-    """The canonical indirect-speech sentence
-    ``Sinabi niya na pumunta si Maria.`` does not parse today.
-    This pin tracks the gap; flipping the assertion to
-    ``len(parses) >= 1`` is the trigger for the follow-on
-    parsing work."""
-
-    def test_canonical_indirect_speech_zero_parse(self) -> None:
-        parses = parse_text("Sinabi niya na pumunta si Maria.")
-        assert len(parses) == 0, (
-            "Indirect-speech parsing is now possible — Phase 5l "
-            "follow-on or Phase 6 may have landed the OV-with-na-S "
-            "complement rule. Update this test and add positive "
-            "tests for the new shape."
-        )
+# The Phase 5n.A Commit 26 0-parse tripwire over the 12 corpus
+# fixtures was lifted by Phase 5n.A Commit 27 — see
+# tests/tgllfg/test_phase5n_indirect_speech.py for the positive-
+# parse assertions on those same 12 sentences.

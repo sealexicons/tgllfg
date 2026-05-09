@@ -344,10 +344,23 @@ def register_rules(rules: list[Rule]) -> None:
         ]
         # Bare frame: V kita (no further args). Covers 2-arg
         # constructions and intransitive-feeling causatives.
+        #
+        # Phase 5n.A Commit 29 added the explicit ``(↓2 KITA) =c
+        # 'YES'`` constraining equation to close a non-conflict-
+        # matcher leak (per ``project_parser_nonconflict_matcher``):
+        # the daughter pattern ``PRON[KITA=YES]`` was admitting any
+        # PRON via shared-key absence, since the equations don't
+        # bind ↓2's f-structure to anything (the rule literally
+        # synthesises SUBJ.PERS=2 and OBJ-AGENT.PERS=1, never
+        # touching the PRON's features). Without the =c, the rule
+        # fired on ``Tinanong niya.`` etc., producing a bogus S
+        # over the V + PRON span — and the Phase 5l COND-adjunct
+        # path subsequently misanalyzed ``Tinanong niya kung sino
+        # ang kumain.`` as ``[Tinanong niya] [kung-S]``.
         rules.append(Rule(
             "S",
             [v_cat, "PRON[KITA=YES]"],
-            _eqs(*kita_subj_eqs, *actor_eqs),
+            _eqs(*kita_subj_eqs, *actor_eqs, "(↓2 KITA) =c 'YES'"),
         ))
         # With-PATIENT frame: V kita NP[GEN]. Covers 3-arg
         # ditransitives and 3-arg pa-causatives (where the GEN-NP
@@ -360,6 +373,7 @@ def register_rules(rules: list[Rule]) -> None:
                 *kita_subj_eqs,
                 *actor_eqs,
                 "(↑ OBJ-PATIENT) = ↓3",
+                "(↓2 KITA) =c 'YES'",
             ),
         ))
         # With-DAT frame: V kita NP[DAT]. The DAT-NP rides into
@@ -371,5 +385,6 @@ def register_rules(rules: list[Rule]) -> None:
                 *kita_subj_eqs,
                 *actor_eqs,
                 "↓3 ∈ (↑ ADJUNCT)",
+                "(↓2 KITA) =c 'YES'",
             ),
         ))

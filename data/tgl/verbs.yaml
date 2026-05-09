@@ -240,13 +240,11 @@
   pos: VERB
   gloss: be quick
   transitivity: INTR
-  affix_class: [um, mag, ma, maka]
-
-- citation: bingi
-  pos: VERB
-  gloss: be deaf
-  transitivity: INTR
-  affix_class: [ma, maka]
+  # Phase 5n.A Commit 1: slimmed from [um, mag, ma, maka] to [um].
+  # The ma- adjective surface (``mabilis``) is in adjectives.yaml;
+  # the verbal entry retains only the inchoative -um- reading
+  # (``bumilis`` "become quick / quicken").
+  affix_class: [um]
 
 - citation: bisita
   pos: VERB
@@ -272,12 +270,6 @@
   transitivity: TR
   # mag- / -an.
   affix_class: [mag, an_oblig, maka]
-
-- citation: bulag
-  pos: VERB
-  gloss: be blind
-  transitivity: INTR
-  affix_class: [ma, maka]
 
 - citation: bunot
   pos: VERB
@@ -398,12 +390,6 @@
   transitivity: INTR
   affix_class: [um, ma, maka]
 
-- citation: galit
-  pos: VERB
-  gloss: be angry
-  transitivity: INTR
-  affix_class: [ma, maka]
-
 - citation: gamit
   pos: VERB
   gloss: use
@@ -415,7 +401,11 @@
   pos: VERB
   gloss: be beautiful
   transitivity: INTR
-  affix_class: [um, mag, ma, maka]
+  # Phase 5n.A Commit 1: slimmed from [um, mag, ma, maka] to [um].
+  # The ma- adjective surface (``maganda``) is in adjectives.yaml;
+  # the verbal entry retains only the inchoative -um- reading
+  # (``gumanda`` "become beautiful").
+  affix_class: [um]
 
 - citation: gawa
   pos: VERB
@@ -431,24 +421,12 @@
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
 
-- citation: ginaw
-  pos: VERB
-  gloss: be cold
-  transitivity: INTR
-  affix_class: [ma, maka]
-
 # -- ma- non-volitional / stative --
 - citation: gising
   pos: VERB
   gloss: wake up
   transitivity: INTR
   affix_class: [um, mag, ma, maka]
-
-- citation: gulat
-  pos: VERB
-  gloss: be surprised
-  transitivity: INTR
-  affix_class: [ma, maka]
 
 - citation: gulay
   pos: VERB
@@ -463,12 +441,6 @@
   transitivity: TR
   # R&B 77: -um- / -in / -an / i-.
   affix_class: [um, in_oblig, an_oblig, i_oblig, maka]
-
-- citation: gutom
-  pos: VERB
-  gloss: be hungry
-  transitivity: INTR
-  affix_class: [ma, maka]
 
 - citation: hagis
   pos: VERB
@@ -558,12 +530,6 @@
   transitivity: TR
   # -um- / -in / -an.
   affix_class: [um, in_oblig, an_oblig, maka]
-
-- citation: hilo
-  pos: VERB
-  gloss: be dizzy
-  transitivity: INTR
-  affix_class: [ma, maka]
 
 - citation: hingi
   pos: VERB
@@ -798,7 +764,11 @@
   pos: VERB
   gloss: be strong
   transitivity: INTR
-  affix_class: [um, mag, ma, maka]
+  # Phase 5n.A Commit 1: slimmed from [um, mag, ma, maka] to [um].
+  # The ma- adjective surface (``malakas``) is in adjectives.yaml;
+  # the verbal entry retains only the inchoative -um- reading
+  # (``lumakas`` "become strong / strengthen").
+  affix_class: [um]
 
 - citation: lapit
   pos: VERB
@@ -1236,18 +1206,6 @@
   # R&B 266: mag- / i- / -an.
   affix_class: [mag, i_oblig, an_oblig, maka]
 
-- citation: tibay
-  pos: VERB
-  gloss: be durable
-  transitivity: INTR
-  affix_class: [ma, maka]
-
-- citation: tigang
-  pos: VERB
-  gloss: be parched
-  transitivity: INTR
-  affix_class: [ma, maka]
-
 - citation: tigil
   pos: VERB
   gloss: stop
@@ -1418,4 +1376,8 @@
   pos: VERB
   gloss: be wealthy
   transitivity: INTR
-  affix_class: [um, ma, maka]
+  # Phase 5n.A Commit 1: slimmed from [um, ma, maka] to [um].
+  # The ma- adjective surface (``mayaman``) is in adjectives.yaml;
+  # the verbal entry retains only the inchoative -um- reading
+  # (``yumaman`` "become wealthy").
+  affix_class: [um]

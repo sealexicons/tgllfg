@@ -10865,3 +10865,396 @@ Roadmap §12.1 / plan-of-record §7.2. +20 fixtures in
 ``coverage_corpus.yaml`` sampling each Commit 2-11 family.
 Baseline recaptured: 1332 → 1352 top-1 captures (+20); 6 historic
 non-parses preserved.
+
+
+## Phase 5n.A: §18 deferral debt-clearing (overview)
+
+Plan-of-record ``tgllfg-phase-5n.md`` §3. Phase 5n.A closes 17
+§18.1 deferrals across phases 5d-5m via 32 commits. The phase
+has no thematic unity beyond "close the backlog"; analytical
+commitments are recorded per Commit-N below. Five deferrals are
+explicitly carried to Phase 5n.B (Phase 5h/5i/5m completions);
+five more — L29 DV PFV gap, L77 gapping, L78 cross-conjunct
+negation, L83 standalone NP-coord, and the parser non-conflict-
+matcher fix unblocking 5+-conjunct flat coord — are bucketed for
+Phase 5n.C per user direction.
+
+Two cross-cutting analytical decisions warrant explicit
+documentation:
+
+**Drill-down protocol** (per user direction 2026-05-08): no new
+deferrals from Phase 5n.A unless the scope is genuinely Phase 6+
+infra-dependent. When a commit's targeted closure surfaces an
+adjacent issue, the in-commit work expands to cover it. Examples:
+Commit 7 surfaced the depictive PRON+linker+ADV rule (added in-
+commit); Commit 8 surfaced 3 new rules for the R&G combined
+essay paragraph (all added); Commit 17 surfaced the equation-
+language-has-no-arithmetic constraint (decided in-commit per
+Phase 5f Commit 9 precedent).
+
+**Non-conflict matcher project finding** (Commit 19 / 19a): the
+tgllfg Earley parser's category-pattern matcher accepts
+``Cat[X=Y]`` daughters that lack the ``X`` feature on the
+candidate, deferring rejection to constraining-equation
+unification. This works for low-arity rules but pollutes the
+chart at high arity (5+-conjunct flat NP coord 0-parses despite
+correct recursive infrastructure because every binary parse path
+ambiguously matches the Phase 5m mismo NP-emphatic rule and
+gets rejected at unification). Documented in
+``project_parser_nonconflict_matcher`` memory; deferred to
+Phase 5n.C with two routes to a real fix (parser-level defining
+category constraints, or grammar-wide narrower daughter feats).
+
+The same pattern surfaced in Commit 29 (kita-fusion was firing on
+any GEN-PRON via the same non-conflict leak); there the scope
+was tractable for an in-commit fix (``(↓2 KITA) =c 'YES'``
+constraining equation on all 3 kita rule variants), which
+load-bearingly suppressed the Phase 5l COND-adjunct misanalysis
+path for ASK-class reported-Q.
+
+
+## Phase 5n.A Commit 1: Be-X-root verbal-paradigm pruning (§18 L35)
+
+Nine non-verbal "be-X" roots (``bingi``, ``bulag``, ``galit``,
+``ginaw``, ``gulat``, ``gutom``, ``hilo``, ``tibay``, ``tigang``)
+were removed from ``verbs.yaml`` and re-lex'd in
+``adjectives.yaml`` with ``affix_class: [ma_adj]``. Four roots
+(``ganda``, ``bilis``, ``lakas``, ``yaman``) stayed in
+``verbs.yaml`` slimmed to ``[um]``-only (they admit
+``maganda + um → gumanda`` "become beautiful" inchoative use).
+The migration removes ~50 spurious verbal-paradigm cells from
+the seed lex.
+
+
+## Phase 5n.A Commit 2: hindi-wrap × non-``ka`` NOM-clitic (§18 L69)
+
+Added ``is_clitic: true`` to the full NOM-PRON inventory
+(``ako``, ``tayo``, ``kami``, ``kayo``, ``siya``, ``sila``).
+Added a ``_is_pre_ay_pron`` exception to clitic placement so the
+ay-inversion path doesn't pull these into the post-``hindi``
+position. Generalised ``_find_verbless_anchor`` in
+``clitics/placement.py`` to skip ALL PART tokens (not just
+NEG-PART) so ``Hindi siguro siya kumain`` etc. anchors correctly.
+
+
+## Phase 5n.A Commit 3: SAY/ASK paradigm propagation (§18 L91)
+
+Misdiagnosis closure. SAY_CLASS / ASK_CLASS feats already
+propagate uniformly through the paradigm engine; the apparent
+gap was a test-side oversight. Tests-only commit confirming
+the projection.
+
+
+## Phase 5n.A Commit 4: orthographic-variant LEMMA-collapse extension (§18 L74)
+
+Phase 5j Commit 7 introduced ``MorphAnalysis.lemma = feats.get(
+"LEMMA", surface)`` for the particles branch of
+``_build_index``. Commit 4 extended the same mechanic to four
+other branches: pronouns, nouns, verbs (root + paradigm cells),
+adjectives (bare-root + paradigm cells). Synthetic ``MorphData``
+tests validate the extension without mutating seed YAML.
+
+
+## Phase 5n.A Commit 5: mag-isa ADV depictive (§18 L60)
+
+New ADV lex entry ``magisa`` with ``LEMMA: mag-isa, MAGISA:
+YES``. The pre-existing ``merge_hyphen_compounds`` pre-pass
+collapses ``mag-isa`` → ``magisa`` for analyzer lookup. New
+``cfg/nominal.py`` rule
+``NP[CASE=NOM] → PRON[CASE=NOM] PART[LINK=NG] ADV[MAGISA=YES]``
+attaches the depictive secondary predicate to the SUBJ NP.
+
+
+## Phase 5n.A Commit 6: naka- resultative ADJ paradigm (§18 L61)
+
+New ``naka_resultative`` cell in ``adj_paradigms.yaml``; 5 new
+ADJ entries opting in (``tira``, ``upo``, ``higa``, ``tayo``,
+``tabi``). Generates surfaces ``nakatira`` / ``nakaupo`` /
+``nakahiga`` / ``nakatayo`` / ``nakatabi`` parsed as
+ADJ[NAKA=YES] at predicative position.
+
+
+## Phase 5n.A Commit 7: mama / R&G simples #1, #3 (§18 L62 + L63)
+
+New PRON entry ``mama`` (vocative / informal address). Added
+the depictive PRON+linker+ADV rule needed by R&G simples #1 /
+#3 (one rule discovery in-commit per drill-down protocol).
+
+
+## Phase 5n.A Commit 8: R&G combined essay (§18 L64)
+
+Combined essay-paragraph parse. Drill-down surfaced 3 new rules
+needed for full coverage: ADJ-with-depictive in
+``cfg/nominal.py``, N-level RC wrap (``N → N
+PART[LINK=N{A,G}] S_GAP``), and nasa-headed S_GAP variant in
+``cfg/extraction.py``. All landed in-commit.
+
+
+## Phase 5n.A Commit 9: maaari polysemous noun reading (§18 L65)
+
+Lex-only addition: ``maaari`` as NOUN ("the possible /
+possibility") alongside the existing PART/VERB[MODAL] entries.
+Marginal in modern Tagalog; surfaces in formal / written
+register (R&G 1981 §10).
+
+
+## Phase 5n.A Commit 10: existential as RC head (§18 L66)
+
+Tests-only verification. The Commit 8 N-level RC wrap delivered
+the required infrastructure; Commit 10 documents the closure.
+
+
+## Phase 5n.A Commit 11: modal stacking (§18 L67)
+
+New nested-MODAL S_XCOMP rule in ``cfg/control.py``. Admits
+``Dapat akong puwedeng kumain.`` "I should be able to eat."
+The outer modal's XCOMP is itself a modal-headed S_XCOMP;
+PRO fillers for the implicit args.
+
+
+## Phase 5n.A Commit 12: hindi puwede standalone (§18 L68)
+
+Modal-as-predicate rule in ``cfg/control.py``. Admits
+``Hindi puwede.`` as a complete clause with PRO fillers for
+SUBJ and XCOMP. Initial design used a literal ``MODAL <SUBJ>``
+PRED template but conflicted with the lex's ``PUWEDE <SUBJ,
+XCOMP>``; re-designed to provide PRO fillers for both implicit
+args without overriding PRED.
+
+
+## Phase 5n.A Commit 13: modal + sa-PP ADJUNCT in XCOMP (§18 L70)
+
+New 2-daughter S_XCOMP variant in ``cfg/control.py`` admitting
+``V[MODAL=YES] + S_XCOMP-with-DAT-PP-adjunct``.
+
+
+## Phase 5n.A Commit 14: OV embedded V kainin (§18 L72)
+
+New bare-OV cell in ``paradigms.yaml`` with ``MOOD=SOC`` for
+``kainin`` / ``bilihin`` / ``inumin`` / ``gawahin``. Admits
+``Maaari mong kainin ang isda.`` "You can eat the fish" (modal
++ bare-OV-in-XCOMP).
+
+
+## Phase 5n.A Commit 15: correlative ``hindi lang...kundi pati`` (§18 L75)
+
+Tests-only closure. Phase 5l Commit 14 already delivered the
+required correlative-coord infrastructure; Commit 15 documents
+the closure.
+
+
+## Phase 5n.A Commit 16: multi-word coord o kaya / at saka / at nang (§18 L76 + L82)
+
+Three new multi-word coord combiner rules in
+``cfg/coordination.py``: ``o kaya`` (COORD=OR + UNCERTAIN=YES),
+``at saka`` (COORD=AND + SEQUENCE=YES), ``at nang``
+(COORD=AND + RESULT=YES). Each composes via a multi-word
+lexicalized rule that consumes the two-PART sequence
+structurally.
+
+
+## Phase 5n.A Commit 17: coordinated cardinals (§18 L79)
+
+New NUM coord rule in ``cfg/coordination.py``:
+``NUM[CARDINAL=YES] → NUM PART[COORD=AND] NUM`` recording the
+operand cardinal values. The combined arithmetic value is NOT
+computed — the equation language has no arithmetic operators
+(per Phase 5f Commit 9 precedent); operand cardinals are
+recorded for downstream consumers.
+
+
+## Phase 5n.A Commit 18: bukod sa / maliban sa exceptive PP (§18 L80)
+
+New PREP entries ``bukod`` and ``maliban`` in
+``particles.yaml``. New clause-final EXCEPTIVE PP rule in
+``cfg/discourse.py`` that attaches ``bukod sa NP`` /
+``maliban sa NP`` as ADJUNCT[PREP_TYPE=EXCEPTIVE].
+
+
+## Phase 5n.A Commit 19 / 19a: 4+-conjunct flat NP coord (§18 L85)
+
+Commit 19 added explicit 4-conjunct rules (Oxford + non-Oxford
+× NOM/GEN/DAT). Commit 19a refactored to a left-recursive
+``NP_LONG_LIST_<case>`` non-terminal with base + recursive +
+wrap rules. The 4-conjunct case fires via the base + wrap; 5+-
+conjunct stays pinned at 0-parse.
+
+**Root cause** (per ``project_parser_nonconflict_matcher``
+memory): the parser's category-pattern matcher is non-conflict.
+For 5+-conjunct, every binary parse path (Catalan C(N-1)
+parses) ambiguously matches the Phase 5m mismo NP-emphatic rule
+``NP → NP PART`` on each NP+PART adjacency — including spurious
+matches like ``si Jose .`` or ``si A at`` — and the constraining
+equations reject them at unification, polluting every parse path.
+For 4-conjunct (5 binary parses), at least one survives; for
+5-conjunct (14 binary parses), all 14 fail.
+
+**Status**: deferred to Phase 5n.C. Two routes to a real fix
+documented in the project memory: (1) parser-level defining
+category-pattern feats at predict time, or (2) grammar-wide
+audit tightening every rule's bracketed-feat daughters.
+
+
+## Phase 5n.A Commit 20: disjunctive 3-conjunct flat NP coord (§18 L86)
+
+Generalized the Phase 5k Commit 4 3-conjunct rules from AND-
+only to AND/OR. Twelve rules total (Oxford + non-Oxford × NOM
+/ GEN / DAT × AND / OR). NUM behaviour mirrors the binary forms:
+AND forces ``(↑ NUM) = 'PL'``, OR percolates ``(↑ NUM) = ↓1
+NUM`` (one underspecified referent).
+
+
+## Phase 5n.A Commit 21: HAVE-mayroon-with-linker (§18 L87)
+
+Two new clause rules in ``cfg/clause.py``: 5e (positive HAVE,
+postposed possessor with linker) and 5f (positive HAVE,
+internal clitic possessor with leading linker). Mirrors the
+Phase 5j Commit 5c / 5d negative HAVE structure but with POS
+polarity. Admits
+``Mayroong aklat si Maria.`` and ``Mayroong akong aklat.``
+
+
+## Phase 5n.A Commit 22: free-standing naman 2P enclitic (§18 L88)
+
+Second ``naman`` lex entry added to ``particles.yaml``: a 2P
+clitic with ``ADV: ALSO``, parallel to ``din``/``rin``. The
+pre-existing non-clitic ``naman`` (Phase 5k Commit 7, used by
+the ``kaya naman`` two-word coord) coexists with the new clitic
+entry. Disambiguation: the 2P-clitic absorption rule's
+``CLITIC_CLASS=2P`` daughter constraint selects the clitic
+entry; the kaya-naman rule's structural context (PART
+sandwiched between two complete S clauses with leading
+``kaya``) selects the non-clitic entry.
+
+
+## Phase 5n.A Commit 23: bagamat / 'pag orthographic contractions (§18 L94 + L107)
+
+L94: new ``bagamat`` PART entry with feats
+``{COMP_TYPE: CONC, LEMMA: bagaman, REGISTER: FORMAL}``;
+the analyzer's MorphAnalysis.lemma collapses to canonical
+``bagaman`` via the Phase 5j Commit 7 mechanic.
+
+L107: existing ``pag`` entry's LEMMA updated from ``pag`` →
+``kapag`` so all short forms (``pag``, ``'pag``) collapse to
+the canonical ``kapag``. The ``'pag`` surface tokenizes as
+``'`` + ``pag`` (apostrophe is a non-word char per
+``text/tokenizer.py``); the apostrophe is filtered as
+non-content and the ``pag`` lex matches the remainder.
+Adding a literal ``'pag`` lex entry was rejected — the
+tokenizer never yields a single ``'pag`` token.
+
+
+## Phase 5n.A Commit 24: subord nesting depth-3+ stress fixtures (§18 L95)
+
+Tests-only closure. The Phase 5l subord adjunct attachment
+machinery already supports unbounded recursion; Commit 24 adds
+explicit stress-test fixtures across depth-2 (5 fixtures one
+per COMP_TYPE family), depth-3 (8 fixtures spanning COND ×
+{TEMP, PURP, REAS, CONC} matrices and inverses), and depth-4
+(2 fixtures with 3 nested subord adjuncts). Depth-4 sentences
+parse but the f-structure may flatten one adjunct as a sibling
+rather than a strict-nested daughter — acceptable per
+plan-of-record §3.4 Commit 24 mitigation.
+
+
+## Phase 5n.A Commit 25: pang- purpose nominals (§18 L27)
+
+Hand-authored ``pang-`` (and ``pam-``/``pan-`` allomorph)
+instrumental / purpose nominals, lex'd as NOUN with a
+``PANG_DERIVED: true`` traceability feat. Six entries:
+``pambili``, ``pamasahe``, ``pangharang``, ``pangkain``,
+``pangsuot``, ``pansulat``. Productive ``pang-`` derivation
+engine deferred to L31 (NOUN-root engine). Verified no
+crossfire with the existing IV-INSTR ``ipang-`` paradigm
+(``ipinambili`` etc.) — POS-typed differently.
+
+
+## Phase 5n.A Commit 26 / 27: OV-with-na-S indirect-speech (§18 L89)
+
+Commit 26: 12 corpus fixtures spanning OV PFV/IPFV/CTPL of
+``sabi`` × clitic-GEN-PRON actors × AV-intransitive /
+AV-transitive embeds. Pinned at ``expected: fragment``;
+Commit 27 lifts the pin.
+
+Commit 27: new clause rule
+``S → V[VOICE=OV, SAY_CLASS=YES] PRON[CASE=GEN] PART[LINK=NA] S``
+binding the said-thing to SUBJ via the OV LMT THEME→SUBJ
+mapping, and the actor PRON to OBJ-AGENT. Companion change in
+``clitics/placement.py``: new ``is_say_class_pron_seq`` branch
+in ``disambiguate_homophone_clitics`` so ``na`` between SAY-V
++ GEN-PRON + V stays as the linker (not the ALREADY clitic).
+Without the disambiguator change, ``reorder_clitics`` was
+moving ``na`` to clause-final position, breaking the rule's
+V-PRON-na-S adjacency.
+
+Gating choices:
+* SAY_CLASS=YES on ↓1 — narrow gate preserving Phase 4
+  SUBJ-as-NOM-NP default for non-SAY OV verbs.
+* PRON[CASE=GEN] (not full NP[CASE=GEN]) — sidesteps the
+  N-headed RC-linker ``na`` path which misanalyzes
+  ``Sinabi ng lalaki na pumunta si Maria.`` as
+  ``[ng lalaki] [na pumunta]``.
+
+
+## Phase 5n.A Commit 28 / 29: ASK-class reported-Q (§18 L90 + L92)
+
+Commit 28: 18 corpus fixtures spanning ``tanong`` × OV/AV ×
+PFV/IPFV/CTPL × wh-PRONs (sino, ano, saan, kailan, bakit,
+paano). 10 OV-clitic fixtures pinned at COND-misanalysis
+(parsing via the Phase 5l COND-adjunct path with
+``SUBORD_TYPE=COND`` instead of the correct
+``COMP_TYPE=INTERROG``); 8 AV / full-NP fixtures pinned at
+``expected: fragment``. Commit 29 lifts both pin shapes.
+
+Commit 29 lands two coordinated changes:
+
+**Two new clause rules in cfg/control.py** — ASK-class
+reported-Q for OV pivot (asked-thing as SUBJ, asker as OBJ-
+AGENT) and AV pivot (asker as SUBJ, asked-thing as OBJ). Both
+gated on ``(↓1 ASK_CLASS) =c 'YES'``. NP[CASE=X] subsumes
+clitic-PRON via the existing ``NP → PRON`` shells, so a single
+rule per voice covers both clitic-PRON and full-NP actors.
+
+**kita-fusion non-conflict-matcher leak closure (cfg/clitic.py)**
+— added ``(↓2 KITA) =c 'YES'`` constraining equations to all 3
+kita rule variants. The rules synthesise SUBJ.PERS=2 /
+OBJ-AGENT.PERS=1 without binding ↓2's f-structure, so the
+non-conflict matcher was admitting any GEN-PRON via shared-key
+absence (no constraint to reject ``niya`` etc.). The spurious
+kita-S over ``Tinanong niya`` was the matrix S that the
+COND-adjunct rule was attaching to; killing the spurious S
+removed the misanalysis path entirely — no need for a guard on
+the COND-adjunct rule itself. This was an unanticipated
+load-bearing fix that closed L92 without explicit work.
+
+Companion change in ``data/tgl/pronouns.yaml``: ``KITA: YES``
+quoted to ``KITA: "YES"`` (string, not boolean) per the
+``=c 'YES'`` convention used by ``MODAL: "YES"`` etc. The one
+consumer (``test_kita_fusion.py::TestKitaMorph``) updated to
+``== "YES"``.
+
+
+## Phase 5n.A Commit 30: COND vs reported-Q vs indirect-speech disambiguation sweep
+
+Regression-sweep commit. 24 tests across 5 classes
+(TestCondAdjunctRegression, TestOtherSubordTypesUnchanged,
+TestKnowIndirectQRegression, TestNoCrossPollination,
+TestKitaStillFires) verifying the Commit 27 / 29 changes don't
+regress existing Phase 5l COND-adjunct uses, Phase 5i KNOW-
+class indirect-Q, or other-COMP-TYPE adjunct families, and
+confirming no cross-pollination across the SAY / ASK / KNOW
+rule families.
+
+Baseline recapture: 1394 → 1410 corpus entries (will grow
+again in Commit 31); 1388/1394 captured (6 are intentional
+``expected: fragment`` / ``fail`` entries).
+
+
+## Phase 5n.A Commit 31: coverage corpus expansion + baseline recapture
+
+Per Phase 5m Commit 12 / 5l Commit 15 / 5k Commit 10 precedent.
++16 fixtures across the Commit 5/6/11/12/14/16/17/18/19/20/21/
+22/23/24 constructions that didn't get corpus coverage in their
+own commits, reaching 52 phase5n entries total (alongside the
+36 from Commits 25/26/28). Baseline recaptured: 1394 → 1410
+top-1 captures (+16); 1404/1410 captured.
