@@ -1070,6 +1070,67 @@
   feats: {SEM_CLASS: REFLEXIVE}
 
 
+# === Phase 5n.A Commit 25: pang- purpose nominals (§18 L27) ==============
+#
+# Hand-authored ``pang-`` (and ``pam-`` / ``pan-`` allomorphs)
+# instrumental / purpose nominals, lex'd as NOUN with a
+# ``PANG_DERIVED: true`` traceability feat. Each entry covers a
+# single attested form; the productive ``pang-`` derivation engine
+# is deferred to L31 (NOUN-root engine).
+#
+# Allomorphy: ``pang-`` selects ``pam-`` before /b, p/ and ``pan-``
+# before /t, d, s, l, n/, with ``pang-`` proper before vowels and
+# /k, g, h, ng, w, y/. The base nominal class denotes the
+# instrument or stuff used for an action (S&O 1972 §5.x; R&B 1986
+# ch.7 derived nominals).
+#
+# Risk note (per plan-of-record §3.5): the bare ``pambili`` /
+# ``pansulat`` etc. surfaces are currently ``_UNK`` in the morph
+# analyzer (the existing IV-INSTR ``ipang-`` paradigm only fires
+# for the inflected forms ``ipinambili`` / ``ipinapambili`` /
+# etc.). Adding NOUN entries for the bare forms doesn't conflict
+# with the IV-INSTR machinery because the analyses are POS-typed
+# differently — VERB[VOICE=IV, APPL=INSTR] vs NOUN. Verified by
+# the Commit 25 IV-INSTR regression test on ``Ipinambili niya
+# ang pera``.
+#
+# Sources: ``pambili`` and ``pamasahe`` are attested in the
+# intermediate-Tagalog corpus (``data/tgl/dictionaries/
+# intermediate-tagalog-...``); ``pansulat`` / ``pangkain`` /
+# ``pangsuot`` / ``pangharang`` are S&O 1972 §5.x derived-nominal
+# class examples.
+
+- citation: pambili
+  pos: NOUN
+  gloss: money for buying / shopping money
+  feats: {PANG_DERIVED: true}
+
+- citation: pamasahe
+  pos: NOUN
+  gloss: transport fare
+  feats: {PANG_DERIVED: true}
+
+- citation: pangharang
+  pos: NOUN
+  gloss: instrument for blocking / blockade
+  feats: {PANG_DERIVED: true}
+
+- citation: pangkain
+  pos: NOUN
+  gloss: food / something to eat
+  feats: {PANG_DERIVED: true}
+
+- citation: pangsuot
+  pos: NOUN
+  gloss: clothing / garment
+  feats: {PANG_DERIVED: true}
+
+- citation: pansulat
+  pos: NOUN
+  gloss: pen / writing instrument
+  feats: {PANG_DERIVED: true}
+
+
 # === Proper-name placeholders ============================================
 # Test-fixture proper names. Alphabetical by citation.
 

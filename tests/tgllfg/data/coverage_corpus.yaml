@@ -4301,3 +4301,23 @@
 - text: Bukod dito kumain ang bata.
   construction: 'phase5m: discourse bukod dito — multi-word PART (PART + ADP); DISCOURSE=ALSO'
   expected: parse
+
+# --- Phase 5n.A Commit 25: pang- purpose nominals (§18 L27) ------
+- text: Bumili siya ng pansulat.
+  construction: 'phase5n: pang- purpose nominal pansulat (pen) as OBJ of AV verb'
+  expected: parse
+- text: Bumili ako ng pangkain.
+  construction: 'phase5n: pang- purpose nominal pangkain (food) as OBJ of AV verb'
+  expected: parse
+- text: Bumili siya ng pangsuot.
+  construction: 'phase5n: pang- purpose nominal pangsuot (clothing) as OBJ of AV verb'
+  expected: parse
+- text: May pansulat ako.
+  construction: 'phase5n: pang- purpose nominal pansulat as existence-asserted N in HAVE'
+  expected: parse
+- text: May pangkain si Maria.
+  construction: 'phase5n: pang- purpose nominal pangkain in HAVE with full-NP possessor'
+  expected: parse
+- text: Mayroong pansulat ako.
+  construction: 'phase5n: pang- purpose nominal pansulat in HAVE-mayroon-with-linker'
+  expected: parse
