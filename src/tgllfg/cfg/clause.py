@@ -932,6 +932,46 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.B Commit 6: equative DAT-standard variant (§18 L44) ---
+    #
+    # ``Kasingganda kay Maria si Ana.``
+    #     "Ana is as beautiful as Maria." (DAT-standard, formal /
+    #     marginal alternative to the GEN-standard canonical form)
+    #
+    # Closes §18 L44 (carried forward from Phase 5h §9.2 / Commit
+    # 6 audit). The GEN-standard form (``Kasingganda ni Maria si
+    # Ana``) is canonical per S&O 1972 / R&B 1986 and lives in
+    # the third equative rule above. The DAT-standard alternative
+    # (``Kasingganda kay Maria si Ana``) is marginal in modern
+    # Tagalog but attested; this fourth rule lands it.
+    #
+    # Mirrors the GEN-standard rule (``ADJ NP[CASE=GEN]
+    # NP[CASE=NOM]``) one-for-one with ``CASE=DAT`` substituting
+    # for ``CASE=GEN``. Daughter 2 is the standard; daughter 3 is
+    # the comparee (NOM-marked SUBJ pivot). Same ``ADJUNCT`` set
+    # membership + ``ROLE: EQUATIVE_STANDARD`` convention as the
+    # other equative rules above so consumers walking the
+    # ADJUNCT set find the comparison standard uniformly across
+    # GEN / NOM / DAT shapes.
+    rules.append(Rule(
+        "S",
+        [
+            "ADJ[COMP_DEGREE=EQUATIVE]",
+            "NP[CASE=DAT]",
+            "NP[CASE=NOM]",
+        ],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 ROLE) = 'EQUATIVE_STANDARD'",
+        ],
+    ))
+
 
     # --- Phase 5g Commit 5: manner-adverb (S-level) -----------
     #
