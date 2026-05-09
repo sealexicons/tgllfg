@@ -34,6 +34,8 @@ follow-on without committing to a half-built parsing path.
 
 from __future__ import annotations
 
+import pytest
+
 from tgllfg.core.common import Token
 from tgllfg.morph import Analyzer
 from tgllfg.core.pipeline import parse_text
@@ -91,7 +93,14 @@ class TestIndirectSpeechParseDeferred:
     ``Sinabi niya na pumunta si Maria.`` does not parse today.
     This pin tracks the gap; flipping the assertion to
     ``len(parses) >= 1`` is the trigger for the follow-on
-    parsing work."""
+    parsing work.
+
+    Phase 5n.A Commit 26 (§18 L89.1) extended the pin from one
+    canonical sentence to 12 corpus fixtures spanning OV PFV /
+    IPFV / CTPL × varied actor PRONs × AV-intransitive /
+    AV-transitive embeds (with one negation case). All 12 are
+    currently 0-parse-pinned; Commit 27 lands the
+    OV-with-na-S complement rule and flips them to positive."""
 
     def test_canonical_indirect_speech_zero_parse(self) -> None:
         parses = parse_text("Sinabi niya na pumunta si Maria.")
@@ -100,4 +109,33 @@ class TestIndirectSpeechParseDeferred:
             "follow-on or Phase 6 may have landed the OV-with-na-S "
             "complement rule. Update this test and add positive "
             "tests for the new shape."
+        )
+
+    @pytest.mark.parametrize("sentence", [
+        # PFV (sinabi)
+        "Sinabi niya na pumunta si Maria.",
+        "Sinabi mo na pumunta si Pedro.",
+        "Sinabi ko na kumain si Maria.",
+        "Sinabi nila na bumili si Maria ng aklat.",
+        "Sinabi niya na pumunta sila.",
+        # IPFV (sinasabi)
+        "Sinasabi niya na pumunta si Maria.",
+        "Sinasabi mo na kumain ako.",
+        "Sinasabi nila na bumili kami ng aklat.",
+        # CTPL (sasabihin)
+        "Sasabihin niya na pumunta si Maria.",
+        "Sasabihin ko na kumain ako bukas.",
+        "Sasabihin nila na bumili kami ng aklat.",
+        # PFV with embed transitive
+        "Sinabi niya na bumili si Maria ng aklat.",
+    ])
+    def test_phase5n_corpus_zero_parse(self, sentence: str) -> None:
+        """Phase 5n.A Commit 26 corpus fixtures — all 12 currently
+        0-parse. Commit 27 lands the OV-with-na-S complement rule
+        and flips this to ``len(parses) >= 1``."""
+        parses = parse_text(sentence)
+        assert len(parses) == 0, (
+            f"{sentence!r} now parses — Phase 5n.A Commit 27 may "
+            "have landed the OV-with-na-S complement rule. Update "
+            "this test and add positive tests for the new shape."
         )
