@@ -225,31 +225,7 @@ class TestThreeWayComposition:
         assert len(conjuncts) == 2
 
 
-# === Pinned Phase 5j gaps (NOT Commit 9 issues) =====================
-
-
-class TestPhase5jHavePinnedGaps:
-    """Pre-existing Phase 5j gaps that surfaced during Commit 9
-    audit but are NOT Commit 9's responsibility. Pin the 0-parse
-    state so future Phase 5j follow-ons flip when the rule lands.
-
-    The HAVE-mayroon-with-linker form ``Mayroong aklat si Maria.``
-    has no Phase 5j rule — Phase 5j Commit 5 only added 4 HAVE
-    rules (positive postposed / clitic-possessor + negative
-    postposed / clitic-possessor); the linker-mayroon HAVE form
-    is a Phase 5j follow-on."""
-
-    def test_mayroon_have_pinned_zero(self) -> None:
-        parses = parse_text("Mayroong aklat si Maria.")
-        assert len(parses) == 0, (
-            "Mayroong aklat si Maria. now parses — Phase 5j "
-            "follow-on may have landed the linker-mayroon HAVE "
-            "rule. Update this test and add positive coverage."
-        )
-
-    def test_mayroon_have_with_coord_pinned_zero(self) -> None:
-        parses = parse_text("Mayroong aklat at lapis si Maria.")
-        assert len(parses) == 0, (
-            "Mayroong aklat at lapis si Maria. now parses — Phase "
-            "5j follow-on linker-mayroon HAVE rule may have landed."
-        )
+# Phase 5j HAVE-mayroon-with-linker pin closed by Phase 5n.A
+# Commit 21 — see test_phase5n_have_mayroon_linker.py for positive
+# coverage of ``Mayroong aklat si Maria.`` and the N-coord
+# composition ``Mayroong aklat at lapis si Maria.``.

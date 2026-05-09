@@ -1548,6 +1548,82 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.A Commit 21: positive HAVE with leading linker (§18 L87) ---
+    #
+    # ``mayroon`` is the vowel-final variant of ``may`` and ALWAYS
+    # takes bound ``-ng`` before its complement (parallel to ``wala``
+    # in 5c / 5d above). Commits 5a / 5b above cover the consonant-
+    # final ``may`` shape (no leading linker); the ``mayroon`` HAVE
+    # readings need parallel rules with the leading PART[LINK=NG]
+    # daughter consumed structurally between the existential and
+    # the possessor / N.
+    #
+    # Surface patterns (closes §18 L87):
+    #
+    #   ``Mayroong aklat si Maria.``  "Maria has a book."
+    #                                 (postposed possessor)
+    #   ``Mayroong aklat ako.``        "I have a book."
+    #                                 (postposed clitic possessor)
+    #   ``Mayroong akong aklat.``     "I have a book."
+    #                                 (internal clitic possessor —
+    #                                  two LINK=NG daughters)
+    #
+    # 5e mirrors 5c (negative postposed with linker) with POS
+    # polarity; 5f mirrors 5b (positive internal clitic) with the
+    # extra leading linker daughter that ``mayroon`` requires. The
+    # ``(↓1 LEMMA) =c 'mayroon'`` constraint isn't strictly needed
+    # — ``may`` is consonant-final and never appears before
+    # PART[LINK=NG] in well-formed input — so the rules fire
+    # opportunistically, mirroring the Phase 5j Commit 2 linker-
+    # existential rule's analogous treatment.
+
+    # Commit 5e: positive HAVE — postposed possessor (mayroon + bound -ng).
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=POS]",
+            "PART[LINK=NG]",
+            "N",
+            "NP[CASE=NOM]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ SUBJ POSSESSOR) = ↓4",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+            "(↓2 LINK) =c 'NG'",
+        ],
+    ))
+
+    # Commit 5f: positive HAVE — internal clitic possessor with
+    # leading linker (mayroon + bound -ng + PRON + bound -ng + N).
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL=YES, POLARITY=POS]",
+            "PART[LINK=NG]",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "N",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓5",
+            "(↑ SUBJ POSSESSOR) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↑ HAVE) = 'YES'",
+            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 POLARITY) =c 'POS'",
+            "(↓2 LINK) =c 'NG'",
+            "(↓4 LINK) =c 'NG'",
+        ],
+    ))
+
     # Clause-final DAT-NP ADJUNCT lift, gated on existential
     # clauses. ``May tao sa labas`` / ``Mayroong tao sa labas`` —
     # the locative-PP composes by adjoining a clause-final
