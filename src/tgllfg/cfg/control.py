@@ -65,6 +65,21 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBJ) = (↑ REL-PRO)",
         ),
     ))
+    # Phase 5n.A Commit 13 (§18 L70): AV intransitive embedded
+    # clause with trailing DAT-NP as ADJUNCT, no overt GEN-OBJ.
+    # ``Dapat akong kumain sa labas.`` "I should eat outside" — the
+    # embedded ``kumain sa labas`` is AV-intransitive (no OBJ) with
+    # the locative ``sa labas`` lifted to ADJUNCT. Mirrors the
+    # 3-daughter rule above but without the GEN-OBJ daughter; the
+    # locative-PP ADJUNCT lift is structurally identical.
+    rules.append(Rule(
+        "S_XCOMP",
+        ["V[VOICE=AV]", "NP[CASE=DAT]"],
+        _eqs(
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+        ),
+    ))
     # Phase 5c §7.6 follow-on: non-AV embedded clauses, where
     # REL-PRO routes to ``OBJ-AGENT`` (the actor's typed GF in
     # OV / DV / IV). The patient / recipient / theme NOM-pivot
