@@ -436,6 +436,40 @@ def register_rules(rules: list[Rule]) -> None:
     # matrix structure (PRED=DAPAT, POLARITY=NEG, XCOMP holding
     # the embedded ``kumain``). The Phase 4 §7.2 hindi-wrap
     # composes onto the matrix S unchanged.
+    # Phase 5n.A Commit 12 (§18 L68): modal-as-predicate (no XCOMP).
+    # ``Hindi puwede.`` "Not allowed/possible.", ``Hindi dapat.``
+    # "Not necessary.", ``Hindi kailangan.`` "Not needed." — bare
+    # modals function as impersonal predicates with no embedded V.
+    # The PRED template shape ``MODAL <SUBJ>`` mirrors the
+    # control-wrap PRED shape, but the SUBJ is implicit (PRO) since
+    # there's no overt argument.
+    #
+    # Single-daughter rule structure: when a modal-headed input has
+    # an XCOMP, the multi-daughter modal control wrap below fires
+    # instead and consumes the XCOMP material; the bare-modal rule
+    # only matches when no XCOMP is present (no overt linker + V or
+    # NP + linker + V daughter sequence).
+    #
+    # Composes with the Phase 4 §7.2 hindi-wrap (S → PART[NEG] S)
+    # to yield ``Hindi puwede.``-style sentences.
+    # Provide impersonal-PRO fillers for both args declared by the
+    # modal's lex PRED (``PUWEDE <SUBJ, XCOMP>`` etc.) so completeness
+    # is satisfied. Linguistically: ``Hindi puwede.`` "(it) is not
+    # permitted (to do something)" — the SUBJ is the implicit
+    # forcee/agent and the XCOMP is the implicit unspecified action.
+    rules.append(Rule(
+        "S",
+        ["V[CTRL_CLASS=MODAL]"],
+        _eqs(
+            "(↑) = ↓1",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ XCOMP PRED) = 'PRO'",
+            "(↑ MODAL_STANDALONE) = 'YES'",
+            "(↓1 CTRL_CLASS) =c 'MODAL'",
+            "(↓1 MODAL) =c 'YES'",
+        ),
+    ))
+
     for link in ("NA", "NG"):
         # NOM-actor variant (dapat / puwede / maaari).
         rules.append(Rule(
