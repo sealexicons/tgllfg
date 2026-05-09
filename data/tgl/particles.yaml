@@ -158,6 +158,51 @@
   pos: Q
   feats: {QUANT: MOST, VAGUE: "YES"}
 
+# === Phase 5n.B Commit 4: pinaka- superlative Q heads (§18 L40) =============
+#
+# Productive ``pinaka-`` derivation on the closed-class vague-Q
+# inventory: ``pinakamarami`` "the most", ``pinakakonti`` /
+# ``pinakakaunti`` "the fewest", ``pinakakakaunti`` "the very
+# fewest", ``pinakaiilan`` "the very few", ``pinakakaramihan``
+# "the great majority". Closes §18 L40 (carried forward from
+# Phase 5h §9.2: the productive ADJ ``pinaka_adj`` cell fires on
+# ``ma_adj`` ADJ roots only; vague-Q heads are stored as static
+# PART entries in particles.yaml and don't go through the
+# adjective paradigm engine).
+#
+# Direct-lex (rather than a paradigm-engine extension to Q)
+# because the vague-Q inventory is closed; productively-extending
+# Q-paradigm infrastructure across particles is reserved for a
+# Phase 6 generalisation. The orthographic-variant ``LEMMA``
+# convention (Phase 5j Commit 7) routes each entry's analysis
+# back to the bare-Q canonical lemma so existing partitive /
+# NP-modifier rules see a Q with QUANT + VAGUE + the new
+# COMP_DEGREE feat.
+#
+# The Phase 5n.B Commit 1 predicative-Q clause rule fires on
+# these surfaces (``Pinakamarami ang aklat.`` "The books are
+# the most"), and the Phase 5f Commit 15 vague-Q NP-modifier
+# rule fires on the linker-fused forms (``pinakamaraming aklat``
+# "the most books").
+- surface: pinakamarami
+  pos: Q
+  feats: {QUANT: MANY, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: marami}
+- surface: pinakakonti
+  pos: Q
+  feats: {QUANT: FEW, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: konti}
+- surface: pinakakaunti
+  pos: Q
+  feats: {QUANT: FEW, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: kaunti}
+- surface: pinakakakaunti
+  pos: Q
+  feats: {QUANT: VERY_FEW, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: kakaunti}
+- surface: pinakaiilan
+  pos: Q
+  feats: {QUANT: FEW, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: iilan}
+- surface: pinakakaramihan
+  pos: Q
+  feats: {QUANT: MOST, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: karamihan}
+
 # === Phase 5f Commit 16: approximators (Group H1 item 2) ===================
 # Approximators — closed-class pre-modifiers that wrap a NUM or Q
 # head and add ``APPROX: YES`` to the result. ``halos`` "almost /
@@ -1786,6 +1831,21 @@
 - surface: paminsanminsan
   pos: ADV
   feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: OCCASIONAL, LEMMA: paminsan-minsan}
+
+# Phase 5n.B Commit 4 (§18 L40): pinaka- superlative ADV-FREQUENCY
+# variants. Parallel to the Q-superlative entries above; the
+# COMP_DEGREE=SUPERLATIVE rides into the existing Phase 5f Commit
+# 5 sentential-FREQ ADV rule unchanged. ``pinakamadalas`` "most
+# often" is the canonical example from §18 L40 — Phase 5h §9.2
+# called out explicitly. ``palagi`` / ``lagi`` (always-class)
+# don't naturally accept ``pinaka-`` ("most always" is degenerate);
+# only ``madalas`` / ``minsan`` get the superlative form.
+- surface: pinakamadalas
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: HIGH, COMP_DEGREE: SUPERLATIVE, LEMMA: madalas}
+- surface: pinakaminsan
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: SOMETIMES, COMP_DEGREE: SUPERLATIVE, LEMMA: minsan}
 
 # === Phase 5n.A Commit 5: mag-isa "alone" manner adverb (§18 L60) ===========
 #
