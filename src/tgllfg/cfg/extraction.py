@@ -107,6 +107,75 @@ def register_rules(rules: list[Rule]) -> None:
         ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
     ))
 
+    # === Phase 5n.A Commit 8: N-level RC wrap for existential N modifier (§18 L64) =====
+    #
+    # ``May bahay na nasa bundok.`` "There is a house in the mountain"
+    # — the existential rule (Phase 5j Commit 2) takes an ``N`` (not
+    # ``NP``) daughter, so the existing NP-level RC wrap rule
+    # (``NP[CASE=X] → NP[CASE=X] PART[LINK=N{A,G}] S_GAP``, Phase 4
+    # §7.5) doesn't compose: there's no NP for the RC to attach to.
+    # This new rule adds an N-level parallel:
+    #
+    #   N → N PART[LINK=N{A,G}] S_GAP
+    #
+    # The CASE equation from the NP-level wrap is dropped (N has no
+    # CASE — it's case-marked when projected to NP); the PRED binding
+    # to REL-PRO and the SUBJ-only constraint are preserved.
+    # Required for R&G "Ang Manok" combined essay-paragraph and
+    # ``May bahay na nasa bundok`` style sentences.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "N",
+            ["N", f"PART[LINK={link}]", "S_GAP"],
+            [
+                "(↑) = ↓1",
+                "↓3 ∈ (↑ ADJ)",
+                "(↓3 REL-PRO PRED) = (↓1 PRED)",
+                "(↓3 REL-PRO) =c (↓3 SUBJ)",
+            ],
+        ))
+
+
+    # === Phase 5n.A Commit 8: nasa-headed gapped clause for RC bodies (§18 L64) =====
+    #
+    # ``May bahay na nasa bundok.`` "There is a house in the mountain"
+    # — the RC body ``nasa bundok`` is a SUBJ-gapped locative-existential
+    # clause (Phase 5j Commit 4 ``S → PART[LOC_EXISTENTIAL=YES] N
+    # NP[CASE=NOM]`` minus the NOM-NP daughter, with the SUBJ slot
+    # filled by REL-PRO bound to the head N). Required for the R&G
+    # "Ang Manok" combined essay-paragraph (R&G p. 482, Commit 8
+    # integration target).
+    #
+    # Two variants: bare-N ground (``nasa bundok``) and possessor-of-
+    # ground (``nasa tuktok ng bundok``). The shapes mirror the
+    # matrix Phase 5j Commit 4 frames in cfg/clause.py exactly,
+    # except the NOM-NP SUBJ daughter is replaced with the
+    # ``(↑ SUBJ) = (↑ REL-PRO)`` gap binding (per the standard
+    # S_GAP convention).
+    rules.append(Rule(
+        "S_GAP",
+        ["PART[LOC_EXISTENTIAL=YES]", "N"],
+        [
+            "(↑ PRED) = 'LOC <SUBJ>'",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ LOCATION) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
+            "(↓1 LOC_EXISTENTIAL) =c 'YES'",
+        ],
+    ))
+    rules.append(Rule(
+        "S_GAP",
+        ["PART[LOC_EXISTENTIAL=YES]", "N", "NP[CASE=GEN]"],
+        [
+            "(↑ PRED) = 'LOC <SUBJ>'",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ LOCATION) = ↓2",
+            "(↓2 POSS) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
+            "(↓1 LOC_EXISTENTIAL) =c 'YES'",
+        ],
+    ))
+
 
     # --- Phase 5d Commit 5: non-pivot ay-fronting gap-categories ---
     #

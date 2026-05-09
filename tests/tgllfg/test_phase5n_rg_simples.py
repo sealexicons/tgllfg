@@ -139,31 +139,13 @@ class TestOtherRgSimplesUnchanged:
         assert len(parse_text("Nasa tuktok ng bundok ang bahay.")) >= 1
 
 
-# === Combined essay-paragraph (Commit 8 target — pinned at 0-parse) ======
-
-
-class TestRgCombinedEssayDeferred:
-    """The R&G "Ang Manok" combined essay-paragraph (p. 482):
-
-        ``May isang mamang matanda na nakatirang mag-isa sa maliit
-        na bahay na nasa tuktok ng mataas na bundok sa bukid.``
-
-    Composes simples #1 / #2 / #3 / #4 / #5 / #6 / #7 in one nested
-    sentence with multi-RC + multi-PP attachment. Commit 7 unblocks
-    the constituent simples; Commit 8 lands the integrated parse
-    (or surfaces additional structural gaps if any). Pinned at
-    0-parse here as the Commit 8 trigger."""
-
-    def test_combined_essay_zero_parse_pending_commit_8(self) -> None:
-        parses = parse_text(
-            "May isang mamang matanda na nakatirang mag-isa sa "
-            "maliit na bahay na nasa tuktok ng mataas na bundok "
-            "sa bukid."
-        )
-        assert len(parses) == 0, (
-            "R&G combined essay-paragraph unexpectedly parses — "
-            "Commit 8 may have landed; flip this assertion there."
-        )
+# === Combined essay-paragraph — see test_phase5n_rg_combined_essay.py =====
+#
+# Phase 5n.A Commit 8 lands the integrated combined essay parse
+# via three new rules: ADJ-with-depictive (``ADJ → ADJ
+# PART[LINK=N{A,G}] ADV[MAGISA=YES]``), N-level RC wrap
+# (``N → N PART[LINK=N{A,G}] S_GAP``), and nasa-headed S_GAP variants.
+# Tests live in test_phase5n_rg_combined_essay.py.
 
 
 # === Depictive rule — narrow scoping audit ===============================

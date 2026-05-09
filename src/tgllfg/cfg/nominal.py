@@ -1663,3 +1663,35 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ MAGISA) = 'YES'",
         ],
     ))
+
+    # === Phase 5n.A Commit 8: depictive ``mag-isa`` post-ADJ via linker (§18 L64) =====
+    #
+    # ``May isang mamang matanda na nakatirang mag-isa sa maliit na
+    # bahay na nasa tuktok ng mataas na bundok sa bukid.`` — R&G "Ang
+    # Manok" combined essay-paragraph (R&G p. 482). The
+    # ``mamang ... nakatirang mag-isa`` constituent is N + linker +
+    # ADJ-with-depictive: the resultative ADJ ``nakatira`` is itself
+    # modified by the depictive ADV ``mag-isa`` ("alone"). The
+    # ADJ-internal composition is structurally parallel to the
+    # Phase 5n.A Commit 7 PRON-internal version
+    # (``NP[CASE=NOM] → PRON[CASE=NOM] PART[LINK=NG] ADV[MAGISA=YES]``)
+    # but at the ADJ level so the result feeds back into the existing
+    # Phase 5g Commit 2 NP-internal ADJ-modifier rules
+    # (``N → N PART[LINK=N{A,G}] ADJ``).
+    #
+    # Both linker variants admitted; same ``MAGISA=YES`` gate
+    # narrowly scopes the rule to the mag-isa lex (Commit 5).
+    #
+    # Reference: S&O 1972 §3.5 (depictive secondary predicates); R&G
+    # 1981 p. 482 (combined essay-paragraph).
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "ADJ",
+            ["ADJ", f"PART[LINK={link}]", "ADV"],
+            [
+                "(↑) = ↓1",
+                "↓3 ∈ (↑ ADJUNCT)",
+                "(↓3 MAGISA) =c 'YES'",
+                "(↑ MAGISA) = 'YES'",
+            ],
+        ))
