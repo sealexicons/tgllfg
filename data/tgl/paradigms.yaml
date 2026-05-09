@@ -261,6 +261,26 @@
     - {op: suffix, value: in}
   notes: kakainin, bibilihin (sandhi for vowel-final root)
 
+# Phase 5n.A Commit 14 (§18 L72): bare OV cell — root + -in suffix
+# (no CV-redup, no realis infix), MOOD=SOC. Used as the OV
+# counterpart to the AV-mag SOC bare-hortative cell above. Surfaces:
+# kainin (kain + in), bilihin (bili + h-epenthesis + in), inumin
+# (inom + o→u raising + in), gawin (gawa + in via vowel deletion).
+# Distribution: imperative ("Kainin mo!" "Eat it!"), modal-XCOMP
+# context ("Maaari mong kainin ang isda" "You can eat the fish"),
+# and other dependent / non-finite OV positions where the matrix
+# carries aspect/mood semantics. Matches the AV-mag SOC pattern
+# established by Phase 5e Commit 21.
+- voice: OV
+  aspect: CTPL
+  mood: SOC
+  transitivity: TR
+  affix_class: in_oblig
+  feats: {MOOD: SOC}
+  operations:
+    - {op: suffix, value: in}
+  notes: kainin, bilihin (bare OV + -in for hortative/imperative/modal-XCOMP)
+
 # === DV — Dative / Locative Voice ========================================
 
 - voice: DV
