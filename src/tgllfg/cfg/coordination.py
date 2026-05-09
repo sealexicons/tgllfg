@@ -111,26 +111,35 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
-    # --- Phase 5k Commit 4: multi-conjunct NP coord (3-flat) ---
+    # --- Phase 5k Commit 4 + Phase 5n.A Commit 20: 3-flat coord ---
     #
-    # Two surface variants per case, six rules total:
+    # Two surface variants per case × two coord values, twelve rules
+    # total:
     #
     #   Oxford comma form ("Si Maria, si Juan, at si Pedro"):
     #     NP[CASE=X] → NP[CASE=X] PUNCT[COMMA] NP[CASE=X]
-    #                  PUNCT[COMMA] PART[COORD=AND] NP[CASE=X]
+    #                  PUNCT[COMMA] PART[COORD=Y] NP[CASE=X]
     #
     #   Non-Oxford form  ("Si Maria, si Juan at si Pedro"):
     #     NP[CASE=X] → NP[CASE=X] PUNCT[COMMA] NP[CASE=X]
-    #                  PART[COORD=AND] NP[CASE=X]
+    #                  PART[COORD=Y] NP[CASE=X]
     #
-    # for each case X ∈ {NOM, GEN, DAT}. Both Oxford and non-Oxford
-    # comma conventions are attested in modern Tagalog written
-    # practice; both rules produce the same flat 3-element
-    # CONJUNCTS set. PUNCT[COMMA] daughters are syncategorematic
-    # (no equation refers to them); the matrix carries COORD=AND,
-    # NUM=PL, and the per-case CASE.
+    # for each case X ∈ {NOM, GEN, DAT} and each coord
+    # Y ∈ {AND, OR}. Both Oxford and non-Oxford comma conventions
+    # are attested in modern Tagalog written practice; both rules
+    # produce the same flat 3-element CONJUNCTS set. PUNCT[COMMA]
+    # daughters are syncategorematic (no equation refers to them);
+    # the matrix carries the per-case CASE and per-coord COORD.
     #
-    # Equations (Oxford NOM example, 6 daughters):
+    # NUM behaviour mirrors the binary forms (lines 78–112 above):
+    # AND forces ``(↑ NUM) = 'PL'`` (semantically n referents);
+    # OR percolates ``(↑ NUM) = ↓1 NUM`` (one underspecified
+    # referent — same as the binary disjunction). The Phase 5n.A
+    # Commit 20 disjunctive form closes the §18 L86 deferral and
+    # supersedes the prior "Restricted to AND only" note from
+    # Commit 4.
+    #
+    # Equations (Oxford NOM AND example, 6 daughters):
     #   ↓1 ∈ (↑ CONJUNCTS)
     #   ↓3 ∈ (↑ CONJUNCTS)
     #   ↓6 ∈ (↑ CONJUNCTS)
@@ -139,7 +148,7 @@ def register_rules(rules: list[Rule]) -> None:
     #   (↑ NUM) = 'PL'
     #   (↓5 COORD) =c 'AND'
     #
-    # Equations (non-Oxford NOM example, 5 daughters):
+    # Equations (non-Oxford NOM AND example, 5 daughters):
     #   ↓1 ∈ (↑ CONJUNCTS)
     #   ↓3 ∈ (↑ CONJUNCTS)
     #   ↓5 ∈ (↑ CONJUNCTS)
@@ -148,65 +157,58 @@ def register_rules(rules: list[Rule]) -> None:
     #   (↑ NUM) = 'PL'
     #   (↓4 COORD) =c 'AND'
     #
-    # Restricted to AND only — disjunctive ``Maria, Juan, o
-    # Pedro`` is structurally rare in Tagalog and deferred to a
-    # Phase 5k follow-on if corpus pressure surfaces.
-    #
-    # Restricted to 3 conjuncts only — 4+ conjuncts would compose
-    # via the binary rule wrapping a 3-conjunct sub-NP, which
-    # produces a NESTED CONJUNCTS structure (not a flat 4-element
-    # set). Right-recursive ``NP_COMMA_LIST`` for arbitrary arity
-    # is deferred per plan-of-record §5.3 / §9.2 until corpus
-    # pressure shows ≥4-conjunct sentences.
+    # 4+ conjuncts: see the recursive ``NP_LONG_LIST`` infrastructure
+    # in Commit 19 / 19a below. The 3-conjunct rules here are the
+    # primary structural consumer of comma daughters in Phase 5k;
+    # the asymmetric coord rule (Commit 8) is the second.
     #
     # PUNCT[COMMA] daughter consumption: the comma is now lex'd
     # (Phase 5k Commit 1 added PUNCT[PUNCT_CLASS=COMMA]) so it
-    # survives ``_strip_non_content``. The 3-conjunct rules here
-    # are the primary structural consumer of comma daughters in
-    # Phase 5k; the asymmetric coord rule (Commit 8) is the
-    # second.
+    # survives ``_strip_non_content``.
+    _3CONJ_NUM_BY_COORD = {"AND": "'PL'", "OR": "↓1 NUM"}
     for case in _NP_CASES:
-        # Oxford-comma form (6 daughters).
-        rules.append(Rule(
-            f"NP[CASE={case}]",
-            [
+        for coord, num_rhs in _3CONJ_NUM_BY_COORD.items():
+            # Oxford-comma form (6 daughters).
+            rules.append(Rule(
                 f"NP[CASE={case}]",
-                "PUNCT[PUNCT_CLASS=COMMA]",
+                [
+                    f"NP[CASE={case}]",
+                    "PUNCT[PUNCT_CLASS=COMMA]",
+                    f"NP[CASE={case}]",
+                    "PUNCT[PUNCT_CLASS=COMMA]",
+                    f"PART[COORD={coord}]",
+                    f"NP[CASE={case}]",
+                ],
+                [
+                    "↓1 ∈ (↑ CONJUNCTS)",
+                    "↓3 ∈ (↑ CONJUNCTS)",
+                    "↓6 ∈ (↑ CONJUNCTS)",
+                    f"(↑ COORD) = '{coord}'",
+                    f"(↑ CASE) = '{case}'",
+                    f"(↑ NUM) = {num_rhs}",
+                    f"(↓5 COORD) =c '{coord}'",
+                ],
+            ))
+            # Non-Oxford form (5 daughters).
+            rules.append(Rule(
                 f"NP[CASE={case}]",
-                "PUNCT[PUNCT_CLASS=COMMA]",
-                "PART[COORD=AND]",
-                f"NP[CASE={case}]",
-            ],
-            [
-                "↓1 ∈ (↑ CONJUNCTS)",
-                "↓3 ∈ (↑ CONJUNCTS)",
-                "↓6 ∈ (↑ CONJUNCTS)",
-                "(↑ COORD) = 'AND'",
-                f"(↑ CASE) = '{case}'",
-                "(↑ NUM) = 'PL'",
-                "(↓5 COORD) =c 'AND'",
-            ],
-        ))
-        # Non-Oxford form (5 daughters).
-        rules.append(Rule(
-            f"NP[CASE={case}]",
-            [
-                f"NP[CASE={case}]",
-                "PUNCT[PUNCT_CLASS=COMMA]",
-                f"NP[CASE={case}]",
-                "PART[COORD=AND]",
-                f"NP[CASE={case}]",
-            ],
-            [
-                "↓1 ∈ (↑ CONJUNCTS)",
-                "↓3 ∈ (↑ CONJUNCTS)",
-                "↓5 ∈ (↑ CONJUNCTS)",
-                "(↑ COORD) = 'AND'",
-                f"(↑ CASE) = '{case}'",
-                "(↑ NUM) = 'PL'",
-                "(↓4 COORD) =c 'AND'",
-            ],
-        ))
+                [
+                    f"NP[CASE={case}]",
+                    "PUNCT[PUNCT_CLASS=COMMA]",
+                    f"NP[CASE={case}]",
+                    f"PART[COORD={coord}]",
+                    f"NP[CASE={case}]",
+                ],
+                [
+                    "↓1 ∈ (↑ CONJUNCTS)",
+                    "↓3 ∈ (↑ CONJUNCTS)",
+                    "↓5 ∈ (↑ CONJUNCTS)",
+                    f"(↑ COORD) = '{coord}'",
+                    f"(↑ CASE) = '{case}'",
+                    f"(↑ NUM) = {num_rhs}",
+                    f"(↓4 COORD) =c '{coord}'",
+                ],
+            ))
 
     # --- Phase 5n.A Commit 19: 4+-conjunct flat NP coord (§18 L85) ---
     #
