@@ -50,6 +50,8 @@ This commit therefore delivers:
 
 from __future__ import annotations
 
+import pytest
+
 from tgllfg.core.common import Token
 from tgllfg.morph import Analyzer
 from tgllfg.core.pipeline import parse_text
@@ -150,7 +152,13 @@ class TestReportedQMisanalysisDeferred:
     misanalyzed as a conditional adjunct rather than as a
     reported-Q complement. Pin this misanalysis so future
     follow-on work that lands real ASK-class reported-Q can
-    flip the assertion."""
+    flip the assertion.
+
+    Phase 5n.A Commit 28 (§18 L90.1) extended the pin from one
+    canonical sentence to 10 OV-aspect × wh-PRON corpus
+    fixtures. All 10 currently parse via the COND-misanalysis
+    path; Commit 29 lands the rule + disambiguation that flips
+    them to COMP_TYPE=INTERROG."""
 
     def test_ask_reported_q_currently_parses_as_cond_adjunct(
         self,
@@ -167,4 +175,79 @@ class TestReportedQMisanalysisDeferred:
             "may have landed real ASK-class reported-Q. Update "
             "this test to assert the new (correct) shape "
             "(COMP_TYPE=INTERROG complement)."
+        )
+
+    @pytest.mark.parametrize("sentence", [
+        # OV PFV (tinanong) × six wh-PRONs/wh-ADVs
+        "Tinanong niya kung sino ang kumain.",
+        "Tinanong niya kung ano ang kinain ni Maria.",
+        "Tinanong niya kung saan pumunta si Maria.",
+        "Tinanong niya kung kailan pumunta si Maria.",
+        "Tinanong niya kung bakit kumain si Maria.",
+        "Tinanong niya kung paano kumain si Maria.",
+        # OV IPFV (tinatanong)
+        "Tinatanong niya kung sino ang kumain.",
+        "Tinatanong niya kung saan pumunta si Maria.",
+        # OV CTPL (tatanungin)
+        "Tatanungin niya kung sino ang kumain.",
+        "Tatanungin niya kung kailan pumunta si Maria.",
+    ])
+    def test_phase5n_corpus_misanalysis_pin(
+        self, sentence: str
+    ) -> None:
+        """Phase 5n.A Commit 28 corpus fixtures (10 OV-aspect ×
+        wh-PRON sentences). All currently parse via the COND-
+        adjunct misanalysis. Commit 29 lands the rule and flips
+        these to COMP_TYPE=INTERROG."""
+        parses = parse_text(sentence)
+        assert len(parses) >= 1
+        _ct, fs, _astr, _diags = parses[0]
+        cond_adj = _adjunct_with_subord_type(fs, "COND")
+        assert cond_adj is not None, (
+            f"{sentence!r} no longer produces a COND-adjunct "
+            "parse — Phase 5n.A Commit 29 may have landed the "
+            "ASK-class reported-Q rule. Update this test."
+        )
+
+
+# === ASK reported-Q AV / full-NP 0-parses pinned (deferred) ==========
+
+
+class TestReportedQAvFullNpDeferred:
+    """Phase 5n.A Commit 28: ASK-class reported-Q with AV-voice
+    matrix verb (nagtanong / nagtatanong / magtatanong) or full-
+    NP actor (ng lalaki / si Maria) currently 0-parses.
+
+    Unlike the OV-actor-clitic-PRON pattern (which misanalyzes
+    via COND-adjunct), these forms produce no complete parse
+    — the COND-adjunct path doesn't fit either. Commit 29 lands
+    the unified ASK-class reported-Q rule that parses both
+    families correctly."""
+
+    @pytest.mark.parametrize("sentence", [
+        # AV PFV (nagtanong) × siya actor
+        "Nagtanong siya kung sino ang kumain.",
+        "Nagtanong siya kung saan pumunta si Maria.",
+        # AV IPFV (nagtatanong)
+        "Nagtatanong siya kung sino ang kumain.",
+        "Nagtatanong siya kung bakit kumain si Maria.",
+        # AV CTPL (magtatanong)
+        "Magtatanong siya kung sino ang kumain.",
+        "Magtatanong siya kung paano kumain si Maria.",
+        # OV PFV with full-NP actor
+        "Tinanong ng lalaki kung sino ang kumain.",
+        # AV PFV with full-NP actor
+        "Nagtanong si Maria kung saan pumunta si Pedro.",
+    ])
+    def test_phase5n_av_or_full_np_zero_parse(
+        self, sentence: str
+    ) -> None:
+        """Phase 5n.A Commit 28 corpus fixtures — 0-parse pinned.
+        Commit 29 lands the ASK-class reported-Q rule and flips
+        these to ``len(parses) >= 1``."""
+        parses = parse_text(sentence)
+        assert len(parses) == 0, (
+            f"{sentence!r} now parses — Phase 5n.A Commit 29 may "
+            "have landed the ASK-class reported-Q rule. Update "
+            "this test and add positive coverage."
         )

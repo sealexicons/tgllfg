@@ -4363,3 +4363,73 @@
 - text: Sinabi niya na bumili si Maria ng aklat.
   construction: 'phase5n: indirect-speech sabi PFV / GEN-clitic actor / AV-transitive embed'
   expected: parse
+
+# --- Phase 5n.A Commit 28: ASK-class reported-Q (§18 L90.1) -----------
+# 18 entries spanning OV (currently misanalyzed as COND-adjunct, 10
+# entries — they parse but with the wrong analysis) and AV / full-NP
+# (currently 0-parse, 8 entries with `expected: fragment`). Commit 29
+# lands the unified ASK-class reported-Q rule that flips OV to
+# COMP_TYPE=INTERROG and lifts the AV / full-NP 0-parses. Source:
+# R&B 1986 ch.14 (wh-clauses under ask-verbs).
+- text: Tinanong niya kung sino ang kumain.
+  construction: 'phase5n: ASK-Q tanong OV-PFV / sino wh-PRON / canonical (currently parses as COND-misanalysis)'
+  expected: parse
+- text: Tinanong niya kung ano ang kinain ni Maria.
+  construction: 'phase5n: ASK-Q tanong OV-PFV / ano wh-PRON (COND-misanalysis)'
+  expected: parse
+- text: Tinanong niya kung saan pumunta si Maria.
+  construction: 'phase5n: ASK-Q tanong OV-PFV / saan wh-ADV (COND-misanalysis)'
+  expected: parse
+- text: Tinanong niya kung kailan pumunta si Maria.
+  construction: 'phase5n: ASK-Q tanong OV-PFV / kailan wh-ADV (COND-misanalysis)'
+  expected: parse
+- text: Tinanong niya kung bakit kumain si Maria.
+  construction: 'phase5n: ASK-Q tanong OV-PFV / bakit wh-ADV (COND-misanalysis)'
+  expected: parse
+- text: Tinanong niya kung paano kumain si Maria.
+  construction: 'phase5n: ASK-Q tanong OV-PFV / paano wh-ADV (COND-misanalysis)'
+  expected: parse
+- text: Tinatanong niya kung sino ang kumain.
+  construction: 'phase5n: ASK-Q tanong OV-IPFV / sino (COND-misanalysis)'
+  expected: parse
+- text: Tinatanong niya kung saan pumunta si Maria.
+  construction: 'phase5n: ASK-Q tanong OV-IPFV / saan (COND-misanalysis)'
+  expected: parse
+- text: Tatanungin niya kung sino ang kumain.
+  construction: 'phase5n: ASK-Q tanong OV-CTPL / sino (COND-misanalysis)'
+  expected: parse
+- text: Tatanungin niya kung kailan pumunta si Maria.
+  construction: 'phase5n: ASK-Q tanong OV-CTPL / kailan (COND-misanalysis)'
+  expected: parse
+- text: Nagtanong siya kung sino ang kumain.
+  construction: 'phase5n: ASK-Q tanong AV-PFV / sino (currently 0-parse)'
+  expected: fragment
+  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+- text: Nagtanong siya kung saan pumunta si Maria.
+  construction: 'phase5n: ASK-Q tanong AV-PFV / saan (currently 0-parse)'
+  expected: fragment
+  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+- text: Nagtatanong siya kung sino ang kumain.
+  construction: 'phase5n: ASK-Q tanong AV-IPFV / sino (currently 0-parse)'
+  expected: fragment
+  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+- text: Nagtatanong siya kung bakit kumain si Maria.
+  construction: 'phase5n: ASK-Q tanong AV-IPFV / bakit (currently 0-parse)'
+  expected: fragment
+  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+- text: Magtatanong siya kung sino ang kumain.
+  construction: 'phase5n: ASK-Q tanong AV-CTPL / sino (currently 0-parse)'
+  expected: fragment
+  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+- text: Magtatanong siya kung paano kumain si Maria.
+  construction: 'phase5n: ASK-Q tanong AV-CTPL / paano (currently 0-parse)'
+  expected: fragment
+  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+- text: Tinanong ng lalaki kung sino ang kumain.
+  construction: 'phase5n: ASK-Q tanong OV-PFV / full-NP-actor (currently 0-parse)'
+  expected: fragment
+  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+- text: Nagtanong si Maria kung saan pumunta si Pedro.
+  construction: 'phase5n: ASK-Q tanong AV-PFV / full-NP-actor (currently 0-parse)'
+  expected: fragment
+  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
