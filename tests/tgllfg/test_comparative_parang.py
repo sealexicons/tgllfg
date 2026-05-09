@@ -159,14 +159,24 @@ class TestComparativeWithRelativization:
 class TestTilaNotComparative:
     """``Tila`` shares CTRL_CLASS=RAISING_BARE with ``parang`` for
     the evidential reading but has no COMPARATIVE feature. The
-    constraining equation in the new rule excludes it."""
+    constraining equation in the new rule excludes it.
 
-    def test_tila_with_bare_n_fails(self) -> None:
-        """``Tila aso ang bata.`` doesn't fire the comparative rule
-        and produces no parse (no other rule shape fits this
-        surface)."""
+    Phase 5n.B Commit 2 (§18 L43) added a predicative-N clause
+    rule that admits ``aso ang bata`` ("the child is a dog") as
+    a complete S; ``Tila aso ang bata.`` therefore now parses as
+    raising over predicative-N rather than 0-parsing. The non-
+    comparative semantics of ``tila`` is preserved: no parse
+    carries the comparative ``LIKE <SUBJ, OBJ>`` PRED."""
+
+    def test_tila_with_bare_n_no_comparative(self) -> None:
+        """``Tila aso ang bata.`` does not fire the comparative
+        rule. Pre-Phase-5n.B-Commit-2 the surface 0-parsed; post-
+        Commit-2 it parses as raising over predicative-N. The
+        invariant under test is that no parse carries the
+        comparative ``LIKE`` PRED."""
         rs = parse_text("Tila aso ang bata.", n_best=10)
-        assert rs == []
+        for _ct, fs, _astr, _diags in rs:
+            assert fs.feats.get("PRED") != "LIKE <SUBJ, OBJ>"
 
 
 # === Existing evidential reading unchanged ================================

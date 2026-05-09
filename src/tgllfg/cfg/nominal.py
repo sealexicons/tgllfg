@@ -599,6 +599,18 @@ def register_rules(rules: list[Rule]) -> None:
     # Commit 26 ``parang isang aso`` rule selects an N
     # daughter). Chained-vague-Q blocking via ``¬ (↓3 VAGUE)``
     # parallel to the NP-level rule.
+    #
+    # **Phase 5n.B Commit 2 (§18 L43) tightening**: ``¬ (↓1 WH)``
+    # excludes wh-Q daughters from this non-wh companion rule.
+    # Pre-tightening, ``aling bata`` (Q[WH=YES] daughter) fired
+    # both this rule (producing N without WH) AND the Phase 5i
+    # Commit 6 wh-Q+N companion (producing N[WH=YES]). The non-WH
+    # output then leaked into the new Phase 5n.B Commit 2
+    # predicative-N clause rule (S → N NP[CASE=NOM]) because the
+    # ``¬ (↓1 WH)`` constraint there was satisfied (WH was
+    # already stripped by this rule). Tightening here closes the
+    # leak at its source: wh-Qs go through the Phase 5i Commit 6
+    # path only, non-wh Qs through this rule only.
     for link in ("NA", "NG"):
         rules.append(Rule(
             "N",
@@ -614,6 +626,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ VAGUE) = 'YES'",
                 "¬ (↓3 VAGUE)",
                 "(↓1 VAGUE) =c 'YES'",
+                "¬ (↓1 WH)",
             ],
         ))
 

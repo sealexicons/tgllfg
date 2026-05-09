@@ -743,6 +743,80 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5n.B Commit 2: predicative-N clause (§18 L43) ---
+    #
+    # ``Doktor ako.``                "I am a doctor."
+    # ``Estudyante si Maria.``       "Maria is a student."
+    # ``Lider siya.``                "He is the leader."
+    # ``Mas maraming aklat ako.``    "I have more books." (lit.
+    #                                 "more-books I am")
+    # ``Maliit na bahay ito.``       "This is a small house."
+    #
+    # Closes §18 deferral L43 (``Mas maraming aklat ako.`` —
+    # surfaced during Phase 5h Commit 9 corpus expansion). Tagalog
+    # admits bare-NP predication with no copula; the predicate
+    # is an N-headed phrase (bare N or N modified by ADJ / Q via
+    # the existing N-level modifier rules) and the SUBJ is a
+    # NOM-NP / NOM-PRON pivot.
+    #
+    # Structurally analogous to the Phase 5g Commit 3 predicative-
+    # ADJ rule (S → ADJ[PREDICATIVE=YES] NP[CASE=NOM]), the Phase
+    # 5f Commit 4 predicative-cardinal rule (S → NUM[CARDINAL=YES]
+    # NP[CASE=NOM]), and the Phase 5n.B Commit 1 predicative-Q
+    # rule above (S → Q[VAGUE=YES] NP[CASE=NOM]). Each predicative
+    # head category has its own clause rule; this one covers the
+    # N-headed predicate.
+    #
+    # F-structure shape:
+    #
+    #   PRED        = 'BE-N <SUBJ>'
+    #   N_LEMMA     = the predicate noun's lemma (the "what" of
+    #                  the predication — ``doktor`` / ``estudyante``
+    #                  / ``lider`` / ``aklat`` / ...)
+    #   PREDICATIVE = 'YES'
+    #   SUBJ        = the NOM-NP / NOM-PRON pivot
+    #
+    # The PRED template ``BE-N <SUBJ>`` parallels other predicative
+    # rules' literal-PRED convention. Tagalog does not formally
+    # distinguish equational ("I am a doctor") from possessive
+    # ("I have more books") readings of bare-NP predication —
+    # both surface identically and the disambiguation is semantic /
+    # contextual. The single PRED template captures both.
+    #
+    # **Gating**: the rule fires only on N-headed left daughters
+    # without ``WH`` to avoid colliding with the Phase 5i Commit 6
+    # wh-N cleft (S → N[WH=YES] NP[CASE=NOM]). The ``¬ (↓1 WH)``
+    # neg-existential constraint excludes ``Aling bata si Maria?``
+    # (which fires the wh-cleft) from also producing a predicative-
+    # N parse with PRED='BE-N <SUBJ>'.
+    #
+    # **N category**: the left daughter is the bare ``N``
+    # category (not ``NP``), which matches both:
+    #   - bare nouns (``doktor`` directly out of the morph analyzer);
+    #   - N-modified-by-ADJ via Phase 5g Commit 2 (``magandang
+    #     bata``);
+    #   - N-modified-by-Q via Phase 5f Commit 15 N-level companion
+    #     rule (``maraming aklat``);
+    #   - N-modified by mas-comparative via the wrapper percolation
+    #     (``mas maraming aklat``).
+    # NPs (DET-marked, CASE-bearing) do NOT match — a left-edge
+    # ``ang doktor`` does not fire this rule, which keeps two-NP
+    # equational surfaces (``Ang lalaki ang doktor.``) out of
+    # scope. Those remain as out-of-scope until corpus pressure
+    # surfaces them.
+    rules.append(Rule(
+        "S",
+        ["N", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BE-N <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ N_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "¬ (↓1 WH)",
+        ],
+    ))
+
+
     # --- Phase 5h Commit 6: equative two-NP standard frames -----
     #
     # ``Kasingganda ni Maria si Ana.``

@@ -3554,20 +3554,18 @@
   expected: fragment
   notes: xyzqwerty stripped, but residue lacks NOM-NP
 - text: Aso ang isda.
-  construction: 'robustness: no verb'
-  expected: fragment
+  construction: 'predicative-N (Phase 5n.B Commit 2 / §18 L43)'
+  expected: parse
   notes: |
-    NP-NP predicative-N construction (deferred §18). Phase 5i
-    Commit 6 added a wh-N-cleft rule (``S → N[WH=YES]
-    NP[CASE=NOM]``) that predicts N at clause-initial position.
-    The Earley chart now records a completed N state for ``aso``
-    (and the inner NP[CASE=NOM] for ``ang isda``); fragment
-    extraction returns these. Pre-Phase-5i this entry was
-    expected: fail (no rule predicted N clause-initially); the
-    flip to ``expected: fragment`` is a side-effect of the
-    Phase 5i Commit 6 rule's broader N-prediction. The
-    intended-failure semantics is preserved (no complete
-    parse).
+    NP-NP predicative-N construction. Phase 5n.B Commit 2 closed
+    §18 L43 by adding a clausal rule ``S → N NP[CASE=NOM]`` with
+    PRED='BE-N <SUBJ>'. Pre-Commit-2 this surface produced only
+    fragment-level chart states (the Phase 5i Commit 6 wh-N-cleft
+    rule predicted N at clause-initial position, giving completed
+    N + NP[CASE=NOM] states with no S-level rule to combine
+    them); post-Commit-2 the predicative-N rule fires and
+    produces a complete parse. Semantically: "The fish is a dog"
+    — grammatically composable bare-NP predication.
 - text: Kumain ng.
   construction: 'robustness: incomplete GEN-NP'
   expected: fail
