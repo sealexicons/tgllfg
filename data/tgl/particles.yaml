@@ -1500,6 +1500,14 @@
 - surface: pati
   pos: PART
   feats: {ADV: ALSO_INCL, LEMMA: pati}
+# Phase 5n.A Commit 16 (§18 L82): ``saka`` "later/next/then" — lex
+# component of the ``at saka`` multi-word coord ("and also / and
+# then"). LEMMA-only entry feeds the multi-word combining rule in
+# cfg/coordination.py; the matrix output is COORD=AND with
+# SEQUENCE=YES discriminator.
+- surface: saka
+  pos: PART
+  feats: {LEMMA: saka}
 - surface: lamang
   pos: PART
   feats: {ADV: ONLY, LEMMA: lamang, is_clitic: true, CLITIC_CLASS: 2P}

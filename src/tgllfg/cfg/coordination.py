@@ -560,3 +560,67 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓3 COORD) =c 'BUT_NOT'",
         ],
     ))
+
+    # === Phase 5n.A Commit 16: multi-word coord particles (§18 L76 + L82) ====
+    #
+    # Three multi-word coord phrases combine two existing PARTs into a
+    # single virtual PART that the existing Phase 5k binary clausal /
+    # NP coord rules consume unchanged:
+    #
+    #   ``o kaya``  → COORD=OR  + UNCERTAIN=YES  ("or maybe / or perhaps")
+    #   ``at saka`` → COORD=AND + SEQUENCE=YES   ("and also / and then")
+    #   ``at nang`` → COORD=AND + RESULT=YES     ("and so / and so that")
+    #
+    # Same combining mechanic as Phase 5m Commit 11 (``gayon din`` /
+    # ``ganon din`` / ``bukod dito`` discourse connectives). The
+    # virtual PART carries the basic COORD value (OR / AND) so the
+    # existing ``S → S PART[COORD=Y] S`` and ``NP → NP PART[COORD=Y] NP``
+    # rules fire unchanged; the secondary discriminator
+    # (UNCERTAIN / SEQUENCE / RESULT) rides for downstream consumers
+    # without affecting structural composition.
+    #
+    # Lex (Phase 5k Commit 1 + Phase 5n.A Commit 16): ``o`` / ``at``
+    # exist as PART[COORD=OR] / PART[COORD=AND]; ``kaya`` exists as
+    # PART[COORD=SO] (homonym — the o-kaya rule constrains by lemma,
+    # not COORD); ``saka`` is added in this commit; ``nang`` exists
+    # as PART[COMP_TYPE=TEMP_SINCE] (the at-nang rule constrains by
+    # lemma).
+    #
+    # Reference: S&O 1972 §6.7; R&G 1981 §6.6.
+
+    # ``o kaya`` — disjunctive uncertainty
+    rules.append(Rule(
+        "PART",
+        ["PART", "PART"],
+        [
+            "(↑ COORD) = 'OR'",
+            "(↑ UNCERTAIN) = 'YES'",
+            "(↑ LEMMA) = 'o_kaya'",
+            "(↓1 LEMMA) =c 'o'",
+            "(↓2 LEMMA) =c 'kaya'",
+        ],
+    ))
+    # ``at saka`` — conjunctive sequence
+    rules.append(Rule(
+        "PART",
+        ["PART", "PART"],
+        [
+            "(↑ COORD) = 'AND'",
+            "(↑ SEQUENCE) = 'YES'",
+            "(↑ LEMMA) = 'at_saka'",
+            "(↓1 LEMMA) =c 'at'",
+            "(↓2 LEMMA) =c 'saka'",
+        ],
+    ))
+    # ``at nang`` — conjunctive consequence
+    rules.append(Rule(
+        "PART",
+        ["PART", "PART"],
+        [
+            "(↑ COORD) = 'AND'",
+            "(↑ RESULT) = 'YES'",
+            "(↑ LEMMA) = 'at_nang'",
+            "(↓1 LEMMA) =c 'at'",
+            "(↓2 LEMMA) =c 'nang'",
+        ],
+    ))
