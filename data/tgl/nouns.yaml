@@ -1040,6 +1040,19 @@
   pos: NOUN
   gloss: need / requirement
 
+# Phase 5n.A Commit 9 (§18 L65): ``maaari`` polysemous noun reading.
+# Parallel to ``kailangan`` above. The modal ("can / may / be
+# possible") lives in particles.yaml as a VERB[MODAL=YES] entry;
+# this is the noun reading ("the possible / possibility", as in
+# ``ang maaari ay X`` "the possible (course of action) is X").
+# Marginal in modern Tagalog — the modal reading dominates; the
+# nominal reading appears mainly in formal / written register
+# (R&G 1981 §10). Two separate lex entries, one surface; rule
+# context disambiguates.
+- citation: maaari
+  pos: NOUN
+  gloss: the possible / possibility
+
 
 # === Phase 5m Commit 1: reflexive-noun ``sarili`` ========================
 # ``sarili`` "self" patterns syntactically as a NOUN, not a PRON
