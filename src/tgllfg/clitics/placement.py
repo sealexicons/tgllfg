@@ -519,6 +519,25 @@ def disambiguate_homophone_clitics(
                     for ma in prev_prev
                 )
             )
+            # Phase 5n.A Commit 27 (§18 L89.2): SAY-class V + GEN-PRON
+            # + ``na`` + V is the indirect-speech complementizer
+            # context — ``Sinabi niya na pumunta si Maria.`` The PRON
+            # is the actor (OBJ-AGENT in OV); the ``na`` introduces
+            # the finite-S complement (the said-thing, mapped to
+            # SUBJ via the new clause.py rule). Without this branch,
+            # the default-VERB/PRON-fallthrough below treats ``na`` as
+            # the ALREADY clitic and reorder_clitics moves it to
+            # clause-final, breaking the rule's V-PRON-na-S adjacency.
+            is_say_class_pron_seq = (
+                "PRON" in prev_pos
+                and prev_prev is not None
+                and any(
+                    ma.pos == "VERB"
+                    and ma.feats.get("SAY_CLASS") == "YES"
+                    for ma in prev_prev
+                )
+                and _next_content_is_verb(analyses, i)
+            )
             is_post_noun_pron_with_v_following = (
                 "PRON" in prev_pos
                 and prev_prev is not None
@@ -528,6 +547,7 @@ def disambiguate_homophone_clitics(
             if (
                 is_ctrl_verb
                 or is_ctrl_pron_seq
+                or is_say_class_pron_seq
                 or is_post_noun_pron_with_v_following
             ):
                 out.append([

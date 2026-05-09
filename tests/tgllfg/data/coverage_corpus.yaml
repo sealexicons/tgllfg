@@ -4329,49 +4329,37 @@
 # (complement clauses).
 - text: Sinabi niya na pumunta si Maria.
   construction: 'phase5n: indirect-speech sabi PFV / GEN-clitic actor / AV-intransitive embed'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
+  expected: parse
 - text: Sinabi mo na pumunta si Pedro.
   construction: 'phase5n: indirect-speech sabi PFV / GEN-clitic-mo actor / AV-intransitive embed'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
+  expected: parse
 - text: Sinabi ko na kumain si Maria.
   construction: 'phase5n: indirect-speech sabi PFV / GEN-clitic-ko actor / AV-intransitive embed'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
+  expected: parse
 - text: Sinabi nila na bumili si Maria ng aklat.
   construction: 'phase5n: indirect-speech sabi PFV / GEN-clitic-nila actor / AV-transitive embed'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
+  expected: parse
 - text: Sinabi niya na pumunta sila.
   construction: 'phase5n: indirect-speech sabi PFV / GEN-clitic actor / AV-intransitive embed with PRON SUBJ'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
+  expected: parse
 - text: Sinasabi niya na pumunta si Maria.
   construction: 'phase5n: indirect-speech sabi IPFV / GEN-clitic actor / AV-intransitive embed'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
+  expected: parse
 - text: Sinasabi mo na kumain ako.
   construction: 'phase5n: indirect-speech sabi IPFV / GEN-clitic-mo actor / AV-intransitive embed with PRON SUBJ'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
+  expected: parse
 - text: Sinasabi nila na bumili kami ng aklat.
   construction: 'phase5n: indirect-speech sabi IPFV / GEN-clitic-nila actor / AV-transitive embed'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
+  expected: parse
 - text: Sasabihin niya na pumunta si Maria.
   construction: 'phase5n: indirect-speech sabi CTPL / GEN-clitic actor / AV-intransitive embed'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
-- text: Sasabihin ko na kumain ako bukas.
-  construction: 'phase5n: indirect-speech sabi CTPL / GEN-clitic-ko actor / AV-intransitive embed with bukas adverb'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
+  expected: parse
+- text: Sasabihin ko na kumain si Pedro.
+  construction: 'phase5n: indirect-speech sabi CTPL / GEN-clitic-ko actor / AV-intransitive embed'
+  expected: parse
 - text: Sasabihin nila na bumili kami ng aklat.
   construction: 'phase5n: indirect-speech sabi CTPL / GEN-clitic-nila actor / AV-transitive embed'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
+  expected: parse
 - text: Sinabi niya na bumili si Maria ng aklat.
   construction: 'phase5n: indirect-speech sabi PFV / GEN-clitic actor / AV-transitive embed'
-  expected: fragment
-  notes: 0-parse pinned (parser yields partial fragments); OV-with-na-S complement rule lands in Commit 27
+  expected: parse
