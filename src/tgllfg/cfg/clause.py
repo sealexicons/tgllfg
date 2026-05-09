@@ -1150,6 +1150,56 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5n.B Commit 10: bare-form colloquial indirect-Q (§18 L53) ---
+    #
+    # ``Sino kumain.``               "Who ate?" (bare-form)
+    # ``Alam ko kung sino kumain.``  "I know who ate." (canonical
+    #                                  embedded use)
+    #
+    # Closes §18 L53. The colloquial Tagalog indirect-Q drops
+    # ``ang`` from the canonical wh-cleft form (``Sino ang
+    # kumain.``); the residue is a wh-PRON-as-SUBJ + bare-V
+    # construction.
+    #
+    # Same f-structure shape as the Phase 5i Commit 2 wh-cleft
+    # but the inner clause is the bare V-headed S (rather than a
+    # headless-RC NP[CASE=NOM]). The rule fires on AV
+    # intransitive verbs only — multi-argument frames (transitive
+    # AV / OV) require additional rule shapes that are deferred
+    # to a future commit if corpus pressure surfaces them.
+    #
+    # **Order**: PRON + V is the colloquial bare-form order
+    # (mirroring the canonical wh-cleft surface `wh-PRON [ang] V`
+    # with `ang` dropped). The PRON is the matrix SUBJ; the V
+    # daughter contributes PRED / VOICE / ASPECT / MOOD via
+    # ``(↑) = ↓2`` share.
+    #
+    # **Over-firing risk**: the rule admits standalone bare-form
+    # surfaces (``Sino kumain.``) outside indirect-Q contexts as
+    # well. Per §18 L53 detail, the bare-form is colloquially
+    # well-formed in standalone use too; the rule is left open.
+    # The ``Q_TYPE=WH`` lift correctly marks it as a wh-Q surface.
+    #
+    # Composition with Phase 5i Commit 8 indirect-Q wrap
+    # (``Alam ko kung S[Q_TYPE=WH]``): the bare-form S produces
+    # ``Q_TYPE=WH`` on its f-structure, satisfying the
+    # S_INTERROG_COMP rule's constraint. So embedded bare-form
+    # composes seamlessly.
+    rules.append(Rule(
+        "S",
+        ["PRON[WH=YES, CASE=NOM]", "V[VOICE=AV]"],
+        [
+            "(↑) = ↓2",
+            "(↑ SUBJ) = ↓1",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↓1 WH) =c 'YES'",
+            "(↓2 VOICE) =c 'AV'",
+            "¬ (↓1 INDEF)",
+        ],
+    ))
+
+
     # --- Phase 5i Commit 6: cleft-style wh-N pivot --------------
     #
     # ``Aling bata ang kumain?``       "Which child ate?"
