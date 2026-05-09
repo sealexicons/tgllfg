@@ -348,3 +348,70 @@
   # pareho / magkapareho structurally even though the semantic
   # value is CONTRASTIVE rather than EQUATIVE — a single feature
   # for the "identity-comparing predicate" family.
+
+
+# === Phase 5n.A Commit 6: Resultative stative-locatives (§18 L61) =========
+#
+# Five roots that take the ``naka-`` resultative ADJ reading per
+# S&O 1972 §6 (``tira`` "live", ``upo`` "sit", ``higa`` "lie",
+# ``tayo`` "stand", ``tabi`` "be beside"). Each is also a
+# VERB[INTR] root in verbs.yaml with ``maka`` in its affix_class
+# for the verbal abilitative naka- reading (``nakatira`` "was
+# able to live"); the new ADJ entries produce the parallel
+# resultative reading (``nakatira`` "be living"). The two analyses
+# coexist on the same surface — the predicative-ADJ vs predicative-V
+# rules disambiguate structurally.
+#
+# Affix-class opt-in is ``naka_resultative`` only — none of these
+# roots take ``ma_adj`` adjectivisation (``*matira`` / ``*maupo`` /
+# etc. are not adjectives). The bare-citation surface is also NOT
+# indexed as ADJ (consistent with the Phase 5g policy that bare
+# roots are nouns, and the paradigm-driven derivation produces the
+# adjectival surface).
+#
+# Required for R&G "Ang Manok" simples #1 / #3 (``nakatira``
+# resultative); Commit 7 lands the integration with the ``mama``
+# lex + simple composition.
+
+- citation: tira
+  pos: ADJ
+  gloss: living, residing (in a place)
+  affix_class: [naka_resultative]
+  # Also in verbs.yaml as INTR "live, dwell" with affix_class
+  # ``[um, mag, an_oblig, maka]``; the additive policy leaves the
+  # verbal entry untouched. ``nakatira`` surface fires both
+  # readings (ADJ resultative + VERB abilitative); rule context
+  # disambiguates.
+
+- citation: upo
+  pos: ADJ
+  gloss: sitting, seated
+  affix_class: [naka_resultative]
+  # Also in verbs.yaml as INTR "sit"; ``nakaupo`` is the
+  # resultative ADJ reading. ``Nakaupo siya sa silya.`` "He is
+  # sitting on the chair."
+
+- citation: higa
+  pos: ADJ
+  gloss: lying down, recumbent
+  affix_class: [naka_resultative]
+  # Also in verbs.yaml as INTR "lie down"; ``nakahiga`` is the
+  # resultative ADJ reading.
+
+- citation: tayo
+  pos: ADJ
+  gloss: standing
+  affix_class: [naka_resultative]
+  # Polysemous with the verbs.yaml ``tayo`` (TR "build, erect,
+  # stand up", affix_class ``[mag, i_oblig, an_oblig, maka]``)
+  # AND with the pronouns.yaml ``tayo`` (1pl-INCL NOM PRON).
+  # The ADJ reading produces ``nakatayo`` "be standing"; the
+  # PRON / VERB readings are surface-distinct (``tayo`` bare or
+  # inflected, never ``nakatayo``-ADJ).
+
+- citation: tabi
+  pos: ADJ
+  gloss: beside, adjacent
+  affix_class: [naka_resultative]
+  # Also in verbs.yaml as INTR "move aside"; ``nakatabi`` is the
+  # stative-locative ADJ ("be beside").
