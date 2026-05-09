@@ -4425,3 +4425,57 @@
 - text: Nagtanong si Maria kung saan pumunta si Pedro.
   construction: 'phase5n: ASK-Q tanong AV-PFV / full-NP-actor (currently 0-parse)'
   expected: parse
+
+# --- Phase 5n.A Commit 31: targeted coverage expansion ---------------
+# 16 representative fixtures across the Commit 5/6/11/12/14/16/17/18/19/
+# 20/21/22/23/24 constructions that didn't get corpus coverage in their
+# own commits. Reaches ~52 phase5n entries total (alongside the 36 from
+# Commits 25/26/28). Per plan-of-record §3.6 Commit 31.
+- text: Pumunta siyang magisa.
+  construction: 'phase5n: L60 mag-isa adverb (depictive PRON+linker+ADV[MAGISA])'
+  expected: parse
+- text: Nakatira ang lalaki.
+  construction: 'phase5n: L61 naka-resultative nakatira (stative-locative ADJ)'
+  expected: parse
+- text: Nakaupo si Maria.
+  construction: 'phase5n: L61 naka-resultative nakaupo (stative-locative ADJ)'
+  expected: parse
+- text: Dapat akong puwedeng kumain.
+  construction: 'phase5n: L67 modal stacking (nested-MODAL S_XCOMP)'
+  expected: parse
+- text: Hindi puwede.
+  construction: 'phase5n: L68 hindi puwede standalone (modal-as-predicate with PRO fillers)'
+  expected: parse
+- text: Maaari mong kainin ang isda.
+  construction: 'phase5n: L72 OV embedded V kainin (bare-OV cell with MOOD=SOC)'
+  expected: parse
+- text: Kumain ako o kaya pumunta siya.
+  construction: 'phase5n: L76 multi-word coord o kaya (COORD=OR + UNCERTAIN=YES)'
+  expected: parse
+- text: Kumain ako at saka pumunta siya.
+  construction: 'phase5n: L82 multi-word coord at saka (COORD=AND + SEQUENCE=YES)'
+  expected: parse
+- text: Dalawa at tatlo ang aklat.
+  construction: 'phase5n: L79 coordinated cardinals (NUM coord with operand recording)'
+  expected: parse
+- text: Kumain si Maria bukod sa Juan.
+  construction: 'phase5n: L80 exceptive PP bukod sa (clause-final EXCEPTIVE)'
+  expected: parse
+- text: Kumain si Maria, si Juan, si Pedro at si Ana.
+  construction: 'phase5n: L85 4-conjunct flat NP coord (non-Oxford form)'
+  expected: parse
+- text: Kumain si Maria, si Juan, o si Pedro.
+  construction: 'phase5n: L86 disjunctive 3-conjunct flat NP coord (Oxford OR)'
+  expected: parse
+- text: Mayroong aklat si Maria.
+  construction: 'phase5n: L87 HAVE-mayroon-with-linker postposed possessor'
+  expected: parse
+- text: Kumain naman ako.
+  construction: 'phase5n: L88 free-standing naman 2P enclitic (ADV=ALSO)'
+  expected: parse
+- text: Bagamat kumain ako, pumunta siya.
+  construction: 'phase5n: L94 bagamat orthographic variant (LEMMA=bagaman, CONC)'
+  expected: parse
+- text: Kung kumain ako bago pumunta siya, hindi pumunta ako.
+  construction: 'phase5n: L95 subord nesting depth-3 (COND>TEMP_BEFORE)'
+  expected: parse
