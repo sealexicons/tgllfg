@@ -1249,6 +1249,49 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.B Commit 9: sa-DAT NP cleft (§18 L51) -----------
+    #
+    # ``Sa kanino ang aklat?``  "Whose is the book?" (with
+    #                            explicit DAT marker)
+    # ``Sa sino ang aklat?``    (variant — DAT marker over the
+    #                            NOM-by-default wh-PRON)
+    #
+    # Closes §18 L51. Phase 5i Commit 9 (b) above admits the bare
+    # DAT-PRON pivot (``Kanino ang aklat?`` — bare ``kanino``); the
+    # explicit DAT-marked NP form (``Sa kanino ang aklat?``) is
+    # structurally an NP[CASE=DAT, WH=YES] built by the Phase 5i
+    # Commit 3 in-situ wh-PRON-in-DAT-NP shell ``NP[CASE=DAT] →
+    # ADP[CASE=DAT] PRON[WH=YES]`` — distinct from the bare-PRON
+    # NP shell (Phase 4 §7.8 ``NP[CASE=DAT] → PRON[CASE=DAT]``)
+    # which lifts only the PRON's f-structure unchanged.
+    #
+    # **Disambiguation gate** ``(↓1 PRED) =c 'WH-PRO'``: the
+    # Phase 5i Commit 3 explicit-DAT path explicitly sets ``(↑
+    # PRED) = 'WH-PRO'`` on the matrix NP; the Phase 4 §7.8
+    # bare-PRON path uses ``(↑) = ↓1`` share, exposing the bare
+    # PRON's f-structure (which has no ``PRED`` — wh-PRON lex
+    # entries don't declare one). Constraining ``PRED='WH-PRO'``
+    # gates this rule to the explicit-DAT path only — the
+    # bare-PRON cleft (Phase 5i Commit 9 (b)) remains the canonical
+    # path for ``Kanino ang aklat?``.
+    #
+    # Same f-structure shape as the bare-PRON cleft above —
+    # ``PRED='WH <SUBJ>'`` / ``Q_TYPE=WH`` / ``WH_LEMMA``
+    # propagated from the matrix NP.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=DAT, WH=YES]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 WH_LEMMA",
+            "(↓1 WH) =c 'YES'",
+            "(↓1 CASE) =c 'DAT'",
+            "(↓1 PRED) =c 'WH-PRO'",
+        ],
+    ))
+
 
     # --- Phase 5i Commit 7: tag question `di ba?` ----------------
     #
