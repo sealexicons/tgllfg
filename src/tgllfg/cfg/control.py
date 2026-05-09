@@ -261,6 +261,29 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
             ),
         ))
+        # Phase 5n.A Commit 11 (§18 L67): MODAL nested control —
+        # V[CTRL_CLASS=MODAL] PART S_XCOMP. Parallel to the PSYCH /
+        # INTRANS rules above; admits modal stacking (``Dapat akong
+        # puwedeng kumain.`` "I should be able to eat") with SUBJ
+        # control re-entrant through both layers — outer-modal SUBJ
+        # = inner-modal SUBJ = innermost-action SUBJ. The existing
+        # Phase 5j Commit 7 matrix modal wrap binds the outer
+        # SUBJ NP; this rule lets the inner modal-XCOMP compose.
+        rules.append(Rule(
+            "S_XCOMP",
+            [
+                "V[CTRL_CLASS=MODAL]",
+                f"PART[LINK={link}]",
+                "S_XCOMP",
+            ],
+            _eqs(
+                "(↑ SUBJ) = (↑ REL-PRO)",
+                "(↑ XCOMP) = ↓3",
+                "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                "(↓1 CTRL_CLASS) =c 'MODAL'",
+                "(↓1 MODAL) =c 'YES'",
+            ),
+        ))
         # TRANS nested: V[CTRL_CLASS=TRANS] NP[CASE=GEN] PART
         # S_XCOMP. The GEN-NP is the forcer / orderer, mapped
         # to OBJ-AGENT (the typed slot since Phase 5b
