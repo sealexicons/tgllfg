@@ -46,12 +46,16 @@ def _tok(s: str) -> Token:
 
 SUBORDINATORS = [
     # (surface, comp_type, lemma)
+    # ``pag`` and ``bagamat`` are LEMMA-collapsed to canonical full
+    # forms (``kapag`` and ``bagaman`` respectively) per Phase 5n.A
+    # Commit 23 — see test_phase5n_subord_orthographic.py.
     ("kung",       "COND",        "kung"),
     ("kapag",      "COND",        "kapag"),
-    ("pag",        "COND",        "pag"),
+    ("pag",        "COND",        "kapag"),
     ("sakali",     "COND",        "sakali"),
     ("kahit",      "CONC",        "kahit"),
     ("bagaman",    "CONC",        "bagaman"),
+    ("bagamat",    "CONC",        "bagaman"),
     ("bago",       "TEMP_BEFORE", "bago"),
     ("pagkatapos", "TEMP_AFTER",  "pagkatapos"),
     ("habang",     "TEMP_WHILE",  "habang"),

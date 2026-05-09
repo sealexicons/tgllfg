@@ -1588,7 +1588,22 @@
 # ``COUNTERFACTUAL: "YES"`` feat. Cluster priority lives in
 # ``data/tgl/clitics.yaml``.
 
-# (a) Conditional — ``kung`` / ``kapag`` / ``pag`` / ``sakali``
+# (a) Conditional — ``kung`` / ``kapag`` / ``pag`` / ``'pag`` / ``sakali``
+#
+# ``kapag`` is the canonical full form; ``pag`` is the colloquial
+# short form; ``'pag`` is the elision-marked spelling of the short
+# form (apostrophe = "elided ``ka``"). Phase 5n.A Commit 23 closes
+# §18 L107 by routing all short forms to LEMMA=kapag via the
+# Phase 5j Commit 7 LEMMA-collapse mechanic.
+#
+# The ``'pag`` surface is handled by the existing tokenization
+# pipeline rather than a dedicated lex entry: the tokenizer splits
+# ``'pag`` into ``'`` + ``pag`` (the ``'`` is a non-word character;
+# see ``text/tokenizer.py``), then the parser's
+# ``_strip_non_content`` filter drops the standalone apostrophe and
+# the ``pag`` entry below matches the remainder. Adding a literal
+# ``'pag`` lex entry would never fire because the tokenizer never
+# yields a single ``'pag`` token.
 - surface: kung
   pos: PART
   feats: {COMP_TYPE: COND, LEMMA: kung}
@@ -1597,16 +1612,26 @@
   feats: {COMP_TYPE: COND, LEMMA: kapag}
 - surface: pag
   pos: PART
-  feats: {COMP_TYPE: COND, LEMMA: pag}
+  feats: {COMP_TYPE: COND, LEMMA: kapag}
 - surface: sakali
   pos: PART
   feats: {COMP_TYPE: COND, LEMMA: sakali, SUBORD_VARIANT: IN_CASE}
 
-# (b) Concessive — ``kahit`` / ``bagaman``
+# (b) Concessive — ``kahit`` / ``bagaman`` / ``bagamat``
+#
+# ``bagaman`` is the canonical full form; ``bagamat`` is the
+# colloquial elided variant ("bagaman + at" → "bagamat", with
+# the ``-an`` weakening to ``-a-`` before the suffixed ``at``).
+# Phase 5n.A Commit 23 closes §18 L94 by adding ``bagamat`` as a
+# distinct surface entry with LEMMA=bagaman so the LEMMA-collapse
+# mechanic routes both surfaces to the canonical lemma.
 - surface: kahit
   pos: PART
   feats: {COMP_TYPE: CONC, LEMMA: kahit}
 - surface: bagaman
+  pos: PART
+  feats: {COMP_TYPE: CONC, LEMMA: bagaman, REGISTER: FORMAL}
+- surface: bagamat
   pos: PART
   feats: {COMP_TYPE: CONC, LEMMA: bagaman, REGISTER: FORMAL}
 
