@@ -160,25 +160,32 @@ def _has_feat_value_anywhere(fs, feat: str, value: str, _seen=None) -> bool:
     return False
 
 
-# === Phase 5i pinned 0-parses preserved =============================
+# === Phase 5i pinned 0-parses lifted by Phase 5n.B Commit 11 ==========
 
 
-class TestPinnedZeroParsesPreserved:
-    """Phase 5i pinned two 0-parse sentences — declarative inner
-    and yes/no inner inside ``Alam ko kung X``. The Phase 5l
-    SubordClause rule must NOT introduce a parse path that
-    flips these to 1+ parses (which would happen if ``Alam ko``
-    parsed as a standalone S that could host a COND adjunct;
-    in our grammar, KNOW verbs don't appear without their
-    complement, so the 0-parse pin holds)."""
+class TestYesNoIndirectQAdmitted:
+    """Phase 5n.B Commit 11 (§18 L54) lifted the 0-parse pin on
+    yes/no-indirect-Q surfaces by extending S_INTERROG_COMP to
+    admit a yes/no inner clause (with-ba ``Q_TYPE=YES_NO`` or
+    bare-declarative no-Q_TYPE). Both surfaces below now produce
+    a complete KNOW parse; the matrix wrap fires uniformly with
+    ``COMP_TYPE=INTERROG``."""
 
-    def test_declarative_inner_still_zero(self) -> None:
+    def test_declarative_inner_admitted(self) -> None:
         parses = parse_text("Alam ko kung kumain ang aso.")
-        assert len(parses) == 0
+        know_parses = [
+            p for p in parses
+            if (p[1].feats.get("PRED") or "").startswith("KNOW")
+        ]
+        assert len(know_parses) >= 1
 
-    def test_yes_no_inner_still_zero(self) -> None:
+    def test_yes_no_inner_admitted(self) -> None:
         parses = parse_text("Alam ko kung kumain ka ba.")
-        assert len(parses) == 0
+        know_parses = [
+            p for p in parses
+            if (p[1].feats.get("PRED") or "").startswith("KNOW")
+        ]
+        assert len(know_parses) >= 1
 
 
 # === Nested cross-phase composition =================================

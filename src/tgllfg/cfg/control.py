@@ -556,6 +556,67 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 Q_TYPE) =c 'WH'",
         ],
     ))
+    # Phase 5n.B Commit 11 (§18 L54): yes/no indirect-Q variants.
+    #
+    # ``Alam ko kung kumain ang aso.``     "I know whether the dog
+    #                                       ate." (bare declarative)
+    # ``Alam ko kung pumunta si Maria.``   "I know whether Maria
+    #                                       went." (bare declarative)
+    # ``Alam ko kung kumain ba ang aso.``  (with ``ba`` — Q_TYPE=
+    #                                       YES_NO inner)
+    #
+    # Closes §18 L54. Two sibling rules cover the yes/no path:
+    #
+    #   (a) ``S_INTERROG_COMP → PART[COMP_TYPE=INTERROG]
+    #       S[Q_TYPE=YES_NO]`` — with-ba case (the Phase 5i Commit
+    #       5 ba-rule sets Q_TYPE=YES_NO on the matrix S).
+    #   (b) ``S_INTERROG_COMP → PART[COMP_TYPE=INTERROG] S`` with
+    #       ``¬ (↓2 Q_TYPE)`` — bare declarative case (no Q_TYPE).
+    #
+    # Both lift ``COMP_TYPE=YES_NO_INTERROG`` to mark the matrix
+    # COMP as a yes/no interrogative complement. The wh case
+    # remains routed through the existing ``S[Q_TYPE=WH]`` rule
+    # above with ``COMP_TYPE=INTERROG``.
+    #
+    # **Why two rules**: the unifier's ``NegEquation`` semantics
+    # (per ``fstruct/unify.py:_eval_neg_equation``) is strict:
+    # ``≠`` fails when the lhs path is undefined. A single rule
+    # with ``(↓2 Q_TYPE) ≠ 'WH'`` would correctly admit
+    # Q_TYPE=YES_NO but reject the bare-declarative path (no
+    # Q_TYPE). Splitting into two rules — ``=c 'YES_NO'`` and
+    # ``¬ (↓2 Q_TYPE)`` — covers both cleanly. The three
+    # S_INTERROG_COMP rules (wh / yes-no-with-ba / bare-decl) are
+    # mutually exclusive on Q_TYPE.
+
+    # (a) yes/no with ``ba`` — inner S has Q_TYPE=YES_NO.
+    # COMP_TYPE='INTERROG' keeps the matrix wrap's
+    # ``(↓3 COMP_TYPE) =c 'INTERROG'`` constraint satisfied;
+    # ``COMP_QTYPE='YES_NO'`` tags the COMP for downstream
+    # consumers needing the yes/no vs wh distinction.
+    rules.append(Rule(
+        "S_INTERROG_COMP",
+        ["PART[COMP_TYPE=INTERROG]", "S[Q_TYPE=YES_NO]"],
+        [
+            "(↑) = ↓2",
+            "(↑ COMP_TYPE) = 'INTERROG'",
+            "(↑ COMP_QTYPE) = 'YES_NO'",
+            "(↓1 COMP_TYPE) =c 'INTERROG'",
+            "(↓2 Q_TYPE) =c 'YES_NO'",
+        ],
+    ))
+
+    # (b) bare declarative — inner S has no Q_TYPE.
+    rules.append(Rule(
+        "S_INTERROG_COMP",
+        ["PART[COMP_TYPE=INTERROG]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ COMP_TYPE) = 'INTERROG'",
+            "(↑ COMP_QTYPE) = 'YES_NO'",
+            "(↓1 COMP_TYPE) =c 'INTERROG'",
+            "¬ (↓2 Q_TYPE)",
+        ],
+    ))
     # Matrix wrap: ``Alam ko + S_INTERROG_COMP``. The GEN-NP
     # experiencer is matrix SUBJ (the same NOM→SUBJ deviation as
     # PSYCH); the indirect-Q clause is matrix COMP. No linker
