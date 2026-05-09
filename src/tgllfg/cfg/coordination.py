@@ -624,3 +624,47 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 LEMMA) =c 'nang'",
         ],
     ))
+
+    # === Phase 5n.A Commit 17: coordinated cardinals (§18 L79) ================
+    #
+    # ``apatnapu't lima`` (45) = 40 + 5; ``isang daa't dalawampu`` (120)
+    # = 100 + 20; etc. The bound ``'t`` clitic (Phase 5k Commit 2
+    # ``split_apostrophe_t``) synthesises ``at`` between the two
+    # cardinal operands, so the input reaches the grammar as
+    # ``NUM[CARDINAL=YES] PART[COORD=AND] NUM[CARDINAL=YES]``.
+    #
+    # The unifier's equation language (src/tgllfg/fstruct/equations.py)
+    # has no arithmetic primitive — Atom and Designator are the only
+    # value types. So this rule cannot compute the sum on the matrix
+    # CARDINAL_VALUE directly. Instead it follows the Phase 5f Commit 9
+    # arithmetic-predicate precedent and records OPERAND_1 / OPERAND_2 +
+    # COORD_OP=SUM; downstream consumers compute 40 + 5 = 45 from
+    # the operand feats. (A computed CARDINAL_VALUE would require either
+    # an equation-language extension or a post-unification projection
+    # pass; both are larger scope than this single L79 closure.)
+    #
+    # The rule produces NUM[CARDINAL=YES] so the existing NP-cardinal-
+    # modifier rule (Phase 5f Commit 1) consumes the coordinated
+    # cardinal as if it were a single NUM, allowing
+    # ``apatnapu't limang aklat`` to parse as a quantified NP.
+    #
+    # Reference: S&O 1972 §4 (numeral coordination); R&G 1981
+    # dialogue corpus.
+    rules.append(Rule(
+        "NUM[CARDINAL=YES]",
+        [
+            "NUM[CARDINAL=YES]",
+            "PART[COORD=AND]",
+            "NUM[CARDINAL=YES]",
+        ],
+        [
+            "(↑ CARDINAL) = 'YES'",
+            "(↑ NUM) = 'PL'",
+            "(↑ COORD_OP) = 'SUM'",
+            "(↑ OPERAND_1) = ↓1 CARDINAL_VALUE",
+            "(↑ OPERAND_2) = ↓3 CARDINAL_VALUE",
+            "(↓2 COORD) =c 'AND'",
+            "(↓1 CARDINAL) =c 'YES'",
+            "(↓3 CARDINAL) =c 'YES'",
+        ],
+    ))
