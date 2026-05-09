@@ -579,6 +579,78 @@ def register_rules(rules: list[Rule]) -> None:
         ),
     ))
 
+    # --- Phase 5n.A Commit 29: ASK-class reported-Q (§18 L90.2 + L92) ---
+    #
+    # ASK-class verbs (``tanong`` and its inflected forms
+    # ``tinanong`` / ``tinatanong`` / ``tatanungin`` / ``nagtanong``
+    # / ``nagtatanong`` / ``magtatanong`` / ``tumanong`` /
+    # ``tumatanong``) admit a finite-S indirect-Q complement
+    # introduced by ``kung``. Unlike KNOW (uninflected pseudo-verb
+    # with PRED='KNOW <SUBJ, COMP>'), ASK-class is fully inflected
+    # under standard transitive paradigms so the PRED template is
+    # 'TANONG <SUBJ, OBJ-AGENT>' for OV and 'TANONG <SUBJ, OBJ>'
+    # for AV. The reported-Q complement fills:
+    #
+    # * **OV pivot**: SUBJ = the asked-thing (S_INTERROG_COMP),
+    #   OBJ-AGENT = the asker (clitic GEN-PRON or full GEN-NP).
+    #   Mirrors Phase 5n.A Commit 27 SAY-class OV pattern.
+    # * **AV pivot**: SUBJ = the asker (NOM-clitic-PRON or full
+    #   NOM-NP), OBJ = the asked-thing (S_INTERROG_COMP). The
+    #   embedded clause functions as the THEME of the asking,
+    #   mapped to OBJ in AV.
+    #
+    # Example targets (closes §18 L90.2 corpus from Commit 28):
+    #
+    #   ``Tinanong niya kung sino ang kumain.``  (OV PFV / clitic-actor)
+    #   ``Tinanong ng lalaki kung saan...``      (OV PFV / full-NP-actor)
+    #   ``Nagtanong siya kung sino ang kumain.`` (AV PFV / clitic-actor)
+    #   ``Nagtanong si Maria kung saan...``      (AV PFV / full-NP-actor)
+    #
+    # Per plan-of-record §3.5 Commit 29, two rule shapes (OV and AV)
+    # × two NP types (PRON for clitic, NP for full) = 4 rules.
+    # Both clitic-PRON and full-NP actor variants are admitted; the
+    # full-NP variant doesn't suffer from the RC-linker crossfire
+    # because ``kung`` is structurally distinct from the bare ``-na``
+    # linker (the kung-clause has its own SubordClause builder
+    # context).
+    #
+    # The ASK_CLASS=YES gate restricts to ``tanong`` only; other
+    # transitive verbs continue to require NOM-NP SUBJ.
+
+    # OV reported-Q. NP[CASE=GEN] subsumes clitic-PRON via the
+    # ``NP[CASE=GEN] → PRON[CASE=GEN]`` shell in nominal.py.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=OV, ASK_CLASS=YES]",
+            "NP[CASE=GEN]",
+            "S_INTERROG_COMP",
+        ],
+        _eqs(
+            "(↑ OBJ-AGENT) = ↓2",
+            "(↑ SUBJ) = ↓3",
+            "(↓1 ASK_CLASS) =c 'YES'",
+            "(↓3 COMP_TYPE) =c 'INTERROG'",
+        ),
+    ))
+    # AV reported-Q. NP[CASE=NOM] subsumes clitic-PRON via the
+    # ``NP[CASE=NOM] → PRON[CASE=NOM]`` shell in nominal.py.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=AV, ASK_CLASS=YES]",
+            "NP[CASE=NOM]",
+            "S_INTERROG_COMP",
+        ],
+        _eqs(
+            "(↑ SUBJ) = ↓2",
+            "(↑ OBJ) = ↓3",
+            "(↓1 ASK_CLASS) =c 'YES'",
+            "(↓3 COMP_TYPE) =c 'INTERROG'",
+        ),
+    ))
+
+
     # **Intransitive control** (payag): NOM-marked agent is
     # matrix SUBJ; AV verb. PRED ``AGREE <SUBJ, XCOMP>``.
     for link in ("NA", "NG"):

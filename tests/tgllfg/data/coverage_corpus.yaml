@@ -4403,33 +4403,25 @@
   expected: parse
 - text: Nagtanong siya kung sino ang kumain.
   construction: 'phase5n: ASK-Q tanong AV-PFV / sino (currently 0-parse)'
-  expected: fragment
-  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+  expected: parse
 - text: Nagtanong siya kung saan pumunta si Maria.
   construction: 'phase5n: ASK-Q tanong AV-PFV / saan (currently 0-parse)'
-  expected: fragment
-  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+  expected: parse
 - text: Nagtatanong siya kung sino ang kumain.
   construction: 'phase5n: ASK-Q tanong AV-IPFV / sino (currently 0-parse)'
-  expected: fragment
-  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+  expected: parse
 - text: Nagtatanong siya kung bakit kumain si Maria.
   construction: 'phase5n: ASK-Q tanong AV-IPFV / bakit (currently 0-parse)'
-  expected: fragment
-  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+  expected: parse
 - text: Magtatanong siya kung sino ang kumain.
   construction: 'phase5n: ASK-Q tanong AV-CTPL / sino (currently 0-parse)'
-  expected: fragment
-  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+  expected: parse
 - text: Magtatanong siya kung paano kumain si Maria.
   construction: 'phase5n: ASK-Q tanong AV-CTPL / paano (currently 0-parse)'
-  expected: fragment
-  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+  expected: parse
 - text: Tinanong ng lalaki kung sino ang kumain.
   construction: 'phase5n: ASK-Q tanong OV-PFV / full-NP-actor (currently 0-parse)'
-  expected: fragment
-  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+  expected: parse
 - text: Nagtanong si Maria kung saan pumunta si Pedro.
   construction: 'phase5n: ASK-Q tanong AV-PFV / full-NP-actor (currently 0-parse)'
-  expected: fragment
-  notes: 0-parse pinned; ASK-class reported-Q rule lands in Commit 29
+  expected: parse

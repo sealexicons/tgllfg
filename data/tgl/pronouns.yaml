@@ -124,7 +124,7 @@
 # analyses; the chart parser picks the PRON path when the syntactic
 # context calls for a clitic.
 - surface: kita
-  feats: {KITA: YES}
+  feats: {KITA: "YES"}
   is_clitic: true
 
 # === Phase 5i Commit 1: pronominal wh-words ============================
