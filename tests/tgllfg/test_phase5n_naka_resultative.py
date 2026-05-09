@@ -154,20 +154,10 @@ class TestSentenceIntegration:
         assert len(parses) >= 1
 
 
-# === R&G "Ang Manok" simple #3 integration (deferred to Commit 7) =========
-
-
-class TestRgSimple3Deferred:
-    """The R&G "Ang Manok" simple #3 (``Nakatira siyang mag-isa sa
-    bahay.``) requires the resultative ``nakatira`` (Commit 6) AND
-    the ``mag-isa`` tokenizer fix (Commit 5) AND the ``mama`` lex +
-    composition (Commit 7). Two of three pieces are now in place.
-
-    This pin will flip in Commit 7 when the integration lands."""
-
-    def test_rg_simple_3_zero_parse_pending_commit_7(self) -> None:
-        parses = parse_text("Nakatira siyang mag-isa sa bahay.")
-        assert len(parses) == 0, (
-            "R&G simple #3 unexpectedly parses — Commit 7 may have "
-            "landed; flip this assertion to >= 1 there."
-        )
+# === R&G "Ang Manok" simple #3 — see test_phase5n_rg_simples.py ==========
+#
+# Phase 5n.A Commit 7 lands the depictive secondary-predicate rule
+# (``NP[CASE=NOM] → PRON[CASE=NOM] PART[LINK=NG] ADV[MAGISA=YES]``)
+# in cfg/nominal.py and unblocks ``Nakatira siyang mag-isa sa bahay.``
+# (R&G simple #3) plus simple #1. The integration assertions live in
+# the dedicated Commit-7 test file.

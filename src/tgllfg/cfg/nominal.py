@@ -1629,3 +1629,37 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ EMPHATIC) = 'YES'",
         ],
     ))
+
+    # === Phase 5n.A Commit 7: depictive ``mag-isa`` post-PRON via linker (§18 L62+L63) =====
+    #
+    # ``Nakatira siyang mag-isa sa bahay.`` "He lives by himself in the
+    # house" — R&G "Ang Manok" simple #3. The ``siyang mag-isa``
+    # constituent is a SUBJ NP: PRON[CASE=NOM] head + bound ``-ng``
+    # linker + depictive ADV ``mag-isa`` ("alone / by oneself"). The
+    # ADV functions as a depictive secondary predicate over the PRON
+    # SUBJ, attaching as an ADJUNCT member of the NP.
+    #
+    # Distribution: scoped to ``mag-isa`` only via the
+    # ``(↓3 MAGISA) =c 'YES'`` constraining equation (matches the
+    # MAGISA flag set on the ``magisa`` lex entry — Phase 5n.A
+    # Commit 5). Future depictive ADVs (e.g., ``siyang mabilis`` "him
+    # being-quick", ``siyang madalas`` "him often") would either need
+    # additional rules or a more general ``DEPICTIVE=YES`` feat — both
+    # deferred until corpus pressure surfaces additional tokens.
+    #
+    # The matrix-NP overlay ``(↑ MAGISA) = 'YES'`` exposes the
+    # depictive marker at the NP top level for downstream consumers.
+    #
+    # Reference: S&O 1972 §3.5 (depictive secondary predicates); R&G
+    # 1981 §6.6 (combined "Ang Manok" essay-paragraph).
+    rules.append(Rule(
+        "NP[CASE=NOM]",
+        ["PRON[CASE=NOM]", "PART", "ADV"],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ ADJUNCT)",
+            "(↓2 LINK) =c 'NG'",
+            "(↓3 MAGISA) =c 'YES'",
+            "(↑ MAGISA) = 'YES'",
+        ],
+    ))

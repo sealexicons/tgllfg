@@ -395,6 +395,19 @@
   pos: NOUN
   gloss: earth, soil
 
+# Phase 5n.A Commit 7 (§18 L62): closed-class noun "man / mister",
+# attested in S&O 1972 §3.1 and R&B 1986 as an informal address term
+# for an unrelated adult male. Required for R&G "Ang Manok" simple
+# #1 (``May isang mamang nakatira sa isang bahay sa bukid.`` "There
+# was an old man who lived in a house in the country"). Treated as
+# an animate human noun parallel to ``lalaki`` / ``babae``; the
+# ANIMATE classification for the OBL classifier (PLACE / ANIMATE
+# disambiguation) is configured in src/tgllfg/lmt/oblique_classifier.py
+# rather than declared as a per-NOUN feat.
+- citation: mama
+  pos: NOUN
+  gloss: man, mister
+
 - citation: mangga
   pos: NOUN
   gloss: mango
