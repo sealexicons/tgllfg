@@ -177,6 +177,15 @@
 # REGISTER distinguishes them. Reference: R&B 1986 §15.4.
 - surface: sinuman
   feats: {PRED: SOMEONE_NEG_INDEF, INDEF: NEG_INDEF, NUM: SG, PERS: 3, CASE: NOM, LEMMA: sinuman}
+- surface: anuman
+  # Phase 5n.B Commit 22 (§18 L46 + L102): lexicalized contracted
+  # form of ``ano + man`` "anything" (negative indefinite).
+  # Parallel to ``sinuman`` (someone/anyone) above. Composes with
+  # the Phase 5m C9 negative-existential rule (Walang anuman.) and
+  # the Phase 5n.B C21 PRON-headed RC rule (Walang anumang
+  # nakita.) without any new grammar — both rules gate on
+  # INDEF=NEG_INDEF.
+  feats: {PRED: SOMETHING_NEG_INDEF, INDEF: NEG_INDEF, NUM: SG, PERS: 3, CASE: NOM, LEMMA: anuman}
 # Phase 5n.B Commit 17 (§18 L97): standalone affirmative /
 # negative answer-clause PRONs. ``oo`` "yes" was previously
 # unlex'd; ``hindi`` "no" had only a PART[POLARITY=NEG] entry

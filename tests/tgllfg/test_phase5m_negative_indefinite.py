@@ -114,29 +114,10 @@ class TestSelectionalRestriction:
         assert len(parses) == 0
 
 
-# === Deferrals ========================================================
-
-
-class TestNegativeIndefiniteDeferred:
-    """One construction family pinned at 0-parse for Phase 5n
-    debt-clearing. (Phase 5n.B Commit 21 closed
-    ``Walang sinumang dumating.`` — see
-    ``test_phase5n_b_walang_sinumang_rc.py``.)
-
-    1. ``Walang ano man.`` — productive ``wh-PRON + man`` indef-
-       builder. Possible closure path:
-       ``PRON[INDEF=NEG_INDEF] → PRON[WH=YES] PART[man,ADV=EVEN]``
-       which would compose ``ano man`` into a virtual neg-indef
-       PRON, then feed the new walang+PRON rule. ``anuman``
-       (lexicalized contracted form) is also unlex'd — adding
-       it as PRON[INDEF=NEG_INDEF] would unblock that surface.
-       Closes in Phase 5n.B Commit 22 (§18 L46 + L102).
-    """
-
-    def test_walang_ano_man_zero_parse(self) -> None:
-        parses = parse_text("Walang ano man.")
-        assert len(parses) == 0, (
-            "Walang ano man. parsed unexpectedly — wh-PRON+man "
-            "indef-builder has landed; close the deferral and "
-            "un-pin."
-        )
+# All Phase 5m-era negative-indefinite deferrals closed in
+# Phase 5n.B:
+#
+#   * Walang sinumang dumating.  → C21 (§18 L101)
+#       see test_phase5n_b_walang_sinumang_rc.py
+#   * Walang ano man / anuman.   → C22 (§18 L46 + L102)
+#       see test_phase5n_b_anuman_indef.py

@@ -205,6 +205,36 @@ def _is_sentence_initial_particle(cands: list[MorphAnalysis]) -> bool:
     )
 
 
+def _is_post_wh_pron_man(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is the EVEN-particle ``man``
+    immediately preceded by a wh-PRON.
+
+    Phase 5n.B Commit 22 (§18 L46 + L102): the productive
+    negative-indefinite construction ``wh + man`` (``ano man``,
+    ``sino man``) requires the ``man`` 2P-clitic to stay
+    adjacent to its preceding wh-PRON so the ``PRON →
+    PRON[WH=YES] PART[man,ADV=EVEN]`` indef-builder rule can
+    fire. Without this exception, the standard 2P-clitic
+    placement moves ``man`` to clause-final, breaking the
+    adjacency. Suppressing the move here keeps ``ano man`` /
+    ``sino man`` parseable; the lexicalized contracted forms
+    (``anuman`` / ``sinuman``) are unaffected (single tokens,
+    no placement question)."""
+    if i == 0:
+        return False
+    if not any(
+        ma.feats.get("LEMMA") == "man" and ma.pos == "PART"
+        for ma in analyses[i]
+    ):
+        return False
+    prev = analyses[i - 1]
+    return any(
+        ma.pos == "PRON" and ma.feats.get("WH") == "YES" for ma in prev
+    )
+
+
 def _is_post_noun_pron(
     analyses: list[list[MorphAnalysis]], i: int
 ) -> bool:
@@ -742,6 +772,11 @@ def reorder_clitics(
             i < anchor_idx
             and _is_sentence_initial_particle(cands)
         )
+        # Phase 5n.B Commit 22: ``man`` immediately after a wh-PRON
+        # forms the productive negative-indef builder (``ano man``,
+        # ``sino man``). Keep adjacent to the wh-PRON so the
+        # ``PRON → PRON PART[man,ADV=EVEN]`` rule can fire.
+        and not _is_post_wh_pron_man(analyses, i)
     ]
     if not pron_indices and not adv_indices:
         return analyses

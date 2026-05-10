@@ -714,7 +714,7 @@
   clitic_class: 2P
 - surface: man
   pos: PART
-  feats: {ADV: EVEN}
+  feats: {ADV: EVEN, LEMMA: man}
   is_clitic: true
   clitic_class: 2P
 - surface: yata

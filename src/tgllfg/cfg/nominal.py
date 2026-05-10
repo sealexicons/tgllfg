@@ -1705,6 +1705,43 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # === Phase 5n.B Commit 22: productive wh + man → neg-indef PRON ===
+    #
+    # ``Walang ano man.``     "There is nothing." (productive form
+    #                         of ``Walang anuman.``)
+    # ``Walang sino man.``    (rare productive form of ``Walang
+    #                         sinuman.``)
+    #
+    # Closes part of §18.1 deferral L46 + L102. The rule composes
+    # a wh-PRON with the ``man`` 2P-clitic (PART[ADV=EVEN, LEMMA=
+    # man]) into a virtual ``PRON[INDEF=NEG_INDEF]``. The existing
+    # Phase 5m C9 negative-existential rule then fires on the
+    # produced PRON without modification, parallel to the closure
+    # path for ``Walang sinuman.`` / ``Walang anuman.``
+    # (lexicalized contracted forms).
+    #
+    # The lexicalized contracted forms (``sinuman`` / ``anuman``)
+    # cover the common cases by direct lex (``data/tgl/pronouns.yaml``);
+    # this rule covers the productive non-contracted spelling
+    # (``ano man``) plus any wh-PRON where the contracted form
+    # isn't lexicalized.
+    #
+    # The ``LEMMA=man`` constraint excludes other 2P-clitics
+    # (na / pa / daw / rin / lang / nga / ba / ho / po / kasi /
+    # ...) — only ``man`` (the EVEN/CONCESSIVE particle) functions
+    # as a productive negative-indef builder.
+    rules.append(Rule(
+        "PRON",
+        ["PRON", "PART"],
+        [
+            "(↑) = ↓1",
+            "(↓1 WH) =c 'YES'",
+            "(↓2 ADV) =c 'EVEN'",
+            "(↓2 LEMMA) =c 'man'",
+            "(↑ INDEF) = 'NEG_INDEF'",
+        ],
+    ))
+
     # === Phase 5m Commit 7: emphatic ``mismo`` post-N attachment =====
     #
     # ``Maria mismo`` "Maria herself", ``ang bata mismo`` "the child
