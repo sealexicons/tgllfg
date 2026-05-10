@@ -17,17 +17,17 @@ and 201 ``Rule`` appends inside a single ``Grammar.__init__``.
 Per-section comment headers (``# --- Phase 5f Commit N: ...``)
 make the file navigable but the size is becoming a liability for:
 
-* **Code review.** PRs that touch one Phase 5f construction read
+- **Code review.** PRs that touch one Phase 5f construction read
   as a 100-line diff in a 3250-line file; reviewers spend
   effort relocating the change in context.
-* **Bisect / blame.** Multi-commit changes (the partitive's
+- **Bisect / blame.** Multi-commit changes (the partitive's
   growing list of negative-Q-feature gates: VAGUE / UNIV /
   DISTRIB_POSS / WHOLE / DUAL across Commits 15 / 20 / 21 / 22
   / 23) all touch the same lines, hurting blame precision.
-* **Cognitive load.** New contributors (or future-Claude in a
+- **Cognitive load.** New contributors (or future-Claude in a
   new session) need to scan more than necessary to find the
   rule for a given construction.
-* **Test isolation.** A future test pass that exercises a
+- **Test isolation.** A future test pass that exercises a
   specific grammar module benefits from a smaller import
   surface.
 
@@ -45,7 +45,7 @@ unchanged. The existing ``cfg/compile.py`` (grammar compilation:
 ``parse_pattern``, ``matches``, ``merge_features``) is already
 factored out and stays as-is.
 
-```
+```text
 src/tgllfg/cfg/
 ├── __init__.py             # re-exports Grammar / Rule / compile API
 │                            # (unchanged surface)
@@ -86,11 +86,11 @@ under ``src/``. New per-module tests (if added) go under
 The current ``grammar.py`` has two private helpers used across
 many rules:
 
-* **``_eqs(*extras: str) -> list[str]``** (line 91 of current
+- **``_eqs(*extras: str) -> list[str]``** (line 91 of current
   grammar.py) — appears 100+ times in the existing rules,
   primarily wrapping repetitive equation lists. Move to
   ``_helpers.py`` and import where needed.
-* **``_cardinal_case_marker``** (line 306, currently local to
+- **``_cardinal_case_marker``** (line 306, currently local to
   ``Grammar.__init__``) — a 3-entry dict mapping ``CASE`` to
   the case-marker pattern, used by 6 NP-modifier rules
   (cardinal Commit 1, ordinal Commit 7, vague-Q Commit 15,
@@ -108,10 +108,10 @@ domain boundaries (e.g., ``nominal/det.py`` /
 ``nominal/quant.py`` / ``nominal/adj.py`` once Phase 5g
 adjective work lands) is a follow-up if and when:
 
-* A module exceeds ~1000 lines, OR
-* A module has > ~50 ``Rule`` appends in distinct sub-domains
+- A module exceeds ~1000 lines, OR
+- A module has > ~50 ``Rule`` appends in distinct sub-domains
   that don't share constraining-equation infrastructure, OR
-* Phase 5g+ lands a substantial new construction class
+- Phase 5g+ lands a substantial new construction class
   (adjective inventory, clausal nominalisation, etc.) that
   more than doubles a module.
 
@@ -127,7 +127,7 @@ sub-split into ``extraction/ay.py`` /
 ### Where each Phase 5f rule lands
 
 | Rule (representative) | Source file |
-|------------------------|--------------|
+| ------------------------ | -------------- |
 | Cardinal NP-modifier (Commit 1) | nominal.py |
 | Ordinal NP-modifier (Commit 7) | nominal.py |
 | Predicative cardinal (Commit 4) | clause.py |
@@ -151,31 +151,31 @@ sub-split into ``extraction/ay.py`` /
 
 ### Where each pre-Phase-5f rule lands
 
-* **Phase 4 §7.1 V-initial S frames** → clause.py
-* **Phase 4 §7.2 negation** → negation.py
-* **Phase 4 §7.3 adverbial enclitics** → clitic.py
-* **Phase 4 §7.4 ay-inversion** → extraction.py
-* **Phase 4 §7.5 SUBJ-gapped clauses + relativization** → extraction.py
-* **Phase 4 §7.6 control complement + control wrap** → control.py
-* **Phase 4 §7.8 NP shells / dems / NP-poss / float / pre-NP partitive** → nominal.py (NP rules) + clitic.py (float)
-* **Phase 5b §7.8 follow-on partitive** → nominal.py
-* **Phase 5d Commit 3 post-modifier dem** → nominal.py
-* **Phase 5d Commit 5 non-pivot ay-fronting** → extraction.py
-* **Phase 5d Commit 6 possessive-linker RC** → extraction.py
-* **Phase 5d Commit 7 raising inside control** → control.py
-* **Phase 5e Commit 1 pa-OV / pa-DV ay-fronting** → extraction.py
-* **Phase 5e Commit 2 multi-GEN-NP ay-fronting** → extraction.py
-* **Phase 5e Commit 3 AdvP / PP categorial inventory + fronting** → extraction.py
-* **Phase 5e Commit 5 headless / free relatives** → extraction.py
-* **Phase 5e Commits 16 / 17 pre-modifier dem** → nominal.py
-* **Phase 5e Commit 18 / 19 dual-binding wrap** → extraction.py
-* **Phase 5e Commit 25 huwag MOOD lift** → negation.py
-* **Phase 5e Commit 26 parang comparative** → clause.py
+- **Phase 4 §7.1 V-initial S frames** → clause.py
+- **Phase 4 §7.2 negation** → negation.py
+- **Phase 4 §7.3 adverbial enclitics** → clitic.py
+- **Phase 4 §7.4 ay-inversion** → extraction.py
+- **Phase 4 §7.5 SUBJ-gapped clauses + relativization** → extraction.py
+- **Phase 4 §7.6 control complement + control wrap** → control.py
+- **Phase 4 §7.8 NP shells / dems / NP-poss / float / pre-NP partitive** → nominal.py (NP rules) + clitic.py (float)
+- **Phase 5b §7.8 follow-on partitive** → nominal.py
+- **Phase 5d Commit 3 post-modifier dem** → nominal.py
+- **Phase 5d Commit 5 non-pivot ay-fronting** → extraction.py
+- **Phase 5d Commit 6 possessive-linker RC** → extraction.py
+- **Phase 5d Commit 7 raising inside control** → control.py
+- **Phase 5e Commit 1 pa-OV / pa-DV ay-fronting** → extraction.py
+- **Phase 5e Commit 2 multi-GEN-NP ay-fronting** → extraction.py
+- **Phase 5e Commit 3 AdvP / PP categorial inventory + fronting** → extraction.py
+- **Phase 5e Commit 5 headless / free relatives** → extraction.py
+- **Phase 5e Commits 16 / 17 pre-modifier dem** → nominal.py
+- **Phase 5e Commit 18 / 19 dual-binding wrap** → extraction.py
+- **Phase 5e Commit 25 huwag MOOD lift** → negation.py
+- **Phase 5e Commit 26 parang comparative** → clause.py
 
 ### Rough rule counts (post-decomposition)
 
 | Module | Rule count | Notes |
-|--------|-----------:|-------|
+| -------- | -----------: | ------- |
 | nominal | ~95 | densest (most NP + Phase 5f Q-modifier rules) |
 | extraction | ~50 | S_GAP_* + ay-fronting + relativization |
 | control | ~20 | XCOMP + control wrap + raising |
@@ -274,21 +274,21 @@ etc.) in a follow-up. Initial migration keeps it as one file.
 
 ### Test-suite invariants (across the refactor)
 
-* **Zero pytest diff.** Every commit in the refactor PR must
+- **Zero pytest diff.** Every commit in the refactor PR must
   pass the full pytest suite with the same test count and
   outcomes as the previous commit. ``hatch run pytest -q`` ≡
   identical output.
-* **Zero coverage-corpus diff.** ``hatch run python
+- **Zero coverage-corpus diff.** ``hatch run python
   scripts/generate_coverage_corpus.py`` produces byte-identical
   output before and after.
-* **Zero ranker-output diff.** ``scripts/check_parses_unchanged.py``
+- **Zero ranker-output diff.** ``scripts/check_parses_unchanged.py``
   diffs the ranker's top-1 parse for each sentence in
   ``tests/tgllfg/data/coverage_corpus.yaml`` against the
   baseline pickle. Run as the first step (capture baseline) and
   again after the final commit (confirm zero diff). Spot-check
   with the per-construction test files to catch any
   regressions the corpus might miss.
-* **No new test files in this PR.** New per-module unit tests
+- **No new test files in this PR.** New per-module unit tests
   are nice-to-have but defer to follow-up commits; the
   refactor PR's purpose is reorganisation, not test
   expansion. Tests live under ``tests/tgllfg/`` (NOT under
@@ -296,35 +296,35 @@ etc.) in a follow-up. Initial migration keeps it as one file.
 
 ### Risk considerations
 
-* **Rule order matters.** The Earley parser doesn't depend on
+- **Rule order matters.** The Earley parser doesn't depend on
   registration order, but the ranker's tie-breaker may. The
   migration preserves order by appending in the registrar-call
   order in ``grammar.py``. The composer's ``register_rules``
   call sequence MUST match the order rules appeared in the
   pre-refactor ``grammar.py``.
 
-* **Cross-module references.** Some constants are shared:
-  * ``_cardinal_case_marker`` (used in Commits 1 / 7 / 15 / 20
+- **Cross-module references.** Some constants are shared:
+  - ``_cardinal_case_marker`` (used in Commits 1 / 7 / 15 / 20
     / 21 / 22) → move to a private module-level constant in
     ``nominal.py`` (the only consumer); export if other
     modules surface a need.
-  * ``_eqs`` helper (if it exists) → keep in ``grammar.py`` or
+  - ``_eqs`` helper (if it exists) → keep in ``grammar.py`` or
     move to a private utilities module ``cfg/_helpers.py``.
 
-* **Comment provenance.** The current per-section comments
+- **Comment provenance.** The current per-section comments
   (``# --- Phase 5f Commit N: ...``) are dense linguistic
   references. They MUST migrate intact to the new modules —
   the per-construction analysis-choices.md cross-references
   the line numbers indirectly via section headers, so the
   comments need to move with the rules.
 
-* **Bisect compatibility.** The per-module commits should be
+- **Bisect compatibility.** The per-module commits should be
   bisectable: each commit is a self-contained "extract module
   X" step that leaves the test suite passing. A tester running
   ``git bisect`` on a regression after the refactor should be
   able to pinpoint a specific extraction.
 
-* **nominal.py size.** This module gets the largest share
+- **nominal.py size.** This module gets the largest share
   (~95 rules). If it grows past ~1000 lines as new
   constructions land in Phase 5g+ (adjectives), revisit a
   sub-split (``nominal/det.py``, ``nominal/quant.py``,
@@ -335,33 +335,33 @@ etc.) in a follow-up. Initial migration keeps it as one file.
 The plan §18 entry suggests "between Phase 5f close and Phase
 5g start as a dedicated refactor PR." Concretely:
 
-* **Triggering condition:** when the user is ready to start
+- **Triggering condition:** when the user is ready to start
   Phase 5g and wants the grammar module reorganised first.
-* **Effort estimate:** ~4-6 hours of focused work.
+- **Effort estimate:** ~4-6 hours of focused work.
   Mechanically straightforward (no rule semantics change), but
   requires careful per-commit testing to maintain the zero-diff
   invariant.
-* **Effort level:** ``high`` per the §19 table — pure
+- **Effort level:** ``high`` per the §19 table — pure
   engineering, but touches every Phase 4 / 5 / 5b-5f rule, so
   needs care.
 
 ## Out of scope (for the refactor PR)
 
-* **Rule semantics changes.** No new rules, no rule shape
+- **Rule semantics changes.** No new rules, no rule shape
   changes, no constraining-equation changes. Pure
   reorganisation.
-* **Test additions.** New per-module unit tests are a follow-up
+- **Test additions.** New per-module unit tests are a follow-up
   PR; the refactor PR's purpose is reorganisation.
-* **Plan §18 cleanup.** Other Phase 5f deferrals (hyphenation
+- **Plan §18 cleanup.** Other Phase 5f deferrals (hyphenation
   tokenizer, productive paradigms, ``(lemma, pos)`` polysemy,
   digit tokenization, NP-from-N projection) are separate;
   not bundled.
-* **Renames of existing rule features.** No renaming of
+- **Renames of existing rule features.** No renaming of
   ``CARDINAL=YES`` to ``IS_CARDINAL`` etc. Keep all surface
   feature names as-is.
-* **Type-hint upgrades.** No type-hint changes beyond what
+- **Type-hint upgrades.** No type-hint changes beyond what
   module split requires.
-* **Sub-splitting nominal.py** along det/quant/adj boundaries
+- **Sub-splitting nominal.py** along det/quant/adj boundaries
   — defer until size demands it.
 
 ## Part 3: split `data/tgl/roots.yaml` by POS
@@ -386,8 +386,8 @@ region.
 
 Two new files replace ``data/tgl/roots.yaml``:
 
-* ``data/tgl/verbs.yaml`` — 204 ``pos: VERB`` entries.
-* ``data/tgl/nouns.yaml`` — 207 ``pos: NOUN`` entries.
+- ``data/tgl/verbs.yaml`` — 204 ``pos: VERB`` entries.
+- ``data/tgl/nouns.yaml`` — 207 ``pos: NOUN`` entries.
 
 The morph loader in ``src/tgllfg/morph/loader.py`` reads both and
 concatenates verbs first, then nouns — preserving the exact
@@ -409,14 +409,14 @@ Within each section, source order is initially preserved (Commit
 11). Commit 12 then reorders entries by citation form, with the
 following carve-outs:
 
-* Verbs file: a Control verbs section (``CTRL_CLASS`` carriers,
+- Verbs file: a Control verbs section (``CTRL_CLASS`` carriers,
   3 entries) is preserved as a labelled section because the
   grammar treats them specially via the control-wrap rules in
   ``cfg/control.py``. All other verbs are merged into a single
   alphabetical list. The historical ``# --- Phase 2C bulk verb
   scale-up A/B/C ---`` section markers are dropped (commit-
   organised, not linguistic).
-* Nouns file: the SEM_CLASS-driven sections stay separate
+- Nouns file: the SEM_CLASS-driven sections stay separate
   (frequency / percentage / fraction / clock-time / time-of-day /
   months / days / seasons / collective numerals) because the
   grammar gates rules on those features. Within each, alphabetical
@@ -428,9 +428,9 @@ following carve-outs:
 
 Same as parts 1-2 — every commit must show:
 
-* ``hatch run pytest -q`` — identical pass count.
-* ``hatch run check`` — clean.
-* ``hatch run python scripts/check_parses_unchanged.py --check``
+- ``hatch run pytest -q`` — identical pass count.
+- ``hatch run check`` — clean.
+- ``hatch run python scripts/check_parses_unchanged.py --check``
   — zero ranker-output diff against the Commit 1 baseline.
 
 Reordering risk is real for verbs because paradigm-cell
@@ -444,36 +444,36 @@ parse baseline is the authoritative check.
 Implementation landed in 13 commits on
 ``feature/refactor-grammar-package`` (2026-05-04):
 
-* Commit 1 — baseline ``parses.baseline.pkl`` capture +
+- Commit 1 — baseline ``parses.baseline.pkl`` capture +
   ``scripts/check_parses_unchanged.py`` (the zero-ranker-diff gate
   used on every subsequent commit).
-* Commit 2 — extract ``cfg/_helpers.py`` (``_eqs`` +
+- Commit 2 — extract ``cfg/_helpers.py`` (``_eqs`` +
   ``_VERB_PERCOLATION``).
-* Commits 3-9 — extract the seven per-area rule modules in this
+- Commits 3-9 — extract the seven per-area rule modules in this
   order: ``nominal`` (originally ``np_rules``, 95 rules) →
   ``clause`` (20 rules) → ``clitic`` (5 rules) → ``negation`` (2
   rules) → ``extraction`` (46 rules) → ``control`` (30 rules) →
   ``discourse`` (3 rules). ``grammar.py`` shrinks from 3250 lines
   to 85 (composer + ``Rule`` dataclass + module docstring).
-* Commit 10 — drop the ``_rules`` suffix from filenames
+- Commit 10 — drop the ``_rules`` suffix from filenames
   (``np_rules.py`` → ``nominal.py``; the others have their bare
   stem).
-* Commit 11 — split ``data/tgl/roots.yaml`` into ``verbs.yaml``
+- Commit 11 — split ``data/tgl/roots.yaml`` into ``verbs.yaml``
   (204 entries) + ``nouns.yaml`` (207 entries); pulled the
   misplaced "Phase 4 §7.6: control verbs" sub-section back into
   the verb file; rename plan doc to
   ``docs/refactor-grammar-and-roots.md``.
-* Commit 12 — reorder per-POS yaml entries: alphabetical for
+- Commit 12 — reorder per-POS yaml entries: alphabetical for
   most sections; chronological for months / days; by-N for
   collective numerals; canonical-first preserved for seasons.
-* Commit 13 — sweep stale ``cfg/grammar.py`` references
+- Commit 13 — sweep stale ``cfg/grammar.py`` references
   throughout docs / tests / source comments to point at the new
   per-area modules.
 
 Final ``cfg/`` layout:
 
 | File | Lines | Rules |
-|---|---:|---:|
+| --- | ---: | ---: |
 | ``__init__.py`` | 26 | (re-exports) |
 | ``_helpers.py`` | 40 | (utilities) |
 | ``compile.py`` | 209 | (unchanged) |
@@ -489,9 +489,9 @@ Final ``cfg/`` layout:
 
 Final ``data/tgl/`` lexicon split:
 
-* ``verbs.yaml`` — 204 entries (3 control verbs + 201
+- ``verbs.yaml`` — 204 entries (3 control verbs + 201
   inflectional, alphabetical).
-* ``nouns.yaml`` — 207 entries across 11 sections (common /
+- ``nouns.yaml`` — 207 entries across 11 sections (common /
   frequency-multiplier / percentage / fractions / clock-time /
   time-of-day / months / days / seasons / collective-numerals /
   proper-name placeholders).

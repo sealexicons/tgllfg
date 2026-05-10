@@ -51,6 +51,9 @@ Thumbs.db
 # excluded from the repo for binary-size and licensing reasons.
 data/tgl/dictionaries/
 
+# Other reference documents
+docs/references/
+
 # Per-project plan files (live alongside the repo for convenience but
 # remain personal working notes, not project artifacts).
 .claude/plans/

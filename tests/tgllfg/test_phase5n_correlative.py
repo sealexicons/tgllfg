@@ -29,6 +29,7 @@ from tgllfg.core.pipeline import parse_text
 class TestThreeRuleVariants:
     """Each of the three Phase 5l Commit 14 rule shapes parses."""
 
+    @pytest.mark.slow
     def test_rule_a_canonical_comma_kundi_pati(self) -> None:
         # S , kundi pati S — canonical 5-daughter shape
         parses = parse_text(
@@ -36,6 +37,7 @@ class TestThreeRuleVariants:
         )
         assert len(parses) >= 1
 
+    @pytest.mark.slow
     def test_rule_b_no_comma_kundi_pati(self) -> None:
         # S kundi pati S — 4-daughter shape (no comma)
         parses = parse_text(
@@ -54,6 +56,7 @@ class TestThreeRuleVariants:
 # === Cross-V correlative ==================================================
 
 
+@pytest.mark.slow
 class TestCrossVerbCorrelative:
     """Different verbs in each conjunct (asymmetric V choice)."""
 
@@ -74,6 +77,7 @@ class TestCorrelMatrixFlag:
     """The matrix S carries ``CORREL=YES`` and ``COORD=BUT_NOT``;
     both conjuncts are members of the matrix's CONJUNCTS set."""
 
+    @pytest.mark.slow
     def test_canonical_carries_correl_flag(self) -> None:
         parses = parse_text(
             "Hindi lang kumain si Maria, kundi pati kumain si Juan."

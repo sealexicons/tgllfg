@@ -156,6 +156,16 @@ def _find_verbless_anchor(
         # subordinators, etc.), never predicate heads.
         if all(ma.pos == "PART" for ma in cands):
             continue
+        # Phase 5n.B Commit 17: ``hindi`` now has both a
+        # PART[POLARITY=NEG] entry (negation, particles.yaml) and
+        # a PRON[INTERJ=YES, ANSWER=NEG] entry (answer-clause,
+        # pronouns.yaml). The all-PART check above no longer
+        # skips it because of the PRON reading. Explicitly skip
+        # tokens with any negation-PART reading so the verbless-
+        # neg-hoist logic still finds the post-NEG anchor (the
+        # ADJ / NOUN / ADP predicate head).
+        if _is_neg_part(cands):
+            continue
         return i
     return None
 
@@ -178,6 +188,81 @@ def _is_pron_clitic(cands: list[MorphAnalysis]) -> bool:
 def _is_adv_clitic(cands: list[MorphAnalysis]) -> bool:
     return any(
         ma.feats.get("is_clitic") is True and ma.pos == "PART" for ma in cands
+    )
+
+
+def _is_sentence_initial_particle(cands: list[MorphAnalysis]) -> bool:
+    """``PART[DISCOURSE_POS=SENTENCE_INITIAL]`` — discourse-initial
+    modal / mood / connective particles (``siguro`` / ``marahil`` /
+    ``samakatuwid`` / ...). Phase 5n.B Commit 18 added a polysemous
+    second entry for ``siguro`` / ``marahil`` with
+    ``CLITIC_CLASS=2P`` to admit clause-medial usage; the placement
+    engine skips reordering when this reading is present at a
+    pre-anchor position so the original sentence-initial
+    interpretation is preserved."""
+    return any(
+        ma.feats.get("DISCOURSE_POS") == "SENTENCE_INITIAL" for ma in cands
+    )
+
+
+def _is_post_wh_pron_man(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is the EVEN-particle ``man``
+    immediately preceded by a wh-PRON.
+
+    Phase 5n.B Commit 22 (§18 L46 + L102): the productive
+    negative-indefinite construction ``wh + man`` (``ano man``,
+    ``sino man``) requires the ``man`` 2P-clitic to stay
+    adjacent to its preceding wh-PRON so the ``PRON →
+    PRON[WH=YES] PART[man,ADV=EVEN]`` indef-builder rule can
+    fire. Without this exception, the standard 2P-clitic
+    placement moves ``man`` to clause-final, breaking the
+    adjacency. Suppressing the move here keeps ``ano man`` /
+    ``sino man`` parseable; the lexicalized contracted forms
+    (``anuman`` / ``sinuman``) are unaffected (single tokens,
+    no placement question)."""
+    if i == 0:
+        return False
+    if not any(
+        ma.feats.get("LEMMA") == "man" and ma.pos == "PART"
+        for ma in analyses[i]
+    ):
+        return False
+    prev = analyses[i - 1]
+    return any(
+        ma.pos == "PRON" and ma.feats.get("WH") == "YES" for ma in prev
+    )
+
+
+def _is_post_discourse_head_din(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is the ALSO-clitic ``din`` immediately
+    preceded by a multi-word discourse-connective head
+    (``gayon`` / ``ganon``).
+
+    Phase 5n.B Commit 23 (§18 L103): the multi-word discourse
+    connectives ``gayon din`` / ``ganon din`` "likewise" require
+    ``din`` to stay adjacent to its head so the Phase 5m C11
+    grammar rule (``PART → PART PART`` matching gayon/ganon +
+    din) can fire. Without this exception, the standard 2P-
+    clitic placement moves ``din`` to clause-final, breaking
+    the adjacency. Suppressing the move here keeps the multi-
+    word connectives parseable; the bare ``din`` 2P-clitic
+    (``Kumain ako rin/din.``) is unaffected — the gate is
+    narrowly scoped to the post-gayon / post-ganon position."""
+    if i == 0:
+        return False
+    if not any(
+        ma.feats.get("LEMMA") == "din" and ma.pos == "PART"
+        for ma in analyses[i]
+    ):
+        return False
+    prev = analyses[i - 1]
+    return any(
+        ma.feats.get("LEMMA") in ("gayon", "ganon") and ma.pos == "PART"
+        for ma in prev
     )
 
 
@@ -709,6 +794,25 @@ def reorder_clitics(
     adv_indices = [
         i for i, cands in enumerate(analyses)
         if i != anchor_idx and _is_adv_clitic(cands)
+        # Phase 5n.B Commit 18: ``siguro`` / ``marahil`` have a
+        # polysemous CLITIC_CLASS=2P entry plus the original
+        # DISCOURSE_POS=SENTENCE_INITIAL entry. Skip reordering when
+        # the token is BEFORE the anchor and has a sentence-initial
+        # reading — preserves the clause-initial parse path.
+        and not (
+            i < anchor_idx
+            and _is_sentence_initial_particle(cands)
+        )
+        # Phase 5n.B Commit 22: ``man`` immediately after a wh-PRON
+        # forms the productive negative-indef builder (``ano man``,
+        # ``sino man``). Keep adjacent to the wh-PRON so the
+        # ``PRON → PRON PART[man,ADV=EVEN]`` rule can fire.
+        and not _is_post_wh_pron_man(analyses, i)
+        # Phase 5n.B Commit 23: ``din`` immediately after ``gayon``
+        # or ``ganon`` forms the multi-word discourse connective
+        # ``gayon din`` / ``ganon din``. Keep adjacent so the Phase
+        # 5m C11 grammar rule can fire.
+        and not _is_post_discourse_head_din(analyses, i)
     ]
     if not pron_indices and not adv_indices:
         return analyses

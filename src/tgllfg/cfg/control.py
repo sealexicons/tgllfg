@@ -556,6 +556,67 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 Q_TYPE) =c 'WH'",
         ],
     ))
+    # Phase 5n.B Commit 11 (§18 L54): yes/no indirect-Q variants.
+    #
+    # ``Alam ko kung kumain ang aso.``     "I know whether the dog
+    #                                       ate." (bare declarative)
+    # ``Alam ko kung pumunta si Maria.``   "I know whether Maria
+    #                                       went." (bare declarative)
+    # ``Alam ko kung kumain ba ang aso.``  (with ``ba`` — Q_TYPE=
+    #                                       YES_NO inner)
+    #
+    # Closes §18 L54. Two sibling rules cover the yes/no path:
+    #
+    #   (a) ``S_INTERROG_COMP → PART[COMP_TYPE=INTERROG]
+    #       S[Q_TYPE=YES_NO]`` — with-ba case (the Phase 5i Commit
+    #       5 ba-rule sets Q_TYPE=YES_NO on the matrix S).
+    #   (b) ``S_INTERROG_COMP → PART[COMP_TYPE=INTERROG] S`` with
+    #       ``¬ (↓2 Q_TYPE)`` — bare declarative case (no Q_TYPE).
+    #
+    # Both lift ``COMP_TYPE=YES_NO_INTERROG`` to mark the matrix
+    # COMP as a yes/no interrogative complement. The wh case
+    # remains routed through the existing ``S[Q_TYPE=WH]`` rule
+    # above with ``COMP_TYPE=INTERROG``.
+    #
+    # **Why two rules**: the unifier's ``NegEquation`` semantics
+    # (per ``fstruct/unify.py:_eval_neg_equation``) is strict:
+    # ``≠`` fails when the lhs path is undefined. A single rule
+    # with ``(↓2 Q_TYPE) ≠ 'WH'`` would correctly admit
+    # Q_TYPE=YES_NO but reject the bare-declarative path (no
+    # Q_TYPE). Splitting into two rules — ``=c 'YES_NO'`` and
+    # ``¬ (↓2 Q_TYPE)`` — covers both cleanly. The three
+    # S_INTERROG_COMP rules (wh / yes-no-with-ba / bare-decl) are
+    # mutually exclusive on Q_TYPE.
+
+    # (a) yes/no with ``ba`` — inner S has Q_TYPE=YES_NO.
+    # COMP_TYPE='INTERROG' keeps the matrix wrap's
+    # ``(↓3 COMP_TYPE) =c 'INTERROG'`` constraint satisfied;
+    # ``COMP_QTYPE='YES_NO'`` tags the COMP for downstream
+    # consumers needing the yes/no vs wh distinction.
+    rules.append(Rule(
+        "S_INTERROG_COMP",
+        ["PART[COMP_TYPE=INTERROG]", "S[Q_TYPE=YES_NO]"],
+        [
+            "(↑) = ↓2",
+            "(↑ COMP_TYPE) = 'INTERROG'",
+            "(↑ COMP_QTYPE) = 'YES_NO'",
+            "(↓1 COMP_TYPE) =c 'INTERROG'",
+            "(↓2 Q_TYPE) =c 'YES_NO'",
+        ],
+    ))
+
+    # (b) bare declarative — inner S has no Q_TYPE.
+    rules.append(Rule(
+        "S_INTERROG_COMP",
+        ["PART[COMP_TYPE=INTERROG]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ COMP_TYPE) = 'INTERROG'",
+            "(↑ COMP_QTYPE) = 'YES_NO'",
+            "(↓1 COMP_TYPE) =c 'INTERROG'",
+            "¬ (↓2 Q_TYPE)",
+        ],
+    ))
     # Matrix wrap: ``Alam ko + S_INTERROG_COMP``. The GEN-NP
     # experiencer is matrix SUBJ (the same NOM→SUBJ deviation as
     # PSYCH); the indirect-Q clause is matrix COMP. No linker
@@ -578,6 +639,58 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓3 COMP_TYPE) =c 'INTERROG'",
         ),
     ))
+
+    # --- Phase 5n.B Commit 13: declarative-COMP factive embedding ---
+    #
+    # ``Alam kong kumain ang aso.`` "I know that the dog ate."
+    # ``Akala kong kumain si Maria.`` "I thought Maria ate."
+    # ``Naaalala kong pumunta siya.`` "I remember that she went."
+    #
+    # Closes §18.1 deferral L56. Parallel to the S_INTERROG_COMP
+    # path above (Phase 5i C8 + 5n.B C11) but with a declarative
+    # complement: no ``kung`` complementizer, just a bound linker
+    # (``-ng`` after vowel-final hosts; ``na`` after consonant-
+    # final hosts) between the GEN-NP experiencer and the embedded
+    # S. The embedded S is a complete declarative clause with its
+    # own SUBJ.
+    #
+    # ``S_DECL_COMP`` is a sibling non-terminal to S_INTERROG_COMP.
+    # The wrapper rule lifts the inner S's f-structure and adds
+    # ``COMP_TYPE='DECLARATIVE'`` (parallel to S_INTERROG_COMP's
+    # ``COMP_TYPE='INTERROG'``); the matrix wrap then constrains
+    # ``(↓4 COMP_TYPE) =c 'DECLARATIVE'`` to lock the path.
+    #
+    # **Disambiguation from INTERROG-COMP**: the linker token
+    # ``PART[LINK=NG/NA]`` vs the kung complementizer
+    # ``PART[COMP_TYPE=INTERROG]`` sit in different positions and
+    # don't overlap (kung has no LINK feat; -ng / na have no
+    # COMP_TYPE feat). The two paths are mutually exclusive.
+    rules.append(Rule(
+        "S_DECL_COMP",
+        ["S"],
+        [
+            "(↑) = ↓1",
+            "(↑ COMP_TYPE) = 'DECLARATIVE'",
+        ],
+    ))
+
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            [
+                "V[CTRL_CLASS=KNOW]",
+                "NP[CASE=GEN]",
+                f"PART[LINK={link}]",
+                "S_DECL_COMP",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ COMP) = ↓4",
+                "(↓1 CTRL_CLASS) =c 'KNOW'",
+                f"(↓3 LINK) =c '{link}'",
+                "(↓4 COMP_TYPE) =c 'DECLARATIVE'",
+            ),
+        ))
 
     # --- Phase 5n.A Commit 29: ASK-class reported-Q (§18 L90.2 + L92) ---
     #

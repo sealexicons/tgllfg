@@ -150,6 +150,7 @@ class TestIndirectQWithWhNCleft:
     """Inner clause uses Phase 5i Commit 6's wh-N-cleft
     (``aling N ang ...``). COMP.WH_LEMMA = ``alin``."""
 
+    @pytest.mark.slow
     def test_aling_inside(self) -> None:
         parses = parse_text("Alam ko kung aling bata ang kumain.")
         assert len(parses) >= 1
@@ -188,26 +189,36 @@ class TestIndirectQUnderNegation:
         assert len(parses) >= 1
 
 
-# === Q_TYPE = WH constraint on inner ==================================
+# === Q_TYPE constraint on inner — wh / yes/no / bare-decl ==============
 
 
-class TestIndirectQRequiresWhInner:
-    """The S_INTERROG_COMP rule constrains ``(↓2 Q_TYPE) =c
-    'WH'``. Declarative kung-clauses (no wh inside) and yes/no
-    kung-clauses (Q_TYPE=YES_NO) do NOT match."""
+class TestIndirectQAdmitsAllInnerTypes:
+    """Phase 5n.B Commit 11 (§18 L54) extends S_INTERROG_COMP to
+    admit yes/no and bare-declarative inner clauses (alongside
+    the wh-Q variant). The matrix wrap fires uniformly with
+    ``COMP_TYPE=INTERROG``; the inner Q-type is distinguished by
+    ``COMP_QTYPE`` (set to YES_NO for the yes/no path, absent
+    for the wh path)."""
 
-    def test_declarative_kung_clause_rejected(self) -> None:
-        # ``Alam ko kung kumain ang aso.`` — no wh inside.
-        # The current rule rejects this; yes/no-indirect-Q is a
-        # future commit. 0 parses expected.
+    def test_declarative_kung_clause_admitted(self) -> None:
+        # ``Alam ko kung kumain ang aso.`` — bare declarative
+        # inside; Phase 5n.B Commit 11 (b) rule fires.
         parses = parse_text("Alam ko kung kumain ang aso.")
-        assert len(parses) == 0
+        know_parses = [
+            p for p in parses
+            if (p[1].feats.get("PRED") or "").startswith("KNOW")
+        ]
+        assert len(know_parses) >= 1
 
-    def test_yes_no_inside_kung_rejected(self) -> None:
-        # ``Alam ko kung kumain ka ba.`` — yes/no Q inside.
-        # 0 parses (Q_TYPE=YES_NO doesn't match Q_TYPE=WH).
+    def test_yes_no_inside_kung_admitted(self) -> None:
+        # ``Alam ko kung kumain ka ba.`` — yes/no Q inside; Phase
+        # 5n.B Commit 11 (a) rule fires (with-ba case).
         parses = parse_text("Alam ko kung kumain ka ba.")
-        assert len(parses) == 0
+        know_parses = [
+            p for p in parses
+            if (p[1].feats.get("PRED") or "").startswith("KNOW")
+        ]
+        assert len(know_parses) >= 1
 
 
 # === KNOW-class doesn't cross-fire on PSYCH ===========================

@@ -162,6 +162,37 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.B Commit 19: clause-final indefinite AdvP -------
+    #
+    # ``Pupunta ako kahit saan.``    "I'll go anywhere."
+    # ``Kakain ako kahit kailan.``   "I'll eat anytime."
+    # ``Kumain ako kahit saan.``     "I ate anywhere."
+    #
+    # Closes §18.1 deferral L99. Sibling to the Phase 5f C5
+    # FREQUENCY AdvP rule above; same daughter shape (S + AdvP),
+    # but gated to indefinite ADVs via ``(↓2 INDEF) =c 'YES'``.
+    # Indefinite ADVs are produced by the Phase 5m C8 IndefADV
+    # rule (``ADV → PART[LEMMA=kahit] ADV[WH=YES]``), which
+    # composes ``kahit`` with the wh-ADV inventory (saan / kailan
+    # / paano / bakit). The INDEF=YES gate keeps the plain-LOCATION
+    # / plain-TIME deferrals (Phase 5f C5 closing note) in force —
+    # only the kahit-X variants are admitted here.
+    #
+    # **Scope note**: per plan-of-record §4.2 Commit 19 the target
+    # surfaces are LOCATION (kahit saan) and TIME (kahit kailan).
+    # The INDEF=YES gate also admits MANNER (kahit paano) and
+    # REASON (kahit bakit) which are equally natural and pose no
+    # additional ambiguity risk.
+    rules.append(Rule(
+        "S",
+        ["S", "AdvP"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 INDEF) =c 'YES'",
+        ],
+    ))
+
 
     # --- Phase 5m Commit 4: sentence-initial sentential ADV --------
     #
@@ -273,5 +304,53 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ DISCOURSE_POS) = 'SENTENCE_INITIAL'",
             "(↑ LEMMA) = 'bukod_dito'",
             "(↓1 LEMMA) =c 'bukod'",
+        ],
+    ))
+
+
+    # --- Phase 5n.B Commit 24: narrative-opener idiom (§18 L30) -------
+    #
+    # ``Nang isang beses, may isang manok.``  "Once, there was a
+    #                                          chicken."
+    # ``Nang isang beses, kumain ang bata.``  "Once, the child ate."
+    #
+    # Closes §18.1 deferral L30 (and §18.2 lines 204-215). A fixed-
+    # phrase idiom: the literal sequence ``Nang isang beses ,``
+    # introduces a narrative clause-initial frame, followed by an
+    # arbitrary inner clause. The matrix carries
+    # ``DISCOURSE='NARRATIVE_OPENER'``; the inner clause's
+    # f-structure is lifted via ``(↑) = ↓4``.
+    #
+    # The ``isang`` cardinal modifier collapses with ``beses`` into
+    # a matrix-N daughter (Phase 5f cardinal-internal-modifier rule
+    # builds ``isa + -ng + beses → N``); we constrain ↓2 to be that
+    # specific N via ``LEMMA=beses`` and ``SEM_CLASS=FREQUENCY``
+    # (both set by the existing ``beses`` lex entry). The literal-
+    # lemma constraint on ↓1 (``LEMMA=nang``) and the comma-PUNCT
+    # constraint on ↓3 lock the rule to the exact idiomatic surface.
+    #
+    # Non-idiom uses of nang / isa / beses (e.g., ``Kumain ako nang
+    # marami``, ``isang aklat``) continue to parse via their
+    # existing rules — the 4-daughter N-required pattern doesn't
+    # match those shapes.
+    rules.append(Rule(
+        "S",
+        [
+            "PART",       # nang
+            "NUM",        # isa
+            "PART",       # -ng linker
+            "N",          # beses
+            "PUNCT[PUNCT_CLASS=COMMA]",  # ,
+            "S",          # inner clause
+        ],
+        [
+            "(↑) = ↓6",
+            "(↑ DISCOURSE) = 'NARRATIVE_OPENER'",
+            "(↓1 LEMMA) =c 'nang'",
+            "(↓2 CARDINAL_VALUE) =c '1'",
+            "(↓3 LINK) =c 'NG'",
+            "(↓4 LEMMA) =c 'beses'",
+            "(↓4 SEM_CLASS) =c 'FREQUENCY'",
+            "(↓5 PUNCT_CLASS) =c 'COMMA'",
         ],
     ))

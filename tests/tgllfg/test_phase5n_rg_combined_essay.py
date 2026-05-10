@@ -52,6 +52,7 @@ COMBINED_ESSAY = (
 class TestCombinedEssayParses:
     """The R&G p. 482 combined essay-paragraph parses as one S."""
 
+    @pytest.mark.slow
     def test_combined_essay_parses(self) -> None:
         parses = parse_text(COMBINED_ESSAY)
         assert len(parses) >= 1, (

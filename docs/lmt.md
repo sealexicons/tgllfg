@@ -25,13 +25,15 @@ parsed f-structure, and surfaces typed diagnostics.
 
 ## Components
 
+<!-- markdownlint-disable MD013 -->
 | Module | Purpose |
-|---|---|
+| --- | --- |
 | `tgllfg/lmt/common.py` | Data types (`Role`, `IntrinsicFeatures`, `IntrinsicClassification`, `MappingResult`); typed-GF helpers (`obj_theta`, `obl_theta`); the canonical-intrinsic table (`default_intrinsics`); lex-entry bridges (`intrinsics_for`, `stipulated_gfs_for`). |
 | `tgllfg/lmt/principles.py` | The seven BK 1989 principles as named pure functions, plus the orchestrator `compute_mapping` and the `ROLE_HIERARCHY` ordering. |
 | `tgllfg/lmt/oblique_classifier.py` | Post-solve mutation that reclassifies `ADJUNCT` members with `CASE=DAT` into typed `OBL-θ` slots based on the engine's mapping. |
 | `tgllfg/lmt/check.py` | Pipeline-facing `lmt_check` / `apply_lmt_with_check`. Locates the matrix lex entry, runs engine + classifier, surfaces diagnostics. |
 | `tgllfg/lmt/legacy.py` | Phase 4 voice-aware heuristic. Used only when `find_matrix_lex_entry` returns `None` (defensive fallback). |
+<!-- markdownlint-enable MD013 -->
 
 ## Data types
 
@@ -41,14 +43,16 @@ The role inventory unions the plan §8.1 core (`AGENT`, `PATIENT`,
 `THEME`, `GOAL`, `RECIPIENT`, `BENEFICIARY`, `INSTRUMENT`,
 `LOCATION`, `EXPERIENCER`, `STIMULUS`) with Tagalog augmentation:
 
+<!-- markdownlint-disable MD013 -->
 | Augmentation role | Why it's separate |
-|---|---|
+| --- | --- |
 | `ACTOR` | Intransitive AV pivot. Synonymous with `AGENT` thematically but kept distinct for the synthesizer-fallback path that emits `[ACTOR]` when transitivity is unspecified. |
 | `CONVEYED` | IV-pivot for transferred entities (`itinapon`, `ibinili`, `isinulat`). Behaves like `THEME` in the truth table but voice-marked differently. |
 | `CAUSER` / `CAUSEE` | §7.7 causative frames. `CAUSER` is agent-like, `CAUSEE` patient-like in monoclausal `pa-` direct causatives; in biclausal `magpa-` the causee surfaces as the embedded XCOMP's SUBJ. |
 | `EVENT` | The caused event in `magpa-` indirect causatives; XCOMP-bound (off the truth table). |
 | `COMPLEMENT` | Open-complement target for §7.6 control verbs (`gusto`, `payag`, `pilit`, `utos`); XCOMP-bound. |
 | `REASON` | Pivot of the `ika-` reason applicative (Phase 5c §7.7 follow-on, Commit 4). Patterns like `INSTRUMENT` — non-volitional, secondary-topic capable; default intrinsic `(r=None, o=False)`. |
+<!-- markdownlint-enable MD013 -->
 
 `Role.gf_suffix` returns the short tag used in typed-GF strings —
 `LOC` (LOCATION), `BEN` (BENEFICIARY), `INSTR` (INSTRUMENT), `RECIP`
@@ -60,7 +64,7 @@ The `[±r, ±o]` feature pair as ternary booleans. `True` =
 `+`, `False` = `-`, `None` = unspecified. The truth table:
 
 | `(r, o)` | Maps to |
-|---|---|
+| --- | --- |
 | `(False, False)` | `SUBJ` |
 | `(False, True)` | `OBJ` (bare) |
 | `(True, True)` | `OBJ-θ` (typed: `OBJ-<role.gf_suffix>`) |
@@ -102,11 +106,11 @@ pipeline is explicit.
 
 Fills remaining `None` slots:
 
-* If no role currently has `o=False`, the highest-hierarchy role
+- If no role currently has `o=False`, the highest-hierarchy role
   with `o=None` gets `o=False` (so step 4 has at least one
   SUBJ candidate).
-* All remaining `None` `o` components default to `True`.
-* All remaining `None` `r` components default to `True`.
+- All remaining `None` `o` components default to `True`.
+- All remaining `None` `r` components default to `True`.
 
 For lex entries that already supply complete profiles, this is a
 no-op.
@@ -149,7 +153,7 @@ output, and notes on the f-structure interaction.
 
 ### AV transitive (`kumain ng isda`)
 
-```
+```text
 profile: AGENT (-r, -o), PATIENT (-r, +o)
 mapping: AGENT → SUBJ, PATIENT → OBJ
 ```
@@ -159,7 +163,7 @@ on both slots; no diagnostic fires.
 
 ### OV transitive (`kinain ng aso ang isda`)
 
-```
+```text
 profile: AGENT (+r, +o), PATIENT (-r, -o)
 mapping: AGENT → OBJ-AGENT, PATIENT → SUBJ
 ```
@@ -170,7 +174,7 @@ as informational `lmt-mismatch`.
 
 ### DV transitive (`sinulatan ng bata ang ina`)
 
-```
+```text
 profile: AGENT (+r, +o), RECIPIENT (-r, -o)
 mapping: AGENT → OBJ-AGENT, RECIPIENT → SUBJ
 ```
@@ -180,21 +184,21 @@ sulat's pivot in DV); the legacy heuristic hard-coded `GOAL`.
 
 ### IV-CONVEY (`itinapon ng bata ang basura`)
 
-```
+```text
 profile: AGENT (+r, +o), CONVEYED (-r, -o)
 mapping: AGENT → OBJ-AGENT, CONVEYED → SUBJ
 ```
 
 ### IV-BEN applicative (`ipinaggawa niya ako`)
 
-```
+```text
 profile: AGENT (+r, +o), BENEFICIARY (-r, -o)
 mapping: AGENT → OBJ-AGENT, BENEFICIARY → SUBJ
 ```
 
 ### `pa-` direct causative (`pinakain niya ang bata`)
 
-```
+```text
 profile: CAUSER (+r, +o), CAUSEE (-r, -o)
 mapping: CAUSER → OBJ-CAUSER, CAUSEE → SUBJ
 ```
@@ -204,7 +208,7 @@ PRED (`CAUSE-EAT <SUBJ, OBJ>`).
 
 ### `magpa-` indirect causative (`nagpakain ang nanay na kumain`)
 
-```
+```text
 profile: CAUSER (-r, -o), EVENT (None, None)
 stipulated: {EVENT: XCOMP}
 mapping: CAUSER → SUBJ, EVENT → XCOMP
@@ -216,7 +220,7 @@ inside the embedded XCOMP's SUBJ slot.
 
 ### Psych control (`gusto kong kumain`)
 
-```
+```text
 profile: EXPERIENCER (-r, -o), COMPLEMENT (None, None)
 stipulated: {COMPLEMENT: XCOMP}
 mapping: EXPERIENCER → SUBJ, COMPLEMENT → XCOMP
@@ -228,7 +232,7 @@ the matrix SUBJ, encoded via the `[-r, -o]` intrinsic profile.
 
 ### Intransitive control (`pumayag siyang kumain`)
 
-```
+```text
 profile: AGENT (-r, -o), COMPLEMENT (None, None)
 stipulated: {COMPLEMENT: XCOMP}
 mapping: AGENT → SUBJ, COMPLEMENT → XCOMP
@@ -236,7 +240,7 @@ mapping: AGENT → SUBJ, COMPLEMENT → XCOMP
 
 ### Transitive control — OV (`pinilit siyang kumain`)
 
-```
+```text
 profile: AGENT (+r, +o), PATIENT (-r, -o), COMPLEMENT (None, None)
 stipulated: {COMPLEMENT: XCOMP}
 mapping: AGENT → OBJ-AGENT, PATIENT → SUBJ, COMPLEMENT → XCOMP
@@ -255,7 +259,7 @@ clause against its own lex's intrinsic profile.
 
 ### AV motion with sa-locative (`lumakad ang bata sa palengke`)
 
-```
+```text
 profile: ACTOR (-r, -o), LOCATION (+r, -o)
 mapping: ACTOR → SUBJ, LOCATION → OBL-LOC
 ```
@@ -305,12 +309,14 @@ surface as `lmt-mismatch` diagnostics.
 
 ## Diagnostic policy
 
+<!-- markdownlint-disable MD013 -->
 | Source | Kind | Routing |
-|---|---|---|
+| --- | --- | --- |
 | Engine predicts SUBJ but f-structure has none | `subject-condition-failed` | **Blocking** |
 | Engine emits `lmt-biuniqueness-violated` | `lmt-biuniqueness-violated` | **Blocking** |
 | Engine emits `subject-condition-failed` (lex-only) | dropped | Structural well-formedness catches the case where the f-structure also lacks SUBJ |
 | GF-set differences (OBJ ⇄ OBJ-θ, OBL classification leftovers) | `lmt-mismatch` | Informational (in `NON_BLOCKING_KINDS`) |
+<!-- markdownlint-enable MD013 -->
 
 `lmt-mismatch` carries `detail = {"expected": [...], "actual":
 [...], "pred": "..."}` so downstream consumers can inspect the
@@ -318,7 +324,7 @@ specific GFs that disagreed.
 
 ## Open issues / Phase 5b stretch
 
-* **Multi-GEN-NP applicative / causative frames (lifted in
+- **Multi-GEN-NP applicative / causative frames (lifted in
   Phase 5b).** Phase 5 left these out — a 3-arg `ipinaggawa niya
   ng silya ang kapatid niya` ("he made a chair for his sibling")
   has `AGENT [+r, +o]`, `PATIENT [+r, +o]`, `BENEFICIARY [-r,
@@ -328,7 +334,7 @@ specific GFs that disagreed.
   had handled the profiles all along (see
   `tests/tgllfg/test_lmt_voice_mappings.py::TestMultiGenFrames`).
 
-* **Multi-OBL semantic disambiguation (lifted in Phase 5c).**
+- **Multi-OBL semantic disambiguation (lifted in Phase 5c).**
   Phase 5 matched positionally when two `OBL-θ` roles competed
   for two sa-NPs. Phase 5c §8 follow-on Commit 6 augments the
   classifier with lemma-keyed semantic-class lookup: PLACE
@@ -338,7 +344,7 @@ specific GFs that disagreed.
   preference applies (e.g., OBL-INSTR slots, unknown lemmas, or
   same-class sa-NPs).
 
-* **Embedded-clause LMT (lifted in Phase 5b).** Phase 5
+- **Embedded-clause LMT (lifted in Phase 5b).** Phase 5
   `lmt_check` only validated the matrix f-structure. Phase 5b
   extended :func:`apply_lmt_with_check` to recursively walk
   ``XCOMP`` / ``COMP`` slots and run :func:`lmt_check` on each
@@ -346,7 +352,7 @@ specific GFs that disagreed.
   diagnostics carry the f-structure path (e.g., ``XCOMP`` /
   ``XCOMP.XCOMP``) so the user can see where they came from.
 
-* **OBJ-θ in the grammar (lifted in Phase 5b).** The Phase 4
+- **OBJ-θ in the grammar (lifted in Phase 5b).** The Phase 4
   grammar emitted bare `OBJ` for non-AV ng-non-pivots while the
   engine produced `OBJ-θ` — informational `lmt-mismatch` flagged
   the divergence. Phase 5b aligned the grammar to emit typed
@@ -355,8 +361,8 @@ specific GFs that disagreed.
 
 ## See also
 
-* `docs/analysis-choices.md` — Phase 5 §8 LMT entry for the
+- `docs/analysis-choices.md` — Phase 5 §8 LMT entry for the
   analytical decisions (OBJ-θ upgrade, role-inventory augmentation,
   OBL-X classification approach, diagnostic promotion policy).
-* `tests/tgllfg/test_lmt_voice_mappings.py` — the per-voice
+- `tests/tgllfg/test_lmt_voice_mappings.py` — the per-voice
   regression corpus.

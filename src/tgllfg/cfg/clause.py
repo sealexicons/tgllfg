@@ -663,6 +663,160 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5n.B Commit 1: predicative-Q clause (§18 L42 + L52) ---
+    #
+    # ``Marami ang aklat.``       "There are many books."
+    # ``Konti ang isda.``         "There are few fish."
+    # ``Mas marami ang aklat.``   "There are more books." (Phase 5h
+    #                              Commit 7 mas-wrapped Q)
+    #
+    # Closes §18 deferrals L42 (``Mas marami ang aklat.`` —
+    # surfaced during Phase 5h Commit 7 implementation, pinned at
+    # 0-parse) and L52 (``Marami ang aklat.`` — non-wh predicative-
+    # Q identified during Phase 5i Commit 9 implementation). Per
+    # plan ``tgllfg-phase-5n.md`` §4.1 Commit 1 the two resolutions
+    # land in a single rule.
+    #
+    # Structurally analogous to the Phase 5g Commit 3 predicative-
+    # ADJ rule (S → ADJ[PREDICATIVE=YES] NP[CASE=NOM]) and the
+    # Phase 5f Commit 4 predicative-cardinal rule (S → NUM
+    # [CARDINAL=YES] NP[CASE=NOM]) above; the same shape with a
+    # vague-Q head as the matrix predicate.
+    #
+    # F-structure shape:
+    #
+    #   PRED        = 'Q-PREDICATIVE <SUBJ>'
+    #   Q_LEMMA     = the Q's lemma (``marami``, ``konti``,
+    #                  ``kakaunti``, ``ilan`` — both polysemy
+    #                  partners — and ``karamihan``)
+    #   QUANT       = the Q's QUANT (MANY / FEW / VERY_FEW / MOST)
+    #   PREDICATIVE = 'YES'
+    #   SUBJ        = the NOM-NP / NOM-PRON pivot
+    #
+    # The PRED template ``Q-PREDICATIVE <SUBJ>`` parallels other
+    # predicative rules' literal-PRED convention (``ADJ <SUBJ>`` for
+    # Phase 5g predicative-adj; ``CARDINAL <SUBJ>`` for Phase 5f
+    # predicative-cardinal; ``LIKE <SUBJ, OBJ>`` for Phase 5e
+    # parang). The Q's identity rides on the matrix via ``Q_LEMMA``
+    # rather than plain ``LEMMA`` (parallel to ``ADJ_LEMMA`` for
+    # the predicative-adj rule).
+    #
+    # **Disambiguation against the Phase 5i Commit 9 (a) wh-Q cleft**.
+    # The wh-Q cleft fires on ``Q[WH=YES]`` (e.g., ``Magkano ang
+    # isda?``, ``Ilan ang aklat?`` wh reading) and produces ``PRED='WH
+    # <SUBJ>'`` / ``Q_TYPE=WH``. The new predicative-Q rule must NOT
+    # fire on wh-Qs to avoid ambiguity blowup with two distinct PREDs
+    # on the same surface. The ``¬ (↓1 WH)`` neg-existential constraint
+    # enforces this — the rule fires only when WH is undefined on
+    # the Q daughter (i.e., bare ``marami`` / ``konti`` and the
+    # mas-wrapped / pinaka-wrapped variants, which inherit
+    # ``(↑) = ↓2`` from the wrapped vague-Q with no WH feat).
+    #
+    # **Polysemy partners**: ``ilan`` is double-lex'd as Q[WH=YES,
+    # QUANT=HOW_MANY, VAGUE=YES] (wh use) and Q[QUANT=FEW,
+    # VAGUE=YES] (non-wh "a few" reading). The wh entry feeds the
+    # cleft; the FEW entry feeds this predicative-Q rule.
+    #
+    # **Belt-and-braces** ``(↓1 VAGUE) =c 'YES'`` mirrors the Phase
+    # 5h Commit 7 wrapper convention — closes the same kind of
+    # non-conflict-matcher leak by constraining the f-structure
+    # daughter explicitly (rather than relying on the c-tree
+    # category-pattern alone).
+    #
+    # Cardinal contrast — ``Tatlo ang aklat.`` parses via the Phase
+    # 5f Commit 4 predicative-cardinal rule (NUM[CARDINAL=YES] head),
+    # which has no VAGUE feat and so does not fire this rule. Each
+    # predicative shape (vague-Q, cardinal, ADJ) has its own clause
+    # rule with disjoint head categories.
+    rules.append(Rule(
+        "S",
+        ["Q[VAGUE=YES]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'Q-PREDICATIVE <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_LEMMA) = ↓1 LEMMA",
+            "(↑ QUANT) = ↓1 QUANT",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 VAGUE) =c 'YES'",
+            "¬ (↓1 WH)",
+        ],
+    ))
+
+
+    # --- Phase 5n.B Commit 2: predicative-N clause (§18 L43) ---
+    #
+    # ``Doktor ako.``                "I am a doctor."
+    # ``Estudyante si Maria.``       "Maria is a student."
+    # ``Lider siya.``                "He is the leader."
+    # ``Mas maraming aklat ako.``    "I have more books." (lit.
+    #                                 "more-books I am")
+    # ``Maliit na bahay ito.``       "This is a small house."
+    #
+    # Closes §18 deferral L43 (``Mas maraming aklat ako.`` —
+    # surfaced during Phase 5h Commit 9 corpus expansion). Tagalog
+    # admits bare-NP predication with no copula; the predicate
+    # is an N-headed phrase (bare N or N modified by ADJ / Q via
+    # the existing N-level modifier rules) and the SUBJ is a
+    # NOM-NP / NOM-PRON pivot.
+    #
+    # Structurally analogous to the Phase 5g Commit 3 predicative-
+    # ADJ rule (S → ADJ[PREDICATIVE=YES] NP[CASE=NOM]), the Phase
+    # 5f Commit 4 predicative-cardinal rule (S → NUM[CARDINAL=YES]
+    # NP[CASE=NOM]), and the Phase 5n.B Commit 1 predicative-Q
+    # rule above (S → Q[VAGUE=YES] NP[CASE=NOM]). Each predicative
+    # head category has its own clause rule; this one covers the
+    # N-headed predicate.
+    #
+    # F-structure shape:
+    #
+    #   PRED        = 'BE-N <SUBJ>'
+    #   N_LEMMA     = the predicate noun's lemma (the "what" of
+    #                  the predication — ``doktor`` / ``estudyante``
+    #                  / ``lider`` / ``aklat`` / ...)
+    #   PREDICATIVE = 'YES'
+    #   SUBJ        = the NOM-NP / NOM-PRON pivot
+    #
+    # The PRED template ``BE-N <SUBJ>`` parallels other predicative
+    # rules' literal-PRED convention. Tagalog does not formally
+    # distinguish equational ("I am a doctor") from possessive
+    # ("I have more books") readings of bare-NP predication —
+    # both surface identically and the disambiguation is semantic /
+    # contextual. The single PRED template captures both.
+    #
+    # **Gating**: the rule fires only on N-headed left daughters
+    # without ``WH`` to avoid colliding with the Phase 5i Commit 6
+    # wh-N cleft (S → N[WH=YES] NP[CASE=NOM]). The ``¬ (↓1 WH)``
+    # neg-existential constraint excludes ``Aling bata si Maria?``
+    # (which fires the wh-cleft) from also producing a predicative-
+    # N parse with PRED='BE-N <SUBJ>'.
+    #
+    # **N category**: the left daughter is the bare ``N``
+    # category (not ``NP``), which matches both:
+    #   - bare nouns (``doktor`` directly out of the morph analyzer);
+    #   - N-modified-by-ADJ via Phase 5g Commit 2 (``magandang
+    #     bata``);
+    #   - N-modified-by-Q via Phase 5f Commit 15 N-level companion
+    #     rule (``maraming aklat``);
+    #   - N-modified by mas-comparative via the wrapper percolation
+    #     (``mas maraming aklat``).
+    # NPs (DET-marked, CASE-bearing) do NOT match — a left-edge
+    # ``ang doktor`` does not fire this rule, which keeps two-NP
+    # equational surfaces (``Ang lalaki ang doktor.``) out of
+    # scope. Those remain as out-of-scope until corpus pressure
+    # surfaces them.
+    rules.append(Rule(
+        "S",
+        ["N", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BE-N <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ N_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "¬ (↓1 WH)",
+        ],
+    ))
+
+
     # --- Phase 5h Commit 6: equative two-NP standard frames -----
     #
     # ``Kasingganda ni Maria si Ana.``
@@ -775,6 +929,46 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
             "↓3 ∈ (↑ ADJUNCT)",
             "(↓3 ROLE) = 'EQUATIVE_STANDARD'",
+        ],
+    ))
+
+    # --- Phase 5n.B Commit 6: equative DAT-standard variant (§18 L44) ---
+    #
+    # ``Kasingganda kay Maria si Ana.``
+    #     "Ana is as beautiful as Maria." (DAT-standard, formal /
+    #     marginal alternative to the GEN-standard canonical form)
+    #
+    # Closes §18 L44 (carried forward from Phase 5h §9.2 / Commit
+    # 6 audit). The GEN-standard form (``Kasingganda ni Maria si
+    # Ana``) is canonical per S&O 1972 / R&B 1986 and lives in
+    # the third equative rule above. The DAT-standard alternative
+    # (``Kasingganda kay Maria si Ana``) is marginal in modern
+    # Tagalog but attested; this fourth rule lands it.
+    #
+    # Mirrors the GEN-standard rule (``ADJ NP[CASE=GEN]
+    # NP[CASE=NOM]``) one-for-one with ``CASE=DAT`` substituting
+    # for ``CASE=GEN``. Daughter 2 is the standard; daughter 3 is
+    # the comparee (NOM-marked SUBJ pivot). Same ``ADJUNCT`` set
+    # membership + ``ROLE: EQUATIVE_STANDARD`` convention as the
+    # other equative rules above so consumers walking the
+    # ADJUNCT set find the comparison standard uniformly across
+    # GEN / NOM / DAT shapes.
+    rules.append(Rule(
+        "S",
+        [
+            "ADJ[COMP_DEGREE=EQUATIVE]",
+            "NP[CASE=DAT]",
+            "NP[CASE=NOM]",
+        ],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 ROLE) = 'EQUATIVE_STANDARD'",
         ],
     ))
 
@@ -956,6 +1150,56 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5n.B Commit 10: bare-form colloquial indirect-Q (§18 L53) ---
+    #
+    # ``Sino kumain.``               "Who ate?" (bare-form)
+    # ``Alam ko kung sino kumain.``  "I know who ate." (canonical
+    #                                  embedded use)
+    #
+    # Closes §18 L53. The colloquial Tagalog indirect-Q drops
+    # ``ang`` from the canonical wh-cleft form (``Sino ang
+    # kumain.``); the residue is a wh-PRON-as-SUBJ + bare-V
+    # construction.
+    #
+    # Same f-structure shape as the Phase 5i Commit 2 wh-cleft
+    # but the inner clause is the bare V-headed S (rather than a
+    # headless-RC NP[CASE=NOM]). The rule fires on AV
+    # intransitive verbs only — multi-argument frames (transitive
+    # AV / OV) require additional rule shapes that are deferred
+    # to a future commit if corpus pressure surfaces them.
+    #
+    # **Order**: PRON + V is the colloquial bare-form order
+    # (mirroring the canonical wh-cleft surface `wh-PRON [ang] V`
+    # with `ang` dropped). The PRON is the matrix SUBJ; the V
+    # daughter contributes PRED / VOICE / ASPECT / MOOD via
+    # ``(↑) = ↓2`` share.
+    #
+    # **Over-firing risk**: the rule admits standalone bare-form
+    # surfaces (``Sino kumain.``) outside indirect-Q contexts as
+    # well. Per §18 L53 detail, the bare-form is colloquially
+    # well-formed in standalone use too; the rule is left open.
+    # The ``Q_TYPE=WH`` lift correctly marks it as a wh-Q surface.
+    #
+    # Composition with Phase 5i Commit 8 indirect-Q wrap
+    # (``Alam ko kung S[Q_TYPE=WH]``): the bare-form S produces
+    # ``Q_TYPE=WH`` on its f-structure, satisfying the
+    # S_INTERROG_COMP rule's constraint. So embedded bare-form
+    # composes seamlessly.
+    rules.append(Rule(
+        "S",
+        ["PRON[WH=YES, CASE=NOM]", "V[VOICE=AV]"],
+        [
+            "(↑) = ↓2",
+            "(↑ SUBJ) = ↓1",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↓1 WH) =c 'YES'",
+            "(↓2 VOICE) =c 'AV'",
+            "¬ (↓1 INDEF)",
+        ],
+    ))
+
+
     # --- Phase 5i Commit 6: cleft-style wh-N pivot --------------
     #
     # ``Aling bata ang kumain?``       "Which child ate?"
@@ -1029,6 +1273,37 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.B Commit 14: predicative-Q cleft + trailing DAT-NP ADJUNCT
+    #
+    # ``Magkano ito sa kanya?``        "How much is it for him?"
+    # ``Magkano ang isda sa palengke?``"How much is the fish at the market?"
+    # ``Magkano ang aklat sa bata?``   "How much is the book for the child?"
+    #
+    # Closes §18 deferral L58. Sibling to the (a) wh-Q cleft above
+    # (Phase 5i Commit 9 (a)); same f-structure shape with an
+    # additional DAT-NP daughter folded into the matrix's
+    # ADJUNCT set. The DAT-NP carries locative ("at the market")
+    # or dative ("for him") semantics — the existing PRED='WH
+    # <SUBJ>' covers both readings; the lexical content of the
+    # adjunct disambiguates downstream.
+    #
+    # Although ``Magkano`` is the primary motivation (per plan-of-
+    # record §4.2 Commit 14), the rule generalises to any
+    # Q[WH=YES] with a trailing DAT-NP — the structural pattern
+    # is identical for ``Ilan`` and other amount/count wh-Qs.
+    rules.append(Rule(
+        "S",
+        ["Q[WH=YES]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↓1 WH) =c 'YES'",
+            "↓3 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+
     # (b) DAT-pivot cleft for ``kanino``:
     #
     #   ``Kanino ang aklat?``     "Whose is the book?" / "To whom
@@ -1052,6 +1327,94 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ WH_LEMMA) = ↓1 LEMMA",
             "(↓1 WH) =c 'YES'",
             "(↓1 CASE) =c 'DAT'",
+        ],
+    ))
+
+    # --- Phase 5n.B Commit 15: kanino + possessed-N + NOM-NP cleft ---
+    #
+    # ``Kanino kaibigan ito?``      "Whose friend is this?"
+    # ``Kanino aklat ito?``         "Whose book is this?"
+    # ``Kanino bahay ang malaki?``  "Whose house is the big one?"
+    #
+    # Closes §18.1 deferral L59. Sibling to the Phase 5i C9 (b)
+    # bare DAT-cleft above; same DAT-PRON pivot but with an
+    # additional N daughter as the predicate-N's possessed head.
+    # The NOM-NP is the matrix SUBJ (the possessee referent).
+    #
+    # F-structure shape mirrors the Phase 5n.B C2 predicative-N
+    # rule (PRED='BE-N <SUBJ>', N_LEMMA from the predicate-N) plus
+    # a POSS slot carrying the wh-PRON possessor and the wh
+    # markers (Q_TYPE, WH_LEMMA) for downstream consumers.
+    #
+    # **Structural disambiguation from bare DAT-cleft**: the
+    # 3-daughter shape (with the N between PRON and NOM-NP) is
+    # distinct from the 2-daughter bare cleft above
+    # (``Kanino ang aklat?``) — different daughter counts; no
+    # cross-firing.
+    #
+    # **Coexistence with Phase 5i C9 wh-fronting** (the
+    # ``S → PRON[WH=YES, CASE=DAT] S`` rule below): the wh-fronting
+    # rule also fires on this surface (``kaibigan ito`` parses as
+    # an S via the C2 predicative-N rule). Both parses surface,
+    # with different f-structures — the wh-fronting parse holds
+    # kanino in ADJUNCT; this rule's parse holds it in POSS. Tests
+    # accept ``>= 1`` parse with the POSS-slot shape.
+    rules.append(Rule(
+        "S",
+        ["PRON[WH=YES, CASE=DAT]", "N", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BE-N <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ N_LEMMA) = ↓2 LEMMA",
+            "(↑ POSS) = ↓1",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 WH) =c 'YES'",
+            "(↓1 CASE) =c 'DAT'",
+        ],
+    ))
+
+    # --- Phase 5n.B Commit 9: sa-DAT NP cleft (§18 L51) -----------
+    #
+    # ``Sa kanino ang aklat?``  "Whose is the book?" (with
+    #                            explicit DAT marker)
+    # ``Sa sino ang aklat?``    (variant — DAT marker over the
+    #                            NOM-by-default wh-PRON)
+    #
+    # Closes §18 L51. Phase 5i Commit 9 (b) above admits the bare
+    # DAT-PRON pivot (``Kanino ang aklat?`` — bare ``kanino``); the
+    # explicit DAT-marked NP form (``Sa kanino ang aklat?``) is
+    # structurally an NP[CASE=DAT, WH=YES] built by the Phase 5i
+    # Commit 3 in-situ wh-PRON-in-DAT-NP shell ``NP[CASE=DAT] →
+    # ADP[CASE=DAT] PRON[WH=YES]`` — distinct from the bare-PRON
+    # NP shell (Phase 4 §7.8 ``NP[CASE=DAT] → PRON[CASE=DAT]``)
+    # which lifts only the PRON's f-structure unchanged.
+    #
+    # **Disambiguation gate** ``(↓1 PRED) =c 'WH-PRO'``: the
+    # Phase 5i Commit 3 explicit-DAT path explicitly sets ``(↑
+    # PRED) = 'WH-PRO'`` on the matrix NP; the Phase 4 §7.8
+    # bare-PRON path uses ``(↑) = ↓1`` share, exposing the bare
+    # PRON's f-structure (which has no ``PRED`` — wh-PRON lex
+    # entries don't declare one). Constraining ``PRED='WH-PRO'``
+    # gates this rule to the explicit-DAT path only — the
+    # bare-PRON cleft (Phase 5i Commit 9 (b)) remains the canonical
+    # path for ``Kanino ang aklat?``.
+    #
+    # Same f-structure shape as the bare-PRON cleft above —
+    # ``PRED='WH <SUBJ>'`` / ``Q_TYPE=WH`` / ``WH_LEMMA``
+    # propagated from the matrix NP.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=DAT, WH=YES]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 WH_LEMMA",
+            "(↓1 WH) =c 'YES'",
+            "(↓1 CASE) =c 'DAT'",
+            "(↓1 PRED) =c 'WH-PRO'",
         ],
     ))
 
@@ -1711,32 +2074,73 @@ def register_rules(rules: list[Rule]) -> None:
 
     # === Phase 5m Commit 3: fragment-answer interjection clause ==========
     #
-    # ``Opo.`` "Yes (polite)", ``Oho.`` "Yes (colloquial-polite)" form
-    # one-word answer clauses. PRON entries with ``INTERJ=YES`` and
-    # ``ANSWER=AFFIRM`` (only ``opo`` / ``oho`` today) project as a
-    # complete matrix S via this rule; the PRON's REGISTER (POLITE /
-    # COLLOQUIAL_POLITE) percolates to the matrix S via ``(↑) = ↓1``.
+    # ``Opo.`` "Yes (polite)", ``Oho.`` "Yes (colloquial-polite)",
+    # ``Oo.`` "Yes", ``Hindi.`` "No" form one-word answer clauses.
+    # PRON entries with ``INTERJ=YES`` and ``ANSWER`` ∈ {AFFIRM, NEG}
+    # project as a complete matrix S via this rule; PRON-level feats
+    # (REGISTER, ANSWER) percolate to the matrix S via ``(↑) = ↓1``.
     # CLAUSE_TYPE=FRAGMENT_ANSWER tags the matrix as a fragment-answer
     # clause for downstream consumers.
     #
     # Constraints:
     # * ``(↑ INTERJ) =c 'YES'`` — gates to interjection PRONs only.
-    # * ``(↑ ANSWER) =c 'AFFIRM'`` — gates to affirmative answers
-    #   (no negative-answer PRON entries today; ``hindi`` is PART
-    #   [POLARITY=NEG], not PRON. ``Hindi.`` / ``Oo.`` standalone
-    #   answers stay deferred — see Phase 5n debt).
+    # * ``(↑ ANSWER)`` (existential) — requires the ANSWER feat to
+    #   be defined (no value constraint), admitting both AFFIRM
+    #   (Oo / Opo / Oho) and NEG (Hindi). Phase 5n.B Commit 17
+    #   relaxed this from ``=c 'AFFIRM'`` when adding the
+    #   PRON entries for ``oo`` / ``hindi`` (§18 L97).
     #
-    # This rule does NOT cover ``Salamat po.`` (NOUN fragment +
-    # politeness clitic) — that needs a separate noun-fragment matrix
-    # rule that is a more general analytical commitment, deferred to
-    # Phase 5n.
+    # ``hindi`` has both a PART[POLARITY=NEG] entry (particles.yaml,
+    # used by the hindi-wrap negation rule) and a PRON[INTERJ=YES,
+    # ANSWER=NEG] entry (pronouns.yaml, used by this rule). Rule
+    # context disambiguates: the fragment-answer rule fires on a
+    # single PRON with no trailing tokens, while hindi-wrap requires
+    # an inner S as second daughter — no cross-firing.
+    #
+    # The Phase 5n.B C16 NOUN-host fragment path (``Salamat po.``)
+    # uses CLAUSE_TYPE=FRAGMENT (no ANSWER) via ``S → N`` gated on
+    # FRAGMENT_HOST=YES — distinct path, distinct CLAUSE_TYPE value.
     rules.append(Rule(
         "S",
         ["PRON"],
         [
             "(↑) = ↓1",
             "(↑ INTERJ) =c 'YES'",
-            "(↑ ANSWER) =c 'AFFIRM'",
+            "(↑ ANSWER)",
             "(↑ CLAUSE_TYPE) = 'FRAGMENT_ANSWER'",
+        ],
+    ))
+
+    # === Phase 5n.B Commit 16: fragment-host NOUN clause (§18 L96) ========
+    #
+    # ``Salamat.``       "Thanks."
+    # ``Salamat po.``    "Thank you (polite)."
+    # ``Salamat ho.``    "Thank you (colloquial-polite)."
+    #
+    # Closes §18.1 deferral L96 for the NOUN-host path. A single-
+    # token NOUN gated by ``FRAGMENT_HOST=YES`` projects as a
+    # complete matrix S; the existing Phase 5m clitic-absorption
+    # rule (``S → S PART[CLITIC_CLASS=2P, REGISTER=POLITE]``,
+    # ``cfg/clitic.py``) then attaches the 2P-politeness clitic
+    # (po / ho / opo / oho) on top.
+    #
+    # ``FRAGMENT_HOST=YES`` is set in the lex (``data/tgl/nouns.yaml``
+    # — currently only ``salamat`` qualifies) so the rule does NOT
+    # admit arbitrary noun fragments (``Aklat.`` does not parse as
+    # a one-word S — the constraint gates it out). Future fragment-
+    # host nouns (greetings, exclamations) can opt in via the same
+    # lex feat without grammar changes.
+    #
+    # Companion deferral L97 (standalone ``Oo.`` / ``Hindi.`` answer
+    # clauses) closes in Phase 5n.B Commit 17 — that path uses new
+    # ``PRON[INTERJ=YES, ANSWER=...]`` lex entries plus an
+    # ``S_ANSWER`` rule, distinct from this NOUN-host path.
+    rules.append(Rule(
+        "S",
+        ["N"],
+        [
+            "(↑) = ↓1",
+            "(↑ FRAGMENT_HOST) =c 'YES'",
+            "(↑ CLAUSE_TYPE) = 'FRAGMENT'",
         ],
     ))

@@ -202,16 +202,22 @@ class TestAdverbialWhWithNegation:
     def test_negation_plus_wh_adv(
         self, sentence: str, wh_lemma: str
     ) -> None:
+        # Phase 5n.B Commit 8 (§18 L50): the in-situ Q_TYPE post-
+        # pass also writes Q_TYPE=WH on the in-situ-wh-ADV reading
+        # (where the wh-ADV sits inside the matrix's ADJ set,
+        # without grammar-rule-level WH_LEMMA lift). Filter to the
+        # wh-fronting parse by requiring WH_LEMMA on the matrix.
         parses = parse_text(sentence)
-        wh_parses = [
-            p for p in parses if p[1].feats.get("Q_TYPE") == "WH"
+        wh_fronted_parses = [
+            p for p in parses
+            if p[1].feats.get("Q_TYPE") == "WH"
+            and p[1].feats.get("WH_LEMMA") == wh_lemma
         ]
-        assert len(wh_parses) >= 1, (
+        assert len(wh_fronted_parses) >= 1, (
             f"expected at least one wh-fronting parse for {sentence!r}; "
             f"got {[p[1].feats for p in parses]}"
         )
-        _ct, fs, _astr, _diags = wh_parses[0]
-        assert fs.feats.get("WH_LEMMA") == wh_lemma
+        _ct, fs, _astr, _diags = wh_fronted_parses[0]
         assert fs.feats.get("POLARITY") == "NEG"
 
 

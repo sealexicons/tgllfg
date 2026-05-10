@@ -200,25 +200,44 @@ class TestBareRaisingLmtClean:
             assert not any(d.kind == "lmt-mismatch" for d in diags)
 
 
-# === Regression: linked-raising still produces exactly 1 parse ==========
+# === Regression: linked-raising still produces exactly 1 raising parse ====
 
 
 class TestLinkedRaisingNoDuplicate:
     """The bare-raising rule must NOT cross-fire on mukha / baka
     sentences. With CTRL_CLASS=RAISING vs RAISING_BARE split, the
     matcher can't conflate the two; mukhang / bakang produce
-    exactly one full parse."""
+    exactly one raising parse.
+
+    Phase 5n.B Commit 2 (§18 L43) added a predicative-N clause
+    rule that admits structural ambiguity: ``mukhang kumakain``
+    composes as N-headed RC (``mukha`` modified by ``kumakain``)
+    + NOM-NP, producing a (pragmatically odd but grammatically
+    composed) BE-N parse alongside the canonical raising parse.
+    The disambiguation is semantic; the ranker preserves the
+    raising parse at top-1 while the BE-N parse is admitted as
+    structural ambiguity. This test now checks for exactly one
+    *raising* parse (filtering by PRED) rather than exactly one
+    parse total."""
 
     def test_mukhang_one_parse(self) -> None:
         rs = parse_text("Mukhang kumakain ang bata.", n_best=10)
-        assert len(rs) == 1, (
-            f"expected exactly 1 parse for 'Mukhang kumakain ang "
-            f"bata.', got {len(rs)}"
+        seem_parses = [
+            r for r in rs
+            if (r[1].feats.get("PRED") or "").startswith("SEEM ")
+        ]
+        assert len(seem_parses) == 1, (
+            f"expected exactly 1 SEEM-raising parse for 'Mukhang "
+            f"kumakain ang bata.', got {len(seem_parses)}"
         )
 
     def test_bakang_one_parse(self) -> None:
         rs = parse_text("Bakang umuwi ang bata.", n_best=10)
-        assert len(rs) == 1
+        might_parses = [
+            r for r in rs
+            if (r[1].feats.get("PRED") or "").startswith("MIGHT ")
+        ]
+        assert len(might_parses) == 1
 
 
 # === Disambiguation: yata stays a clitic, not a raising verb ============

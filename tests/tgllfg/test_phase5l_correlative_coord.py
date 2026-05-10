@@ -37,12 +37,15 @@ rather than pinning parse counts.
 
 from __future__ import annotations
 
+import pytest
+
 from tgllfg.core.pipeline import parse_text
 
 
 # === Canonical form (comma + kundi + pati) ============================
 
 
+@pytest.mark.slow
 class TestCanonicalCorrelative:
     """``Hindi lang X, kundi pati Y.`` is the canonical form.
     Matrix has COORD=BUT_NOT, CORREL=YES; CONJUNCTS contains
@@ -81,6 +84,7 @@ class TestCanonicalCorrelative:
 # === No-comma variant ================================================
 
 
+@pytest.mark.slow
 class TestNoCommaCorrelative:
     """``Hindi lang X kundi pati Y.`` (no comma) — same matrix
     feats as canonical."""
@@ -133,6 +137,7 @@ class TestNoPatiCorrelative:
 # === C-tree shapes ====================================================
 
 
+@pytest.mark.slow
 class TestCTreeShapes:
     """The three rules produce three distinct daughter counts."""
 
@@ -208,6 +213,7 @@ class TestNoSpuriousCorrelative:
 # === First clause-internal absorption ================================
 
 
+@pytest.mark.slow
 class TestFirstClauseFeatures:
     """The first conjunct of the canonical correlative is a
     ``hindi X lang`` clause — POLARITY=NEG should land on its

@@ -367,7 +367,33 @@ def register_rules(rules: list[Rule]) -> None:
     # Commit 7 to support the canonical ``Pumunta siya, kaya
     # kumain ako.`` form; symmetric for AND / OR / BUT / SO so the
     # parametrization stays uniform.
+    # Phase 5n.B Commit 7 (§18 L45): Alternative-Q matrix lift for the
+    # OR-clausal variant. ``S → S PART[o] S`` syntactically supports
+    # the Alternative-Q reading (``Tao ka o multo?`` "Are you a person
+    # or a ghost?"); per §18 L45 the rule lifts ``Q_TYPE=ALTERNATIVE``
+    # unconditionally onto the matrix as the structural marker for
+    # the Alt-Q construction. Pragmatic disambiguation between
+    # declarative OR-coord and Alternative-Q (signalled in writing by
+    # ``?`` and in speech by intonation) is left to downstream
+    # consumers — both readings share the same syntactic structure
+    # in Tagalog. The matrix continues to carry ``COORD=OR`` so
+    # existing OR-coord consumers are unaffected.
     for coord in _BINARY_CLAUSAL_COORDS:
+        no_comma_eqs = [
+            "↓1 ∈ (↑ CONJUNCTS)",
+            "↓3 ∈ (↑ CONJUNCTS)",
+            f"(↑ COORD) = '{coord}'",
+            f"(↓2 COORD) =c '{coord}'",
+        ]
+        comma_eqs = [
+            "↓1 ∈ (↑ CONJUNCTS)",
+            "↓4 ∈ (↑ CONJUNCTS)",
+            f"(↑ COORD) = '{coord}'",
+            f"(↓3 COORD) =c '{coord}'",
+        ]
+        if coord == "OR":
+            no_comma_eqs.append("(↑ Q_TYPE) = 'ALTERNATIVE'")
+            comma_eqs.append("(↑ Q_TYPE) = 'ALTERNATIVE'")
         # No-comma form (3 daughters).
         rules.append(Rule(
             "S",
@@ -376,12 +402,7 @@ def register_rules(rules: list[Rule]) -> None:
                 f"PART[COORD={coord}]",
                 "S",
             ],
-            [
-                "↓1 ∈ (↑ CONJUNCTS)",
-                "↓3 ∈ (↑ CONJUNCTS)",
-                f"(↑ COORD) = '{coord}'",
-                f"(↓2 COORD) =c '{coord}'",
-            ],
+            no_comma_eqs,
         ))
         # Comma-marked form (4 daughters; PUNCT syncategorematic).
         rules.append(Rule(
@@ -392,12 +413,7 @@ def register_rules(rules: list[Rule]) -> None:
                 f"PART[COORD={coord}]",
                 "S",
             ],
-            [
-                "↓1 ∈ (↑ CONJUNCTS)",
-                "↓4 ∈ (↑ CONJUNCTS)",
-                f"(↑ COORD) = '{coord}'",
-                f"(↓3 COORD) =c '{coord}'",
-            ],
+            comma_eqs,
         ))
 
     # --- Phase 5k Commit 7: `kaya naman` two-word consequence ---

@@ -154,33 +154,13 @@ class TestKahitConcessivePreserved:
 # === Deferred: IndefADV (kahit saan / kahit kailan) ===================
 
 
-DEFERRED_INDEF_ADV = [
-    "Pumupunta siya kahit saan.",
-    "Pumupunta siya kahit kailan.",
-    "Tumakbo ang bata kahit saan.",
-]
-
-
-class TestIndefAdvDeferred:
-    """``kahit saan`` / ``kahit kailan`` as clause-level adjuncts
-    do NOT parse today: the IndefADV rule produces an
-    ADV[INDEF=YES, ADV_TYPE=LOCATION/TIME], but there is no
-    clause-final LOCATION/TIME ADV adjunct rule (Phase 5f Commit 5
-    covers ADV_TYPE=FREQUENCY only).
-
-    Pinned at 0-parse so closure during Phase 5n debt-clearing
-    (when the missing clause-level ADV adjunct rules land) flips
-    the test detectably.
-    """
-
-    @pytest.mark.parametrize("sent", DEFERRED_INDEF_ADV)
-    def test_zero_parse_today(self, sent: str) -> None:
-        parses = parse_text(sent)
-        assert len(parses) == 0, (
-            f"{sent!r} parsed unexpectedly — clause-level "
-            f"LOCATION/TIME ADV adjunct rule has landed; close "
-            f"the deferral and un-pin this test."
-        )
+# ``kahit saan`` / ``kahit kailan`` as clause-level ADJUNCTs
+# closed in Phase 5n.B Commit 19 (§18 L99). The C19 change
+# added a sibling rule to the Phase 5f C5 FREQUENCY AdvP rule
+# gated on INDEF=YES, admitting all kahit-X indef ADVs as
+# clause-final ADJUNCTs. See
+# ``test_phase5n_b_kahit_advp_adjunct.py`` for the closure
+# tests.
 
 
 # === Deferred: kahit-X as fronted SUBJ ================================

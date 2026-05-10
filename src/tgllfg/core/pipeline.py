@@ -27,6 +27,7 @@ Phase 4 §7.9 robustness:
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 
 from ..cfg import Grammar
@@ -156,6 +157,12 @@ def parse_text_with_fragments(
         diagnostics = list(result.diagnostics) + wf_diags + lmt_diags
         if any(d.is_blocking() for d in diagnostics):
             continue
+        # Phase 5n.B Commit 8 (§18 L50): in-situ Q_TYPE matrix lift.
+        # Post-pass over the f-structure that detects WH=YES in any
+        # embedded GF position and writes Q_TYPE=WH on the matrix.
+        # Idempotent: matrices with Q_TYPE already set (wh-cleft,
+        # tag-Q, yes/no-Q, Alt-Q from Commit 7) are skipped.
+        _lift_in_situ_q_type(result.fstructure)
         candidates.append((ctree, result.fstructure, a, diagnostics))
     candidates.sort(key=lambda r: _rank_key(r[0]))
     parses = candidates[:n_best]
@@ -186,6 +193,71 @@ def parse_text_with_fragments(
             diagnostics=diagnostics,
         ))
     return ParseResult(parses=[], fragments=fragments)
+
+
+# === Phase 5n.B Commit 8: in-situ Q_TYPE matrix lift (§18 L50) ============
+#
+# When a wh-marked element (WH=YES) sits in-situ inside a non-pivot
+# GF — OBJ / OBJ-AGENT / OBL / ADJUNCT / XCOMP / COMP — the matrix
+# clause is a wh-question even though no grammar rule fired on the
+# wh-PRON / wh-N as the matrix predicate (the wh-cleft and wh-fronting
+# rules in cfg/clause.py + cfg/extraction.py write Q_TYPE=WH directly
+# on their matrix outputs; in-situ wh has no such grammar-rule path).
+#
+# This post-pass walks the matrix f-structure recursively and writes
+# Q_TYPE=WH onto the matrix when any embedded GF carries WH=YES.
+#
+# **Filter — RC bodies**: a sub-f-structure with ``REL-PRO`` defined
+# is the body of a relative clause (Phase 4 §7.5 relativization); the
+# wh-marked head N is bound INSIDE the RC, not the matrix Q. The walk
+# skips RC bodies so wh-PRONs nested in an RC don't promote to matrix
+# Q_TYPE. Example: ``Nakita ko ang batang nakita ni Maria.`` (the wh
+# inside an RC body is filtered).
+#
+# **Idempotent**: matrices with ``Q_TYPE`` already set (wh-cleft,
+# wh-fronting, tag-Q, yes/no-Q, Phase 5n.B Commit 7 Alt-Q) are
+# skipped — the grammar-rule lift is the canonical analysis; the
+# post-pass only fills the gap for in-situ wh.
+
+def _lift_in_situ_q_type(matrix: FStructure) -> None:
+    """Phase 5n.B Commit 8 (§18 L50): write ``Q_TYPE='WH'`` onto a
+    matrix that has a wh-marked element embedded in a GF. Idempotent
+    on already-Q-marked matrices; filters out wh-marked elements
+    inside relative-clause bodies (sub-f-structures with REL-PRO
+    defined)."""
+    if matrix.feats.get("Q_TYPE"):
+        return
+    visited: set[int] = {matrix.id}
+    if _has_in_situ_wh(matrix.feats.values(), visited):
+        matrix.feats["Q_TYPE"] = "WH"
+
+
+def _has_in_situ_wh(
+    values: "Iterable[object]", visited: set[int]
+) -> bool:
+    """Walk ``values`` (an iterable of ``FStructure.feats`` values)
+    looking for a sub-f-structure with ``WH='YES'``. Skips
+    relative-clause bodies (sub-f-structures with ``REL-PRO`` defined)
+    and follows nested f-structures + sets uniformly. The ``visited``
+    set protects against re-entrancy cycles."""
+    for v in values:
+        if isinstance(v, FStructure):
+            if v.id in visited:
+                continue
+            visited.add(v.id)
+            # RC body: relativization wrap binds REL-PRO on the inner
+            # gapped clause's f-structure; wh inside is the relative-
+            # head's binding, not a matrix wh-Q.
+            if "REL-PRO" in v.feats:
+                continue
+            if v.feats.get("WH") == "YES":
+                return True
+            if _has_in_situ_wh(v.feats.values(), visited):
+                return True
+        elif isinstance(v, (set, frozenset, list, tuple)):
+            if _has_in_situ_wh(v, visited):
+                return True
+    return False
 
 
 # === Heuristic ranker (Phase 4 §7.9) ======================================

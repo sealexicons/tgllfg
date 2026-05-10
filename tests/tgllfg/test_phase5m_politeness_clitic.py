@@ -168,28 +168,11 @@ class TestRuleAUnchanged:
 # === Fragment-host deferral ============================================
 
 
-FRAGMENT_HOSTS = [
-    "Salamat po.",
-    "Oo po.",
-    "Hindi po.",
-]
-
-
-class TestFragmentHostDeferred:
-    """Fragment-host position (``Salamat po``, ``Oo po``,
-    ``Hindi po``) does NOT parse: there is no Phase 4 fragment-
-    answer matrix-S infrastructure that admits these as input
-    to the 2P clitic absorption rule. Pinned at 0-parse so
-    closure during Phase 5n debt-clearing (or fragment-answer
-    phase, whichever lands first) is detectable as an
-    unintended flip.
-    """
-
-    @pytest.mark.parametrize("sent", FRAGMENT_HOSTS)
-    def test_fragment_host_zero_parse(self, sent: str) -> None:
-        parses = parse_text(sent)
-        assert len(parses) == 0, (
-            f"{sent!r} parsed unexpectedly — fragment-answer "
-            f"infrastructure has landed; close the deferral and "
-            f"un-pin this test."
-        )
+# All Phase 5m C16-era fragment-host deferred pins
+# (``Salamat po.`` / ``Oo po.`` / ``Hindi po.``) closed in
+# Phase 5n.B:
+#
+#   * NOUN-host (``Salamat po.``)  → C16 (§18 L96)
+#       see ``test_phase5n_b_fragment_host.py``
+#   * PRON-host (``Oo po.`` / ``Hindi po.``)  → C17 (§18 L97)
+#       see ``test_phase5n_b_oo_hindi_answer.py``

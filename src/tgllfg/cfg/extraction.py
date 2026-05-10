@@ -177,6 +177,109 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # === Phase 5n.B Commit 3: predicative-ADJ gapped clause for ay-fronting (§18 L39) =====
+    #
+    # ``Si Maria ay maganda.``
+    #     "Maria is beautiful." (ay-fronted predicative-ADJ)
+    # ``Si Maria ay mas matalino.``
+    #     "Maria is more intelligent." (ay-fronted comparative)
+    # ``Si Maria ay mas matalino kaysa kay Juan.``
+    #     "Maria is more intelligent than Juan." (ay-fronted
+    #     comparative + kaysa-PP)
+    # ``Si Maria ay pinakamatalino.``
+    #     "Maria is the most intelligent." (ay-fronted superlative)
+    # ``Si Maria ay kasingganda ni Ana.``
+    #     "Maria is as beautiful as Ana." (ay-fronted equative +
+    #     GEN-standard)
+    #
+    # Closes §18 deferral L39. Phase 4 §7.4 ay-fronting was built
+    # for V-pivot clauses (S_GAP); Phase 5g introduced predicative-
+    # ADJ clauses, and Phase 5h added comparative / superlative /
+    # equative / intensive variants through ADJ wrappers and
+    # paradigm-derived ADJ heads. The ADJ-pivot ay-fronting needs a
+    # parallel gap non-terminal (``S_GAP_PREDADJ``) that captures
+    # the predicative-ADJ residue (the predicative-ADJ S minus its
+    # NOM-NP SUBJ daughter) and binds the SUBJ slot to REL-PRO.
+    #
+    # Two S_GAP_PREDADJ shapes cover the predicative-ADJ residue
+    # variants:
+    #
+    #   1. Bare predicative-ADJ:
+    #      ``S_GAP_PREDADJ → ADJ[PREDICATIVE=YES]``
+    #      Covers ``maganda`` / ``matanda`` / ``mas matalino`` /
+    #      ``pinakamatalino`` / ``kasingganda`` (single-token
+    #      paradigm forms and mas/pinaka-wrapped variants).
+    #
+    #   2. Equative + GEN-standard:
+    #      ``S_GAP_PREDADJ → ADJ[COMP_DEGREE=EQUATIVE]
+    #                         NP[CASE=GEN]``
+    #      Covers ``kasingganda ni Ana``. The equative two-NP
+    #      Phase 5h Commit 6 frames build the matrix S directly
+    #      with both NP daughters; ay-fronted versions need the
+    #      gap variant to admit the GEN-standard alongside the
+    #      ADJ residue.
+    #
+    # **What's NOT in S_GAP_PREDADJ**: the kaysa-PP attachment
+    # (``mas matalino kaysa kay Juan``) is already handled by the
+    # existing Phase 5h Commit 4 kaysa wrap rule (``S → S
+    # PART[KAYSA] NP[CASE=DAT]``), which composes on top of the
+    # ay-fronted bare-ADJ S produced by shape (1) + the wrap rule
+    # below. Adding a kaysa variant inside S_GAP_PREDADJ would
+    # produce spurious ambiguity (two parse paths for the same
+    # surface).
+    #
+    # **Recursive negation** (shape 3): admits ``hindi`` inside
+    # the predicative-ADJ residue (``Si Maria ay hindi
+    # maganda.``), parallel to the Phase 4 §7.4 S_GAP recursive
+    # negation rule above. Without this, the ay-fronted negated
+    # predicative-ADJ surface 0-parses.
+    #
+    # The wrap rule ``S → NP[CASE=NOM] PART[LINK=AY]
+    # S_GAP_PREDADJ`` is added below alongside the existing
+    # Phase 4 §7.4 V-pivot wrap.
+    rules.append(Rule(
+        "S_GAP_PREDADJ",
+        ["ADJ[PREDICATIVE=YES]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 PREDICATIVE) =c 'YES'",
+        ],
+    ))
+    rules.append(Rule(
+        "S_GAP_PREDADJ",
+        ["ADJ[COMP_DEGREE=EQUATIVE]", "NP[CASE=GEN]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 ROLE) = 'EQUATIVE_STANDARD'",
+        ],
+    ))
+    # ``(↓1 POLARITY) =c 'NEG'`` is load-bearing here: without the
+    # constraining equation the non-conflict-matcher admits any
+    # PART for the first daughter (e.g., ``mas`` PART
+    # [COMP_DEGREE=COMPARATIVE]), which then duplicates the
+    # ay-fronted comparative parse via this recursive rule. The
+    # belt-and-braces ``=c`` closes the leak per the Phase 5n.A
+    # ``project_parser_nonconflict_matcher`` finding.
+    rules.append(Rule(
+        "S_GAP_PREDADJ",
+        ["PART[POLARITY=NEG]", "S_GAP_PREDADJ"],
+        [
+            "(↑) = ↓2",
+            "(↑ POLARITY) = 'NEG'",
+            "(↓1 POLARITY) =c 'NEG'",
+        ],
+    ))
+
+
     # --- Phase 5d Commit 5: non-pivot ay-fronting gap-categories ---
     #
     # Phase 4 §7.4 admitted only SUBJ-pivot ay-fronting via
@@ -656,6 +759,39 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.B Commit 3: ADJ-pivot ay-fronting wrap (§18 L39) ---
+    #
+    # ``Si Maria ay maganda.`` "Maria is beautiful."
+    # ``Si Maria ay mas matalino kaysa kay Juan.``
+    #     "Maria is more intelligent than Juan."
+    # ``Si Maria ay pinakamatalino.`` "Maria is the most intelligent."
+    # ``Si Maria ay kasingganda ni Ana.``
+    #     "Maria is as beautiful as Ana."
+    #
+    # Closes §18 L39 (ay-inversion of comparative ADJ; carried
+    # forward from Phase 5g §10 / Phase 5h §9.2). Parallel to the
+    # Phase 4 §7.4 V-pivot ay-fronting rule above, with the inner
+    # clause being the new Phase 5n.B Commit 3 ``S_GAP_PREDADJ``
+    # gap non-terminal (predicative-ADJ residue with SUBJ slot
+    # bound to REL-PRO).
+    #
+    # The fronted-XP type (NP[CASE=NOM]) is the same as the
+    # V-pivot ay-fronting; the disambiguation between the two
+    # rules is via the inner-clause non-terminal: ``S_GAP``
+    # (V-headed) vs ``S_GAP_PREDADJ`` (predicative-ADJ-headed).
+    # Both rules fire only on their respective inner-clause
+    # shapes; no cross-firing.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=NOM]", "PART[LINK=AY]", "S_GAP_PREDADJ"],
+        [
+            "(↑) = ↓3",
+            "(↑ TOPIC) = ↓1",
+            "(↓3 REL-PRO) = ↓1",
+            "(↓3 REL-PRO) =c (↓3 SUBJ)",
+        ],
+    ))
+
 
     # --- Phase 5d Commit 5: non-pivot ay-fronting wrap rules ---
     #
@@ -914,6 +1050,64 @@ def register_rules(rules: list[Rule]) -> None:
                     "(↓3 REL-PRO) =c (↓3 SUBJ)",
                 ],
             ))
+
+    # --- Phase 5n.B Commit 21: PRON-headed RC for negative indefinites
+    #
+    # ``Walang sinumang dumating.``  "Nobody came."
+    # ``Walang anumang nakita.``     "Nothing was seen."
+    #
+    # Closes §18.1 deferral L101. Parallel to the Phase 4 §7.5
+    # N-headed relativization above, but with ``PRON`` as the head
+    # category instead of NP, gated on ``(↓1 INDEF) =c 'NEG_INDEF'``
+    # to keep the rule narrow to negative-indefinite PRONs
+    # (``sinuman`` "no one", ``anuman`` "nothing"). Other PRONs
+    # (``siya`` / ``ako`` / ``niya`` / ...) lack the INDEF feat and
+    # so the rule does not fire on them — they are not naturally
+    # RC-headed.
+    #
+    # The RC body is an ``S_GAP`` (SUBJ-gapped clause) following
+    # the Phase 4 §7.5 SUBJ-only-relativization restriction
+    # (Kroeger 1993). The gap binds to the head PRON via
+    # ``(↓3 REL-PRO) =c (↓3 SUBJ)`` (anaphoric, not structure-
+    # sharing — same convention as the N-headed rule).
+    #
+    # The new rule produces a ``PRON``, so the existing Phase 5m
+    # Commit 9 negative-existential rule (``S → PART[EXISTENTIAL=
+    # YES, POLARITY=NEG] PART[LINK=NG] PRON[INDEF=NEG_INDEF]``,
+    # ``cfg/clause.py``) consumes the relativized PRON without
+    # modification — closing the path that the Phase 5m comment
+    # ("the relative-clause grammar handles sinumang dumating")
+    # had anticipated but not yet implemented.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "PRON",
+            [
+                "PRON[INDEF=NEG_INDEF]",
+                f"PART[LINK={link}]",
+                "S_GAP",
+            ],
+            [
+                "(↓1 INDEF) =c 'NEG_INDEF'",
+                f"(↓2 LINK) =c '{link}'",
+                "(↑) = ↓1",
+                "↓3 ∈ (↑ ADJ)",
+                # The SUBJ-gap binding constraint enforces that the
+                # head PRON fills the RC's SUBJ slot. We omit the
+                # REL-PRO PRED/CASE defining-equation copies (used
+                # by the N-headed relativization above) because the
+                # head's f-structure is already shared with the
+                # matrix via ``(↑) = ↓1``; the SUBJ-gap binding
+                # picks up the head's identity transitively without
+                # a separate REL-PRO copy. Skipping the copies also
+                # avoids an empty-FStructure leak when the head's
+                # PRED is undefined (a structural concern with
+                # PRON heads — though the INDEF=NEG_INDEF gate
+                # restricts to sinuman / anuman, both of which do
+                # have PREDs, the simpler equation set is more
+                # robust).
+                "(↓3 REL-PRO) =c (↓3 SUBJ)",
+            ],
+        ))
 
 
     # --- Phase 5d Commit 6 + Phase 5e Commits 18 & 19:

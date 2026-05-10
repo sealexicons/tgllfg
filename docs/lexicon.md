@@ -3,28 +3,30 @@
 The Phase 3 lexicon is a Postgres 17 database authored from two
 sources:
 
-* **Project-owned YAML** under `data/tgl/`: roots, paradigms,
+- **Project-owned YAML** under `data/tgl/`: roots, paradigms,
   particles, pronouns, sandhi rules, affix inventory. Loaded into
   the DB by `tgllfg lex seed`. The YAML is the source of truth for
   these tables; re-seeding overwrites them.
-* **External CSV imports** with citation tracking, e.g. public-domain
+- **External CSV imports** with citation tracking, e.g. public-domain
   wordlists or OCR'd dictionaries. Loaded by `tgllfg lex import`,
   attributed to a `source` row. Idempotent UPSERT on
   `(language_id, citation_form, pos)`.
 
 ## Components
 
-| Module                    | Purpose                                                          |
-|---------------------------|------------------------------------------------------------------|
-| `alembic/`                | Schema migrations. Migration 0001 is the §6.2 baseline; 0002 adds `paradigm_cell` and `lemma.transitivity` / `lemma.affix_class`. |
-| `src/tgllfg/lex/models.py`     | SQLAlchemy 2.x ORM mirroring the migrations.               |
-| `src/tgllfg/lex/cache.py`      | Frozen-dataclass `LexCache` + `build_cache(session)`. Parser-facing, no SQLAlchemy types leak. |
-| `src/tgllfg/lex/repo.py`       | `AsyncLexRepository` for ad-hoc reads.                     |
-| `src/tgllfg/lex/seed.py`       | YAML → DB upsert (whole-tree, idempotent).                 |
-| `src/tgllfg/lex/import_csv.py` | CSV → DB import with `source` attribution.                 |
-| `src/tgllfg/lex/adapter.py`    | `cache_to_morph_data(cache)` → parser-shape `MorphData`.   |
-| `src/tgllfg/lex/loader.py`     | `resolve_morph_data()` backend switch + data-version gate. |
-| `src/tgllfg/cli.py`            | `tgllfg` CLI entry point.                                  |
+<!-- markdownlint-disable MD013 -->
+| Module | Purpose |
+| --------------------------- | ------------------------------------------------------------------ |
+| `alembic/` | Schema migrations. Migration 0001 is the §6.2 baseline; 0002 adds `paradigm_cell` and `lemma.transitivity` / `lemma.affix_class`. |
+| `src/tgllfg/lex/models.py` | SQLAlchemy 2.x ORM mirroring the migrations. |
+| `src/tgllfg/lex/cache.py` | Frozen-dataclass `LexCache` + `build_cache(session)`. Parser-facing, no SQLAlchemy types leak. |
+| `src/tgllfg/lex/repo.py` | `AsyncLexRepository` for ad-hoc reads. |
+| `src/tgllfg/lex/seed.py` | YAML → DB upsert (whole-tree, idempotent). |
+| `src/tgllfg/lex/import_csv.py` | CSV → DB import with `source` attribution. |
+| `src/tgllfg/lex/adapter.py` | `cache_to_morph_data(cache)` → parser-shape `MorphData`. |
+| `src/tgllfg/lex/loader.py` | `resolve_morph_data()` backend switch + data-version gate. |
+| `src/tgllfg/cli.py` | `tgllfg` CLI entry point. |
+<!-- markdownlint-enable MD013 -->
 
 ## CLI
 
@@ -91,10 +93,10 @@ pytest -m "not postgres"
 
 The parser picks its lexicon backend from `TGLLFG_LEX_BACKEND`:
 
-| Backend          | Source                                  | Default? |
-|------------------|-----------------------------------------|----------|
-| `yaml` (default) | `data/tgl/*.yaml`                       | yes      |
-| `db`             | Postgres at `DATABASE_URL`              | no       |
+| Backend | Source | Default? |
+| ------------------ | ----------------------------------------- | ---------- |
+| `yaml` (default) | `data/tgl/*.yaml` | yes |
+| `db` | Postgres at `DATABASE_URL` | no |
 
 `Analyzer.from_default()` honors this. The demo and offline contexts
 keep working without any database (`TGLLFG_LEX_BACKEND` unset →
@@ -107,7 +109,7 @@ parser startup the DB-backed loader checks this against
 `MIN_COMPATIBLE_DATA_VERSION` (defined in `src/tgllfg/lex/loader.py`).
 If the DB's version is older than the parser requires, the loader
 raises `IncompatibleDataVersionError` with a recovery hint
-(`re-run \`tgllfg lex seed\``). The check fires only on the `db`
+(re-run `tgllfg lex seed`). The check fires only on the `db`
 backend; the YAML path has no version concept.
 
 When introducing a breaking change to the seed shape:

@@ -146,6 +146,30 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.B Commit 14: sa + non-wh DAT-PRON shell ---
+    #
+    # ``sa kanya`` "to/for him/her" — explicit DAT-marker over a
+    # non-wh DAT-PRON. Parallel to the Phase 5i C3 wh-PRON rule
+    # above but for non-wh PRONs (kanya / akin / iyo / atin /
+    # amin / inyo / kanila). Without this rule, ``sa kanya`` does
+    # not form NP[CASE=DAT] — only the bare ``kanya`` does (which
+    # carries CASE=DAT inherently). The explicit-DAT form is
+    # required to parse plan-of-record §4.2 Commit 14 target
+    # ``Magkano ito sa kanya?``.
+    #
+    # ``¬ (↓2 WH)`` keeps this rule disjoint from the Phase 5i
+    # C3 wh-PRON rule above (which fires on PRON[WH=YES]). The
+    # two paths are mutually exclusive on the WH feat.
+    rules.append(Rule(
+        "NP[CASE=DAT]",
+        ["ADP[CASE=DAT]", "PRON[CASE=DAT]"],
+        [
+            "(↑) = ↓1",
+            "(↑) = ↓2",
+            "¬ (↓2 WH)",
+        ],
+    ))
+
 
     # --- Phase 4 §7.8: standalone demonstrative pronouns ---
     #
@@ -599,6 +623,18 @@ def register_rules(rules: list[Rule]) -> None:
     # Commit 26 ``parang isang aso`` rule selects an N
     # daughter). Chained-vague-Q blocking via ``¬ (↓3 VAGUE)``
     # parallel to the NP-level rule.
+    #
+    # **Phase 5n.B Commit 2 (§18 L43) tightening**: ``¬ (↓1 WH)``
+    # excludes wh-Q daughters from this non-wh companion rule.
+    # Pre-tightening, ``aling bata`` (Q[WH=YES] daughter) fired
+    # both this rule (producing N without WH) AND the Phase 5i
+    # Commit 6 wh-Q+N companion (producing N[WH=YES]). The non-WH
+    # output then leaked into the new Phase 5n.B Commit 2
+    # predicative-N clause rule (S → N NP[CASE=NOM]) because the
+    # ``¬ (↓1 WH)`` constraint there was satisfied (WH was
+    # already stripped by this rule). Tightening here closes the
+    # leak at its source: wh-Qs go through the Phase 5i Commit 6
+    # path only, non-wh Qs through this rule only.
     for link in ("NA", "NG"):
         rules.append(Rule(
             "N",
@@ -614,6 +650,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ VAGUE) = 'YES'",
                 "¬ (↓3 VAGUE)",
                 "(↓1 VAGUE) =c 'YES'",
+                "¬ (↓1 WH)",
             ],
         ))
 
@@ -1379,6 +1416,74 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5n.B Commit 5: formal ``nang higit`` ADJ-wrapper (§18 L41) ---
+    #
+    # ``Nang higit matalino si Maria.``
+    #     "Maria is more intelligent." (formal register)
+    # ``Nang higit maganda ang bata.``
+    #     "The child is more beautiful."
+    # ``Nang higit matalino si Maria kaysa kay Juan.``
+    #     "Maria is more intelligent than Juan." (formal +
+    #     existing kaysa wrap)
+    #
+    # Closes §18 L41 (formal ``nang higit`` comparison; carried
+    # forward from Phase 5h §9.2 — ``mas`` is the standard /
+    # colloquial comparative, ``nang higit`` is the formal
+    # alternative). Per the §18.2 detail, two resolution paths
+    # were available: a clausal rule shape ``S → S PART[nang]
+    # PART[higit] ADJ``, or extending the Phase 5h Commit 3
+    # ``mas`` wrapper to admit the multi-word ``nang higit``
+    # particle sequence.
+    #
+    # **Resolution path chosen**: the wrapper-rule path. ``nang
+    # higit + ADJ`` produces an ADJ[COMP_DEGREE=COMPARATIVE]
+    # parallel to the ``mas + ADJ`` wrapper output, so the
+    # existing Phase 5g Commit 3 predicative-ADJ clause rule and
+    # the Phase 5h Commit 4 kaysa wrap consume the result
+    # unchanged. This keeps the comparative semantics in one
+    # place (the ADJ-wrapper layer) and avoids a separate clausal
+    # rule that would duplicate the mas / kaysa composition logic.
+    #
+    # **Equation analysis** (mirrors Phase 5h Commit 3):
+    #
+    # * ``(↑) = ↓3`` shares the inner ADJ's f-structure with the
+    #   wrapped output (PRED, PREDICATIVE, ADJ_LEMMA percolate).
+    # * ``(↑ COMP_DEGREE) = 'COMPARATIVE'`` writes COMPARATIVE
+    #   onto the matrix ADJ. Unification with an inner ADJ
+    #   already carrying SUPERLATIVE (``pinakamatalino``) fails
+    #   — ``*nang higit pinakamatalino`` correctly ungrammatical.
+    # * ``(↑ REGISTER) = 'FORMAL'`` marks the formal register
+    #   distinguishing this from the colloquial ``mas`` form.
+    # * ``(↓1 LEMMA) =c 'nang'`` constrains daughter 1 to the
+    #   ``nang`` PART (existing temporal-since lex entry — its
+    #   ``COMP_TYPE=TEMP_SINCE`` doesn't leak because ``(↑) =
+    #   ↓3`` doesn't share daughter 1's f-structure).
+    # * ``(↓2 COMP_PHRASE) =c 'HIGIT'`` constrains daughter 2 to
+    #   the ``higit`` PART (Phase 5f Commit 17 numeric-comparator
+    #   lex entry). Same lex polysemy — the comparative-clause
+    #   path here is gated by the trailing ADJ.
+    # * ``(↓3 PREDICATIVE) =c 'YES'`` belt-and-braces on the
+    #   ADJ daughter (matches Phase 5h Commit 3 / 5 convention).
+    #
+    # Polysemy safety: ``nang higit + ADJ`` and ``higit sa N``
+    # (Phase 5f Commit 17 numeric comparator) don't conflict —
+    # ``higit sa N`` requires a NUM head and a DAT-NP standard;
+    # ``nang higit + ADJ`` requires an ADJ daughter. The two
+    # paths are structurally disjoint.
+    rules.append(Rule(
+        "ADJ",
+        ["PART[LEMMA=nang]", "PART[COMP_PHRASE=HIGIT]", "ADJ"],
+        [
+            "(↑) = ↓3",
+            "(↑ COMP_DEGREE) = 'COMPARATIVE'",
+            "(↑ REGISTER) = 'FORMAL'",
+            "(↓1 LEMMA) =c 'nang'",
+            "(↓2 COMP_PHRASE) =c 'HIGIT'",
+            "(↓3 PREDICATIVE) =c 'YES'",
+        ],
+    ))
+
+
     # --- Phase 5h Commit 5: particle-intensifier ADJ-wrappers ----
     #
     # ``Sobrang maganda ang bata.``     "The child is too beautiful."
@@ -1597,6 +1702,43 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ INDEF) = 'YES'",
             "(↓1 LEMMA) =c 'kahit'",
             "(↓2 WH) =c 'YES'",
+        ],
+    ))
+
+    # === Phase 5n.B Commit 22: productive wh + man → neg-indef PRON ===
+    #
+    # ``Walang ano man.``     "There is nothing." (productive form
+    #                         of ``Walang anuman.``)
+    # ``Walang sino man.``    (rare productive form of ``Walang
+    #                         sinuman.``)
+    #
+    # Closes part of §18.1 deferral L46 + L102. The rule composes
+    # a wh-PRON with the ``man`` 2P-clitic (PART[ADV=EVEN, LEMMA=
+    # man]) into a virtual ``PRON[INDEF=NEG_INDEF]``. The existing
+    # Phase 5m C9 negative-existential rule then fires on the
+    # produced PRON without modification, parallel to the closure
+    # path for ``Walang sinuman.`` / ``Walang anuman.``
+    # (lexicalized contracted forms).
+    #
+    # The lexicalized contracted forms (``sinuman`` / ``anuman``)
+    # cover the common cases by direct lex (``data/tgl/pronouns.yaml``);
+    # this rule covers the productive non-contracted spelling
+    # (``ano man``) plus any wh-PRON where the contracted form
+    # isn't lexicalized.
+    #
+    # The ``LEMMA=man`` constraint excludes other 2P-clitics
+    # (na / pa / daw / rin / lang / nga / ba / ho / po / kasi /
+    # ...) — only ``man`` (the EVEN/CONCESSIVE particle) functions
+    # as a productive negative-indef builder.
+    rules.append(Rule(
+        "PRON",
+        ["PRON", "PART"],
+        [
+            "(↑) = ↓1",
+            "(↓1 WH) =c 'YES'",
+            "(↓2 ADV) =c 'EVEN'",
+            "(↓2 LEMMA) =c 'man'",
+            "(↑ INDEF) = 'NEG_INDEF'",
         ],
     ))
 
