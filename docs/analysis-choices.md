@@ -11341,3 +11341,155 @@ suffices.
   narrow-scope comment.
 - Schachter & Otanes 1972 §10 (clitic-pronoun NOM SUBJ exclusion).
 - Ramos & Bautista 1986 ch.18 (negation × coordination).
+
+## Phase 5n.C Commit 4: L83 standalone NP-coord fragment — design (S → NP[COORD=BUT_NOT])
+
+**Date:** 2026-05-10 (Phase 5n.C).
+**Status:** design. Implementation lands in Phase 5n.C Commit 5.
+
+### Decision
+
+A new clause rule ``S → NP[CASE=NOM, COORD=BUT_NOT]`` admits the
+bare asymmetric-coord-NP fragment ``Si Maria, hindi si Juan.``
+"Maria, not Juan" as a complete matrix S, marked with
+``CLAUSE_TYPE=FRAGMENT``. The matrix synthesises a one-place
+fragment predicate ``PRED='NP-FRAG <SUBJ>'`` and binds the coord-NP
+as ``SUBJ``; the coord-NP's existing feats (``COORD=BUT_NOT``,
+``CONJUNCTS={Maria, Juan}``, ``CASE=NOM``, ``NUM``) remain on the
+SUBJ f-structure unchanged.
+
+The rule's daughter pattern ``NP[CASE=NOM, COORD=BUT_NOT]``
+restricts the fragment-S admission to Phase 5k Commit 8's
+asymmetric NP-coord output specifically — bare ``Si Maria.``
+(no coord) does NOT parse as a sentence under this rule, because
+the daughter requires ``COORD=BUT_NOT`` which is set only by the
+asymmetric coord rule.
+
+### Mechanism: structural gating, not parser-mode flag
+
+The Phase 5n.C plan-of-record §3.2 originally specified an
+``S_FRAG`` non-terminal gated by an explicit ``FRAGMENT=YES``
+parser-mode flag (CLI ``--allow-fragments`` or parse-config
+option). That design predates Phase 5n.B's L96 / L97 fragment-
+clause work, which established **structural / lex-feat gating**
+as the established convention for fragment-clause rules:
+
+- L96 (``Salamat.``): ``S → N`` gated on ``FRAGMENT_HOST=YES``
+  (set in the lex per-eligible-noun); ``CLAUSE_TYPE=FRAGMENT``
+  on the matrix.
+- L97 (``Hindi.`` / ``Oo.`` / ``Opo.`` / ``Oho.``): ``S → PRON``
+  gated on ``INTERJ=YES`` and existential ``ANSWER`` constraint
+  (set in the lex per-eligible-pronoun);
+  ``CLAUSE_TYPE=FRAGMENT_ANSWER`` on the matrix.
+
+The L83 rule follows the same pattern but discriminates **on a
+constructional feat** (``COORD=BUT_NOT``) rather than a lex feat,
+because the asymmetric coord-NP is a built structure, not a
+lexical item. ``COORD=BUT_NOT`` is uniquely set by Phase 5k Commit
+8 (``cfg/coordination.py:493``) and serves as the natural
+discriminator — no new feat needs to be added to the asymmetric
+coord rule.
+
+This design ratifies an update to the original plan: the parser-
+mode flag is replaced with structural gating, in line with the
+established L96 / L97 fragment-rule pattern. Downstream consumers
+that wish to filter out fragment-S parses can do so by checking
+``CLAUSE_TYPE=FRAGMENT`` on the matrix; no parser-mode plumbing
+is required.
+
+### Why ``COORD=BUT_NOT`` and not ``NP_COORD`` generally
+
+A broader rule ``S → NP[CASE=NOM, COORD=AND/OR/BUT_NOT]`` would
+admit bare AND-coord and OR-coord NPs as sentences (e.g.,
+``Si Maria at si Juan.`` would become a sentence). That over-
+generates: bare additive / disjunctive coord-NPs are not
+canonical sentence fragments in Tagalog. Only the asymmetric
+``X, hindi Y.`` shape is attested as a standalone fragment
+(per S&O 1972 §10 contrast-and-rejection construction;
+R&B 1986 ch.16).
+
+If corpus pressure later surfaces a bare AND-coord or OR-coord
+fragment use case, a separate rule with explicit ``COORD=AND``
+/ ``COORD=OR`` discriminators can be added. Each fragment-S
+rule should restrict to the most specific structural shape that
+licenses the fragment — preserving the ``Si Maria.`` 0-parse
+guarantee for non-fragment-host bare NPs.
+
+### Why a synthetic ``PRED='NP-FRAG <SUBJ>'``
+
+The asymmetric coord-NP itself has no ``PRED`` (its conjuncts
+each have ``PRED`` from the lex — proper-name PREDs like
+``NOUN(↑ FORM)`` — but the coord-NP itself is a CONJUNCTS-
+holding f-structure with no head ``PRED``). The fragment-S must
+have a ``PRED`` for f-structure well-formedness; the matrix
+cannot inherit ``PRED`` via ``(↑) = ↓1`` because the coord-NP
+has none.
+
+Synthesising ``PRED='NP-FRAG <SUBJ>'`` introduces a fragment-
+predicate with one argument slot (SUBJ), bound to the coord-NP.
+This treats the fragment as a degenerate one-place predication
+over the coord-NP — semantically a placeholder that downstream
+Glue / discourse-semantics work (Phase 6+) can interpret as
+"BE", "FOCUS-CONTRAST", or "ASSERT-AND-REJECT" as the
+construction's pragmatics dictate. The ``NP-FRAG`` placeholder
+is intentionally not tied to a specific semantic operator at
+this layer.
+
+The L96 / L97 precedents differ here: their rules use
+``(↑) = ↓1`` because the lex-host (``Salamat`` / ``Oo`` /
+``Hindi`` etc.) carries its own ``PRED``. L83 is the first
+fragment-S rule whose host is a constructed structure without
+a head ``PRED``, so synthesis is unavoidable.
+
+### Interaction with Phase 5k asymmetric coord (Commit 8)
+
+The Phase 5k Commit 8 asymmetric NP-coord rule
+(``cfg/coordination.py:493``) is unchanged — it continues to fire
+inside an S frame (``Kumain si Maria, hindi si Juan.``) with
+``COORD=BUT_NOT`` on the coord-NP. The new L83 rule is an
+additional path: the same ``COORD=BUT_NOT`` coord-NP can serve
+either (a) as the SUBJ of an existing V-headed S, or (b) as the
+sole daughter of a fragment-S. Both readings can coexist on
+ambiguous surfaces, ranked by Phase 4 §7.9 heuristics; the
+fragment reading is naturally lower-ranked because it requires
+the synthesis of a fragment-PRED whereas the V-headed S has a
+real verbal PRED.
+
+For the bare-NP fragment surface ``Si Maria, hindi si Juan.``
+(no V), only the new L83 rule produces a complete parse — the
+V-headed S rules don't fire without a V daughter. So the
+fragment reading is the unique parse for this surface.
+
+### Why bare ``Si Maria.`` still 0-parses
+
+The L83 rule's daughter pattern is ``NP[CASE=NOM,
+COORD=BUT_NOT]``, not ``NP[CASE=NOM]``. Bare singular NPs do
+not carry ``COORD=BUT_NOT`` — that feat is set only by Phase 5k
+Commit 8's asymmetric NP-coord rule, which requires a comma +
+``hindi`` + second NP shape. So ``Si Maria.`` (singular bare
+NP) does not match the L83 rule's daughter and continues to
+0-parse as a sentence. This preserves the existing grammar's
+rejection of bare NPs as sentences.
+
+The L96 / L97 lex-feat-gated rules cover the bare-N / bare-PRON
+fragment cases for specific opted-in lex items (``salamat``,
+``oo``, ``hindi``, ``opo``, ``oho``); arbitrary bare nouns
+(``aklat``, ``bahay``, etc.) and bare proper names
+(``Si Maria``) are not opted in and continue to 0-parse.
+
+### Cross-references
+
+- Phase 5n.C plan-of-record Commit 5
+  (``.claude/plans/tgllfg-phase-5n-c.md`` §3.2; this design
+  appendix is Commit 4).
+- §18 L83 disposition (closes with this commit pair) —
+  ``tgllfg-out-of-scope.md``.
+- Phase 5k Commit 8 asymmetric NP-coord (sole producer of
+  ``COORD=BUT_NOT``) —
+  ``src/tgllfg/cfg/coordination.py:493``.
+- Phase 5m Commit 3 fragment-answer rule (L97 precedent) —
+  ``src/tgllfg/cfg/clause.py:2078`` (search "fragment-answer").
+- Phase 5n.B Commit 16 fragment-host NOUN rule (L96 precedent) —
+  ``src/tgllfg/cfg/clause.py:2134`` (search "fragment-host").
+- Schachter & Otanes 1972 §10 (asymmetric contrast construction).
+- Ramos & Bautista 1986 ch.16 (NP coordination).
