@@ -1172,7 +1172,10 @@ introduced by Phase 5k:
 Out of scope for Phase 5k (deferred — see ``§18``):
 correlative coord ``hindi lang … kundi pati``; ``o kaya``
 multi-word disjunction; gapping (shared-V partial-clause
-coord); cross-conjunct negation scoping (``Hindi [X at Y]
+coord) — **closed Phase 5n.C.2 (GAPPING=YES + reentrant
+PRED across CONJUNCTS; 4 rules in cfg/coordination.py
+covering AV/DV 2-conj, DV ditrans, AV 3-conj)**;
+cross-conjunct negation scoping (``Hindi [X at Y]
 V``) — **closed Phase 5n.C.1 (NEG_SCOPE=WIDE)**;
 coordinated cardinals (``apat na pu't lima`` 45 — 't
 pre-pass landed but NUM-coordination grammar rule remains a
@@ -1445,13 +1448,16 @@ Out of scope for Phase 5n.A (carried to Phase 5n.B / 5n.C / Phase
   pollutes the chart at high arity. Phase 5n.C, requires either
   parser-level support for defining category-pattern constraints
   or grammar-wide tightening of category daughter feats.
-- **L29 DV PFV gap, L77 gapping** — 5n.C.2 bucket
-  (corpus-driven closures); L78 cross-conjunct negation
-  scoping closed by Phase 5n.C.1 (NEG_SCOPE=WIDE marker on
-  matrix S); L83 standalone NP-coord without verbal head
-  closed by Phase 5n.C.1 (CLAUSE_TYPE=FRAGMENT marker on
-  matrix S; L81 distributive-Q topic also closed in 5n.C.1
-  with DISTRIB=YES marker).
+- L29 DV PFV gap + L77 gapping closed by Phase 5n.C.2
+  (PR #TBD, 2026-05-10): L29 via 8 high-frequency DV PFV
+  fixtures + ``verbs.yaml`` ``an_oblig`` additions for
+  ``bigay`` / ``tanong`` / ``usap``; L77 via PRED-sharing
+  gapping rules in ``cfg/coordination.py`` (4 rules: AV/DV
+  2-conjunct, DV ditrans, AV 3-conjunct with Oxford comma)
+  producing matrix ``COORD=AND`` + ``GAPPING=YES`` +
+  reentrant PRED across ``CONJUNCTS``. L78 / L83 / L81
+  closed by Phase 5n.C.1 (NEG_SCOPE=WIDE, CLAUSE_TYPE=FRAGMENT,
+  DISTRIB=YES matrix markers respectively).
 - **Phase 5h / 5i / 5m completions** — Phase 5n.B per
   plan-of-record §4.
 
