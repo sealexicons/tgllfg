@@ -548,6 +548,18 @@
   pos: NOUN
   gloss: floor
 
+- citation: salamat
+  pos: NOUN
+  gloss: thanks, gratitude
+  # Phase 5n.B Commit 16 (§18 L96): fragment-host noun. Surfaces
+  # as a one-word "sentence" (``Salamat.``) and carries the 2P-
+  # politeness clitic (``Salamat po.`` / ``Salamat ho.`` /
+  # ``Salamat opo.``) per the existing Phase 5m clitic-absorption
+  # rule. ``FRAGMENT_HOST=YES`` gates the new ``S_FRAG`` rule so
+  # only specific lex items (greetings / interjections) are
+  # admitted as one-word matrix-S — arbitrary nouns are not.
+  feats: {FRAGMENT_HOST: "YES"}
+
 - citation: salamin
   pos: NOUN
   gloss: mirror, glasses

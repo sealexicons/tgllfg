@@ -2103,3 +2103,37 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ CLAUSE_TYPE) = 'FRAGMENT_ANSWER'",
         ],
     ))
+
+    # === Phase 5n.B Commit 16: fragment-host NOUN clause (§18 L96) ========
+    #
+    # ``Salamat.``       "Thanks."
+    # ``Salamat po.``    "Thank you (polite)."
+    # ``Salamat ho.``    "Thank you (colloquial-polite)."
+    #
+    # Closes §18.1 deferral L96 for the NOUN-host path. A single-
+    # token NOUN gated by ``FRAGMENT_HOST=YES`` projects as a
+    # complete matrix S; the existing Phase 5m clitic-absorption
+    # rule (``S → S PART[CLITIC_CLASS=2P, REGISTER=POLITE]``,
+    # ``cfg/clitic.py``) then attaches the 2P-politeness clitic
+    # (po / ho / opo / oho) on top.
+    #
+    # ``FRAGMENT_HOST=YES`` is set in the lex (``data/tgl/nouns.yaml``
+    # — currently only ``salamat`` qualifies) so the rule does NOT
+    # admit arbitrary noun fragments (``Aklat.`` does not parse as
+    # a one-word S — the constraint gates it out). Future fragment-
+    # host nouns (greetings, exclamations) can opt in via the same
+    # lex feat without grammar changes.
+    #
+    # Companion deferral L97 (standalone ``Oo.`` / ``Hindi.`` answer
+    # clauses) closes in Phase 5n.B Commit 17 — that path uses new
+    # ``PRON[INTERJ=YES, ANSWER=...]`` lex entries plus an
+    # ``S_ANSWER`` rule, distinct from this NOUN-host path.
+    rules.append(Rule(
+        "S",
+        ["N"],
+        [
+            "(↑) = ↓1",
+            "(↑ FRAGMENT_HOST) =c 'YES'",
+            "(↑ CLAUSE_TYPE) = 'FRAGMENT'",
+        ],
+    ))

@@ -168,28 +168,30 @@ class TestRuleAUnchanged:
 # === Fragment-host deferral ============================================
 
 
-FRAGMENT_HOSTS = [
-    "Salamat po.",
+FRAGMENT_HOSTS_PRON = [
+    # PRON-host fragments (``Oo po.`` / ``Hindi po.``) close in
+    # Phase 5n.B Commit 17 — they need new
+    # ``PRON[INTERJ=YES, ANSWER=...]`` lex entries plus an
+    # ``S_ANSWER`` rule. Until then, pinned at 0-parse.
     "Oo po.",
     "Hindi po.",
 ]
 
 
-class TestFragmentHostDeferred:
-    """Fragment-host position (``Salamat po``, ``Oo po``,
-    ``Hindi po``) does NOT parse: there is no Phase 4 fragment-
-    answer matrix-S infrastructure that admits these as input
-    to the 2P clitic absorption rule. Pinned at 0-parse so
-    closure during Phase 5n debt-clearing (or fragment-answer
-    phase, whichever lands first) is detectable as an
-    unintended flip.
+class TestFragmentHostDeferredPron:
+    """PRON-host fragment position (``Oo po`` / ``Hindi po``)
+    does NOT parse yet — closes in Phase 5n.B Commit 17 alongside
+    standalone ``Oo.`` / ``Hindi.`` answer-clauses (§18 L97).
+
+    Phase 5n.B Commit 16 closed the NOUN-host path
+    (``Salamat po.`` — see ``test_phase5n_b_fragment_host.py``);
+    the PRON-host path remains pinned here until C17.
     """
 
-    @pytest.mark.parametrize("sent", FRAGMENT_HOSTS)
-    def test_fragment_host_zero_parse(self, sent: str) -> None:
+    @pytest.mark.parametrize("sent", FRAGMENT_HOSTS_PRON)
+    def test_pron_fragment_host_zero_parse(self, sent: str) -> None:
         parses = parse_text(sent)
         assert len(parses) == 0, (
-            f"{sent!r} parsed unexpectedly — fragment-answer "
-            f"infrastructure has landed; close the deferral and "
-            f"un-pin this test."
+            f"{sent!r} parsed unexpectedly — Phase 5n.B C17 "
+            f"PRON-host infrastructure has landed; close this pin."
         )
