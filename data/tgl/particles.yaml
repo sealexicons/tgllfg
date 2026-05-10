@@ -587,6 +587,29 @@
   pos: VERB
   feats: {CTRL_CLASS: KNOW}
 
+# Phase 5n.B Commit 12 (§18 L55): additional KNOW-class predicates.
+# All four pattern syntactically like ``alam`` — uninflected
+# pseudo-verbs taking a GEN-NP experiencer (matrix SUBJ) and a
+# CLOSED COMP (typically an indirect-Q ``kung``-clause). PRED
+# templates differ per predicate so downstream consumers can
+# distinguish: BELIEVE (akala — connotes mistaken belief), THINK
+# (isip), HEAR (naririnig — surface-form-as-lemma since the
+# involuntary-IPFV ma-prefix paradigm of ``dinig`` isn't yet wired
+# into the morphology engine), REMEMBER (naaalala — same
+# treatment for the involuntary-IPFV form of ``alala``).
+- surface: akala
+  pos: VERB
+  feats: {CTRL_CLASS: KNOW}
+- surface: isip
+  pos: VERB
+  feats: {CTRL_CLASS: KNOW}
+- surface: naririnig
+  pos: VERB
+  feats: {CTRL_CLASS: KNOW}
+- surface: naaalala
+  pos: VERB
+  feats: {CTRL_CLASS: KNOW}
+
 # Phase 5c §7.6 follow-on (Commit 5): raising verbs. Like the
 # psych pseudo-verbs above, they're closed-class, uninflected,
 # select an XCOMP. Unlike psych, they have no thematic SUBJ —

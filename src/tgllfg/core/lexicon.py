@@ -594,6 +594,58 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_PSYCH_CONTROL,
         ),
     ],
+    # Phase 5n.B Commit 12 (§18 L55): additional KNOW-class predicates.
+    # Same a-structure / GF mapping / intrinsic-classification skeleton
+    # as ``alam``; only the PRED template differs per predicate so
+    # downstream consumers can distinguish them. ``akala`` carries the
+    # ``mistakenly believe`` connotation in idiomatic Tagalog (``Akala
+    # ko kumain si Maria, pero hindi pala`` "I thought Maria ate, but
+    # actually no"); we use BELIEVE rather than THINK to preserve that
+    # nuance. ``naririnig`` and ``naaalala`` are the involuntary-IPFV
+    # forms of ``dinig`` "hear" and ``alala`` "remember"; lemma'd by
+    # surface here rather than via the paradigm engine because the
+    # ma- prefix involuntary derivation isn't yet wired into the
+    # morphology layer (deferred to a future morphology pass).
+    "akala": [
+        LexicalEntry(
+            lemma="akala",
+            pred="BELIEVE <SUBJ, COMP>",
+            a_structure=["EXPERIENCER", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "KNOW"},
+            gf_defaults={"EXPERIENCER": "SUBJ", "COMPLEMENT": "COMP"},
+            intrinsic_classification=_PSYCH_CONTROL,
+        ),
+    ],
+    "isip": [
+        LexicalEntry(
+            lemma="isip",
+            pred="THINK <SUBJ, COMP>",
+            a_structure=["EXPERIENCER", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "KNOW"},
+            gf_defaults={"EXPERIENCER": "SUBJ", "COMPLEMENT": "COMP"},
+            intrinsic_classification=_PSYCH_CONTROL,
+        ),
+    ],
+    "naririnig": [
+        LexicalEntry(
+            lemma="naririnig",
+            pred="HEAR <SUBJ, COMP>",
+            a_structure=["EXPERIENCER", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "KNOW"},
+            gf_defaults={"EXPERIENCER": "SUBJ", "COMPLEMENT": "COMP"},
+            intrinsic_classification=_PSYCH_CONTROL,
+        ),
+    ],
+    "naaalala": [
+        LexicalEntry(
+            lemma="naaalala",
+            pred="REMEMBER <SUBJ, COMP>",
+            a_structure=["EXPERIENCER", "COMPLEMENT"],
+            morph_constraints={"CTRL_CLASS": "KNOW"},
+            gf_defaults={"EXPERIENCER": "SUBJ", "COMPLEMENT": "COMP"},
+            intrinsic_classification=_PSYCH_CONTROL,
+        ),
+    ],
     # Phase 5j Commit 6: modal verbs (closed-class, uninflected,
     # AGENT-SUBJ + XCOMP). Distinct CTRL_CLASS=MODAL keeps them
     # from cross-firing on PSYCH (gusto / ayaw / kaya) and KNOW
