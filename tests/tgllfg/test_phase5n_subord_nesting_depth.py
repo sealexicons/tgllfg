@@ -113,6 +113,7 @@ class TestDepth3:
 # === Depth-4 (deeply nested) ========================================
 
 
+@pytest.mark.slow
 class TestDepth4:
     """Three nested subord adjuncts. The grammar admits these
     surfaces; f-structure shape may flatten one adjunct as a

@@ -150,6 +150,7 @@ class TestIndirectQWithWhNCleft:
     """Inner clause uses Phase 5i Commit 6's wh-N-cleft
     (``aling N ang ...``). COMP.WH_LEMMA = ``alin``."""
 
+    @pytest.mark.slow
     def test_aling_inside(self) -> None:
         parses = parse_text("Alam ko kung aling bata ang kumain.")
         assert len(parses) >= 1

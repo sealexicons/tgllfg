@@ -29,6 +29,8 @@ overlaps with the indirect-Q shape), these tests flag it.
 
 from __future__ import annotations
 
+import pytest
+
 from tgllfg.core.common import Token
 from tgllfg.morph import Analyzer
 from tgllfg.core.pipeline import parse_text
@@ -198,6 +200,7 @@ class TestNestedCondInsideInterrog:
     the inner kung is COND. Both readings of kung fire in the
     same sentence."""
 
+    @pytest.mark.slow
     def test_nested_kungs_parse(self) -> None:
         # Use ``ang aso`` (NOM dog) for the inner conditional's
         # SUBJ, since ``kumain ang aso`` is a clean intransitive
