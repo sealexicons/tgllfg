@@ -4584,3 +4584,45 @@
 - text: Hindi si Maria o si Juan tumakbo.
   construction: 'phase5n.C: L78 wide-scope hindi over OR-coord with intransitive AV verb'
   expected: parse
+
+# --- Phase 5n.C.2 Commit 1: L29 DV PFV high-frequency verbs ---------
+# Closes the §18.1 L29 DV PFV paradigm-coverage gap surfaced during
+# Phase 5e Commit 18 review. Each fixture exercises the DV PFV
+# paradigm cell (paradigms.yaml line 286: -in- infix + -an suffix)
+# on a high-frequency verb. Canonical DV pattern: `<DV-PFV-V> ni
+# <agent> si <pivot>` per S&O 1972 §10 + R&B 1986 chs.5/7.
+#
+# Verbs already covered by verbs.yaml at branch cut (5 fixtures
+# below): aral / basa / bili / gawa / tulong all carry an_oblig +
+# generate cleanly via the existing DV PFV cell.
+- text: Inaralan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with aral (inaralan)'
+  expected: parse
+- text: Binasahan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with basa (binasahan)'
+  expected: parse
+- text: Binilihan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with bili (binilihan)'
+  expected: parse
+- text: Ginawahan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with gawa (ginawahan)'
+  expected: parse
+- text: Tinulungan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with tulong (tinulungan)'
+  expected: parse
+
+# Verbs missing an_oblig at branch cut — the surface decomposes to
+# fragments (V[_UNK] + GEN-NP + NOM-NP) since the DV PFV cell does
+# not fire for these verbs. Commit 2 adds an_oblig to verbs.yaml;
+# Commit 3 flips expected to 'parse'. Tripwire test asserting the
+# zero complete-parse state lives in
+# tests/tgllfg/test_phase5n_c2_l29_dv_pfv.py.
+- text: Binigayan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with bigay (binigayan) — pinned fragment pre-Commit-2'
+  expected: fragment
+- text: Tinanungan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with tanong (tinanungan) — pinned fragment pre-Commit-2'
+  expected: fragment
+- text: Inusapan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with usap (inusapan) — pinned fragment pre-Commit-2'
+  expected: fragment
