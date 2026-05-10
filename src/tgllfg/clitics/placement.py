@@ -191,6 +191,20 @@ def _is_adv_clitic(cands: list[MorphAnalysis]) -> bool:
     )
 
 
+def _is_sentence_initial_particle(cands: list[MorphAnalysis]) -> bool:
+    """``PART[DISCOURSE_POS=SENTENCE_INITIAL]`` — discourse-initial
+    modal / mood / connective particles (``siguro`` / ``marahil`` /
+    ``samakatuwid`` / ...). Phase 5n.B Commit 18 added a polysemous
+    second entry for ``siguro`` / ``marahil`` with
+    ``CLITIC_CLASS=2P`` to admit clause-medial usage; the placement
+    engine skips reordering when this reading is present at a
+    pre-anchor position so the original sentence-initial
+    interpretation is preserved."""
+    return any(
+        ma.feats.get("DISCOURSE_POS") == "SENTENCE_INITIAL" for ma in cands
+    )
+
+
 def _is_post_noun_pron(
     analyses: list[list[MorphAnalysis]], i: int
 ) -> bool:
@@ -719,6 +733,15 @@ def reorder_clitics(
     adv_indices = [
         i for i, cands in enumerate(analyses)
         if i != anchor_idx and _is_adv_clitic(cands)
+        # Phase 5n.B Commit 18: ``siguro`` / ``marahil`` have a
+        # polysemous CLITIC_CLASS=2P entry plus the original
+        # DISCOURSE_POS=SENTENCE_INITIAL entry. Skip reordering when
+        # the token is BEFORE the anchor and has a sentence-initial
+        # reading — preserves the clause-initial parse path.
+        and not (
+            i < anchor_idx
+            and _is_sentence_initial_particle(cands)
+        )
     ]
     if not pron_indices and not adv_indices:
         return analyses

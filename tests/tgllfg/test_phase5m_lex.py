@@ -105,8 +105,11 @@ MODAL_PARTICLES = [
 
 
 class TestModalParticles:
-    """``siguro`` and ``marahil`` are sentence-initial epistemic
-    particles with ``EPISTEMIC=PROBABLY``."""
+    """``siguro`` and ``marahil`` are epistemic particles with
+    ``EPISTEMIC=PROBABLY``. Phase 5n.B Commit 18 (§18 L98) added
+    polysemous CLITIC_CLASS=2P entries to admit clause-medial
+    usage; the original DISCOURSE_POS=SENTENCE_INITIAL entries
+    remain. Both readings must surface in the analyzer output."""
 
     @pytest.mark.parametrize("surface,lemma,register", MODAL_PARTICLES)
     def test_indexed_as_modal_particle(
@@ -120,14 +123,25 @@ class TestModalParticles:
             and a.feats.get("EPISTEMIC") == "PROBABLY"
             and a.feats.get("LEMMA") == lemma
         ]
-        assert len(modals) == 1, (
-            f"expected exactly one PART[EPISTEMIC=PROBABLY, "
-            f"LEMMA={lemma}] for {surface!r}; got "
+        assert len(modals) == 2, (
+            f"expected exactly two PART[EPISTEMIC=PROBABLY, "
+            f"LEMMA={lemma}] entries (sentence-initial + 2P-clitic) "
+            f"for {surface!r}; got "
             f"{[(a.pos, a.lemma, dict(a.feats)) for a in out]}"
         )
-        assert modals[0].feats.get("DISCOURSE_POS") == "SENTENCE_INITIAL"
+        # Sentence-initial entry: DISCOURSE_POS=SENTENCE_INITIAL,
+        # not is_clitic.
+        sent_initial = [
+            a for a in modals
+            if a.feats.get("DISCOURSE_POS") == "SENTENCE_INITIAL"
+        ]
+        assert len(sent_initial) == 1
         if register is not None:
-            assert modals[0].feats.get("REGISTER") == register
+            assert sent_initial[0].feats.get("REGISTER") == register
+        # 2P-clitic entry: is_clitic=True, CLITIC_CLASS='2P'.
+        clitic = [a for a in modals if a.feats.get("is_clitic") is True]
+        assert len(clitic) == 1
+        assert clitic[0].feats.get("CLITIC_CLASS") == "2P"
 
 
 # === (c) Single-word discourse connectives =============================

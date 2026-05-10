@@ -1767,20 +1767,39 @@
   is_clitic: true
   clitic_class: 2P
 
-# (b) Modal / mood particles (sentence-initial)
+# (b) Modal / mood particles
 #
-# ``siguro`` (colloquial) and ``marahil`` (formal) are sentence-
-# initial epistemic particles ("maybe / perhaps"). Composes via
-# the new Phase 5m Commit 4 rule ``S → PART[DISCOURSE_POS=
-# SENTENCE_INITIAL] S`` (cfg/discourse.py). Clause-medial use
-# (``Pumupunta siguro siya``) is attested but rare; deferred per
-# Phase 5m plan §9.1 Q2. Reference: R&B 1986 §15.5.
+# ``siguro`` (colloquial) and ``marahil`` (formal) are epistemic
+# particles ("maybe / perhaps") with two attested surface positions:
+#
+# * **Sentence-initial**: ``Siguro pumupunta siya.`` Composes via
+#   the Phase 5m Commit 4 rule ``S → PART[DISCOURSE_POS=
+#   SENTENCE_INITIAL] S`` (cfg/discourse.py). The original entry.
+#
+# * **Clause-medial 2P-clitic** (Phase 5n.B Commit 16, §18 L98):
+#   ``Pumupunta siguro siya.`` Composes via the Phase 4 §7.3
+#   generic 2P-clitic absorption rule (cfg/clitic.py Rule A),
+#   parallel to other 2P clitics (na / pa / daw / rin / nga / lang).
+#   The clitic-cluster placement engine handles the surface
+#   ordering. The polysemous entry pattern (mirroring kung —
+#   COND vs INTERROG — and other 5l/5m polysemy resolutions)
+#   keeps the two readings disjoint at parse time: clause-initial
+#   surfaces consume the DISCOURSE_POS=SENTENCE_INITIAL entry;
+#   clause-medial surfaces consume the CLITIC_CLASS=2P entry.
+#
+# Reference: R&B 1986 §15.5.
 - surface: siguro
   pos: PART
   feats: {EPISTEMIC: PROBABLY, DISCOURSE_POS: SENTENCE_INITIAL, LEMMA: siguro}
+- surface: siguro
+  pos: PART
+  feats: {EPISTEMIC: PROBABLY, is_clitic: true, CLITIC_CLASS: 2P, LEMMA: siguro}
 - surface: marahil
   pos: PART
   feats: {EPISTEMIC: PROBABLY, DISCOURSE_POS: SENTENCE_INITIAL, REGISTER: FORMAL, LEMMA: marahil}
+- surface: marahil
+  pos: PART
+  feats: {EPISTEMIC: PROBABLY, is_clitic: true, CLITIC_CLASS: 2P, LEMMA: marahil}
 
 # (c) Discourse connectives — single-word (sentence-initial)
 #
