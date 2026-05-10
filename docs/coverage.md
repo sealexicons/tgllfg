@@ -1173,13 +1173,17 @@ Out of scope for Phase 5k (deferred — see ``§18``):
 correlative coord ``hindi lang … kundi pati``; ``o kaya``
 multi-word disjunction; gapping (shared-V partial-clause
 coord); cross-conjunct negation scoping (``Hindi [X at Y]
-V``); coordinated cardinals (``apat na pu't lima`` 45 — 't
+V``) — **closed Phase 5n.C.1 (NEG_SCOPE=WIDE)**;
+coordinated cardinals (``apat na pu't lima`` 45 — 't
 pre-pass landed but NUM-coordination grammar rule remains a
 Phase 5f follow-on); ``bukod sa`` / ``maliban sa``
-exceptive expressions; distributive coord readings;
+exceptive expressions; distributive coord readings —
+**closed Phase 5n.C.1 (DISTRIB=YES; covers Q + N, Q + NUM,
+intransitive verb, transitive verb, ± DAT ADJUNCT)**;
 ``at saka`` / ``at nang`` multi-word variants; standalone
-NP-coord without verbal head (``Si Maria, hindi si Juan.``
-0-parse — needs a fragment-NP rule); no-comma asymmetric
+NP-coord without verbal head (``Si Maria, hindi si Juan.``)
+— **closed Phase 5n.C.1 (CLAUSE_TYPE=FRAGMENT, synthetic
+``PRED='NP-FRAG <SUBJ>'``)**; no-comma asymmetric
 coord (the comma is structurally required); 4+-conjunct flat
 NP coord (right-recursive ``NP_COMMA_LIST`` deferred);
 disjunctive 3-conjunct flat (``Maria, Juan, o Pedro``); HAVE
@@ -1441,8 +1445,13 @@ Out of scope for Phase 5n.A (carried to Phase 5n.B / 5n.C / Phase
   pollutes the chart at high arity. Phase 5n.C, requires either
   parser-level support for defining category-pattern constraints
   or grammar-wide tightening of category daughter feats.
-- **L29 DV PFV gap, L77 gapping, L78 cross-conjunct negation,
-  L83 standalone NP-coord** — 5n.C bucket per user direction.
+- **L29 DV PFV gap, L77 gapping** — 5n.C.2 bucket
+  (corpus-driven closures); L78 cross-conjunct negation
+  scoping closed by Phase 5n.C.1 (NEG_SCOPE=WIDE marker on
+  matrix S); L83 standalone NP-coord without verbal head
+  closed by Phase 5n.C.1 (CLAUSE_TYPE=FRAGMENT marker on
+  matrix S; L81 distributive-Q topic also closed in 5n.C.1
+  with DISTRIB=YES marker).
 - **Phase 5h / 5i / 5m completions** — Phase 5n.B per
   plan-of-record §4.
 
