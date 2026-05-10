@@ -162,6 +162,37 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.B Commit 19: clause-final indefinite AdvP -------
+    #
+    # ``Pupunta ako kahit saan.``    "I'll go anywhere."
+    # ``Kakain ako kahit kailan.``   "I'll eat anytime."
+    # ``Kumain ako kahit saan.``     "I ate anywhere."
+    #
+    # Closes §18.1 deferral L99. Sibling to the Phase 5f C5
+    # FREQUENCY AdvP rule above; same daughter shape (S + AdvP),
+    # but gated to indefinite ADVs via ``(↓2 INDEF) =c 'YES'``.
+    # Indefinite ADVs are produced by the Phase 5m C8 IndefADV
+    # rule (``ADV → PART[LEMMA=kahit] ADV[WH=YES]``), which
+    # composes ``kahit`` with the wh-ADV inventory (saan / kailan
+    # / paano / bakit). The INDEF=YES gate keeps the plain-LOCATION
+    # / plain-TIME deferrals (Phase 5f C5 closing note) in force —
+    # only the kahit-X variants are admitted here.
+    #
+    # **Scope note**: per plan-of-record §4.2 Commit 19 the target
+    # surfaces are LOCATION (kahit saan) and TIME (kahit kailan).
+    # The INDEF=YES gate also admits MANNER (kahit paano) and
+    # REASON (kahit bakit) which are equally natural and pose no
+    # additional ambiguity risk.
+    rules.append(Rule(
+        "S",
+        ["S", "AdvP"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 INDEF) =c 'YES'",
+        ],
+    ))
+
 
     # --- Phase 5m Commit 4: sentence-initial sentential ADV --------
     #
