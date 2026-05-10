@@ -4623,3 +4623,41 @@
 - text: Inusapan ni Maria si Juan.
   construction: 'phase5n.C.2: L29 DV PFV with usap (inusapan)'
   expected: parse
+
+# --- Phase 5n.C.2 Commit 3: L77 gapping in coordination -------------
+# Closes §18.1 L77 (gapping in coord) per R&B 1986 ch.18 + S&O 1972
+# §10. Canonical pattern: `<V> <agent1> <args1> at <agent2> <args2>`
+# where the verb is shared across conjuncts (`Kumain si Maria ng
+# kanin at si Juan ng tinapay.` "Maria ate rice and Juan bread").
+#
+# State at Phase 5n.C.2 branch cut: AV gapping sentences parse
+# spuriously via the existing recursive NP-coord rule (the post-V
+# material decomposes to NP[COORD=AND] / NP[CASE=GEN], not a real
+# gapping analysis). DV gapping 0-parses since GEN-marked agents
+# can't enter the NOM-NP-coord. Commit 5 adds a gapping rule
+# producing real PRED-sharing parses; tripwire lives in
+# tests/tgllfg/test_phase5n_c2_l77_gapping.py.
+- text: Kumain si Maria ng kanin at si Juan ng tinapay.
+  construction: 'phase5n.C.2: L77 gapping AV-um 2-conjunct (canonical)'
+  expected: parse
+- text: Bumili si Maria ng aklat at si Pedro ng panulat.
+  construction: 'phase5n.C.2: L77 gapping AV-um 2-conjunct (bili)'
+  expected: parse
+- text: Naglinis si Maria ng bahay at si Pedro ng kotse.
+  construction: 'phase5n.C.2: L77 gapping AV-mag 2-conjunct'
+  expected: parse
+- text: Kumain si Maria ng kanin, si Juan ng tinapay, at si Lola ng isda.
+  construction: 'phase5n.C.2: L77 gapping AV-um 3-conjunct'
+  expected: parse
+- text: Binigayan ni Maria si Juan ng aklat at si Pedro ng panulat.
+  construction: 'phase5n.C.2: L77 gapping DV-PFV ditransitive 2-conjunct'
+  expected: parse
+- text: Tinulungan ni Maria si Juan at ni Pedro si Lola.
+  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (tulong) — pinned fragment pre-Commit-5'
+  expected: fragment
+- text: Sinulatan ni Maria si Juan at ni Pedro si Lola.
+  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (sulat) — pinned fragment pre-Commit-5'
+  expected: fragment
+- text: Inaralan ni Maria si Juan at ni Pedro si Lola.
+  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (aral) — pinned fragment pre-Commit-5'
+  expected: fragment
