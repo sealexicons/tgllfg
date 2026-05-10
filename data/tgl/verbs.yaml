@@ -204,9 +204,13 @@
   pos: VERB
   gloss: give
   transitivity: TR
-  # mag- AV; OV/DV/IV forms exist but require non-trivial sandhi
-  # deferred to Phase 2C.
-  affix_class: [mag, maka]
+  # mag- AV + DV PFV (an_oblig). R&B 1986 ch.5 paradigm tables.
+  # DV PFV surface `binigayan` is the formal-register pivot-recipient
+  # form (S&O 1972 §10); the syncope variant `binigyan` is a separate
+  # per-form lex (not yet added). OV (`-in`) and IV (`i-`) remain
+  # deferred — `bigay` OV is rare (the give-event is canonically DV
+  # for recipient pivot or IV-CONVEY for the gift-as-pivot).
+  affix_class: [mag, an_oblig, maka]
 
 - citation: bihis
   pos: VERB
@@ -1153,7 +1157,10 @@
   pos: VERB
   gloss: ask
   transitivity: TR
-  affix_class: [um, mag, in_oblig, maka]
+  # Phase 5n.C.2 Commit 2 (§18 L29): adds an_oblig for DV PFV
+  # `tinanungan` "asked (recipient)" — the canonical
+  # ask-recipient-as-pivot form per R&B 1986 ch.7 + S&O 1972 §10.
+  affix_class: [um, mag, in_oblig, an_oblig, maka]
   feats: {ASK_CLASS: "YES"}
 
 - citation: tao
@@ -1349,8 +1356,16 @@
 - citation: usap
   pos: VERB
   gloss: talk, converse
-  transitivity: INTR
-  affix_class: [mag, in_oblig, maka]
+  # Phase 5n.C.2 Commit 2 (§18 L29): retag INTR → TR. The pre-existing
+  # `in_oblig` affix class signals OV intent (`inusap` "spoke to"), but
+  # the transitivity filter (paradigms.yaml DV PFV cell requires TR)
+  # was blocking both OV and DV forms. Retagging activates the
+  # OV cycle (`inusap` / `inuusap` / `uusapin`) and the DV cycle
+  # (`inusapan` "talked to (recipient)" — recipient-as-pivot per
+  # S&O 1972 §5.30 + R&B 1986 ch.7). The intransitive reciprocal AV
+  # `mag-usap` "converse with each other" surfaces are unaffected.
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
 
 - citation: utang
   pos: VERB

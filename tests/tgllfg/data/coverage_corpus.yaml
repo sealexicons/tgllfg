@@ -4611,18 +4611,15 @@
   construction: 'phase5n.C.2: L29 DV PFV with tulong (tinulungan)'
   expected: parse
 
-# Verbs missing an_oblig at branch cut — the surface decomposes to
-# fragments (V[_UNK] + GEN-NP + NOM-NP) since the DV PFV cell does
-# not fire for these verbs. Commit 2 adds an_oblig to verbs.yaml;
-# Commit 3 flips expected to 'parse'. Tripwire test asserting the
-# zero complete-parse state lives in
-# tests/tgllfg/test_phase5n_c2_l29_dv_pfv.py.
+# Verbs whose an_oblig was added in Commit 2: bigay (added);
+# tanong (added alongside existing in_oblig); usap (added with
+# INTR → TR retag to unblock the pre-declared in_oblig OV cells).
 - text: Binigayan ni Maria si Juan.
-  construction: 'phase5n.C.2: L29 DV PFV with bigay (binigayan) — pinned fragment pre-Commit-2'
-  expected: fragment
+  construction: 'phase5n.C.2: L29 DV PFV with bigay (binigayan)'
+  expected: parse
 - text: Tinanungan ni Maria si Juan.
-  construction: 'phase5n.C.2: L29 DV PFV with tanong (tinanungan) — pinned fragment pre-Commit-2'
-  expected: fragment
+  construction: 'phase5n.C.2: L29 DV PFV with tanong (tinanungan)'
+  expected: parse
 - text: Inusapan ni Maria si Juan.
-  construction: 'phase5n.C.2: L29 DV PFV with usap (inusapan) — pinned fragment pre-Commit-2'
-  expected: fragment
+  construction: 'phase5n.C.2: L29 DV PFV with usap (inusapan)'
+  expected: parse

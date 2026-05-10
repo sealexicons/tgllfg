@@ -1,4 +1,4 @@
-"""Phase 5n.C.2 Commits 1-3 — L29 DV PFV high-frequency verbs.
+"""Phase 5n.C.2 Commit 2 — L29 DV PFV high-frequency verbs.
 
 Closes the §18.1 L29 DV PFV paradigm-coverage gap surfaced during
 Phase 5e Commit 18 review. Each canonical DV PFV sentence exercises
@@ -9,11 +9,14 @@ Pattern: ``<DV-PFV-V> ni <agent> si <pivot>`` per S&O 1972 §10 +
 R&B 1986 chs.5/7. The agent is GEN-marked; the pivot is NOM-marked
 (``si Juan``). DV pivots are semantically dative/locative/recipient.
 
-Commit 1 (this file initial) pins five working verbs as positive
-parses and three under-lexicalised verbs at 0-parse via
-``TestPinnedDVPFVMissingAnOblig``. Commit 2 adds ``an_oblig`` to
-the three under-lexicalised verbs in ``verbs.yaml``; Commit 3
-flips the tripwire to positive coverage.
+Commit 2 of Phase 5n.C.2 bundles the verbs.yaml affix-class expansion
+and the tripwire flip: ``bigay`` and ``tanong`` gain ``an_oblig``;
+``usap`` is retagged INTR → TR + ``an_oblig`` (the pre-declared
+``in_oblig`` was inadvertently blocked by the transitivity filter,
+so both OV and DV cycles activate). The previously pinned tripwire
+in ``TestPinnedDVPFVMissingAnOblig`` is flipped here to positive
+coverage; the original 0-parse test was removed once Commit 2's
+verbs.yaml changes landed.
 """
 
 from __future__ import annotations
@@ -23,7 +26,7 @@ import pytest
 from tgllfg.core.pipeline import parse_text
 
 
-# === Positive coverage — verbs that work at branch cut ====================
+# === Canonical DV PFV — all 8 verbs now parse =============================
 
 
 @pytest.mark.parametrize("sentence,verb_lemma,pred", [
@@ -32,6 +35,10 @@ from tgllfg.core.pipeline import parse_text
     ("Binilihan ni Maria si Juan.", "bili",   "BILI <SUBJ, OBJ-AGENT>"),
     ("Ginawahan ni Maria si Juan.", "gawa",   "GAWA <SUBJ, OBJ-AGENT>"),
     ("Tinulungan ni Maria si Juan.", "tulong", "TULONG <SUBJ, OBJ-AGENT>"),
+    # Three previously deferred (verbs.yaml updated in Commit 2):
+    ("Binigayan ni Maria si Juan.",  "bigay",  "BIGAY <SUBJ, OBJ-AGENT>"),
+    ("Tinanungan ni Maria si Juan.", "tanong", "TANONG <SUBJ, OBJ-AGENT>"),
+    ("Inusapan ni Maria si Juan.",   "usap",   "USAP <SUBJ, OBJ-AGENT>"),
 ])
 def test_dv_pfv_canonical(
     sentence: str, verb_lemma: str, pred: str
@@ -42,39 +49,57 @@ def test_dv_pfv_canonical(
     _ct, fs, _astr, _diags = parses[0]
     assert fs.feats.get("VOICE") == "DV"
     assert fs.feats.get("ASPECT") == "PFV"
-    # PRED may vary by lex (some have specific English glosses);
-    # assert the LEMMA-based form which the engine produces by
-    # default when no LexicalEntry overrides.
     assert fs.feats.get("PRED") == pred, (
         f"PRED mismatch for {sentence!r}: "
         f"expected {pred!r}, got {fs.feats.get('PRED')!r}"
     )
 
 
-# === Tripwire — verbs missing an_oblig at branch cut ======================
+# === Argument-role mapping ===============================================
 
 
-class TestPinnedDVPFVMissingAnOblig:
-    """Verbs whose ``verbs.yaml`` entries lack ``an_oblig`` at Phase
-    5n.C.2 branch cut (``6ad5841``): ``bigay`` / ``tanong`` / ``usap``.
-    Without ``an_oblig``, the analyzer's DV PFV cell does not fire,
-    so the canonical DV PFV sentence 0-parses.
+@pytest.mark.parametrize("sentence", [
+    "Inaralan ni Maria si Juan.",
+    "Binigayan ni Maria si Juan.",
+    "Tinanungan ni Maria si Juan.",
+    "Inusapan ni Maria si Juan.",
+])
+def test_dv_pfv_role_mapping(sentence: str) -> None:
+    """DV PFV maps NOM-pivot → SUBJ and GEN-agent → OBJ-AGENT."""
+    parses = parse_text(sentence)
+    assert len(parses) >= 1
+    _ct, fs, _astr, _diags = parses[0]
+    subj = fs.feats.get("SUBJ")
+    assert subj is not None
+    # NOM-pivot is `si Juan` — proper-noun NP with CASE=NOM.
+    assert subj.feats.get("CASE") == "NOM"
+    assert subj.feats.get("LEMMA") == "juan"
+    obj_agent = fs.feats.get("OBJ-AGENT")
+    assert obj_agent is not None
+    assert obj_agent.feats.get("CASE") == "GEN"
+    assert obj_agent.feats.get("LEMMA") == "maria"
 
-    Commit 2 adds ``an_oblig`` to each verb's affix_class list;
-    Commit 3 flips this test into positive-parse asserters.
-    """
 
-    @pytest.mark.parametrize("sentence,verb_lemma", [
-        ("Binigayan ni Maria si Juan.",  "bigay"),
-        ("Tinanungan ni Maria si Juan.", "tanong"),
-        ("Inusapan ni Maria si Juan.",   "usap"),
-    ])
-    def test_pinned_zero_parse(
-        self, sentence: str, verb_lemma: str
-    ) -> None:
-        parses = parse_text(sentence)
-        assert len(parses) == 0, (
-            f"expected 0 parses for {sentence!r} pre-Commit-2; got "
-            f"{len(parses)}. Did Commit 2 already land? If so, flip "
-            f"this tripwire to positive parse (Commit 3 task)."
-        )
+# === Aspect cycle: PFV / IPFV / CTPL =====================================
+
+
+@pytest.mark.parametrize("sentence,verb_lemma,aspect", [
+    # PFV (already covered by `test_dv_pfv_canonical`).
+    # IPFV: -in- + cv-redup + -an
+    ("Tinatanungan ni Maria si Juan.", "tanong", "IPFV"),
+    ("Inuusapan ni Maria si Juan.",    "usap",   "IPFV"),
+    # CTPL: cv-redup + -an (no -in-).
+    ("Tatanungan ni Maria si Juan.",   "tanong", "CTPL"),
+    ("Uusapan ni Maria si Juan.",      "usap",   "CTPL"),
+])
+def test_dv_aspect_cycle(
+    sentence: str, verb_lemma: str, aspect: str
+) -> None:
+    """The IPFV / CTPL DV cells fire on the newly-an_oblig'd verbs
+    too — the existing cv-redup paradigm cells (paradigms.yaml lines
+    296 / 307) gain coverage transparently."""
+    parses = parse_text(sentence)
+    assert len(parses) >= 1, f"expected ≥1 parse for {sentence!r}"
+    _ct, fs, _astr, _diags = parses[0]
+    assert fs.feats.get("VOICE") == "DV"
+    assert fs.feats.get("ASPECT") == aspect
