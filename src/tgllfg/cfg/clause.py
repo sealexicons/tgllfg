@@ -2144,3 +2144,76 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ CLAUSE_TYPE) = 'FRAGMENT'",
         ],
     ))
+
+    # === Phase 5n.C Commit 5 (§18 L83): asymmetric NP-coord fragment ====
+    #
+    # ``Si Maria, hindi si Juan.`` "Maria, not Juan" — the bare
+    # asymmetric-coord-NP fragment, lifted to a complete matrix S.
+    # The Phase 5k Commit 8 asymmetric NP-coord rule
+    # (``cfg/coordination.py:493``) already builds an
+    # ``NP[CASE=NOM, COORD=BUT_NOT]`` from the daughter shape
+    # ``NP COMMA PART[POLARITY=NEG] NP``; this rule wraps that NP
+    # as a fragment-S.
+    #
+    # Daughter shape: ``NP[CASE=NOM, COORD=BUT_NOT]`` — restricted
+    # to the asymmetric coord shape specifically. ``COORD=BUT_NOT``
+    # is set only by Phase 5k Commit 8 (no other producer in the
+    # grammar), so this serves as the structural discriminator
+    # without needing a new feat. Bare singular NPs (``Si Maria.``)
+    # do NOT carry ``COORD=BUT_NOT`` and continue to 0-parse as
+    # sentences. AND-coord (``Si Maria at si Juan.``) and OR-coord
+    # (``Si Maria o si Juan.``) NPs carry ``COORD=AND`` / ``OR``
+    # and also do not match — bare additive / disjunctive coord-NP
+    # fragments are not attested as canonical sentence fragments
+    # in Tagalog (per S&O 1972 §10).
+    #
+    # F-structure shape:
+    #
+    #   PRED       = 'NP-FRAG <SUBJ>'   (synthetic fragment predicate)
+    #   SUBJ       = ↓1                 (the asymmetric coord-NP)
+    #   CLAUSE_TYPE = 'FRAGMENT'         (downstream-consumer marker)
+    #
+    # The synthetic ``PRED='NP-FRAG <SUBJ>'`` is a one-place
+    # placeholder predicate. The asymmetric coord-NP itself has no
+    # head ``PRED`` (its conjuncts each carry proper-name PREDs;
+    # the coord-NP holds ``CONJUNCTS`` / ``COORD`` / ``CASE`` /
+    # ``NUM`` only), so we cannot inherit PRED via ``(↑) = ↓1`` as
+    # the L96 fragment-host NOUN rule above does. Synthesis is
+    # unavoidable. The L97 fragment-answer rule
+    # (``cfg/clause.py``, search "fragment-answer") similarly
+    # uses ``(↑) = ↓1`` because its lex-host (``Oo``/``Hindi`` PRONs
+    # with INTERJ=YES) carries PRED — L83 is the first fragment-S
+    # rule whose host is a constructed structure without head PRED.
+    #
+    # The ``NP-FRAG`` placeholder is intentionally minimal-
+    # commitment: Phase 6+ Glue / discourse-semantics work can
+    # interpret it as "BE", "FOCUS-CONTRAST", or "ASSERT-AND-
+    # REJECT" depending on the construction's pragmatics; this
+    # layer just admits the fragment structurally.
+    #
+    # Coexistence with V-headed S rules: the same
+    # ``NP[CASE=NOM, COORD=BUT_NOT]`` can serve as SUBJ of a
+    # V-headed S (``Kumain si Maria, hindi si Juan.`` — Phase 5k
+    # Commit 8 unchanged) OR as the sole daughter of this
+    # fragment-S rule (``Si Maria, hindi si Juan.``). For surfaces
+    # where both paths apply, the ranker picks per Phase 4 §7.9
+    # heuristics — the V-headed reading is naturally preferred
+    # because it has a real verbal PRED rather than the synthetic
+    # NP-FRAG placeholder.
+    #
+    # Reference: Schachter & Otanes 1972 §10 (asymmetric contrast
+    # construction); Ramos & Bautista 1986 ch.16 (NP coordination);
+    # Phase 5n.B Commit 16 L96 fragment-host NOUN precedent (same
+    # CLAUSE_TYPE=FRAGMENT marker, lex-feat gating);
+    # ``docs/analysis-choices.md`` "Phase 5n.C Commit 4" design
+    # appendix.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=NOM, COORD=BUT_NOT]"],
+        [
+            "(↑ PRED) = 'NP-FRAG <SUBJ>'",
+            "(↑ SUBJ) = ↓1",
+            "(↑ CLAUSE_TYPE) = 'FRAGMENT'",
+            "(↓1 COORD) =c 'BUT_NOT'",
+        ],
+    ))

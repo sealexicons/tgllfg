@@ -280,13 +280,16 @@ class TestNegationXClausalCoordLocalScoping:
 
 
 class TestDeferredAsymmetricForms:
-    """Standalone NP-coord without verbal head and the no-comma
-    asymmetric form are deferred. Pin the 0-parse state so future
-    follow-on work flips the assertion."""
+    """The no-comma asymmetric form is still deferred. Pin the
+    0-parse state so future follow-on work flips the assertion.
+
+    The standalone NP-coord without verbal head case
+    (``Si Maria, hindi si Juan.``) was deferred at Phase 5k and is
+    now closed by Phase 5n.C Commit 5 (§18 L83) — see
+    ``tests/tgllfg/test_phase5n_c_l83_fragment_coord.py`` for
+    positive coverage."""
 
     @pytest.mark.parametrize("sentence", [
-        # Standalone NP-coord (no verbal head).
-        "Si Maria, hindi si Juan.",
         # No-comma asymmetric — comma is structurally required.
         "Kumain si Maria hindi si Juan.",
     ])
@@ -294,7 +297,6 @@ class TestDeferredAsymmetricForms:
         parses = parse_text(sentence)
         assert len(parses) == 0, (
             f"{sentence!r} now parses — Phase 5k follow-on may have "
-            f"landed standalone-NP-coord support or a no-comma "
-            f"asymmetric variant. Update this test and add positive "
-            f"tests for the new construction."
+            f"landed a no-comma asymmetric variant. Update this test "
+            f"and add positive tests for the new construction."
         )
