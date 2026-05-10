@@ -112,31 +112,14 @@ class TestSelectionalRestriction:
 # === Deferred: Oo. / Hindi. ===========================================
 
 
-DEFERRED_FRAGMENT_ANSWERS = [
-    "Oo.",
-    "Hindi.",
-]
-
-
-class TestOoHindiDeferred:
-    """``Oo.`` ("yes") and ``Hindi.`` ("no") as standalone fragment-
-    answer clauses are NOT in Phase 5m scope.
-
-    * ``oo`` is not lex'd (would need a new PRON[INTERJ=YES,
-      ANSWER=AFFIRM] entry; orthogonal to politeness work).
-    * ``hindi`` is lex'd as PART[POLARITY=NEG], not PRON. A second
-      PRON[INTERJ=YES, ANSWER=NEG] entry would be needed; the
-      fragment-answer rule would also need a parallel
-      ``(↑ ANSWER) =c 'NEG'`` rule.
-
-    Both items are flagged for Phase 5n debt-clearing.
-    """
-
-    @pytest.mark.parametrize("sent", DEFERRED_FRAGMENT_ANSWERS)
-    def test_zero_parse_deferred(self, sent: str) -> None:
-        parses = parse_text(sent)
-        assert len(parses) == 0, (
-            f"{sent!r} parsed unexpectedly — fragment-answer "
-            f"infrastructure has been extended; close the deferral "
-            f"and un-pin this test."
-        )
+# ``Oo.`` and ``Hindi.`` standalone fragment-answer clauses
+# closed in Phase 5n.B Commit 17 (§18 L97). The C17 changes:
+#
+#   * Added ``oo`` PRON[INTERJ=YES, ANSWER=AFFIRM] entry.
+#   * Added ``hindi`` PRON[INTERJ=YES, ANSWER=NEG] entry alongside
+#     the existing PART[POLARITY=NEG] entry.
+#   * Relaxed the Phase 5m C3 fragment-answer rule's ANSWER
+#     constraint from ``=c 'AFFIRM'`` to existential to admit
+#     both AFFIRM and NEG answers.
+#
+# See ``test_phase5n_b_oo_hindi_answer.py`` for the closure tests.

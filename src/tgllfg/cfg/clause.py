@@ -2074,32 +2074,39 @@ def register_rules(rules: list[Rule]) -> None:
 
     # === Phase 5m Commit 3: fragment-answer interjection clause ==========
     #
-    # ``Opo.`` "Yes (polite)", ``Oho.`` "Yes (colloquial-polite)" form
-    # one-word answer clauses. PRON entries with ``INTERJ=YES`` and
-    # ``ANSWER=AFFIRM`` (only ``opo`` / ``oho`` today) project as a
-    # complete matrix S via this rule; the PRON's REGISTER (POLITE /
-    # COLLOQUIAL_POLITE) percolates to the matrix S via ``(↑) = ↓1``.
+    # ``Opo.`` "Yes (polite)", ``Oho.`` "Yes (colloquial-polite)",
+    # ``Oo.`` "Yes", ``Hindi.`` "No" form one-word answer clauses.
+    # PRON entries with ``INTERJ=YES`` and ``ANSWER`` ∈ {AFFIRM, NEG}
+    # project as a complete matrix S via this rule; PRON-level feats
+    # (REGISTER, ANSWER) percolate to the matrix S via ``(↑) = ↓1``.
     # CLAUSE_TYPE=FRAGMENT_ANSWER tags the matrix as a fragment-answer
     # clause for downstream consumers.
     #
     # Constraints:
     # * ``(↑ INTERJ) =c 'YES'`` — gates to interjection PRONs only.
-    # * ``(↑ ANSWER) =c 'AFFIRM'`` — gates to affirmative answers
-    #   (no negative-answer PRON entries today; ``hindi`` is PART
-    #   [POLARITY=NEG], not PRON. ``Hindi.`` / ``Oo.`` standalone
-    #   answers stay deferred — see Phase 5n debt).
+    # * ``(↑ ANSWER)`` (existential) — requires the ANSWER feat to
+    #   be defined (no value constraint), admitting both AFFIRM
+    #   (Oo / Opo / Oho) and NEG (Hindi). Phase 5n.B Commit 17
+    #   relaxed this from ``=c 'AFFIRM'`` when adding the
+    #   PRON entries for ``oo`` / ``hindi`` (§18 L97).
     #
-    # This rule does NOT cover ``Salamat po.`` (NOUN fragment +
-    # politeness clitic) — that needs a separate noun-fragment matrix
-    # rule that is a more general analytical commitment, deferred to
-    # Phase 5n.
+    # ``hindi`` has both a PART[POLARITY=NEG] entry (particles.yaml,
+    # used by the hindi-wrap negation rule) and a PRON[INTERJ=YES,
+    # ANSWER=NEG] entry (pronouns.yaml, used by this rule). Rule
+    # context disambiguates: the fragment-answer rule fires on a
+    # single PRON with no trailing tokens, while hindi-wrap requires
+    # an inner S as second daughter — no cross-firing.
+    #
+    # The Phase 5n.B C16 NOUN-host fragment path (``Salamat po.``)
+    # uses CLAUSE_TYPE=FRAGMENT (no ANSWER) via ``S → N`` gated on
+    # FRAGMENT_HOST=YES — distinct path, distinct CLAUSE_TYPE value.
     rules.append(Rule(
         "S",
         ["PRON"],
         [
             "(↑) = ↓1",
             "(↑ INTERJ) =c 'YES'",
-            "(↑ ANSWER) =c 'AFFIRM'",
+            "(↑ ANSWER)",
             "(↑ CLAUSE_TYPE) = 'FRAGMENT_ANSWER'",
         ],
     ))

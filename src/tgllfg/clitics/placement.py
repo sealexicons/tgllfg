@@ -156,6 +156,16 @@ def _find_verbless_anchor(
         # subordinators, etc.), never predicate heads.
         if all(ma.pos == "PART" for ma in cands):
             continue
+        # Phase 5n.B Commit 17: ``hindi`` now has both a
+        # PART[POLARITY=NEG] entry (negation, particles.yaml) and
+        # a PRON[INTERJ=YES, ANSWER=NEG] entry (answer-clause,
+        # pronouns.yaml). The all-PART check above no longer
+        # skips it because of the PRON reading. Explicitly skip
+        # tokens with any negation-PART reading so the verbless-
+        # neg-hoist logic still finds the post-NEG anchor (the
+        # ADJ / NOUN / ADP predicate head).
+        if _is_neg_part(cands):
+            continue
         return i
     return None
 

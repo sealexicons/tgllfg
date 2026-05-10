@@ -177,6 +177,23 @@
 # REGISTER distinguishes them. Reference: R&B 1986 §15.4.
 - surface: sinuman
   feats: {PRED: SOMEONE_NEG_INDEF, INDEF: NEG_INDEF, NUM: SG, PERS: 3, CASE: NOM, LEMMA: sinuman}
+# Phase 5n.B Commit 17 (§18 L97): standalone affirmative /
+# negative answer-clause PRONs. ``oo`` "yes" was previously
+# unlex'd; ``hindi`` "no" had only a PART[POLARITY=NEG] entry
+# in particles.yaml (used by the hindi-wrap negation rule).
+# These new PRON entries close the L97 fragment-answer surfaces
+# (``Oo.`` / ``Hindi.``) and feed the Phase 5m C3 fragment-answer
+# rule (``S → PRON`` gated on INTERJ=YES) — relaxed in this
+# commit to admit ANSWER ∈ {AFFIRM, NEG}, not just AFFIRM. The
+# ``hindi`` PART entry stays in particles.yaml and continues to
+# feed the hindi-wrap (``S → PART[POLARITY=NEG] S``) negation
+# rule — the two readings are disambiguated by rule context (the
+# fragment-answer rule fires on a single PRON with no trailing
+# tokens; hindi-wrap requires an inner S).
+- surface: oo
+  feats: {PRED: "YES", INTERJ: "YES", ANSWER: AFFIRM, LEMMA: oo}
+- surface: hindi
+  feats: {PRED: "NO", INTERJ: "YES", ANSWER: NEG, LEMMA: hindi}
 - surface: opo
   feats: {PRED: "YES", INTERJ: "YES", ANSWER: AFFIRM, REGISTER: POLITE, LEMMA: opo}
 - surface: oho
