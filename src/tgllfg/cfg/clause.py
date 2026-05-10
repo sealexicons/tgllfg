@@ -1330,6 +1330,51 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.B Commit 15: kanino + possessed-N + NOM-NP cleft ---
+    #
+    # ``Kanino kaibigan ito?``      "Whose friend is this?"
+    # ``Kanino aklat ito?``         "Whose book is this?"
+    # ``Kanino bahay ang malaki?``  "Whose house is the big one?"
+    #
+    # Closes §18.1 deferral L59. Sibling to the Phase 5i C9 (b)
+    # bare DAT-cleft above; same DAT-PRON pivot but with an
+    # additional N daughter as the predicate-N's possessed head.
+    # The NOM-NP is the matrix SUBJ (the possessee referent).
+    #
+    # F-structure shape mirrors the Phase 5n.B C2 predicative-N
+    # rule (PRED='BE-N <SUBJ>', N_LEMMA from the predicate-N) plus
+    # a POSS slot carrying the wh-PRON possessor and the wh
+    # markers (Q_TYPE, WH_LEMMA) for downstream consumers.
+    #
+    # **Structural disambiguation from bare DAT-cleft**: the
+    # 3-daughter shape (with the N between PRON and NOM-NP) is
+    # distinct from the 2-daughter bare cleft above
+    # (``Kanino ang aklat?``) — different daughter counts; no
+    # cross-firing.
+    #
+    # **Coexistence with Phase 5i C9 wh-fronting** (the
+    # ``S → PRON[WH=YES, CASE=DAT] S`` rule below): the wh-fronting
+    # rule also fires on this surface (``kaibigan ito`` parses as
+    # an S via the C2 predicative-N rule). Both parses surface,
+    # with different f-structures — the wh-fronting parse holds
+    # kanino in ADJUNCT; this rule's parse holds it in POSS. Tests
+    # accept ``>= 1`` parse with the POSS-slot shape.
+    rules.append(Rule(
+        "S",
+        ["PRON[WH=YES, CASE=DAT]", "N", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BE-N <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ N_LEMMA) = ↓2 LEMMA",
+            "(↑ POSS) = ↓1",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = 'YES'",
+            "(↓1 WH) =c 'YES'",
+            "(↓1 CASE) =c 'DAT'",
+        ],
+    ))
+
     # --- Phase 5n.B Commit 9: sa-DAT NP cleft (§18 L51) -----------
     #
     # ``Sa kanino ang aklat?``  "Whose is the book?" (with
