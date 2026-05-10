@@ -494,6 +494,33 @@ BASE: dict[str, list[LexicalEntry]] = {
             },
             intrinsic_classification=_AV_DITRANS_AGENT_THEME_RECIP_LOC,
         ),
+        # Phase 5n.C.2 Commit 5 (§18 L29 + L77): DV 2-arg
+        # recipient-pivot entry for `binigayan` "gave to (someone)".
+        # Mirrors the sulat DV entry pattern (AGENT + RECIPIENT
+        # pivot). Enables the 2-arg DV PRED so gapping rule [2] in
+        # `cfg/coordination.py` can fire for `Binigayan ni Maria si
+        # Juan at ni Pedro si Lola.` etc.
+        _entry(
+            "bigay", "DV", "GIVE <SUBJ, OBJ-AGENT>",
+            ["AGENT", "RECIPIENT"],
+            {"RECIPIENT": "SUBJ", "AGENT": "OBJ-AGENT"},
+            intrinsic_classification=_DV_TR_AGENT_RECIPIENT,
+        ),
+        # 3-arg DV with explicit THEME alongside AGENT + RECIPIENT-
+        # pivot. Mirrors sulat's "WRITE-TO" 3-arg entry. Enables
+        # `Binigayan ni Maria si Juan ng aklat.` (Mother-AGENT gave
+        # Juan-RECIPIENT a book-THEME) and the DV ditrans gapping
+        # rule [3] in `cfg/coordination.py`.
+        _entry(
+            "bigay", "DV", "GIVE-TO <SUBJ, OBJ-AGENT, OBJ-PATIENT>",
+            ["AGENT", "PATIENT", "RECIPIENT"],
+            {
+                "RECIPIENT": "SUBJ",
+                "AGENT": "OBJ-AGENT",
+                "PATIENT": "OBJ-PATIENT",
+            },
+            intrinsic_classification=_DV_TR_AGENT_PATIENT_RECIPIENT_THREE_ARG,
+        ),
     ],
     # gawa — do, make.
     "gawa": [

@@ -4584,3 +4584,83 @@
 - text: Hindi si Maria o si Juan tumakbo.
   construction: 'phase5n.C: L78 wide-scope hindi over OR-coord with intransitive AV verb'
   expected: parse
+
+# --- Phase 5n.C.2 Commit 1: L29 DV PFV high-frequency verbs ---------
+# Closes the §18.1 L29 DV PFV paradigm-coverage gap surfaced during
+# Phase 5e Commit 18 review. Each fixture exercises the DV PFV
+# paradigm cell (paradigms.yaml line 286: -in- infix + -an suffix)
+# on a high-frequency verb. Canonical DV pattern: `<DV-PFV-V> ni
+# <agent> si <pivot>` per S&O 1972 §10 + R&B 1986 chs.5/7.
+#
+# Verbs already covered by verbs.yaml at branch cut (5 fixtures
+# below): aral / basa / bili / gawa / tulong all carry an_oblig +
+# generate cleanly via the existing DV PFV cell.
+- text: Inaralan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with aral (inaralan)'
+  expected: parse
+- text: Binasahan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with basa (binasahan)'
+  expected: parse
+- text: Binilihan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with bili (binilihan)'
+  expected: parse
+- text: Ginawahan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with gawa (ginawahan)'
+  expected: parse
+- text: Tinulungan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with tulong (tinulungan)'
+  expected: parse
+
+# Verbs whose an_oblig was added in Commit 2: bigay (added);
+# tanong (added alongside existing in_oblig); usap (added with
+# INTR → TR retag to unblock the pre-declared in_oblig OV cells).
+- text: Binigayan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with bigay (binigayan)'
+  expected: parse
+- text: Tinanungan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with tanong (tinanungan)'
+  expected: parse
+- text: Inusapan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with usap (inusapan)'
+  expected: parse
+
+# --- Phase 5n.C.2 Commit 3: L77 gapping in coordination -------------
+# Closes §18.1 L77 (gapping in coord) per R&B 1986 ch.18 + S&O 1972
+# §10. Canonical pattern: `<V> <agent1> <args1> at <agent2> <args2>`
+# where the verb is shared across conjuncts (`Kumain si Maria ng
+# kanin at si Juan ng tinapay.` "Maria ate rice and Juan bread").
+#
+# State at Phase 5n.C.2 branch cut: AV gapping sentences parse
+# spuriously via the existing recursive NP-coord rule (the post-V
+# material decomposes to NP[COORD=AND] / NP[CASE=GEN], not a real
+# gapping analysis). DV gapping 0-parses since GEN-marked agents
+# can't enter the NOM-NP-coord. Commit 5 adds a gapping rule
+# producing real PRED-sharing parses; tripwire lives in
+# tests/tgllfg/test_phase5n_c2_l77_gapping.py.
+- text: Kumain si Maria ng kanin at si Juan ng tinapay.
+  construction: 'phase5n.C.2: L77 gapping AV-um 2-conjunct (canonical)'
+  expected: parse
+- text: Bumili si Maria ng aklat at si Pedro ng panulat.
+  construction: 'phase5n.C.2: L77 gapping AV-um 2-conjunct (bili)'
+  expected: parse
+- text: Naglinis si Maria ng bahay at si Pedro ng kotse.
+  construction: 'phase5n.C.2: L77 gapping AV-mag 2-conjunct'
+  expected: parse
+- text: Kumain si Maria ng kanin, si Juan ng tinapay, at si Lola ng isda.
+  construction: 'phase5n.C.2: L77 gapping AV-um 3-conjunct'
+  expected: parse
+- text: Binigayan ni Maria si Juan at ni Pedro si Lola.
+  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (bigay)'
+  expected: parse
+- text: Binigayan ni Maria si Juan ng aklat at si Pedro ng panulat.
+  construction: 'phase5n.C.2: L77 gapping DV-PFV ditransitive 2-conjunct'
+  expected: parse
+- text: Tinulungan ni Maria si Juan at ni Pedro si Lola.
+  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (tulong)'
+  expected: parse
+- text: Sinulatan ni Maria si Juan at ni Pedro si Lola.
+  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (sulat)'
+  expected: parse
+- text: Inaralan ni Maria si Juan at ni Pedro si Lola.
+  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (aral)'
+  expected: parse

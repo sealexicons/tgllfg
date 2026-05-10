@@ -11661,3 +11661,199 @@ overlap; no rule competition.
   entries with ``UNIV=YES``.
 - Schachter & Otanes 1972 §10 (quantifier scope).
 - Ramos & Bautista 1986 ch.16 (universal quantification).
+
+## Phase 5n.C.2 Commit 4: L77 PRED-sharing gapping in coord — design (CONJUNCTS reentrancy)
+
+**Date:** 2026-05-10 (Phase 5n.C.2).
+**Status:** design. Implementation lands in Phase 5n.C.2 Commit 5;
+this entry documents the analysis decision and the f-structure
+shape so the implementing commit is mechanical.
+
+### Decision
+
+The L77 gapping construction (``Kumain si Maria ng kanin at si Juan
+ng tinapay.`` "Maria ate rice and Juan bread", canonical per
+R&B 1986 ch.18 + S&O 1972 §10) is analysed as **PRED-sharing via
+reentrancy across coord-S conjuncts**, in line with Bresnan 2001
+§6 (coord) + Dalrymple 2001 §4 (reentrancy in coord).
+
+The matrix S of a gapping construction is a coord with
+``COORD=AND`` (or ``COORD=OR``); each conjunct is a sub-f-structure
+in the ``CONJUNCTS`` set whose ``PRED`` value is reentrant
+to the verb's lex ``PRED``. The first conjunct contributes the
+shared verb explicitly; the second (and any subsequent) conjunct
+re-binds the verb's PRED + a-structure via reentrancy without an
+explicit V daughter in the c-tree.
+
+### Mechanism
+
+The new rule slot in ``src/tgllfg/cfg/coordination.py`` is
+
+```text
+S → V[VOICE=AV, ...] NP[CASE=NOM] NP[CASE=GEN] PART[COORD=AND] \
+    NP[CASE=NOM] NP[CASE=GEN]
+```
+
+with equations roughly:
+
+```text
+↓5 ∈ (↑ CONJUNCTS)         # first conjunct (V's frame) added
+↓6 ∈ (↑ CONJUNCTS)         # second conjunct's frame added
+(↑ COORD)   = 'AND'
+(↑ GAPPING) = 'YES'        # matrix marker
+(↓1 PRED)   = (↓5 PRED)    # share PRED across conjuncts (reentrancy)
+(↓1 PRED)   = (↓6 PRED)    # ditto for the gapped conjunct
+(↓5 SUBJ)   = ↓2           # first conjunct's SUBJ = NP[NOM]_1
+(↓5 OBJ)    = ↓3           # first conjunct's OBJ  = NP[GEN]_1
+(↓6 SUBJ)   = ↓5_NP[NOM]   # second conjunct's SUBJ = NP[NOM]_2
+(↓6 OBJ)    = ↓6_NP[GEN]   # second conjunct's OBJ  = NP[GEN]_2
+(↓4 COORD)  =c 'AND'
+```
+
+(Exact equations land in Commit 5; the equation shapes above are
+schematic — the implementing commit picks the precise rule shape
+and possibly parameterises over voice / argument-frame variants.)
+
+Parallel rule slots for **DV gapping** (``Tinulungan ni Maria si
+Juan at ni Pedro si Lola.``) flip the case-marking pattern to
+``NP[CASE=GEN] NP[CASE=NOM]`` (DV: GEN-agent, NOM-pivot) and adapt
+the conjunct equations. The DV variant covers the corpus fixtures
+pinned in Commit 3 (``tulong`` / ``sulat`` / ``aral``).
+
+### Matrix marker: ``GAPPING=YES``
+
+The matrix S carries an explicit ``GAPPING=YES`` feat to
+disambiguate real gapping from the existing spurious recursive
+NP-coord parses (see Commit 3 design notes) and from the existing
+biclausal coord (``Kumain si Maria at uminom si Juan.`` —
+``COORD=AND`` but no shared PRED). Downstream consumers can pattern-
+match on ``GAPPING=YES`` to identify the construction; per
+``feedback_terse_feature_names`` the marker is a single segment
+with the atomic value ``YES``.
+
+The choice of ``GAPPING=YES`` (rather than reusing an existing
+feat like ``COORD=GAP`` or layering on ``ELLIPSIS=YES``) reflects
+that:
+
+- ``COORD`` already ranges over ``AND`` / ``OR`` / ``BUT`` / ``SO``
+  / ``BUT_NOT`` (Phase 5k coord). Adding a ``COORD=GAP`` value
+  would mix a structural marker (the gapping mechanism) into
+  the conjunction-type feat (the surface connector). Keeping
+  ``COORD=AND`` + ``GAPPING=YES`` separate is cleaner.
+- ``ELLIPSIS`` would be too broad: gapping is a specific form
+  of clausal ellipsis with PRED-sharing; other ellipsis forms
+  (sluicing, VP-ellipsis) have different mechanisms and may
+  warrant separate markers if ever closed.
+
+### Why PRED-sharing reentrancy and not the alternatives
+
+The §18.2 L77 entry noted three LFG analyses; here is the
+disposition for each:
+
+**1. PRED-sharing via reentrancy (chosen).** Bresnan 2001 §6
+treats gapping as coord with reentrant PRED across conjunct
+f-structures. Dalrymple 2001 §4 elaborates the reentrancy
+mechanism. This analysis fits LFG's design space directly:
+
+- No new c-structure machinery — the rule introduces a new
+  c-structure shape but uses standard f-structure reentrancy
+  for the PRED equality.
+- No empty categories — the second conjunct has no V daughter
+  in the c-tree, but the f-structure carries the shared PRED
+  via the existing reentrancy mechanism.
+- Composes cleanly with Phase 5k's ``CONJUNCTS`` set — gapping
+  conjuncts populate the same set, just with shared PRED.
+
+**2. Structural ellipsis (rejected).** Would introduce an empty
+V category in the second conjunct's c-tree, with a binding
+equation tying the empty V to the first conjunct's V. This
+adds empty categories to the grammar, which Phase 4 §7.5
+(relativization) avoided and which Phase 6 LFG-graph parsing
+will further marginalise. Rejected on inventory grounds.
+
+**3. Small-clause coord (rejected).** Would treat each conjunct
+as a "small clause" with no projected V — a separate
+clause-type from S. Requires a new ``S_SMALL`` non-terminal
+and rule slate, plus a separate analysis for how the shared V
+distributes over the small-clause conjuncts. Larger
+architectural change for the same expressive outcome.
+PRED-sharing reentrancy is the lowest-cost path.
+
+### Interaction with Phase 5k coord (CONJUNCTS, COORD propagation)
+
+Phase 5k's NP-coord (``cfg/coordination.py`` lines 78-112) and
+clausal coord (``cfg/coordination.py`` lines 350+) both use:
+
+- ``(↑ COORD) = '<value>'`` to set matrix coord type
+- ``↓N ∈ (↑ CONJUNCTS)`` to add each conjunct to the set
+- ``(↓N COORD) =c '<value>'`` belt-and-braces on the
+  conjunction particle
+
+The gapping rule re-uses **all three patterns**. The only
+addition is the ``GAPPING=YES`` matrix marker and the
+PRED-reentrancy equations. No conflict with Phase 5k: both
+mechanisms produce ``COORD=AND`` + ``CONJUNCTS={c1, c2}``;
+the difference is whether each conjunct has an independent
+PRED (Phase 5k biclausal coord) or a shared reentrant PRED
+(gapping).
+
+### Disambiguation from spurious recursive NP-coord
+
+Pre-Commit-5, AV gapping sentences parse spuriously via the
+existing recursive ``NP → NP NP[GEN]`` rule; the matrix S has
+no ``COORD`` feat on these spurious parses. After Commit 5,
+the gapping rule produces an additional real-gapping parse with
+``COORD=AND`` + ``GAPPING=YES``. The ranker prefers the real
+parse (more meaningful structure; per Phase 4 §7.9 heuristics);
+the spurious parse stays admissible but lower-ranked.
+
+The parser's non-conflict matcher (see
+``project_parser_nonconflict_matcher`` memory) is the source of
+the spurious parses. Phase 6's graph-constrained unification
+parser is expected to eliminate them by checking feature
+compatibility at predict time. Until then, ranking is the
+mitigation.
+
+### Scope: AV+DV 2 and 3 conjunct; OBJ-only gapping deferred
+
+The implementing commit covers the most common gapping shapes:
+
+- **2-conjunct AV transitive** (canonical): ``Kumain si Maria ng
+  kanin at si Juan ng tinapay.``
+- **3-conjunct AV transitive**: ``Kumain si Maria ng kanin, si
+  Juan ng tinapay, at si Lola ng isda.``
+- **2-conjunct DV transitive**: ``Tinulungan ni Maria si Juan at
+  ni Pedro si Lola.``
+- **2-conjunct DV ditransitive**: ``Binigayan ni Maria si Juan
+  ng aklat at si Pedro ng panulat.``
+
+Out of scope for Commit 5 (corpus pressure dependent):
+
+- **OBJ-only gapping** (``Kumain si Maria ng kanin at ng
+  tinapay.`` — Maria ate rice and bread) — flagged as marginal
+  in the plan §4.2 Commit 4 (more clausal coord than gapping;
+  per §18.2 deferred-as-unclear).
+- **Mixed-voice gapping** (``Kumain si Maria at tinawag ni Juan
+  si Pedro.``) — semantically different, the verbs aren't
+  shared; this is biclausal coord.
+- **Adjunct-only gap** (``Kumain si Maria sa bahay at si Juan
+  sa simbahan.``) — adverbial residue rather than argument
+  residue; defer to corpus pressure.
+
+### Cross-references
+
+- Phase 5n.C plan-of-record §4.2 Commits 4-7
+  (``.claude/plans/tgllfg-phase-5n-c.md``; this design appendix
+  is Commit 4 / formerly Commit 5).
+- §18 L77 disposition (closes with Commits 3-5) —
+  ``.claude/plans/tgllfg-out-of-scope.md``.
+- Phase 5k Commit 3 binary NP-coord (CONJUNCTS / COORD pattern
+  reused) — ``src/tgllfg/cfg/coordination.py:78-112``.
+- Phase 5k clausal-S coord (``S → S PART[COORD=AND] S``,
+  parallel pattern) — ``src/tgllfg/cfg/coordination.py:350+``.
+- ``project_parser_nonconflict_matcher`` memory — the spurious
+  parse caveat is parser-level; Phase 6 supersedes.
+- Bresnan 2001 ch.16 §3 "Coordination" (PRED-sharing analysis).
+- Dalrymple 2001 ch.4 §4 "Coordination and reentrancy".
+- Schachter & Otanes 1972 §10 (coord in Tagalog).
+- Ramos & Bautista 1986 ch.18 (coord in Tagalog).
