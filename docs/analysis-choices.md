@@ -11493,3 +11493,171 @@ fragment cases for specific opted-in lex items (``salamat``,
   ``src/tgllfg/cfg/clause.py:2134`` (search "fragment-host").
 - Schachter & Otanes 1972 §10 (asymmetric contrast construction).
 - Ramos & Bautista 1986 ch.16 (NP coordination).
+
+## Phase 5n.C Commit 6: L81 distributive-Q topic — design (DISTRIB scope marker)
+
+**Date:** 2026-05-10 (Phase 5n.C).
+**Status:** design. Implementation lands in Phase 5n.C Commit 7.
+
+### Decision
+
+A new clause rule ``S → NP[CASE=NOM] PART[PUNCT_CLASS=COMMA]
+V[VOICE=AV]`` admits the surface ``Bawat bata, kumain.`` "Each
+child ate" — a fronted universal-Q-NP topic, separated by a comma
+from an AV-intransitive verb, producing a distributive-scope
+reading. The matrix S carries ``DISTRIB=YES`` to mark the
+distributive operator scope; the topic-NP becomes the matrix
+``SUBJ`` (filling the AV verb's required argument).
+
+### Analysis chosen: each-distributive operator
+
+The plan-of-record §3.3 outlined two competing analyses:
+
+1. **Distributive coord-elaboration.** Treat ``Bawat bata, kumain.``
+   as a coord-style elaboration where the comma is the structural
+   separator and the Q-NP is one of the coord daughters. Rejected
+   — the surface is not a coord (only one conjunct, not a list);
+   the comma is a topicalization marker, not a coord connective.
+
+2. **Each-distributive operator.** Treat the Q-NP as a topic that
+   raises to a distributive operator scope position; the inner
+   clause carries the predication; the matrix is marked with a
+   distributive-scope feat. **Chosen.** Cited basis: S&O 1972 §10
+   (quantifier scope); R&B 1986 ch.16 (universal quantification).
+
+The chosen analysis matches the LFG-canonical handling of
+quantifier-scope marking (Bresnan 2001 §6 + Dalrymple 2001 §6 on
+scope feats). The semantic side — interpreting the operator as a
+distributive Glue derivation that scopes universally over the
+inner predication — stays as **Phase 6+ Glue work** (out-of-scope
+per ``tgllfg-out-of-scope.md`` §5.5 L19; the distributive scope
+semantics is part of the broader quantifier-Glue agenda that
+Phase 6's FU + LDD work prerequisites).
+
+### Daughter pattern: ``NP[CASE=NOM]`` with UNIV constraining equation
+
+The plan-of-record originally specified ``Q[DISTRIB=YES]`` as the
+first daughter. Under the existing lex (``data/tgl/particles.yaml``
+Phase 5f Commit 20), ``bawat`` and ``kada`` carry
+``feats: {QUANT: EVERY, UNIV: "YES"}`` — **not ``DISTRIB``**. The
+``DISTRIB`` feat is reserved in the existing grammar for
+distributive cardinals (``tig-isa`` "one each", ``tig-dalawa``
+"two each" — Phase 5f Commit 19) and as the matrix-level
+distributive-scope marker (``cfg/clause.py:188`` predicative
+distributive-cardinal rule sets ``(↑ DISTRIB) = 'YES'``).
+
+To match the existing lex without introducing a new ``DISTRIB``
+feat on ``bawat`` / ``kada``, the L81 rule uses a constraining
+equation pattern:
+
+```text
+S → NP[CASE=NOM] PART[PUNCT_CLASS=COMMA] V[VOICE=AV]
+  (↑ PRED) = ↓3 PRED                  -- verb percolation from ↓3
+  (↑ VOICE) = ↓3 VOICE
+  (↑ ASPECT) = ↓3 ASPECT
+  (↑ MOOD) = ↓3 MOOD
+  (↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT
+  (↑ DISTRIB) = 'YES'                 -- matrix scope marker
+  (↑ SUBJ) = ↓1                       -- topic-NP fills AV verb's SUBJ
+  (↓1 UNIV) =c 'YES'                  -- gates to bawat / kada heads
+  (↓2 PUNCT_CLASS) =c 'COMMA'         -- belt-and-braces comma filter
+```
+
+The ``(↓1 UNIV) =c 'YES'`` constraining equation gates the rule
+to topic-NPs whose head carries ``UNIV=YES`` — i.e., ``bawat`` /
+``kada``-headed NPs (the Phase 5f Commit 20 universal-Q + bare-N
+rule sets ``(↑ UNIV) = 'YES'`` on the resulting NP). Bare proper-
+name topics (``Si Maria, kumain.``) lack ``UNIV`` and don't
+match. Non-universal Qs (``lahat``, ``iba``, vague Qs) also lack
+``UNIV`` and don't match.
+
+### Why ``(↑ DISTRIB) = 'YES'`` and not a new feat
+
+``DISTRIB=YES`` is already an established matrix-level marker
+(Phase 5f Commit 19 predicative distributive cardinals — ``cfg/
+clause.py:188``). Using the same feat for L81 keeps the matrix
+naming-space consistent: a clause with distributive reading
+carries ``DISTRIB=YES`` regardless of whether the distributivity
+comes from a distributive numeral (``tig-isa``) or a universal-Q
+topic (``bawat``). Downstream consumers can pattern-match on
+``DISTRIB=YES`` uniformly. Per ``feedback_terse_feature_names``,
+the existing terse feat is preferred over a new
+``Q_SCOPE=DISTRIB`` or ``DIST_SCOPE=YES`` synonym.
+
+### Scope: AV-intransitive only for this commit
+
+The rule's third daughter is restricted to ``V[VOICE=AV]`` (no
+explicit transitive-frame variants). The canonical S&O 1972 §10
+example is ``Bawat isa, kumain.`` (intransitive). Transitive
+variants (``Bawat isa, kumain ng kanin.``) would require parallel
+rules with V + GEN-NP / V + DAT-NP frames; defer to a follow-on
+if corpus pressure surfaces. The intransitive case closes the
+core L81 syntactic side per the plan.
+
+### Out of scope: ``Bawat isa, ...`` (Q + NUM)
+
+The canonical ``Bawat isa, kumain.`` example involves ``bawat
+isa`` (Q + NUM "each one"). Phase 5f Commit 20 explicitly
+deferred Q + NUM composition (``bawat isa`` / ``bawat dalawa`` /
+etc.). Without that compositional rule, ``Bawat isa, kumain.``
+cannot match the L81 daughter pattern — the front position
+expects an ``NP[CASE=NOM]``, but ``bawat isa`` 0-parses as an NP
+today.
+
+The L81 commit closes the comma+S syntactic mechanism for
+``bawat`` + N forms (``Bawat bata, kumain.``, ``Kada bata,
+kumain.``); the Q + NUM piece remains deferred separately. This
+matches the disposition pattern from Phase 5f Commit 20: each
+piece of the universal-Q feature surface is closed independently
+based on linguistic priority.
+
+### Disambiguation from ay-fronting
+
+The existing Phase 4 §7.4 ay-fronting rule already admits
+``Bawat bata ay kumain.`` "Every child eats" with the bawat-NP
+in topic position. That parse does NOT carry ``DISTRIB=YES`` on
+the matrix — ay-fronting is a topicalization mechanism without
+intrinsic distributive scope. The L81 comma+S construction is
+distinct: the comma marks the distributive-scope reading
+explicitly, whereas ay-fronting is a more general
+topicalization that doesn't specialize for distributivity.
+
+For surfaces where both are structurally available (e.g., a
+bawat-NP with both ``ay`` and a comma — uncommon), the parser
+admits both readings; ranking per Phase 4 §7.9 heuristics.
+
+### Disambiguation from Phase 5n.C Commit 5 (L83 fragment-NP-coord)
+
+The L83 fragment-NP-coord rule
+(``S → NP[CASE=NOM, COORD=BUT_NOT]``) and the L81 distributive-Q
+rule are structurally distinct:
+
+- L83's daughter is a 1-element rule: just the asymmetric
+  coord-NP, no comma daughter, no V.
+- L81's daughter is a 3-element rule: NP + COMMA + V.
+
+Both have a comma in their input surfaces, but the L83 comma is
+*inside* the coord-NP daughter (consumed by Phase 5k Commit 8
+which builds ``NP COMMA hindi NP``), while the L81 comma is a
+*top-level* daughter of the new clause rule. No structural
+overlap; no rule competition.
+
+### Cross-references
+
+- Phase 5n.C plan-of-record Commits 6 + 7
+  (``.claude/plans/tgllfg-phase-5n-c.md`` §3.3; this design
+  appendix is Commit 6).
+- §18 L81 disposition (closes with this commit pair) —
+  ``tgllfg-out-of-scope.md``.
+- §5.5 L19 quantifier-Glue deferral (Phase 6+ scope semantics) —
+  ``tgllfg-out-of-scope.md``.
+- Phase 5f Commit 19 predicative distributive-cardinal rule
+  (existing ``DISTRIB=YES`` matrix marker convention) —
+  ``src/tgllfg/cfg/clause.py:188``.
+- Phase 5f Commit 20 universal-Q + bare-N rule (sets
+  ``UNIV=YES`` on the resulting NP) —
+  ``src/tgllfg/cfg/nominal.py:696``.
+- ``data/tgl/particles.yaml:414`` — ``bawat`` / ``kada`` lex
+  entries with ``UNIV=YES``.
+- Schachter & Otanes 1972 §10 (quantifier scope).
+- Ramos & Bautista 1986 ch.16 (universal quantification).
