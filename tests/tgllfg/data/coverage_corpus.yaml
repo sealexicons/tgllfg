@@ -4649,15 +4649,18 @@
 - text: Kumain si Maria ng kanin, si Juan ng tinapay, at si Lola ng isda.
   construction: 'phase5n.C.2: L77 gapping AV-um 3-conjunct'
   expected: parse
+- text: Binigayan ni Maria si Juan at ni Pedro si Lola.
+  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (bigay)'
+  expected: parse
 - text: Binigayan ni Maria si Juan ng aklat at si Pedro ng panulat.
   construction: 'phase5n.C.2: L77 gapping DV-PFV ditransitive 2-conjunct'
   expected: parse
 - text: Tinulungan ni Maria si Juan at ni Pedro si Lola.
-  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (tulong) — pinned fragment pre-Commit-5'
-  expected: fragment
+  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (tulong)'
+  expected: parse
 - text: Sinulatan ni Maria si Juan at ni Pedro si Lola.
-  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (sulat) — pinned fragment pre-Commit-5'
-  expected: fragment
+  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (sulat)'
+  expected: parse
 - text: Inaralan ni Maria si Juan at ni Pedro si Lola.
-  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (aral) — pinned fragment pre-Commit-5'
-  expected: fragment
+  construction: 'phase5n.C.2: L77 gapping DV-PFV 2-conjunct (aral)'
+  expected: parse

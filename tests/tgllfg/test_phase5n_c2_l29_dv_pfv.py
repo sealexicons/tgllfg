@@ -35,8 +35,11 @@ from tgllfg.core.pipeline import parse_text
     ("Binilihan ni Maria si Juan.", "bili",   "BILI <SUBJ, OBJ-AGENT>"),
     ("Ginawahan ni Maria si Juan.", "gawa",   "GAWA <SUBJ, OBJ-AGENT>"),
     ("Tinulungan ni Maria si Juan.", "tulong", "TULONG <SUBJ, OBJ-AGENT>"),
-    # Three previously deferred (verbs.yaml updated in Commit 2):
-    ("Binigayan ni Maria si Juan.",  "bigay",  "BIGAY <SUBJ, OBJ-AGENT>"),
+    # Three previously deferred (verbs.yaml updated in Commit 2;
+    # `bigay` also has a 2-arg + 3-arg DV LexicalEntry added in
+    # Commit 5, which changes PRED from the synthesized default
+    # `BIGAY <...>` to the LFG-canonical `GIVE <...>`).
+    ("Binigayan ni Maria si Juan.",  "bigay",  "GIVE <SUBJ, OBJ-AGENT>"),
     ("Tinanungan ni Maria si Juan.", "tanong", "TANONG <SUBJ, OBJ-AGENT>"),
     ("Inusapan ni Maria si Juan.",   "usap",   "USAP <SUBJ, OBJ-AGENT>"),
 ])

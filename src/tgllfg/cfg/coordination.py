@@ -797,3 +797,199 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓3 CARDINAL) =c 'YES'",
         ],
     ))
+
+    # === Phase 5n.C.2 Commit 5: L77 gapping in coord (PRED-sharing) =========
+    #
+    # Closes §18.1 L77. Canonical pattern: `<V> <agent1> <args1> at
+    # <agent2> <args2>` where the verb is shared across conjuncts
+    # (`Kumain si Maria ng kanin at si Juan ng tinapay.` "Maria ate
+    # rice and Juan bread"). Design appendix in
+    # docs/analysis-choices.md "Phase 5n.C.2 Commit 4: L77
+    # PRED-sharing gapping in coord".
+    #
+    # Mechanism per LFG convention (Bresnan 2001 §6, Dalrymple 2001 §4):
+    # the matrix S has `COORD=AND` + `GAPPING=YES` + `CONJUNCTS={c1, c2}`
+    # where conjunct1 is V's f-structure (with SUBJ/OBJ from the first
+    # NP pair) and conjunct2 is a new sub-f-structure (↑.CONJ2) with
+    # PRED reentrant to V's PRED + SUBJ/OBJ from the second NP pair.
+    #
+    # The matrix has no PRED of its own — parallel to Phase 5k clausal
+    # coord (lines 381+). The `GAPPING=YES` marker distinguishes real
+    # gapping from spurious recursive NP-coord parses (Commit 3
+    # tripwire pinning) and from biclausal coord (which has
+    # COORD=AND but no shared PRED).
+    #
+    # Scope per design appendix:
+    # - 2-conjunct AV transitive (canonical): rule [1] below
+    # - 2-conjunct DV transitive: rule [2] (case-marking flipped:
+    #   GEN-agent + NOM-pivot)
+    # - 2-conjunct DV ditransitive: rule [3] (GEN + NOM + GEN frame)
+    # - 3-conjunct AV transitive (Oxford comma form): rule [4]
+    #
+    # OBJ-only gapping, mixed-voice gapping, and adjunct-only gap
+    # remain deferred per the design appendix.
+    #
+    # The non-conflict matcher (project_parser_nonconflict_matcher
+    # memory) admits spurious NP-coord parses alongside the new
+    # gapping parses; the ranker prefers the gapping analysis on
+    # meaningful structure. Phase 6 parser is expected to eliminate
+    # spurious parses via feature-compatibility at predict time.
+
+    # [1] 2-conjunct AV transitive.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=AV]",
+            "NP[CASE=NOM]",
+            "NP[CASE=GEN]",
+            "PART[COORD=AND]",
+            "NP[CASE=NOM]",
+            "NP[CASE=GEN]",
+        ],
+        [
+            # Conjunct 1: V's f-structure becomes conjunct1; add
+            # SUBJ + OBJ from first NP pair.
+            "(↓1 SUBJ) = ↓2",
+            "(↓1 OBJ) = ↓3",
+            "↓1 ∈ (↑ CONJUNCTS)",
+            # Conjunct 2: fresh sub-f-structure with PRED + voice/
+            # aspect/mood reentrant to V; SUBJ + OBJ from second
+            # NP pair.
+            "(↑ CONJ2 PRED) = (↓1 PRED)",
+            "(↑ CONJ2 VOICE) = (↓1 VOICE)",
+            "(↑ CONJ2 ASPECT) = (↓1 ASPECT)",
+            "(↑ CONJ2 MOOD) = (↓1 MOOD)",
+            "(↑ CONJ2 SUBJ) = ↓5",
+            "(↑ CONJ2 OBJ) = ↓6",
+            "(↑ CONJ2) ∈ (↑ CONJUNCTS)",
+            # Matrix
+            "(↑ COORD) = 'AND'",
+            "(↑ GAPPING) = 'YES'",
+            "(↓4 COORD) =c 'AND'",
+        ],
+    ))
+
+    # [2] 2-conjunct DV transitive.
+    #
+    # DV pattern: V[VOICE=DV] NP[CASE=GEN]_agent NP[CASE=NOM]_pivot.
+    # Both conjuncts share the GEN agent + NOM pivot frame.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=DV]",
+            "NP[CASE=GEN]",
+            "NP[CASE=NOM]",
+            "PART[COORD=AND]",
+            "NP[CASE=GEN]",
+            "NP[CASE=NOM]",
+        ],
+        [
+            # Conjunct 1: V + OBJ-AGENT (GEN) + SUBJ (NOM).
+            "(↓1 OBJ-AGENT) = ↓2",
+            "(↓1 SUBJ) = ↓3",
+            "↓1 ∈ (↑ CONJUNCTS)",
+            # Conjunct 2: PRED + voice/aspect/mood reentrant; new
+            # OBJ-AGENT + SUBJ from second pair.
+            "(↑ CONJ2 PRED) = (↓1 PRED)",
+            "(↑ CONJ2 VOICE) = (↓1 VOICE)",
+            "(↑ CONJ2 ASPECT) = (↓1 ASPECT)",
+            "(↑ CONJ2 MOOD) = (↓1 MOOD)",
+            "(↑ CONJ2 OBJ-AGENT) = ↓5",
+            "(↑ CONJ2 SUBJ) = ↓6",
+            "(↑ CONJ2) ∈ (↑ CONJUNCTS)",
+            "(↑ COORD) = 'AND'",
+            "(↑ GAPPING) = 'YES'",
+            "(↓4 COORD) =c 'AND'",
+        ],
+    ))
+
+    # [3] 2-conjunct DV ditransitive.
+    #
+    # 3-arg DV (e.g., `Binigayan ni Maria si Juan ng aklat at si
+    # Pedro ng panulat`): V[DV] GEN-agent NOM-pivot GEN-theme +
+    # at + NOM-pivot GEN-theme. The GEN-agent is shared across
+    # conjuncts (Maria gives both Juan and Pedro). Requires a
+    # 3-arg DV LexicalEntry for the verb (`bigay` / `sulat` /
+    # similar — added/extended in `core/lexicon.py` for L29 + L77).
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=DV]",
+            "NP[CASE=GEN]",
+            "NP[CASE=NOM]",
+            "NP[CASE=GEN]",
+            "PART[COORD=AND]",
+            "NP[CASE=NOM]",
+            "NP[CASE=GEN]",
+        ],
+        [
+            # Conjunct 1: V + OBJ-AGENT (GEN-1) + SUBJ (NOM-1) +
+            # OBJ-PATIENT (GEN-2).
+            "(↓1 OBJ-AGENT) = ↓2",
+            "(↓1 SUBJ) = ↓3",
+            "(↓1 OBJ-PATIENT) = ↓4",
+            "↓1 ∈ (↑ CONJUNCTS)",
+            # Conjunct 2: shared PRED + voice/aspect/mood +
+            # OBJ-AGENT (Maria is the agent in both); new SUBJ +
+            # OBJ-PATIENT from the second NP pair.
+            "(↑ CONJ2 PRED) = (↓1 PRED)",
+            "(↑ CONJ2 VOICE) = (↓1 VOICE)",
+            "(↑ CONJ2 ASPECT) = (↓1 ASPECT)",
+            "(↑ CONJ2 MOOD) = (↓1 MOOD)",
+            "(↑ CONJ2 OBJ-AGENT) = (↓1 OBJ-AGENT)",
+            "(↑ CONJ2 SUBJ) = ↓6",
+            "(↑ CONJ2 OBJ-PATIENT) = ↓7",
+            "(↑ CONJ2) ∈ (↑ CONJUNCTS)",
+            "(↑ COORD) = 'AND'",
+            "(↑ GAPPING) = 'YES'",
+            "(↓5 COORD) =c 'AND'",
+        ],
+    ))
+
+    # [4] 3-conjunct AV transitive (Oxford comma form).
+    #
+    # `Kumain si Maria ng kanin, si Juan ng tinapay, at si Lola ng
+    # isda.` — three conjuncts with comma separators and `at`
+    # before the final conjunct. Daughters 4 and 8 are syncategorematic
+    # commas; daughter 9 is the conjunction particle.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=AV]",
+            "NP[CASE=NOM]",
+            "NP[CASE=GEN]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "NP[CASE=NOM]",
+            "NP[CASE=GEN]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "PART[COORD=AND]",
+            "NP[CASE=NOM]",
+            "NP[CASE=GEN]",
+        ],
+        [
+            # Conjunct 1 (V + first NP pair)
+            "(↓1 SUBJ) = ↓2",
+            "(↓1 OBJ) = ↓3",
+            "↓1 ∈ (↑ CONJUNCTS)",
+            # Conjunct 2 (second NP pair)
+            "(↑ CONJ2 PRED) = (↓1 PRED)",
+            "(↑ CONJ2 VOICE) = (↓1 VOICE)",
+            "(↑ CONJ2 ASPECT) = (↓1 ASPECT)",
+            "(↑ CONJ2 MOOD) = (↓1 MOOD)",
+            "(↑ CONJ2 SUBJ) = ↓5",
+            "(↑ CONJ2 OBJ) = ↓6",
+            "(↑ CONJ2) ∈ (↑ CONJUNCTS)",
+            # Conjunct 3 (third NP pair)
+            "(↑ CONJ3 PRED) = (↓1 PRED)",
+            "(↑ CONJ3 VOICE) = (↓1 VOICE)",
+            "(↑ CONJ3 ASPECT) = (↓1 ASPECT)",
+            "(↑ CONJ3 MOOD) = (↓1 MOOD)",
+            "(↑ CONJ3 SUBJ) = ↓9",
+            "(↑ CONJ3 OBJ) = ↓10",
+            "(↑ CONJ3) ∈ (↑ CONJUNCTS)",
+            # Matrix
+            "(↑ COORD) = 'AND'",
+            "(↑ GAPPING) = 'YES'",
+            "(↓8 COORD) =c 'AND'",
+        ],
+    ))
