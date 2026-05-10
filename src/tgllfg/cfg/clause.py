@@ -2318,3 +2318,116 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 PUNCT_CLASS) =c 'COMMA'",
         ],
     ))
+
+
+    # === Phase 5n.C Commit 7.6 (§18 L81): transitive variants ===========
+    #
+    # Closes the L81 transitive deferral surfaced in user review of
+    # Commit 7 (anti-deferral discipline per
+    # ``tgllfg-phase-5n-c.md`` §8). Adds three parallel rules to the
+    # Commit 7 intransitive rule above, mirroring the Phase 4 §7.1
+    # canonical AV clause shapes (``cfg/clause.py:48-58``):
+    #
+    #   intransitive + DAT ADJUNCT:
+    #     NP[CASE=NOM] PUNCT[COMMA] V[VOICE=AV] NP[CASE=DAT]
+    #
+    #   transitive (GEN OBJ):
+    #     NP[CASE=NOM] PUNCT[COMMA] V[VOICE=AV] NP[CASE=GEN]
+    #
+    #   transitive + DAT ADJUNCT:
+    #     NP[CASE=NOM] PUNCT[COMMA] V[VOICE=AV] NP[CASE=GEN]
+    #     NP[CASE=DAT]
+    #
+    # Surfaces (sample):
+    #
+    #   Bawat bata, tumakbo sa parke.       (intrans + DAT)
+    #   Bawat bata, kumain ng kanin.        (transitive)
+    #   Bawat isa, bumili ng aklat.         (Q + NUM via Commit 7.5)
+    #   Bawat bata, kumain ng kanin sa kusina. (trans + DAT)
+    #
+    # All variants share the same matrix-equation pattern as the
+    # Commit 7 intransitive rule: verb percolation from ↓3,
+    # ``(↑ DISTRIB) = 'YES'``, ``(↑ SUBJ) = ↓1``, ``(↓1 UNIV) =c
+    # 'YES'``. The transitive variants add ``(↑ OBJ) = ↓4`` for
+    # GEN-OBJ; the DAT-ADJUNCT variants add ``↓N ∈ (↑ ADJUNCT)`` for
+    # the trailing DAT-NP. Same anti-overgeneration constraint
+    # (``(↓1 UNIV) =c 'YES'``) — only universal-Q-headed topics
+    # admit, preserving the bare-proper-name rejection from Commit 7.
+    #
+    # Ditransitive (3-arg DAT) variants and 2-DAT-ADJUNCT shapes
+    # mirroring ``cfg/clause.py:578-606`` are deferred — corpus
+    # pressure has not surfaced ditransitive distributive-Q topics.
+    # If they appear, the same parameterised pattern extends
+    # mechanically (add ``NP[CASE=DAT]`` daughters and corresponding
+    # ADJUNCT membership equations).
+
+    # Intransitive + DAT ADJUNCT.
+    rules.append(Rule(
+        "S",
+        [
+            "NP[CASE=NOM]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "V[VOICE=AV]",
+            "NP[CASE=DAT]",
+        ],
+        [
+            "(↑ PRED) = ↓3 PRED",
+            "(↑ VOICE) = ↓3 VOICE",
+            "(↑ ASPECT) = ↓3 ASPECT",
+            "(↑ MOOD) = ↓3 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
+            "(↑ DISTRIB) = 'YES'",
+            "(↑ SUBJ) = ↓1",
+            "↓4 ∈ (↑ ADJUNCT)",
+            "(↓1 UNIV) =c 'YES'",
+            "(↓2 PUNCT_CLASS) =c 'COMMA'",
+        ],
+    ))
+
+    # Transitive (GEN OBJ).
+    rules.append(Rule(
+        "S",
+        [
+            "NP[CASE=NOM]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "V[VOICE=AV]",
+            "NP[CASE=GEN]",
+        ],
+        [
+            "(↑ PRED) = ↓3 PRED",
+            "(↑ VOICE) = ↓3 VOICE",
+            "(↑ ASPECT) = ↓3 ASPECT",
+            "(↑ MOOD) = ↓3 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
+            "(↑ DISTRIB) = 'YES'",
+            "(↑ SUBJ) = ↓1",
+            "(↑ OBJ) = ↓4",
+            "(↓1 UNIV) =c 'YES'",
+            "(↓2 PUNCT_CLASS) =c 'COMMA'",
+        ],
+    ))
+
+    # Transitive + DAT ADJUNCT.
+    rules.append(Rule(
+        "S",
+        [
+            "NP[CASE=NOM]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "V[VOICE=AV]",
+            "NP[CASE=GEN]",
+            "NP[CASE=DAT]",
+        ],
+        [
+            "(↑ PRED) = ↓3 PRED",
+            "(↑ VOICE) = ↓3 VOICE",
+            "(↑ ASPECT) = ↓3 ASPECT",
+            "(↑ MOOD) = ↓3 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
+            "(↑ DISTRIB) = 'YES'",
+            "(↑ SUBJ) = ↓1",
+            "(↑ OBJ) = ↓4",
+            "↓5 ∈ (↑ ADJUNCT)",
+            "(↓1 UNIV) =c 'YES'",
+            "(↓2 PUNCT_CLASS) =c 'COMMA'",
+        ],
+    ))
