@@ -139,3 +139,78 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 MOOD) =c 'IMP'",
         ],
     ))
+
+
+    # --- Phase 5n.C Commit 2 (§18 L78): wide-scope hindi over coord-NP ---
+    #
+    # ``Hindi [si Maria at si Juan] kumain.`` "Neither Maria nor Juan
+    # ate" — ``hindi`` at the matrix left edge takes scope over a
+    # coordinated NOM SUBJ that precedes the AV-intransitive verb.
+    # The reading is wide-scope: ``¬(eat(M) ∧ eat(J))`` for AND-coord,
+    # ``¬(eat(M) ∨ eat(J))`` for OR-coord — both equivalent to
+    # "neither one" by De Morgan.
+    #
+    # Two rules generated (parameterized over COORD value): the
+    # AND-coord variant fires on ``si Maria at si Juan``-style
+    # coord-SUBJ, the OR-coord variant on ``si Maria o si Juan``.
+    # Both produce ``NEG_SCOPE=WIDE`` on the matrix S to mark the
+    # wide reading (per design appendix in
+    # ``docs/analysis-choices.md`` — Phase 5n.C Commit 1).
+    #
+    # Daughter shape:
+    #
+    #   PART[POLARITY=NEG] NP[CASE=NOM, COORD=Y] V[VOICE=AV]
+    #     ↓1 = hindi (POLARITY=NEG, no MOOD — excludes huwag)
+    #     ↓2 = coord-SUBJ (matrix SUBJ; binds via ``(↑ SUBJ) = ↓2``)
+    #     ↓3 = AV-intransitive verb (head; verb percolation from ↓3)
+    #
+    # Verb percolation is from ↓3 here (not ↓1 as in the canonical
+    # ``_VERB_PERCOLATION`` shape from ``_helpers.py``) — the
+    # PART-NP-V daughter order has the verb in third position. The
+    # ``(↑ NEG_SCOPE) = 'WIDE'`` equation marks the matrix
+    # explicitly; downstream consumers / Phase 6+ Glue work pattern-
+    # match on this to derive the wide-scope semantics. The default
+    # narrow-scope reading (Phase 4 §7.2 hindi-wrap above) leaves
+    # NEG_SCOPE absent on the matrix, encoding "default narrow / no
+    # relevant coord interaction" without explicit marker.
+    #
+    # ``(↓2 COORD) =c '<value>'`` is the chart-level filter that
+    # selects the coord-SUBJ; ``(↓1 POLARITY) =c 'NEG'`` excludes
+    # non-NEG PARTs (mismo, etc.) per the Phase 5h Commit 3 belt-
+    # and-braces convention; ``¬ (↓1 MOOD)`` excludes ``huwag``
+    # (which carries MOOD=IMP) — wide-scope imperative-negation
+    # over coord-NP is a separate construction and not in scope
+    # for this commit.
+    #
+    # Phase 5k Commit 8 asymmetric coord (``Si Maria, hindi si
+    # Juan``) is structurally distinct: ``hindi`` appears in
+    # third position as the asymmetric connective, not at left
+    # edge, and produces ``COORD=BUT_NOT`` on the coord-NP. The
+    # new wide-scope rule fires only on ``COORD=AND`` / ``OR``,
+    # so no overlap.
+    #
+    # Reference: Schachter & Otanes 1972 §10 (negation × coord);
+    # Ramos & Bautista 1986 ch.18; ``docs/analysis-choices.md``
+    # "Phase 5n.C Commit 1" design appendix.
+    for coord_value in ("AND", "OR"):
+        rules.append(Rule(
+            "S",
+            [
+                "PART[POLARITY=NEG]",
+                f"NP[CASE=NOM, COORD={coord_value}]",
+                "V[VOICE=AV]",
+            ],
+            [
+                "(↑ PRED) = ↓3 PRED",
+                "(↑ VOICE) = ↓3 VOICE",
+                "(↑ ASPECT) = ↓3 ASPECT",
+                "(↑ MOOD) = ↓3 MOOD",
+                "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
+                "(↑ POLARITY) = 'NEG'",
+                "(↑ NEG_SCOPE) = 'WIDE'",
+                "(↑ SUBJ) = ↓2",
+                "(↓1 POLARITY) =c 'NEG'",
+                "¬ (↓1 MOOD)",
+                f"(↓2 COORD) =c '{coord_value}'",
+            ],
+        ))
