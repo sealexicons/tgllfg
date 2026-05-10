@@ -1009,15 +1009,25 @@
   gloss: dozen
   feats: {MEASURE: "YES"}
 
-- citation: daandaan
+# Phase 5n.C.3 Commit 2 (§18 L31): replaced the hand-coded
+# ``daandaan`` / ``libulibo`` entries with productive ``card_redup``
+# paradigm cells. The base NOUN roots below carry COLL_VALUE
+# (per-root, not productive) + ``affix_class: [card_redup]`` so
+# the paradigms.yaml cell fires. ``libo`` and ``daan`` as
+# cardinal-base NOUNs are distinct from the verb ``daan`` "pass
+# through" (verbs.yaml line 290) — the polysemous-noun index
+# resolves the cardinal vs verb sense at parse time.
+- citation: daan
   pos: NOUN
-  gloss: hundreds
-  feats: {MEASURE: "YES", COLL_VALUE: HUNDREDS}
+  gloss: hundred
+  feats: {COLL_VALUE: HUNDREDS}
+  affix_class: [card_redup]
 
-- citation: libulibo
+- citation: libo
   pos: NOUN
-  gloss: thousands
-  feats: {MEASURE: "YES", COLL_VALUE: THOUSANDS}
+  gloss: thousand
+  feats: {COLL_VALUE: THOUSANDS}
+  affix_class: [card_redup]
 
 
 # === Phase 5j Commit 1: locative / existential supporting nouns =========

@@ -51,15 +51,22 @@ def test_verb_paradigm_unchanged() -> None:
     assert av_pfv[0].lemma == "kain"
 
 
-def test_default_base_pos_is_verb() -> None:
-    """Cells loaded from the seed paradigms.yaml all have
-    ``base_pos == 'VERB'`` (the field defaults preserve the legacy
-    AV/OV/DV/IV paradigm semantics)."""
+def test_legacy_verb_cells_default_to_verb_base_pos() -> None:
+    """Legacy AV/OV/DV/IV paradigm cells (those with non-empty
+    ``voice``) all carry ``base_pos == 'VERB'``. The field default
+    preserves the legacy paradigm semantics for cells written
+    without an explicit base_pos.
+
+    Phase 5n.C.3 Commit 2 onward introduces non-verbal cells
+    (``base_pos: NOUN`` / ``ADJ`` / ``PRON``) that have empty
+    voice/aspect — those are excluded from this check."""
     a = Analyzer.from_default()
     assert len(a._data.paradigm_cells) > 0
-    for cell in a._data.paradigm_cells:
+    verb_cells = [c for c in a._data.paradigm_cells if c.voice]
+    assert len(verb_cells) > 0
+    for cell in verb_cells:
         assert cell.base_pos == "VERB", (
-            f"unexpected base_pos {cell.base_pos!r} on cell "
+            f"unexpected base_pos {cell.base_pos!r} on verbal cell "
             f"{cell.voice}/{cell.aspect}/{cell.affix_class}"
         )
 

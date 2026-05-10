@@ -54,6 +54,7 @@ from .paradigms import (
 from .sandhi import (
     attach_suffix,
     cv_reduplicate,
+    full_reduplicate,
     d_to_r_intervocalic,
     infix_after_first_consonant,
     nasal_assim_prefix,
@@ -99,6 +100,13 @@ def generate_form(root: Root, cell: ParadigmCell) -> str:
 def _apply(op: Operation, base: str, flags: set[str]) -> str:
     if op.op == "cv_redup":
         return cv_reduplicate(base)
+    if op.op == "full_redup":
+        # Phase 5n.C.3 Commit 2 (§18 L31): whole-root reduplication
+        # for compound cardinals (``libo`` → ``libulibo``). Distinct
+        # from ``cv_redup`` (first-CV only) and from the
+        # Phase 5n.C.3 Commit 6 ``redup_root`` op (which redups
+        # AFTER prefix attachment, used by ADJ intensives).
+        return full_reduplicate(base)
     if op.op == "infix":
         return infix_after_first_consonant(base, op.value)
     if op.op == "suffix":

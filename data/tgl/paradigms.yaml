@@ -807,3 +807,31 @@
     - {op: suffix, value: an}
     - {op: prefix, value: "mag"}
   notes: magkakainan, magbibigayan
+
+# === Phase 5n.C.3: non-verbal paradigm cells (base_pos != VERB) =========
+#
+# Productive paradigms over NOUN / ADJ / PRON roots. The shared
+# operation-execution engine (analyzer.generate_form + sandhi.py)
+# is POS-agnostic; the ``base_pos`` discriminator on each cell
+# (Phase 5n.C.3 Commit 1) routes the cell to the matching root POS
+# during indexing. See ``src/tgllfg/morph/analyzer.py``
+# ``_index_paradigm_via_base_pos``.
+
+# --- Phase 5n.C.3 Commit 2: card_redup (§18 L31) ------------------------
+# Compound cardinals via full-root reduplication: ``libo`` →
+# ``libulibo`` "thousands of", ``daan`` → ``daandaan`` "hundreds of".
+# The ``full_redup`` op (analyzer.py + sandhi.full_reduplicate)
+# duplicates the root and raises the first copy's final-syllable /o/
+# to /u/ (same rule as ``attach_suffix``). Cell.feats contributes
+# ``MEASURE=YES`` so the existing measure-N grammar rule
+# (``cfg/nominal.py`` line 1011) fires on the derived surface.
+# Root-side ``COLL_VALUE`` (HUNDREDS / THOUSANDS) propagates
+# per-root via the standard root.feats merge.
+# References: Schachter & Otanes 1972 §6 (collective cardinal redup);
+# R&B 1986 paradigm tables.
+- base_pos: NOUN
+  affix_class: card_redup
+  operations:
+    - {op: full_redup}
+  feats: {MEASURE: "YES"}
+  notes: card_redup — libo → libulibo, daan → daandaan
