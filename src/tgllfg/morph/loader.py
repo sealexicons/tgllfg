@@ -127,9 +127,21 @@ def _load_paradigm_cells(path: Path) -> list[VerbalCell]:
         feats_raw = rec.get("feats", {})
         if not isinstance(feats_raw, dict):
             raise ValueError(f"{where}: 'feats' must be a mapping")
+        # Phase 5n.C.3 Commit 1: ``base_pos`` discriminates verbal vs
+        # non-verbal paradigm cells. VERB cells (the legacy default)
+        # still require ``voice`` and ``aspect``; NOUN / ADJ / PRON
+        # cells are non-verbal derivations and skip those fields.
+        base_pos = rec.get("base_pos", "VERB")
+        if base_pos == "VERB":
+            voice = _require(rec, "voice", where)
+            aspect = _require(rec, "aspect", where)
+        else:
+            voice = rec.get("voice", "")
+            aspect = rec.get("aspect", "")
         out.append(VerbalCell(
-            voice=_require(rec, "voice", where),
-            aspect=_require(rec, "aspect", where),
+            base_pos=base_pos,
+            voice=voice,
+            aspect=aspect,
             mood=rec.get("mood", "IND"),
             transitivity=rec.get("transitivity", ""),
             affix_class=rec.get("affix_class", ""),

@@ -317,6 +317,11 @@ class Analyzer:
                         feats=noun_feats,
                     ),
                 )
+                # Phase 5n.C.3 Commit 1: NOUN-base paradigm cells
+                # (``card_redup``, ``tig_distrib``, ``tag_season``,
+                # ``kani-``) fire here. Cells live in
+                # ``data/tgl/paradigms.yaml`` with ``base_pos: NOUN``.
+                self._index_paradigm_via_base_pos(r)
             elif r.pos == "ADJ":
                 # Phase 5h §4.2: dispatch on affix_class. Roots with a
                 # non-empty list go through the productive paradigm
@@ -333,6 +338,53 @@ class Analyzer:
                     self._index_adjective_paradigms(r)
                 else:
                     self._index_adjective_bare_root(r)
+                # Phase 5n.C.3 Commit 1: ADJ-base paradigm cells
+                # (Phase 5n.C.3 L37 reduplicated intensives, L38
+                # archaic ``kasing-`` reduplication) fire here too.
+                # Cells live in ``data/tgl/paradigms.yaml`` with
+                # ``base_pos: ADJ``; the operation-execution engine
+                # is shared with verb / noun paradigms.
+                self._index_paradigm_via_base_pos(r)
+
+    def _index_paradigm_via_base_pos(self, root: Root) -> None:
+        """Index paradigm cells in ``paradigm_cells`` whose
+        ``base_pos`` matches ``root.pos``. Phase 5n.C.3 Commit 1
+        infrastructure for non-verbal derivations (NOUN-root
+        ``card_redup`` / ``tig_distrib`` / ``tag_season`` / ``kani-``;
+        ADJ-root ``redup_root`` intensives / ``kasing-`` redup).
+
+        Routes generated surfaces to the POS-appropriate index
+        (``nouns`` / ``adjectives``). Per-root + per-cell feats are
+        merged with cell.feats winning over root.feats (mirrors the
+        VERB / ADJ-paradigm convention); LEMMA defaults to
+        ``root.citation`` if not explicitly set.
+        """
+        for cell in self._data.paradigm_cells:
+            if cell.base_pos != root.pos:
+                continue
+            if not _affix_class_match(cell.affix_class, root.affix_class):
+                continue
+            surface = generate_form(root, cell).lower()
+            feats: dict[str, object] = {**root.feats}
+            for k, v in cell.feats.items():
+                feats[k] = v
+            feats.setdefault("LEMMA", root.citation)
+            canonical_lemma = feats.get("LEMMA", root.citation)
+            if not isinstance(canonical_lemma, str):
+                canonical_lemma = root.citation
+            analysis = MorphAnalysis(
+                lemma=canonical_lemma,
+                pos=root.pos,
+                feats=feats,
+            )
+            if root.pos == "NOUN":
+                self._index.nouns.setdefault(surface, []).append(analysis)
+            elif root.pos == "ADJ":
+                self._index.adjectives.setdefault(surface, []).append(analysis)
+            else:
+                # PRON / other POS-bases would extend here; ignored
+                # for now (no PRON-root paradigms in the seed).
+                pass
 
     def _index_adjective_bare_root(self, root: Root) -> None:
         """Index the bare citation as ADJ for non-productive roots.
@@ -421,6 +473,11 @@ class Analyzer:
 
     def _index_verb_paradigms(self, root: Root) -> None:
         for cell in self._data.paradigm_cells:
+            # Phase 5n.C.3 Commit 1: filter to VERB-base cells only.
+            # Non-verbal cells (base_pos: NOUN / ADJ / PRON) fire via
+            # :meth:`_index_paradigm_via_base_pos` below.
+            if cell.base_pos != "VERB":
+                continue
             if cell.transitivity and cell.transitivity != root.transitivity:
                 continue
             if not _affix_class_match(cell.affix_class, root.affix_class):

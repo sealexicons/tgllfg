@@ -106,8 +106,16 @@ class ParadigmCell:
     The analyzer's :func:`tgllfg.morph.analyzer.generate_form` takes
     the base class so the operation-application engine is shared.
 
-    The four shared fields are:
+    The five shared fields are:
 
+    * ``base_pos`` — filter: cell only fires for roots whose
+      ``pos`` matches. Defaults to ``"VERB"`` for backward
+      compatibility with the original AV/OV/DV/IV paradigm
+      cells. Phase 5n.C.3 Commit 1 introduces this discriminator
+      so ``NOUN`` and ``ADJ`` roots can drive non-verbal
+      derivations (e.g., ``card_redup`` numeral reduplication,
+      ``redup_root`` ADJ intensives) through the same
+      :func:`tgllfg.morph.analyzer.generate_form` engine.
     * ``affix_class`` — filter: cell only fires for roots whose
       ``affix_class`` list contains this string. Empty means
       "applies to roots whose affix_class is also empty" (legacy
@@ -123,6 +131,7 @@ class ParadigmCell:
       ``CAUS``; subclasses contribute their own per-cell feature
       conventions.
     """
+    base_pos: str = "VERB"
     affix_class: str = ""
     operations: list[Operation] = field(default_factory=list)
     notes: str = ""
