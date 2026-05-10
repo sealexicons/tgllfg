@@ -11197,3 +11197,147 @@ Per Phase 5m Commit 12 / 5l Commit 15 / 5k Commit 10 precedent.
 own commits, reaching 52 phase5n entries total (alongside the
 36 from Commits 25/26/28). Baseline recaptured: 1394 → 1410
 top-1 captures (+16); 1404/1410 captured.
+
+## Phase 5n.C Commit 1: L78 wide-scope hindi over coord-NP — design (NEG_SCOPE feat)
+
+**Date:** 2026-05-10 (Phase 5n.C).
+**Status:** design. Implementation lands in Phase 5n.C Commit 2;
+fixtures + baseline in Commit 3.
+
+### Decision
+
+A new f-structure feature ``NEG_SCOPE`` (single value: ``WIDE``)
+marks the matrix S of a clause where ``hindi`` takes scope over a
+coordinated NP. The default reading (no ``NEG_SCOPE`` on the matrix)
+is narrow scope, consistent with the existing Phase 4 §7.2
+hindi-wrap rule's behaviour. ``NEG_SCOPE`` is set only by the new
+wide-scope rule introduced in Commit 2; the existing hindi-wrap rule
+in ``cfg/negation.py`` is unchanged.
+
+The new wide-scope rule (Commit 2 implementation forecast) attaches
+``hindi`` at the matrix above a coord-NP SUBJ, e.g. for
+``Hindi kumain si Maria at si Juan.`` "Neither Maria nor Juan ate":
+
+```text
+S → PART[POLARITY=NEG] V NP[CASE=NOM, COORD=AND]
+  ↑ = ↓2
+  (↑ POLARITY) = 'NEG'
+  (↑ NEG_SCOPE) = 'WIDE'
+  (↑ SUBJ) = ↓3
+  (↓1 POLARITY) =c 'NEG'
+  (↓3 COORD) =c 'AND'
+```
+
+Mirror rules cover ``COORD=OR`` (semantics: ``¬(M ate ∨ J ate)``;
+both AND- and OR-coord yield "neither" semantics under wide-scope
+negation, by De Morgan).
+
+The pre-V word order ``Hindi [si Maria at si Juan] kumain.`` is
+non-canonical without ay-fronting; if corpus pressure surfaces it,
+an ay-fronted variant is added separately. The post-V form is the
+canonical L78 surface.
+
+### Why a single feature, not two
+
+Two alternatives were considered:
+
+1. **Two separate boolean features** (``NEG_NARROW`` /
+   ``NEG_WIDE``). Rejected — the readings are mutually exclusive
+   structurally (the wide-scope rule produces one f-structure;
+   the existing narrow-scope hindi-wrap path produces another).
+   A single feat captures the disjunction without redundancy.
+
+2. **Three-valued ``NEG_SCOPE`` (``WIDE`` / ``NARROW`` /
+   ``UNSPECIFIED``).** Rejected — there is no construction that
+   would assert ``UNSPECIFIED`` distinct from "feat absent". The
+   narrow reading is the default behaviour of every existing
+   hindi-wrap path; absence on the matrix already encodes
+   "narrow / not wide / no relevant coord interaction".
+
+Single-value (``WIDE`` only) follows the codebase convention for
+binary marker feats: ``EMPHATIC=YES``, ``COUNTERFACTUAL=YES``,
+``CARDINAL=YES`` etc. all encode presence-vs-absence rather than
+two-valued. ``NEG_SCOPE=WIDE`` is the marker; the absence is the
+default narrow reading.
+
+### Interaction with Phase 5k coord-NP head feats
+
+Phase 5k Commit 3 (``cfg/coordination.py:44``) propagates
+``COORD``, ``CASE``, ``NUM`` from the daughter conjuncts to the
+matrix coord-NP. The new wide-scope hindi rule attaches ABOVE the
+matrix coord-NP — its NP daughter is the already-built coord-NP,
+and ``NEG_SCOPE=WIDE`` lands on the matrix S, not on the
+coord-NP. No conflict: the coord-NP's head feats stay where Phase
+5k put them; the matrix S gains a new feat orthogonal to coord-NP
+structure.
+
+### Disambiguation from Phase 5k asymmetric coord (Commit 8)
+
+The asymmetric coord rule (Phase 5k Commit 8,
+``cfg/coordination.py:493``) handles ``Si Maria, hindi si Juan`` —
+``hindi`` in third position acting as the asymmetric connective —
+producing ``COORD=BUT_NOT`` on the coord-NP and a defining
+``(↓4 POLARITY) = 'NEG'`` on the second conjunct's f-structure.
+The new wide-scope rule is structurally distinct: ``hindi`` is at
+the matrix left edge (or left edge of the post-V SUBJ slot, not
+between two NPs), and the coord-NP carries ``COORD=AND/OR``
+(symmetric). No structural overlap; both rules can coexist.
+
+### Disambiguation from existing narrow-scope hindi-wrap
+
+The existing Phase 4 §7.2 hindi-wrap rule (``cfg/negation.py:73``,
+``S → PART[POLARITY=NEG] S``) wraps an inner S that already has a
+COMPLETE f-structure. When that inner S contains a coord-NP SUBJ,
+the wrap produces narrow-scope semantics: ``POLARITY=NEG`` on the
+matrix without ``NEG_SCOPE`` set, encoding "the predicate over the
+coord-SUBJ is negated as a unit, with the coord internal to that
+predicate." Whether this composes with multi-clause coord
+(``Hindi kumain si Maria at uminom si Juan.``) is unaffected by
+this commit — multi-clause cases remain narrow per the
+``cfg/coordination.py:355`` comment.
+
+For surfaces where both wide- and narrow-scope readings are
+structurally available (e.g. coord-SUBJ post-V), both parses are
+admitted; the wide-scope parse carries ``NEG_SCOPE=WIDE``, the
+narrow-scope parse does not. Ranker disambiguation per Phase 4
+§7.9 heuristics applies.
+
+### Clitic-pronoun NOM SUBJ exclusion
+
+Per S&O 1972 §10, the wide-scope reading is degraded /
+ungrammatical when the coord-NP contains a clitic pronoun
+(``siya`` / ``sila`` / ``ako`` / ``ka`` etc.) as a NOM SUBJ inside
+the coord. Concretely, ``Hindi kumain si Maria at siya.`` resists
+the wide-scope reading; only narrow scope or rephrasing (e.g.
+``Hindi sila kumain.`` with a plural pronoun) is natural.
+
+The constraint is enforced structurally: NOM clitic pronouns are
+typed as ``PRON[CASE=NOM, CLITIC_CLASS=2P]`` and don't compose
+into ``NP[CASE=NOM]`` via the Phase 5k coord rules — they have
+their own pronominal-fronting / 2P-clitic absorption paths. So
+the wide-scope rule's daughter pattern ``NP[CASE=NOM, COORD=AND]``
+already excludes coord-NPs that contain clitic-pronoun conjuncts.
+No additional constraining equation is needed for this design.
+
+If corpus pressure later surfaces a non-clitic full-pronoun
+(``ako``, ``ikaw`` in stressed form) coord-NP that should still be
+excluded, an explicit ``¬ (↓3 PRON_TYPE) = 'PRONOMINAL_COORD'``
+constraint can be added; for now the structural restriction
+suffices.
+
+### Cross-references
+
+- Phase 5n.C plan-of-record Commits 1–3
+  (``.claude/plans/tgllfg-phase-5n-c.md`` §3.1).
+- §18 L78 disposition (closes with this commit triple) —
+  ``tgllfg-out-of-scope.md``.
+- Phase 4 §7.2 narrow-scope hindi-wrap rule —
+  ``src/tgllfg/cfg/negation.py:73``.
+- Phase 5k Commit 3 binary NP coord head feats —
+  ``src/tgllfg/cfg/coordination.py:44``.
+- Phase 5k Commit 8 asymmetric NP coord —
+  ``src/tgllfg/cfg/coordination.py:493``.
+- ``cfg/coordination.py:355`` — multi-clause coord × hindi-wrap
+  narrow-scope comment.
+- Schachter & Otanes 1972 §10 (clitic-pronoun NOM SUBJ exclusion).
+- Ramos & Bautista 1986 ch.18 (negation × coordination).
