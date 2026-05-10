@@ -89,42 +89,16 @@ class TestBukodDito:
         assert len(parses) == 1
 
 
-# === gayon din / ganon din: deferred =================================
-
-
-GAYON_DIN_DEFERRED = [
-    "Gayon din kumain ang bata.",
-    "Gayon din pumupunta siya.",
-    "Ganon din kumain ang bata.",
-    "Ganon din pumupunta siya.",
-]
-
-
-class TestGayonDinDeferred:
-    """``gayon din`` / ``ganon din`` do NOT parse today because
-    ``din`` is a 2P clitic and the Phase 4 §7.3 ``reorder_clitics``
-    pre-pass moves it to clause-final position before grammar
-    parsing. The multi-word PART rule requires adjacency, so it
-    never fires.
-
-    The grammar rules are landed (so closure during Phase 5n is a
-    pre-pass change, not a grammar change). Pinned at 0-parse to
-    catch any unintended flip when the pre-pass infrastructure is
-    extended.
-
-    Closure path: a pre-clitic-reorder phrase-recognition pass
-    that merges ``gayon din`` / ``ganon din`` into single tokens
-    before reorder_clitics runs.
-    """
-
-    @pytest.mark.parametrize("sent", GAYON_DIN_DEFERRED)
-    def test_zero_parse_today(self, sent: str) -> None:
-        parses = parse_text(sent)
-        assert len(parses) == 0, (
-            f"{sent!r} parsed unexpectedly — pre-clitic-reorder "
-            f"phrase-recognition has landed; close the deferral "
-            f"and un-pin this test."
-        )
+# === gayon din / ganon din: closed by Phase 5n.B C23 =================
+#
+# ``gayon din`` / ``ganon din`` clause-initial discourse
+# connectives closed in Phase 5n.B Commit 23 (§18 L103) via a
+# placement-engine exception (_is_post_discourse_head_din) that
+# keeps ``din`` adjacent to ``gayon`` / ``ganon`` instead of
+# moving it to clause-final. The Phase 5m C11 grammar rule
+# (which expects adjacent PART+PART) then fires.
+#
+# See ``test_phase5n_b_gayon_din.py`` for the closure tests.
 
 
 # === Commit 1 LEMMA additions on existing entries ====================

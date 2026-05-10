@@ -235,6 +235,37 @@ def _is_post_wh_pron_man(
     )
 
 
+def _is_post_discourse_head_din(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is the ALSO-clitic ``din`` immediately
+    preceded by a multi-word discourse-connective head
+    (``gayon`` / ``ganon``).
+
+    Phase 5n.B Commit 23 (§18 L103): the multi-word discourse
+    connectives ``gayon din`` / ``ganon din`` "likewise" require
+    ``din`` to stay adjacent to its head so the Phase 5m C11
+    grammar rule (``PART → PART PART`` matching gayon/ganon +
+    din) can fire. Without this exception, the standard 2P-
+    clitic placement moves ``din`` to clause-final, breaking
+    the adjacency. Suppressing the move here keeps the multi-
+    word connectives parseable; the bare ``din`` 2P-clitic
+    (``Kumain ako rin/din.``) is unaffected — the gate is
+    narrowly scoped to the post-gayon / post-ganon position."""
+    if i == 0:
+        return False
+    if not any(
+        ma.feats.get("LEMMA") == "din" and ma.pos == "PART"
+        for ma in analyses[i]
+    ):
+        return False
+    prev = analyses[i - 1]
+    return any(
+        ma.feats.get("LEMMA") in ("gayon", "ganon") and ma.pos == "PART"
+        for ma in prev
+    )
+
+
 def _is_post_noun_pron(
     analyses: list[list[MorphAnalysis]], i: int
 ) -> bool:
@@ -777,6 +808,11 @@ def reorder_clitics(
         # ``sino man``). Keep adjacent to the wh-PRON so the
         # ``PRON → PRON PART[man,ADV=EVEN]`` rule can fire.
         and not _is_post_wh_pron_man(analyses, i)
+        # Phase 5n.B Commit 23: ``din`` immediately after ``gayon``
+        # or ``ganon`` forms the multi-word discourse connective
+        # ``gayon din`` / ``ganon din``. Keep adjacent so the Phase
+        # 5m C11 grammar rule can fire.
+        and not _is_post_discourse_head_din(analyses, i)
     ]
     if not pron_indices and not adv_indices:
         return analyses
