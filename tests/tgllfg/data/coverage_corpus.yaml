@@ -4477,3 +4477,86 @@
 - text: Kung kumain ako bago pumunta siya, hindi pumunta ako.
   construction: 'phase5n: L95 subord nesting depth-3 (COND>TEMP_BEFORE)'
   expected: parse
+
+# === Phase 5n.B: §18 deferral closures (Commits 1-24) ====================
+# Representative fixtures from each Phase 5n.B commit covering the
+# §18 entries closed during the phase. Per plan-of-record §4.5
+# Commit 25 (Phase 5n.A Commit 31 precedent).
+- text: Marami ang aklat.
+  construction: 'phase5n.B: L42+L52 predicative-Q non-wh (Q-PREDICATIVE)'
+  expected: parse
+- text: Doktor ako.
+  construction: 'phase5n.B: L43 predicative-N (BE-N)'
+  expected: parse
+- text: Si Maria ay mas matalino.
+  construction: 'phase5n.B: L39 ay-inversion of comparative ADJ'
+  expected: parse
+- text: Pinakamarami ang aklat.
+  construction: 'phase5n.B: L40 pinaka- superlative on Q heads'
+  expected: parse
+- text: Nang higit malaki ang bahay.
+  construction: 'phase5n.B: L41 formal nang higit comparison'
+  expected: parse
+- text: Kasingganda kay Maria si Ana.
+  construction: 'phase5n.B: L44 DAT-standard equative (kay-marked)'
+  expected: parse
+- text: Kumain ka ba o pumunta siya?
+  construction: 'phase5n.B: L45 alternative-Q (Q_TYPE=ALTERNATIVE)'
+  expected: parse
+- text: Kumain ka ng ano?
+  construction: 'phase5n.B: L50 in-situ Q_TYPE matrix lift'
+  expected: parse
+- text: Sa kanino ang aklat?
+  construction: 'phase5n.B: L51 sa-DAT NP cleft (explicit DAT-marker)'
+  expected: parse
+- text: Alam ko kung sino kumain.
+  construction: 'phase5n.B: L53 bare-form colloquial indirect-Q'
+  expected: parse
+- text: Alam ko kung kumain ang aso.
+  construction: 'phase5n.B: L54 yes/no indirect-Q (bare declarative inner)'
+  expected: parse
+- text: Akala ko kung sino ang kumain.
+  construction: 'phase5n.B: L55 BELIEVE KNOW-class predicate + indirect-Q'
+  expected: parse
+- text: Alam kong kumain ang aso.
+  construction: 'phase5n.B: L56 declarative-COMP factive embedding'
+  expected: parse
+- text: Magkano ito sa kanya?
+  construction: 'phase5n.B: L58 Magkano cleft + DAT-NP ADJUNCT'
+  expected: parse
+- text: Kanino kaibigan ito?
+  construction: 'phase5n.B: L59 Kanino predicative possessor over N'
+  expected: parse
+- text: Salamat po.
+  construction: 'phase5n.B: L96 fragment-host NOUN + 2P-politeness clitic'
+  expected: parse
+- text: Hindi.
+  construction: 'phase5n.B: L97 standalone Hindi answer-clause (NEG)'
+  expected: parse
+- text: Oo po.
+  construction: 'phase5n.B: L97 standalone Oo answer + 2P-politeness clitic'
+  expected: parse
+- text: Pumupunta siguro siya.
+  construction: 'phase5n.B: L98 siguro clause-medial 2P-clitic (EPISTEMIC)'
+  expected: parse
+- text: Pupunta ako kahit saan.
+  construction: 'phase5n.B: L99 kahit saan clause-final indef-LOCATION ADJUNCT'
+  expected: parse
+- text: Kahit sino ay kumain.
+  construction: 'phase5n.B: L100 kahit-X SUBJ ay-fronted (composition-only)'
+  expected: parse
+- text: Walang sinumang dumating.
+  construction: 'phase5n.B: L101 PRON-headed RC for negative indefinites'
+  expected: parse
+- text: Walang anuman.
+  construction: 'phase5n.B: L46+L102 lexicalized anuman neg-indef PRON'
+  expected: parse
+- text: Walang ano man.
+  construction: 'phase5n.B: L46+L102 productive wh-PRON + man neg-indef'
+  expected: parse
+- text: Gayon din kumain ako.
+  construction: 'phase5n.B: L103 gayon din multi-word discourse connective'
+  expected: parse
+- text: Nang isang beses, may isang manok.
+  construction: 'phase5n.B: L30 narrative-opener idiom (DISCOURSE=NARRATIVE_OPENER)'
+  expected: parse
