@@ -1051,6 +1051,64 @@ def register_rules(rules: list[Rule]) -> None:
                 ],
             ))
 
+    # --- Phase 5n.B Commit 21: PRON-headed RC for negative indefinites
+    #
+    # ``Walang sinumang dumating.``  "Nobody came."
+    # ``Walang anumang nakita.``     "Nothing was seen."
+    #
+    # Closes §18.1 deferral L101. Parallel to the Phase 4 §7.5
+    # N-headed relativization above, but with ``PRON`` as the head
+    # category instead of NP, gated on ``(↓1 INDEF) =c 'NEG_INDEF'``
+    # to keep the rule narrow to negative-indefinite PRONs
+    # (``sinuman`` "no one", ``anuman`` "nothing"). Other PRONs
+    # (``siya`` / ``ako`` / ``niya`` / ...) lack the INDEF feat and
+    # so the rule does not fire on them — they are not naturally
+    # RC-headed.
+    #
+    # The RC body is an ``S_GAP`` (SUBJ-gapped clause) following
+    # the Phase 4 §7.5 SUBJ-only-relativization restriction
+    # (Kroeger 1993). The gap binds to the head PRON via
+    # ``(↓3 REL-PRO) =c (↓3 SUBJ)`` (anaphoric, not structure-
+    # sharing — same convention as the N-headed rule).
+    #
+    # The new rule produces a ``PRON``, so the existing Phase 5m
+    # Commit 9 negative-existential rule (``S → PART[EXISTENTIAL=
+    # YES, POLARITY=NEG] PART[LINK=NG] PRON[INDEF=NEG_INDEF]``,
+    # ``cfg/clause.py``) consumes the relativized PRON without
+    # modification — closing the path that the Phase 5m comment
+    # ("the relative-clause grammar handles sinumang dumating")
+    # had anticipated but not yet implemented.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "PRON",
+            [
+                "PRON[INDEF=NEG_INDEF]",
+                f"PART[LINK={link}]",
+                "S_GAP",
+            ],
+            [
+                "(↓1 INDEF) =c 'NEG_INDEF'",
+                f"(↓2 LINK) =c '{link}'",
+                "(↑) = ↓1",
+                "↓3 ∈ (↑ ADJ)",
+                # The SUBJ-gap binding constraint enforces that the
+                # head PRON fills the RC's SUBJ slot. We omit the
+                # REL-PRO PRED/CASE defining-equation copies (used
+                # by the N-headed relativization above) because the
+                # head's f-structure is already shared with the
+                # matrix via ``(↑) = ↓1``; the SUBJ-gap binding
+                # picks up the head's identity transitively without
+                # a separate REL-PRO copy. Skipping the copies also
+                # avoids an empty-FStructure leak when the head's
+                # PRED is undefined (a structural concern with
+                # PRON heads — though the INDEF=NEG_INDEF gate
+                # restricts to sinuman / anuman, both of which do
+                # have PREDs, the simpler equation set is more
+                # robust).
+                "(↓3 REL-PRO) =c (↓3 SUBJ)",
+            ],
+        ))
+
 
     # --- Phase 5d Commit 6 + Phase 5e Commits 18 & 19:
     # possessive-linker RC wrap rule ---

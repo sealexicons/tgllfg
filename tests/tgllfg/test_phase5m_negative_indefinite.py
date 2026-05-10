@@ -118,31 +118,20 @@ class TestSelectionalRestriction:
 
 
 class TestNegativeIndefiniteDeferred:
-    """Two construction families pinned at 0-parse for Phase 5n
-    debt-clearing.
+    """One construction family pinned at 0-parse for Phase 5n
+    debt-clearing. (Phase 5n.B Commit 21 closed
+    ``Walang sinumang dumating.`` — see
+    ``test_phase5n_b_walang_sinumang_rc.py``.)
 
-    1. ``Walang sinumang dumating.`` — sinuman + bound -ng linker
-       + V[finite] relative-clause complement of the indef PRON.
-       Needs the Phase 4 §7.5 N-headed RC rule extended to
-       PRON-headed RCs (``PRON → PRON PART[LINK=NG] V[+finite]``)
-       or a parallel sinuman-specific rule.
-
-    2. ``Walang ano man.`` — productive ``wh-PRON + man`` indef-
+    1. ``Walang ano man.`` — productive ``wh-PRON + man`` indef-
        builder. Possible closure path:
        ``PRON[INDEF=NEG_INDEF] → PRON[WH=YES] PART[man,ADV=EVEN]``
        which would compose ``ano man`` into a virtual neg-indef
        PRON, then feed the new walang+PRON rule. ``anuman``
        (lexicalized contracted form) is also unlex'd — adding
        it as PRON[INDEF=NEG_INDEF] would unblock that surface.
+       Closes in Phase 5n.B Commit 22 (§18 L46 + L102).
     """
-
-    def test_walang_sinumang_dumating_zero_parse(self) -> None:
-        parses = parse_text("Walang sinumang dumating.")
-        assert len(parses) == 0, (
-            "Walang sinumang dumating. parsed unexpectedly — "
-            "PRON-headed relative-clause infrastructure has "
-            "landed; close the deferral and un-pin."
-        )
 
     def test_walang_ano_man_zero_parse(self) -> None:
         parses = parse_text("Walang ano man.")
