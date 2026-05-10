@@ -640,6 +640,58 @@ def register_rules(rules: list[Rule]) -> None:
         ),
     ))
 
+    # --- Phase 5n.B Commit 13: declarative-COMP factive embedding ---
+    #
+    # ``Alam kong kumain ang aso.`` "I know that the dog ate."
+    # ``Akala kong kumain si Maria.`` "I thought Maria ate."
+    # ``Naaalala kong pumunta siya.`` "I remember that she went."
+    #
+    # Closes §18.1 deferral L56. Parallel to the S_INTERROG_COMP
+    # path above (Phase 5i C8 + 5n.B C11) but with a declarative
+    # complement: no ``kung`` complementizer, just a bound linker
+    # (``-ng`` after vowel-final hosts; ``na`` after consonant-
+    # final hosts) between the GEN-NP experiencer and the embedded
+    # S. The embedded S is a complete declarative clause with its
+    # own SUBJ.
+    #
+    # ``S_DECL_COMP`` is a sibling non-terminal to S_INTERROG_COMP.
+    # The wrapper rule lifts the inner S's f-structure and adds
+    # ``COMP_TYPE='DECLARATIVE'`` (parallel to S_INTERROG_COMP's
+    # ``COMP_TYPE='INTERROG'``); the matrix wrap then constrains
+    # ``(↓4 COMP_TYPE) =c 'DECLARATIVE'`` to lock the path.
+    #
+    # **Disambiguation from INTERROG-COMP**: the linker token
+    # ``PART[LINK=NG/NA]`` vs the kung complementizer
+    # ``PART[COMP_TYPE=INTERROG]`` sit in different positions and
+    # don't overlap (kung has no LINK feat; -ng / na have no
+    # COMP_TYPE feat). The two paths are mutually exclusive.
+    rules.append(Rule(
+        "S_DECL_COMP",
+        ["S"],
+        [
+            "(↑) = ↓1",
+            "(↑ COMP_TYPE) = 'DECLARATIVE'",
+        ],
+    ))
+
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            [
+                "V[CTRL_CLASS=KNOW]",
+                "NP[CASE=GEN]",
+                f"PART[LINK={link}]",
+                "S_DECL_COMP",
+            ],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ COMP) = ↓4",
+                "(↓1 CTRL_CLASS) =c 'KNOW'",
+                f"(↓3 LINK) =c '{link}'",
+                "(↓4 COMP_TYPE) =c 'DECLARATIVE'",
+            ),
+        ))
+
     # --- Phase 5n.A Commit 29: ASK-class reported-Q (§18 L90.2 + L92) ---
     #
     # ASK-class verbs (``tanong`` and its inflected forms
