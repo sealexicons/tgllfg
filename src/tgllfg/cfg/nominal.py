@@ -146,6 +146,30 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.B Commit 14: sa + non-wh DAT-PRON shell ---
+    #
+    # ``sa kanya`` "to/for him/her" — explicit DAT-marker over a
+    # non-wh DAT-PRON. Parallel to the Phase 5i C3 wh-PRON rule
+    # above but for non-wh PRONs (kanya / akin / iyo / atin /
+    # amin / inyo / kanila). Without this rule, ``sa kanya`` does
+    # not form NP[CASE=DAT] — only the bare ``kanya`` does (which
+    # carries CASE=DAT inherently). The explicit-DAT form is
+    # required to parse plan-of-record §4.2 Commit 14 target
+    # ``Magkano ito sa kanya?``.
+    #
+    # ``¬ (↓2 WH)`` keeps this rule disjoint from the Phase 5i
+    # C3 wh-PRON rule above (which fires on PRON[WH=YES]). The
+    # two paths are mutually exclusive on the WH feat.
+    rules.append(Rule(
+        "NP[CASE=DAT]",
+        ["ADP[CASE=DAT]", "PRON[CASE=DAT]"],
+        [
+            "(↑) = ↓1",
+            "(↑) = ↓2",
+            "¬ (↓2 WH)",
+        ],
+    ))
+
 
     # --- Phase 4 §7.8: standalone demonstrative pronouns ---
     #

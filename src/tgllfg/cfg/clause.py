@@ -1273,6 +1273,37 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 5n.B Commit 14: predicative-Q cleft + trailing DAT-NP ADJUNCT
+    #
+    # ``Magkano ito sa kanya?``        "How much is it for him?"
+    # ``Magkano ang isda sa palengke?``"How much is the fish at the market?"
+    # ``Magkano ang aklat sa bata?``   "How much is the book for the child?"
+    #
+    # Closes §18 deferral L58. Sibling to the (a) wh-Q cleft above
+    # (Phase 5i Commit 9 (a)); same f-structure shape with an
+    # additional DAT-NP daughter folded into the matrix's
+    # ADJUNCT set. The DAT-NP carries locative ("at the market")
+    # or dative ("for him") semantics — the existing PRED='WH
+    # <SUBJ>' covers both readings; the lexical content of the
+    # adjunct disambiguates downstream.
+    #
+    # Although ``Magkano`` is the primary motivation (per plan-of-
+    # record §4.2 Commit 14), the rule generalises to any
+    # Q[WH=YES] with a trailing DAT-NP — the structural pattern
+    # is identical for ``Ilan`` and other amount/count wh-Qs.
+    rules.append(Rule(
+        "S",
+        ["Q[WH=YES]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
+        [
+            "(↑ PRED) = 'WH <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ Q_TYPE) = 'WH'",
+            "(↑ WH_LEMMA) = ↓1 LEMMA",
+            "(↓1 WH) =c 'YES'",
+            "↓3 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+
     # (b) DAT-pivot cleft for ``kanino``:
     #
     #   ``Kanino ang aklat?``     "Whose is the book?" / "To whom
