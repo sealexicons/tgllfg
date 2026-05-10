@@ -4560,3 +4560,27 @@
 - text: Nang isang beses, may isang manok.
   construction: 'phase5n.B: L30 narrative-opener idiom (DISCOURSE=NARRATIVE_OPENER)'
   expected: parse
+- text: Hindi si Maria at si Juan kumain.
+  construction: 'phase5n.C: L78 wide-scope hindi over AND-coord NOM SUBJ (NEG_SCOPE=WIDE)'
+  expected: parse
+- text: Hindi si Pedro at si Lola kumain.
+  construction: 'phase5n.C: L78 wide-scope hindi over AND-coord NOM SUBJ (NEG_SCOPE=WIDE)'
+  expected: parse
+- text: Hindi si Maria o si Juan kumain.
+  construction: 'phase5n.C: L78 wide-scope hindi over OR-coord NOM SUBJ (NEG_SCOPE=WIDE)'
+  expected: parse
+- text: Hindi si Pedro o si Lola kumain.
+  construction: 'phase5n.C: L78 wide-scope hindi over OR-coord NOM SUBJ (NEG_SCOPE=WIDE)'
+  expected: parse
+- text: Hindi si Maria, si Juan at si Pedro kumain.
+  construction: 'phase5n.C: L78 wide-scope hindi over 3-conjunct AND-coord NOM SUBJ'
+  expected: parse
+- text: Hindi si Maria, si Juan o si Pedro kumain.
+  construction: 'phase5n.C: L78 wide-scope hindi over 3-conjunct OR-coord NOM SUBJ'
+  expected: parse
+- text: Hindi si Maria at si Juan tumakbo.
+  construction: 'phase5n.C: L78 wide-scope hindi over AND-coord with intransitive AV verb'
+  expected: parse
+- text: Hindi si Maria o si Juan tumakbo.
+  construction: 'phase5n.C: L78 wide-scope hindi over OR-coord with intransitive AV verb'
+  expected: parse
