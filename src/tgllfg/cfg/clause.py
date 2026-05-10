@@ -2217,3 +2217,104 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 COORD) =c 'BUT_NOT'",
         ],
     ))
+
+    # === Phase 5n.C Commit 7 (§18 L81): distributive-Q topic ============
+    #
+    # ``Bawat bata, kumain.`` "Each child ate" — a fronted
+    # universal-Q-NP topic, separated by a comma from an AV-
+    # intransitive verb, producing a distributive-scope reading.
+    # The matrix S carries ``DISTRIB=YES`` to mark the distributive
+    # operator scope; the topic-NP becomes the matrix ``SUBJ``
+    # (filling the AV verb's required argument).
+    #
+    # Daughter shape:
+    #
+    #   NP[CASE=NOM] PART[PUNCT_CLASS=COMMA] V[VOICE=AV]
+    #     ↓1 = topic-NP (must be UNIV-marked, see (↓1 UNIV) =c)
+    #     ↓2 = comma
+    #     ↓3 = AV-intransitive verb (head; verb percolation from ↓3)
+    #
+    # Verb percolation is from ↓3 (the V is in third position; the
+    # canonical ``_VERB_PERCOLATION`` helper from ``_helpers.py``
+    # assumes ↓1 so equations are written explicitly here, mirroring
+    # the Phase 5n.C Commit 2 L78 wide-scope hindi rule's pattern).
+    #
+    # ``(↓1 UNIV) =c 'YES'`` constraining equation gates the topic
+    # to universal-Q-headed NPs (``bawat`` / ``kada`` per Phase 5f
+    # Commit 20 lex; the universal-Q + bare-N rule in
+    # ``cfg/nominal.py:696`` sets ``(↑ UNIV) = 'YES'`` on the
+    # composed NP). Bare proper-name topics
+    # (``Si Maria, kumain.``) lack UNIV and don't match. Non-
+    # universal Qs (``lahat`` / ``iba`` / vague) also lack UNIV
+    # and don't match. ``(↓2 PUNCT_CLASS) =c 'COMMA'`` is belt-
+    # and-braces — the daughter pattern already restricts to
+    # COMMA, but the constraining equation guards against any
+    # future shape regression.
+    #
+    # Analysis chosen: each-distributive operator (rejected:
+    # distributive coord-elaboration). The Q-NP raises to a
+    # distributive operator scope position; the matrix is marked
+    # with ``DISTRIB=YES`` for downstream consumers / Phase 6+
+    # Glue work to interpret. Cited basis: S&O 1972 §10
+    # (quantifier scope); R&B 1986 ch.16 (universal
+    # quantification); Bresnan 2001 §6 + Dalrymple 2001 §6 on
+    # LFG scope-feat marking.
+    #
+    # ``(↑ DISTRIB) = 'YES'`` re-uses the established matrix-scope
+    # marker convention from Phase 5f Commit 19 predicative
+    # distributive-cardinal rule (``cfg/clause.py:188`` —
+    # ``Tigisang aklat sila.``); same feat name, same value, same
+    # purpose: "this clause has a distributive reading." A
+    # downstream consumer that filters on DISTRIB=YES picks up
+    # both the cardinal-distributive and Q-distributive paths
+    # uniformly.
+    #
+    # Scope: AV-intransitive only for this commit. Transitive
+    # variants (``Bawat bata, kumain ng kanin.``) would need
+    # parallel rules with V + GEN-NP / V + DAT-NP frames; defer
+    # to a follow-on if corpus pressure surfaces. ``Bawat isa,
+    # kumain.`` (Q + NUM) is also out of scope — Phase 5f Commit
+    # 20 deferred Q + NUM composition (``bawat isa`` 0-parses as
+    # an NP today), so the daughter pattern can't match.
+    #
+    # Disambiguation:
+    #
+    # * From the Phase 4 §7.4 ay-fronting rule: ay-fronted
+    #   ``Bawat bata ay kumain.`` parses today and does NOT
+    #   carry DISTRIB=YES — ay-fronting is general topicalization
+    #   without the distributive-scope reading. The new comma+S
+    #   rule is a distinct path that specifically marks the
+    #   distributive scope.
+    # * From the Phase 5n.C Commit 5 L83 fragment-NP-coord rule:
+    #   structurally distinct (L83 has 1 daughter, this rule has
+    #   3); the comma in L83 is *inside* the coord-NP daughter
+    #   while the comma here is a *top-level* daughter. No
+    #   structural overlap.
+    #
+    # Reference: Schachter & Otanes 1972 §10 (quantifier scope);
+    # Ramos & Bautista 1986 ch.16 (universal quantification);
+    # Phase 5f Commit 19 distributive-cardinal precedent
+    # (``cfg/clause.py:188`` — ``DISTRIB=YES`` matrix marker);
+    # Phase 5f Commit 20 universal-Q + bare-N rule
+    # (``cfg/nominal.py:696`` — sole producer of NP[UNIV=YES]);
+    # ``docs/analysis-choices.md`` "Phase 5n.C Commit 6" design
+    # appendix.
+    rules.append(Rule(
+        "S",
+        [
+            "NP[CASE=NOM]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "V[VOICE=AV]",
+        ],
+        [
+            "(↑ PRED) = ↓3 PRED",
+            "(↑ VOICE) = ↓3 VOICE",
+            "(↑ ASPECT) = ↓3 ASPECT",
+            "(↑ MOOD) = ↓3 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
+            "(↑ DISTRIB) = 'YES'",
+            "(↑ SUBJ) = ↓1",
+            "(↓1 UNIV) =c 'YES'",
+            "(↓2 PUNCT_CLASS) =c 'COMMA'",
+        ],
+    ))
