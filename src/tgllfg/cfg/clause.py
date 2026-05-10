@@ -2144,3 +2144,290 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ CLAUSE_TYPE) = 'FRAGMENT'",
         ],
     ))
+
+    # === Phase 5n.C Commit 5 (§18 L83): asymmetric NP-coord fragment ====
+    #
+    # ``Si Maria, hindi si Juan.`` "Maria, not Juan" — the bare
+    # asymmetric-coord-NP fragment, lifted to a complete matrix S.
+    # The Phase 5k Commit 8 asymmetric NP-coord rule
+    # (``cfg/coordination.py:493``) already builds an
+    # ``NP[CASE=NOM, COORD=BUT_NOT]`` from the daughter shape
+    # ``NP COMMA PART[POLARITY=NEG] NP``; this rule wraps that NP
+    # as a fragment-S.
+    #
+    # Daughter shape: ``NP[CASE=NOM, COORD=BUT_NOT]`` — restricted
+    # to the asymmetric coord shape specifically. ``COORD=BUT_NOT``
+    # is set only by Phase 5k Commit 8 (no other producer in the
+    # grammar), so this serves as the structural discriminator
+    # without needing a new feat. Bare singular NPs (``Si Maria.``)
+    # do NOT carry ``COORD=BUT_NOT`` and continue to 0-parse as
+    # sentences. AND-coord (``Si Maria at si Juan.``) and OR-coord
+    # (``Si Maria o si Juan.``) NPs carry ``COORD=AND`` / ``OR``
+    # and also do not match — bare additive / disjunctive coord-NP
+    # fragments are not attested as canonical sentence fragments
+    # in Tagalog (per S&O 1972 §10).
+    #
+    # F-structure shape:
+    #
+    #   PRED       = 'NP-FRAG <SUBJ>'   (synthetic fragment predicate)
+    #   SUBJ       = ↓1                 (the asymmetric coord-NP)
+    #   CLAUSE_TYPE = 'FRAGMENT'         (downstream-consumer marker)
+    #
+    # The synthetic ``PRED='NP-FRAG <SUBJ>'`` is a one-place
+    # placeholder predicate. The asymmetric coord-NP itself has no
+    # head ``PRED`` (its conjuncts each carry proper-name PREDs;
+    # the coord-NP holds ``CONJUNCTS`` / ``COORD`` / ``CASE`` /
+    # ``NUM`` only), so we cannot inherit PRED via ``(↑) = ↓1`` as
+    # the L96 fragment-host NOUN rule above does. Synthesis is
+    # unavoidable. The L97 fragment-answer rule
+    # (``cfg/clause.py``, search "fragment-answer") similarly
+    # uses ``(↑) = ↓1`` because its lex-host (``Oo``/``Hindi`` PRONs
+    # with INTERJ=YES) carries PRED — L83 is the first fragment-S
+    # rule whose host is a constructed structure without head PRED.
+    #
+    # The ``NP-FRAG`` placeholder is intentionally minimal-
+    # commitment: Phase 6+ Glue / discourse-semantics work can
+    # interpret it as "BE", "FOCUS-CONTRAST", or "ASSERT-AND-
+    # REJECT" depending on the construction's pragmatics; this
+    # layer just admits the fragment structurally.
+    #
+    # Coexistence with V-headed S rules: the same
+    # ``NP[CASE=NOM, COORD=BUT_NOT]`` can serve as SUBJ of a
+    # V-headed S (``Kumain si Maria, hindi si Juan.`` — Phase 5k
+    # Commit 8 unchanged) OR as the sole daughter of this
+    # fragment-S rule (``Si Maria, hindi si Juan.``). For surfaces
+    # where both paths apply, the ranker picks per Phase 4 §7.9
+    # heuristics — the V-headed reading is naturally preferred
+    # because it has a real verbal PRED rather than the synthetic
+    # NP-FRAG placeholder.
+    #
+    # Reference: Schachter & Otanes 1972 §10 (asymmetric contrast
+    # construction); Ramos & Bautista 1986 ch.16 (NP coordination);
+    # Phase 5n.B Commit 16 L96 fragment-host NOUN precedent (same
+    # CLAUSE_TYPE=FRAGMENT marker, lex-feat gating);
+    # ``docs/analysis-choices.md`` "Phase 5n.C Commit 4" design
+    # appendix.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=NOM, COORD=BUT_NOT]"],
+        [
+            "(↑ PRED) = 'NP-FRAG <SUBJ>'",
+            "(↑ SUBJ) = ↓1",
+            "(↑ CLAUSE_TYPE) = 'FRAGMENT'",
+            "(↓1 COORD) =c 'BUT_NOT'",
+        ],
+    ))
+
+    # === Phase 5n.C Commit 7 (§18 L81): distributive-Q topic ============
+    #
+    # ``Bawat bata, kumain.`` "Each child ate" — a fronted
+    # universal-Q-NP topic, separated by a comma from an AV-
+    # intransitive verb, producing a distributive-scope reading.
+    # The matrix S carries ``DISTRIB=YES`` to mark the distributive
+    # operator scope; the topic-NP becomes the matrix ``SUBJ``
+    # (filling the AV verb's required argument).
+    #
+    # Daughter shape:
+    #
+    #   NP[CASE=NOM] PART[PUNCT_CLASS=COMMA] V[VOICE=AV]
+    #     ↓1 = topic-NP (must be UNIV-marked, see (↓1 UNIV) =c)
+    #     ↓2 = comma
+    #     ↓3 = AV-intransitive verb (head; verb percolation from ↓3)
+    #
+    # Verb percolation is from ↓3 (the V is in third position; the
+    # canonical ``_VERB_PERCOLATION`` helper from ``_helpers.py``
+    # assumes ↓1 so equations are written explicitly here, mirroring
+    # the Phase 5n.C Commit 2 L78 wide-scope hindi rule's pattern).
+    #
+    # ``(↓1 UNIV) =c 'YES'`` constraining equation gates the topic
+    # to universal-Q-headed NPs (``bawat`` / ``kada`` per Phase 5f
+    # Commit 20 lex; the universal-Q + bare-N rule in
+    # ``cfg/nominal.py:696`` sets ``(↑ UNIV) = 'YES'`` on the
+    # composed NP). Bare proper-name topics
+    # (``Si Maria, kumain.``) lack UNIV and don't match. Non-
+    # universal Qs (``lahat`` / ``iba`` / vague) also lack UNIV
+    # and don't match. ``(↓2 PUNCT_CLASS) =c 'COMMA'`` is belt-
+    # and-braces — the daughter pattern already restricts to
+    # COMMA, but the constraining equation guards against any
+    # future shape regression.
+    #
+    # Analysis chosen: each-distributive operator (rejected:
+    # distributive coord-elaboration). The Q-NP raises to a
+    # distributive operator scope position; the matrix is marked
+    # with ``DISTRIB=YES`` for downstream consumers / Phase 6+
+    # Glue work to interpret. Cited basis: S&O 1972 §10
+    # (quantifier scope); R&B 1986 ch.16 (universal
+    # quantification); Bresnan 2001 §6 + Dalrymple 2001 §6 on
+    # LFG scope-feat marking.
+    #
+    # ``(↑ DISTRIB) = 'YES'`` re-uses the established matrix-scope
+    # marker convention from Phase 5f Commit 19 predicative
+    # distributive-cardinal rule (``cfg/clause.py:188`` —
+    # ``Tigisang aklat sila.``); same feat name, same value, same
+    # purpose: "this clause has a distributive reading." A
+    # downstream consumer that filters on DISTRIB=YES picks up
+    # both the cardinal-distributive and Q-distributive paths
+    # uniformly.
+    #
+    # Scope: AV-intransitive only for this commit. Transitive
+    # variants (``Bawat bata, kumain ng kanin.``) would need
+    # parallel rules with V + GEN-NP / V + DAT-NP frames; defer
+    # to a follow-on if corpus pressure surfaces. ``Bawat isa,
+    # kumain.`` (Q + NUM) is also out of scope — Phase 5f Commit
+    # 20 deferred Q + NUM composition (``bawat isa`` 0-parses as
+    # an NP today), so the daughter pattern can't match.
+    #
+    # Disambiguation:
+    #
+    # * From the Phase 4 §7.4 ay-fronting rule: ay-fronted
+    #   ``Bawat bata ay kumain.`` parses today and does NOT
+    #   carry DISTRIB=YES — ay-fronting is general topicalization
+    #   without the distributive-scope reading. The new comma+S
+    #   rule is a distinct path that specifically marks the
+    #   distributive scope.
+    # * From the Phase 5n.C Commit 5 L83 fragment-NP-coord rule:
+    #   structurally distinct (L83 has 1 daughter, this rule has
+    #   3); the comma in L83 is *inside* the coord-NP daughter
+    #   while the comma here is a *top-level* daughter. No
+    #   structural overlap.
+    #
+    # Reference: Schachter & Otanes 1972 §10 (quantifier scope);
+    # Ramos & Bautista 1986 ch.16 (universal quantification);
+    # Phase 5f Commit 19 distributive-cardinal precedent
+    # (``cfg/clause.py:188`` — ``DISTRIB=YES`` matrix marker);
+    # Phase 5f Commit 20 universal-Q + bare-N rule
+    # (``cfg/nominal.py:696`` — sole producer of NP[UNIV=YES]);
+    # ``docs/analysis-choices.md`` "Phase 5n.C Commit 6" design
+    # appendix.
+    rules.append(Rule(
+        "S",
+        [
+            "NP[CASE=NOM]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "V[VOICE=AV]",
+        ],
+        [
+            "(↑ PRED) = ↓3 PRED",
+            "(↑ VOICE) = ↓3 VOICE",
+            "(↑ ASPECT) = ↓3 ASPECT",
+            "(↑ MOOD) = ↓3 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
+            "(↑ DISTRIB) = 'YES'",
+            "(↑ SUBJ) = ↓1",
+            "(↓1 UNIV) =c 'YES'",
+            "(↓2 PUNCT_CLASS) =c 'COMMA'",
+        ],
+    ))
+
+
+    # === Phase 5n.C Commit 7.6 (§18 L81): transitive variants ===========
+    #
+    # Closes the L81 transitive deferral surfaced in user review of
+    # Commit 7 (anti-deferral discipline per
+    # ``tgllfg-phase-5n-c.md`` §8). Adds three parallel rules to the
+    # Commit 7 intransitive rule above, mirroring the Phase 4 §7.1
+    # canonical AV clause shapes (``cfg/clause.py:48-58``):
+    #
+    #   intransitive + DAT ADJUNCT:
+    #     NP[CASE=NOM] PUNCT[COMMA] V[VOICE=AV] NP[CASE=DAT]
+    #
+    #   transitive (GEN OBJ):
+    #     NP[CASE=NOM] PUNCT[COMMA] V[VOICE=AV] NP[CASE=GEN]
+    #
+    #   transitive + DAT ADJUNCT:
+    #     NP[CASE=NOM] PUNCT[COMMA] V[VOICE=AV] NP[CASE=GEN]
+    #     NP[CASE=DAT]
+    #
+    # Surfaces (sample):
+    #
+    #   Bawat bata, tumakbo sa parke.       (intrans + DAT)
+    #   Bawat bata, kumain ng kanin.        (transitive)
+    #   Bawat isa, bumili ng aklat.         (Q + NUM via Commit 7.5)
+    #   Bawat bata, kumain ng kanin sa kusina. (trans + DAT)
+    #
+    # All variants share the same matrix-equation pattern as the
+    # Commit 7 intransitive rule: verb percolation from ↓3,
+    # ``(↑ DISTRIB) = 'YES'``, ``(↑ SUBJ) = ↓1``, ``(↓1 UNIV) =c
+    # 'YES'``. The transitive variants add ``(↑ OBJ) = ↓4`` for
+    # GEN-OBJ; the DAT-ADJUNCT variants add ``↓N ∈ (↑ ADJUNCT)`` for
+    # the trailing DAT-NP. Same anti-overgeneration constraint
+    # (``(↓1 UNIV) =c 'YES'``) — only universal-Q-headed topics
+    # admit, preserving the bare-proper-name rejection from Commit 7.
+    #
+    # Ditransitive (3-arg DAT) variants and 2-DAT-ADJUNCT shapes
+    # mirroring ``cfg/clause.py:578-606`` are deferred — corpus
+    # pressure has not surfaced ditransitive distributive-Q topics.
+    # If they appear, the same parameterised pattern extends
+    # mechanically (add ``NP[CASE=DAT]`` daughters and corresponding
+    # ADJUNCT membership equations).
+
+    # Intransitive + DAT ADJUNCT.
+    rules.append(Rule(
+        "S",
+        [
+            "NP[CASE=NOM]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "V[VOICE=AV]",
+            "NP[CASE=DAT]",
+        ],
+        [
+            "(↑ PRED) = ↓3 PRED",
+            "(↑ VOICE) = ↓3 VOICE",
+            "(↑ ASPECT) = ↓3 ASPECT",
+            "(↑ MOOD) = ↓3 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
+            "(↑ DISTRIB) = 'YES'",
+            "(↑ SUBJ) = ↓1",
+            "↓4 ∈ (↑ ADJUNCT)",
+            "(↓1 UNIV) =c 'YES'",
+            "(↓2 PUNCT_CLASS) =c 'COMMA'",
+        ],
+    ))
+
+    # Transitive (GEN OBJ).
+    rules.append(Rule(
+        "S",
+        [
+            "NP[CASE=NOM]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "V[VOICE=AV]",
+            "NP[CASE=GEN]",
+        ],
+        [
+            "(↑ PRED) = ↓3 PRED",
+            "(↑ VOICE) = ↓3 VOICE",
+            "(↑ ASPECT) = ↓3 ASPECT",
+            "(↑ MOOD) = ↓3 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
+            "(↑ DISTRIB) = 'YES'",
+            "(↑ SUBJ) = ↓1",
+            "(↑ OBJ) = ↓4",
+            "(↓1 UNIV) =c 'YES'",
+            "(↓2 PUNCT_CLASS) =c 'COMMA'",
+        ],
+    ))
+
+    # Transitive + DAT ADJUNCT.
+    rules.append(Rule(
+        "S",
+        [
+            "NP[CASE=NOM]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "V[VOICE=AV]",
+            "NP[CASE=GEN]",
+            "NP[CASE=DAT]",
+        ],
+        [
+            "(↑ PRED) = ↓3 PRED",
+            "(↑ VOICE) = ↓3 VOICE",
+            "(↑ ASPECT) = ↓3 ASPECT",
+            "(↑ MOOD) = ↓3 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
+            "(↑ DISTRIB) = 'YES'",
+            "(↑ SUBJ) = ↓1",
+            "(↑ OBJ) = ↓4",
+            "↓5 ∈ (↑ ADJUNCT)",
+            "(↓1 UNIV) =c 'YES'",
+            "(↓2 PUNCT_CLASS) =c 'COMMA'",
+        ],
+    ))

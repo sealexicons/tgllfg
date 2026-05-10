@@ -749,6 +749,78 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 5n.C Commit 7.5: universal Q + NUM composition --
+    #
+    # Closes the Phase 5f Commit 20 deferred Q + NUM piece per
+    # Phase 5n.C anti-deferral discipline. Adds parallel rules
+    # mirroring the Q + N family above, with a NUM[CARDINAL=YES]
+    # complement instead of a bare N. Surfaces:
+    #
+    #   bawat isa       "every one / each one"
+    #   bawat dalawa    "every two / each pair"
+    #   kada isa        "every one (colloquial)"
+    #   ang bawat isa   "the every one"
+    #   sa bawat isa    "to every one"
+    #
+    # The Q-of-NUM construction names a quantifier scope over a
+    # numerically-specified group ("each pair") or over each
+    # individual ("each one") — semantically distributive, just
+    # like Q + N. Once the NP composes, the Phase 5n.C Commit 7
+    # L81 distributive-Q topic rule fires on it transparently
+    # (its daughter pattern is ``NP[CASE=NOM]`` gated on
+    # UNIV=YES, which both Q + N and Q + NUM produce).
+    #
+    # Rule shape mirrors Q + N:
+    #
+    # 4 rules total: 3 case-marked variants
+    # (``DET/ADP[CASE=X] Q[UNIV=YES] NUM[CARDINAL=YES]``) plus
+    # 1 bare-NOM variant (``Q[UNIV=YES] NUM[CARDINAL=YES]``).
+    # CARDINAL_VALUE percolates from the NUM daughter so
+    # downstream consumers can read the count
+    # (``bawat dalawa`` carries CARDINAL_VALUE=2).
+    #
+    # The NUM bracket constraint ``[CARDINAL=YES]`` restricts the
+    # rule to genuine cardinals (``isa`` / ``dalawa`` / ``tatlo``
+    # / ...) rather than firing on any NUM token (e.g.,
+    # ordinals, vague numerics). The constraining equation
+    # ``(↓last CARDINAL) =c 'YES'`` is the belt-and-braces
+    # companion (matching the cardinal / ordinal / vague-Q
+    # rules' positive constraint convention).
+    for case, marker in _cardinal_case_marker.items():
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [marker, "Q", "NUM[CARDINAL=YES]"],
+            [
+                "(↑) = ↓1",
+                "(↑ PRED) = ↓3 PRED",
+                "(↑ LEMMA) = ↓3 LEMMA",
+                "(↑ QUANT) = ↓2 QUANT",
+                "(↑ UNIV) = 'YES'",
+                "(↑ CARDINAL_VALUE) = ↓3 CARDINAL_VALUE",
+                "¬ (↓3 UNIV)",
+                "(↓2 UNIV) =c 'YES'",
+                "(↓3 CARDINAL) =c 'YES'",
+            ],
+        ))
+
+    # Bare-NOM rule (parallel to the Q + N bare-NOM rule).
+    rules.append(Rule(
+        "NP[CASE=NOM]",
+        ["Q", "NUM[CARDINAL=YES]"],
+        [
+            "(↑ PRED) = ↓2 PRED",
+            "(↑ LEMMA) = ↓2 LEMMA",
+            "(↑ QUANT) = ↓1 QUANT",
+            "(↑ UNIV) = 'YES'",
+            "(↑ CASE) = 'NOM'",
+            "(↑ CARDINAL_VALUE) = ↓2 CARDINAL_VALUE",
+            "¬ (↓2 UNIV)",
+            "(↓1 UNIV) =c 'YES'",
+            "(↓2 CARDINAL) =c 'YES'",
+        ],
+    ))
+
+
     # --- Phase 5f Commit 21: distributive-possessive
     # `kani-kaniya` / `kanya-kanya` (Group H3 item 7) ------------
     #

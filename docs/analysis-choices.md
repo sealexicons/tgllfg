@@ -11197,3 +11197,467 @@ Per Phase 5m Commit 12 / 5l Commit 15 / 5k Commit 10 precedent.
 own commits, reaching 52 phase5n entries total (alongside the
 36 from Commits 25/26/28). Baseline recaptured: 1394 → 1410
 top-1 captures (+16); 1404/1410 captured.
+
+## Phase 5n.C Commit 1: L78 wide-scope hindi over coord-NP — design (NEG_SCOPE feat)
+
+**Date:** 2026-05-10 (Phase 5n.C).
+**Status:** design. Implementation lands in Phase 5n.C Commit 2;
+fixtures + baseline in Commit 3.
+
+### Decision
+
+A new f-structure feature ``NEG_SCOPE`` (single value: ``WIDE``)
+marks the matrix S of a clause where ``hindi`` takes scope over a
+coordinated NP. The default reading (no ``NEG_SCOPE`` on the matrix)
+is narrow scope, consistent with the existing Phase 4 §7.2
+hindi-wrap rule's behaviour. ``NEG_SCOPE`` is set only by the new
+wide-scope rule introduced in Commit 2; the existing hindi-wrap rule
+in ``cfg/negation.py`` is unchanged.
+
+The new wide-scope rule (Commit 2 implementation forecast) attaches
+``hindi`` at the matrix above a coord-NP SUBJ, e.g. for
+``Hindi kumain si Maria at si Juan.`` "Neither Maria nor Juan ate":
+
+```text
+S → PART[POLARITY=NEG] V NP[CASE=NOM, COORD=AND]
+  ↑ = ↓2
+  (↑ POLARITY) = 'NEG'
+  (↑ NEG_SCOPE) = 'WIDE'
+  (↑ SUBJ) = ↓3
+  (↓1 POLARITY) =c 'NEG'
+  (↓3 COORD) =c 'AND'
+```
+
+Mirror rules cover ``COORD=OR`` (semantics: ``¬(M ate ∨ J ate)``;
+both AND- and OR-coord yield "neither" semantics under wide-scope
+negation, by De Morgan).
+
+The pre-V word order ``Hindi [si Maria at si Juan] kumain.`` is
+non-canonical without ay-fronting; if corpus pressure surfaces it,
+an ay-fronted variant is added separately. The post-V form is the
+canonical L78 surface.
+
+### Why a single feature, not two
+
+Two alternatives were considered:
+
+1. **Two separate boolean features** (``NEG_NARROW`` /
+   ``NEG_WIDE``). Rejected — the readings are mutually exclusive
+   structurally (the wide-scope rule produces one f-structure;
+   the existing narrow-scope hindi-wrap path produces another).
+   A single feat captures the disjunction without redundancy.
+
+2. **Three-valued ``NEG_SCOPE`` (``WIDE`` / ``NARROW`` /
+   ``UNSPECIFIED``).** Rejected — there is no construction that
+   would assert ``UNSPECIFIED`` distinct from "feat absent". The
+   narrow reading is the default behaviour of every existing
+   hindi-wrap path; absence on the matrix already encodes
+   "narrow / not wide / no relevant coord interaction".
+
+Single-value (``WIDE`` only) follows the codebase convention for
+binary marker feats: ``EMPHATIC=YES``, ``COUNTERFACTUAL=YES``,
+``CARDINAL=YES`` etc. all encode presence-vs-absence rather than
+two-valued. ``NEG_SCOPE=WIDE`` is the marker; the absence is the
+default narrow reading.
+
+### Interaction with Phase 5k coord-NP head feats
+
+Phase 5k Commit 3 (``cfg/coordination.py:44``) propagates
+``COORD``, ``CASE``, ``NUM`` from the daughter conjuncts to the
+matrix coord-NP. The new wide-scope hindi rule attaches ABOVE the
+matrix coord-NP — its NP daughter is the already-built coord-NP,
+and ``NEG_SCOPE=WIDE`` lands on the matrix S, not on the
+coord-NP. No conflict: the coord-NP's head feats stay where Phase
+5k put them; the matrix S gains a new feat orthogonal to coord-NP
+structure.
+
+### Disambiguation from Phase 5k asymmetric coord (Commit 8)
+
+The asymmetric coord rule (Phase 5k Commit 8,
+``cfg/coordination.py:493``) handles ``Si Maria, hindi si Juan`` —
+``hindi`` in third position acting as the asymmetric connective —
+producing ``COORD=BUT_NOT`` on the coord-NP and a defining
+``(↓4 POLARITY) = 'NEG'`` on the second conjunct's f-structure.
+The new wide-scope rule is structurally distinct: ``hindi`` is at
+the matrix left edge (or left edge of the post-V SUBJ slot, not
+between two NPs), and the coord-NP carries ``COORD=AND/OR``
+(symmetric). No structural overlap; both rules can coexist.
+
+### Disambiguation from existing narrow-scope hindi-wrap
+
+The existing Phase 4 §7.2 hindi-wrap rule (``cfg/negation.py:73``,
+``S → PART[POLARITY=NEG] S``) wraps an inner S that already has a
+COMPLETE f-structure. When that inner S contains a coord-NP SUBJ,
+the wrap produces narrow-scope semantics: ``POLARITY=NEG`` on the
+matrix without ``NEG_SCOPE`` set, encoding "the predicate over the
+coord-SUBJ is negated as a unit, with the coord internal to that
+predicate." Whether this composes with multi-clause coord
+(``Hindi kumain si Maria at uminom si Juan.``) is unaffected by
+this commit — multi-clause cases remain narrow per the
+``cfg/coordination.py:355`` comment.
+
+For surfaces where both wide- and narrow-scope readings are
+structurally available (e.g. coord-SUBJ post-V), both parses are
+admitted; the wide-scope parse carries ``NEG_SCOPE=WIDE``, the
+narrow-scope parse does not. Ranker disambiguation per Phase 4
+§7.9 heuristics applies.
+
+### Clitic-pronoun NOM SUBJ exclusion
+
+Per S&O 1972 §10, the wide-scope reading is degraded /
+ungrammatical when the coord-NP contains a clitic pronoun
+(``siya`` / ``sila`` / ``ako`` / ``ka`` etc.) as a NOM SUBJ inside
+the coord. Concretely, ``Hindi kumain si Maria at siya.`` resists
+the wide-scope reading; only narrow scope or rephrasing (e.g.
+``Hindi sila kumain.`` with a plural pronoun) is natural.
+
+The constraint is enforced structurally: NOM clitic pronouns are
+typed as ``PRON[CASE=NOM, CLITIC_CLASS=2P]`` and don't compose
+into ``NP[CASE=NOM]`` via the Phase 5k coord rules — they have
+their own pronominal-fronting / 2P-clitic absorption paths. So
+the wide-scope rule's daughter pattern ``NP[CASE=NOM, COORD=AND]``
+already excludes coord-NPs that contain clitic-pronoun conjuncts.
+No additional constraining equation is needed for this design.
+
+If corpus pressure later surfaces a non-clitic full-pronoun
+(``ako``, ``ikaw`` in stressed form) coord-NP that should still be
+excluded, an explicit ``¬ (↓3 PRON_TYPE) = 'PRONOMINAL_COORD'``
+constraint can be added; for now the structural restriction
+suffices.
+
+### Cross-references
+
+- Phase 5n.C plan-of-record Commits 1–3
+  (``.claude/plans/tgllfg-phase-5n-c.md`` §3.1).
+- §18 L78 disposition (closes with this commit triple) —
+  ``tgllfg-out-of-scope.md``.
+- Phase 4 §7.2 narrow-scope hindi-wrap rule —
+  ``src/tgllfg/cfg/negation.py:73``.
+- Phase 5k Commit 3 binary NP coord head feats —
+  ``src/tgllfg/cfg/coordination.py:44``.
+- Phase 5k Commit 8 asymmetric NP coord —
+  ``src/tgllfg/cfg/coordination.py:493``.
+- ``cfg/coordination.py:355`` — multi-clause coord × hindi-wrap
+  narrow-scope comment.
+- Schachter & Otanes 1972 §10 (clitic-pronoun NOM SUBJ exclusion).
+- Ramos & Bautista 1986 ch.18 (negation × coordination).
+
+## Phase 5n.C Commit 4: L83 standalone NP-coord fragment — design (S → NP[COORD=BUT_NOT])
+
+**Date:** 2026-05-10 (Phase 5n.C).
+**Status:** design. Implementation lands in Phase 5n.C Commit 5.
+
+### Decision
+
+A new clause rule ``S → NP[CASE=NOM, COORD=BUT_NOT]`` admits the
+bare asymmetric-coord-NP fragment ``Si Maria, hindi si Juan.``
+"Maria, not Juan" as a complete matrix S, marked with
+``CLAUSE_TYPE=FRAGMENT``. The matrix synthesises a one-place
+fragment predicate ``PRED='NP-FRAG <SUBJ>'`` and binds the coord-NP
+as ``SUBJ``; the coord-NP's existing feats (``COORD=BUT_NOT``,
+``CONJUNCTS={Maria, Juan}``, ``CASE=NOM``, ``NUM``) remain on the
+SUBJ f-structure unchanged.
+
+The rule's daughter pattern ``NP[CASE=NOM, COORD=BUT_NOT]``
+restricts the fragment-S admission to Phase 5k Commit 8's
+asymmetric NP-coord output specifically — bare ``Si Maria.``
+(no coord) does NOT parse as a sentence under this rule, because
+the daughter requires ``COORD=BUT_NOT`` which is set only by the
+asymmetric coord rule.
+
+### Mechanism: structural gating, not parser-mode flag
+
+The Phase 5n.C plan-of-record §3.2 originally specified an
+``S_FRAG`` non-terminal gated by an explicit ``FRAGMENT=YES``
+parser-mode flag (CLI ``--allow-fragments`` or parse-config
+option). That design predates Phase 5n.B's L96 / L97 fragment-
+clause work, which established **structural / lex-feat gating**
+as the established convention for fragment-clause rules:
+
+- L96 (``Salamat.``): ``S → N`` gated on ``FRAGMENT_HOST=YES``
+  (set in the lex per-eligible-noun); ``CLAUSE_TYPE=FRAGMENT``
+  on the matrix.
+- L97 (``Hindi.`` / ``Oo.`` / ``Opo.`` / ``Oho.``): ``S → PRON``
+  gated on ``INTERJ=YES`` and existential ``ANSWER`` constraint
+  (set in the lex per-eligible-pronoun);
+  ``CLAUSE_TYPE=FRAGMENT_ANSWER`` on the matrix.
+
+The L83 rule follows the same pattern but discriminates **on a
+constructional feat** (``COORD=BUT_NOT``) rather than a lex feat,
+because the asymmetric coord-NP is a built structure, not a
+lexical item. ``COORD=BUT_NOT`` is uniquely set by Phase 5k Commit
+8 (``cfg/coordination.py:493``) and serves as the natural
+discriminator — no new feat needs to be added to the asymmetric
+coord rule.
+
+This design ratifies an update to the original plan: the parser-
+mode flag is replaced with structural gating, in line with the
+established L96 / L97 fragment-rule pattern. Downstream consumers
+that wish to filter out fragment-S parses can do so by checking
+``CLAUSE_TYPE=FRAGMENT`` on the matrix; no parser-mode plumbing
+is required.
+
+### Why ``COORD=BUT_NOT`` and not ``NP_COORD`` generally
+
+A broader rule ``S → NP[CASE=NOM, COORD=AND/OR/BUT_NOT]`` would
+admit bare AND-coord and OR-coord NPs as sentences (e.g.,
+``Si Maria at si Juan.`` would become a sentence). That over-
+generates: bare additive / disjunctive coord-NPs are not
+canonical sentence fragments in Tagalog. Only the asymmetric
+``X, hindi Y.`` shape is attested as a standalone fragment
+(per S&O 1972 §10 contrast-and-rejection construction;
+R&B 1986 ch.16).
+
+If corpus pressure later surfaces a bare AND-coord or OR-coord
+fragment use case, a separate rule with explicit ``COORD=AND``
+/ ``COORD=OR`` discriminators can be added. Each fragment-S
+rule should restrict to the most specific structural shape that
+licenses the fragment — preserving the ``Si Maria.`` 0-parse
+guarantee for non-fragment-host bare NPs.
+
+### Why a synthetic ``PRED='NP-FRAG <SUBJ>'``
+
+The asymmetric coord-NP itself has no ``PRED`` (its conjuncts
+each have ``PRED`` from the lex — proper-name PREDs like
+``NOUN(↑ FORM)`` — but the coord-NP itself is a CONJUNCTS-
+holding f-structure with no head ``PRED``). The fragment-S must
+have a ``PRED`` for f-structure well-formedness; the matrix
+cannot inherit ``PRED`` via ``(↑) = ↓1`` because the coord-NP
+has none.
+
+Synthesising ``PRED='NP-FRAG <SUBJ>'`` introduces a fragment-
+predicate with one argument slot (SUBJ), bound to the coord-NP.
+This treats the fragment as a degenerate one-place predication
+over the coord-NP — semantically a placeholder that downstream
+Glue / discourse-semantics work (Phase 6+) can interpret as
+"BE", "FOCUS-CONTRAST", or "ASSERT-AND-REJECT" as the
+construction's pragmatics dictate. The ``NP-FRAG`` placeholder
+is intentionally not tied to a specific semantic operator at
+this layer.
+
+The L96 / L97 precedents differ here: their rules use
+``(↑) = ↓1`` because the lex-host (``Salamat`` / ``Oo`` /
+``Hindi`` etc.) carries its own ``PRED``. L83 is the first
+fragment-S rule whose host is a constructed structure without
+a head ``PRED``, so synthesis is unavoidable.
+
+### Interaction with Phase 5k asymmetric coord (Commit 8)
+
+The Phase 5k Commit 8 asymmetric NP-coord rule
+(``cfg/coordination.py:493``) is unchanged — it continues to fire
+inside an S frame (``Kumain si Maria, hindi si Juan.``) with
+``COORD=BUT_NOT`` on the coord-NP. The new L83 rule is an
+additional path: the same ``COORD=BUT_NOT`` coord-NP can serve
+either (a) as the SUBJ of an existing V-headed S, or (b) as the
+sole daughter of a fragment-S. Both readings can coexist on
+ambiguous surfaces, ranked by Phase 4 §7.9 heuristics; the
+fragment reading is naturally lower-ranked because it requires
+the synthesis of a fragment-PRED whereas the V-headed S has a
+real verbal PRED.
+
+For the bare-NP fragment surface ``Si Maria, hindi si Juan.``
+(no V), only the new L83 rule produces a complete parse — the
+V-headed S rules don't fire without a V daughter. So the
+fragment reading is the unique parse for this surface.
+
+### Why bare ``Si Maria.`` still 0-parses
+
+The L83 rule's daughter pattern is ``NP[CASE=NOM,
+COORD=BUT_NOT]``, not ``NP[CASE=NOM]``. Bare singular NPs do
+not carry ``COORD=BUT_NOT`` — that feat is set only by Phase 5k
+Commit 8's asymmetric NP-coord rule, which requires a comma +
+``hindi`` + second NP shape. So ``Si Maria.`` (singular bare
+NP) does not match the L83 rule's daughter and continues to
+0-parse as a sentence. This preserves the existing grammar's
+rejection of bare NPs as sentences.
+
+The L96 / L97 lex-feat-gated rules cover the bare-N / bare-PRON
+fragment cases for specific opted-in lex items (``salamat``,
+``oo``, ``hindi``, ``opo``, ``oho``); arbitrary bare nouns
+(``aklat``, ``bahay``, etc.) and bare proper names
+(``Si Maria``) are not opted in and continue to 0-parse.
+
+### Cross-references
+
+- Phase 5n.C plan-of-record Commit 5
+  (``.claude/plans/tgllfg-phase-5n-c.md`` §3.2; this design
+  appendix is Commit 4).
+- §18 L83 disposition (closes with this commit pair) —
+  ``tgllfg-out-of-scope.md``.
+- Phase 5k Commit 8 asymmetric NP-coord (sole producer of
+  ``COORD=BUT_NOT``) —
+  ``src/tgllfg/cfg/coordination.py:493``.
+- Phase 5m Commit 3 fragment-answer rule (L97 precedent) —
+  ``src/tgllfg/cfg/clause.py:2078`` (search "fragment-answer").
+- Phase 5n.B Commit 16 fragment-host NOUN rule (L96 precedent) —
+  ``src/tgllfg/cfg/clause.py:2134`` (search "fragment-host").
+- Schachter & Otanes 1972 §10 (asymmetric contrast construction).
+- Ramos & Bautista 1986 ch.16 (NP coordination).
+
+## Phase 5n.C Commit 6: L81 distributive-Q topic — design (DISTRIB scope marker)
+
+**Date:** 2026-05-10 (Phase 5n.C).
+**Status:** design. Implementation lands in Phase 5n.C Commit 7.
+
+### Decision
+
+A new clause rule ``S → NP[CASE=NOM] PART[PUNCT_CLASS=COMMA]
+V[VOICE=AV]`` admits the surface ``Bawat bata, kumain.`` "Each
+child ate" — a fronted universal-Q-NP topic, separated by a comma
+from an AV-intransitive verb, producing a distributive-scope
+reading. The matrix S carries ``DISTRIB=YES`` to mark the
+distributive operator scope; the topic-NP becomes the matrix
+``SUBJ`` (filling the AV verb's required argument).
+
+### Analysis chosen: each-distributive operator
+
+The plan-of-record §3.3 outlined two competing analyses:
+
+1. **Distributive coord-elaboration.** Treat ``Bawat bata, kumain.``
+   as a coord-style elaboration where the comma is the structural
+   separator and the Q-NP is one of the coord daughters. Rejected
+   — the surface is not a coord (only one conjunct, not a list);
+   the comma is a topicalization marker, not a coord connective.
+
+2. **Each-distributive operator.** Treat the Q-NP as a topic that
+   raises to a distributive operator scope position; the inner
+   clause carries the predication; the matrix is marked with a
+   distributive-scope feat. **Chosen.** Cited basis: S&O 1972 §10
+   (quantifier scope); R&B 1986 ch.16 (universal quantification).
+
+The chosen analysis matches the LFG-canonical handling of
+quantifier-scope marking (Bresnan 2001 §6 + Dalrymple 2001 §6 on
+scope feats). The semantic side — interpreting the operator as a
+distributive Glue derivation that scopes universally over the
+inner predication — stays as **Phase 6+ Glue work** (out-of-scope
+per ``tgllfg-out-of-scope.md`` §5.5 L19; the distributive scope
+semantics is part of the broader quantifier-Glue agenda that
+Phase 6's FU + LDD work prerequisites).
+
+### Daughter pattern: ``NP[CASE=NOM]`` with UNIV constraining equation
+
+The plan-of-record originally specified ``Q[DISTRIB=YES]`` as the
+first daughter. Under the existing lex (``data/tgl/particles.yaml``
+Phase 5f Commit 20), ``bawat`` and ``kada`` carry
+``feats: {QUANT: EVERY, UNIV: "YES"}`` — **not ``DISTRIB``**. The
+``DISTRIB`` feat is reserved in the existing grammar for
+distributive cardinals (``tig-isa`` "one each", ``tig-dalawa``
+"two each" — Phase 5f Commit 19) and as the matrix-level
+distributive-scope marker (``cfg/clause.py:188`` predicative
+distributive-cardinal rule sets ``(↑ DISTRIB) = 'YES'``).
+
+To match the existing lex without introducing a new ``DISTRIB``
+feat on ``bawat`` / ``kada``, the L81 rule uses a constraining
+equation pattern:
+
+```text
+S → NP[CASE=NOM] PART[PUNCT_CLASS=COMMA] V[VOICE=AV]
+  (↑ PRED) = ↓3 PRED                  -- verb percolation from ↓3
+  (↑ VOICE) = ↓3 VOICE
+  (↑ ASPECT) = ↓3 ASPECT
+  (↑ MOOD) = ↓3 MOOD
+  (↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT
+  (↑ DISTRIB) = 'YES'                 -- matrix scope marker
+  (↑ SUBJ) = ↓1                       -- topic-NP fills AV verb's SUBJ
+  (↓1 UNIV) =c 'YES'                  -- gates to bawat / kada heads
+  (↓2 PUNCT_CLASS) =c 'COMMA'         -- belt-and-braces comma filter
+```
+
+The ``(↓1 UNIV) =c 'YES'`` constraining equation gates the rule
+to topic-NPs whose head carries ``UNIV=YES`` — i.e., ``bawat`` /
+``kada``-headed NPs (the Phase 5f Commit 20 universal-Q + bare-N
+rule sets ``(↑ UNIV) = 'YES'`` on the resulting NP). Bare proper-
+name topics (``Si Maria, kumain.``) lack ``UNIV`` and don't
+match. Non-universal Qs (``lahat``, ``iba``, vague Qs) also lack
+``UNIV`` and don't match.
+
+### Why ``(↑ DISTRIB) = 'YES'`` and not a new feat
+
+``DISTRIB=YES`` is already an established matrix-level marker
+(Phase 5f Commit 19 predicative distributive cardinals — ``cfg/
+clause.py:188``). Using the same feat for L81 keeps the matrix
+naming-space consistent: a clause with distributive reading
+carries ``DISTRIB=YES`` regardless of whether the distributivity
+comes from a distributive numeral (``tig-isa``) or a universal-Q
+topic (``bawat``). Downstream consumers can pattern-match on
+``DISTRIB=YES`` uniformly. Per ``feedback_terse_feature_names``,
+the existing terse feat is preferred over a new
+``Q_SCOPE=DISTRIB`` or ``DIST_SCOPE=YES`` synonym.
+
+### Scope: AV-intransitive only for this commit
+
+The rule's third daughter is restricted to ``V[VOICE=AV]`` (no
+explicit transitive-frame variants). The canonical S&O 1972 §10
+example is ``Bawat isa, kumain.`` (intransitive). Transitive
+variants (``Bawat isa, kumain ng kanin.``) would require parallel
+rules with V + GEN-NP / V + DAT-NP frames; defer to a follow-on
+if corpus pressure surfaces. The intransitive case closes the
+core L81 syntactic side per the plan.
+
+### Out of scope: ``Bawat isa, ...`` (Q + NUM)
+
+The canonical ``Bawat isa, kumain.`` example involves ``bawat
+isa`` (Q + NUM "each one"). Phase 5f Commit 20 explicitly
+deferred Q + NUM composition (``bawat isa`` / ``bawat dalawa`` /
+etc.). Without that compositional rule, ``Bawat isa, kumain.``
+cannot match the L81 daughter pattern — the front position
+expects an ``NP[CASE=NOM]``, but ``bawat isa`` 0-parses as an NP
+today.
+
+The L81 commit closes the comma+S syntactic mechanism for
+``bawat`` + N forms (``Bawat bata, kumain.``, ``Kada bata,
+kumain.``); the Q + NUM piece remains deferred separately. This
+matches the disposition pattern from Phase 5f Commit 20: each
+piece of the universal-Q feature surface is closed independently
+based on linguistic priority.
+
+### Disambiguation from ay-fronting
+
+The existing Phase 4 §7.4 ay-fronting rule already admits
+``Bawat bata ay kumain.`` "Every child eats" with the bawat-NP
+in topic position. That parse does NOT carry ``DISTRIB=YES`` on
+the matrix — ay-fronting is a topicalization mechanism without
+intrinsic distributive scope. The L81 comma+S construction is
+distinct: the comma marks the distributive-scope reading
+explicitly, whereas ay-fronting is a more general
+topicalization that doesn't specialize for distributivity.
+
+For surfaces where both are structurally available (e.g., a
+bawat-NP with both ``ay`` and a comma — uncommon), the parser
+admits both readings; ranking per Phase 4 §7.9 heuristics.
+
+### Disambiguation from Phase 5n.C Commit 5 (L83 fragment-NP-coord)
+
+The L83 fragment-NP-coord rule
+(``S → NP[CASE=NOM, COORD=BUT_NOT]``) and the L81 distributive-Q
+rule are structurally distinct:
+
+- L83's daughter is a 1-element rule: just the asymmetric
+  coord-NP, no comma daughter, no V.
+- L81's daughter is a 3-element rule: NP + COMMA + V.
+
+Both have a comma in their input surfaces, but the L83 comma is
+*inside* the coord-NP daughter (consumed by Phase 5k Commit 8
+which builds ``NP COMMA hindi NP``), while the L81 comma is a
+*top-level* daughter of the new clause rule. No structural
+overlap; no rule competition.
+
+### Cross-references
+
+- Phase 5n.C plan-of-record Commits 6 + 7
+  (``.claude/plans/tgllfg-phase-5n-c.md`` §3.3; this design
+  appendix is Commit 6).
+- §18 L81 disposition (closes with this commit pair) —
+  ``tgllfg-out-of-scope.md``.
+- §5.5 L19 quantifier-Glue deferral (Phase 6+ scope semantics) —
+  ``tgllfg-out-of-scope.md``.
+- Phase 5f Commit 19 predicative distributive-cardinal rule
+  (existing ``DISTRIB=YES`` matrix marker convention) —
+  ``src/tgllfg/cfg/clause.py:188``.
+- Phase 5f Commit 20 universal-Q + bare-N rule (sets
+  ``UNIV=YES`` on the resulting NP) —
+  ``src/tgllfg/cfg/nominal.py:696``.
+- ``data/tgl/particles.yaml:414`` — ``bawat`` / ``kada`` lex
+  entries with ``UNIV=YES``.
+- Schachter & Otanes 1972 §10 (quantifier scope).
+- Ramos & Bautista 1986 ch.16 (universal quantification).
