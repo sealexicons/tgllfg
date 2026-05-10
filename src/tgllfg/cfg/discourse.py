@@ -306,3 +306,51 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 LEMMA) =c 'bukod'",
         ],
     ))
+
+
+    # --- Phase 5n.B Commit 24: narrative-opener idiom (§18 L30) -------
+    #
+    # ``Nang isang beses, may isang manok.``  "Once, there was a
+    #                                          chicken."
+    # ``Nang isang beses, kumain ang bata.``  "Once, the child ate."
+    #
+    # Closes §18.1 deferral L30 (and §18.2 lines 204-215). A fixed-
+    # phrase idiom: the literal sequence ``Nang isang beses ,``
+    # introduces a narrative clause-initial frame, followed by an
+    # arbitrary inner clause. The matrix carries
+    # ``DISCOURSE='NARRATIVE_OPENER'``; the inner clause's
+    # f-structure is lifted via ``(↑) = ↓4``.
+    #
+    # The ``isang`` cardinal modifier collapses with ``beses`` into
+    # a matrix-N daughter (Phase 5f cardinal-internal-modifier rule
+    # builds ``isa + -ng + beses → N``); we constrain ↓2 to be that
+    # specific N via ``LEMMA=beses`` and ``SEM_CLASS=FREQUENCY``
+    # (both set by the existing ``beses`` lex entry). The literal-
+    # lemma constraint on ↓1 (``LEMMA=nang``) and the comma-PUNCT
+    # constraint on ↓3 lock the rule to the exact idiomatic surface.
+    #
+    # Non-idiom uses of nang / isa / beses (e.g., ``Kumain ako nang
+    # marami``, ``isang aklat``) continue to parse via their
+    # existing rules — the 4-daughter N-required pattern doesn't
+    # match those shapes.
+    rules.append(Rule(
+        "S",
+        [
+            "PART",       # nang
+            "NUM",        # isa
+            "PART",       # -ng linker
+            "N",          # beses
+            "PUNCT[PUNCT_CLASS=COMMA]",  # ,
+            "S",          # inner clause
+        ],
+        [
+            "(↑) = ↓6",
+            "(↑ DISCOURSE) = 'NARRATIVE_OPENER'",
+            "(↓1 LEMMA) =c 'nang'",
+            "(↓2 CARDINAL_VALUE) =c '1'",
+            "(↓3 LINK) =c 'NG'",
+            "(↓4 LEMMA) =c 'beses'",
+            "(↓4 SEM_CLASS) =c 'FREQUENCY'",
+            "(↓5 PUNCT_CLASS) =c 'COMMA'",
+        ],
+    ))
