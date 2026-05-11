@@ -66,7 +66,6 @@ from .graph import (
     FGraph,
     NodeId,
     SetValue,
-    _atoms_compatible,
 )
 
 
@@ -347,9 +346,7 @@ def _eval_constraining_eq(
     lhs_val = graph.value(lhs_node)
 
     if isinstance(eq.rhs, Atom):
-        if isinstance(lhs_val, AtomValue) and _atoms_compatible(
-            lhs_val.atom, eq.rhs.value
-        ):
+        if isinstance(lhs_val, AtomValue) and lhs_val.atom == eq.rhs.value:
             return None
         return Diagnostic(
             "constraint-failed",
@@ -374,7 +371,7 @@ def _eval_constraining_eq(
     if (
         isinstance(lhs_val, AtomValue)
         and isinstance(rhs_val, AtomValue)
-        and _atoms_compatible(lhs_val.atom, rhs_val.atom)
+        and lhs_val.atom == rhs_val.atom
     ):
         return None
     return Diagnostic(
@@ -440,9 +437,7 @@ def _eval_neg_equation(
         )
     lhs_val = graph.value(lhs_node)
     if isinstance(eq.rhs, Atom):
-        if not isinstance(lhs_val, AtomValue) or not _atoms_compatible(
-            lhs_val.atom, eq.rhs.value
-        ):
+        if not isinstance(lhs_val, AtomValue) or lhs_val.atom != eq.rhs.value:
             return None
         return Diagnostic(
             "neg-equation-failed",
@@ -463,7 +458,7 @@ def _eval_neg_equation(
     if (
         isinstance(lhs_val, AtomValue)
         and isinstance(rhs_val, AtomValue)
-        and _atoms_compatible(lhs_val.atom, rhs_val.atom)
+        and lhs_val.atom == rhs_val.atom
     ):
         return Diagnostic(
             "neg-equation-failed",
@@ -490,25 +485,7 @@ def _project(graph: FGraph, root: NodeId) -> FStructure:
     """Project the graph rooted at `root` to a tree-shaped FStructure.
     Shared subgraphs become shared FStructure objects (Python identity)
     so reentrancy is preserved for downstream renderers.
-
-    Phase 5n.C.4: when projecting an AtomValue *as the value of a
-    feature in BINARY_FEATS*, canonicalize to Python ``bool``. The
-    stored value may be ``"YES"`` (from a rule-string atom) or
-    ``True`` (from a lex-emitted bool literal) — projection unifies
-    the surface view so downstream consumers (tests, renderers) see
-    a single representation.
     """
-    from tgllfg.core.feats import BINARY_FEATS
-
-    def _canonicalize_for_feat(feat: str, value: ProjectedValue) -> ProjectedValue:
-        if feat not in BINARY_FEATS:
-            return value
-        if value == "YES" or value is True:
-            return True
-        if value == "NO" or value is False:
-            return False
-        return value
-
     seen: dict[NodeId, ProjectedValue] = {}
 
     def go(n: NodeId) -> ProjectedValue:
@@ -527,7 +504,7 @@ def _project(graph: FGraph, root: NodeId) -> FStructure:
             f = FStructure(feats={}, id=n)
             seen[n] = f
             for feat, child in v.attrs.items():
-                f.feats[feat] = _canonicalize_for_feat(feat, go(child))
+                f.feats[feat] = go(child)
             return f
         # SetValue: project members. Cycles through sets are not
         # excluded by occurs-check, so we cache before recursing.

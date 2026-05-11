@@ -18,8 +18,6 @@ from typing import Any
 
 import yaml
 
-from tgllfg.core.feats import BINARY_FEATS
-
 from .paradigms import (
     AdjectiveCell,
     MorphData,
@@ -30,26 +28,6 @@ from .paradigms import (
     SandhiRule,
     VerbalCell,
 )
-
-
-# Phase 5n.C.4 Commit 4: canonicalize binary feat values to Python
-# ``bool``. YAML 1.1 coerces unquoted ``YES`` / ``NO`` to bool already,
-# but quoted ``"YES"`` / ``"NO"`` remains a string — leaving the
-# runtime view inconsistent across the lex YAML files. This pass
-# closes the gap by normalizing both forms to ``True`` / ``False`` for
-# feats in ``BINARY_FEATS``. Enum feats (``INDEF``, ``PRED``,
-# ``Q_TYPE``, etc.) keep their literal string value, including the
-# legacy ``"YES"`` enum tags on ``INDEF`` / ``PRED``.
-def _canonicalize_binary_feats(feats: dict[str, Any]) -> dict[str, Any]:
-    out = dict(feats)
-    for key, value in list(out.items()):
-        if key not in BINARY_FEATS:
-            continue
-        if value is True or value == "YES":
-            out[key] = True
-        elif value is False or value == "NO":
-            out[key] = False
-    return out
 
 # Default location: <repo-root>/data/tgl. Resolved relative to this
 # source file so the package works whether installed editable or not.
@@ -135,7 +113,7 @@ def _load_roots(path: Path) -> list[Root]:
             transitivity=rec.get("transitivity", ""),
             affix_class=list(affix_class_raw),
             sandhi_flags=list(sandhi_flags_raw),
-            feats=_canonicalize_binary_feats(feats_raw),
+            feats=dict(feats_raw),
             synonyms=list(synonyms_raw),
         ))
     return out
@@ -177,7 +155,7 @@ def _load_paradigm_cells(path: Path) -> list[VerbalCell]:
             affix_class=rec.get("affix_class", ""),
             operations=operations,
             notes=rec.get("notes", ""),
-            feats=_canonicalize_binary_feats(feats_raw),
+            feats=dict(feats_raw),
         ))
     return out
 
@@ -201,7 +179,7 @@ def _load_adjective_cells(path: Path) -> list[AdjectiveCell]:
             affix_class=rec.get("affix_class", ""),
             operations=operations,
             notes=rec.get("notes", ""),
-            feats=_canonicalize_binary_feats(feats_raw),
+            feats=dict(feats_raw),
         ))
     return out
 
@@ -213,7 +191,7 @@ def _load_particles(path: Path) -> list[Particle]:
         out.append(Particle(
             surface=_require(rec, "surface", where),
             pos=_require(rec, "pos", where),
-            feats=_canonicalize_binary_feats(rec.get("feats", {})),
+            feats=dict(rec.get("feats", {})),
             is_clitic=bool(rec.get("is_clitic", False)),
             clitic_class=rec.get("clitic_class", ""),
         ))
@@ -229,7 +207,7 @@ def _load_pronouns(path: Path) -> list[Pronoun]:
             raise ValueError(f"{where}: 'affix_class' must be a list")
         out.append(Pronoun(
             surface=_require(rec, "surface", where),
-            feats=_canonicalize_binary_feats(rec.get("feats", {})),
+            feats=dict(rec.get("feats", {})),
             is_clitic=bool(rec.get("is_clitic", False)),
             affix_class=list(affix_class_raw),
         ))

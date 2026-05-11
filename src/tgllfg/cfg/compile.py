@@ -55,13 +55,11 @@ class CategoryPattern:
     key. Two patterns with the same category and same features
     (regardless of construction order) are equal and hash the same.
 
-    Values are typically ``str`` (for enum feats like ``CASE=NOM``).
-    Phase 5n.C.4 introduces ``bool`` values for binary feats — both
-    ``PART[WH=YES]`` and ``PART[WH=true]`` and ``PART[WH]`` produce
-    ``("WH", True)``. The matcher in :func:`matches` aliases ``True``
-    with the legacy string ``"YES"`` (and ``False`` with ``"NO"``)
-    during the migration window so rule strings that still spell
-    ``=c 'YES'`` stay compatible. Commit 8 removes that aliasing.
+    Values are typically ``str`` (for enum feats like ``CASE=NOM``)
+    or ``bool`` (for binary feats — ``PART[WH=true]``, the
+    ``PART[WH]`` shorthand). Phase 5n.C.4 Commit 8 removed the
+    legacy ``YES`` / ``NO`` aliases; binary feats now accept only
+    ``true`` / ``false`` or the shorthand form.
     """
     category: str
     features: tuple[tuple[str, str | bool], ...] = ()
@@ -78,34 +76,31 @@ _FEATURE_SHORTHAND_RE = re.compile(
 )
 
 
-# Phase 5n.C.4 Commit 3 — the rule-parser is the bool migration's
-# front door. ``true`` / ``YES`` and ``false`` / ``NO`` all canonicalize
-# to the existing string sentinels ``"YES"`` / ``"NO"`` so that
-# downstream consumers (analyzer, matcher, unifier) remain unchanged
-# in C3. Commit 4 will flip the internal representation to Python
-# ``bool``, at which point this canonicalization moves with it.
-_BOOL_TRUE_VALUES: frozenset[str] = frozenset({"true", "YES"})
-_BOOL_FALSE_VALUES: frozenset[str] = frozenset({"false", "NO"})
-
-
 def _normalize_value(
     feat: str, value: str, pattern_src: str
 ) -> str | bool:
-    """Coerce ``true`` / ``YES`` and ``false`` / ``NO`` literals on
-    binary feats to Python ``bool``. Enum feats keep their literal
-    string value (including the legacy ``"YES"`` enum tag on
-    ``INDEF`` / ``PRED``). Reject ``=true`` / ``=false`` on enum
-    feats — that combination is almost certainly a semantic error."""
-    if value in {"true", "false"} and feat not in BINARY_FEATS:
+    """Translate ``true`` / ``false`` literals on binary feats to
+    Python ``bool``. Enum feats keep their literal string value
+    (including the legacy ``"YES"`` enum tag on ``INDEF`` / ``PRED``).
+    Reject ``=true`` / ``=false`` on enum feats and reject any other
+    value on binary feats — Phase 5n.C.4 Commit 8 removed the legacy
+    ``YES`` / ``NO`` aliases."""
+    if feat in BINARY_FEATS:
+        if value == "true":
+            return True
+        if value == "false":
+            return False
         raise ValueError(
-            f"`{feat}={value}` in pattern {pattern_src!r}: "
-            f"bool literal not allowed on non-binary feat (see "
+            f"`{feat}={value}` in pattern {pattern_src!r}: binary "
+            f"feats accept only `true`, `false`, or the `[{feat}]` "
+            f"shorthand (see docs/feats-binary-audit.md)"
+        )
+    if value in {"true", "false"}:
+        raise ValueError(
+            f"`{feat}={value}` in pattern {pattern_src!r}: bool "
+            f"literal not allowed on non-binary feat (see "
             f"docs/feats-binary-audit.md for the binary-feat list)"
         )
-    if value in _BOOL_TRUE_VALUES and feat in BINARY_FEATS:
-        return True
-    if value in _BOOL_FALSE_VALUES and feat in BINARY_FEATS:
-        return False
     return value
 
 
@@ -115,9 +110,8 @@ def parse_pattern(s: str) -> CategoryPattern:
     Accepts ``NP``, ``NP[CASE=NOM]``, ``V[VOICE=PV,ASPECT=PFV]`` and
     Phase 5n.C.4 syntactic forms:
 
-    * ``PART[WH=true]`` / ``PART[WH=false]`` — bool literals on
-      binary feats (canonicalize to the legacy ``"YES"`` / ``"NO"``
-      internal representation).
+    * ``PART[WH=true]`` / ``PART[WH=false]`` — Python bool literals
+      on binary feats; produces ``("WH", True)`` / ``("WH", False)``.
     * ``PART[WH]`` — shorthand for ``PART[WH=true]``. Permitted only
       when the feat is in ``tgllfg.core.feats.BINARY_FEATS``;
       rejected on enum feats because ``[CASE]`` for ``CASE=NOM`` /
@@ -161,22 +155,6 @@ def parse_pattern(s: str) -> CategoryPattern:
     return CategoryPattern(category, tuple(feats))
 
 
-def _values_equivalent(a: str | bool, b: str | bool) -> bool:
-    """Phase 5n.C.4 transitional aliasing: treat the legacy string
-    sentinels ``"YES"`` / ``"NO"`` as equivalent to Python ``True`` /
-    ``False``. Lets rule strings that still spell ``[X=YES]`` (or
-    ``=c 'YES'``) match analyzer-side bool values until Commit 5
-    migrates the rule text. Commit 8 removes this aliasing."""
-    if a == b:
-        return True
-    pair = {a, b}
-    if pair == {True, "YES"}:
-        return True
-    if pair == {False, "NO"}:
-        return True
-    return False
-
-
 def matches(expected: CategoryPattern, candidate: CategoryPattern) -> bool:
     """Non-conflict matching: same category and no disagreement on
     any feature shared between the two sides."""
@@ -185,7 +163,7 @@ def matches(expected: CategoryPattern, candidate: CategoryPattern) -> bool:
     e = dict(expected.features)
     c = dict(candidate.features)
     for k in e.keys() & c.keys():
-        if not _values_equivalent(e[k], c[k]):
+        if e[k] != c[k]:
             return False
     return True
 

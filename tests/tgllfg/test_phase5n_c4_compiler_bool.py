@@ -1,18 +1,20 @@
-"""Phase 5n.C.4 Commit 3 — compiler + equation parser accept bool literals.
+"""Phase 5n.C.4 Commits 3 + 8 — compiler + equation parser accept bool literals.
 
-The compiler gains:
+The compiler accepts:
 
-* ``PART[WH=true]`` / ``PART[WH=false]`` — bool literals on binary feats.
+* ``PART[WH=true]`` / ``PART[WH=false]`` — Python bool literals on
+  binary feats.
 * ``PART[WH]`` — shorthand for ``PART[WH=true]``, permitted only on
   feats in ``BINARY_FEATS``.
-* ``PART[X=YES]`` / ``PART[X=NO]`` — legacy syntax preserved as aliases
-  during the migration window.
 
-The equation parser gains bare ``true`` / ``false`` keywords at value
-position. All four shapes (``=true``, ``=YES``, ``[X]``, ``= 'YES'``)
-canonicalize to the same internal representation (string ``"YES"`` /
-``"NO"``) for C3 — Commit 4 will flip the internal rep to Python
-``bool``.
+Commit 8 removed the legacy ``YES`` / ``NO`` aliases:
+
+* ``PART[WH=YES]`` — rejected (use ``[WH=true]`` or ``[WH]``).
+* ``PART[WH=NO]`` — rejected (use ``[WH=false]``).
+
+The equation parser accepts bare ``true`` / ``false`` keywords at
+value position; quoted ``'YES'`` / ``'NO'`` atoms remain as string
+atoms (used for enum YES tags on PRED / INDEF).
 
 Non-binary feats reject bool syntax:
 
@@ -40,8 +42,6 @@ from tgllfg.fstruct.equations import (
 @pytest.mark.parametrize("src,feat,value", [
     ("PART[WH=true]", "WH", True),
     ("PART[WH=false]", "WH", False),
-    ("PART[WH=YES]", "WH", True),
-    ("PART[WH=NO]", "WH", False),
     ("PART[WH]", "WH", True),
 ])
 def test_binary_feat_bool_forms_canonicalize_to_bool(
@@ -51,23 +51,22 @@ def test_binary_feat_bool_forms_canonicalize_to_bool(
     assert p.features == ((feat, value),)
 
 
-def test_shorthand_and_explicit_yes_yield_equal_patterns() -> None:
-    """``PART[WH]`` and ``PART[WH=YES]`` produce hash-equal patterns —
-    the shorthand decodes to the same internal representation."""
+def test_shorthand_and_explicit_true_yield_equal_patterns() -> None:
+    """``PART[WH]`` and ``PART[WH=true]`` produce hash-equal patterns."""
     a = parse_pattern("PART[WH]")
-    b = parse_pattern("PART[WH=YES]")
+    b = parse_pattern("PART[WH=true]")
     assert a == b
 
 
-def test_bool_literal_and_legacy_alias_yield_equal_patterns() -> None:
-    """``PART[WH=true]`` and ``PART[WH=YES]`` are interchangeable in
-    C3 — both produce the legacy string sentinel internally."""
-    a = parse_pattern("PART[WH=true]")
-    b = parse_pattern("PART[WH=YES]")
-    assert a == b
-    a = parse_pattern("PART[WH=false]")
-    b = parse_pattern("PART[WH=NO]")
-    assert a == b
+@pytest.mark.parametrize("src", [
+    "PART[WH=YES]",
+    "PART[WH=NO]",
+])
+def test_legacy_yes_no_aliases_rejected(src: str) -> None:
+    """Commit 8 removed the ``YES`` / ``NO`` aliases — binary feats
+    accept only ``true`` / ``false`` / shorthand."""
+    with pytest.raises(ValueError, match="binary feats accept only"):
+        parse_pattern(src)
 
 
 # === Pattern parsing: enum feats stay string =============================
@@ -133,12 +132,11 @@ def test_shorthand_works_alongside_explicit_pair() -> None:
     assert feats["CLITIC_CLASS"] == "2P"
 
 
-def test_existing_legacy_patterns_unaffected() -> None:
-    """Regression: every shape that worked before C3 keeps parsing.
-    Phase 5n.C.4 canonicalizes the binary-feat value to ``True``, but
-    the matcher aliases ``True`` with the legacy ``"YES"`` string
-    during the migration window."""
-    p = parse_pattern("PART[CLITIC_CLASS=2P, QUESTION=YES]")
+def test_post_c8_canonical_pattern() -> None:
+    """Phase 5n.C.4 Commit 8 end-state: the binary feat must be
+    written as ``[QUESTION]`` shorthand or ``[QUESTION=true]``;
+    other forms are rejected."""
+    p = parse_pattern("PART[CLITIC_CLASS=2P, QUESTION]")
     assert p == CategoryPattern(
         "PART",
         (("CLITIC_CLASS", "2P"), ("QUESTION", True)),
