@@ -504,11 +504,15 @@ disambiguator branch for ``na`` after NUM[CARDINAL=YES]
 (also Commit 1) handles consonant-final distributives
 (tigapat / tiganim / tigsiyam). The Phase 5f Commit 4
 predicative-cardinal rule absorbs ``Tigisa sila.`` style
-sentences too. Out of scope: productive ``tig_distrib``
-morph class (would generate higher cardinals + Spanish-
-borrowed bases), distributive predicate construction
-(``Tigisang aklat sila`` "they each have one book" needs a
-new S frame rule with linker-attached complement N), DISTRIB
+sentences too. Productive ``tig_distrib`` morph class closed by
+Phase 5n.C.3 Commit 3 (§18 L31): new ``data/tgl/numerals.yaml``
+(10 NUM Roots) + a ``tig_distrib`` paradigm cell with
+``base_pos: NUM`` and the ``[prefix tig]`` op; replaces the 10
+hand-coded ``tig*`` particles. Still out of scope: higher-
+cardinal + Spanish-borrowed base coverage (would need
+additional NUM Roots), distributive predicate construction
+(``Tigisang aklat sila`` "they each have one book" needs a new
+S frame rule with linker-attached complement N), DISTRIB
 percolation to the matrix NP (same NP-from-N projection
 limitation).
 
@@ -755,7 +759,9 @@ and the placement pass treats ``na`` as the clitic.
 
 Out of scope for Phase 5g (deferred): ay-inversion of adj-pred
 clauses (``Ang bata ay maganda.``); reduplicated intensives
-(``maganda-ganda`` "rather beautiful" — Phase 5h);
+(``maganda-ganda`` "rather beautiful") — **closed Phase
+5n.C.3 Commit 7 (INTENS=MILD; productive across ~45 ma_adj
+roots via ``redup_root`` op)**;
 ``napaka-`` / ``mas`` / ``pinaka-`` derivations (Phase 5h);
 colour terms (``puti`` / ``itim`` / ``pula`` — bare adjectives
 that don't take ``ma-``); ``ka-`` exclamative (``Kaganda!``).
@@ -849,9 +855,13 @@ admits ``PART[INTENSIFIER=YES] + na + ADJ``.
 
 Out of scope for Phase 5h (deferred — see ``§18``):
 ay-inversion of comparative ADJ (``Ang bata ay mas matalino``);
-reduplicated intensives (``maganda-ganda`` "rather beautiful");
-archaic ``kasing-`` adjective-stem reduplication
-(``kasing-da-dali``); ``pinaka-`` on Q heads (``pinakamadalas``
+reduplicated intensives (``maganda-ganda`` "rather beautiful") —
+**closed Phase 5n.C.3 Commit 7 (INTENS=MILD via productive
+``redup_intens_adj`` cell)**; archaic ``kasing-`` adjective-stem
+reduplication (``kasing-da-dali``) — **closed Phase 5n.C.3
+Commit 8 (productive ``kasing_redup_adj`` cell with
+``[cv_redup, prefix kasing]``; f-structure-identical to modern
+``kasing-`` per GT verification)**; ``pinaka-`` on Q heads (``pinakamadalas``
 "most often"); formal ``nang higit`` comparison; predicative-Q
 clause (``Mas marami ang aklat.`` "There are more books");
 predicative-N clause (``Mas maraming aklat ako.`` "I have more
