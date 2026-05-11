@@ -83,7 +83,8 @@ A YAML file is a top-level **list** of LexicalEntry records.
 | `transitive` | bool | `true` | When `false`, `morph_constraints` omits `TR`. |
 | `intrinsic` | symbolic name | none | Reference to a Python intrinsic-profile constant. |
 | `intrinsic_classification` | map[role, [±r, ±o]] | empty | Inline alternative; see note A below. |
-| `extra_constraints` | map[string, string] | empty | Additional `morph_constraints`; see note B below. |
+| `extra_constraints` | map[string, string] | empty | Adds keys to auto-filled `morph_constraints`; see note B below. |
+| `morph_constraints` | map[string, string] | none | Full override of auto-fill; see note C below. |
 
 **Note A — `intrinsic_classification`:** inline alternative for one-off
 shapes when no named profile fits. Tuples are `["+", "+"]` (`[+r, +o]`),
@@ -94,6 +95,14 @@ one of `intrinsic` / `intrinsic_classification` may be set.
 `MOOD: SOC`; pa- causatives use `CAUS: DIRECT`; applicatives use
 `APPL: BEN` / `APPL: INSTR` / `APPL: REASON`. Keys override the
 auto-filled defaults below.
+
+**Note C — `morph_constraints` (full override):** when present,
+replaces the auto-fill entirely — the loader emits exactly the
+keys listed here (plus the `VOICE` field, which must agree with
+the record's `voice`). Used by BEN / INSTR / REASON applicative
+entries originally authored as bare `LexicalEntry(...)` in
+`BASE` that intentionally under-specify `CAUS` / `TR` for a looser
+analyzer match. Mutually exclusive with `extra_constraints`.
 
 ### Auto-filled `morph_constraints`
 
@@ -219,6 +228,28 @@ The `kain` "eat" lemma currently in `BASE`:
     APPL: BEN
   intrinsic: IV_BEN_AGENT_BENEFICIARY
 ```
+
+### Explicit `morph_constraints` override (looser match)
+
+The BEN / INSTR / REASON applicatives in `BASE` were originally
+authored as bare `LexicalEntry(...)` calls (not via the `_entry()`
+helper) with minimal `morph_constraints = {VOICE: IV, APPL: BEN}`
+— deliberately under-specified so the analyzer matches any CAUS
+and any TR value:
+
+```yaml
+- lemma: bili
+  voice: IV
+  pred: "BUY-FOR <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, BENEFICIARY]
+  gf_defaults: {BENEFICIARY: SUBJ, AGENT: OBJ-AGENT}
+  morph_constraints:
+    APPL: BEN
+  intrinsic: IV_BEN_AGENT_BENEFICIARY
+```
+
+The loader emits `{VOICE: IV, APPL: BEN}` exactly — no auto-fill.
+Mutually exclusive with `extra_constraints`.
 
 ### Inline intrinsic for a one-off shape
 

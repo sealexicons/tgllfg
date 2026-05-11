@@ -1,0 +1,241 @@
+# Applicative DV / IV / BV / LV lex entries — Phase 5n.C.4 Commit 15.
+#
+# Each record migrates one ``LexicalEntry`` from ``BASE`` whose
+# VOICE is DV / IV / BV / LV and that is NOT a causative
+# (CAUS=NONE) and NOT a control verb (no CTRL_CLASS).
+#
+# Two morph_constraints shapes coexist:
+#   * Full ``_entry()`` shape: ``{VOICE, CAUS=NONE, TR=TR, APPL}``.
+#     Loader auto-fills these from voice + transitive flag +
+#     extra_constraints. Used for DV/IV plain (CONVEY/RECIPIENT).
+#   * Minimal direct shape: ``{VOICE, APPL}`` only. Used for
+#     BEN / INSTR / REASON applicatives that intentionally omit
+#     CAUS / TR for a looser analyzer match. Loader emits these
+#     via the explicit ``morph_constraints`` field (see
+#     docs/lex-yaml-schema.md note C).
+
+# kain — eat. IV REASON applicative (eat-FOR-REASON-X).
+- lemma: kain
+  voice: IV
+  pred: "EAT-FOR-REASON <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, REASON]
+  gf_defaults:
+    REASON: SUBJ
+    AGENT: OBJ-AGENT
+  morph_constraints:
+    APPL: REASON
+  intrinsic: IV_REASON_AGENT_REASON
+
+- lemma: kain
+  voice: IV
+  pred: "EAT-FOR-REASON <SUBJ, OBJ-AGENT, OBJ-PATIENT>"
+  a_structure: [AGENT, PATIENT, REASON]
+  gf_defaults:
+    REASON: SUBJ
+    AGENT: OBJ-AGENT
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    APPL: REASON
+  intrinsic: IV_REASON_AGENT_PATIENT_REASON
+
+# bili — buy. IV BEN ("buy FOR someone") + IV INSTR ("buy WITH").
+- lemma: bili
+  voice: IV
+  pred: "BUY-FOR <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, BENEFICIARY]
+  gf_defaults:
+    BENEFICIARY: SUBJ
+    AGENT: OBJ-AGENT
+  morph_constraints:
+    APPL: BEN
+  intrinsic: IV_BEN_AGENT_BENEFICIARY
+
+- lemma: bili
+  voice: IV
+  pred: "BUY-FOR <SUBJ, OBJ-AGENT, OBJ-PATIENT>"
+  a_structure: [AGENT, PATIENT, BENEFICIARY]
+  gf_defaults:
+    BENEFICIARY: SUBJ
+    AGENT: OBJ-AGENT
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    APPL: BEN
+  intrinsic: IV_BEN_AGENT_PATIENT_BENEFICIARY
+
+- lemma: bili
+  voice: IV
+  pred: "BUY-WITH <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, INSTRUMENT]
+  gf_defaults:
+    INSTRUMENT: SUBJ
+    AGENT: OBJ-AGENT
+  morph_constraints:
+    APPL: INSTR
+  intrinsic: IV_INSTR_AGENT_INSTRUMENT
+
+- lemma: bili
+  voice: IV
+  pred: "BUY-WITH <SUBJ, OBJ-AGENT, OBJ-PATIENT>"
+  a_structure: [AGENT, PATIENT, INSTRUMENT]
+  gf_defaults:
+    INSTRUMENT: SUBJ
+    AGENT: OBJ-AGENT
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    APPL: INSTR
+  intrinsic: IV_INSTR_AGENT_PATIENT_INSTRUMENT
+
+# sulat — write. DV (recipient-pivot) + DV 3-arg + IV bare CONVEY +
+# IV BEN 2/3-arg + IV REASON 2/3-arg.
+- lemma: sulat
+  voice: DV
+  pred: "WRITE <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, RECIPIENT]
+  gf_defaults:
+    RECIPIENT: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: DV_TR_AGENT_RECIPIENT
+
+- lemma: sulat
+  voice: DV
+  pred: "WRITE-TO <SUBJ, OBJ-AGENT, OBJ-PATIENT>"
+  a_structure: [AGENT, PATIENT, RECIPIENT]
+  gf_defaults:
+    RECIPIENT: SUBJ
+    AGENT: OBJ-AGENT
+    PATIENT: OBJ-PATIENT
+  intrinsic: DV_TR_AGENT_PATIENT_RECIPIENT_THREE_ARG
+
+- lemma: sulat
+  voice: IV
+  pred: "WRITE <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, CONVEYED]
+  gf_defaults:
+    CONVEYED: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: IV_TR_AGENT_CONVEYED
+
+- lemma: sulat
+  voice: IV
+  pred: "WRITE-FOR <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, BENEFICIARY]
+  gf_defaults:
+    BENEFICIARY: SUBJ
+    AGENT: OBJ-AGENT
+  morph_constraints:
+    APPL: BEN
+  intrinsic: IV_BEN_AGENT_BENEFICIARY
+
+- lemma: sulat
+  voice: IV
+  pred: "WRITE-FOR <SUBJ, OBJ-AGENT, OBJ-PATIENT>"
+  a_structure: [AGENT, PATIENT, BENEFICIARY]
+  gf_defaults:
+    BENEFICIARY: SUBJ
+    AGENT: OBJ-AGENT
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    APPL: BEN
+  intrinsic: IV_BEN_AGENT_PATIENT_BENEFICIARY
+
+- lemma: sulat
+  voice: IV
+  pred: "WRITE-FOR-REASON <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, REASON]
+  gf_defaults:
+    REASON: SUBJ
+    AGENT: OBJ-AGENT
+  morph_constraints:
+    APPL: REASON
+  intrinsic: IV_REASON_AGENT_REASON
+
+- lemma: sulat
+  voice: IV
+  pred: "WRITE-FOR-REASON <SUBJ, OBJ-AGENT, OBJ-PATIENT>"
+  a_structure: [AGENT, PATIENT, REASON]
+  gf_defaults:
+    REASON: SUBJ
+    AGENT: OBJ-AGENT
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    APPL: REASON
+  intrinsic: IV_REASON_AGENT_PATIENT_REASON
+
+# bigay — give. DV 2-arg + DV 3-arg (Phase 5n.C.2 closure for L29 /
+# L77 gapping). AV ditransitive lives in plain_transitive.yaml.
+- lemma: bigay
+  voice: DV
+  pred: "GIVE <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, RECIPIENT]
+  gf_defaults:
+    RECIPIENT: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: DV_TR_AGENT_RECIPIENT
+
+- lemma: bigay
+  voice: DV
+  pred: "GIVE-TO <SUBJ, OBJ-AGENT, OBJ-PATIENT>"
+  a_structure: [AGENT, PATIENT, RECIPIENT]
+  gf_defaults:
+    RECIPIENT: SUBJ
+    AGENT: OBJ-AGENT
+    PATIENT: OBJ-PATIENT
+  intrinsic: DV_TR_AGENT_PATIENT_RECIPIENT_THREE_ARG
+
+# gawa — make. IV BEN 2/3-arg.
+- lemma: gawa
+  voice: IV
+  pred: "MAKE-FOR <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, BENEFICIARY]
+  gf_defaults:
+    BENEFICIARY: SUBJ
+    AGENT: OBJ-AGENT
+  morph_constraints:
+    APPL: BEN
+  intrinsic: IV_BEN_AGENT_BENEFICIARY
+
+- lemma: gawa
+  voice: IV
+  pred: "MAKE-FOR <SUBJ, OBJ-AGENT, OBJ-PATIENT>"
+  a_structure: [AGENT, PATIENT, BENEFICIARY]
+  gf_defaults:
+    BENEFICIARY: SUBJ
+    AGENT: OBJ-AGENT
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    APPL: BEN
+  intrinsic: IV_BEN_AGENT_PATIENT_BENEFICIARY
+
+# tapon — throw away. IV CONVEY (Phase 4 §7.10 conveyed-theme).
+- lemma: tapon
+  voice: IV
+  pred: "THROW <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, CONVEYED]
+  gf_defaults:
+    CONVEYED: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: IV_TR_AGENT_CONVEYED
+
+# tahi — sew. IV INSTR 2/3-arg (sew-with-needle / sew-cloth-with-needle).
+- lemma: tahi
+  voice: IV
+  pred: "SEW-WITH <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, INSTRUMENT]
+  gf_defaults:
+    INSTRUMENT: SUBJ
+    AGENT: OBJ-AGENT
+  morph_constraints:
+    APPL: INSTR
+  intrinsic: IV_INSTR_AGENT_INSTRUMENT
+
+- lemma: tahi
+  voice: IV
+  pred: "SEW-WITH <SUBJ, OBJ-AGENT, OBJ-PATIENT>"
+  a_structure: [AGENT, PATIENT, INSTRUMENT]
+  gf_defaults:
+    INSTRUMENT: SUBJ
+    AGENT: OBJ-AGENT
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    APPL: INSTR
+  intrinsic: IV_INSTR_AGENT_PATIENT_INSTRUMENT

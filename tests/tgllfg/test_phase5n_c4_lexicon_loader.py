@@ -134,6 +134,75 @@ def test_iv_gets_appl_convey(tmp_path: Path) -> None:
     }
 
 
+def test_morph_constraints_override_replaces_autofill(tmp_path: Path) -> None:
+    """``morph_constraints`` as a top-level field replaces the
+    auto-filled CAUS / APPL / TR entirely — the loader emits
+    exactly the listed keys plus VOICE. Used by BEN / INSTR /
+    REASON applicatives that under-specify for a looser match."""
+    _write(
+        tmp_path / "applicative.yaml",
+        [
+            {
+                "lemma": "bili",
+                "voice": "IV",
+                "pred": "BUY-FOR <SUBJ, OBJ-AGENT>",
+                "a_structure": ["AGENT", "BENEFICIARY"],
+                "gf_defaults": {
+                    "BENEFICIARY": "SUBJ", "AGENT": "OBJ-AGENT"
+                },
+                "morph_constraints": {"APPL": "BEN"},
+                "intrinsic": "IV_BEN_AGENT_BENEFICIARY",
+            }
+        ],
+    )
+    entry = load_lex_entries(tmp_path)["bili"][0]
+    # No CAUS, no TR — the looser-match shape.
+    assert entry.morph_constraints == {"VOICE": "IV", "APPL": "BEN"}
+
+
+def test_morph_constraints_and_extra_constraints_are_mutually_exclusive(
+    tmp_path: Path,
+) -> None:
+    _write(
+        tmp_path / "applicative.yaml",
+        [
+            {
+                "lemma": "x",
+                "voice": "IV",
+                "pred": "X <SUBJ, OBJ-AGENT>",
+                "a_structure": ["AGENT", "BENEFICIARY"],
+                "gf_defaults": {
+                    "BENEFICIARY": "SUBJ", "AGENT": "OBJ-AGENT"
+                },
+                "morph_constraints": {"APPL": "BEN"},
+                "extra_constraints": {"MOOD": "SOC"},
+            }
+        ],
+    )
+    with pytest.raises(ValueError, match="mutually exclusive"):
+        load_lex_entries(tmp_path)
+
+
+def test_morph_constraints_voice_must_agree(tmp_path: Path) -> None:
+    _write(
+        tmp_path / "applicative.yaml",
+        [
+            {
+                "lemma": "x",
+                "voice": "IV",
+                "pred": "X <SUBJ, OBJ-AGENT>",
+                "a_structure": ["AGENT", "BENEFICIARY"],
+                "gf_defaults": {
+                    "BENEFICIARY": "SUBJ", "AGENT": "OBJ-AGENT"
+                },
+                "morph_constraints": {"VOICE": "OV", "APPL": "BEN"},
+            }
+        ],
+    )
+    with pytest.raises(ValueError, match="disagrees with the voice field"):
+        load_lex_entries(tmp_path)
+
+
 def test_extra_constraints_overrides_and_extends(tmp_path: Path) -> None:
     """``extra_constraints`` adds MOOD/CAUS/APPL keys and overrides
     the auto-filled defaults — mirrors the existing ``_entry()`` +

@@ -157,6 +157,19 @@ def _parse_record(rec: Any, where: str) -> LexicalEntry:
             )
         extra_constraints[k] = v
 
+    explicit_constraints_raw = rec.get("morph_constraints")
+    if explicit_constraints_raw is not None:
+        if not isinstance(explicit_constraints_raw, dict):
+            raise ValueError(
+                f"{where}: morph_constraints must be a mapping"
+            )
+        if extra_constraints:
+            raise ValueError(
+                f"{where}: morph_constraints (full override) and "
+                f"extra_constraints (extends auto-fill) are mutually "
+                f"exclusive"
+            )
+
     has_intrinsic = "intrinsic" in rec
     has_inline = "intrinsic_classification" in rec
     if has_intrinsic and has_inline:
@@ -172,14 +185,33 @@ def _parse_record(rec: Any, where: str) -> LexicalEntry:
             rec["intrinsic_classification"], where
         )
 
-    morph_constraints: dict[str, FeatureValue] = {
-        "VOICE": voice,
-        "CAUS": "NONE",
-    }
-    morph_constraints["APPL"] = "CONVEY" if voice == "IV" else "NONE"
-    if transitive:
-        morph_constraints["TR"] = "TR"
-    morph_constraints.update(extra_constraints)
+    morph_constraints: dict[str, FeatureValue] = {}
+    if explicit_constraints_raw is not None:
+        # Full override: replace the auto-fill entirely. Used by
+        # applicative entries (BEN / INSTR / REASON) authored as
+        # bare LexicalEntry(...) in BASE that intentionally
+        # under-specify CAUS / TR for a looser match.
+        for k, v in explicit_constraints_raw.items():
+            if not isinstance(k, str):
+                raise ValueError(
+                    f"{where}: morph_constraints keys must be strings; "
+                    f"got {k!r}"
+                )
+            morph_constraints[k] = v
+        if morph_constraints.get("VOICE", voice) != voice:
+            raise ValueError(
+                f"{where}: morph_constraints['VOICE'] = "
+                f"{morph_constraints['VOICE']!r} disagrees with the "
+                f"voice field {voice!r}"
+            )
+        morph_constraints["VOICE"] = voice
+    else:
+        morph_constraints["VOICE"] = voice
+        morph_constraints["CAUS"] = "NONE"
+        morph_constraints["APPL"] = "CONVEY" if voice == "IV" else "NONE"
+        if transitive:
+            morph_constraints["TR"] = "TR"
+        morph_constraints.update(extra_constraints)
 
     return LexicalEntry(
         lemma=lemma,
