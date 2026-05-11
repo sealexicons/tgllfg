@@ -55,7 +55,7 @@ class TestSanaBasic:
         assert len(parses) >= 1
         # At least one parse has matrix COUNTERFACTUAL=YES.
         assert any(
-            fs.feats.get("COUNTERFACTUAL") == "YES"
+            fs.feats.get("COUNTERFACTUAL") is True
             for _ct, fs, _astr, _diags in parses
         )
 
@@ -63,7 +63,7 @@ class TestSanaBasic:
         parses = parse_text("Kumain sana si Maria.")
         assert len(parses) >= 1
         assert any(
-            fs.feats.get("COUNTERFACTUAL") == "YES"
+            fs.feats.get("COUNTERFACTUAL") is True
             for _ct, fs, _astr, _diags in parses
         )
 
@@ -71,7 +71,7 @@ class TestSanaBasic:
         parses = parse_text("Tumakbo sana siya.")
         assert len(parses) >= 1
         assert any(
-            fs.feats.get("COUNTERFACTUAL") == "YES"
+            fs.feats.get("COUNTERFACTUAL") is True
             for _ct, fs, _astr, _diags in parses
         )
 
@@ -93,7 +93,7 @@ class TestSanaInAdjSet:
             a for a in adj if a.feats.get("LEMMA") == "sana"
         ]
         assert len(sana_members) == 1
-        assert sana_members[0].feats.get("COUNTERFACTUAL") == "YES"
+        assert sana_members[0].feats.get("COUNTERFACTUAL") is True
         assert sana_members[0].feats.get("CLITIC_CLASS") == "2P"
 
 
@@ -114,7 +114,7 @@ class TestSanaWithNegation:
             for _ct, fs, _astr, _diags in parses
         ]
         assert any(
-            pol == "NEG" and cf == "YES" for pol, cf in good
+            pol == "NEG" and cf is True for pol, cf in good
         )
 
 
@@ -176,7 +176,7 @@ class TestSanaWithOther2PClitic:
         assert len(parses) >= 1
         # At least one parse has CF=YES on the matrix.
         assert any(
-            fs.feats.get("COUNTERFACTUAL") == "YES"
+            fs.feats.get("COUNTERFACTUAL") is True
             for _ct, fs, _astr, _diags in parses
         )
 

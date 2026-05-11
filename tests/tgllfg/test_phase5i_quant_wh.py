@@ -169,7 +169,7 @@ class TestKaninoFronting:
         assert adj is not None
         kanino_in_adj = any(
             (m.feats.get("LEMMA") == "kanino"
-             and m.feats.get("WH") == "YES")
+             and m.feats.get("WH") is True)
             for m in adj
         )
         assert kanino_in_adj
@@ -206,7 +206,7 @@ class TestKaninoInSitu:
         assert adj is not None
         kanino_in_adj = any(
             (m.feats.get("LEMMA") == "kanino"
-             and m.feats.get("WH") == "YES")
+             and m.feats.get("WH") is True)
             for m in adj
         )
         assert kanino_in_adj

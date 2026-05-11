@@ -63,7 +63,7 @@ class TestMismoPostN:
         subj = fs.feats.get("SUBJ")
         assert subj is not None
         assert subj.feats.get("LEMMA") == subj_lemma
-        assert subj.feats.get("EMPHATIC") == "YES", (
+        assert subj.feats.get("EMPHATIC") is True, (
             f"expected SUBJ.EMPHATIC=YES for {sent!r}; got "
             f"{subj.feats.get('EMPHATIC')!r}"
         )
@@ -80,7 +80,7 @@ class TestMismoPostN:
             m for m in adj
             if hasattr(m, "feats")
             and m.feats.get("LEMMA") == "mismo"
-            and m.feats.get("EMPHATIC") == "YES"
+            and m.feats.get("EMPHATIC") is True
         ]
         assert len(mismos) == 1
 

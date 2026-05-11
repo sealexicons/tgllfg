@@ -114,7 +114,7 @@ class TestUniversalMorph:
             cands = [c for c in ml[0] if c.pos == "Q"]
             assert cands, f"no Q analysis for {lemma!r}"
             ma = cands[0]
-            assert ma.feats.get("UNIV") == "YES", (
+            assert ma.feats.get("UNIV") is True, (
                 f"{lemma}: UNIV expected 'YES', got "
                 f"{ma.feats.get('UNIV')!r}"
             )
@@ -135,7 +135,7 @@ class TestUniversalCaseMarked:
         assert subj is not None
         assert subj.feats.get("LEMMA") == "bata"
         assert subj.feats.get("QUANT") == "EVERY"
-        assert subj.feats.get("UNIV") == "YES"
+        assert subj.feats.get("UNIV") is True
 
     def test_bawat_in_gen_obj(self) -> None:
         obj = _first_obj("Kumain ako ng bawat aklat.")
@@ -143,7 +143,7 @@ class TestUniversalCaseMarked:
         assert obj.feats.get("LEMMA") == "aklat"
         assert obj.feats.get("CASE") == "GEN"
         assert obj.feats.get("QUANT") == "EVERY"
-        assert obj.feats.get("UNIV") == "YES"
+        assert obj.feats.get("UNIV") is True
 
     def test_bawat_in_dat_adjunct(self) -> None:
         # Intransitive ``pumunta`` routes the DAT-NP to ADJUNCT.
@@ -151,7 +151,7 @@ class TestUniversalCaseMarked:
         assert adj is not None
         assert adj.feats.get("CASE") == "DAT"
         assert adj.feats.get("QUANT") == "EVERY"
-        assert adj.feats.get("UNIV") == "YES"
+        assert adj.feats.get("UNIV") is True
 
     def test_kada_in_nom_subj(self) -> None:
         # kada is the colloquial Spanish-borrowed synonym; same
@@ -178,7 +178,7 @@ class TestUniversalBareNom:
         assert isinstance(topic, FStructure)
         assert topic.feats.get("LEMMA") == "bata"
         assert topic.feats.get("QUANT") == "EVERY"
-        assert topic.feats.get("UNIV") == "YES"
+        assert topic.feats.get("UNIV") is True
 
     def test_kada_bata_ay_fronted(self) -> None:
         rs = parse_text("Kada bata ay kumakain.", n_best=5)

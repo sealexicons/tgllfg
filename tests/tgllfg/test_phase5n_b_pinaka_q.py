@@ -77,7 +77,7 @@ class TestPinakaQMorph:
         a = q_anals[0]
         assert a.lemma == expected_lemma
         assert a.feats.get("QUANT") == expected_quant
-        assert a.feats.get("VAGUE") == "YES"
+        assert a.feats.get("VAGUE") is True
         assert a.feats.get("COMP_DEGREE") == "SUPERLATIVE"
 
 
@@ -140,7 +140,7 @@ class TestPinakaQPredicative:
         _ct, fs, _astr, _diags = pred_parses[0]
         assert fs.feats.get("Q_LEMMA") == q_lemma
         assert fs.feats.get("QUANT") == quant
-        assert fs.feats.get("PREDICATIVE") == "YES"
+        assert fs.feats.get("PREDICATIVE") is True
 
 
 # === NP-modifier with pinaka- =======================================
@@ -200,4 +200,4 @@ class TestPinakaAdjUnaffected:
         a = adj_anals[0]
         assert a.lemma == "ganda"
         assert a.feats.get("COMP_DEGREE") == "SUPERLATIVE"
-        assert a.feats.get("PREDICATIVE") == "YES"
+        assert a.feats.get("PREDICATIVE") is True

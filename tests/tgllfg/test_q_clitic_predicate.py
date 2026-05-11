@@ -58,7 +58,7 @@ def _adj_dual(f: FStructure) -> FStructure | None:
     members = list(adj) if isinstance(adj, frozenset) else [adj]
     return next(
         (m for m in members
-         if isinstance(m, FStructure) and m.feats.get("DUAL") == "YES"),
+         if isinstance(m, FStructure) and m.feats.get("DUAL") is True),
         None,
     )
 
@@ -104,7 +104,7 @@ class TestDualTransitive:
         assert obj.feats.get("LEMMA") == "isda"
         adj = _adj_dual(f)
         assert adj is not None
-        assert adj.feats.get("DUAL") == "YES"
+        assert adj.feats.get("DUAL") is True
 
 
 class TestDualDitransitive:
@@ -162,7 +162,7 @@ class TestDistributivePredicative:
         assert f is not None, f"no parse for {text!r}"
         assert f.feats.get("PRED") == "CARDINAL <SUBJ, OBJ>"
         assert f.feats.get("CARDINAL_VALUE") == value
-        assert f.feats.get("DISTRIB") == "YES"
+        assert f.feats.get("DISTRIB") is True
         subj = f.feats.get("SUBJ")
         assert subj is not None and subj.feats.get("CASE") == "NOM"
         obj = f.feats.get("OBJ")
@@ -181,7 +181,7 @@ class TestDistributivePredicativeNegative:
         f = _matrix("Isang aklat sila.")
         if f is None:
             return  # acceptable — no parse means nothing overgenerates
-        assert f.feats.get("DISTRIB") != "YES", (
+        assert f.feats.get("DISTRIB") is not True, (
             f"plain cardinal accidentally fired distributive rule: {f.feats}"
         )
 
@@ -197,7 +197,7 @@ class TestFloatRegression:
         assert f is not None
         adj = _adj_dual(f)
         assert adj is not None
-        assert adj.feats.get("DUAL") == "YES"
+        assert adj.feats.get("DUAL") is True
 
     def test_distrib_np_modifier_regression(self) -> None:
         f = _matrix("Bumili sila ng tigisang aklat.")

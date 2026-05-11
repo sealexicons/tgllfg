@@ -66,7 +66,7 @@ class TestCanonicalCorrelative:
             (fs.feats.get("COORD"), fs.feats.get("CORREL"))
             for _ct, fs, _astr, _diags in parses
         ]
-        assert any(c == "BUT_NOT" and r == "YES" for c, r in good)
+        assert any(c == "BUT_NOT" and r is True for c, r in good)
 
     def test_canonical_conjuncts_set(self) -> None:
         parses = parse_text(
@@ -103,7 +103,7 @@ class TestNoCommaCorrelative:
             (fs.feats.get("COORD"), fs.feats.get("CORREL"))
             for _ct, fs, _astr, _diags in parses
         ]
-        assert any(c == "BUT_NOT" and r == "YES" for c, r in good)
+        assert any(c == "BUT_NOT" and r is True for c, r in good)
 
 
 # === No-pati variant =================================================

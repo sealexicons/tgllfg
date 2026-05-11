@@ -250,7 +250,7 @@ def _has_in_situ_wh(
             # head's binding, not a matrix wh-Q.
             if "REL-PRO" in v.feats:
                 continue
-            if v.feats.get("WH") == "YES":
+            if v.feats.get("WH") is True:
                 return True
             if _has_in_situ_wh(v.feats.values(), visited):
                 return True

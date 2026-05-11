@@ -46,12 +46,12 @@ class TestIntransitivePlusDatAdjunct:
             f"{sentence!r}"
         )
         _ct, fs, _astr, _diags = parses[0]
-        assert fs.feats.get("DISTRIB") == "YES"
+        assert fs.feats.get("DISTRIB") is True
         assert fs.feats.get("PRED") == verb_pred
         # SUBJ is the topic-NP.
         subj = fs.feats.get("SUBJ")
         assert subj is not None
-        assert subj.feats.get("UNIV") == "YES"
+        assert subj.feats.get("UNIV") is True
         # DAT is in ADJUNCT.
         assert fs.feats.get("ADJUNCT") is not None
 
@@ -77,11 +77,11 @@ class TestTransitiveGenObj:
             f"{sentence!r}"
         )
         _ct, fs, _astr, _diags = parses[0]
-        assert fs.feats.get("DISTRIB") == "YES"
+        assert fs.feats.get("DISTRIB") is True
         assert fs.feats.get("PRED") == verb_pred
         subj = fs.feats.get("SUBJ")
         assert subj is not None
-        assert subj.feats.get("UNIV") == "YES"
+        assert subj.feats.get("UNIV") is True
         obj = fs.feats.get("OBJ")
         assert obj is not None
         assert obj.feats.get("LEMMA") == obj_lemma
@@ -110,7 +110,7 @@ class TestTransitivePlusDatAdjunct:
             f"parse: {sentence!r}"
         )
         _ct, fs, _astr, _diags = parses[0]
-        assert fs.feats.get("DISTRIB") == "YES"
+        assert fs.feats.get("DISTRIB") is True
         assert fs.feats.get("PRED") == verb_pred
         obj = fs.feats.get("OBJ")
         assert obj is not None
@@ -146,11 +146,11 @@ class TestQNumTopicWithTransitive:
         parses = parse_text(sentence)
         assert len(parses) >= 1
         _ct, fs, _astr, _diags = parses[0]
-        assert fs.feats.get("DISTRIB") == "YES"
+        assert fs.feats.get("DISTRIB") is True
         assert fs.feats.get("PRED") == verb_pred
         subj = fs.feats.get("SUBJ")
         assert subj is not None
-        assert subj.feats.get("UNIV") == "YES"
+        assert subj.feats.get("UNIV") is True
         assert subj.feats.get("CARDINAL_VALUE") == cardinal_value
         obj = fs.feats.get("OBJ")
         assert obj is not None

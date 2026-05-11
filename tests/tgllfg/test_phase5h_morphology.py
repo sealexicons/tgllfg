@@ -112,7 +112,7 @@ class TestSuperlativeSurfaces:
             a for a in analyzer.analyze_one(_tok(pinaka)) if a.pos == "ADJ"
         )
         assert adj.feats.get("COMP_DEGREE") == "SUPERLATIVE"
-        assert adj.feats.get("PREDICATIVE") == "YES"  # intrinsic
+        assert adj.feats.get("PREDICATIVE") is True  # intrinsic
         assert adj.feats.get("LEMMA") == root         # lemma policy
         # The intensifier flag is napaka-specific; superlative does not set it.
         assert "INTENSIFIER" not in adj.feats
@@ -162,8 +162,8 @@ class TestIntensiveSurfaces:
             a for a in analyzer.analyze_one(_tok(napaka)) if a.pos == "ADJ"
         )
         assert adj.feats.get("COMP_DEGREE") == "INTENSIVE"
-        assert adj.feats.get("INTENSIFIER") == "YES"
-        assert adj.feats.get("PREDICATIVE") == "YES"  # intrinsic
+        assert adj.feats.get("INTENSIFIER") is True
+        assert adj.feats.get("PREDICATIVE") is True  # intrinsic
         assert adj.feats.get("LEMMA") == root         # lemma policy
 
 
@@ -200,7 +200,7 @@ class TestParadigmCellSeparation:
         )
         assert adj.feats.get("COMP_DEGREE") is None
         assert "INTENSIFIER" not in adj.feats
-        assert adj.feats.get("PREDICATIVE") == "YES"  # unchanged
+        assert adj.feats.get("PREDICATIVE") is True  # unchanged
         assert adj.feats.get("LEMMA") == "ganda"      # unchanged
 
     def test_bare_pinaka_is_unk(self) -> None:
@@ -266,7 +266,7 @@ class TestFullInventoryProductivity:
             adj_analyses = [a for a in out if a.pos == "ADJ"]
             assert any(
                 a.feats.get("COMP_DEGREE") == "INTENSIVE"
-                and a.feats.get("INTENSIFIER") == "YES"
+                and a.feats.get("INTENSIFIER") is True
                 and a.lemma == root.citation
                 for a in adj_analyses
             ), (
@@ -304,7 +304,7 @@ class TestEndToEndParse:
         _ctree, fstruct, _astr, _diags = parses[0]
         assert fstruct.feats.get("PRED") == "ADJ <SUBJ>"
         assert fstruct.feats.get("ADJ_LEMMA") == lemma
-        assert fstruct.feats.get("PREDICATIVE") == "YES"
+        assert fstruct.feats.get("PREDICATIVE") is True
 
     @pytest.mark.parametrize("sentence,lemma", [
         ("Napakaganda ang bahay.",   "ganda"),
@@ -322,7 +322,7 @@ class TestEndToEndParse:
         _ctree, fstruct, _astr, _diags = parses[0]
         assert fstruct.feats.get("PRED") == "ADJ <SUBJ>"
         assert fstruct.feats.get("ADJ_LEMMA") == lemma
-        assert fstruct.feats.get("PREDICATIVE") == "YES"
+        assert fstruct.feats.get("PREDICATIVE") is True
 
     def test_phase5g_baseline_still_parses(self) -> None:
         """Sanity: bare ``ma-`` predicative clauses still parse

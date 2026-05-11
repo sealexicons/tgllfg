@@ -114,11 +114,11 @@ class TestDigitMorph:
     ])
     def test_digit_analyses(self, digit: str, num: str) -> None:
         ms = _morph(digit)
-        digit_ms = [m for m in ms if m.pos == "NUM" and m.feats.get("DIGIT_FORM") == "YES"]
+        digit_ms = [m for m in ms if m.pos == "NUM" and m.feats.get("DIGIT_FORM") is True]
         assert len(digit_ms) == 1, f"expected exactly 1 digit-form NUM, got {ms}"
         m = digit_ms[0]
         assert m.lemma == digit
-        assert m.feats.get("CARDINAL") == "YES"
+        assert m.feats.get("CARDINAL") is True
         assert m.feats.get("CARDINAL_VALUE") == digit
         assert m.feats.get("NUM") == num
 
@@ -128,7 +128,7 @@ class TestDigitMorph:
         ms = _morph("5")
         assert len(ms) == 1
         assert ms[0].pos == "NUM"
-        assert ms[0].feats.get("DIGIT_FORM") == "YES"
+        assert ms[0].feats.get("DIGIT_FORM") is True
 
     @pytest.mark.parametrize("non_digit", ["bata", "5a", "a5", "5b3", "tatlo"])
     def test_non_digit_no_digit_form(self, non_digit: str) -> None:
@@ -136,7 +136,7 @@ class TestDigitMorph:
         digit-form analysis. ``tatlo`` analyses as a word-form NUM
         via particles.yaml; the digit-form path doesn't fire."""
         ms = _morph(non_digit)
-        digit_ms = [m for m in ms if m.feats.get("DIGIT_FORM") == "YES"]
+        digit_ms = [m for m in ms if m.feats.get("DIGIT_FORM") is True]
         assert digit_ms == [], f"unexpected digit-form analysis: {digit_ms}"
 
 
@@ -294,7 +294,7 @@ class TestWordFormRegression:
         nums = [m for m in ms if m.pos == "NUM"]
         assert len(nums) == 1, f"expected 1 NUM analysis for {word!r}, got {nums}"
         m = nums[0]
-        assert m.feats.get("CARDINAL") == "YES"
+        assert m.feats.get("CARDINAL") is True
         assert m.feats.get("CARDINAL_VALUE") == value
         assert m.feats.get("DIGIT_FORM") is None
 

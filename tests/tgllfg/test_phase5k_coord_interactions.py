@@ -34,7 +34,7 @@ class TestCoordPlusHave:
         assert len(parses) >= 1
         _ct, fs, _astr, _diags = parses[0]
         assert fs.feats.get("CLAUSE_TYPE") == "EXISTENTIAL"
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
         assert fs.feats.get("POLARITY") == "POS"
         # SUBJ is the coord-N (aklat at lapis); has CONJUNCTS.
         subj = fs.feats.get("SUBJ")

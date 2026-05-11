@@ -78,8 +78,8 @@ class TestNakaResultativeAdjSurfaces:
         adj = next(
             a for a in out if a.pos == "ADJ" and a.lemma == root
         )
-        assert adj.feats.get("RESULTATIVE") == "YES"
-        assert adj.feats.get("PREDICATIVE") == "YES"
+        assert adj.feats.get("RESULTATIVE") is True
+        assert adj.feats.get("PREDICATIVE") is True
         assert adj.feats.get("LEMMA") == root
 
 

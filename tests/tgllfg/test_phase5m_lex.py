@@ -217,7 +217,7 @@ class TestEmphaticMismo:
         emphatics = [
             a for a in out
             if a.pos == "PART"
-            and a.feats.get("EMPHATIC") == "YES"
+            and a.feats.get("EMPHATIC") is True
             and a.feats.get("LEMMA") == "mismo"
         ]
         assert len(emphatics) == 1, (
@@ -315,7 +315,7 @@ class TestAnswerInterjections:
         out = analyzer.analyze_one(_tok(surface))
         interjs = [
             a for a in out
-            if a.feats.get("INTERJ") == "YES"
+            if a.feats.get("INTERJ") is True
             and a.feats.get("ANSWER") == "AFFIRM"
             and a.feats.get("REGISTER") == register
             and a.feats.get("LEMMA") == lemma

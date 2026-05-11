@@ -70,7 +70,7 @@ class TestPolitenessAnswer:
             f"{fs.feats.get('PRED')!r}"
         )
         assert fs.feats.get("CLAUSE_TYPE") == "FRAGMENT_ANSWER"
-        assert fs.feats.get("INTERJ") == "YES"
+        assert fs.feats.get("INTERJ") is True
         assert fs.feats.get("ANSWER") == "AFFIRM"
         assert fs.feats.get("REGISTER") == register
 

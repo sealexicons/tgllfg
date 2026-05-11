@@ -73,7 +73,7 @@ class TestModalLex:
         out = analyzer.analyze_one(_tok(surface))
         modals = [
             a for a in out
-            if a.pos == "VERB" and a.feats.get("MODAL") == "YES"
+            if a.pos == "VERB" and a.feats.get("MODAL") is True
         ]
         assert len(modals) == 1, (
             f"expected exactly one modal VERB analysis for "
@@ -88,9 +88,9 @@ class TestModalLex:
         analyzer = Analyzer.from_default()
         modal = next(
             a for a in analyzer.analyze_one(_tok(surface))
-            if a.pos == "VERB" and a.feats.get("MODAL") == "YES"
+            if a.pos == "VERB" and a.feats.get("MODAL") is True
         )
-        assert modal.feats.get("MODAL") == "YES"
+        assert modal.feats.get("MODAL") is True
         assert modal.feats.get("CTRL_CLASS") == "MODAL"
         assert modal.feats.get("LEMMA") == canonical_lemma
 
@@ -109,7 +109,7 @@ class TestPuwedeSurfaceVariants:
         analyzer = Analyzer.from_default()
         modals = [
             a for a in analyzer.analyze_one(_tok(surface))
-            if a.pos == "VERB" and a.feats.get("MODAL") == "YES"
+            if a.pos == "VERB" and a.feats.get("MODAL") is True
         ]
         assert len(modals) == 1
         assert modals[0].feats.get("LEMMA") == "puwede"
@@ -142,7 +142,7 @@ class TestKailanganPolysemy:
             a for a in analyzer.analyze_one(_tok("kailangan"))
             if a.pos == "VERB"
         )
-        assert modal.feats.get("MODAL") == "YES"
+        assert modal.feats.get("MODAL") is True
         assert modal.feats.get("CTRL_CLASS") == "MODAL"
 
     def test_kailangan_noun_has_no_modal_flag(self) -> None:
@@ -177,7 +177,7 @@ class TestModalCtrlClassDistinct:
         analyzer = Analyzer.from_default()
         modal = next(
             a for a in analyzer.analyze_one(_tok(modal_surface))
-            if a.pos == "VERB" and a.feats.get("MODAL") == "YES"
+            if a.pos == "VERB" and a.feats.get("MODAL") is True
         )
         assert modal.feats.get("CTRL_CLASS") != "PSYCH"
 
@@ -190,7 +190,7 @@ class TestModalCtrlClassDistinct:
         analyzer = Analyzer.from_default()
         modal = next(
             a for a in analyzer.analyze_one(_tok(modal_surface))
-            if a.pos == "VERB" and a.feats.get("MODAL") == "YES"
+            if a.pos == "VERB" and a.feats.get("MODAL") is True
         )
         assert modal.feats.get("CTRL_CLASS") != "KNOW"
 

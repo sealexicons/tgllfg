@@ -84,7 +84,7 @@ class TestCorrelMatrixFlag:
         )
         assert len(parses) >= 1
         _ct, fs, _astr, _diags = parses[0]
-        assert fs.feats.get("CORREL") == "YES"
+        assert fs.feats.get("CORREL") is True
         assert fs.feats.get("COORD") == "BUT_NOT"
         conj = fs.feats.get("CONJUNCTS")
         assert conj is not None

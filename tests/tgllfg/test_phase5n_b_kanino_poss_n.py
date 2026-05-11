@@ -73,12 +73,12 @@ class TestKaninoPossOverN:
         assert fs.feats.get("N_LEMMA") == n_lemma
         assert fs.feats.get("Q_TYPE") == "WH"
         assert fs.feats.get("WH_LEMMA") == "kanino"
-        assert fs.feats.get("PREDICATIVE") == "YES"
+        assert fs.feats.get("PREDICATIVE") is True
         # POSS carries the wh-PRON's f-structure.
         poss = fs.feats.get("POSS")
         assert poss is not None
         assert poss.feats.get("LEMMA") == "kanino"
-        assert poss.feats.get("WH") == "YES"
+        assert poss.feats.get("WH") is True
         assert poss.feats.get("CASE") == "DAT"
 
 

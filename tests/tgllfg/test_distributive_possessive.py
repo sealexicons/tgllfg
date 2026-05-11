@@ -119,7 +119,7 @@ class TestDistribPossMorph:
             cands = [c for c in ml[0] if c.pos == "Q"]
             assert cands, f"no Q analysis for {lemma!r}"
             ma = cands[0]
-            assert ma.feats.get("DISTRIB_POSS") == "YES", (
+            assert ma.feats.get("DISTRIB_POSS") is True, (
                 f"{lemma}: DISTRIB_POSS expected 'YES', got "
                 f"{ma.feats.get('DISTRIB_POSS')!r}"
             )
@@ -141,14 +141,14 @@ class TestDistribPossCaseMarked:
         assert obj is not None
         assert obj.feats.get("LEMMA") == "aklat"
         assert obj.feats.get("CASE") == "GEN"
-        assert obj.feats.get("DISTRIB_POSS") == "YES"
+        assert obj.feats.get("DISTRIB_POSS") is True
         assert obj.feats.get("QUANT") == "EACH_OWN"
 
     def test_kanikaniya_in_gen_obj(self) -> None:
         obj = _first_obj("Bumili ako ng kanikaniyang aklat.")
         assert obj is not None
         assert obj.feats.get("LEMMA") == "aklat"
-        assert obj.feats.get("DISTRIB_POSS") == "YES"
+        assert obj.feats.get("DISTRIB_POSS") is True
         assert obj.feats.get("QUANT") == "EACH_OWN"
 
     def test_kanyakanya_in_dat_adjunct(self) -> None:
@@ -157,7 +157,7 @@ class TestDistribPossCaseMarked:
         )
         assert adj is not None
         assert adj.feats.get("CASE") == "DAT"
-        assert adj.feats.get("DISTRIB_POSS") == "YES"
+        assert adj.feats.get("DISTRIB_POSS") is True
         assert adj.feats.get("QUANT") == "EACH_OWN"
 
 
@@ -177,7 +177,7 @@ class TestDistribPossBareNom:
         topic = f.feats.get("TOPIC")
         assert isinstance(topic, FStructure)
         assert topic.feats.get("LEMMA") == "aklat"
-        assert topic.feats.get("DISTRIB_POSS") == "YES"
+        assert topic.feats.get("DISTRIB_POSS") is True
         assert topic.feats.get("QUANT") == "EACH_OWN"
 
     def test_kanikaniyang_aklat_ay_fronted(self) -> None:
@@ -186,7 +186,7 @@ class TestDistribPossBareNom:
         _, f, _, _ = rs[0]
         topic = f.feats.get("TOPIC")
         assert isinstance(topic, FStructure)
-        assert topic.feats.get("DISTRIB_POSS") == "YES"
+        assert topic.feats.get("DISTRIB_POSS") is True
 
 
 # === Negative fixtures (per §11.2) ========================================

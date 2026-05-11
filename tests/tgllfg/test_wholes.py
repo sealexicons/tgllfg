@@ -114,7 +114,7 @@ class TestWholeMorph:
         cands = [c for c in ml[0] if c.pos == "Q"]
         assert cands, "no Q analysis for buo"
         ma = cands[0]
-        assert ma.feats.get("WHOLE") == "YES"
+        assert ma.feats.get("WHOLE") is True
         assert ma.feats.get("QUANT") == "WHOLE"
 
 
@@ -131,7 +131,7 @@ class TestWholeCaseMarked:
         subj = _first_subj("Kumakain ang buong bata.")
         assert subj is not None
         assert subj.feats.get("LEMMA") == "bata"
-        assert subj.feats.get("WHOLE") == "YES"
+        assert subj.feats.get("WHOLE") is True
         assert subj.feats.get("QUANT") == "WHOLE"
 
     def test_buong_in_gen_obj(self) -> None:
@@ -139,7 +139,7 @@ class TestWholeCaseMarked:
         assert obj is not None
         assert obj.feats.get("LEMMA") == "araw"
         assert obj.feats.get("CASE") == "GEN"
-        assert obj.feats.get("WHOLE") == "YES"
+        assert obj.feats.get("WHOLE") is True
         assert obj.feats.get("QUANT") == "WHOLE"
 
     def test_buong_in_dat_adjunct(self) -> None:
@@ -148,7 +148,7 @@ class TestWholeCaseMarked:
         )
         assert adj is not None
         assert adj.feats.get("CASE") == "DAT"
-        assert adj.feats.get("WHOLE") == "YES"
+        assert adj.feats.get("WHOLE") is True
         assert adj.feats.get("QUANT") == "WHOLE"
 
 
@@ -167,7 +167,7 @@ class TestWholeBareNom:
         topic = f.feats.get("TOPIC")
         assert isinstance(topic, FStructure)
         assert topic.feats.get("LEMMA") == "pamilya"
-        assert topic.feats.get("WHOLE") == "YES"
+        assert topic.feats.get("WHOLE") is True
         assert topic.feats.get("QUANT") == "WHOLE"
 
     def test_buong_bata_ay_fronted(self) -> None:
@@ -176,7 +176,7 @@ class TestWholeBareNom:
         _, f, _, _ = rs[0]
         topic = f.feats.get("TOPIC")
         assert isinstance(topic, FStructure)
-        assert topic.feats.get("WHOLE") == "YES"
+        assert topic.feats.get("WHOLE") is True
 
 
 # === Negative fixtures (per §11.2) ========================================

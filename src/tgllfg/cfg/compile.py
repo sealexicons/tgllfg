@@ -54,9 +54,17 @@ class CategoryPattern:
     Features are stored as a tuple of ``(key, value)`` pairs sorted by
     key. Two patterns with the same category and same features
     (regardless of construction order) are equal and hash the same.
+
+    Values are typically ``str`` (for enum feats like ``CASE=NOM``).
+    Phase 5n.C.4 introduces ``bool`` values for binary feats — both
+    ``PART[WH=YES]`` and ``PART[WH=true]`` and ``PART[WH]`` produce
+    ``("WH", True)``. The matcher in :func:`matches` aliases ``True``
+    with the legacy string ``"YES"`` (and ``False`` with ``"NO"``)
+    during the migration window so rule strings that still spell
+    ``=c 'YES'`` stay compatible. Commit 8 removes that aliasing.
     """
     category: str
-    features: tuple[tuple[str, str], ...] = ()
+    features: tuple[tuple[str, str | bool], ...] = ()
 
 
 _PATTERN_RE = re.compile(
@@ -80,13 +88,14 @@ _BOOL_TRUE_VALUES: frozenset[str] = frozenset({"true", "YES"})
 _BOOL_FALSE_VALUES: frozenset[str] = frozenset({"false", "NO"})
 
 
-def _normalize_value(feat: str, value: str, pattern_src: str) -> str:
-    """Coerce ``true`` / ``false`` literals on binary feats to the
-    backward-compat ``"YES"`` / ``"NO"`` string sentinels. Enum feats
-    keep their literal value (including the legacy ``"YES"`` /
-    ``"NO"`` enum tags on ``INDEF`` / ``PRED``). Reject ``=true`` /
-    ``=false`` on enum feats — that combination is almost certainly
-    a semantic error."""
+def _normalize_value(
+    feat: str, value: str, pattern_src: str
+) -> str | bool:
+    """Coerce ``true`` / ``YES`` and ``false`` / ``NO`` literals on
+    binary feats to Python ``bool``. Enum feats keep their literal
+    string value (including the legacy ``"YES"`` enum tag on
+    ``INDEF`` / ``PRED``). Reject ``=true`` / ``=false`` on enum
+    feats — that combination is almost certainly a semantic error."""
     if value in {"true", "false"} and feat not in BINARY_FEATS:
         raise ValueError(
             f"`{feat}={value}` in pattern {pattern_src!r}: "
@@ -94,9 +103,9 @@ def _normalize_value(feat: str, value: str, pattern_src: str) -> str:
             f"docs/feats-binary-audit.md for the binary-feat list)"
         )
     if value in _BOOL_TRUE_VALUES and feat in BINARY_FEATS:
-        return "YES"
+        return True
     if value in _BOOL_FALSE_VALUES and feat in BINARY_FEATS:
-        return "NO"
+        return False
     return value
 
 
@@ -127,7 +136,7 @@ def parse_pattern(s: str) -> CategoryPattern:
         return CategoryPattern(category, ())
     if not feature_body.strip():
         raise ValueError(f"empty feature body in pattern: {s!r}")
-    feats: list[tuple[str, str]] = []
+    feats: list[tuple[str, str | bool]] = []
     for pair_src in feature_body.split(","):
         pm = _FEATURE_PAIR_RE.match(pair_src)
         if pm is not None:
@@ -143,13 +152,29 @@ def parse_pattern(s: str) -> CategoryPattern:
                     f"permitted on binary feats (see "
                     f"docs/feats-binary-audit.md)"
                 )
-            feats.append((feat, "YES"))
+            feats.append((feat, True))
             continue
         raise ValueError(
             f"malformed feature constraint {pair_src!r} in pattern {s!r}"
         )
     feats.sort(key=lambda kv: kv[0])
     return CategoryPattern(category, tuple(feats))
+
+
+def _values_equivalent(a: str | bool, b: str | bool) -> bool:
+    """Phase 5n.C.4 transitional aliasing: treat the legacy string
+    sentinels ``"YES"`` / ``"NO"`` as equivalent to Python ``True`` /
+    ``False``. Lets rule strings that still spell ``[X=YES]`` (or
+    ``=c 'YES'``) match analyzer-side bool values until Commit 5
+    migrates the rule text. Commit 8 removes this aliasing."""
+    if a == b:
+        return True
+    pair = {a, b}
+    if pair == {True, "YES"}:
+        return True
+    if pair == {False, "NO"}:
+        return True
+    return False
 
 
 def matches(expected: CategoryPattern, candidate: CategoryPattern) -> bool:
@@ -160,7 +185,7 @@ def matches(expected: CategoryPattern, candidate: CategoryPattern) -> bool:
     e = dict(expected.features)
     c = dict(candidate.features)
     for k in e.keys() & c.keys():
-        if e[k] != c[k]:
+        if not _values_equivalent(e[k], c[k]):
             return False
     return True
 
@@ -172,7 +197,7 @@ def merge_features(
     union of their feature constraints. Caller must have verified
     compatibility via :func:`matches`."""
     assert a.category == b.category
-    merged: dict[str, str] = dict(a.features)
+    merged: dict[str, str | bool] = dict(a.features)
     for k, v in b.features:
         merged[k] = v
     return CategoryPattern(

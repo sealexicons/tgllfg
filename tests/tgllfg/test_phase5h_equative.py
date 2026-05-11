@@ -104,7 +104,7 @@ class TestKasingEquative:
             a for a in analyzer.analyze_one(_tok(kasing)) if a.pos == "ADJ"
         )
         assert adj.feats.get("COMP_DEGREE") == "EQUATIVE"
-        assert adj.feats.get("PREDICATIVE") == "YES"  # intrinsic
+        assert adj.feats.get("PREDICATIVE") is True  # intrinsic
         assert adj.feats.get("LEMMA") == root
 
 
@@ -136,7 +136,7 @@ class TestSingEquative:
             a for a in analyzer.analyze_one(_tok(sing)) if a.pos == "ADJ"
         )
         assert adj.feats.get("COMP_DEGREE") == "EQUATIVE"
-        assert adj.feats.get("PREDICATIVE") == "YES"
+        assert adj.feats.get("PREDICATIVE") is True
         assert adj.feats.get("LEMMA") == root
 
 
@@ -234,11 +234,11 @@ class TestBareCitationIndexer:
         # Q reading: floated-quantifier shape from Phase 5f Commit 23.
         q = by_pos["Q"]
         assert q.feats.get("QUANT") == "BOTH"
-        assert q.feats.get("DUAL") == "YES"
+        assert q.feats.get("DUAL") is True
         # ADJ reading: equative-identity predicate, intrinsically PREDICATIVE.
         adj = by_pos["ADJ"]
-        assert adj.feats.get("PREDICATIVE") == "YES"
-        assert adj.feats.get("EQUATIVE") == "YES"
+        assert adj.feats.get("PREDICATIVE") is True
+        assert adj.feats.get("EQUATIVE") is True
         assert adj.feats.get("COMP_DEGREE") == "EQUATIVE"
         assert adj.lemma == "pareho"
 
@@ -249,8 +249,8 @@ class TestBareCitationIndexer:
         assert len(adj_analyses) == 1
         adj = adj_analyses[0]
         assert adj.lemma == "magkapareho"
-        assert adj.feats.get("PREDICATIVE") == "YES"
-        assert adj.feats.get("EQUATIVE") == "YES"
+        assert adj.feats.get("PREDICATIVE") is True
+        assert adj.feats.get("EQUATIVE") is True
         assert adj.feats.get("COMP_DEGREE") == "EQUATIVE"
 
     def test_magkaiba_indexed_as_adj_with_contrastive(self) -> None:
@@ -260,8 +260,8 @@ class TestBareCitationIndexer:
         assert len(adj_analyses) == 1
         adj = adj_analyses[0]
         assert adj.lemma == "magkaiba"
-        assert adj.feats.get("PREDICATIVE") == "YES"
-        assert adj.feats.get("EQUATIVE") == "YES"  # family flag
+        assert adj.feats.get("PREDICATIVE") is True
+        assert adj.feats.get("EQUATIVE") is True  # family flag
         assert adj.feats.get("COMP_DEGREE") == "CONTRASTIVE"  # semantic value
 
     def test_productive_ma_adj_root_bare_citation_still_unindexed(
@@ -336,7 +336,7 @@ class TestEquativePredicativeParse:
         for _ctree, fstruct, _astr, _diags in parses:
             assert fstruct.feats.get("PRED") == "ADJ <SUBJ>"
             assert fstruct.feats.get("ADJ_LEMMA") == lemma
-            assert fstruct.feats.get("PREDICATIVE") == "YES"
+            assert fstruct.feats.get("PREDICATIVE") is True
 
     @pytest.mark.parametrize("sentence,lemma", [
         ("Kasingganda ang bahay.",  "ganda"),

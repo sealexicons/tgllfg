@@ -53,8 +53,38 @@ type NodeId = int
 
 @dataclass
 class AtomValue:
-    """A leaf value such as ``'NOM'`` or ``'EAT <SUBJ, OBJ>'``."""
-    atom: str
+    """A leaf value such as ``'NOM'`` or ``'EAT <SUBJ, OBJ>'``.
+
+    Phase 5n.C.4: binary feats carry Python ``bool`` atoms instead of
+    the legacy string sentinels ``"YES"`` / ``"NO"``. The unifier
+    aliases the two during the migration window via
+    :func:`_atoms_compatible`.
+    """
+    atom: str | bool
+
+
+def _atoms_compatible(a: object, b: object) -> bool:
+    """True iff two atomic values may unify. Phase 5n.C.4 transitional
+    aliasing: ``True`` is interchangeable with ``"YES"`` and ``False``
+    with ``"NO"``. Commit 8 will remove the aliasing."""
+    if a == b:
+        return True
+    pair = {a, b}
+    if pair == {True, "YES"}:
+        return True
+    if pair == {False, "NO"}:
+        return True
+    return False
+
+
+def _canonical_atom(a: object) -> object:
+    """Prefer bool over the equivalent string sentinel when picking
+    the surviving value during atom unification."""
+    if a == "YES":
+        return True
+    if a == "NO":
+        return False
+    return a
 
 
 @dataclass
@@ -175,17 +205,19 @@ class FGraph:
 
     # --- Direct bindings ---------------------------------------------------
 
-    def set_atom(self, n: NodeId, atom: str) -> Diagnostic | None:
+    def set_atom(self, n: NodeId, atom: str | bool) -> Diagnostic | None:
         """Bind `n` to an atomic value. Idempotent if `n` already
         carries the same atom; fails with a diagnostic if it carries
-        an incompatible value."""
+        an incompatible value. Phase 5n.C.4: ``_atoms_compatible``
+        aliases bool ``True`` with ``"YES"`` and ``False`` with
+        ``"NO"`` during the migration window."""
         n = self.find(n)
         v = self._store.get(n)
         if v is None:
             self._store[n] = AtomValue(atom)
             return None
         if isinstance(v, AtomValue):
-            if v.atom == atom:
+            if _atoms_compatible(v.atom, atom):
                 return None
             return Diagnostic(
                 "atom-mismatch",
@@ -365,7 +397,7 @@ class FGraph:
 
         if isinstance(va, AtomValue):
             assert isinstance(vb, AtomValue)
-            if va.atom != vb.atom:
+            if not _atoms_compatible(va.atom, vb.atom):
                 return Diagnostic(
                     "atom-mismatch",
                     f"cannot unify atoms {va.atom!r} and {vb.atom!r}",

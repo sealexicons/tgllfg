@@ -89,7 +89,7 @@ class TestLexAnalysis:
         analyzer = Analyzer.from_default()
         out = analyzer.analyze_one(_tok("magisa"))
         adv = next(a for a in out if a.pos == "ADV")
-        assert adv.feats.get("MAGISA") == "YES"
+        assert adv.feats.get("MAGISA") is True
         assert adv.feats.get("ADV_TYPE") == "MANNER"
         assert adv.feats.get("LEMMA") == "mag-isa"
 
@@ -111,7 +111,7 @@ class TestEndToEnd:
         adv = [a for a in out if a.pos == "ADV"]
         assert len(adv) == 1
         assert adv[0].lemma == "mag-isa"
-        assert adv[0].feats.get("MAGISA") == "YES"
+        assert adv[0].feats.get("MAGISA") is True
 
 
 # === No-op regression on related multiword forms ==========================
@@ -127,7 +127,7 @@ class TestNoRegression:
         out = analyzer.analyze_one(_tok("isa"))
         nums = [a for a in out if a.pos == "NUM"]
         assert any(
-            a.feats.get("CARDINAL") == "YES"
+            a.feats.get("CARDINAL") is True
             and a.feats.get("CARDINAL_VALUE") == "1"
             for a in nums
         )

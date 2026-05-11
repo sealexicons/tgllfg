@@ -231,7 +231,7 @@ def _is_post_wh_pron_man(
         return False
     prev = analyses[i - 1]
     return any(
-        ma.pos == "PRON" and ma.feats.get("WH") == "YES" for ma in prev
+        ma.pos == "PRON" and ma.feats.get("WH") is True for ma in prev
     )
 
 
@@ -433,8 +433,8 @@ def disambiguate_homophone_clitics(
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif prev is not None and any(
             ma.pos == "NUM" and (
-                ma.feats.get("CARDINAL") == "YES"
-                or ma.feats.get("ORDINAL") == "YES"
+                ma.feats.get("CARDINAL") is True
+                or ma.feats.get("ORDINAL") is True
             )
             for ma in prev
         ):
@@ -453,7 +453,7 @@ def disambiguate_homophone_clitics(
             # to clause-end as the ALREADY enclitic.
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif prev is not None and any(
-            ma.pos == "Q" and ma.feats.get("VAGUE") == "YES"
+            ma.pos == "Q" and ma.feats.get("VAGUE") is True
             for ma in prev
         ):
             # Phase 5f Commit 15: vague-cardinal Q followed by ``na``
@@ -511,7 +511,7 @@ def disambiguate_homophone_clitics(
         elif (
             prev is not None
             and any(
-                ma.pos == "PART" and ma.feats.get("INTENSIFIER") == "YES"
+                ma.pos == "PART" and ma.feats.get("INTENSIFIER") is True
                 for ma in prev
             )
             and _na_right_context_is_linker_target(analyses, i)
@@ -618,7 +618,7 @@ def disambiguate_homophone_clitics(
                 and prev_prev is not None
                 and any(
                     ma.pos == "VERB"
-                    and ma.feats.get("SAY_CLASS") == "YES"
+                    and ma.feats.get("SAY_CLASS") is True
                     for ma in prev_prev
                 )
                 and _next_content_is_verb(analyses, i)

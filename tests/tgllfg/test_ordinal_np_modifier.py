@@ -121,7 +121,7 @@ class TestOrdinalMorph:
             num_cands = [c for c in cands if c.pos == "NUM"]
             assert num_cands, f"no NUM analysis for {lemma}"
             ma = num_cands[0]
-            assert ma.feats.get("ORDINAL") == "YES", (
+            assert ma.feats.get("ORDINAL") is True, (
                 f"{lemma}: ORDINAL missing"
             )
             assert ma.feats.get("ORDINAL_VALUE") == value, (

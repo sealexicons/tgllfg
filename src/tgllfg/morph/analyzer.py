@@ -209,9 +209,9 @@ class Analyzer:
                 lemma=n,
                 pos="NUM",
                 feats={
-                    "CARDINAL": "YES",
+                    "CARDINAL": True,
                     "CARDINAL_VALUE": n,
-                    "DIGIT_FORM": "YES",
+                    "DIGIT_FORM": True,
                     "NUM": "SG" if value == 1 else "PL",
                 },
             ))
@@ -266,7 +266,7 @@ class Analyzer:
             # plain ``ang`` / ``ng`` / ``sa`` would also match under
             # the parser's non-conflict matcher.
             if p.pos in ("DET", "ADP"):
-                feats.setdefault("DEM", "NO")
+                feats.setdefault("DEM", False)
             # Phase 5e Commit 3: ADV / PREP particles auto-carry
             # LEMMA so the grammar's `(↑) = ↓1` percolation in
             # `AdvP → ADV` and `PP → PREP NP[CASE=DAT]` exposes the
@@ -524,11 +524,11 @@ class Analyzer:
         # Phase 5n.A Commit 4 (§18 L74): build feats so root.feats's
         # ``LEMMA`` (if any) wins over the citation default. Order:
         #   1. start from root.feats (may carry LEMMA + SEM_CLASS etc.)
-        #   2. setdefault intrinsic ``PREDICATIVE: YES`` (overridable
+        #   2. setdefault intrinsic ``PREDICATIVE: True`` (overridable
         #      by root.feats; future cell.feats override too).
         #   3. setdefault ``LEMMA: root.citation`` as fallback.
         feats: dict[str, object] = {**root.feats}
-        feats.setdefault("PREDICATIVE", "YES")
+        feats.setdefault("PREDICATIVE", True)
         feats.setdefault("LEMMA", root.citation)
         canonical_lemma = feats.get("LEMMA", root.citation)
         if not isinstance(canonical_lemma, str):
@@ -577,7 +577,7 @@ class Analyzer:
             feats: dict[str, object] = {**root.feats}
             for k, v in cell.feats.items():
                 feats[k] = v
-            feats.setdefault("PREDICATIVE", "YES")
+            feats.setdefault("PREDICATIVE", True)
             feats.setdefault("LEMMA", root.citation)
             canonical_lemma = feats.get("LEMMA", root.citation)
             if not isinstance(canonical_lemma, str):

@@ -96,7 +96,7 @@ class TestIntensifierPartLex:
         part = next(
             a for a in analyzer.analyze_one(_tok(surface)) if a.pos == "PART"
         )
-        assert part.feats.get("INTENSIFIER") == "YES"
+        assert part.feats.get("INTENSIFIER") is True
         assert part.feats.get("INTENSITY") == intensity
 
 

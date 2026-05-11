@@ -55,7 +55,7 @@ class TestSayClassLexTagging:
         matrix verb form."""
         analyzer = Analyzer.from_default()
         out = analyzer.analyze_one(_tok("sinabi"))
-        say = [a for a in out if a.feats.get("SAY_CLASS") == "YES"]
+        say = [a for a in out if a.feats.get("SAY_CLASS") is True]
         assert len(say) == 1
         assert say[0].lemma == "sabi"
         assert say[0].feats.get("VOICE") == "OV"
@@ -65,7 +65,7 @@ class TestSayClassLexTagging:
         """``sasabihin`` (OV CTPL) — future indirect-speech form."""
         analyzer = Analyzer.from_default()
         out = analyzer.analyze_one(_tok("sasabihin"))
-        say = [a for a in out if a.feats.get("SAY_CLASS") == "YES"]
+        say = [a for a in out if a.feats.get("SAY_CLASS") is True]
         assert len(say) == 1
         assert say[0].lemma == "sabi"
 

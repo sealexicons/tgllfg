@@ -81,7 +81,7 @@ class TestMgaMorph:
         ml = analyze_tokens(toks)
         cands = [c for c in ml[0] if c.pos == "PART"]
         assert cands
-        assert cands[0].feats.get("PLURAL_MARKER") == "YES"
+        assert cands[0].feats.get("PLURAL_MARKER") is True
 
 
 # === Time approximation ===================================================
@@ -158,7 +158,7 @@ class TestMgaNegative:
             )
             for m in members:
                 if isinstance(m, FStructure):
-                    if m.feats.get("APPROX") == "YES":
+                    if m.feats.get("APPROX") is True:
                         raise AssertionError(
                             "non-TIME head accepted as APPROX matrix"
                         )
@@ -176,7 +176,7 @@ class TestMgaNegative:
                 list(adj) if isinstance(adj, (set, frozenset, list)) else [adj]
             )
             for m in members:
-                if isinstance(m, FStructure) and m.feats.get("APPROX") == "YES":
+                if isinstance(m, FStructure) and m.feats.get("APPROX") is True:
                     raise AssertionError(
                         "MONTH head accepted as APPROX matrix — "
                         "should be TIME-only"

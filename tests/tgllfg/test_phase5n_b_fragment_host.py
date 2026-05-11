@@ -61,7 +61,7 @@ class TestBareFragment:
         assert result is not None
         _ct, fs, _astr, _diags = result
         assert fs.feats.get("LEMMA") == "salamat"
-        assert fs.feats.get("FRAGMENT_HOST") == "YES"
+        assert fs.feats.get("FRAGMENT_HOST") is True
         # No REGISTER on bare fragment (the 2P-clitic absorption
         # rule lifts REGISTER only when the clitic is present).
         assert fs.feats.get("REGISTER") is None

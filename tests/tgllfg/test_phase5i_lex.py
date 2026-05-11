@@ -85,7 +85,7 @@ class TestPronominalWh:
         pron = next(
             a for a in analyzer.analyze_one(_tok(surface)) if a.pos == "PRON"
         )
-        assert pron.feats.get("WH") == "YES"
+        assert pron.feats.get("WH") is True
         assert pron.feats.get("CASE") == case
         assert pron.feats.get("LEMMA") == lemma
         if human:
@@ -131,7 +131,7 @@ class TestAdverbialWh:
         adv = next(
             a for a in analyzer.analyze_one(_tok(surface)) if a.pos == "ADV"
         )
-        assert adv.feats.get("WH") == "YES"
+        assert adv.feats.get("WH") is True
         assert adv.feats.get("ADV_TYPE") == adv_type
         assert adv.feats.get("LEMMA") == lemma
 
@@ -150,9 +150,9 @@ class TestQuantitativeWh:
         qs = [a for a in out if a.pos == "Q"]
         assert len(qs) == 1
         q = qs[0]
-        assert q.feats.get("WH") == "YES"
+        assert q.feats.get("WH") is True
         assert q.feats.get("QUANT") == "HOW_MUCH"
-        assert q.feats.get("VAGUE") == "YES"
+        assert q.feats.get("VAGUE") is True
 
     def test_aling_pre_n_selector_via_split(self) -> None:
         """``aling`` is the bound-``-ng`` form for pre-N use. Phase
@@ -190,13 +190,13 @@ class TestAlinPolysemy:
         )
         # PRON: standalone NOM wh
         pron = by_pos["PRON"]
-        assert pron.feats.get("WH") == "YES"
+        assert pron.feats.get("WH") is True
         assert pron.feats.get("CASE") == "NOM"
         assert pron.lemma == "alin"
         # Q: selectional pre-N
         q = by_pos["Q"]
-        assert q.feats.get("WH") == "YES"
-        assert q.feats.get("VAGUE") == "YES"
+        assert q.feats.get("WH") is True
+        assert q.feats.get("VAGUE") is True
         assert q.lemma == "alin"
 
 
@@ -217,12 +217,12 @@ class TestIlanPolysemy:
             f"got {[(a.pos, dict(a.feats)) for a in qs]}"
         )
         # Identify by feats
-        wh = next(q for q in qs if q.feats.get("WH") == "YES")
-        non_wh = next(q for q in qs if q.feats.get("WH") != "YES")
+        wh = next(q for q in qs if q.feats.get("WH") is True)
+        non_wh = next(q for q in qs if q.feats.get("WH") is not True)
         assert wh.feats.get("QUANT") == "HOW_MANY"
-        assert wh.feats.get("VAGUE") == "YES"
+        assert wh.feats.get("VAGUE") is True
         assert non_wh.feats.get("QUANT") == "FEW"
-        assert non_wh.feats.get("VAGUE") == "YES"
+        assert non_wh.feats.get("VAGUE") is True
 
 
 # === Complementizer + tag particle ====================================
@@ -258,7 +258,7 @@ class TestTagParticleDi:
         parts = [a for a in out if a.pos == "PART"]
         assert len(parts) == 1
         part = parts[0]
-        assert part.feats.get("NEG_TAG") == "YES"
+        assert part.feats.get("NEG_TAG") is True
         assert part.lemma == "di"
 
 

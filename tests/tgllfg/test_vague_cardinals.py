@@ -155,7 +155,7 @@ class TestVagueCardinalMorph:
             cands = [c for c in ml[0] if c.pos == "Q"]
             assert cands, f"no Q analysis for {lemma!r}"
             ma = cands[0]
-            assert ma.feats.get("VAGUE") == "YES", (
+            assert ma.feats.get("VAGUE") is True, (
                 f"{lemma}: VAGUE expected 'YES' (string), got "
                 f"{ma.feats.get('VAGUE')!r}"
             )
@@ -216,7 +216,7 @@ class TestVagueCardinalNPModifier:
             assert obj is not None, f"no parse for {text!r}"
             assert obj.feats.get("LEMMA") == "isda"
             assert obj.feats.get("CASE") == "GEN"
-            assert obj.feats.get("VAGUE") == "YES"
+            assert obj.feats.get("VAGUE") is True
             assert obj.feats.get("QUANT") == expected_quant
 
     def test_all_vague_in_subj(self) -> None:
@@ -226,7 +226,7 @@ class TestVagueCardinalNPModifier:
             assert subj is not None, f"no parse for {text!r}"
             assert subj.feats.get("LEMMA") == "bata"
             assert subj.feats.get("CASE") == "NOM"
-            assert subj.feats.get("VAGUE") == "YES"
+            assert subj.feats.get("VAGUE") is True
             assert subj.feats.get("QUANT") == expected_quant
 
     def test_all_vague_in_dat(self) -> None:
@@ -240,7 +240,7 @@ class TestVagueCardinalNPModifier:
             adj = _adjunct_with_lemma(text, "bata")
             assert adj is not None, f"no parse for {text!r}"
             assert adj.feats.get("CASE") == "DAT"
-            assert adj.feats.get("VAGUE") == "YES"
+            assert adj.feats.get("VAGUE") is True
             assert adj.feats.get("QUANT") == expected_quant
 
 
@@ -256,7 +256,7 @@ class TestVagueCardinalNegative:
         rs = parse_text("Kumain ako ng maraming kaunting isda.", n_best=10)
         for _, f, _, _ in rs:
             obj = f.feats.get("OBJ")
-            if isinstance(obj, FStructure) and obj.feats.get("VAGUE") == "YES":
+            if isinstance(obj, FStructure) and obj.feats.get("VAGUE") is True:
                 # If any parse landed with VAGUE on OBJ, the chained
                 # form composed — that's the regression. The
                 # acceptable path is 0 parses; in practice the

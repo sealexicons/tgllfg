@@ -131,11 +131,11 @@ class TestDistribMorph:
             cands = [c for c in ml[0] if c.pos == "NUM"]
             assert cands, f"no NUM analysis for {lemma!r}"
             ma = cands[0]
-            assert ma.feats.get("CARDINAL") == "YES", (
+            assert ma.feats.get("CARDINAL") is True, (
                 f"{lemma}: CARDINAL expected 'YES', got "
                 f"{ma.feats.get('CARDINAL')!r}"
             )
-            assert ma.feats.get("DISTRIB") == "YES", (
+            assert ma.feats.get("DISTRIB") is True, (
                 f"{lemma}: DISTRIB expected 'YES', got "
                 f"{ma.feats.get('DISTRIB')!r}"
             )

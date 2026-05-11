@@ -38,14 +38,14 @@ from tgllfg.fstruct.equations import (
 
 
 @pytest.mark.parametrize("src,feat,value", [
-    ("PART[WH=true]", "WH", "YES"),
-    ("PART[WH=false]", "WH", "NO"),
-    ("PART[WH=YES]", "WH", "YES"),
-    ("PART[WH=NO]", "WH", "NO"),
-    ("PART[WH]", "WH", "YES"),
+    ("PART[WH=true]", "WH", True),
+    ("PART[WH=false]", "WH", False),
+    ("PART[WH=YES]", "WH", True),
+    ("PART[WH=NO]", "WH", False),
+    ("PART[WH]", "WH", True),
 ])
-def test_binary_feat_bool_forms_canonicalize_to_yes_no(
-    src: str, feat: str, value: str
+def test_binary_feat_bool_forms_canonicalize_to_bool(
+    src: str, feat: str, value: bool
 ) -> None:
     p = parse_pattern(src)
     assert p.features == ((feat, value),)
@@ -120,7 +120,7 @@ def test_mixed_bool_and_enum_in_one_pattern() -> None:
     """A common shape: ``PART[QUESTION=true, CLITIC_CLASS=2P]``."""
     p = parse_pattern("PART[QUESTION=true, CLITIC_CLASS=2P]")
     feats = dict(p.features)
-    assert feats["QUESTION"] == "YES"
+    assert feats["QUESTION"] is True
     assert feats["CLITIC_CLASS"] == "2P"
 
 
@@ -129,16 +129,19 @@ def test_shorthand_works_alongside_explicit_pair() -> None:
     explicit pair for another."""
     p = parse_pattern("PART[QUESTION, CLITIC_CLASS=2P]")
     feats = dict(p.features)
-    assert feats["QUESTION"] == "YES"
+    assert feats["QUESTION"] is True
     assert feats["CLITIC_CLASS"] == "2P"
 
 
 def test_existing_legacy_patterns_unaffected() -> None:
-    """Regression: every shape that worked before C3 keeps working."""
+    """Regression: every shape that worked before C3 keeps parsing.
+    Phase 5n.C.4 canonicalizes the binary-feat value to ``True``, but
+    the matcher aliases ``True`` with the legacy ``"YES"`` string
+    during the migration window."""
     p = parse_pattern("PART[CLITIC_CLASS=2P, QUESTION=YES]")
     assert p == CategoryPattern(
         "PART",
-        (("CLITIC_CLASS", "2P"), ("QUESTION", "YES")),
+        (("CLITIC_CLASS", "2P"), ("QUESTION", True)),
     )
 
 
@@ -149,38 +152,43 @@ def test_equation_defining_with_bool_true() -> None:
     eq = parse_equation("(↑ WH) = true")
     assert isinstance(eq, DefiningEquation)
     assert isinstance(eq.rhs, Atom)
-    assert eq.rhs.value == "YES"
+    assert eq.rhs.value is True
 
 
 def test_equation_defining_with_bool_false() -> None:
     eq = parse_equation("(↑ WH) = false")
     assert isinstance(eq, DefiningEquation)
     assert isinstance(eq.rhs, Atom)
-    assert eq.rhs.value == "NO"
+    assert eq.rhs.value is False
 
 
 def test_equation_constraining_with_bool_true() -> None:
     eq = parse_equation("(↓2 QUESTION) =c true")
     assert isinstance(eq, ConstrainingEquation)
     assert isinstance(eq.rhs, Atom)
-    assert eq.rhs.value == "YES"
+    assert eq.rhs.value is True
 
 
-def test_equation_legacy_quoted_yes_atom_unchanged() -> None:
-    """``=c 'YES'`` continues to parse to the same Atom("YES") that
-    ``=c true`` produces — they're interchangeable in C3."""
-    a = parse_equation("(↓2 QUESTION) =c 'YES'")
-    b = parse_equation("(↓2 QUESTION) =c true")
-    assert a == b
+def test_equation_legacy_quoted_yes_distinct_from_bool() -> None:
+    """``=c 'YES'`` parses to a *string* Atom("YES") while
+    ``=c true`` parses to a *bool* Atom(True). They are
+    interchangeable at unification time via the
+    :func:`fstruct.graph._atoms_compatible` aliasing, but the parsed
+    AST values are distinct types."""
+    str_atom = parse_equation("(↓2 QUESTION) =c 'YES'")
+    bool_atom = parse_equation("(↓2 QUESTION) =c true")
+    assert str_atom != bool_atom
+    assert isinstance(str_atom, ConstrainingEquation)
+    assert isinstance(bool_atom, ConstrainingEquation)
+    assert isinstance(str_atom.rhs, Atom) and str_atom.rhs.value == "YES"
+    assert isinstance(bool_atom.rhs, Atom) and bool_atom.rhs.value is True
 
 
-def test_equation_unparse_renders_atom_form() -> None:
-    """The unparser renders Atom("YES") as ``'YES'`` (single-quoted),
-    not as ``true``. That's fine for C3 — round-trip integrity is
-    preserved, and Commit 5 will switch rule strings to ``true`` /
-    ``false`` directly."""
+def test_equation_unparse_renders_bool_keyword() -> None:
+    """The unparser renders ``Atom(True)`` as the bare ``true`` keyword
+    (not as ``'YES'``). Round-trips cleanly."""
     parsed = parse_equation("(↑ WH) = true")
     rendered = unparse(parsed)
-    assert rendered == "(↑ WH) = 'YES'"
+    assert rendered == "(↑ WH) = true"
     reparsed = parse_equation(rendered)
     assert reparsed == parsed

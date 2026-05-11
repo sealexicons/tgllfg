@@ -46,7 +46,7 @@ def test_av_gapping_2conj(sentence: str) -> None:
     assert len(parses) >= 1, f"expected ≥1 parse for {sentence!r}"
     gapping_parses = [
         (ct, fs) for ct, fs, _astr, _diags in parses
-        if fs.feats.get("GAPPING") == "YES"
+        if fs.feats.get("GAPPING") is True
     ]
     assert len(gapping_parses) >= 1, (
         f"expected ≥1 gapping parse for {sentence!r}; got "
@@ -70,7 +70,7 @@ def test_av_gapping_3conj() -> None:
     parses = parse_text(sentence)
     gapping_parses = [
         (ct, fs) for ct, fs, _astr, _diags in parses
-        if fs.feats.get("GAPPING") == "YES"
+        if fs.feats.get("GAPPING") is True
     ]
     assert len(gapping_parses) >= 1, (
         f"expected ≥1 gapping parse for {sentence!r}"
@@ -98,7 +98,7 @@ def test_dv_gapping_2conj(sentence: str) -> None:
     assert len(parses) >= 1, f"expected ≥1 parse for {sentence!r}"
     gapping_parses = [
         (ct, fs) for ct, fs, _astr, _diags in parses
-        if fs.feats.get("GAPPING") == "YES"
+        if fs.feats.get("GAPPING") is True
     ]
     assert len(gapping_parses) >= 1, (
         f"expected ≥1 gapping parse for {sentence!r}"
@@ -127,7 +127,7 @@ def test_dv_ditrans_gapping() -> None:
     parses = parse_text(sentence)
     gapping_parses = [
         (ct, fs) for ct, fs, _astr, _diags in parses
-        if fs.feats.get("GAPPING") == "YES"
+        if fs.feats.get("GAPPING") is True
     ]
     assert len(gapping_parses) >= 1, (
         f"expected ≥1 gapping parse for {sentence!r}"
@@ -164,7 +164,7 @@ def test_pred_sharing_reentrant() -> None:
     parses = parse_text(sentence)
     gapping_parses = [
         (ct, fs) for ct, fs, _astr, _diags in parses
-        if fs.feats.get("GAPPING") == "YES"
+        if fs.feats.get("GAPPING") is True
     ]
     assert len(gapping_parses) >= 1
     _ct, fs = gapping_parses[0]

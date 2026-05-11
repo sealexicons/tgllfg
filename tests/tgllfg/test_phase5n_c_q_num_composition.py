@@ -49,7 +49,7 @@ class TestQNumAsNP:
         _ct, fs, _astr, _diags = parses[0]
         subj = fs.feats.get("SUBJ")
         assert subj is not None
-        assert subj.feats.get("UNIV") == "YES"
+        assert subj.feats.get("UNIV") is True
         assert subj.feats.get("CARDINAL_VALUE") == cardinal_value
 
     @pytest.mark.parametrize("sentence,cardinal_value", [
@@ -67,7 +67,7 @@ class TestQNumAsNP:
         _ct, fs, _astr, _diags = parses[0]
         subj = fs.feats.get("SUBJ")
         assert subj is not None
-        assert subj.feats.get("UNIV") == "YES"
+        assert subj.feats.get("UNIV") is True
         assert subj.feats.get("CARDINAL_VALUE") == cardinal_value
 
 
@@ -96,11 +96,11 @@ class TestL81FiresOnQNumTopics:
             f"L81 with Q+NUM should parse: {sentence!r}"
         )
         _ct, fs, _astr, _diags = parses[0]
-        assert fs.feats.get("DISTRIB") == "YES"
+        assert fs.feats.get("DISTRIB") is True
         assert fs.feats.get("PRED") == verb_pred
         subj = fs.feats.get("SUBJ")
         assert subj is not None
-        assert subj.feats.get("UNIV") == "YES"
+        assert subj.feats.get("UNIV") is True
         assert subj.feats.get("CARDINAL_VALUE") == cardinal_value
 
 
@@ -143,5 +143,5 @@ class TestQPlusNUnchanged:
         _ct, fs, _astr, _diags = parses[0]
         subj = fs.feats.get("SUBJ")
         assert subj is not None
-        assert subj.feats.get("UNIV") == "YES"
+        assert subj.feats.get("UNIV") is True
         assert subj.feats.get("LEMMA") == n_lemma

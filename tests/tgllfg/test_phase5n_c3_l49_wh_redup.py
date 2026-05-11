@@ -62,7 +62,7 @@ def test_wh_redup_morph(
     redup_prons = [r for r in results
                    if r.pos == "PRON"
                    and r.feats.get("NUM") == "PL"
-                   and r.feats.get("WH") == "YES"]
+                   and r.feats.get("WH") is True]
     assert len(redup_prons) >= 1, (
         f"expected ≥1 PRON WH=YES NUM=PL analysis for {surface!r}"
     )
@@ -87,7 +87,7 @@ def test_bare_wh_pron_unchanged(surface: str) -> None:
     token = Token(surface=surface, norm=surface, start=0, end=len(surface))
     results = a.analyze_one(token)
     pron_results = [r for r in results
-                    if r.pos == "PRON" and r.feats.get("WH") == "YES"]
+                    if r.pos == "PRON" and r.feats.get("WH") is True]
     assert len(pron_results) >= 1
     # Bare form has no NUM (vs. NUM=PL on the redup form)
     assert pron_results[0].feats.get("NUM") is None

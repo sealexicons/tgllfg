@@ -61,7 +61,7 @@ def test_redup_intens_morph_smoke(surface: str, base: str) -> None:
             f"expected ≥1 INTENS=MILD ADJ analysis for {surface!r}"
         )
         assert intens_adjs[0].lemma == base
-        assert intens_adjs[0].feats.get("PREDICATIVE") == "YES"
+        assert intens_adjs[0].feats.get("PREDICATIVE") is True
 
 
 # === Base ma- forms unchanged =============================================
@@ -82,7 +82,7 @@ def test_bare_ma_adj_unchanged(surface: str, base: str) -> None:
                  if r.pos == "ADJ" and r.feats.get("INTENS") is None]
     assert len(base_adjs) >= 1
     assert base_adjs[0].lemma == base
-    assert base_adjs[0].feats.get("PREDICATIVE") == "YES"
+    assert base_adjs[0].feats.get("PREDICATIVE") is True
 
 
 # === End-to-end clausal use ==============================================

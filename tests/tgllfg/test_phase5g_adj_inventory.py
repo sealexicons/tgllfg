@@ -101,7 +101,7 @@ class TestSizeDimension:
         adj = [a for a in out if a.pos == "ADJ"]
         assert len(adj) == 1
         assert adj[0].lemma == root
-        assert adj[0].feats.get("PREDICATIVE") == "YES"
+        assert adj[0].feats.get("PREDICATIVE") is True
         assert adj[0].feats.get("LEMMA") == root
 
 
@@ -279,7 +279,7 @@ class TestSentenceIntegration:
         f = parses[0][1]
         assert f.feats.get("PRED") == "ADJ <SUBJ>"
         assert f.feats.get("ADJ_LEMMA") == expected_lemma
-        assert f.feats.get("PREDICATIVE") == "YES"
+        assert f.feats.get("PREDICATIVE") is True
         subj = f.feats.get("SUBJ")
         assert isinstance(subj, FStructure)
         assert subj.feats.get("CASE") == "NOM"
