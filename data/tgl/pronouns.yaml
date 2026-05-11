@@ -168,14 +168,25 @@
 # residue ``Pumunta ka.`` parsed as AV-intransitive). Once these
 # entries land, the strip stops and Commit 2's wh-fronting rule
 # consumes the PRON.
+# Phase 5n.C.3 Commit 9 (§18 L49): all 4 wh-PRONs tag into the
+# new ``redup_wh_plural`` paradigm cell (paradigms.yaml) which
+# derives the reduplicated plural forms ``sinosino`` "who-PL /
+# random people", ``anoano`` "what-PL / various things",
+# ``kaninokanino`` "to whom-PL", ``alinalin`` "which-PL".
+# References: Phase 5i §9.2 (deferred from Phase 5i; corpus
+# surfaced via Phase 5m wh+man builder work); S&O 1972 §6.
 - surface: sino
   feats: {WH: "YES", CASE: NOM, HUMAN: True, LEMMA: sino}
+  affix_class: [redup_wh_plural]
 - surface: ano
   feats: {WH: "YES", CASE: NOM, LEMMA: ano}
+  affix_class: [redup_wh_plural]
 - surface: kanino
   feats: {WH: "YES", CASE: DAT, HUMAN: True, LEMMA: kanino}
+  affix_class: [redup_wh_plural]
 - surface: alin
   feats: {WH: "YES", CASE: NOM, LEMMA: alin}
+  affix_class: [redup_wh_plural]
 
 # === Phase 5m Commit 1: indefinite + answer-interjection PRONs =============
 #

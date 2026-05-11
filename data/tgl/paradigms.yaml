@@ -936,13 +936,17 @@
   notes: redup_intens_adj — ganda → magandaganda (L37 redup intensive)
 
 # --- Phase 5n.C.3 Commit 8: kasing_redup_adj (§18 L38) ------------------
-# Archaic CV-reduplicated equative — "just as X" / "exactly as X":
-# ``kasinggaganda`` "just as beautiful", ``kasingdadali`` "just as
-# easy", ``kasingbabait`` "just as kind". Per Schachter & Otanes
-# 1972 §5: a more emphatic equative variant of the modern
-# ``kasing-`` equative (which has no stem redup —
-# ``kasingganda`` "as beautiful (as)"). The form is archaic in
-# modern register but still attested in formal / older texts.
+# CV-reduplicated equative variant — "just as X" / "exactly as X":
+# ``kasinggaganda``, ``kasingdadali``, ``kasingbabait``. Per
+# Schachter & Otanes 1972 §5 the CV-redup form is a stylistic
+# variant of the modern ``kasing-`` equative
+# (``kasingganda`` "as beautiful (as)"). In modern usage the two
+# forms are semantically equivalent — both translate as "just as
+# X" (verified 2026-05-10 via GT comparison of ``kasingganda``
+# / ``kasinggaganda``). The earlier C8 ``REGISTER: ARCHAIC``
+# distinguishing feat was dropped per the GT observation; the
+# productive paradigm now produces a surface distinct from the
+# bare ``kasing-`` form but f-structure-identical to it.
 #
 # Operations: ``[cv_redup, prefix kasing]``. CV-reduplicates the
 # root first (``ganda`` → ``gaganda``, ``dali`` → ``dadali``,
@@ -952,15 +956,47 @@
 #
 # Cell.feats: ``COMP_DEGREE: EQUATIVE`` (so the existing Phase
 # 5h Commit 2 equative grammar rules consume the surface
-# unchanged) + ``REGISTER: ARCHAIC`` (distinguishes the
-# archaic variant from the modern ``kasing-`` form for
-# downstream consumers). The note in ``adj_paradigms.yaml`` for
-# the bare ``kasing-`` cell flagged this archaic form as deferred
-# to L38; this commit closes the deferral.
+# unchanged) + ``PREDICATIVE: YES``. The note in
+# ``adj_paradigms.yaml`` for the bare ``kasing-`` cell flagged
+# this redup form as deferred to L38; this commit closes the
+# deferral.
 - base_pos: ADJ
   affix_class: ma_adj
   operations:
     - {op: cv_redup}
     - {op: prefix, value: "kasing"}
-  feats: {PREDICATIVE: "YES", COMP_DEGREE: EQUATIVE, REGISTER: ARCHAIC}
-  notes: kasing_redup_adj — ganda → kasinggaganda, dali → kasingdadali (L38 archaic redup equative)
+  feats: {PREDICATIVE: "YES", COMP_DEGREE: EQUATIVE}
+  notes: kasing_redup_adj — ganda → kasinggaganda, dali → kasingdadali (L38 CV-redup equative)
+
+# --- Phase 5n.C.3 Commit 9: redup_wh_plural (§18 L49) -------------------
+# Reduplicated wh-plural PRON surfaces — ``ano-ano`` "what-PL /
+# various things", ``sino-sino`` "who-PL / random people",
+# ``kanino-kanino`` "to whom-PL", ``alin-alin`` "which-PL". The
+# hyphen-merge tokenizer pre-pass collapses the canonical
+# hyphenated form to the single-token surface this paradigm
+# generates (``anoano`` etc.).
+#
+# Operations: ``[redup_root]``. The Commit 6 ``redup_root`` op
+# appends the original ``root.citation`` to the current base; for
+# a freshly-loaded synthetic Root from a wh-PRON, the initial
+# base IS root.citation (no prior prefix), so the op produces
+# ``ano`` + ``ano`` = ``anoano``, ``kanino`` + ``kanino`` =
+# ``kaninokanino``, etc. No prefix, no sandhi.
+#
+# Distinct from ``full_redup`` (Commit 2) — that op applies o→u
+# raising on the first copy, which is wrong for wh-PRONs ending
+# in /o/ (``ano`` would yield ``anuano`` ≠ ``anoano``).
+#
+# Cell.feats: ``NUM: PL`` (the plural reading marker; bare
+# wh-PRONs don't carry NUM). ``WH: YES`` already rides through
+# from root.feats. Output pos stays PRON (no pos-flip) — the
+# derived form is syntactically a wh-PRON like its base.
+#
+# References: Phase 5i §9.2 (deferred from Phase 5i; corpus
+# surfaced via Phase 5m wh+man builder work); S&O 1972 §6.
+- base_pos: PRON
+  affix_class: redup_wh_plural
+  operations:
+    - {op: redup_root}
+  feats: {NUM: PL}
+  notes: redup_wh_plural — ano → anoano, sino → sinosino, kanino → kaninokanino, alin → alinalin (L49)
