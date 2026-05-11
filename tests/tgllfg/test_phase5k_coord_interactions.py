@@ -209,17 +209,19 @@ class TestThreeWayComposition:
             "Bumili ng dalawang malalaking aklat "
             "at ng tatlong maliliit na lapis si Maria."
         )
-        if not parses:
-            pytest.skip(
-                "Three-way composition (cardinal + ADJ + coord) "
-                "is a stretch test; defer if not parsing."
-            )
+        # Phase 5n.C.4: the defensive ``pytest.skip`` clauses that
+        # used to gate this test were dead code by the time this
+        # phase ran — three-way composition (cardinal + ADJ + coord
+        # in a single NP) parses cleanly. The earlier scaffolding is
+        # removed so a regression fails loudly instead of silently
+        # downgrading to "skipped".
+        assert parses, "three-way composition (cardinal + ADJ + coord) failed to parse"
         _ct, fs, _astr, _diags = parses[0]
         obj = fs.feats.get("OBJ")
-        if obj is None:
-            pytest.skip("Three-way composition didn't yield an OBJ")
-        if obj.feats.get("COORD") != "AND":
-            pytest.skip("Three-way composition didn't fire coord rule")
+        assert obj is not None, "three-way composition did not yield an OBJ"
+        assert obj.feats.get("COORD") == "AND", (
+            "three-way composition did not fire the coord rule"
+        )
         conjuncts = obj.feats.get("CONJUNCTS")
         assert conjuncts is not None
         assert len(conjuncts) == 2

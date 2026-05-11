@@ -561,6 +561,54 @@ BASE: dict[str, list[LexicalEntry]] = {
             intrinsic_classification=_IV_TR_AGENT_CONVEYED,
         ),
     ],
+    # sigaw — shout. AV-intransitive ("Sumigaw siya." — "He shouted")
+    # + AV / OV transitive ("Sinigaw niya ang tulong." — "He shouted
+    # help"). verbs.yaml declares ``[um, mag, in_oblig, maka]``.
+    "sigaw": [
+        _entry(
+            "sigaw", "AV", "SHOUT <SUBJ>",
+            ["AGENT"],
+            {"AGENT": "SUBJ"},
+            transitive=False,
+            intrinsic_classification=_AV_INTR_AGENT,
+        ),
+        _entry(
+            "sigaw", "AV", "SHOUT <SUBJ, OBJ>",
+            ["AGENT", "THEME"],
+            {"AGENT": "SUBJ", "THEME": "OBJ"},
+            intrinsic_classification=_AV_TR_AGENT_THEME,
+        ),
+        _entry(
+            "sigaw", "OV", "SHOUT <SUBJ, OBJ-AGENT>",
+            ["AGENT", "THEME"],
+            {"THEME": "SUBJ", "AGENT": "OBJ-AGENT"},
+            intrinsic_classification=_OV_TR_AGENT_THEME,
+        ),
+    ],
+    # tawag — call. AV-intransitive ("Tumawag siya." — "He called /
+    # phoned") + AV / OV transitive ("Tumawag siya ng doktor." — "He
+    # called a doctor"). verbs.yaml declares ``[um, in_oblig, maka]``.
+    "tawag": [
+        _entry(
+            "tawag", "AV", "CALL <SUBJ>",
+            ["AGENT"],
+            {"AGENT": "SUBJ"},
+            transitive=False,
+            intrinsic_classification=_AV_INTR_AGENT,
+        ),
+        _entry(
+            "tawag", "AV", "CALL <SUBJ, OBJ>",
+            ["AGENT", "THEME"],
+            {"AGENT": "SUBJ", "THEME": "OBJ"},
+            intrinsic_classification=_AV_TR_AGENT_THEME,
+        ),
+        _entry(
+            "tawag", "OV", "CALL <SUBJ, OBJ-AGENT>",
+            ["AGENT", "THEME"],
+            {"THEME": "SUBJ", "AGENT": "OBJ-AGENT"},
+            intrinsic_classification=_OV_TR_AGENT_THEME,
+        ),
+    ],
     # ===== Phase 4 §7.6: control verbs =====================================
     #
     # Three control patterns, all sharing SUBJ-control over an XCOMP
