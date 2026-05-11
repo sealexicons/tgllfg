@@ -42,6 +42,8 @@ import re
 from dataclasses import dataclass
 from typing import Iterable
 
+from tgllfg.core.feats import BINARY_FEATS
+
 from .grammar import Grammar, Rule
 
 
@@ -63,13 +65,56 @@ _PATTERN_RE = re.compile(
 _FEATURE_PAIR_RE = re.compile(
     r"^\s*([A-Za-z][A-Za-z0-9_-]*)\s*=\s*([A-Za-z0-9_-]+)\s*$"
 )
+_FEATURE_SHORTHAND_RE = re.compile(
+    r"^\s*([A-Za-z][A-Za-z0-9_-]*)\s*$"
+)
+
+
+# Phase 5n.C.4 Commit 3 — the rule-parser is the bool migration's
+# front door. ``true`` / ``YES`` and ``false`` / ``NO`` all canonicalize
+# to the existing string sentinels ``"YES"`` / ``"NO"`` so that
+# downstream consumers (analyzer, matcher, unifier) remain unchanged
+# in C3. Commit 4 will flip the internal representation to Python
+# ``bool``, at which point this canonicalization moves with it.
+_BOOL_TRUE_VALUES: frozenset[str] = frozenset({"true", "YES"})
+_BOOL_FALSE_VALUES: frozenset[str] = frozenset({"false", "NO"})
+
+
+def _normalize_value(feat: str, value: str, pattern_src: str) -> str:
+    """Coerce ``true`` / ``false`` literals on binary feats to the
+    backward-compat ``"YES"`` / ``"NO"`` string sentinels. Enum feats
+    keep their literal value (including the legacy ``"YES"`` /
+    ``"NO"`` enum tags on ``INDEF`` / ``PRED``). Reject ``=true`` /
+    ``=false`` on enum feats — that combination is almost certainly
+    a semantic error."""
+    if value in {"true", "false"} and feat not in BINARY_FEATS:
+        raise ValueError(
+            f"`{feat}={value}` in pattern {pattern_src!r}: "
+            f"bool literal not allowed on non-binary feat (see "
+            f"docs/feats-binary-audit.md for the binary-feat list)"
+        )
+    if value in _BOOL_TRUE_VALUES and feat in BINARY_FEATS:
+        return "YES"
+    if value in _BOOL_FALSE_VALUES and feat in BINARY_FEATS:
+        return "NO"
+    return value
 
 
 def parse_pattern(s: str) -> CategoryPattern:
     """Parse a category pattern from surface notation.
 
     Accepts ``NP``, ``NP[CASE=NOM]``, ``V[VOICE=PV,ASPECT=PFV]`` and
-    similar. Whitespace around brackets, equals signs, and commas is
+    Phase 5n.C.4 syntactic forms:
+
+    * ``PART[WH=true]`` / ``PART[WH=false]`` — bool literals on
+      binary feats (canonicalize to the legacy ``"YES"`` / ``"NO"``
+      internal representation).
+    * ``PART[WH]`` — shorthand for ``PART[WH=true]``. Permitted only
+      when the feat is in ``tgllfg.core.feats.BINARY_FEATS``;
+      rejected on enum feats because ``[CASE]`` for ``CASE=NOM`` /
+      ``CASE=GEN`` / ... would be ambiguous.
+
+    Whitespace around brackets, equals signs, and commas is
     tolerated. Empty bracket bodies (``NP[]``) and empty input are
     rejected.
     """
@@ -85,11 +130,24 @@ def parse_pattern(s: str) -> CategoryPattern:
     feats: list[tuple[str, str]] = []
     for pair_src in feature_body.split(","):
         pm = _FEATURE_PAIR_RE.match(pair_src)
-        if pm is None:
-            raise ValueError(
-                f"malformed feature constraint {pair_src!r} in pattern {s!r}"
-            )
-        feats.append((pm.group(1), pm.group(2)))
+        if pm is not None:
+            feat, value = pm.group(1), pm.group(2)
+            feats.append((feat, _normalize_value(feat, value, s)))
+            continue
+        sm = _FEATURE_SHORTHAND_RE.match(pair_src)
+        if sm is not None:
+            feat = sm.group(1)
+            if feat not in BINARY_FEATS:
+                raise ValueError(
+                    f"shorthand `{feat}` in pattern {s!r}: only "
+                    f"permitted on binary feats (see "
+                    f"docs/feats-binary-audit.md)"
+                )
+            feats.append((feat, "YES"))
+            continue
+        raise ValueError(
+            f"malformed feature constraint {pair_src!r} in pattern {s!r}"
+        )
     feats.sort(key=lambda kv: kv[0])
     return CategoryPattern(category, tuple(feats))
 

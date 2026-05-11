@@ -459,6 +459,15 @@ class _Parser:
         if t.kind == "ATOM":
             self._consume("ATOM")
             return Atom(value=t.text)
+        # Phase 5n.C.4 Commit 3: accept bare ``true`` / ``false`` at
+        # value position. Both canonicalize to ``Atom("YES")`` /
+        # ``Atom("NO")`` for backward-compat with the existing unifier
+        # (which compares Atom values by string equality against the
+        # analyzer-side ``"YES"`` / ``"NO"`` sentinels). Commit 4 will
+        # flip the internal representation to ``Atom(value=bool)``.
+        if t.kind == "IDENT" and t.text in ("true", "false"):
+            self._consume("IDENT")
+            return Atom(value="YES" if t.text == "true" else "NO")
         return self._parse_designator()
 
 
