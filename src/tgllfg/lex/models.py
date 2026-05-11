@@ -108,15 +108,13 @@ class LexEntry(Base):
     id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True), primary_key=True, server_default=_UUID_PK_DEFAULT
     )
-    lemma_id: Mapped[UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("lemma.id"), nullable=False
-    )
-    # Phase 5n.C.4 Commit 1: dual-FK during the additive migration
-    # window. Commit 2 will rewrite ``seed.py`` / ``cache.py`` /
-    # ``adapter.py`` to key off ``lemma_sense_id``; migration 0005
-    # then drops ``lemma_id`` and enforces NOT NULL here.
-    lemma_sense_id: Mapped[UUID | None] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("lemma_sense.id"), nullable=True
+    # Phase 5n.C.4 Commit 9: LexEntry FK points at ``lemma_sense``
+    # directly (the additive ``lex_entry.lemma_id`` was dropped in
+    # migration 0005). Every LexEntry is tied to one specific
+    # ``LemmaSense`` row, so polysemous lemmas get per-sense lex
+    # entries by construction.
+    lemma_sense_id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("lemma_sense.id"), nullable=False
     )
     pred_template: Mapped[str] = mapped_column(Text, nullable=False)
     a_structure: Mapped[Any] = mapped_column(JSONB, nullable=False)

@@ -50,9 +50,26 @@ class LemmaEntry:
 
 
 @dataclass(frozen=True)
-class LexEntryRow:
+class LemmaSenseEntry:
+    """One sense of a lemma, carrying per-sense ``feats`` JSONB.
+
+    Phase 5n.C.4 Commit 9: polysemous lemmas (``kuwarto`` ROOM vs.
+    FRACTION) materialize as one ``LemmaEntry`` plus N
+    ``LemmaSenseEntry`` rows, each at a strictly-increasing
+    ``sense_index``.
+    """
     id: UUID
     lemma_id: UUID
+    sense_index: int
+    feats: Mapping[str, Any] = field(default_factory=dict)
+    gloss: str | None = None
+    source_ref: str | None = None
+
+
+@dataclass(frozen=True)
+class LexEntryRow:
+    id: UUID
+    lemma_sense_id: UUID
     pred_template: str
     a_structure: Any
     morph_constraints: Mapping[str, Any]
@@ -146,6 +163,7 @@ class LexCache:
     languages: tuple[LanguageEntry, ...] = ()
     sources: tuple[SourceEntry, ...] = ()
     lemmas: tuple[LemmaEntry, ...] = ()
+    lemma_senses: tuple[LemmaSenseEntry, ...] = ()
     lex_entries: tuple[LexEntryRow, ...] = ()
     affixes: tuple[AffixEntry, ...] = ()
     paradigms: tuple[ParadigmEntry, ...] = ()
@@ -159,6 +177,7 @@ class LexCache:
     particles_by_surface: Mapping[str, tuple[ParticleEntry, ...]] = field(default_factory=dict)
     pronouns_by_surface: Mapping[str, tuple[PronounEntry, ...]] = field(default_factory=dict)
     lemmas_by_citation: Mapping[str, tuple[LemmaEntry, ...]] = field(default_factory=dict)
+    senses_by_lemma: Mapping[UUID, tuple[LemmaSenseEntry, ...]] = field(default_factory=dict)
 
 
 def _group(items: list[Any], key: str) -> Mapping[str, tuple[Any, ...]]:
@@ -198,10 +217,21 @@ async def build_cache(session: AsyncSession) -> LexCache:
         )
         for r in (await session.scalars(select(m.Lemma))).all()
     ]
+    lemma_senses = [
+        LemmaSenseEntry(
+            id=r.id,
+            lemma_id=r.lemma_id,
+            sense_index=r.sense_index,
+            feats=r.feats or {},
+            gloss=r.gloss,
+            source_ref=r.source_ref,
+        )
+        for r in (await session.scalars(select(m.LemmaSense))).all()
+    ]
     lex_entries = [
         LexEntryRow(
             id=r.id,
-            lemma_id=r.lemma_id,
+            lemma_sense_id=r.lemma_sense_id,
             pred_template=r.pred_template,
             a_structure=r.a_structure,
             morph_constraints=r.morph_constraints,
@@ -298,10 +328,19 @@ async def build_cache(session: AsyncSession) -> LexCache:
     meta_rows = (await session.scalars(select(m.LexMetadata))).all()
     metadata = {r.key: r.value for r in meta_rows}
 
+    senses_by_lemma_raw: dict[UUID, list[LemmaSenseEntry]] = defaultdict(list)
+    for sense in lemma_senses:
+        senses_by_lemma_raw[sense.lemma_id].append(sense)
+    senses_by_lemma = {
+        k: tuple(sorted(v, key=lambda x: x.sense_index))
+        for k, v in senses_by_lemma_raw.items()
+    }
+
     return LexCache(
         languages=tuple(languages),
         sources=tuple(sources),
         lemmas=tuple(lemmas),
+        lemma_senses=tuple(lemma_senses),
         lex_entries=tuple(lex_entries),
         affixes=tuple(affixes),
         paradigms=tuple(paradigms),
@@ -314,6 +353,7 @@ async def build_cache(session: AsyncSession) -> LexCache:
         particles_by_surface=_group(particles, "surface"),
         pronouns_by_surface=_group(pronouns, "surface"),
         lemmas_by_citation=_group(lemmas, "citation_form"),
+        senses_by_lemma=senses_by_lemma,
     )
 
 
@@ -321,6 +361,7 @@ __all__ = [
     "AffixEntry",
     "LanguageEntry",
     "LemmaEntry",
+    "LemmaSenseEntry",
     "LexCache",
     "LexEntryRow",
     "ParadigmCellEntry",

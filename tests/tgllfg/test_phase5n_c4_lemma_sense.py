@@ -157,44 +157,36 @@ async def test_polysemous_lemma_two_senses_via_distinct_indexes(
     assert rows[1] == (1, {"SEM_CLASS": "FRACTION"}, "quarter")
 
 
-async def test_lex_entry_lemma_sense_id_nullable_in_c1(
+async def test_lex_entry_lemma_sense_id_required_after_c9(
     migrated_with_pre_populated_lemma: tuple[AsyncEngine, uuid.UUID, uuid.UUID],
 ) -> None:
-    """C1 is the additive migration window: ``lex_entry.lemma_sense_id``
-    must be nullable so legacy seed writes (which still set only
-    ``lemma_id``) keep working. C2 + migration 0005 will enforce
-    NOT NULL."""
+    """Phase 5n.C.4 Commit 9 enforced NOT NULL on
+    ``lex_entry.lemma_sense_id`` and dropped ``lemma_id``. An
+    INSERT without a sense_id must fail."""
     engine, _lang_id, lemma_id = migrated_with_pre_populated_lemma
     sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
     async with sessionmaker() as session:
-        await session.execute(
-            text(
-                "INSERT INTO lex_entry "
-                "(lemma_id, pred_template, a_structure, "
-                "morph_constraints, intrinsic_classification) "
-                "VALUES (:l, 'ROOM <>', :a, :m, :ic)"
-            ),
-            {
-                "l": lemma_id,
-                "a": json.dumps([]),
-                "m": json.dumps({}),
-                "ic": json.dumps({}),
-            },
-        )
-        await session.commit()
-
-        result = await session.execute(
-            text("SELECT lemma_sense_id FROM lex_entry WHERE lemma_id = :l"),
-            {"l": lemma_id},
-        )
-        assert result.scalar_one() is None
+        with pytest.raises(Exception, match="lemma_sense_id"):
+            await session.execute(
+                text(
+                    "INSERT INTO lex_entry "
+                    "(pred_template, a_structure, morph_constraints, "
+                    "intrinsic_classification) "
+                    "VALUES ('ROOM <>', :a, :m, :ic)"
+                ),
+                {
+                    "a": json.dumps([]),
+                    "m": json.dumps({}),
+                    "ic": json.dumps({}),
+                },
+            )
+            await session.commit()
 
 
 async def test_lex_entry_lemma_sense_id_roundtrips_when_set(
     migrated_with_pre_populated_lemma: tuple[AsyncEngine, uuid.UUID, uuid.UUID],
 ) -> None:
-    """C2 will set ``lex_entry.lemma_sense_id`` on every write; verify
-    the FK accepts it and reads back unchanged in C1."""
+    """LexEntry FKs ``lemma_sense`` directly; round-trip read-back."""
     engine, _lang_id, lemma_id = migrated_with_pre_populated_lemma
     sessionmaker = async_sessionmaker(engine, expire_on_commit=False)
     async with sessionmaker() as session:
@@ -210,12 +202,11 @@ async def test_lex_entry_lemma_sense_id_roundtrips_when_set(
         await session.execute(
             text(
                 "INSERT INTO lex_entry "
-                "(lemma_id, lemma_sense_id, pred_template, a_structure, "
+                "(lemma_sense_id, pred_template, a_structure, "
                 "morph_constraints, intrinsic_classification) "
-                "VALUES (:l, :s, 'ROOM <>', :a, :m, :ic)"
+                "VALUES (:s, 'ROOM <>', :a, :m, :ic)"
             ),
             {
-                "l": lemma_id,
                 "s": sense_id,
                 "a": json.dumps([]),
                 "m": json.dumps({}),
@@ -225,7 +216,7 @@ async def test_lex_entry_lemma_sense_id_roundtrips_when_set(
         await session.commit()
 
         result = await session.execute(
-            text("SELECT lemma_sense_id FROM lex_entry WHERE lemma_id = :l"),
-            {"l": lemma_id},
+            text("SELECT lemma_sense_id FROM lex_entry WHERE lemma_sense_id = :s"),
+            {"s": sense_id},
         )
         assert result.scalar_one() == sense_id
