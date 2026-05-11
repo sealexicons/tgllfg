@@ -122,6 +122,17 @@
   # serves as the manner-adverb form (``mabilis na tumakbo``
   # "ran quickly" — Phase 5g Commit 5).
 
+# Phase 5n.C.3 Commit 8 (§18 L38): added ``dali`` as an ADJ
+# root to enable the canonical S&O 1972 §5 archaic kasing-redup
+# example ``kasingdadali`` "just as easy". The verb ``dali``
+# (verbs.yaml) is the same root in a different POS — Tagalog
+# polysemy. ``madali`` (ma_adj) is a common modern adjective
+# meaning "easy / quick".
+- citation: dali
+  pos: ADJ
+  gloss: easy, quick
+  affix_class: [ma_adj]
+
 - citation: bait
   pos: ADJ
   gloss: kind, well-behaved

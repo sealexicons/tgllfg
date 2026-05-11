@@ -160,19 +160,21 @@ class TestInventoryTotals:
     the count rises from 30 to 39.
     """
 
-    def test_thirtynine_ma_adj_roots(self) -> None:
+    def test_forty_ma_adj_roots(self) -> None:
         """Phase 5g seeded 30 ADJ roots opting into ``ma_adj``;
-        Phase 5n.A Commit 1 adds 9 (bingi / bulag / galit / ginaw /
-        gulat / gutom / hilo / tibay / tigang) for a total of 39.
+        Phase 5n.A Commit 1 added 9 (bingi / bulag / galit / ginaw /
+        gulat / gutom / hilo / tibay / tigang) for 39; Phase 5n.C.3
+        Commit 8 (§18 L38) adds ``dali`` for 40 total.
         """
         data = load_morph_data()
         ma_adj_roots = [
             r for r in data.roots
             if r.pos == "ADJ" and "ma_adj" in r.affix_class
         ]
-        assert len(ma_adj_roots) == 39, (
-            f"expected 39 ma_adj-opting ADJ roots (30 from Phase 5g "
-            f"+ 9 from Phase 5n.A Commit 1); got {len(ma_adj_roots)}"
+        assert len(ma_adj_roots) == 40, (
+            f"expected 40 ma_adj-opting ADJ roots (30 Phase 5g "
+            f"+ 9 Phase 5n.A C1 + 1 Phase 5n.C.3 C8); got "
+            f"{len(ma_adj_roots)}"
         )
 
     def test_phase5g_inventory_lemmas_present(self) -> None:
