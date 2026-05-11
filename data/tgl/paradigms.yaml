@@ -807,3 +807,196 @@
     - {op: suffix, value: an}
     - {op: prefix, value: "mag"}
   notes: magkakainan, magbibigayan
+
+# === Phase 5n.C.3: non-verbal paradigm cells (base_pos != VERB) =========
+#
+# Productive paradigms over NOUN / ADJ / PRON roots. The shared
+# operation-execution engine (analyzer.generate_form + sandhi.py)
+# is POS-agnostic; the ``base_pos`` discriminator on each cell
+# (Phase 5n.C.3 Commit 1) routes the cell to the matching root POS
+# during indexing. See ``src/tgllfg/morph/analyzer.py``
+# ``_index_paradigm_via_base_pos``.
+
+# --- Phase 5n.C.3 Commit 2: card_redup (§18 L31) ------------------------
+# Compound cardinals via full-root reduplication: ``libo`` →
+# ``libulibo`` "thousands of", ``daan`` → ``daandaan`` "hundreds of".
+# The ``full_redup`` op (analyzer.py + sandhi.full_reduplicate)
+# duplicates the root and raises the first copy's final-syllable /o/
+# to /u/ (same rule as ``attach_suffix``). Cell.feats contributes
+# ``MEASURE=YES`` so the existing measure-N grammar rule
+# (``cfg/nominal.py`` line 1011) fires on the derived surface.
+# Root-side ``COLL_VALUE`` (HUNDREDS / THOUSANDS) propagates
+# per-root via the standard root.feats merge.
+# References: Schachter & Otanes 1972 §6 (collective cardinal redup);
+# R&B 1986 paradigm tables.
+- base_pos: NOUN
+  affix_class: card_redup
+  operations:
+    - {op: full_redup}
+  feats: {MEASURE: "YES"}
+  notes: card_redup — libo → libulibo, daan → daandaan
+
+# --- Phase 5n.C.3 Commit 3: tig_distrib (§18 L31) -----------------------
+# Productive distributive numerals: ``tig-isa`` "one each",
+# ``tig-dalawa`` "two each", etc. Single ``prefix tig`` op produces
+# the derived surface; cell.feats contributes the construction-
+# level markers ``DISTRIB=YES`` (the distributive reading) and
+# ``CARDINAL=YES`` (so the existing Phase 5f Commit 1 cardinal
+# NP-modifier rule consumes the surface unchanged). Root-side
+# ``CARDINAL_VALUE`` (1-10) propagates per-root via the standard
+# merge.
+#
+# NUM-pos roots live in ``data/tgl/numerals.yaml``; the matching
+# tokenizer pre-pass (``text/multiword.py`` hyphen-merge) folds
+# ``tig-isa`` into ``tigisa`` so the productive surface tokenises
+# cleanly. References: Schachter & Otanes 1972 §5.27 (distributive
+# tig-); §4 (cardinal numerals).
+- base_pos: NUM
+  affix_class: tig_distrib
+  operations:
+    - {op: prefix, value: "tig"}
+  feats: {DISTRIB: "YES", CARDINAL: "YES", NUM: PL}
+  notes: tig_distrib — isa → tigisa, dalawa → tigdalawa, ...
+
+# --- Phase 5n.C.3 Commit 4: tag_season (§18 L31) ------------------------
+# Productive season noun derivation: ``tag-`` prefix + NOUN root
+# yields a season name. ``araw`` "sun" → ``tagaraw`` "sunny
+# period"; ``ulan`` "rain" → ``tagulan`` "rainy season";
+# ``init`` "heat" → ``taginit`` "hot/dry season"; ``lamig``
+# "cold" → ``taglamig`` "cold spell"; ``gutom`` "hunger" →
+# ``taggutom`` "hunger season".
+#
+# Replaces the 5 hand-coded ``tag*`` NOUN entries from Phase 5f
+# Commit 14. The hyphen-merge tokenizer pre-pass
+# (``text/multiword.py``) folds canonical ``tag-init`` etc. into
+# the single-token form the productive cell generates. Cell.feats
+# contributes ``SEM_CLASS=SEASON``; root-side affix_class
+# ``[tag_season]`` gates the cell to the 5 season-base nouns.
+# References: Schachter & Otanes 1972 §5 (``tag-`` derivation);
+# R&B 1986 ch.4.
+- base_pos: NOUN
+  affix_class: tag_season
+  operations:
+    - {op: prefix, value: "tag"}
+  feats: {SEM_CLASS: SEASON}
+  notes: tag_season — araw → tagaraw, ulan → tagulan, init → taginit, lamig → taglamig, gutom → taggutom
+
+# --- Phase 5n.C.3 Commit 5: kani_redup (§18 L31) ------------------------
+# Distributive-possessive redup on 3rd-person DAT pronouns —
+# productive replacement for the Phase 5f Commit 21 hand-coded
+# ``kanikaniya`` / ``kanyakanya`` Q forms. The ``kani_redup`` op
+# (analyzer.py + sandhi.kani_reduplicate) handles two patterns:
+# 2-syllable bases (``kanya``) get full reduplication; 3-syllable
+# bases (``kaniya`` / ``kanila``) have the first copy truncated to
+# 2 syllables and concatenated with the full base.
+#
+# POS-flip: cell.pos=Q overrides the PRON base. Distributive-
+# possessive surfaces are syntactically Q (preposed quantifier
+# with linker complement, matching Phase 5f Commits 15 / 20 / 22),
+# so the derived form is indexed as Q in the particles table —
+# the same shape consumers expect.
+# References: Schachter & Otanes 1972 §10 (universal quantification);
+# R&B 1986 ch.10 (distributive possessive pronouns).
+- base_pos: PRON
+  pos: Q
+  affix_class: kani_redup
+  operations:
+    - {op: kani_redup}
+  feats: {QUANT: EACH_OWN, DISTRIB_POSS: "YES"}
+  notes: kani_redup — kanya → kanyakanya, kaniya → kanikaniya, kanila → kanikanila
+
+# --- Phase 5n.C.3 Commit 7: redup_intens_adj (§18 L37) ------------------
+# Reduplicated intensive adjectives — "rather X" / "X-ish":
+# ``maganda-ganda`` "rather beautiful", ``maliit-liit`` "rather
+# small", ``mabilis-bilis`` "rather fast", ``mabait-bait`` "rather
+# kind". The hyphen-merge tokenizer pre-pass collapses the
+# canonical hyphenated form to the single-token surface that
+# this paradigm generates (``magandaganda`` etc.).
+#
+# Operations: ``[prefix ma, redup_root]``. Order matters — the
+# Commit 6 ``redup_root`` op appends the root after the prefix
+# has been attached, so the prefix appears only on the first
+# copy. Distinct from ``full_redup`` which would put ``ma-`` on
+# both copies. Reference: Schachter & Otanes 1972 §5
+# (intensive redup); R&B 1986 ch.4.
+#
+# The cell re-uses the existing ``affix_class: ma_adj`` filter
+# so every ma_adj-class ADJ root automatically produces an
+# intensive form. The output is an ADJ with ``INTENS: MILD`` —
+# semantically weaker than the Phase 5h ``napaka-`` super-
+# intensifier (``COMP_DEGREE: INTENSIFIER``). The two
+# mechanisms are syntactically parallel (both are ADJ surfaces)
+# but morphologically distinct.
+- base_pos: ADJ
+  affix_class: ma_adj
+  operations:
+    - {op: prefix, value: "ma"}
+    - {op: redup_root}
+  feats: {PREDICATIVE: "YES", INTENS: MILD}
+  notes: redup_intens_adj — ganda → magandaganda (L37 redup intensive)
+
+# --- Phase 5n.C.3 Commit 8: kasing_redup_adj (§18 L38) ------------------
+# CV-reduplicated equative variant — "just as X" / "exactly as X":
+# ``kasinggaganda``, ``kasingdadali``, ``kasingbabait``. Per
+# Schachter & Otanes 1972 §5 the CV-redup form is a stylistic
+# variant of the modern ``kasing-`` equative
+# (``kasingganda`` "as beautiful (as)"). In modern usage the two
+# forms are semantically equivalent — both translate as "just as
+# X" (verified 2026-05-10 via GT comparison of ``kasingganda``
+# / ``kasinggaganda``). The earlier C8 ``REGISTER: ARCHAIC``
+# distinguishing feat was dropped per the GT observation; the
+# productive paradigm now produces a surface distinct from the
+# bare ``kasing-`` form but f-structure-identical to it.
+#
+# Operations: ``[cv_redup, prefix kasing]``. CV-reduplicates the
+# root first (``ganda`` → ``gaganda``, ``dali`` → ``dadali``,
+# ``bait`` → ``babait``), then prefixes with ``kasing``. Re-uses
+# the existing ``cv_redup`` and ``prefix`` ops — no new op
+# needed.
+#
+# Cell.feats: ``COMP_DEGREE: EQUATIVE`` (so the existing Phase
+# 5h Commit 2 equative grammar rules consume the surface
+# unchanged) + ``PREDICATIVE: YES``. The note in
+# ``adj_paradigms.yaml`` for the bare ``kasing-`` cell flagged
+# this redup form as deferred to L38; this commit closes the
+# deferral.
+- base_pos: ADJ
+  affix_class: ma_adj
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "kasing"}
+  feats: {PREDICATIVE: "YES", COMP_DEGREE: EQUATIVE}
+  notes: kasing_redup_adj — ganda → kasinggaganda, dali → kasingdadali (L38 CV-redup equative)
+
+# --- Phase 5n.C.3 Commit 9: redup_wh_plural (§18 L49) -------------------
+# Reduplicated wh-plural PRON surfaces — ``ano-ano`` "what-PL /
+# various things", ``sino-sino`` "who-PL / random people",
+# ``kanino-kanino`` "to whom-PL", ``alin-alin`` "which-PL". The
+# hyphen-merge tokenizer pre-pass collapses the canonical
+# hyphenated form to the single-token surface this paradigm
+# generates (``anoano`` etc.).
+#
+# Operations: ``[redup_root]``. The Commit 6 ``redup_root`` op
+# appends the original ``root.citation`` to the current base; for
+# a freshly-loaded synthetic Root from a wh-PRON, the initial
+# base IS root.citation (no prior prefix), so the op produces
+# ``ano`` + ``ano`` = ``anoano``, ``kanino`` + ``kanino`` =
+# ``kaninokanino``, etc. No prefix, no sandhi.
+#
+# Distinct from ``full_redup`` (Commit 2) — that op applies o→u
+# raising on the first copy, which is wrong for wh-PRONs ending
+# in /o/ (``ano`` would yield ``anuano`` ≠ ``anoano``).
+#
+# Cell.feats: ``NUM: PL`` (the plural reading marker; bare
+# wh-PRONs don't carry NUM). ``WH: YES`` already rides through
+# from root.feats. Output pos stays PRON (no pos-flip) — the
+# derived form is syntactically a wh-PRON like its base.
+#
+# References: Phase 5i §9.2 (deferred from Phase 5i; corpus
+# surfaced via Phase 5m wh+man builder work); S&O 1972 §6.
+- base_pos: PRON
+  affix_class: redup_wh_plural
+  operations:
+    - {op: redup_root}
+  feats: {NUM: PL}
+  notes: redup_wh_plural — ano → anoano, sino → sinosino, kanino → kaninokanino, alin → alinalin (L49)

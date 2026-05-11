@@ -68,6 +68,21 @@ def _seasons() -> list[str]:
     return ["taginit", "tagulan", "taglamig", "tagaraw", "taggutom"]
 
 
+def _season_pairs() -> list[tuple[str, str]]:
+    """Return (surface, base_lemma) pairs. Phase 5n.C.3 Commit 4
+    migrated the 5 hand-coded season NOUN entries to a productive
+    ``tag_season`` paradigm, so the derived form's LEMMA is the
+    base noun's citation (``init`` / ``ulan`` / etc.), not the
+    surface (``taginit`` / ``tagulan`` / etc.)."""
+    return [
+        ("taginit",  "init"),
+        ("tagulan",  "ulan"),
+        ("taglamig", "lamig"),
+        ("tagaraw",  "araw"),
+        ("taggutom", "gutom"),
+    ]
+
+
 def _adjunct_with_obj_lemma(text: str, lemma: str) -> FStructure | None:
     """Find any parse where an ADJUNCT has an OBJ with the given
     lemma."""
@@ -133,9 +148,9 @@ class TestSeasonWithSa:
     existing routing."""
 
     def test_sa_each_season(self) -> None:
-        for lemma in _seasons():
-            text = f"Pumunta ako sa {lemma}."
-            adj = _adjunct_with_lemma(text, lemma)
+        for surface, base_lemma in _season_pairs():
+            text = f"Pumunta ako sa {surface}."
+            adj = _adjunct_with_lemma(text, base_lemma)
             assert adj is not None, f"no DAT-NP parse for {text!r}"
             assert adj.feats.get("CASE") == "DAT"
 
@@ -149,9 +164,9 @@ class TestSeasonWithTuwing:
     SEASON variant in this commit."""
 
     def test_tuwing_each_season_clause_final(self) -> None:
-        for lemma in _seasons():
-            text = f"Pumunta ako tuwing {lemma}."
-            adj = _adjunct_with_obj_lemma(text, lemma)
+        for surface, base_lemma in _season_pairs():
+            text = f"Pumunta ako tuwing {surface}."
+            adj = _adjunct_with_obj_lemma(text, base_lemma)
             assert adj is not None, f"no tuwing-PP parse for {text!r}"
             assert adj.feats.get("TIME_FRAME") == "PERIODIC"
 
@@ -165,7 +180,10 @@ class TestSeasonWithTuwing:
                     and topic.feats.get("TIME_FRAME") == "PERIODIC"):
                 continue
             obj = topic.feats.get("OBJ")
-            if isinstance(obj, FStructure) and obj.feats.get("LEMMA") == "tagulan":
+            # Phase 5n.C.3 Commit 4: ``tagulan`` derives from
+            # ``ulan`` via the productive tag_season paradigm; the
+            # derived NOUN's LEMMA is the base citation ``ulan``.
+            if isinstance(obj, FStructure) and obj.feats.get("LEMMA") == "ulan":
                 found = True
                 break
         assert found, "no PERIODIC-TOPIC parse for ay-fronted SEASON PP"
@@ -179,9 +197,9 @@ class TestSeasonWithNoong:
     with TIME_FRAME=PAST."""
 
     def test_noong_each_season_clause_final(self) -> None:
-        for lemma in _seasons():
-            text = f"Pumunta kami noong {lemma}."
-            adj = _adjunct_with_obj_lemma(text, lemma)
+        for surface, base_lemma in _season_pairs():
+            text = f"Pumunta kami noong {surface}."
+            adj = _adjunct_with_obj_lemma(text, base_lemma)
             assert adj is not None, f"no noong-PP parse for {text!r}"
             assert adj.feats.get("TIME_FRAME") == "PAST"
 

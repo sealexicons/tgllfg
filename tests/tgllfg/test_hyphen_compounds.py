@@ -151,7 +151,10 @@ class TestHyphenatedSentenceParses:
         obj = time_pp.feats.get("OBJ")
         assert obj is not None
         assert obj.feats.get("SEM_CLASS") == "SEASON"
-        assert obj.feats.get("LEMMA") == "taginit"
+        # Phase 5n.C.3 Commit 4: ``taginit`` derives from ``init``
+        # via the productive tag_season paradigm; the derived NOUN's
+        # LEMMA is the base citation ``init``.
+        assert obj.feats.get("LEMMA") == "init"
 
     def test_approximator(self) -> None:
         """``humigit-kumulang lima`` — the approximator is a PART

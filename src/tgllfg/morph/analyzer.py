@@ -54,6 +54,8 @@ from .paradigms import (
 from .sandhi import (
     attach_suffix,
     cv_reduplicate,
+    full_reduplicate,
+    kani_reduplicate,
     d_to_r_intervocalic,
     infix_after_first_consonant,
     nasal_assim_prefix,
@@ -90,15 +92,55 @@ def generate_form(root: Root, cell: ParadigmCell) -> str:
     flags = set(root.sandhi_flags)
     base = root.citation
     for op in cell.operations:
-        base = _apply(op, base, flags)
+        base = _apply(op, base, flags, root.citation)
     if "d_to_r" in flags:
         base = d_to_r_intervocalic(base)
     return base
 
 
-def _apply(op: Operation, base: str, flags: set[str]) -> str:
+def _apply(
+    op: Operation, base: str, flags: set[str], root_citation: str = ""
+) -> str:
     if op.op == "cv_redup":
         return cv_reduplicate(base)
+    if op.op == "full_redup":
+        # Phase 5n.C.3 Commit 2 (§18 L31): whole-root reduplication
+        # for compound cardinals (``libo`` → ``libulibo``). Distinct
+        # from ``cv_redup`` (first-CV only) and from the
+        # Phase 5n.C.3 Commit 6 ``redup_root`` op (which redups
+        # AFTER prefix attachment, used by ADJ intensives).
+        return full_reduplicate(base)
+    if op.op == "kani_redup":
+        # Phase 5n.C.3 Commit 5 (§18 L31): distributive-possessive
+        # redup for 3rd-person DAT pronouns. ``kanya`` (2-syl) →
+        # ``kanyakanya`` via full redup; ``kaniya`` / ``kanila``
+        # (3-syl) → first copy truncated to 2 syllables +
+        # full base (``kanikaniya`` / ``kanikanila``).
+        return kani_reduplicate(base)
+    if op.op == "redup_root":
+        # Phase 5n.C.3 Commit 6 (§18 L31): post-prefix root
+        # reduplication. Appends the original root citation to
+        # the current base. ``ganda`` after ``ma-`` prefix
+        # (giving ``maganda``) followed by ``redup_root`` yields
+        # ``maganda`` + ``ganda`` = ``magandaganda`` — the L37
+        # reduplicated-intensive surface (canonical orthography
+        # ``maganda-ganda``; the hyphen-merge tokenizer pre-pass
+        # collapses the hyphenated input to the single-token
+        # form for lex lookup).
+        #
+        # Distinct from ``full_redup`` (Commit 2) which redups
+        # the WHOLE current base — that op produces
+        # ``magandaganda`` only if applied BEFORE the prefix
+        # (the L37 pattern requires the order
+        # ``prefix → redup_root`` so the prefix appears only
+        # on the first copy).
+        if not root_citation:
+            raise ValueError(
+                "redup_root op requires root_citation context "
+                "(generate_form passes it; standalone callers "
+                "must pass it explicitly)"
+            )
+        return base + root_citation
     if op.op == "infix":
         return infix_after_first_consonant(base, op.value)
     if op.op == "suffix":
@@ -286,6 +328,16 @@ class Analyzer:
                 pos="PRON",
                 feats=feats,
             )
+            # Phase 5n.C.3 Commit 5 (§18 L31): PRON-base paradigm
+            # cells fire on pronouns with non-empty affix_class.
+            # The ``kani_redup`` cell (data/tgl/paradigms.yaml)
+            # derives distributive-possessive Q surfaces from
+            # 3rd-person DAT pronouns. Derived surfaces are indexed
+            # into the particles table (since the cell flips
+            # ``pos: Q``); the bare PRON entry continues to be
+            # looked up via the pronouns table.
+            if pn.affix_class:
+                self._index_pronoun_paradigms(pn)
         for r in self._data.roots:
             if r.pos == "VERB":
                 self._index_verb_paradigms(r)
@@ -317,6 +369,11 @@ class Analyzer:
                         feats=noun_feats,
                     ),
                 )
+                # Phase 5n.C.3 Commit 1: NOUN-base paradigm cells
+                # (``card_redup``, ``tig_distrib``, ``tag_season``,
+                # ``kani-``) fire here. Cells live in
+                # ``data/tgl/paradigms.yaml`` with ``base_pos: NOUN``.
+                self._index_paradigm_via_base_pos(r)
             elif r.pos == "ADJ":
                 # Phase 5h §4.2: dispatch on affix_class. Roots with a
                 # non-empty list go through the productive paradigm
@@ -333,6 +390,120 @@ class Analyzer:
                     self._index_adjective_paradigms(r)
                 else:
                     self._index_adjective_bare_root(r)
+                # Phase 5n.C.3 Commit 1: ADJ-base paradigm cells
+                # (Phase 5n.C.3 L37 reduplicated intensives, L38
+                # archaic ``kasing-`` reduplication) fire here too.
+                # Cells live in ``data/tgl/paradigms.yaml`` with
+                # ``base_pos: ADJ``; the operation-execution engine
+                # is shared with verb / noun paradigms.
+                self._index_paradigm_via_base_pos(r)
+            elif r.pos == "NUM":
+                # Phase 5n.C.3 Commit 3 (§18 L31): NUM-pos roots
+                # (cardinal numerals 1-10 from
+                # ``data/tgl/numerals.yaml``) only drive paradigm
+                # cells — bare-NUM lookup continues to come from
+                # the matching ``particles.yaml`` entries. The
+                # ``tig_distrib`` cell with ``base_pos: NUM`` fires
+                # here and produces ``tigisa`` / ``tigdalawa`` /
+                # etc., indexed into the particles table.
+                self._index_paradigm_via_base_pos(r)
+
+    def _index_pronoun_paradigms(self, pn) -> None:  # type: ignore[no-untyped-def]
+        """Phase 5n.C.3 Commit 5: iterate paradigm cells with
+        ``base_pos: PRON`` against the pronoun, indexing derived
+        surfaces. Surfaces are routed by ``cell.pos`` (default
+        PRON): a Q-pos cell routes to the particles table (the
+        ``kani_redup`` cell flips PRON → Q for the distributive-
+        possessive quantifier output).
+        """
+        for cell in self._data.paradigm_cells:
+            if cell.base_pos != "PRON":
+                continue
+            if not _affix_class_match(cell.affix_class, pn.affix_class):
+                continue
+            # Construct a synthetic Root from the Pronoun so
+            # generate_form can apply the cell's operations.
+            from .paradigms import Root as _Root
+            synthetic = _Root(
+                citation=pn.surface,
+                pos="PRON",
+                feats=dict(pn.feats),
+                affix_class=list(pn.affix_class),
+            )
+            surface = generate_form(synthetic, cell).lower()
+            feats: dict[str, object] = {**pn.feats}
+            for k, v in cell.feats.items():
+                feats[k] = v
+            # LEMMA defaults to the source pronoun's surface (or its
+            # canonical LEMMA feat per Phase 5n.A Commit 4
+            # orthographic-variant convention).
+            canonical_lemma = feats.get("LEMMA", pn.surface)
+            if not isinstance(canonical_lemma, str):
+                canonical_lemma = pn.surface
+            out_pos = cell.pos or "PRON"
+            analysis = MorphAnalysis(
+                lemma=canonical_lemma,
+                pos=out_pos,
+                feats=feats,
+            )
+            if out_pos == "PRON":
+                # Stay in pronouns table for PRON-typed derivations
+                # (none in the current seed; reserved for future).
+                self._index.pronouns[surface] = analysis
+            else:
+                # POS-flipped derivations (Q for kani_redup,
+                # potentially others) land in particles where the
+                # grammar looks up Q / DET / etc.
+                self._index.particles.setdefault(surface, []).append(analysis)
+
+    def _index_paradigm_via_base_pos(self, root: Root) -> None:
+        """Index paradigm cells in ``paradigm_cells`` whose
+        ``base_pos`` matches ``root.pos``. Phase 5n.C.3 Commit 1
+        infrastructure for non-verbal derivations (NOUN-root
+        ``card_redup`` / ``tig_distrib`` / ``tag_season`` / ``kani-``;
+        ADJ-root ``redup_root`` intensives / ``kasing-`` redup).
+
+        Routes generated surfaces to the POS-appropriate index
+        (``nouns`` / ``adjectives``). Per-root + per-cell feats are
+        merged with cell.feats winning over root.feats (mirrors the
+        VERB / ADJ-paradigm convention); LEMMA defaults to
+        ``root.citation`` if not explicitly set.
+        """
+        for cell in self._data.paradigm_cells:
+            if cell.base_pos != root.pos:
+                continue
+            if not _affix_class_match(cell.affix_class, root.affix_class):
+                continue
+            surface = generate_form(root, cell).lower()
+            feats: dict[str, object] = {**root.feats}
+            for k, v in cell.feats.items():
+                feats[k] = v
+            feats.setdefault("LEMMA", root.citation)
+            canonical_lemma = feats.get("LEMMA", root.citation)
+            if not isinstance(canonical_lemma, str):
+                canonical_lemma = root.citation
+            analysis = MorphAnalysis(
+                lemma=canonical_lemma,
+                pos=root.pos,
+                feats=feats,
+            )
+            if root.pos == "NOUN":
+                self._index.nouns.setdefault(surface, []).append(analysis)
+            elif root.pos == "ADJ":
+                self._index.adjectives.setdefault(surface, []).append(analysis)
+            elif root.pos == "NUM":
+                # Phase 5n.C.3 Commit 3: derived NUM surfaces are
+                # indexed into the particles table — this is where
+                # ``analyze_one`` looks up NUM particles (cardinal
+                # numerals are loaded from particles.yaml). Mirrors
+                # the existing particles dispatch for bare-numeral
+                # lookup; the derived analyses carry the same
+                # pos="NUM" so grammar consumers see no distinction.
+                self._index.particles.setdefault(surface, []).append(analysis)
+            else:
+                # PRON / other POS-bases would extend here; ignored
+                # for now (no PRON-root paradigms in the seed).
+                pass
 
     def _index_adjective_bare_root(self, root: Root) -> None:
         """Index the bare citation as ADJ for non-productive roots.
@@ -421,6 +592,11 @@ class Analyzer:
 
     def _index_verb_paradigms(self, root: Root) -> None:
         for cell in self._data.paradigm_cells:
+            # Phase 5n.C.3 Commit 1: filter to VERB-base cells only.
+            # Non-verbal cells (base_pos: NOUN / ADJ / PRON) fire via
+            # :meth:`_index_paradigm_via_base_pos` below.
+            if cell.base_pos != "VERB":
+                continue
             if cell.transitivity and cell.transitivity != root.transitivity:
                 continue
             if not _affix_class_match(cell.affix_class, root.affix_class):

@@ -659,6 +659,14 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ ADJ_LEMMA) = ↓1 LEMMA",
             "(↑ PREDICATIVE) = 'YES'",
             "(↓1 PREDICATIVE) =c 'YES'",
+            # Phase 5n.C.3 Commit 7 (§18 L37): lift INTENS from the
+            # ADJ daughter to the matrix so downstream consumers
+            # see the reduplicated-intensive reading on the matrix
+            # S. The Phase 5n.C.3 ``redup_intens_adj`` paradigm
+            # cell tags ADJ surfaces with ``INTENS: MILD``;
+            # daughter ADJs without INTENS leave the matrix INTENS
+            # undefined (no-op via unification semantics).
+            "(↑ INTENS) = ↓1 INTENS",
         ],
     ))
 
