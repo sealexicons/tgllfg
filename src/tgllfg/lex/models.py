@@ -72,6 +72,37 @@ class Lemma(Base):
     )
 
 
+class LemmaSense(Base):
+    """One linguistically distinct sense of a Lemma.
+
+    A polysemous lemma has one ``lemma`` row plus N ``lemma_sense`` rows;
+    a monosemous lemma has the same one lemma row plus exactly one
+    sense at ``sense_index = 0``. Per-sense ``feats`` is the
+    discriminator that prior Phase 5f writes had to drop because the
+    schema couldn't carry it.
+    """
+
+    __tablename__ = "lemma_sense"
+    __table_args__ = (
+        UniqueConstraint("lemma_id", "sense_index", name="uq_lemma_sense_lemma_index"),
+    )
+    id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True), primary_key=True, server_default=_UUID_PK_DEFAULT
+    )
+    lemma_id: Mapped[UUID] = mapped_column(
+        PG_UUID(as_uuid=True),
+        ForeignKey("lemma.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    sense_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    feats: Mapped[Any] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
+    )
+    gloss: Mapped[str | None] = mapped_column(Text)
+    source_ref: Mapped[str | None] = mapped_column(Text)
+    notes: Mapped[str | None] = mapped_column(Text)
+
+
 class LexEntry(Base):
     __tablename__ = "lex_entry"
     id: Mapped[UUID] = mapped_column(
@@ -79,6 +110,13 @@ class LexEntry(Base):
     )
     lemma_id: Mapped[UUID] = mapped_column(
         PG_UUID(as_uuid=True), ForeignKey("lemma.id"), nullable=False
+    )
+    # Phase 5n.C.4 Commit 1: dual-FK during the additive migration
+    # window. Commit 2 will rewrite ``seed.py`` / ``cache.py`` /
+    # ``adapter.py`` to key off ``lemma_sense_id``; migration 0005
+    # then drops ``lemma_id`` and enforces NOT NULL here.
+    lemma_sense_id: Mapped[UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("lemma_sense.id"), nullable=True
     )
     pred_template: Mapped[str] = mapped_column(Text, nullable=False)
     a_structure: Mapped[Any] = mapped_column(JSONB, nullable=False)
@@ -243,6 +281,7 @@ __all__ = [
     "Example",
     "Language",
     "Lemma",
+    "LemmaSense",
     "LexEntry",
     "LexMetadata",
     "Paradigm",
