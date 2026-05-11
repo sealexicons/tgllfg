@@ -904,3 +904,33 @@
     - {op: kani_redup}
   feats: {QUANT: EACH_OWN, DISTRIB_POSS: "YES"}
   notes: kani_redup — kanya → kanyakanya, kaniya → kanikaniya, kanila → kanikanila
+
+# --- Phase 5n.C.3 Commit 7: redup_intens_adj (§18 L37) ------------------
+# Reduplicated intensive adjectives — "rather X" / "X-ish":
+# ``maganda-ganda`` "rather beautiful", ``maliit-liit`` "rather
+# small", ``mabilis-bilis`` "rather fast", ``mabait-bait`` "rather
+# kind". The hyphen-merge tokenizer pre-pass collapses the
+# canonical hyphenated form to the single-token surface that
+# this paradigm generates (``magandaganda`` etc.).
+#
+# Operations: ``[prefix ma, redup_root]``. Order matters — the
+# Commit 6 ``redup_root`` op appends the root after the prefix
+# has been attached, so the prefix appears only on the first
+# copy. Distinct from ``full_redup`` which would put ``ma-`` on
+# both copies. Reference: Schachter & Otanes 1972 §5
+# (intensive redup); R&B 1986 ch.4.
+#
+# The cell re-uses the existing ``affix_class: ma_adj`` filter
+# so every ma_adj-class ADJ root automatically produces an
+# intensive form. The output is an ADJ with ``INTENS: MILD`` —
+# semantically weaker than the Phase 5h ``napaka-`` super-
+# intensifier (``COMP_DEGREE: INTENSIFIER``). The two
+# mechanisms are syntactically parallel (both are ADJ surfaces)
+# but morphologically distinct.
+- base_pos: ADJ
+  affix_class: ma_adj
+  operations:
+    - {op: prefix, value: "ma"}
+    - {op: redup_root}
+  feats: {PREDICATIVE: "YES", INTENS: MILD}
+  notes: redup_intens_adj — ganda → magandaganda (L37 redup intensive)
