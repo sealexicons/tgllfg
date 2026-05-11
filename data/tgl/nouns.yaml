@@ -51,6 +51,10 @@
 - citation: araw
   pos: NOUN
   gloss: day, sun
+  # Phase 5n.C.3 Commit 4 (§18 L31): tag_season paradigm input —
+  # `araw` "sun" yields `tagaraw` "sunny period" via the
+  # productive cell in paradigms.yaml.
+  affix_class: [tag_season]
 
 - citation: asawa
   pos: NOUN
@@ -239,6 +243,9 @@
 - citation: gutom
   pos: NOUN
   gloss: hunger (Phase 5c §7.7 ika- test fixture)
+  # Phase 5n.C.3 Commit 4 (§18 L31): tag_season paradigm input —
+  # `gutom` "hunger" yields `taggutom` "hunger season".
+  affix_class: [tag_season]
 
 - citation: hagdan
   pos: NOUN
@@ -648,6 +655,9 @@
 - citation: ulan
   pos: NOUN
   gloss: rain
+  # Phase 5n.C.3 Commit 4 (§18 L31): tag_season paradigm input —
+  # `ulan` "rain" yields `tagulan` "rainy season".
+  affix_class: [tag_season]
 
 - citation: ulap
   pos: NOUN
@@ -954,44 +964,32 @@
   feats: {SEM_CLASS: DAY, DAY_VALUE: "7"}
 
 
-# === Seasons (Phase 5f Commit 14) ========================================
-# Two-season canonical (taginit hot/dry, tagulan rainy) plus three
-# `tag-` derivatives (taglamig cold spell, tagaraw sunny period,
-# taggutom hunger season). Order preserved from the pre-reorder
-# layout — canonical first, derivatives after — rather than
-# alphabetised, because the two-season system has a clear
-# canonical-vs-derivative distinction that alphabetising would
-# obscure.
+# === Seasons (Phase 5f Commit 14, migrated to productive paradigm
+# 2026-05-10 in Phase 5n.C.3 Commit 4) =====================================
+# The 5 hand-coded ``tag*`` season NOUN entries that previously
+# lived here have been replaced with productive derivation via the
+# ``tag_season`` paradigm cell (``data/tgl/paradigms.yaml`` —
+# ``base_pos: NOUN, prefix tag, feats: {SEM_CLASS: SEASON}``).
+# The base NOUN roots ``araw`` / ``gutom`` / ``ulan`` /
+# ``init`` / ``lamig`` carry ``affix_class: [tag_season]`` to
+# trigger the cell. ``init`` and ``lamig`` are added as NOUN
+# roots below — they previously existed only as ADJ roots
+# (producing ``mainit`` / ``malamig``). Their NOUN-pos
+# counterparts are conventional nominalizations ("heat" /
+# "cold") and don't conflict with the existing ADJ paradigm.
 #
-# Hyphenation note: the canonical orthography is `tag-init`, etc.
-# The current tokenizer (`\w+|\S`) splits hyphens, so the seed
-# stores single-token forms (`taginit`, `tagulan`); supporting the
-# hyphenated forms requires a tokenizer pre-pass and is deferred.
+# Closes §18 L31 partial; addresses Phase 5f Commit 14's
+# productive-paradigm deferral.
 
-- citation: taginit
+- citation: init
   pos: NOUN
-  gloss: hot/dry season
-  feats: {SEM_CLASS: SEASON}
+  gloss: heat
+  affix_class: [tag_season]
 
-- citation: tagulan
+- citation: lamig
   pos: NOUN
-  gloss: rainy season
-  feats: {SEM_CLASS: SEASON}
-
-- citation: taglamig
-  pos: NOUN
-  gloss: cold spell
-  feats: {SEM_CLASS: SEASON}
-
-- citation: tagaraw
-  pos: NOUN
-  gloss: sunny period
-  feats: {SEM_CLASS: SEASON}
-
-- citation: taggutom
-  pos: NOUN
-  gloss: hunger season
-  feats: {SEM_CLASS: SEASON}
+  gloss: cold
+  affix_class: [tag_season]
 
 
 # === Collective numerals (Phase 5f Commit 18) ============================

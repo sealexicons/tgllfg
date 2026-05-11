@@ -857,3 +857,26 @@
     - {op: prefix, value: "tig"}
   feats: {DISTRIB: "YES", CARDINAL: "YES", NUM: PL}
   notes: tig_distrib — isa → tigisa, dalawa → tigdalawa, ...
+
+# --- Phase 5n.C.3 Commit 4: tag_season (§18 L31) ------------------------
+# Productive season noun derivation: ``tag-`` prefix + NOUN root
+# yields a season name. ``araw`` "sun" → ``tagaraw`` "sunny
+# period"; ``ulan`` "rain" → ``tagulan`` "rainy season";
+# ``init`` "heat" → ``taginit`` "hot/dry season"; ``lamig``
+# "cold" → ``taglamig`` "cold spell"; ``gutom`` "hunger" →
+# ``taggutom`` "hunger season".
+#
+# Replaces the 5 hand-coded ``tag*`` NOUN entries from Phase 5f
+# Commit 14. The hyphen-merge tokenizer pre-pass
+# (``text/multiword.py``) folds canonical ``tag-init`` etc. into
+# the single-token form the productive cell generates. Cell.feats
+# contributes ``SEM_CLASS=SEASON``; root-side affix_class
+# ``[tag_season]`` gates the cell to the 5 season-base nouns.
+# References: Schachter & Otanes 1972 §5 (``tag-`` derivation);
+# R&B 1986 ch.4.
+- base_pos: NOUN
+  affix_class: tag_season
+  operations:
+    - {op: prefix, value: "tag"}
+  feats: {SEM_CLASS: SEASON}
+  notes: tag_season — araw → tagaraw, ulan → tagulan, init → taginit, lamig → taglamig, gutom → taggutom
