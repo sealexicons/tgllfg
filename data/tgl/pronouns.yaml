@@ -143,7 +143,7 @@
 # analyses; the chart parser picks the PRON path when the syntactic
 # context calls for a clitic.
 - surface: kita
-  feats: {KITA: "YES"}
+  feats: {KITA: true}
   is_clitic: true
 
 # === Phase 5i Commit 1: pronominal wh-words ============================
@@ -176,16 +176,16 @@
 # References: Phase 5i §9.2 (deferred from Phase 5i; corpus
 # surfaced via Phase 5m wh+man builder work); S&O 1972 §6.
 - surface: sino
-  feats: {WH: "YES", CASE: NOM, HUMAN: True, LEMMA: sino}
+  feats: {WH: true, CASE: NOM, HUMAN: True, LEMMA: sino}
   affix_class: [redup_wh_plural]
 - surface: ano
-  feats: {WH: "YES", CASE: NOM, LEMMA: ano}
+  feats: {WH: true, CASE: NOM, LEMMA: ano}
   affix_class: [redup_wh_plural]
 - surface: kanino
-  feats: {WH: "YES", CASE: DAT, HUMAN: True, LEMMA: kanino}
+  feats: {WH: true, CASE: DAT, HUMAN: True, LEMMA: kanino}
   affix_class: [redup_wh_plural]
 - surface: alin
-  feats: {WH: "YES", CASE: NOM, LEMMA: alin}
+  feats: {WH: true, CASE: NOM, LEMMA: alin}
   affix_class: [redup_wh_plural]
 
 # === Phase 5m Commit 1: indefinite + answer-interjection PRONs =============
@@ -230,10 +230,10 @@
 # fragment-answer rule fires on a single PRON with no trailing
 # tokens; hindi-wrap requires an inner S).
 - surface: oo
-  feats: {PRED: "YES", INTERJ: "YES", ANSWER: AFFIRM, LEMMA: oo}
+  feats: {PRED: "YES", INTERJ: true, ANSWER: AFFIRM, LEMMA: oo}
 - surface: hindi
-  feats: {PRED: "NO", INTERJ: "YES", ANSWER: NEG, LEMMA: hindi}
+  feats: {PRED: "NO", INTERJ: true, ANSWER: NEG, LEMMA: hindi}
 - surface: opo
-  feats: {PRED: "YES", INTERJ: "YES", ANSWER: AFFIRM, REGISTER: POLITE, LEMMA: opo}
+  feats: {PRED: "YES", INTERJ: true, ANSWER: AFFIRM, REGISTER: POLITE, LEMMA: opo}
 - surface: oho
-  feats: {PRED: "YES", INTERJ: "YES", ANSWER: AFFIRM, REGISTER: COLLOQUIAL_POLITE, LEMMA: oho}
+  feats: {PRED: "YES", INTERJ: true, ANSWER: AFFIRM, REGISTER: COLLOQUIAL_POLITE, LEMMA: oho}

@@ -332,7 +332,7 @@
   pos: ADJ
   gloss: same, alike (equative-identity predicate)
   affix_class: []
-  feats: {EQUATIVE: "YES", COMP_DEGREE: EQUATIVE}
+  feats: {EQUATIVE: true, COMP_DEGREE: EQUATIVE}
   # Polysemous with particles.yaml's Q[QUANT=BOTH, DUAL=YES]
   # entry. The ADJ analysis fires the predicative-adj clause
   # rule (Phase 5g Commit 3) for ``Pareho ang kanilang sapatos``
@@ -343,7 +343,7 @@
   pos: ADJ
   gloss: alike, equal (formal equative-identity predicate)
   affix_class: []
-  feats: {EQUATIVE: "YES", COMP_DEGREE: EQUATIVE}
+  feats: {EQUATIVE: true, COMP_DEGREE: EQUATIVE}
   # Lexicalised; ``magka-`` is a productive prefix family but is
   # not separately decomposed here. ``Magkapareho ang kanilang
   # sapatos`` "their shoes are alike".
@@ -352,7 +352,7 @@
   pos: ADJ
   gloss: different (contrastive-identity predicate)
   affix_class: []
-  feats: {EQUATIVE: "YES", COMP_DEGREE: CONTRASTIVE}
+  feats: {EQUATIVE: true, COMP_DEGREE: CONTRASTIVE}
   # Lexicalised contrastive equative ("different from each
   # other"). ``Magkaiba ang kanilang sapatos`` "their shoes are
   # different". The ``EQUATIVE: YES`` flag groups it with

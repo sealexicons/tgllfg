@@ -20,50 +20,50 @@
 
 - citation: isa
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "1", NUM: SG}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "1", NUM: SG}
   affix_class: [tig_distrib]
 
 - citation: dalawa
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "2", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "2", NUM: PL}
   affix_class: [tig_distrib]
 
 - citation: tatlo
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "3", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "3", NUM: PL}
   affix_class: [tig_distrib]
 
 - citation: apat
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "4", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "4", NUM: PL}
   affix_class: [tig_distrib]
 
 - citation: lima
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "5", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "5", NUM: PL}
   affix_class: [tig_distrib]
 
 - citation: anim
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "6", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "6", NUM: PL}
   affix_class: [tig_distrib]
 
 - citation: pito
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "7", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "7", NUM: PL}
   affix_class: [tig_distrib]
 
 - citation: walo
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "8", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "8", NUM: PL}
   affix_class: [tig_distrib]
 
 - citation: siyam
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "9", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "9", NUM: PL}
   affix_class: [tig_distrib]
 
 - citation: sampu
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "10", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "10", NUM: PL}
   affix_class: [tig_distrib]

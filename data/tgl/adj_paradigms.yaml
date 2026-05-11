@@ -67,7 +67,7 @@
 - affix_class: ma_adj
   operations:
     - {op: prefix, value: "napaka"}
-  feats: {COMP_DEGREE: INTENSIVE, INTENSIFIER: "YES"}
+  feats: {COMP_DEGREE: INTENSIVE, INTENSIFIER: true}
   notes: |
     Productive napaka- intensifier. Attaches to the bare ADJ
     root (no ``ma-``): ``napaka`` + ``ganda`` → ``napakaganda``
@@ -145,7 +145,7 @@
 - affix_class: naka_resultative
   operations:
     - {op: prefix, value: "naka"}
-  feats: {RESULTATIVE: "YES"}
+  feats: {RESULTATIVE: true}
   notes: |
     Resultative naka- adjectival reading: ``naka`` + root → stative
     locative ADJ (``nakatira`` "be living", ``nakaupo`` "be sitting",
