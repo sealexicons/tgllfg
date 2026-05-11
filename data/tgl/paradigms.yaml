@@ -835,3 +835,25 @@
     - {op: full_redup}
   feats: {MEASURE: "YES"}
   notes: card_redup — libo → libulibo, daan → daandaan
+
+# --- Phase 5n.C.3 Commit 3: tig_distrib (§18 L31) -----------------------
+# Productive distributive numerals: ``tig-isa`` "one each",
+# ``tig-dalawa`` "two each", etc. Single ``prefix tig`` op produces
+# the derived surface; cell.feats contributes the construction-
+# level markers ``DISTRIB=YES`` (the distributive reading) and
+# ``CARDINAL=YES`` (so the existing Phase 5f Commit 1 cardinal
+# NP-modifier rule consumes the surface unchanged). Root-side
+# ``CARDINAL_VALUE`` (1-10) propagates per-root via the standard
+# merge.
+#
+# NUM-pos roots live in ``data/tgl/numerals.yaml``; the matching
+# tokenizer pre-pass (``text/multiword.py`` hyphen-merge) folds
+# ``tig-isa`` into ``tigisa`` so the productive surface tokenises
+# cleanly. References: Schachter & Otanes 1972 §5.27 (distributive
+# tig-); §4 (cardinal numerals).
+- base_pos: NUM
+  affix_class: tig_distrib
+  operations:
+    - {op: prefix, value: "tig"}
+  feats: {DISTRIB: "YES", CARDINAL: "YES", NUM: PL}
+  notes: tig_distrib — isa → tigisa, dalawa → tigdalawa, ...

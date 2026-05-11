@@ -54,6 +54,13 @@ def load_morph_data(data_dir: Path | None = None) -> MorphData:
             _load_roots(base / "verbs.yaml")
             + _load_roots(base / "nouns.yaml")
             + _load_roots(base / "adjectives.yaml")
+            # Phase 5n.C.3 Commit 3 (§18 L31): NUM-pos roots for the
+            # cardinal numerals. These drive the ``tig_distrib``
+            # paradigm cell (and any future ``base_pos: NUM``
+            # paradigms). Bare-NUM lookup continues to come from
+            # ``particles.yaml``; the NUM-roots are paradigm inputs
+            # only — they are NOT indexed as bare surfaces.
+            + _load_roots(base / "numerals.yaml")
         ),
         paradigm_cells=_load_paradigm_cells(base / "paradigms.yaml"),
         adjective_cells=_load_adjective_cells(base / "adj_paradigms.yaml"),

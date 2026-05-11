@@ -353,6 +353,16 @@ class Analyzer:
                 # ``base_pos: ADJ``; the operation-execution engine
                 # is shared with verb / noun paradigms.
                 self._index_paradigm_via_base_pos(r)
+            elif r.pos == "NUM":
+                # Phase 5n.C.3 Commit 3 (§18 L31): NUM-pos roots
+                # (cardinal numerals 1-10 from
+                # ``data/tgl/numerals.yaml``) only drive paradigm
+                # cells — bare-NUM lookup continues to come from
+                # the matching ``particles.yaml`` entries. The
+                # ``tig_distrib`` cell with ``base_pos: NUM`` fires
+                # here and produces ``tigisa`` / ``tigdalawa`` /
+                # etc., indexed into the particles table.
+                self._index_paradigm_via_base_pos(r)
 
     def _index_paradigm_via_base_pos(self, root: Root) -> None:
         """Index paradigm cells in ``paradigm_cells`` whose
@@ -389,6 +399,15 @@ class Analyzer:
                 self._index.nouns.setdefault(surface, []).append(analysis)
             elif root.pos == "ADJ":
                 self._index.adjectives.setdefault(surface, []).append(analysis)
+            elif root.pos == "NUM":
+                # Phase 5n.C.3 Commit 3: derived NUM surfaces are
+                # indexed into the particles table — this is where
+                # ``analyze_one`` looks up NUM particles (cardinal
+                # numerals are loaded from particles.yaml). Mirrors
+                # the existing particles dispatch for bare-numeral
+                # lookup; the derived analyses carry the same
+                # pos="NUM" so grammar consumers see no distinction.
+                self._index.particles.setdefault(surface, []).append(analysis)
             else:
                 # PRON / other POS-bases would extend here; ignored
                 # for now (no PRON-root paradigms in the seed).
