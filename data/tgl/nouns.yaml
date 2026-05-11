@@ -72,6 +72,10 @@
   pos: NOUN
   gloss: sugar
 
+- citation: ate
+  pos: NOUN
+  gloss: older sister, term of address for older female
+
 - citation: babae
   pos: NOUN
   gloss: woman
@@ -116,6 +120,10 @@
   pos: NOUN
   gloss: town, country
 
+- citation: bayaw
+  pos: NOUN
+  gloss: brother-in-law
+
 - citation: bibig
   pos: NOUN
   gloss: mouth
@@ -141,6 +149,10 @@
   pos: NOUN
   gloss: star
 
+- citation: biyenan
+  pos: NOUN
+  gloss: parent-in-law
+
 - citation: bubong
   pos: NOUN
   gloss: roof
@@ -156,6 +168,10 @@
 - citation: bundok
   pos: NOUN
   gloss: mountain
+
+- citation: bunso
+  pos: NOUN
+  gloss: youngest sibling
 
 - citation: bus
   pos: NOUN
@@ -255,6 +271,10 @@
   pos: NOUN
   gloss: wind
 
+- citation: hipag
+  pos: NOUN
+  gloss: sister-in-law
+
 - citation: ibon
   pos: NOUN
   gloss: bird
@@ -272,9 +292,17 @@
   pos: NOUN
   gloss: mother (formal)
 
+- citation: inay
+  pos: NOUN
+  gloss: mother (affective / informal)
+
 - citation: isda
   pos: NOUN
   gloss: fish
+
+- citation: itay
+  pos: NOUN
+  gloss: father (affective / informal)
 
 - citation: itlog
   pos: NOUN
@@ -357,6 +385,10 @@
   pos: NOUN
   gloss: room
 
+- citation: kuya
+  pos: NOUN
+  gloss: older brother, term of address for older male
+
 - citation: lalaki
   pos: NOUN
   gloss: man
@@ -402,6 +434,10 @@
   pos: NOUN
   gloss: earth, soil
 
+- citation: magulang
+  pos: NOUN
+  gloss: parent
+
 # Phase 5n.A Commit 7 (§18 L62): closed-class noun "man / mister",
 # attested in S&O 1972 §3.1 and R&B 1986 as an informal address term
 # for an unrelated adult male. Required for R&G "Ang Manok" simple
@@ -426,6 +462,10 @@
 - citation: mansanas
   pos: NOUN
   gloss: apple
+
+- citation: manugang
+  pos: NOUN
+  gloss: child-in-law
 
 - citation: mata
   pos: NOUN
@@ -478,6 +518,10 @@
 - citation: palengke
   pos: NOUN
   gloss: market
+
+- citation: pamangkin
+  pos: NOUN
+  gloss: niece, nephew
 
 - citation: pamilya
   pos: NOUN
@@ -636,9 +680,34 @@
   pos: NOUN
   gloss: teacher
 
+# Phase 5n.C.3 Commit 11 (post-C9 kinship sweep, lex-only): adds
+# the missing kinship inventory. ``tiya`` and ``tiyo`` are
+# orthographic variants of ``tita`` / ``tito`` (both colloquial
+# Spanish-borrowed forms with -y- vs -t- spelling); they route to
+# the canonical lemma via the Phase 5n.A Commit 4 ``LEMMA`` feat.
+# ``tiyahin`` / ``tiyuhin`` are the formal-register forms (distinct
+# from the colloquial Spanish-borrowed pair).
+- citation: tiya
+  pos: NOUN
+  gloss: aunt (orthographic variant of tita)
+  feats: {LEMMA: tita}
+
+- citation: tiyahin
+  pos: NOUN
+  gloss: aunt (formal)
+
 - citation: tiyan
   pos: NOUN
   gloss: stomach
+
+- citation: tiyo
+  pos: NOUN
+  gloss: uncle (orthographic variant of tito)
+  feats: {LEMMA: tito}
+
+- citation: tiyuhin
+  pos: NOUN
+  gloss: uncle (formal)
 
 - citation: trabaho
   pos: NOUN
@@ -651,6 +720,15 @@
 - citation: tubig
   pos: NOUN
   gloss: water
+
+# Phase 5n.C.3 Commit 11: ``tuhod`` "knee" — the body-part noun
+# also occurs in the kinship-extension compound ``lolo / lola /
+# tiyahin / tiyuhin sa tuhod`` "great-grandparent / great-aunt /
+# great-uncle" (literally "at the knee", idiomatic). Lex-only;
+# the kinship-extension reading isn't given idiom-level handling.
+- citation: tuhod
+  pos: NOUN
+  gloss: knee
 
 - citation: ulan
   pos: NOUN
