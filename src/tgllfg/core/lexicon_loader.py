@@ -46,10 +46,11 @@ _FILES_IN_ORDER: tuple[str, ...] = (
 
 _LEGAL_VOICES: frozenset[str] = frozenset({"AV", "OV", "DV", "IV", "BV", "LV"})
 
-# Required fields per record.
+# Required fields per record. ``voice`` is conditionally required —
+# see ``_parse_record`` for the rule (omitted only on pseudo-verb
+# control entries that supply ``morph_constraints`` directly).
 _REQUIRED_FIELDS: tuple[str, ...] = (
     "lemma",
-    "voice",
     "pred",
     "a_structure",
     "gf_defaults",
@@ -109,11 +110,13 @@ def _parse_record(rec: Any, where: str) -> LexicalEntry:
             raise ValueError(f"{where}: missing required field {key!r}")
 
     lemma = _require_str(rec, "lemma", where)
-    voice = _require_str(rec, "voice", where)
-    if voice not in _LEGAL_VOICES:
-        raise ValueError(
-            f"{where}: voice {voice!r} not in {sorted(_LEGAL_VOICES)}"
-        )
+    voice: str | None = None
+    if "voice" in rec:
+        voice = _require_str(rec, "voice", where)
+        if voice not in _LEGAL_VOICES:
+            raise ValueError(
+                f"{where}: voice {voice!r} not in {sorted(_LEGAL_VOICES)}"
+            )
     pred = _require_str(rec, "pred", where)
 
     a_structure_raw = rec["a_structure"]
@@ -190,7 +193,9 @@ def _parse_record(rec: Any, where: str) -> LexicalEntry:
         # Full override: replace the auto-fill entirely. Used by
         # applicative entries (BEN / INSTR / REASON) authored as
         # bare LexicalEntry(...) in BASE that intentionally
-        # under-specify CAUS / TR for a looser match.
+        # under-specify CAUS / TR for a looser match, and by
+        # pseudo-verb control entries (gusto / ayaw / kaya / …)
+        # that carry no VOICE at all.
         for k, v in explicit_constraints_raw.items():
             if not isinstance(k, str):
                 raise ValueError(
@@ -198,14 +203,21 @@ def _parse_record(rec: Any, where: str) -> LexicalEntry:
                     f"got {k!r}"
                 )
             morph_constraints[k] = v
-        if morph_constraints.get("VOICE", voice) != voice:
-            raise ValueError(
-                f"{where}: morph_constraints['VOICE'] = "
-                f"{morph_constraints['VOICE']!r} disagrees with the "
-                f"voice field {voice!r}"
-            )
-        morph_constraints["VOICE"] = voice
+        if voice is not None:
+            if morph_constraints.get("VOICE", voice) != voice:
+                raise ValueError(
+                    f"{where}: morph_constraints['VOICE'] = "
+                    f"{morph_constraints['VOICE']!r} disagrees with "
+                    f"the voice field {voice!r}"
+                )
+            morph_constraints["VOICE"] = voice
     else:
+        if voice is None:
+            raise ValueError(
+                f"{where}: auto-filled morph_constraints requires "
+                f"the voice field; absent voice is permitted only "
+                f"with an explicit morph_constraints override"
+            )
         morph_constraints["VOICE"] = voice
         morph_constraints["CAUS"] = "NONE"
         morph_constraints["APPL"] = "CONVEY" if voice == "IV" else "NONE"

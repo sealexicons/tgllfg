@@ -1,0 +1,216 @@
+# Control verb lex entries — Phase 5n.C.4 Commit 16.
+#
+# Five sub-classes by ``CTRL_CLASS``:
+#   * PSYCH    — gusto / ayaw / kaya. GEN experiencer is matrix
+#                SUBJ; pseudo-verbs (no morphological voice).
+#   * KNOW     — alam / akala / isip / naririnig / naaalala.
+#                COMP complement (vs XCOMP); same SUBJ binding.
+#   * MODAL    — dapat / puwede / maaari / kailangan. AGENT-pivot
+#                modal pseudo-verbs.
+#   * INTRANS  — payag (AV-inflected). AGENT pivot, XCOMP.
+#   * TRANS    — pilit (OV) / utos (DV). 3-arg control with
+#                a syntactic argument controlling the XCOMP SUBJ.
+#   * RAISING  — mukha / baka / parang / tila. Bare COMPLEMENT
+#                (no thematic role) with structure-sharing onto
+#                XCOMP.SUBJ via the grammar's raising binding.
+#
+# Pseudo-verbs (PSYCH / KNOW / MODAL / RAISING) carry no ``voice``
+# field — their morph_constraints have only CTRL_CLASS. Inflected
+# control verbs (payag / pilit / utos) include voice.
+
+# === PSYCH (XCOMP) ===
+- lemma: gusto
+  pred: "WANT <SUBJ, XCOMP>"
+  a_structure: [EXPERIENCER, COMPLEMENT]
+  gf_defaults:
+    EXPERIENCER: SUBJ
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: PSYCH
+  intrinsic: PSYCH_CONTROL
+
+- lemma: ayaw
+  pred: "DISLIKE <SUBJ, XCOMP>"
+  a_structure: [EXPERIENCER, COMPLEMENT]
+  gf_defaults:
+    EXPERIENCER: SUBJ
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: PSYCH
+  intrinsic: PSYCH_CONTROL
+
+- lemma: kaya
+  pred: "ABLE <SUBJ, XCOMP>"
+  a_structure: [EXPERIENCER, COMPLEMENT]
+  gf_defaults:
+    EXPERIENCER: SUBJ
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: PSYCH
+  intrinsic: PSYCH_CONTROL
+
+# === KNOW (COMP) ===
+- lemma: alam
+  pred: "KNOW <SUBJ, COMP>"
+  a_structure: [EXPERIENCER, COMPLEMENT]
+  gf_defaults:
+    EXPERIENCER: SUBJ
+    COMPLEMENT: COMP
+  morph_constraints:
+    CTRL_CLASS: KNOW
+  intrinsic: PSYCH_CONTROL
+
+- lemma: akala
+  pred: "BELIEVE <SUBJ, COMP>"
+  a_structure: [EXPERIENCER, COMPLEMENT]
+  gf_defaults:
+    EXPERIENCER: SUBJ
+    COMPLEMENT: COMP
+  morph_constraints:
+    CTRL_CLASS: KNOW
+  intrinsic: PSYCH_CONTROL
+
+- lemma: isip
+  pred: "THINK <SUBJ, COMP>"
+  a_structure: [EXPERIENCER, COMPLEMENT]
+  gf_defaults:
+    EXPERIENCER: SUBJ
+    COMPLEMENT: COMP
+  morph_constraints:
+    CTRL_CLASS: KNOW
+  intrinsic: PSYCH_CONTROL
+
+- lemma: naririnig
+  pred: "HEAR <SUBJ, COMP>"
+  a_structure: [EXPERIENCER, COMPLEMENT]
+  gf_defaults:
+    EXPERIENCER: SUBJ
+    COMPLEMENT: COMP
+  morph_constraints:
+    CTRL_CLASS: KNOW
+  intrinsic: PSYCH_CONTROL
+
+- lemma: naaalala
+  pred: "REMEMBER <SUBJ, COMP>"
+  a_structure: [EXPERIENCER, COMPLEMENT]
+  gf_defaults:
+    EXPERIENCER: SUBJ
+    COMPLEMENT: COMP
+  morph_constraints:
+    CTRL_CLASS: KNOW
+  intrinsic: PSYCH_CONTROL
+
+# === MODAL (XCOMP, AGENT subject) ===
+- lemma: dapat
+  pred: "DAPAT <SUBJ, XCOMP>"
+  a_structure: [AGENT, COMPLEMENT]
+  gf_defaults:
+    AGENT: SUBJ
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: MODAL
+  intrinsic: INTRANS_CONTROL
+
+- lemma: puwede
+  pred: "PUWEDE <SUBJ, XCOMP>"
+  a_structure: [AGENT, COMPLEMENT]
+  gf_defaults:
+    AGENT: SUBJ
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: MODAL
+  intrinsic: INTRANS_CONTROL
+
+- lemma: maaari
+  pred: "MAAARI <SUBJ, XCOMP>"
+  a_structure: [AGENT, COMPLEMENT]
+  gf_defaults:
+    AGENT: SUBJ
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: MODAL
+  intrinsic: INTRANS_CONTROL
+
+- lemma: kailangan
+  pred: "KAILANGAN <SUBJ, XCOMP>"
+  a_structure: [AGENT, COMPLEMENT]
+  gf_defaults:
+    AGENT: SUBJ
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: MODAL
+  intrinsic: INTRANS_CONTROL
+
+# === Inflected intransitive control: payag (AV) ===
+- lemma: payag
+  voice: AV
+  pred: "AGREE <SUBJ, XCOMP>"
+  a_structure: [AGENT, COMPLEMENT]
+  gf_defaults:
+    AGENT: SUBJ
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: INTRANS
+  intrinsic: INTRANS_CONTROL
+
+# === Inflected transitive control: pilit (OV), utos (DV) ===
+- lemma: pilit
+  voice: OV
+  pred: "FORCE <SUBJ, OBJ-AGENT, XCOMP>"
+  a_structure: [AGENT, PATIENT, COMPLEMENT]
+  gf_defaults:
+    PATIENT: SUBJ
+    AGENT: OBJ-AGENT
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: TRANS
+  intrinsic: OV_TRANS_CONTROL
+
+- lemma: utos
+  voice: DV
+  pred: "ORDER <SUBJ, OBJ-AGENT, XCOMP>"
+  a_structure: [AGENT, RECIPIENT, COMPLEMENT]
+  gf_defaults:
+    RECIPIENT: SUBJ
+    AGENT: OBJ-AGENT
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: TRANS
+  intrinsic: DV_TRANS_CONTROL
+
+# === Raising verbs (no thematic argument; XCOMP only) ===
+- lemma: mukha
+  pred: "SEEM <XCOMP> SUBJ"
+  a_structure: [COMPLEMENT]
+  gf_defaults:
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: RAISING
+  intrinsic: RAISING
+
+- lemma: baka
+  pred: "MIGHT <XCOMP> SUBJ"
+  a_structure: [COMPLEMENT]
+  gf_defaults:
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: RAISING
+  intrinsic: RAISING
+
+- lemma: parang
+  pred: "SEEMS-LIKE <XCOMP> SUBJ"
+  a_structure: [COMPLEMENT]
+  gf_defaults:
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: RAISING_BARE
+  intrinsic: RAISING
+
+- lemma: tila
+  pred: "APPARENTLY <XCOMP> SUBJ"
+  a_structure: [COMPLEMENT]
+  gf_defaults:
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: RAISING_BARE
+  intrinsic: RAISING
