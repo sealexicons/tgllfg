@@ -92,13 +92,15 @@ def generate_form(root: Root, cell: ParadigmCell) -> str:
     flags = set(root.sandhi_flags)
     base = root.citation
     for op in cell.operations:
-        base = _apply(op, base, flags)
+        base = _apply(op, base, flags, root.citation)
     if "d_to_r" in flags:
         base = d_to_r_intervocalic(base)
     return base
 
 
-def _apply(op: Operation, base: str, flags: set[str]) -> str:
+def _apply(
+    op: Operation, base: str, flags: set[str], root_citation: str = ""
+) -> str:
     if op.op == "cv_redup":
         return cv_reduplicate(base)
     if op.op == "full_redup":
@@ -115,6 +117,30 @@ def _apply(op: Operation, base: str, flags: set[str]) -> str:
         # (3-syl) → first copy truncated to 2 syllables +
         # full base (``kanikaniya`` / ``kanikanila``).
         return kani_reduplicate(base)
+    if op.op == "redup_root":
+        # Phase 5n.C.3 Commit 6 (§18 L31): post-prefix root
+        # reduplication. Appends the original root citation to
+        # the current base. ``ganda`` after ``ma-`` prefix
+        # (giving ``maganda``) followed by ``redup_root`` yields
+        # ``maganda`` + ``ganda`` = ``magandaganda`` — the L37
+        # reduplicated-intensive surface (canonical orthography
+        # ``maganda-ganda``; the hyphen-merge tokenizer pre-pass
+        # collapses the hyphenated input to the single-token
+        # form for lex lookup).
+        #
+        # Distinct from ``full_redup`` (Commit 2) which redups
+        # the WHOLE current base — that op produces
+        # ``magandaganda`` only if applied BEFORE the prefix
+        # (the L37 pattern requires the order
+        # ``prefix → redup_root`` so the prefix appears only
+        # on the first copy).
+        if not root_citation:
+            raise ValueError(
+                "redup_root op requires root_citation context "
+                "(generate_form passes it; standalone callers "
+                "must pass it explicitly)"
+            )
+        return base + root_citation
     if op.op == "infix":
         return infix_after_first_consonant(base, op.value)
     if op.op == "suffix":
