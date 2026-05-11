@@ -73,7 +73,7 @@ def test_kasing_redup_morph_smoke(surface: str, base: str) -> None:
             f"expected ≥1 COMP_DEGREE=EQUATIVE ADJ analysis "
             f"with lemma={base!r} for {surface!r}"
         )
-        assert target[0].feats.get("PREDICATIVE") == "YES"
+        assert target[0].feats.get("PREDICATIVE") is True
 
 
 # === Modern kasing- form unchanged ========================================
@@ -112,7 +112,7 @@ def test_dali_adj_root_madali() -> None:
     adjs = [r for r in results if r.pos == "ADJ"]
     assert len(adjs) >= 1
     assert adjs[0].lemma == "dali"
-    assert adjs[0].feats.get("PREDICATIVE") == "YES"
+    assert adjs[0].feats.get("PREDICATIVE") is True
 
 
 def test_dali_adj_root_kasingdadali() -> None:

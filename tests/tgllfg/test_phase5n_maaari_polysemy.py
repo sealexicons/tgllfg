@@ -41,7 +41,7 @@ class TestMaaariDualAnalyses:
         out = analyzer.analyze_one(_tok("maaari"))
         verb_modal = [
             a for a in out
-            if a.pos == "VERB" and a.feats.get("MODAL") == "YES"
+            if a.pos == "VERB" and a.feats.get("MODAL") is True
         ]
         assert len(verb_modal) == 1
         assert verb_modal[0].lemma == "maaari"
@@ -101,7 +101,7 @@ class TestKailanganPolysemyRegression:
         out = analyzer.analyze_one(_tok("kailangan"))
         verb_modal = [
             a for a in out
-            if a.pos == "VERB" and a.feats.get("MODAL") == "YES"
+            if a.pos == "VERB" and a.feats.get("MODAL") is True
         ]
         noun = [a for a in out if a.pos == "NOUN"]
         assert len(verb_modal) == 1

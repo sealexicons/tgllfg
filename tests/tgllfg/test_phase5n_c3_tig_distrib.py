@@ -52,12 +52,12 @@ def test_tig_distrib_productive(surface: str, value: str) -> None:
     token = Token(surface=surface, norm=surface, start=0, end=len(surface))
     results = a.analyze_one(token)
     num_results = [r for r in results if r.pos == "NUM"]
-    distrib = [r for r in num_results if r.feats.get("DISTRIB") == "YES"]
+    distrib = [r for r in num_results if r.feats.get("DISTRIB") is True]
     assert len(distrib) >= 1, (
         f"expected ≥1 DISTRIB=YES NUM analysis for {surface!r}"
     )
     r = distrib[0]
-    assert r.feats.get("CARDINAL") == "YES"
+    assert r.feats.get("CARDINAL") is True
     assert r.feats.get("CARDINAL_VALUE") == value
     assert r.feats.get("NUM") == "PL"
 
@@ -81,8 +81,8 @@ def test_bare_cardinals_unchanged(
     results = a.analyze_one(token)
     num_results = [r for r in results
                    if r.pos == "NUM"
-                   and r.feats.get("CARDINAL") == "YES"
-                   and r.feats.get("DISTRIB") != "YES"]
+                   and r.feats.get("CARDINAL") is True
+                   and r.feats.get("DISTRIB") is not True]
     assert len(num_results) >= 1
     r = num_results[0]
     assert r.feats.get("CARDINAL_VALUE") == value
@@ -125,7 +125,7 @@ def test_num_root_does_not_shadow_bare_numeral() -> None:
     # duplicate from a NUM-Root-as-bare path.
     cardinal_nums = [r for r in results
                      if r.pos == "NUM"
-                     and r.feats.get("CARDINAL") == "YES"
+                     and r.feats.get("CARDINAL") is True
                      and r.feats.get("CARDINAL_VALUE") == "1"]
     assert len(cardinal_nums) == 1, (
         f"expected exactly 1 bare-NUM analysis for 'isa'; got "

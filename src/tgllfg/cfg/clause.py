@@ -82,10 +82,10 @@ def register_rules(rules: list[Rule]) -> None:
     # Commit 1 evidential rule uses ``V[CTRL_CLASS=RAISING_BARE]``,
     # so this rule mirrors that category.
     #
-    # The constraining equation ``(↓1 COMPARATIVE) =c 'YES'``
+    # The constraining equation ``(↓1 COMPARATIVE) =c true``
     # restricts to ``parang`` only — the category-pattern
     # matcher (``compile.py::matches``) is non-conflict, so
-    # ``V[COMPARATIVE=YES, CTRL_CLASS=RAISING_BARE]`` would
+    # ``V[COMPARATIVE, CTRL_CLASS=RAISING_BARE]`` would
     # also match ``tila`` (RAISING_BARE without COMPARATIVE) by
     # absorption without the explicit constraint.
     #
@@ -95,12 +95,12 @@ def register_rules(rules: list[Rule]) -> None:
     # rule shape, no competition.
     rules.append(Rule(
         "S",
-        ["V[COMPARATIVE=YES, CTRL_CLASS=RAISING_BARE]", "N", "NP[CASE=NOM]"],
+        ["V[COMPARATIVE, CTRL_CLASS=RAISING_BARE]", "N", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'LIKE <SUBJ, OBJ>'",
             "(↑ OBJ) = ↓2",
             "(↑ SUBJ) = ↓3",
-            "(↓1 COMPARATIVE) =c 'YES'",
+            "(↓1 COMPARATIVE) =c true",
         ],
     ))
 
@@ -115,7 +115,7 @@ def register_rules(rules: list[Rule]) -> None:
     # The cardinal serves as the matrix predicate with a NOM-NP
     # pivot. Structurally analogous to the Phase 5e Commit 26
     # comparative parang rule above (and the Phase 5d Commit 1
-    # evidential parang) but with NUM[CARDINAL=YES] as the
+    # evidential parang) but with NUM[CARDINAL] as the
     # predicate instead of V.
     #
     # F-structure shape:
@@ -136,7 +136,7 @@ def register_rules(rules: list[Rule]) -> None:
     # (LMT classifier, ranker) recognise the PRED shape.
     rules.append(Rule(
         "S",
-        ["NUM[CARDINAL=YES]", "NP[CASE=NOM]"],
+        ["NUM[CARDINAL]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'CARDINAL <SUBJ>'",
             "(↑ SUBJ) = ↓2",
@@ -165,7 +165,7 @@ def register_rules(rules: list[Rule]) -> None:
     #   DISTRIB         = 'YES'
     #   NUM             = the cardinal's NUM
     #
-    # Constraining ``(↓1 DISTRIB) =c 'YES'`` restricts the rule
+    # Constraining ``(↓1 DISTRIB) =c true`` restricts the rule
     # to genuinely distributive cardinals (``tigisa`` /
     # ``tigdalawa`` / ...) rather than firing on plain cardinals
     # (``isa`` / ``dalawa`` / ...) which would overgenerate to
@@ -174,7 +174,7 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             "S",
             [
-                "NUM[CARDINAL=YES]",
+                "NUM[CARDINAL]",
                 f"PART[LINK={link}]",
                 "N",
                 "NP[CASE=NOM]",
@@ -185,9 +185,9 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ OBJ) = ↓3",
                 "(↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE",
                 "(↑ NUM) = ↓1 NUM",
-                "(↑ DISTRIB) = 'YES'",
-                "(↓1 CARDINAL) =c 'YES'",
-                "(↓1 DISTRIB) =c 'YES'",
+                "(↑ DISTRIB) = true",
+                "(↓1 CARDINAL) =c true",
+                "(↓1 DISTRIB) =c true",
             ],
         ))
 
@@ -213,7 +213,7 @@ def register_rules(rules: list[Rule]) -> None:
     # value (without the constraint, the non-conflict pattern
     # matcher would accept any PART since OP / LINK /
     # ASPECT_PART / DECIMAL_SEP don't share keys — same fix-
-    # pattern as Commit 6's PART[DECIMAL_SEP=YES] constraint).
+    # pattern as Commit 6's PART[DECIMAL_SEP] constraint).
     #
     # Plus / minus / times share a 5-daughter shape; division
     # has 6 daughters because ``hati`` takes a ``sa``-marked
@@ -224,11 +224,11 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             "S",
             [
-                "NUM[CARDINAL=YES]",
+                "NUM[CARDINAL]",
                 "PART",
-                "NUM[CARDINAL=YES]",
+                "NUM[CARDINAL]",
                 "PART[LINK=AY]",
-                "NUM[CARDINAL=YES]",
+                "NUM[CARDINAL]",
             ],
             [
                 "(↑ PRED) = 'ARITHMETIC'",
@@ -237,9 +237,9 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ OPERAND_2) = ↓3 CARDINAL_VALUE",
                 "(↑ RESULT) = ↓5 CARDINAL_VALUE",
                 f"(↓2 OP) =c '{op_name}'",
-                "(↓1 CARDINAL) =c 'YES'",
-                "(↓3 CARDINAL) =c 'YES'",
-                "(↓5 CARDINAL) =c 'YES'",
+                "(↓1 CARDINAL) =c true",
+                "(↓3 CARDINAL) =c true",
+                "(↓5 CARDINAL) =c true",
             ],
         ))
     # Division: ``X hati sa Y ay Z``. 6 daughters; the divisor
@@ -247,12 +247,12 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         [
-            "NUM[CARDINAL=YES]",
+            "NUM[CARDINAL]",
             "PART",
             "ADP[CASE=DAT]",
-            "NUM[CARDINAL=YES]",
+            "NUM[CARDINAL]",
             "PART[LINK=AY]",
-            "NUM[CARDINAL=YES]",
+            "NUM[CARDINAL]",
         ],
         [
             "(↑ PRED) = 'ARITHMETIC'",
@@ -261,9 +261,9 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ OPERAND_2) = ↓4 CARDINAL_VALUE",
             "(↑ RESULT) = ↓6 CARDINAL_VALUE",
             "(↓2 OP) =c 'DIVIDE'",
-            "(↓1 CARDINAL) =c 'YES'",
-            "(↓4 CARDINAL) =c 'YES'",
-            "(↓6 CARDINAL) =c 'YES'",
+            "(↓1 CARDINAL) =c true",
+            "(↓4 CARDINAL) =c true",
+            "(↓6 CARDINAL) =c true",
         ],
     ))
     # Symbolic division: ``X / Y = Z``. Parallel 5-daughter rule
@@ -272,7 +272,7 @@ def register_rules(rules: list[Rule]) -> None:
     # operators added in particles.yaml under the digit
     # tokenization closing deferral; those three slot into the
     # word-form 5-daughter rule above unchanged. The constraining
-    # ``(↓2 SYMBOLIC) =c 'YES'`` keeps this rule from firing on
+    # ``(↓2 SYMBOLIC) =c true`` keeps this rule from firing on
     # word-form ``hati`` (which lacks ``SYMBOLIC=YES``); ``hati``
     # without ``sa`` is ungrammatical Tagalog and the existing
     # negative test ``*Anim hati dalawa ay tatlo`` confirms it
@@ -280,11 +280,11 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         [
-            "NUM[CARDINAL=YES]",
+            "NUM[CARDINAL]",
             "PART",
-            "NUM[CARDINAL=YES]",
+            "NUM[CARDINAL]",
             "PART[LINK=AY]",
-            "NUM[CARDINAL=YES]",
+            "NUM[CARDINAL]",
         ],
         [
             "(↑ PRED) = 'ARITHMETIC'",
@@ -293,10 +293,10 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ OPERAND_2) = ↓3 CARDINAL_VALUE",
             "(↑ RESULT) = ↓5 CARDINAL_VALUE",
             "(↓2 OP) =c 'DIVIDE'",
-            "(↓2 SYMBOLIC) =c 'YES'",
-            "(↓1 CARDINAL) =c 'YES'",
-            "(↓3 CARDINAL) =c 'YES'",
-            "(↓5 CARDINAL) =c 'YES'",
+            "(↓2 SYMBOLIC) =c true",
+            "(↓1 CARDINAL) =c true",
+            "(↓3 CARDINAL) =c true",
+            "(↓5 CARDINAL) =c true",
         ],
     ))
 
@@ -552,7 +552,7 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         [
-            "V[VOICE=OV, SAY_CLASS=YES]",
+            "V[VOICE=OV, SAY_CLASS]",
             "PRON[CASE=GEN]",
             "PART[LINK=NA]",
             "S",
@@ -560,7 +560,7 @@ def register_rules(rules: list[Rule]) -> None:
         _eqs(
             "(↑ OBJ-AGENT) = ↓2",
             "(↑ SUBJ) = ↓4",
-            "(↓1 SAY_CLASS) =c 'YES'",
+            "(↓1 SAY_CLASS) =c true",
             "(↓3 LINK) =c 'NA'",
         ),
     ))
@@ -639,9 +639,9 @@ def register_rules(rules: list[Rule]) -> None:
     # ``ADJ_LEMMA`` (a Phase-5g-specific attribute name to avoid
     # the ambiguity of plain ``LEMMA`` on a clausal f-structure).
     #
-    # The constraining equation ``(↓1 PREDICATIVE) =c 'YES'`` is
+    # The constraining equation ``(↓1 PREDICATIVE) =c true`` is
     # belt-and-braces — the rule's RHS already filters on
-    # ``ADJ[PREDICATIVE=YES]`` at the category-pattern level — but
+    # ``ADJ[PREDICATIVE]`` at the category-pattern level — but
     # makes the analytical commitment explicit and guards against
     # future lex entries with PREDICATIVE=NO (modifier-only
     # adjectives, if introduced).
@@ -652,13 +652,13 @@ def register_rules(rules: list[Rule]) -> None:
     # ungrammatical).
     rules.append(Rule(
         "S",
-        ["ADJ[PREDICATIVE=YES]", "NP[CASE=NOM]"],
+        ["ADJ[PREDICATIVE]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'ADJ <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ ADJ_LEMMA) = ↓1 LEMMA",
-            "(↑ PREDICATIVE) = 'YES'",
-            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
             # Phase 5n.C.3 Commit 7 (§18 L37): lift INTENS from the
             # ADJ daughter to the matrix so downstream consumers
             # see the reduplicated-intensive reading on the matrix
@@ -686,9 +686,9 @@ def register_rules(rules: list[Rule]) -> None:
     # land in a single rule.
     #
     # Structurally analogous to the Phase 5g Commit 3 predicative-
-    # ADJ rule (S → ADJ[PREDICATIVE=YES] NP[CASE=NOM]) and the
+    # ADJ rule (S → ADJ[PREDICATIVE] NP[CASE=NOM]) and the
     # Phase 5f Commit 4 predicative-cardinal rule (S → NUM
-    # [CARDINAL=YES] NP[CASE=NOM]) above; the same shape with a
+    # [CARDINAL] NP[CASE=NOM]) above; the same shape with a
     # vague-Q head as the matrix predicate.
     #
     # F-structure shape:
@@ -710,7 +710,7 @@ def register_rules(rules: list[Rule]) -> None:
     # the predicative-adj rule).
     #
     # **Disambiguation against the Phase 5i Commit 9 (a) wh-Q cleft**.
-    # The wh-Q cleft fires on ``Q[WH=YES]`` (e.g., ``Magkano ang
+    # The wh-Q cleft fires on ``Q[WH]`` (e.g., ``Magkano ang
     # isda?``, ``Ilan ang aklat?`` wh reading) and produces ``PRED='WH
     # <SUBJ>'`` / ``Q_TYPE=WH``. The new predicative-Q rule must NOT
     # fire on wh-Qs to avoid ambiguity blowup with two distinct PREDs
@@ -720,32 +720,32 @@ def register_rules(rules: list[Rule]) -> None:
     # mas-wrapped / pinaka-wrapped variants, which inherit
     # ``(↑) = ↓2`` from the wrapped vague-Q with no WH feat).
     #
-    # **Polysemy partners**: ``ilan`` is double-lex'd as Q[WH=YES,
-    # QUANT=HOW_MANY, VAGUE=YES] (wh use) and Q[QUANT=FEW,
+    # **Polysemy partners**: ``ilan`` is double-lex'd as Q[WH,
+    # QUANT=HOW_MANY, VAGUE] (wh use) and Q[QUANT=FEW,
     # VAGUE=YES] (non-wh "a few" reading). The wh entry feeds the
     # cleft; the FEW entry feeds this predicative-Q rule.
     #
-    # **Belt-and-braces** ``(↓1 VAGUE) =c 'YES'`` mirrors the Phase
+    # **Belt-and-braces** ``(↓1 VAGUE) =c true`` mirrors the Phase
     # 5h Commit 7 wrapper convention — closes the same kind of
     # non-conflict-matcher leak by constraining the f-structure
     # daughter explicitly (rather than relying on the c-tree
     # category-pattern alone).
     #
     # Cardinal contrast — ``Tatlo ang aklat.`` parses via the Phase
-    # 5f Commit 4 predicative-cardinal rule (NUM[CARDINAL=YES] head),
+    # 5f Commit 4 predicative-cardinal rule (NUM[CARDINAL] head),
     # which has no VAGUE feat and so does not fire this rule. Each
     # predicative shape (vague-Q, cardinal, ADJ) has its own clause
     # rule with disjoint head categories.
     rules.append(Rule(
         "S",
-        ["Q[VAGUE=YES]", "NP[CASE=NOM]"],
+        ["Q[VAGUE]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'Q-PREDICATIVE <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ Q_LEMMA) = ↓1 LEMMA",
             "(↑ QUANT) = ↓1 QUANT",
-            "(↑ PREDICATIVE) = 'YES'",
-            "(↓1 VAGUE) =c 'YES'",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 VAGUE) =c true",
             "¬ (↓1 WH)",
         ],
     ))
@@ -768,10 +768,10 @@ def register_rules(rules: list[Rule]) -> None:
     # NOM-NP / NOM-PRON pivot.
     #
     # Structurally analogous to the Phase 5g Commit 3 predicative-
-    # ADJ rule (S → ADJ[PREDICATIVE=YES] NP[CASE=NOM]), the Phase
-    # 5f Commit 4 predicative-cardinal rule (S → NUM[CARDINAL=YES]
+    # ADJ rule (S → ADJ[PREDICATIVE] NP[CASE=NOM]), the Phase
+    # 5f Commit 4 predicative-cardinal rule (S → NUM[CARDINAL]
     # NP[CASE=NOM]), and the Phase 5n.B Commit 1 predicative-Q
-    # rule above (S → Q[VAGUE=YES] NP[CASE=NOM]). Each predicative
+    # rule above (S → Q[VAGUE] NP[CASE=NOM]). Each predicative
     # head category has its own clause rule; this one covers the
     # N-headed predicate.
     #
@@ -793,7 +793,7 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # **Gating**: the rule fires only on N-headed left daughters
     # without ``WH`` to avoid colliding with the Phase 5i Commit 6
-    # wh-N cleft (S → N[WH=YES] NP[CASE=NOM]). The ``¬ (↓1 WH)``
+    # wh-N cleft (S → N[WH] NP[CASE=NOM]). The ``¬ (↓1 WH)``
     # neg-existential constraint excludes ``Aling bata si Maria?``
     # (which fires the wh-cleft) from also producing a predicative-
     # N parse with PRED='BE-N <SUBJ>'.
@@ -819,7 +819,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PRED) = 'BE-N <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ N_LEMMA) = ↓1 LEMMA",
-            "(↑ PREDICATIVE) = 'YES'",
+            "(↑ PREDICATIVE) = true",
             "¬ (↓1 WH)",
         ],
     ))
@@ -888,8 +888,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PRED) = 'ADJ <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ ADJ_LEMMA) = ↓1 LEMMA",
-            "(↑ PREDICATIVE) = 'YES'",
-            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
             "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
             "↓3 ∈ (↑ ADJUNCT)",
             "(↓3 ROLE) = 'EQUATIVE_STANDARD'",
@@ -909,8 +909,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PRED) = 'ADJ <SUBJ>'",
             "(↑ SUBJ) = ↓3",
             "(↑ ADJ_LEMMA) = ↓1 LEMMA",
-            "(↑ PREDICATIVE) = 'YES'",
-            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
             "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
             "↓2 ∈ (↑ ADJUNCT)",
             "(↓2 ROLE) = 'EQUATIVE_STANDARD'",
@@ -932,8 +932,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PRED) = 'ADJ <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ ADJ_LEMMA) = ↓1 LEMMA",
-            "(↑ PREDICATIVE) = 'YES'",
-            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
             "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
             "↓3 ∈ (↑ ADJUNCT)",
             "(↓3 ROLE) = 'EQUATIVE_STANDARD'",
@@ -972,8 +972,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PRED) = 'ADJ <SUBJ>'",
             "(↑ SUBJ) = ↓3",
             "(↑ ADJ_LEMMA) = ↓1 LEMMA",
-            "(↑ PREDICATIVE) = 'YES'",
-            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
             "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
             "↓2 ∈ (↑ ADJUNCT)",
             "(↓2 ROLE) = 'EQUATIVE_STANDARD'",
@@ -1124,7 +1124,7 @@ def register_rules(rules: list[Rule]) -> None:
     #   - Phase 5g Commit 3 predicative-adj (``Maganda ang bata``
     #     — literal-PRED with PREDICATIVE-feature head)
     #
-    # The category-pattern ``PRON[WH=YES, CASE=NOM]`` filters the
+    # The category-pattern ``PRON[WH, CASE=NOM]`` filters the
     # head to NOM-marked wh-PRONs (sino / ano / alin). Restricting
     # to NOM keeps DAT-marked ``kanino`` "to whom" out of this
     # rule — a separate DAT-pivot frame is needed for that
@@ -1135,7 +1135,7 @@ def register_rules(rules: list[Rule]) -> None:
     # closing pattern Phase 5h established (Commits 3 / 5 / 7):
     # the category-pattern matcher is non-conflict, so a PRON
     # without WH would absorb the slot via shared-key absence.
-    # ``(↓1 WH) =c 'YES'`` makes the WH constraint binding.
+    # ``(↓1 WH) =c true`` makes the WH constraint binding.
     #
     # **Top-1 flip risk** (plan §7.2): Pre-Phase-5i probes showed
     # the cleft-style sentences (``Sino ang kumain?`` etc.) all
@@ -1147,13 +1147,13 @@ def register_rules(rules: list[Rule]) -> None:
     # entries flip.
     rules.append(Rule(
         "S",
-        ["PRON[WH=YES, CASE=NOM]", "NP[CASE=NOM]"],
+        ["PRON[WH, CASE=NOM]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ Q_TYPE) = 'WH'",
             "(↑ WH_LEMMA) = ↓1 LEMMA",
-            "(↓1 WH) =c 'YES'",
+            "(↓1 WH) =c true",
         ],
     ))
 
@@ -1195,13 +1195,13 @@ def register_rules(rules: list[Rule]) -> None:
     # composes seamlessly.
     rules.append(Rule(
         "S",
-        ["PRON[WH=YES, CASE=NOM]", "V[VOICE=AV]"],
+        ["PRON[WH, CASE=NOM]", "V[VOICE=AV]"],
         [
             "(↑) = ↓2",
             "(↑ SUBJ) = ↓1",
             "(↑ Q_TYPE) = 'WH'",
             "(↑ WH_LEMMA) = ↓1 LEMMA",
-            "(↓1 WH) =c 'YES'",
+            "(↓1 WH) =c true",
             "(↓2 VOICE) =c 'AV'",
             "¬ (↓1 INDEF)",
         ],
@@ -1230,13 +1230,13 @@ def register_rules(rules: list[Rule]) -> None:
     # in the PRON cleft.
     rules.append(Rule(
         "S",
-        ["N[WH=YES]", "NP[CASE=NOM]"],
+        ["N[WH]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ Q_TYPE) = 'WH'",
             "(↑ WH_LEMMA) = ↓1 WH_LEMMA",
-            "(↓1 WH) =c 'YES'",
+            "(↓1 WH) =c true",
         ],
     ))
 
@@ -1252,11 +1252,11 @@ def register_rules(rules: list[Rule]) -> None:
     #   ``Ilan ang aklat?``       "How many are the books?"
     #   ``Alin ang aklat?``       (Q reading; PRON reading via Commit 2)
     #
-    # The cleft-pivot is a Q[WH=YES] head (magkano /
+    # The cleft-pivot is a Q[WH] head (magkano /
     # ilan-WH / alin-Q). The headless-RC NP[CASE=NOM] is the SUBJ.
     # Same f-structure shape as Commit 2's PRON cleft —
     # PRED=``WH <SUBJ>``, Q_TYPE=WH, WH_LEMMA from the Q's LEMMA
-    # field. The polysemy partner ``ilan`` Q[QUANT=FEW, VAGUE=YES]
+    # field. The polysemy partner ``ilan`` Q[QUANT=FEW, VAGUE]
     # (no WH=YES) is excluded by the ``=c 'YES'`` constraint;
     # non-conflict matching at the chart level is closed by the
     # f-structure unifier.
@@ -1271,13 +1271,13 @@ def register_rules(rules: list[Rule]) -> None:
     # ``>= 1`` parses for ``Alin ang aklat?``.
     rules.append(Rule(
         "S",
-        ["Q[WH=YES]", "NP[CASE=NOM]"],
+        ["Q[WH]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ Q_TYPE) = 'WH'",
             "(↑ WH_LEMMA) = ↓1 LEMMA",
-            "(↓1 WH) =c 'YES'",
+            "(↓1 WH) =c true",
         ],
     ))
 
@@ -1297,17 +1297,17 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Although ``Magkano`` is the primary motivation (per plan-of-
     # record §4.2 Commit 14), the rule generalises to any
-    # Q[WH=YES] with a trailing DAT-NP — the structural pattern
+    # Q[WH] with a trailing DAT-NP — the structural pattern
     # is identical for ``Ilan`` and other amount/count wh-Qs.
     rules.append(Rule(
         "S",
-        ["Q[WH=YES]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
+        ["Q[WH]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ Q_TYPE) = 'WH'",
             "(↑ WH_LEMMA) = ↓1 LEMMA",
-            "(↓1 WH) =c 'YES'",
+            "(↓1 WH) =c true",
             "↓3 ∈ (↑ ADJUNCT)",
         ],
     ))
@@ -1327,13 +1327,13 @@ def register_rules(rules: list[Rule]) -> None:
     # the lexical content (kanino vs sino).
     rules.append(Rule(
         "S",
-        ["PRON[WH=YES, CASE=DAT]", "NP[CASE=NOM]"],
+        ["PRON[WH, CASE=DAT]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ Q_TYPE) = 'WH'",
             "(↑ WH_LEMMA) = ↓1 LEMMA",
-            "(↓1 WH) =c 'YES'",
+            "(↓1 WH) =c true",
             "(↓1 CASE) =c 'DAT'",
         ],
     ))
@@ -1361,7 +1361,7 @@ def register_rules(rules: list[Rule]) -> None:
     # cross-firing.
     #
     # **Coexistence with Phase 5i C9 wh-fronting** (the
-    # ``S → PRON[WH=YES, CASE=DAT] S`` rule below): the wh-fronting
+    # ``S → PRON[WH, CASE=DAT] S`` rule below): the wh-fronting
     # rule also fires on this surface (``kaibigan ito`` parses as
     # an S via the C2 predicative-N rule). Both parses surface,
     # with different f-structures — the wh-fronting parse holds
@@ -1369,7 +1369,7 @@ def register_rules(rules: list[Rule]) -> None:
     # accept ``>= 1`` parse with the POSS-slot shape.
     rules.append(Rule(
         "S",
-        ["PRON[WH=YES, CASE=DAT]", "N", "NP[CASE=NOM]"],
+        ["PRON[WH, CASE=DAT]", "N", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'BE-N <SUBJ>'",
             "(↑ SUBJ) = ↓3",
@@ -1377,8 +1377,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ POSS) = ↓1",
             "(↑ Q_TYPE) = 'WH'",
             "(↑ WH_LEMMA) = ↓1 LEMMA",
-            "(↑ PREDICATIVE) = 'YES'",
-            "(↓1 WH) =c 'YES'",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 WH) =c true",
             "(↓1 CASE) =c 'DAT'",
         ],
     ))
@@ -1393,9 +1393,9 @@ def register_rules(rules: list[Rule]) -> None:
     # Closes §18 L51. Phase 5i Commit 9 (b) above admits the bare
     # DAT-PRON pivot (``Kanino ang aklat?`` — bare ``kanino``); the
     # explicit DAT-marked NP form (``Sa kanino ang aklat?``) is
-    # structurally an NP[CASE=DAT, WH=YES] built by the Phase 5i
+    # structurally an NP[CASE=DAT, WH] built by the Phase 5i
     # Commit 3 in-situ wh-PRON-in-DAT-NP shell ``NP[CASE=DAT] →
-    # ADP[CASE=DAT] PRON[WH=YES]`` — distinct from the bare-PRON
+    # ADP[CASE=DAT] PRON[WH]`` — distinct from the bare-PRON
     # NP shell (Phase 4 §7.8 ``NP[CASE=DAT] → PRON[CASE=DAT]``)
     # which lifts only the PRON's f-structure unchanged.
     #
@@ -1414,13 +1414,13 @@ def register_rules(rules: list[Rule]) -> None:
     # propagated from the matrix NP.
     rules.append(Rule(
         "S",
-        ["NP[CASE=DAT, WH=YES]", "NP[CASE=NOM]"],
+        ["NP[CASE=DAT, WH]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ Q_TYPE) = 'WH'",
             "(↑ WH_LEMMA) = ↓1 WH_LEMMA",
-            "(↓1 WH) =c 'YES'",
+            "(↓1 WH) =c true",
             "(↓1 CASE) =c 'DAT'",
             "(↓1 PRED) =c 'WH-PRO'",
         ],
@@ -1475,30 +1475,30 @@ def register_rules(rules: list[Rule]) -> None:
         [
             "S",
             "PUNCT[PUNCT_CLASS=COMMA]",
-            "PART[NEG_TAG=YES]",
-            "PART[QUESTION=YES, CLITIC_CLASS=2P]",
+            "PART[NEG_TAG]",
+            "PART[QUESTION, CLITIC_CLASS=2P]",
         ],
         [
             "(↑) = ↓1",
             "↓4 ∈ (↑ ADJ)",
             "(↑ Q_TYPE) = 'TAG'",
-            "(↓3 NEG_TAG) =c 'YES'",
-            "(↓4 QUESTION) =c 'YES'",
+            "(↓3 NEG_TAG) =c true",
+            "(↓4 QUESTION) =c true",
         ],
     ))
     rules.append(Rule(
         "S",
         [
             "S",
-            "PART[NEG_TAG=YES]",
-            "PART[QUESTION=YES, CLITIC_CLASS=2P]",
+            "PART[NEG_TAG]",
+            "PART[QUESTION, CLITIC_CLASS=2P]",
         ],
         [
             "(↑) = ↓1",
             "↓3 ∈ (↑ ADJ)",
             "(↑ Q_TYPE) = 'TAG'",
-            "(↓2 NEG_TAG) =c 'YES'",
-            "(↓3 QUESTION) =c 'YES'",
+            "(↓2 NEG_TAG) =c true",
+            "(↓3 QUESTION) =c true",
         ],
     ))
 
@@ -1547,13 +1547,13 @@ def register_rules(rules: list[Rule]) -> None:
     # baseline flips.
     rules.append(Rule(
         "S",
-        ["ADV[WH=YES]", "S"],
+        ["ADV[WH]", "S"],
         [
             "(↑) = ↓2",
             "(↑ Q_TYPE) = 'WH'",
             "(↑ WH_LEMMA) = ↓1 LEMMA",
             "↓1 ∈ (↑ ADJUNCT)",
-            "(↓1 WH) =c 'YES'",
+            "(↓1 WH) =c true",
         ],
     ))
 
@@ -1575,13 +1575,13 @@ def register_rules(rules: list[Rule]) -> None:
     # (e.g., ``ka pumunta``).
     rules.append(Rule(
         "S",
-        ["PRON[WH=YES, CASE=DAT]", "S"],
+        ["PRON[WH, CASE=DAT]", "S"],
         [
             "(↑) = ↓2",
             "(↑ Q_TYPE) = 'WH'",
             "(↑ WH_LEMMA) = ↓1 LEMMA",
             "↓1 ∈ (↑ ADJUNCT)",
-            "(↓1 WH) =c 'YES'",
+            "(↓1 WH) =c true",
             "(↓1 CASE) =c 'DAT'",
         ],
     ))
@@ -1640,22 +1640,22 @@ def register_rules(rules: list[Rule]) -> None:
     # Commit 4 which is a separate clause-type with the locative
     # ground promoted to LOCATION argument).
     #
-    # The constraining equations ``(↓1 EXISTENTIAL) =c 'YES'`` and
+    # The constraining equations ``(↓1 EXISTENTIAL) =c true`` and
     # ``(↓1 POLARITY) =c 'POS'`` are belt-and-braces — the rule's
     # category-pattern matchers already filter on
-    # ``PART[EXISTENTIAL=YES, POLARITY=POS]`` — but make the
+    # ``PART[EXISTENTIAL, POLARITY=POS]`` — but make the
     # analytical commitment explicit and guard against future PART
     # entries with the same EXISTENTIAL flag but different POLARITY
     # (e.g., a hypothetical INTERROG-existential).
     rules.append(Rule(
         "S",
-        ["PART[EXISTENTIAL=YES, POLARITY=POS]", "N"],
+        ["PART[EXISTENTIAL, POLARITY=POS]", "N"],
         [
             "(↑ PRED) = 'EXIST <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'POS'",
-            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'POS'",
         ],
     ))
@@ -1675,13 +1675,13 @@ def register_rules(rules: list[Rule]) -> None:
     # formed input). The linker variant fires opportunistically.
     rules.append(Rule(
         "S",
-        ["PART[EXISTENTIAL=YES, POLARITY=POS]", "PART[LINK=NG]", "N"],
+        ["PART[EXISTENTIAL, POLARITY=POS]", "PART[LINK=NG]", "N"],
         [
             "(↑ PRED) = 'EXIST <SUBJ>'",
             "(↑ SUBJ) = ↓3",
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'POS'",
-            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'POS'",
             "(↓2 LINK) =c 'NG'",
         ],
@@ -1702,7 +1702,7 @@ def register_rules(rules: list[Rule]) -> None:
     # + ``-ng`` + ``N`` — so the linker variant is the primary
     # entry point for ``wala``.
     #
-    # The bare-N variant (``S → PART[EXISTENTIAL=YES, POLARITY=NEG]
+    # The bare-N variant (``S → PART[EXISTENTIAL, POLARITY=NEG]
     # N``) is included for parity with Commit 2's positive base
     # rule and to admit edge cases where ``wala`` appears without
     # the linker (e.g., ``Wala.`` standalone, "There is none.")
@@ -1718,13 +1718,13 @@ def register_rules(rules: list[Rule]) -> None:
     # existentials too — no separate locative rule needed.
     rules.append(Rule(
         "S",
-        ["PART[EXISTENTIAL=YES, POLARITY=NEG]", "N"],
+        ["PART[EXISTENTIAL, POLARITY=NEG]", "N"],
         [
             "(↑ PRED) = 'EXIST <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'NEG'",
-            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'NEG'",
         ],
     ))
@@ -1733,13 +1733,13 @@ def register_rules(rules: list[Rule]) -> None:
     # negative-existential surface ``Walang aklat`` etc.).
     rules.append(Rule(
         "S",
-        ["PART[EXISTENTIAL=YES, POLARITY=NEG]", "PART[LINK=NG]", "N"],
+        ["PART[EXISTENTIAL, POLARITY=NEG]", "PART[LINK=NG]", "N"],
         [
             "(↑ PRED) = 'EXIST <SUBJ>'",
             "(↑ SUBJ) = ↓3",
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'NEG'",
-            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'NEG'",
             "(↓2 LINK) =c 'NG'",
         ],
@@ -1765,7 +1765,7 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         [
-            "PART[EXISTENTIAL=YES, POLARITY=NEG]",
+            "PART[EXISTENTIAL, POLARITY=NEG]",
             "PART[LINK=NG]",
             "PRON[INDEF=NEG_INDEF]",
         ],
@@ -1774,7 +1774,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBJ) = ↓3",
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'NEG'",
-            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'NEG'",
             "(↓2 LINK) =c 'NG'",
             "(↓3 INDEF) =c 'NEG_INDEF'",
@@ -1826,13 +1826,13 @@ def register_rules(rules: list[Rule]) -> None:
     # comparison standards.
     rules.append(Rule(
         "S",
-        ["PART[LOC_EXISTENTIAL=YES]", "N", "NP[CASE=NOM]"],
+        ["PART[LOC_EXISTENTIAL]", "N", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'LOC <SUBJ>'",
             "(↑ SUBJ) = ↓3",
             "(↑ LOCATION) = ↓2",
             "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
-            "(↓1 LOC_EXISTENTIAL) =c 'YES'",
+            "(↓1 LOC_EXISTENTIAL) =c true",
         ],
     ))
 
@@ -1841,14 +1841,14 @@ def register_rules(rules: list[Rule]) -> None:
     # possessor); the GEN-NP rides on the ground's POSS feature.
     rules.append(Rule(
         "S",
-        ["PART[LOC_EXISTENTIAL=YES]", "N", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+        ["PART[LOC_EXISTENTIAL]", "N", "NP[CASE=GEN]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'LOC <SUBJ>'",
             "(↑ SUBJ) = ↓4",
             "(↑ LOCATION) = ↓2",
             "(↓2 POSS) = ↓3",
             "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
-            "(↓1 LOC_EXISTENTIAL) =c 'YES'",
+            "(↓1 LOC_EXISTENTIAL) =c true",
         ],
     ))
 
@@ -1887,7 +1887,7 @@ def register_rules(rules: list[Rule]) -> None:
     # ("Y has X"). The POSSESSOR feature on the SUBJ N captures
     # this while keeping the matrix CLAUSE_TYPE as EXISTENTIAL
     # and the matrix PRED as the literal ``'EXIST <SUBJ>'``.
-    # ``(↑ HAVE) = 'YES'`` lifts the HAVE-reading flag for
+    # ``(↑ HAVE) = true`` lifts the HAVE-reading flag for
     # downstream consumers.
     #
     # Internal-clitic rules constrain the possessor daughter to
@@ -1899,15 +1899,15 @@ def register_rules(rules: list[Rule]) -> None:
     # Commit 5a: positive HAVE — postposed possessor.
     rules.append(Rule(
         "S",
-        ["PART[EXISTENTIAL=YES, POLARITY=POS]", "N", "NP[CASE=NOM]"],
+        ["PART[EXISTENTIAL, POLARITY=POS]", "N", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'EXIST <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ SUBJ POSSESSOR) = ↓3",
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'POS'",
-            "(↑ HAVE) = 'YES'",
-            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↑ HAVE) = true",
+            "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'POS'",
         ],
     ))
@@ -1916,7 +1916,7 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         [
-            "PART[EXISTENTIAL=YES, POLARITY=POS]",
+            "PART[EXISTENTIAL, POLARITY=POS]",
             "PRON[CASE=NOM]",
             "PART[LINK=NG]",
             "N",
@@ -1927,8 +1927,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBJ POSSESSOR) = ↓2",
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'POS'",
-            "(↑ HAVE) = 'YES'",
-            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↑ HAVE) = true",
+            "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'POS'",
             "(↓3 LINK) =c 'NG'",
         ],
@@ -1938,7 +1938,7 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         [
-            "PART[EXISTENTIAL=YES, POLARITY=NEG]",
+            "PART[EXISTENTIAL, POLARITY=NEG]",
             "PART[LINK=NG]",
             "N",
             "NP[CASE=NOM]",
@@ -1949,8 +1949,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBJ POSSESSOR) = ↓4",
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'NEG'",
-            "(↑ HAVE) = 'YES'",
-            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↑ HAVE) = true",
+            "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'NEG'",
             "(↓2 LINK) =c 'NG'",
         ],
@@ -1960,7 +1960,7 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         [
-            "PART[EXISTENTIAL=YES, POLARITY=NEG]",
+            "PART[EXISTENTIAL, POLARITY=NEG]",
             "PRON[CASE=NOM]",
             "PART[LINK=NG]",
             "N",
@@ -1971,8 +1971,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBJ POSSESSOR) = ↓2",
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'NEG'",
-            "(↑ HAVE) = 'YES'",
-            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↑ HAVE) = true",
+            "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'NEG'",
             "(↓3 LINK) =c 'NG'",
         ],
@@ -2011,7 +2011,7 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         [
-            "PART[EXISTENTIAL=YES, POLARITY=POS]",
+            "PART[EXISTENTIAL, POLARITY=POS]",
             "PART[LINK=NG]",
             "N",
             "NP[CASE=NOM]",
@@ -2022,8 +2022,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBJ POSSESSOR) = ↓4",
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'POS'",
-            "(↑ HAVE) = 'YES'",
-            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↑ HAVE) = true",
+            "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'POS'",
             "(↓2 LINK) =c 'NG'",
         ],
@@ -2034,7 +2034,7 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         [
-            "PART[EXISTENTIAL=YES, POLARITY=POS]",
+            "PART[EXISTENTIAL, POLARITY=POS]",
             "PART[LINK=NG]",
             "PRON[CASE=NOM]",
             "PART[LINK=NG]",
@@ -2046,8 +2046,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBJ POSSESSOR) = ↓3",
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'POS'",
-            "(↑ HAVE) = 'YES'",
-            "(↓1 EXISTENTIAL) =c 'YES'",
+            "(↑ HAVE) = true",
+            "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'POS'",
             "(↓2 LINK) =c 'NG'",
             "(↓4 LINK) =c 'NG'",
@@ -2091,7 +2091,7 @@ def register_rules(rules: list[Rule]) -> None:
     # clause for downstream consumers.
     #
     # Constraints:
-    # * ``(↑ INTERJ) =c 'YES'`` — gates to interjection PRONs only.
+    # * ``(↑ INTERJ) =c true`` — gates to interjection PRONs only.
     # * ``(↑ ANSWER)`` (existential) — requires the ANSWER feat to
     #   be defined (no value constraint), admitting both AFFIRM
     #   (Oo / Opo / Oho) and NEG (Hindi). Phase 5n.B Commit 17
@@ -2099,7 +2099,7 @@ def register_rules(rules: list[Rule]) -> None:
     #   PRON entries for ``oo`` / ``hindi`` (§18 L97).
     #
     # ``hindi`` has both a PART[POLARITY=NEG] entry (particles.yaml,
-    # used by the hindi-wrap negation rule) and a PRON[INTERJ=YES,
+    # used by the hindi-wrap negation rule) and a PRON[INTERJ,
     # ANSWER=NEG] entry (pronouns.yaml, used by this rule). Rule
     # context disambiguates: the fragment-answer rule fires on a
     # single PRON with no trailing tokens, while hindi-wrap requires
@@ -2113,7 +2113,7 @@ def register_rules(rules: list[Rule]) -> None:
         ["PRON"],
         [
             "(↑) = ↓1",
-            "(↑ INTERJ) =c 'YES'",
+            "(↑ INTERJ) =c true",
             "(↑ ANSWER)",
             "(↑ CLAUSE_TYPE) = 'FRAGMENT_ANSWER'",
         ],
@@ -2141,14 +2141,14 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Companion deferral L97 (standalone ``Oo.`` / ``Hindi.`` answer
     # clauses) closes in Phase 5n.B Commit 17 — that path uses new
-    # ``PRON[INTERJ=YES, ANSWER=...]`` lex entries plus an
+    # ``PRON[INTERJ, ANSWER=...]`` lex entries plus an
     # ``S_ANSWER`` rule, distinct from this NOUN-host path.
     rules.append(Rule(
         "S",
         ["N"],
         [
             "(↑) = ↓1",
-            "(↑ FRAGMENT_HOST) =c 'YES'",
+            "(↑ FRAGMENT_HOST) =c true",
             "(↑ CLAUSE_TYPE) = 'FRAGMENT'",
         ],
     ))
@@ -2247,10 +2247,10 @@ def register_rules(rules: list[Rule]) -> None:
     # assumes ↓1 so equations are written explicitly here, mirroring
     # the Phase 5n.C Commit 2 L78 wide-scope hindi rule's pattern).
     #
-    # ``(↓1 UNIV) =c 'YES'`` constraining equation gates the topic
+    # ``(↓1 UNIV) =c true`` constraining equation gates the topic
     # to universal-Q-headed NPs (``bawat`` / ``kada`` per Phase 5f
     # Commit 20 lex; the universal-Q + bare-N rule in
-    # ``cfg/nominal.py:696`` sets ``(↑ UNIV) = 'YES'`` on the
+    # ``cfg/nominal.py:696`` sets ``(↑ UNIV) = true`` on the
     # composed NP). Bare proper-name topics
     # (``Si Maria, kumain.``) lack UNIV and don't match. Non-
     # universal Qs (``lahat`` / ``iba`` / vague) also lack UNIV
@@ -2268,7 +2268,7 @@ def register_rules(rules: list[Rule]) -> None:
     # quantification); Bresnan 2001 §6 + Dalrymple 2001 §6 on
     # LFG scope-feat marking.
     #
-    # ``(↑ DISTRIB) = 'YES'`` re-uses the established matrix-scope
+    # ``(↑ DISTRIB) = true`` re-uses the established matrix-scope
     # marker convention from Phase 5f Commit 19 predicative
     # distributive-cardinal rule (``cfg/clause.py:188`` —
     # ``Tigisang aklat sila.``); same feat name, same value, same
@@ -2304,7 +2304,7 @@ def register_rules(rules: list[Rule]) -> None:
     # Phase 5f Commit 19 distributive-cardinal precedent
     # (``cfg/clause.py:188`` — ``DISTRIB=YES`` matrix marker);
     # Phase 5f Commit 20 universal-Q + bare-N rule
-    # (``cfg/nominal.py:696`` — sole producer of NP[UNIV=YES]);
+    # (``cfg/nominal.py:696`` — sole producer of NP[UNIV]);
     # ``docs/analysis-choices.md`` "Phase 5n.C Commit 6" design
     # appendix.
     rules.append(Rule(
@@ -2320,9 +2320,9 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ ASPECT) = ↓3 ASPECT",
             "(↑ MOOD) = ↓3 MOOD",
             "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
-            "(↑ DISTRIB) = 'YES'",
+            "(↑ DISTRIB) = true",
             "(↑ SUBJ) = ↓1",
-            "(↓1 UNIV) =c 'YES'",
+            "(↓1 UNIV) =c true",
             "(↓2 PUNCT_CLASS) =c 'COMMA'",
         ],
     ))
@@ -2355,11 +2355,11 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # All variants share the same matrix-equation pattern as the
     # Commit 7 intransitive rule: verb percolation from ↓3,
-    # ``(↑ DISTRIB) = 'YES'``, ``(↑ SUBJ) = ↓1``, ``(↓1 UNIV) =c
+    # ``(↑ DISTRIB) = true``, ``(↑ SUBJ) = ↓1``, ``(↓1 UNIV) =c
     # 'YES'``. The transitive variants add ``(↑ OBJ) = ↓4`` for
     # GEN-OBJ; the DAT-ADJUNCT variants add ``↓N ∈ (↑ ADJUNCT)`` for
     # the trailing DAT-NP. Same anti-overgeneration constraint
-    # (``(↓1 UNIV) =c 'YES'``) — only universal-Q-headed topics
+    # (``(↓1 UNIV) =c true``) — only universal-Q-headed topics
     # admit, preserving the bare-proper-name rejection from Commit 7.
     #
     # Ditransitive (3-arg DAT) variants and 2-DAT-ADJUNCT shapes
@@ -2384,10 +2384,10 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ ASPECT) = ↓3 ASPECT",
             "(↑ MOOD) = ↓3 MOOD",
             "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
-            "(↑ DISTRIB) = 'YES'",
+            "(↑ DISTRIB) = true",
             "(↑ SUBJ) = ↓1",
             "↓4 ∈ (↑ ADJUNCT)",
-            "(↓1 UNIV) =c 'YES'",
+            "(↓1 UNIV) =c true",
             "(↓2 PUNCT_CLASS) =c 'COMMA'",
         ],
     ))
@@ -2407,10 +2407,10 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ ASPECT) = ↓3 ASPECT",
             "(↑ MOOD) = ↓3 MOOD",
             "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
-            "(↑ DISTRIB) = 'YES'",
+            "(↑ DISTRIB) = true",
             "(↑ SUBJ) = ↓1",
             "(↑ OBJ) = ↓4",
-            "(↓1 UNIV) =c 'YES'",
+            "(↓1 UNIV) =c true",
             "(↓2 PUNCT_CLASS) =c 'COMMA'",
         ],
     ))
@@ -2431,11 +2431,11 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ ASPECT) = ↓3 ASPECT",
             "(↑ MOOD) = ↓3 MOOD",
             "(↑ LEX-ASTRUCT) = ↓3 LEX-ASTRUCT",
-            "(↑ DISTRIB) = 'YES'",
+            "(↑ DISTRIB) = true",
             "(↑ SUBJ) = ↓1",
             "(↑ OBJ) = ↓4",
             "↓5 ∈ (↑ ADJUNCT)",
-            "(↓1 UNIV) =c 'YES'",
+            "(↓1 UNIV) =c true",
             "(↓2 PUNCT_CLASS) =c 'COMMA'",
         ],
     ))

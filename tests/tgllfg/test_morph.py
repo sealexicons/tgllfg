@@ -331,13 +331,13 @@ class TestParticles:
         # Phase 4 §7.8: DEM=NO sentinel rides on non-demonstrative
         # DET/ADP entries so the standalone-demonstrative NP rule
         # (which expects DEM=YES) doesn't fire on plain ``ang``.
-        assert det[0].feats == {"CASE": "NOM", "MARKER": "ANG", "DEM": "NO"}
+        assert det[0].feats == {"CASE": "NOM", "MARKER": "ANG", "DEM": False}
 
     def test_ng_genitive(self, analyzer: Analyzer) -> None:
         out = analyzer.analyze_one(_tok("ng"))
         adp = [a for a in out if a.pos == "ADP"]
         assert adp
-        assert adp[0].feats == {"CASE": "GEN", "MARKER": "NG", "DEM": "NO"}
+        assert adp[0].feats == {"CASE": "GEN", "MARKER": "NG", "DEM": False}
 
     def test_si_personal_marker(self, analyzer: Analyzer) -> None:
         out = analyzer.analyze_one(_tok("si"))
@@ -729,7 +729,7 @@ class TestDemonstratives:
 class TestEnclitics:
     @pytest.mark.parametrize("surface,key,value", [
         ("pa",   "ASPECT_PART", "STILL"),
-        ("ba",   "QUESTION",    "YES"),
+        ("ba",   "QUESTION",    True),
         ("daw",  "EVID",        "REPORT"),
         ("raw",  "EVID",        "REPORT"),
         ("din",  "ADV",         "ALSO"),

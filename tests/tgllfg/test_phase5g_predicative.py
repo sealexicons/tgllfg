@@ -88,7 +88,7 @@ class TestSeedPredicates:
         text = f"{pred} {subj}."
         f = _first_parse(text)
         assert f is not None
-        assert f.feats.get("PREDICATIVE") == "YES"
+        assert f.feats.get("PREDICATIVE") is True
 
 
 # === SUBJ shape: NP vs PRON ==============================================

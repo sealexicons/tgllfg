@@ -83,7 +83,7 @@ class TestAskClassLexTagging:
         verb form."""
         analyzer = Analyzer.from_default()
         out = analyzer.analyze_one(_tok("tinanong"))
-        ask = [a for a in out if a.feats.get("ASK_CLASS") == "YES"]
+        ask = [a for a in out if a.feats.get("ASK_CLASS") is True]
         assert len(ask) == 1
         assert ask[0].lemma == "tanong"
         assert ask[0].feats.get("VOICE") == "OV"

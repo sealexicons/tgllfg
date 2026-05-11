@@ -69,7 +69,7 @@ from .graph import (
 )
 
 
-type ProjectedValue = str | FStructure | frozenset
+type ProjectedValue = str | bool | FStructure | frozenset
 
 
 @dataclass
@@ -484,7 +484,8 @@ def _value_summary(v: object) -> str:
 def _project(graph: FGraph, root: NodeId) -> FStructure:
     """Project the graph rooted at `root` to a tree-shaped FStructure.
     Shared subgraphs become shared FStructure objects (Python identity)
-    so reentrancy is preserved for downstream renderers."""
+    so reentrancy is preserved for downstream renderers.
+    """
     seen: dict[NodeId, ProjectedValue] = {}
 
     def go(n: NodeId) -> ProjectedValue:

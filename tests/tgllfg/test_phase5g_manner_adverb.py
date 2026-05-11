@@ -166,7 +166,7 @@ class TestMannerAdjAttributes:
             None,
         )
         assert bilis is not None
-        assert bilis.feats.get("PREDICATIVE") == "YES"
+        assert bilis.feats.get("PREDICATIVE") is True
 
 
 # === Disambiguator extension =============================================

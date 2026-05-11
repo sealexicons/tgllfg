@@ -72,7 +72,7 @@ class TestBareVagueQPredicative:
         assert fs is not None, f"no predicative-Q parse for {sentence!r}"
         assert fs.feats.get("Q_LEMMA") == q_lemma
         assert fs.feats.get("QUANT") == quant
-        assert fs.feats.get("PREDICATIVE") == "YES"
+        assert fs.feats.get("PREDICATIVE") is True
         subj = fs.feats.get("SUBJ")
         assert isinstance(subj, FStructure)
         assert subj.feats.get("CASE") == "NOM"

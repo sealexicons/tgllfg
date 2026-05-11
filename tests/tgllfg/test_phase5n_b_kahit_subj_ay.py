@@ -73,7 +73,7 @@ class TestKahitPronAyFronted:
         assert subj is not None
         assert subj.feats.get("LEMMA") == subj_lemma
         assert subj.feats.get("INDEF") == "YES"
-        assert subj.feats.get("WH") == "YES"
+        assert subj.feats.get("WH") is True
         assert subj.feats.get("CASE") == "NOM"
         # The kahit particle rides as ADJUNCT inside the SUBJ.
         adj = subj.feats.get("ADJUNCT")

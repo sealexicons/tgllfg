@@ -1,0 +1,193 @@
+# Causative lex entries — Phase 5n.C.4 Commit 16.
+#
+# Two causative shapes:
+#   * Direct (pa- / pa-…-an / pa-…-i): CAUSER pivot via OV or DV
+#     voice; CAUSEE or LOCATION takes SUBJ. Two arities each
+#     (2-arg = CAUSER + CAUSEE/LOC; 3-arg = adds PATIENT).
+#   * Indirect (magpa-): biclausal control verb (XCOMP); CAUSER
+#     is matrix SUBJ, the caused event is XCOMP.
+#
+# All entries use the explicit ``morph_constraints`` override
+# form: BASE constructed them as bare ``LexicalEntry(...)`` with
+# only ``{VOICE, CAUS}`` (or ``{VOICE, CAUS, CTRL_CLASS}``) — no
+# CAUS=NONE default, no TR=TR, no APPL=NONE. Preserving the
+# loose-match shape.
+
+# kain — eat / feed / cause-to-eat.
+- lemma: kain
+  voice: OV
+  pred: "CAUSE-EAT <SUBJ, OBJ-CAUSER>"
+  a_structure: [CAUSER, CAUSEE]
+  gf_defaults:
+    CAUSEE: SUBJ
+    CAUSER: OBJ-CAUSER
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: OV_CAUS_DIRECT
+
+- lemma: kain
+  voice: OV
+  pred: "CAUSE-EAT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>"
+  a_structure: [CAUSER, PATIENT, CAUSEE]
+  gf_defaults:
+    CAUSEE: SUBJ
+    CAUSER: OBJ-CAUSER
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: OV_CAUS_DIRECT_THREE_ARG
+
+- lemma: kain
+  voice: DV
+  pred: "CAUSE-EAT-AT <SUBJ, OBJ-CAUSER>"
+  a_structure: [CAUSER, LOCATION]
+  gf_defaults:
+    LOCATION: SUBJ
+    CAUSER: OBJ-CAUSER
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: DV_CAUS_DIRECT
+
+- lemma: kain
+  voice: DV
+  pred: "CAUSE-EAT-AT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>"
+  a_structure: [CAUSER, PATIENT, LOCATION]
+  gf_defaults:
+    LOCATION: SUBJ
+    CAUSER: OBJ-CAUSER
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: DV_CAUS_DIRECT_THREE_ARG
+
+- lemma: kain
+  voice: AV
+  pred: "CAUSE-EAT <SUBJ, XCOMP>"
+  a_structure: [CAUSER, EVENT]
+  gf_defaults:
+    CAUSER: SUBJ
+    EVENT: XCOMP
+  morph_constraints:
+    CAUS: INDIRECT
+    CTRL_CLASS: INTRANS
+  intrinsic: AV_CAUS_INDIRECT
+
+# basa — read / cause-to-read.
+- lemma: basa
+  voice: OV
+  pred: "CAUSE-READ <SUBJ, OBJ-CAUSER>"
+  a_structure: [CAUSER, CAUSEE]
+  gf_defaults:
+    CAUSEE: SUBJ
+    CAUSER: OBJ-CAUSER
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: OV_CAUS_DIRECT
+
+- lemma: basa
+  voice: OV
+  pred: "CAUSE-READ <SUBJ, OBJ-CAUSER, OBJ-PATIENT>"
+  a_structure: [CAUSER, PATIENT, CAUSEE]
+  gf_defaults:
+    CAUSEE: SUBJ
+    CAUSER: OBJ-CAUSER
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: OV_CAUS_DIRECT_THREE_ARG
+
+- lemma: basa
+  voice: DV
+  pred: "CAUSE-READ-AT <SUBJ, OBJ-CAUSER>"
+  a_structure: [CAUSER, LOCATION]
+  gf_defaults:
+    LOCATION: SUBJ
+    CAUSER: OBJ-CAUSER
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: DV_CAUS_DIRECT
+
+- lemma: basa
+  voice: DV
+  pred: "CAUSE-READ-AT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>"
+  a_structure: [CAUSER, PATIENT, LOCATION]
+  gf_defaults:
+    LOCATION: SUBJ
+    CAUSER: OBJ-CAUSER
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: DV_CAUS_DIRECT_THREE_ARG
+
+- lemma: basa
+  voice: AV
+  pred: "CAUSE-READ <SUBJ, XCOMP>"
+  a_structure: [CAUSER, EVENT]
+  gf_defaults:
+    CAUSER: SUBJ
+    EVENT: XCOMP
+  morph_constraints:
+    CAUS: INDIRECT
+    CTRL_CLASS: INTRANS
+  intrinsic: AV_CAUS_INDIRECT
+
+# inom — drink / cause-to-drink. (inom has no plain-AV / OV / DV
+# entries in BASE — only causatives — so all five lemma entries
+# land here.)
+- lemma: inom
+  voice: OV
+  pred: "CAUSE-DRINK <SUBJ, OBJ-CAUSER>"
+  a_structure: [CAUSER, CAUSEE]
+  gf_defaults:
+    CAUSEE: SUBJ
+    CAUSER: OBJ-CAUSER
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: OV_CAUS_DIRECT
+
+- lemma: inom
+  voice: OV
+  pred: "CAUSE-DRINK <SUBJ, OBJ-CAUSER, OBJ-PATIENT>"
+  a_structure: [CAUSER, PATIENT, CAUSEE]
+  gf_defaults:
+    CAUSEE: SUBJ
+    CAUSER: OBJ-CAUSER
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: OV_CAUS_DIRECT_THREE_ARG
+
+- lemma: inom
+  voice: DV
+  pred: "CAUSE-DRINK-AT <SUBJ, OBJ-CAUSER>"
+  a_structure: [CAUSER, LOCATION]
+  gf_defaults:
+    LOCATION: SUBJ
+    CAUSER: OBJ-CAUSER
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: DV_CAUS_DIRECT
+
+- lemma: inom
+  voice: DV
+  pred: "CAUSE-DRINK-AT <SUBJ, OBJ-CAUSER, OBJ-PATIENT>"
+  a_structure: [CAUSER, PATIENT, LOCATION]
+  gf_defaults:
+    LOCATION: SUBJ
+    CAUSER: OBJ-CAUSER
+    PATIENT: OBJ-PATIENT
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: DV_CAUS_DIRECT_THREE_ARG
+
+- lemma: inom
+  voice: AV
+  pred: "CAUSE-DRINK <SUBJ, XCOMP>"
+  a_structure: [CAUSER, EVENT]
+  gf_defaults:
+    CAUSER: SUBJ
+    EVENT: XCOMP
+  morph_constraints:
+    CAUS: INDIRECT
+    CTRL_CLASS: INTRANS
+  intrinsic: AV_CAUS_INDIRECT

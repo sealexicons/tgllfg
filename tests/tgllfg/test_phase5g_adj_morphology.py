@@ -71,7 +71,7 @@ class TestSeedInventorySurfaces:
         analyzer = Analyzer.from_default()
         out = analyzer.analyze_one(_tok(surface))
         adj = next(a for a in out if a.pos == "ADJ")
-        assert adj.feats.get("PREDICATIVE") == "YES", (
+        assert adj.feats.get("PREDICATIVE") is True, (
             f"ADJ {surface!r} (lemma {root!r}) should carry "
             f"PREDICATIVE=YES intrinsically; feats={adj.feats}"
         )
@@ -235,12 +235,12 @@ class TestPerCellFeats:
         analyses = analyzer._index.adjectives["maganda"]
         assert len(analyses) == 1
         feats = analyses[0].feats
-        assert feats["PREDICATIVE"] == "YES"
+        assert feats["PREDICATIVE"] is True
         assert feats["DEGREE"] == "POSITIVE"
 
     def test_per_cell_feat_can_override_predicative(self) -> None:
         # Hypothetical "modifier-only" cell that explicitly sets
-        # PREDICATIVE: NO. Tests the override semantics — not in
+        # PREDICATIVE: False. Tests the override semantics — not in
         # the seed inventory.
         data = MorphData(
             roots=[
@@ -250,13 +250,13 @@ class TestPerCellFeats:
                 AdjectiveCell(
                     affix_class="mod_only",
                     operations=[Operation(op="prefix", value="ma")],
-                    feats={"PREDICATIVE": "NO"},
+                    feats={"PREDICATIVE": False},
                 ),
             ],
         )
         analyzer = Analyzer(data)
         analyses = analyzer._index.adjectives["maganda"]
-        assert analyses[0].feats["PREDICATIVE"] == "NO"
+        assert analyses[0].feats["PREDICATIVE"] is False
 
 
 # === Per-root feats =======================================================
@@ -288,4 +288,4 @@ class TestPerRootFeats:
         analyzer = Analyzer(data)
         feats = analyzer._index.adjectives["maganda"][0].feats
         assert feats["SEM_CLASS"] == "EVALUATIVE"
-        assert feats["PREDICATIVE"] == "YES"
+        assert feats["PREDICATIVE"] is True

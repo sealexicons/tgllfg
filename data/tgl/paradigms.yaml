@@ -778,7 +778,7 @@
   mood: SOC
   transitivity: ''
   affix_class: mag_an
-  feats: {MOOD: SOC, RECP: YES}
+  feats: {MOOD: SOC, RECP: true}
   operations:
     - {op: suffix, value: an}
     - {op: prefix, value: "nag"}
@@ -789,7 +789,7 @@
   mood: SOC
   transitivity: ''
   affix_class: mag_an
-  feats: {MOOD: SOC, RECP: YES}
+  feats: {MOOD: SOC, RECP: true}
   operations:
     - {op: cv_redup}
     - {op: suffix, value: an}
@@ -801,7 +801,7 @@
   mood: SOC
   transitivity: ''
   affix_class: mag_an
-  feats: {MOOD: SOC, RECP: YES}
+  feats: {MOOD: SOC, RECP: true}
   operations:
     - {op: cv_redup}
     - {op: suffix, value: an}
@@ -833,7 +833,7 @@
   affix_class: card_redup
   operations:
     - {op: full_redup}
-  feats: {MEASURE: "YES"}
+  feats: {MEASURE: true}
   notes: card_redup — libo → libulibo, daan → daandaan
 
 # --- Phase 5n.C.3 Commit 3: tig_distrib (§18 L31) -----------------------
@@ -855,7 +855,7 @@
   affix_class: tig_distrib
   operations:
     - {op: prefix, value: "tig"}
-  feats: {DISTRIB: "YES", CARDINAL: "YES", NUM: PL}
+  feats: {DISTRIB: true, CARDINAL: true, NUM: PL}
   notes: tig_distrib — isa → tigisa, dalawa → tigdalawa, ...
 
 # --- Phase 5n.C.3 Commit 4: tag_season (§18 L31) ------------------------
@@ -902,7 +902,7 @@
   affix_class: kani_redup
   operations:
     - {op: kani_redup}
-  feats: {QUANT: EACH_OWN, DISTRIB_POSS: "YES"}
+  feats: {QUANT: EACH_OWN, DISTRIB_POSS: true}
   notes: kani_redup — kanya → kanyakanya, kaniya → kanikaniya, kanila → kanikanila
 
 # --- Phase 5n.C.3 Commit 7: redup_intens_adj (§18 L37) ------------------
@@ -932,7 +932,7 @@
   operations:
     - {op: prefix, value: "ma"}
     - {op: redup_root}
-  feats: {PREDICATIVE: "YES", INTENS: MILD}
+  feats: {PREDICATIVE: true, INTENS: MILD}
   notes: redup_intens_adj — ganda → magandaganda (L37 redup intensive)
 
 # --- Phase 5n.C.3 Commit 8: kasing_redup_adj (§18 L38) ------------------
@@ -965,7 +965,7 @@
   operations:
     - {op: cv_redup}
     - {op: prefix, value: "kasing"}
-  feats: {PREDICATIVE: "YES", COMP_DEGREE: EQUATIVE}
+  feats: {PREDICATIVE: true, COMP_DEGREE: EQUATIVE}
   notes: kasing_redup_adj — ganda → kasinggaganda, dali → kasingdadali (L38 CV-redup equative)
 
 # --- Phase 5n.C.3 Commit 9: redup_wh_plural (§18 L49) -------------------

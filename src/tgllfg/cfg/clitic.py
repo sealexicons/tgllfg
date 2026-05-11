@@ -73,7 +73,7 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             "S",
             [
-                "Q[DUAL=YES]",
+                "Q[DUAL]",
                 "PRON[CASE=NOM]",
                 f"PART[LINK={link}]",
                 "V[VOICE=AV]",
@@ -87,14 +87,14 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ SUBJ) = ↓2",
                 "↓1 ∈ (↑ ADJ)",
                 "(↓1 ANTECEDENT) = (↑ SUBJ)",
-                "(↓1 DUAL) =c 'YES'",
+                "(↓1 DUAL) =c true",
             ],
         ))
         # AV transitive: ``Pareho silang kumain ng isda.``
         rules.append(Rule(
             "S",
             [
-                "Q[DUAL=YES]",
+                "Q[DUAL]",
                 "PRON[CASE=NOM]",
                 f"PART[LINK={link}]",
                 "V[VOICE=AV]",
@@ -110,14 +110,14 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ OBJ) = ↓5",
                 "↓1 ∈ (↑ ADJ)",
                 "(↓1 ANTECEDENT) = (↑ SUBJ)",
-                "(↓1 DUAL) =c 'YES'",
+                "(↓1 DUAL) =c true",
             ],
         ))
         # AV ditransitive: ``Pareho silang kumain ng isda sa palengke.``
         rules.append(Rule(
             "S",
             [
-                "Q[DUAL=YES]",
+                "Q[DUAL]",
                 "PRON[CASE=NOM]",
                 f"PART[LINK={link}]",
                 "V[VOICE=AV]",
@@ -135,7 +135,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓6 ∈ (↑ ADJUNCT)",
                 "↓1 ∈ (↑ ADJ)",
                 "(↓1 ANTECEDENT) = (↑ SUBJ)",
-                "(↓1 DUAL) =c 'YES'",
+                "(↓1 DUAL) =c true",
             ],
         ))
 
@@ -199,12 +199,12 @@ def register_rules(rules: list[Rule]) -> None:
     ))
     rules.append(Rule(
         "S",
-        ["S", "PART[CLITIC_CLASS=2P, QUESTION=YES]"],
+        ["S", "PART[CLITIC_CLASS=2P, QUESTION]"],
         [
             "(↑) = ↓1",
             "↓2 ∈ (↑ ADJ)",
             "(↓2 CLITIC_CLASS) =c '2P'",
-            "(↓2 QUESTION) =c 'YES'",
+            "(↓2 QUESTION) =c true",
             "(↑ Q_TYPE) = 'YES_NO'",
         ],
     ))
@@ -212,18 +212,18 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Mirrors Rule B (``ba`` Q_TYPE lift) — same shape with a
     # COUNTERFACTUAL=YES daughter precondition and a literal
-    # ``(↑ COUNTERFACTUAL) = 'YES'`` lift onto the matrix S. Rule A
+    # ``(↑ COUNTERFACTUAL) = true`` lift onto the matrix S. Rule A
     # is updated above with ``¬ (↓2 COUNTERFACTUAL)`` so the two
     # paths are mutually exclusive.
     rules.append(Rule(
         "S",
-        ["S", "PART[CLITIC_CLASS=2P, COUNTERFACTUAL=YES]"],
+        ["S", "PART[CLITIC_CLASS=2P, COUNTERFACTUAL]"],
         [
             "(↑) = ↓1",
             "↓2 ∈ (↑ ADJ)",
             "(↓2 CLITIC_CLASS) =c '2P'",
-            "(↓2 COUNTERFACTUAL) =c 'YES'",
-            "(↑ COUNTERFACTUAL) = 'YES'",
+            "(↓2 COUNTERFACTUAL) =c true",
+            "(↑ COUNTERFACTUAL) = true",
         ],
     ))
     # Phase 5m Commit 2: Rule D — politeness ``po`` / ``ho`` REGISTER lift.
@@ -348,7 +348,7 @@ def register_rules(rules: list[Rule]) -> None:
         # Phase 5n.A Commit 29 added the explicit ``(↓2 KITA) =c
         # 'YES'`` constraining equation to close a non-conflict-
         # matcher leak (per ``project_parser_nonconflict_matcher``):
-        # the daughter pattern ``PRON[KITA=YES]`` was admitting any
+        # the daughter pattern ``PRON[KITA]`` was admitting any
         # PRON via shared-key absence, since the equations don't
         # bind ↓2's f-structure to anything (the rule literally
         # synthesises SUBJ.PERS=2 and OBJ-AGENT.PERS=1, never
@@ -359,8 +359,8 @@ def register_rules(rules: list[Rule]) -> None:
         # ang kumain.`` as ``[Tinanong niya] [kung-S]``.
         rules.append(Rule(
             "S",
-            [v_cat, "PRON[KITA=YES]"],
-            _eqs(*kita_subj_eqs, *actor_eqs, "(↓2 KITA) =c 'YES'"),
+            [v_cat, "PRON[KITA]"],
+            _eqs(*kita_subj_eqs, *actor_eqs, "(↓2 KITA) =c true"),
         ))
         # With-PATIENT frame: V kita NP[GEN]. Covers 3-arg
         # ditransitives and 3-arg pa-causatives (where the GEN-NP
@@ -368,23 +368,23 @@ def register_rules(rules: list[Rule]) -> None:
         # SUBJ).
         rules.append(Rule(
             "S",
-            [v_cat, "PRON[KITA=YES]", "NP[CASE=GEN]"],
+            [v_cat, "PRON[KITA]", "NP[CASE=GEN]"],
             _eqs(
                 *kita_subj_eqs,
                 *actor_eqs,
                 "(↑ OBJ-PATIENT) = ↓3",
-                "(↓2 KITA) =c 'YES'",
+                "(↓2 KITA) =c true",
             ),
         ))
         # With-DAT frame: V kita NP[DAT]. The DAT-NP rides into
         # ADJUNCT.
         rules.append(Rule(
             "S",
-            [v_cat, "PRON[KITA=YES]", "NP[CASE=DAT]"],
+            [v_cat, "PRON[KITA]", "NP[CASE=DAT]"],
             _eqs(
                 *kita_subj_eqs,
                 *actor_eqs,
                 "↓3 ∈ (↑ ADJUNCT)",
-                "(↓2 KITA) =c 'YES'",
+                "(↓2 KITA) =c true",
             ),
         ))

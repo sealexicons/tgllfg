@@ -104,7 +104,7 @@ class TestWhFeatLift:
                 return []
             seen.add(id(f))
             results = []
-            if f.feats.get("WH") == "YES":
+            if f.feats.get("WH") is True:
                 results.append(f)
             for v in f.feats.values():
                 if isinstance(v, FStructure):
@@ -226,4 +226,4 @@ class TestBaselinePreserved:
         # Should produce normal PRED, not WH-PRO anywhere.
         for _ct, fs, _astr, _diags in parses:
             # No matrix-level WH=YES.
-            assert fs.feats.get("WH") != "YES"
+            assert fs.feats.get("WH") is not True

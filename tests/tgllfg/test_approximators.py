@@ -111,7 +111,7 @@ class TestApproxMorph:
             cands = [c for c in ml[0] if c.pos == "PART"]
             assert cands, f"no PART analysis for {lemma!r}"
             ma = cands[0]
-            assert ma.feats.get("APPROX") == "YES", (
+            assert ma.feats.get("APPROX") is True, (
                 f"{lemma}: APPROX expected 'YES', got "
                 f"{ma.feats.get('APPROX')!r}"
             )
@@ -198,7 +198,7 @@ class TestHalosWithQ:
         obj = _first_obj("Bumili ako ng halos maraming aklat.")
         assert obj is not None
         assert obj.feats.get("LEMMA") == "aklat"
-        assert obj.feats.get("VAGUE") == "YES"
+        assert obj.feats.get("VAGUE") is True
         assert obj.feats.get("QUANT") == "MANY"
 
 
@@ -248,7 +248,7 @@ class TestApproxNegative:
             for m in members:
                 if (isinstance(m, FStructure)
                         and m.feats.get("LEMMA") == "bata"
-                        and m.feats.get("APPROX") == "YES"):
+                        and m.feats.get("APPROX") is True):
                     raise AssertionError(
                         "halos composed with bare NOUN as approximator"
                     )
@@ -267,7 +267,7 @@ class TestApproxNegative:
             )
             for m in members:
                 if (isinstance(m, FStructure)
-                        and m.feats.get("APPROX") == "YES"):
+                        and m.feats.get("APPROX") is True):
                     raise AssertionError(
                         "halos composed standalone as APPROX adjunct"
                     )

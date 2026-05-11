@@ -155,7 +155,7 @@ class TestAdjectiveBareRootLemmaCollapse:
                     gloss="same/alike (variant spelling)",
                     affix_class=[],
                     feats={
-                        "EQUATIVE": "YES",
+                        "EQUATIVE": True,
                         "COMP_DEGREE": "EQUATIVE",
                         "LEMMA": "pareho",
                     },
@@ -168,9 +168,9 @@ class TestAdjectiveBareRootLemmaCollapse:
         assert len(adjs) == 1
         assert adjs[0].lemma == "pareho"
         # PREDICATIVE=YES still set intrinsically.
-        assert adjs[0].feats.get("PREDICATIVE") == "YES"
+        assert adjs[0].feats.get("PREDICATIVE") is True
         # Per-root EQUATIVE feat survives.
-        assert adjs[0].feats.get("EQUATIVE") == "YES"
+        assert adjs[0].feats.get("EQUATIVE") is True
 
     def test_adj_bare_root_without_lemma_feat_uses_citation(self) -> None:
         data = MorphData(
@@ -179,7 +179,7 @@ class TestAdjectiveBareRootLemmaCollapse:
                     citation="pareho",
                     pos="ADJ",
                     affix_class=[],
-                    feats={"EQUATIVE": "YES"},
+                    feats={"EQUATIVE": True},
                 )
             ]
         )

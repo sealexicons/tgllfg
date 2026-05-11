@@ -73,7 +73,7 @@ class TestBareAyFronted:
         assert fs is not None, f"no ay-fronted-ADJ parse for {sentence!r}"
         assert _topic_lemma(fs) == topic
         assert fs.feats.get("ADJ_LEMMA") == adj_lemma
-        assert fs.feats.get("PREDICATIVE") == "YES"
+        assert fs.feats.get("PREDICATIVE") is True
 
 
 # === Comparative ADJ ay-fronted ======================================

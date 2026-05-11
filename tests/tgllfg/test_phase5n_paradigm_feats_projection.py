@@ -61,7 +61,7 @@ class TestSayClassUniformProjection:
         missing = [
             (surface, feats)
             for surface, feats in surfaces_with_lemma_sabi
-            if feats.get("SAY_CLASS") != "YES"
+            if feats.get("SAY_CLASS") is not True
         ]
         assert missing == [], (
             f"sabi cells missing SAY_CLASS=YES: "
@@ -89,7 +89,7 @@ class TestAskClassUniformProjection:
         missing = [
             (surface, feats)
             for surface, feats in surfaces_with_lemma_tanong
-            if feats.get("ASK_CLASS") != "YES"
+            if feats.get("ASK_CLASS") is not True
         ]
         assert missing == [], (
             f"tanong cells missing ASK_CLASS=YES: "

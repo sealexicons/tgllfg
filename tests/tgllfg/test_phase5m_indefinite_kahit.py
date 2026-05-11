@@ -94,7 +94,7 @@ class TestKahitSinoAsSubject:
         )
         _ct_fs_etc, subj = indef_subjs[0]
         assert subj.feats.get("LEMMA") == indef_lemma
-        assert subj.feats.get("WH") == "YES"
+        assert subj.feats.get("WH") is True
         assert subj.feats.get("INDEF") == "YES"
 
 
@@ -122,7 +122,7 @@ class TestKahitAnoAsObject:
         )
         obj = indef_objs[0]
         assert obj.feats.get("LEMMA") == "ano"
-        assert obj.feats.get("WH") == "YES"
+        assert obj.feats.get("WH") is True
 
 
 # === Phase 5l concessive preservation =================================

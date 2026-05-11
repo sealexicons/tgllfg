@@ -85,13 +85,13 @@ class TestModalStandaloneFlag:
         parses = parse_text("Puwede.")
         assert len(parses) >= 1
         _ct, fs, _astr, _diags = parses[0]
-        assert fs.feats.get("MODAL_STANDALONE") == "YES"
+        assert fs.feats.get("MODAL_STANDALONE") is True
 
     def test_hindi_puwede_carries_flag(self) -> None:
         parses = parse_text("Hindi puwede.")
         assert len(parses) >= 1
         _ct, fs, _astr, _diags = parses[0]
-        assert fs.feats.get("MODAL_STANDALONE") == "YES"
+        assert fs.feats.get("MODAL_STANDALONE") is True
         assert fs.feats.get("POLARITY") == "NEG"
 
 

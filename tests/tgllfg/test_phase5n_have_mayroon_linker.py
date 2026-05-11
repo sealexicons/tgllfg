@@ -49,14 +49,14 @@ class TestMayroonHavePostposedFullNP:
     ) -> None:
         parses = parse_text(sentence)
         ex_parses = [
-            p for p in parses if p[1].feats.get("HAVE") == "YES"
+            p for p in parses if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
         assert fs.feats.get("PRED") == "EXIST <SUBJ>"
         assert fs.feats.get("CLAUSE_TYPE") == "EXISTENTIAL"
         assert fs.feats.get("POLARITY") == "POS"
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
         subj = fs.feats.get("SUBJ")
         assert subj is not None
         assert subj.feats.get("LEMMA") == subj_lemma
@@ -79,11 +79,11 @@ class TestMayroonHavePostposedClitic:
     ) -> None:
         parses = parse_text(sentence)
         ex_parses = [
-            p for p in parses if p[1].feats.get("HAVE") == "YES"
+            p for p in parses if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
         assert fs.feats.get("POLARITY") == "POS"
         subj = fs.feats.get("SUBJ")
         assert subj is not None
@@ -113,13 +113,13 @@ class TestMayroonHaveInternalClitic:
     ) -> None:
         parses = parse_text(sentence)
         ex_parses = [
-            p for p in parses if p[1].feats.get("HAVE") == "YES"
+            p for p in parses if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
         assert fs.feats.get("PRED") == "EXIST <SUBJ>"
         assert fs.feats.get("POLARITY") == "POS"
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
         subj = fs.feats.get("SUBJ")
         assert subj is not None
         assert subj.feats.get("LEMMA") == subj_lemma
@@ -141,7 +141,7 @@ class TestExistentialNoPossessorRegression:
         assert len(parses) >= 1
         # No parse should carry HAVE=YES on this sentence.
         for _ct, fs, _astr, _diags in parses:
-            assert fs.feats.get("HAVE") != "YES"
+            assert fs.feats.get("HAVE") is not True
         # The existential reading does parse.
         _ct, fs, _astr, _diags = parses[0]
         assert fs.feats.get("CLAUSE_TYPE") == "EXISTENTIAL"
@@ -160,11 +160,11 @@ class TestMayroonHaveWithNCoord:
     def test_mayroon_have_n_coord_full_np(self) -> None:
         parses = parse_text("Mayroong aklat at lapis si Maria.")
         ex_parses = [
-            p for p in parses if p[1].feats.get("HAVE") == "YES"
+            p for p in parses if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
         subj = fs.feats.get("SUBJ")
         assert subj is not None
         conjuncts = subj.feats.get("CONJUNCTS")
@@ -191,11 +191,11 @@ class TestMayBareRegression:
     ) -> None:
         parses = parse_text(sentence)
         ex_parses = [
-            p for p in parses if p[1].feats.get("HAVE") == "YES"
+            p for p in parses if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
         subj = fs.feats.get("SUBJ")
         assert subj is not None
         poss = subj.feats.get("POSSESSOR")
@@ -205,6 +205,6 @@ class TestMayBareRegression:
     def test_may_internal_clitic_still_parses(self) -> None:
         parses = parse_text("May akong aklat.")
         ex_parses = [
-            p for p in parses if p[1].feats.get("HAVE") == "YES"
+            p for p in parses if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1

@@ -421,7 +421,7 @@ def _strip_non_content(
 
     def is_terminator(cands: list[tuple[MorphAnalysis, LexicalEntry | None]]) -> bool:
         return all(
-            ma.pos == "PART" and ma.feats.get("ORTHOGRAPHIC_TERMINATOR") == "YES"
+            ma.pos == "PART" and ma.feats.get("ORTHOGRAPHIC_TERMINATOR") is True
             for ma, _ in cands
         )
 
@@ -445,9 +445,15 @@ def _strip_non_content(
 
 def _ma_to_pattern(ma: MorphAnalysis) -> CategoryPattern:
     cat = _POS_ALIASES.get(ma.pos, ma.pos)
-    feats: list[tuple[str, str]] = []
+    feats: list[tuple[str, str | bool]] = []
     for k, v in ma.feats.items():
-        if isinstance(v, str):
+        if isinstance(v, (str, bool)):
+            # Note ``bool`` first in isinstance: a Python ``bool`` is
+            # also a ``str`` substring instance? No — bool is a
+            # subclass of int, not str — so order is fine. Pattern
+            # values flow through as either type; the matcher in
+            # :mod:`tgllfg.cfg.compile` aliases bool ↔ "YES"/"NO"
+            # during the migration window.
             feats.append((k, v))
     feats.sort(key=lambda kv: kv[0])
     return CategoryPattern(cat, tuple(feats))
@@ -459,7 +465,11 @@ def _lex_equations(
     """Derive the LFG equations contributed by a lex token."""
     eqs: list[str] = []
     for k, v in ma.feats.items():
-        if isinstance(v, str):
+        if isinstance(v, bool):
+            # Phase 5n.C.4: emit a bare ``true`` / ``false`` keyword;
+            # the equation parser produces ``Atom(value=bool)``.
+            eqs.append(f"(↑ {k}) = {'true' if v else 'false'}")
+        elif isinstance(v, str):
             eqs.append(f"(↑ {k}) = '{v}'")
     if le is not None:
         eqs.append(f"(↑ PRED) = '{le.pred}'")

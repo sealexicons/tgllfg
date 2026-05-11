@@ -166,8 +166,10 @@ class Designator:
 @dataclass(frozen=True)
 class Atom:
     """A single-quoted atomic value such as ``'NOM'`` or
-    ``'EAT <SUBJ, OBJ>'``. The contents are opaque to this module."""
-    value: str
+    ``'EAT <SUBJ, OBJ>'``, or — Phase 5n.C.4 — a bare ``true`` /
+    ``false`` keyword for binary feats. The contents are opaque to
+    this module."""
+    value: str | bool
 
 
 type Value = Atom | Designator
@@ -459,6 +461,13 @@ class _Parser:
         if t.kind == "ATOM":
             self._consume("ATOM")
             return Atom(value=t.text)
+        # Phase 5n.C.4: bare ``true`` / ``false`` at value position
+        # produce Atom(value=bool). Quoted ``'YES'`` / ``'NO'`` keep
+        # their string form (which the unifier aliases with bool
+        # during the migration window — see ``fstruct.graph``).
+        if t.kind == "IDENT" and t.text in ("true", "false"):
+            self._consume("IDENT")
+            return Atom(value=(t.text == "true"))
         return self._parse_designator()
 
 
@@ -524,6 +533,8 @@ def _unparse_designator(d: Designator) -> str:
 
 def _unparse_value(v: Value) -> str:
     if isinstance(v, Atom):
+        if isinstance(v.value, bool):
+            return "true" if v.value else "false"
         return f"'{v.value}'"
     return _unparse_designator(v)
 

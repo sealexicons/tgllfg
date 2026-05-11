@@ -116,7 +116,7 @@ class TestCollectiveMorph:
             cands = [c for c in ml[0] if c.pos == "NOUN"]
             assert cands, f"no NOUN analysis for {lemma!r}"
             ma = cands[0]
-            assert ma.feats.get("MEASURE") == "YES", (
+            assert ma.feats.get("MEASURE") is True, (
                 f"{lemma}: MEASURE expected 'YES', got "
                 f"{ma.feats.get('MEASURE')!r}"
             )

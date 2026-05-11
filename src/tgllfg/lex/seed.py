@@ -34,7 +34,7 @@ from typing import Any
 from uuid import UUID
 
 import yaml
-from sqlalchemy import text
+from sqlalchemy import delete, select, text
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
@@ -105,35 +105,41 @@ async def _upsert_language(session: AsyncSession, iso_code: str, name: str) -> U
 async def _upsert_lemmas(
     session: AsyncSession, language_id: UUID, roots: list[Any]
 ) -> int:
+    """Upsert one ``lemma`` row per ``(citation, pos)`` and one
+    ``lemma_sense`` row per ``Root`` — Phase 5n.C.4 Commit 9 closes
+    the long-standing kuwarto polysemy case (room vs. fraction) by
+    splitting per-sense feats into the child ``lemma_sense`` table.
+
+    Idempotent: re-running the seed deletes existing sense rows for
+    each touched lemma and re-inserts them, so any reshuffling in
+    the YAML inventory (added/removed sense, changed feats) is
+    reflected exactly.
+
+    Returns the count of distinct ``(citation, pos)`` lemmas seeded
+    — not the sense count, which is reported separately.
+    """
     if not roots:
         return 0
-    # Phase 5f closing deferral on multiple lex entries per
-    # ``(lemma, pos)`` (2026-05-04): the YAML lex now permits
-    # multiple Root entries for the same ``(citation, pos)`` (e.g.
-    # ``kuwarto`` "room" + ``kuwarto`` "quarter (of hour)"). The
-    # ``Lemma`` schema doesn't carry ``feats`` and enforces a
-    # unique ``(language_id, citation_form, pos)``, so the DB
-    # backend collapses to one row per pair — keeping the first
-    # encountered. This is a known DB-backend limitation; the
-    # YAML-backed analyzer (the default) sees both readings via
-    # the list-valued noun index in ``morph/analyzer.py``.
-    seen: set[tuple[str, str]] = set()
-    rows = []
+
+    # Group Roots by (citation, pos). Order within a group becomes
+    # the deterministic sense_index 0..N-1.
+    by_key: dict[tuple[str, str], list[Any]] = {}
     for r in roots:
-        key = (r.citation, r.pos)
-        if key in seen:
-            continue
-        seen.add(key)
-        rows.append({
+        by_key.setdefault((r.citation, r.pos), []).append(r)
+
+    lemma_rows = []
+    for (citation, pos), group in by_key.items():
+        head = group[0]
+        lemma_rows.append({
             "language_id": language_id,
-            "citation_form": r.citation,
-            "pos": r.pos,
-            "gloss": r.gloss or None,
-            "transitivity": r.transitivity or "",
-            "affix_class": list(r.affix_class or ()),
-            "sandhi_flags": list(r.sandhi_flags or ()),
+            "citation_form": citation,
+            "pos": pos,
+            "gloss": head.gloss or None,
+            "transitivity": head.transitivity or "",
+            "affix_class": list(head.affix_class or ()),
+            "sandhi_flags": list(head.sandhi_flags or ()),
         })
-    stmt = pg_insert(m.Lemma).values(rows)
+    stmt = pg_insert(m.Lemma).values(lemma_rows)
     stmt = stmt.on_conflict_do_update(
         constraint="uq_lemma_lang_form_pos",
         set_={
@@ -144,7 +150,42 @@ async def _upsert_lemmas(
         },
     )
     await session.execute(stmt)
-    return len(rows)
+
+    # Fetch each lemma_id so we can attach sense rows.
+    result = await session.execute(
+        select(m.Lemma.id, m.Lemma.citation_form, m.Lemma.pos).where(
+            m.Lemma.language_id == language_id
+        )
+    )
+    lemma_id_by_key: dict[tuple[str, str], UUID] = {
+        (row.citation_form, row.pos): row.id for row in result
+    }
+
+    # Replace senses for every touched lemma. The simplest idempotent
+    # strategy: delete all senses for these lemmas, then insert the
+    # group ordered as Roots appeared in the YAML.
+    touched_lemma_ids = [
+        lemma_id_by_key[k] for k in by_key if k in lemma_id_by_key
+    ]
+    if touched_lemma_ids:
+        await session.execute(
+            delete(m.LemmaSense).where(
+                m.LemmaSense.lemma_id.in_(touched_lemma_ids)
+            )
+        )
+    sense_rows = []
+    for (citation, pos), group in by_key.items():
+        lemma_id = lemma_id_by_key[(citation, pos)]
+        for sense_index, r in enumerate(group):
+            sense_rows.append({
+                "lemma_id": lemma_id,
+                "sense_index": sense_index,
+                "feats": dict(r.feats or {}),
+                "gloss": r.gloss or None,
+            })
+    if sense_rows:
+        await session.execute(pg_insert(m.LemmaSense).values(sense_rows))
+    return len(lemma_rows)
 
 
 async def _replace_particles(

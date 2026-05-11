@@ -55,12 +55,12 @@ class TestDistributiveScopeMarker:
             f"L81 distributive-Q topic should parse: {sentence!r}"
         )
         _ct, fs, _astr, _diags = parses[0]
-        assert fs.feats.get("DISTRIB") == "YES"
+        assert fs.feats.get("DISTRIB") is True
         assert fs.feats.get("PRED") == verb_pred
         # Topic-NP fills the verb's SUBJ slot.
         subj = fs.feats.get("SUBJ")
         assert subj is not None
-        assert subj.feats.get("UNIV") == "YES"
+        assert subj.feats.get("UNIV") is True
         assert subj.feats.get("CASE") == "NOM"
 
 
@@ -108,7 +108,7 @@ class TestCommaRequired:
         # must not fire — confirm by checking no parse carries
         # DISTRIB=YES.
         for _ct, fs, _astr, _diags in parses:
-            assert fs.feats.get("DISTRIB") != "YES"
+            assert fs.feats.get("DISTRIB") is not True
 
 
 # === Coexistence: ay-fronting unaffected ==============================
@@ -135,7 +135,7 @@ class TestAyFrontingUnaffected:
         # comma+S rule is the only DISTRIB-marker producer.
         subj = fs.feats.get("SUBJ")
         assert subj is not None
-        assert subj.feats.get("UNIV") == "YES"
+        assert subj.feats.get("UNIV") is True
         assert fs.feats.get("DISTRIB") is None
 
 
@@ -160,7 +160,7 @@ class TestCanonicalVSUnaffected:
         # carries no DISTRIB feat.
         subj = fs.feats.get("SUBJ")
         assert subj is not None
-        assert subj.feats.get("UNIV") == "YES"
+        assert subj.feats.get("UNIV") is True
         assert fs.feats.get("DISTRIB") is None
 
 

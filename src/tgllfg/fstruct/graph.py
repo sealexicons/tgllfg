@@ -53,8 +53,10 @@ type NodeId = int
 
 @dataclass
 class AtomValue:
-    """A leaf value such as ``'NOM'`` or ``'EAT <SUBJ, OBJ>'``."""
-    atom: str
+    """A leaf value such as ``'NOM'`` or ``'EAT <SUBJ, OBJ>'``, or —
+    Phase 5n.C.4 — a Python ``bool`` for binary feats.
+    """
+    atom: str | bool
 
 
 @dataclass
@@ -175,7 +177,7 @@ class FGraph:
 
     # --- Direct bindings ---------------------------------------------------
 
-    def set_atom(self, n: NodeId, atom: str) -> Diagnostic | None:
+    def set_atom(self, n: NodeId, atom: str | bool) -> Diagnostic | None:
         """Bind `n` to an atomic value. Idempotent if `n` already
         carries the same atom; fails with a diagnostic if it carries
         an incompatible value."""

@@ -135,7 +135,7 @@ class TestWhAdvInAdjunctSet:
         wh_adv_members = [
             m for m in adjunct
             if isinstance(m, FStructure)
-            and m.feats.get("WH") == "YES"
+            and m.feats.get("WH") is True
             and m.feats.get("ADV_TYPE") == "LOCATION"
         ]
         assert len(wh_adv_members) >= 1, (

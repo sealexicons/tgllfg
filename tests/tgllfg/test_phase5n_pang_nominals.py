@@ -112,11 +112,11 @@ class TestPangNominalInHave:
     ) -> None:
         parses = parse_text(sentence)
         ex_parses = [
-            p for p in parses if p[1].feats.get("HAVE") == "YES"
+            p for p in parses if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
         subj = fs.feats.get("SUBJ")
         assert subj is not None
         assert subj.feats.get("LEMMA") == subj_lemma

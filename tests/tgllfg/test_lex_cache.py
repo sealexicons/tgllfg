@@ -61,6 +61,7 @@ async def migrated_engine(
                 "VALUES ('Kroeger1993', 'Kroeger 1993, Phrase Structure...')"
             )
         )
+        sense_id = uuid.uuid4()
         await session.execute(
             text(
                 "INSERT INTO lemma (id, language_id, citation_form, pos, gloss) "
@@ -70,13 +71,20 @@ async def migrated_engine(
         )
         await session.execute(
             text(
+                "INSERT INTO lemma_sense (id, lemma_id, sense_index, feats) "
+                "VALUES (:i, :l, 0, '{}'::jsonb)"
+            ),
+            {"i": sense_id, "l": lemma_id},
+        )
+        await session.execute(
+            text(
                 "INSERT INTO lex_entry "
-                "(lemma_id, pred_template, a_structure, morph_constraints, "
+                "(lemma_sense_id, pred_template, a_structure, morph_constraints, "
                 "intrinsic_classification) "
-                "VALUES (:l, 'EAT <SUBJ, OBJ>', :a, :m, :ic)"
+                "VALUES (:s, 'EAT <SUBJ, OBJ>', :a, :m, :ic)"
             ),
             {
-                "l": lemma_id,
+                "s": sense_id,
                 "a": json.dumps(["AGENT", "PATIENT"]),
                 "m": json.dumps({"VOICE": "OV"}),
                 "ic": json.dumps({"AGENT": {"r": "-", "o": "-"}}),

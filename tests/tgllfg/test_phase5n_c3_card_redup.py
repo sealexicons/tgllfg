@@ -77,7 +77,7 @@ def test_libulibo_produced_by_paradigm() -> None:
     results = a.analyze_one(token)
     nouns = [r for r in results if r.pos == "NOUN"]
     assert len(nouns) >= 1
-    measure_nouns = [r for r in nouns if r.feats.get("MEASURE") == "YES"]
+    measure_nouns = [r for r in nouns if r.feats.get("MEASURE") is True]
     assert len(measure_nouns) >= 1
     n = measure_nouns[0]
     assert n.lemma == "libo"
@@ -92,7 +92,7 @@ def test_daandaan_produced_by_paradigm() -> None:
     results = a.analyze_one(token)
     measure_nouns = [r for r in results
                      if r.pos == "NOUN"
-                     and r.feats.get("MEASURE") == "YES"]
+                     and r.feats.get("MEASURE") is True]
     assert len(measure_nouns) >= 1
     n = measure_nouns[0]
     assert n.lemma == "daan"

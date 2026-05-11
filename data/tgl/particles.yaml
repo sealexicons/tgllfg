@@ -42,33 +42,33 @@
 # enumerating per-deixis variants.
 - surface: ito
   pos: DET
-  feats: {CASE: NOM, DEIXIS: PROX, DEM: YES}
+  feats: {CASE: NOM, DEIXIS: PROX, DEM: true}
 - surface: nito
   pos: ADP
-  feats: {CASE: GEN, DEIXIS: PROX, DEM: YES}
+  feats: {CASE: GEN, DEIXIS: PROX, DEM: true}
 - surface: dito
   pos: ADP
-  feats: {CASE: DAT, DEIXIS: PROX, DEM: YES}
+  feats: {CASE: DAT, DEIXIS: PROX, DEM: true}
 
 - surface: iyan
   pos: DET
-  feats: {CASE: NOM, DEIXIS: MED, DEM: YES}
+  feats: {CASE: NOM, DEIXIS: MED, DEM: true}
 - surface: niyan
   pos: ADP
-  feats: {CASE: GEN, DEIXIS: MED, DEM: YES}
+  feats: {CASE: GEN, DEIXIS: MED, DEM: true}
 - surface: diyan
   pos: ADP
-  feats: {CASE: DAT, DEIXIS: MED, DEM: YES}
+  feats: {CASE: DAT, DEIXIS: MED, DEM: true}
 
 - surface: iyon
   pos: DET
-  feats: {CASE: NOM, DEIXIS: DIST, DEM: YES}
+  feats: {CASE: NOM, DEIXIS: DIST, DEM: true}
 - surface: niyon
   pos: ADP
-  feats: {CASE: GEN, DEIXIS: DIST, DEM: YES}
+  feats: {CASE: GEN, DEIXIS: DIST, DEM: true}
 - surface: doon
   pos: ADP
-  feats: {CASE: DAT, DEIXIS: DIST, DEM: YES}
+  feats: {CASE: DAT, DEIXIS: DIST, DEM: true}
 
 # === Polarity ============================================================
 - surface: hindi
@@ -138,25 +138,25 @@
 # tokenizer-level pre-pass for the irregular contraction. Deferred.
 - surface: ilan
   pos: Q
-  feats: {QUANT: FEW, VAGUE: "YES"}
+  feats: {QUANT: FEW, VAGUE: true}
 - surface: marami
   pos: Q
-  feats: {QUANT: MANY, VAGUE: "YES"}
+  feats: {QUANT: MANY, VAGUE: true}
 - surface: kaunti
   pos: Q
-  feats: {QUANT: FEW, VAGUE: "YES"}
+  feats: {QUANT: FEW, VAGUE: true}
 - surface: konti
   pos: Q
-  feats: {QUANT: FEW, VAGUE: "YES"}
+  feats: {QUANT: FEW, VAGUE: true}
 - surface: kakaunti
   pos: Q
-  feats: {QUANT: VERY_FEW, VAGUE: "YES"}
+  feats: {QUANT: VERY_FEW, VAGUE: true}
 - surface: iilan
   pos: Q
-  feats: {QUANT: FEW, VAGUE: "YES"}
+  feats: {QUANT: FEW, VAGUE: true}
 - surface: karamihan
   pos: Q
-  feats: {QUANT: MOST, VAGUE: "YES"}
+  feats: {QUANT: MOST, VAGUE: true}
 
 # === Phase 5n.B Commit 4: pinaka- superlative Q heads (§18 L40) =============
 #
@@ -186,22 +186,22 @@
 # "the most books").
 - surface: pinakamarami
   pos: Q
-  feats: {QUANT: MANY, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: marami}
+  feats: {QUANT: MANY, VAGUE: true, COMP_DEGREE: SUPERLATIVE, LEMMA: marami}
 - surface: pinakakonti
   pos: Q
-  feats: {QUANT: FEW, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: konti}
+  feats: {QUANT: FEW, VAGUE: true, COMP_DEGREE: SUPERLATIVE, LEMMA: konti}
 - surface: pinakakaunti
   pos: Q
-  feats: {QUANT: FEW, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: kaunti}
+  feats: {QUANT: FEW, VAGUE: true, COMP_DEGREE: SUPERLATIVE, LEMMA: kaunti}
 - surface: pinakakakaunti
   pos: Q
-  feats: {QUANT: VERY_FEW, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: kakaunti}
+  feats: {QUANT: VERY_FEW, VAGUE: true, COMP_DEGREE: SUPERLATIVE, LEMMA: kakaunti}
 - surface: pinakaiilan
   pos: Q
-  feats: {QUANT: FEW, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: iilan}
+  feats: {QUANT: FEW, VAGUE: true, COMP_DEGREE: SUPERLATIVE, LEMMA: iilan}
 - surface: pinakakaramihan
   pos: Q
-  feats: {QUANT: MOST, VAGUE: "YES", COMP_DEGREE: SUPERLATIVE, LEMMA: karamihan}
+  feats: {QUANT: MOST, VAGUE: true, COMP_DEGREE: SUPERLATIVE, LEMMA: karamihan}
 
 # === Phase 5f Commit 16: approximators (Group H1 item 2) ===================
 # Approximators — closed-class pre-modifiers that wrap a NUM or Q
@@ -234,10 +234,10 @@
 #   the simple pre-modifier; deferred.
 - surface: halos
   pos: PART
-  feats: {APPROX: "YES"}
+  feats: {APPROX: true}
 - surface: humigitkumulang
   pos: PART
-  feats: {APPROX: "YES"}
+  feats: {APPROX: true}
 
 # === Phase 5f Commit 17: numeric comparatives (Group H1 item 3) ===========
 # Numeric comparators that wrap a NUM[CARDINAL=YES] standard via
@@ -350,10 +350,10 @@
 #   Defer.
 - surface: bawat
   pos: Q
-  feats: {QUANT: EVERY, UNIV: "YES"}
+  feats: {QUANT: EVERY, UNIV: true}
 - surface: kada
   pos: Q
-  feats: {QUANT: EVERY, UNIV: "YES"}
+  feats: {QUANT: EVERY, UNIV: true}
 
 # === Phase 5f Commit 21: distributive-possessive (Group H3 item 7) =========
 # Phase 5n.C.3 Commit 5 (§18 L31): migrated to productive
@@ -400,7 +400,7 @@
 #   ``buo``, deferred.
 - surface: buo
   pos: Q
-  feats: {QUANT: WHOLE, WHOLE: "YES"}
+  feats: {QUANT: WHOLE, WHOLE: true}
 
 # === Phase 5f Commit 23: dual `pareho` / `kapwa` (Group H3 item 9) ==========
 # Closes Phase 5f. Plan §11.1 Group H item 9 (S&O 1972 §4.7;
@@ -444,10 +444,10 @@
 #   "their shoes are the same" — Phase 5h scope.
 - surface: pareho
   pos: Q
-  feats: {QUANT: BOTH, DUAL: "YES"}
+  feats: {QUANT: BOTH, DUAL: true}
 - surface: kapwa
   pos: Q
-  feats: {QUANT: BOTH, DUAL: "YES"}
+  feats: {QUANT: BOTH, DUAL: true}
 
 # === Phase 4 §7.6: psych control predicates ==============================
 # Pseudo-verbal predicates that select an XCOMP complement clause and
@@ -546,7 +546,7 @@
 # `(↓1 COMPARATIVE) =c 'YES'` to fire only on parang (not tila).
 - surface: parang
   pos: VERB
-  feats: {CTRL_CLASS: RAISING_BARE, COMPARATIVE: "YES"}
+  feats: {CTRL_CLASS: RAISING_BARE, COMPARATIVE: true}
 - surface: tila
   pos: VERB
   feats: {CTRL_CLASS: RAISING_BARE}
@@ -568,7 +568,7 @@
   clitic_class: 2P
 - surface: ba
   pos: PART
-  feats: {QUESTION: "YES", Q_TYPE: YES_NO}
+  feats: {QUESTION: true, Q_TYPE: YES_NO}
   is_clitic: true
   clitic_class: 2P
 - surface: daw
@@ -689,34 +689,34 @@
 # contributes the matrix N's number).
 - surface: isa
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "1", NUM: SG}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "1", NUM: SG}
 - surface: dalawa
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "2", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "2", NUM: PL}
 - surface: tatlo
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "3", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "3", NUM: PL}
 - surface: apat
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "4", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "4", NUM: PL}
 - surface: lima
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "5", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "5", NUM: PL}
 - surface: anim
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "6", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "6", NUM: PL}
 - surface: pito
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "7", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "7", NUM: PL}
 - surface: walo
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "8", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "8", NUM: PL}
 - surface: siyam
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "9", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "9", NUM: PL}
 - surface: sampu
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "10", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "10", NUM: PL}
 
 # === Phase 5f Commit 2: Spanish-borrowed cardinals 1-10 ==================
 # Same syntactic distribution as the native cardinals — no grammar
@@ -732,34 +732,34 @@
 # tres, sais, dies) take the standalone ``na`` linker.
 - surface: uno
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "1", NUM: SG}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "1", NUM: SG}
 - surface: dos
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "2", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "2", NUM: PL}
 - surface: tres
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "3", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "3", NUM: PL}
 - surface: kuwatro
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "4", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "4", NUM: PL}
 - surface: singko
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "5", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "5", NUM: PL}
 - surface: sais
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "6", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "6", NUM: PL}
 - surface: siyete
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "7", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "7", NUM: PL}
 - surface: otso
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "8", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "8", NUM: PL}
 - surface: nuwebe
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "9", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "9", NUM: PL}
 - surface: dies
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "10", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "10", NUM: PL}
 
 # === Phase 5f Commit 3: compound cardinals 11-1000 =======================
 # Hand-authored single-token lex for the high-frequency compound
@@ -792,65 +792,65 @@
 # --- Teens 11-19 (labing- + base) ----------------------------------------
 - surface: labingisa
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "11", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "11", NUM: PL}
 - surface: labindalawa
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "12", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "12", NUM: PL}
 - surface: labintatlo
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "13", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "13", NUM: PL}
 - surface: labingapat
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "14", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "14", NUM: PL}
 - surface: labinlima
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "15", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "15", NUM: PL}
 - surface: labinganim
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "16", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "16", NUM: PL}
 - surface: labimpito
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "17", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "17", NUM: PL}
 - surface: labingwalo
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "18", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "18", NUM: PL}
 - surface: labinsiyam
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "19", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "19", NUM: PL}
 
 # --- Decades 20-90 (base + -pu / -mpu / -na pu sandhi) -------------------
 - surface: dalawampu
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "20", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "20", NUM: PL}
 - surface: tatlumpu
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "30", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "30", NUM: PL}
 - surface: apatnapu
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "40", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "40", NUM: PL}
 - surface: limampu
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "50", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "50", NUM: PL}
 - surface: animnapu
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "60", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "60", NUM: PL}
 - surface: pitumpu
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "70", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "70", NUM: PL}
 - surface: walumpu
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "80", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "80", NUM: PL}
 - surface: siyamnapu
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "90", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "90", NUM: PL}
 
 # --- Hundreds and thousands ----------------------------------------------
 - surface: sandaan
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "100", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "100", NUM: PL}
 - surface: sanlibo
   pos: NUM
-  feats: {CARDINAL: "YES", CARDINAL_VALUE: "1000", NUM: PL}
+  feats: {CARDINAL: true, CARDINAL_VALUE: "1000", NUM: PL}
 
 # === Phase 5f Commit 5: maka- multiplicative adverbials 1-10 =============
 # Productive ``maka-`` + cardinal stem yields a frequency / multi-
@@ -925,16 +925,16 @@
 # mark and exclamation get the same treatment.
 - surface: punto
   pos: PART
-  feats: {DECIMAL_SEP: "YES"}
+  feats: {DECIMAL_SEP: true}
 - surface: "."
   pos: PART
-  feats: {DECIMAL_SEP: "YES", ORTHOGRAPHIC_TERMINATOR: "YES"}
+  feats: {DECIMAL_SEP: true, ORTHOGRAPHIC_TERMINATOR: true}
 - surface: "?"
   pos: PART
-  feats: {ORTHOGRAPHIC_TERMINATOR: "YES"}
+  feats: {ORTHOGRAPHIC_TERMINATOR: true}
 - surface: "!"
   pos: PART
-  feats: {ORTHOGRAPHIC_TERMINATOR: "YES"}
+  feats: {ORTHOGRAPHIC_TERMINATOR: true}
 
 # === Phase 5f Commit 7: ordinals 1st-10th ================================
 # Hand-authored single-token lex for the high-frequency ordinals.
@@ -961,37 +961,37 @@
 # ordinal.
 - surface: una
   pos: NUM
-  feats: {ORDINAL: "YES", ORDINAL_VALUE: "1"}
+  feats: {ORDINAL: true, ORDINAL_VALUE: "1"}
 - surface: ikalawa
   pos: NUM
-  feats: {ORDINAL: "YES", ORDINAL_VALUE: "2"}
+  feats: {ORDINAL: true, ORDINAL_VALUE: "2"}
 - surface: pangalawa
   pos: NUM
-  feats: {ORDINAL: "YES", ORDINAL_VALUE: "2"}
+  feats: {ORDINAL: true, ORDINAL_VALUE: "2"}
 - surface: ikatlo
   pos: NUM
-  feats: {ORDINAL: "YES", ORDINAL_VALUE: "3"}
+  feats: {ORDINAL: true, ORDINAL_VALUE: "3"}
 - surface: ikaapat
   pos: NUM
-  feats: {ORDINAL: "YES", ORDINAL_VALUE: "4"}
+  feats: {ORDINAL: true, ORDINAL_VALUE: "4"}
 - surface: ikalima
   pos: NUM
-  feats: {ORDINAL: "YES", ORDINAL_VALUE: "5"}
+  feats: {ORDINAL: true, ORDINAL_VALUE: "5"}
 - surface: ikaanim
   pos: NUM
-  feats: {ORDINAL: "YES", ORDINAL_VALUE: "6"}
+  feats: {ORDINAL: true, ORDINAL_VALUE: "6"}
 - surface: ikapito
   pos: NUM
-  feats: {ORDINAL: "YES", ORDINAL_VALUE: "7"}
+  feats: {ORDINAL: true, ORDINAL_VALUE: "7"}
 - surface: ikawalo
   pos: NUM
-  feats: {ORDINAL: "YES", ORDINAL_VALUE: "8"}
+  feats: {ORDINAL: true, ORDINAL_VALUE: "8"}
 - surface: ikasiyam
   pos: NUM
-  feats: {ORDINAL: "YES", ORDINAL_VALUE: "9"}
+  feats: {ORDINAL: true, ORDINAL_VALUE: "9"}
 - surface: ikasampu
   pos: NUM
-  feats: {ORDINAL: "YES", ORDINAL_VALUE: "10"}
+  feats: {ORDINAL: true, ORDINAL_VALUE: "10"}
 
 # === Phase 5f Commit 9: arithmetic operators (Group D) ===================
 # Word-form arithmetic: ``Dalawa dagdag tatlo ay lima`` "2+3=5",
@@ -1050,7 +1050,7 @@
   feats: {OP: TIMES}
 - surface: "/"
   pos: PART
-  feats: {OP: DIVIDE, SYMBOLIC: "YES"}
+  feats: {OP: DIVIDE, SYMBOLIC: true}
 - surface: "="
   pos: PART
   feats: {LINK: AY}
@@ -1113,7 +1113,7 @@
 # the constraining equation on the approximator rule.
 - surface: mga
   pos: PART
-  feats: {PLURAL_MARKER: "YES"}
+  feats: {PLURAL_MARKER: true}
 
 # === Phase 5h Commit 3: comparative ``mas`` (Group A degree marker) ======
 # Roadmap §12.1: pre-ADJ degree marker producing a comparative-
@@ -1215,19 +1215,19 @@
 # this commit's audit.
 - surface: sobra
   pos: PART
-  feats: {INTENSIFIER: "YES", INTENSITY: EXCESSIVE}
+  feats: {INTENSIFIER: true, INTENSITY: EXCESSIVE}
 - surface: medyo
   pos: PART
-  feats: {INTENSIFIER: "YES", INTENSITY: MODERATE}
+  feats: {INTENSIFIER: true, INTENSITY: MODERATE}
 - surface: talaga
   pos: PART
-  feats: {INTENSIFIER: "YES", INTENSITY: EMPHATIC}
+  feats: {INTENSIFIER: true, INTENSITY: EMPHATIC}
 - surface: lubos
   pos: PART
-  feats: {INTENSIFIER: "YES", INTENSITY: COMPLETE}
+  feats: {INTENSIFIER: true, INTENSITY: COMPLETE}
 - surface: masyado
   pos: PART
-  feats: {INTENSIFIER: "YES", INTENSITY: EXCESSIVE}
+  feats: {INTENSIFIER: true, INTENSITY: EXCESSIVE}
 
 # === Phase 5i Commit 1: wh-words (adverbial + Q + comp + tag) ============
 #
@@ -1264,26 +1264,26 @@
 # (a) Adverbial wh — ADV with WH=YES + per-wh ADV_TYPE
 - surface: saan
   pos: ADV
-  feats: {WH: "YES", ADV_TYPE: LOCATION, LEMMA: saan}
+  feats: {WH: true, ADV_TYPE: LOCATION, LEMMA: saan}
 - surface: kailan
   pos: ADV
-  feats: {WH: "YES", ADV_TYPE: TIME, LEMMA: kailan}
+  feats: {WH: true, ADV_TYPE: TIME, LEMMA: kailan}
 - surface: bakit
   pos: ADV
-  feats: {WH: "YES", ADV_TYPE: REASON, LEMMA: bakit}
+  feats: {WH: true, ADV_TYPE: REASON, LEMMA: bakit}
 - surface: paano
   pos: ADV
-  feats: {WH: "YES", ADV_TYPE: MANNER, LEMMA: paano}
+  feats: {WH: true, ADV_TYPE: MANNER, LEMMA: paano}
 - surface: papaano
   pos: ADV
-  feats: {WH: "YES", ADV_TYPE: MANNER, LEMMA: papaano}
+  feats: {WH: true, ADV_TYPE: MANNER, LEMMA: papaano}
 
 # (b) Quantitative + selectional wh — Q heads
 # magkano: amount-wh, never takes a count complement (`magkano ang
 # halaga` "how much is the price?")
 - surface: magkano
   pos: Q
-  feats: {WH: "YES", QUANT: HOW_MUCH, VAGUE: "YES", LEMMA: magkano}
+  feats: {WH: true, QUANT: HOW_MUCH, VAGUE: true, LEMMA: magkano}
 # alin: bare-form polysemy partner with the PRON entry in
 # pronouns.yaml. Used standalone in predicative-Q contexts
 # (``Alin ang aklat?`` parses via the Phase 5i cleft-style wh-
@@ -1296,14 +1296,14 @@
 # daughters: marker + Q + PART[LINK] + N) couldn't fire.
 - surface: alin
   pos: Q
-  feats: {WH: "YES", VAGUE: "YES", LEMMA: alin}
+  feats: {WH: true, VAGUE: true, LEMMA: alin}
 # ilan-WH: polysemy partner with the Phase 5f vague-Q reading
 # (Q[QUANT=FEW, VAGUE=YES]). The wh variant has its own QUANT
 # value (HOW_MANY); rule context disambiguates between ``Ilan
 # ang aklat?`` (wh) and ``ilan ng aklat`` (vague — "a few books").
 - surface: ilan
   pos: Q
-  feats: {WH: "YES", QUANT: HOW_MANY, VAGUE: "YES", LEMMA: ilan}
+  feats: {WH: true, QUANT: HOW_MANY, VAGUE: true, LEMMA: ilan}
 
 # (c) Complementizer for indirect questions
 - surface: kung
@@ -1315,7 +1315,7 @@
 # in a sentence-final tag rule.
 - surface: di
   pos: PART
-  feats: {NEG_TAG: "YES", LEMMA: di}
+  feats: {NEG_TAG: true, LEMMA: di}
 
 # === Phase 5j Commit 1: existential clause-typers =========================
 #
@@ -1331,7 +1331,7 @@
 # modern Tagalog they are interchangeable in the bare existential
 # (``May tao``, ``Mayroong tao``), but ``mayroon`` is preferred
 # before clitics / linker-bound complements. Both get the same
-# {EXISTENTIAL: "YES", POLARITY: POS} feats.
+# {EXISTENTIAL: true, POLARITY: POS} feats.
 #
 # ``wala`` is vowel-final and triggers bound ``-ng`` linker
 # (``Walang aklat``); ``split_linker_ng`` strips the linker once
@@ -1343,16 +1343,16 @@
 # rule shape (Commit 4).
 - surface: may
   pos: PART
-  feats: {EXISTENTIAL: "YES", POLARITY: POS, LEMMA: may}
+  feats: {EXISTENTIAL: true, POLARITY: POS, LEMMA: may}
 - surface: mayroon
   pos: PART
-  feats: {EXISTENTIAL: "YES", POLARITY: POS, LEMMA: mayroon}
+  feats: {EXISTENTIAL: true, POLARITY: POS, LEMMA: mayroon}
 - surface: wala
   pos: PART
-  feats: {EXISTENTIAL: "YES", POLARITY: NEG, LEMMA: wala}
+  feats: {EXISTENTIAL: true, POLARITY: NEG, LEMMA: wala}
 - surface: nasa
   pos: PART
-  feats: {LOC_EXISTENTIAL: "YES", LEMMA: nasa}
+  feats: {LOC_EXISTENTIAL: true, LEMMA: nasa}
 
 # === Phase 5j Commit 6: modal verbs =======================================
 #
@@ -1393,22 +1393,22 @@
 # Phase 5j flip-risk surface (plan-of-record §3 / §6 / §7.2).
 - surface: dapat
   pos: VERB
-  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: dapat}
+  feats: {MODAL: true, CTRL_CLASS: MODAL, LEMMA: dapat}
 - surface: puwede
   pos: VERB
-  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: puwede}
+  feats: {MODAL: true, CTRL_CLASS: MODAL, LEMMA: puwede}
 - surface: pwede
   pos: VERB
-  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: puwede}
+  feats: {MODAL: true, CTRL_CLASS: MODAL, LEMMA: puwede}
 - surface: puede
   pos: VERB
-  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: puwede}
+  feats: {MODAL: true, CTRL_CLASS: MODAL, LEMMA: puwede}
 - surface: maaari
   pos: VERB
-  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: maaari}
+  feats: {MODAL: true, CTRL_CLASS: MODAL, LEMMA: maaari}
 - surface: kailangan
   pos: VERB
-  feats: {MODAL: "YES", CTRL_CLASS: MODAL, LEMMA: kailangan}
+  feats: {MODAL: true, CTRL_CLASS: MODAL, LEMMA: kailangan}
 
 # === Phase 5k Commit 1: coordinator + punctuation lex inventory ============
 #
@@ -1636,7 +1636,7 @@
 # (f) Counterfactual enclitic — ``sana``
 - surface: sana
   pos: PART
-  feats: {COUNTERFACTUAL: "YES", is_clitic: true, CLITIC_CLASS: 2P, LEMMA: sana}
+  feats: {COUNTERFACTUAL: true, is_clitic: true, CLITIC_CLASS: 2P, LEMMA: sana}
 
 # === Phase 5m Commit 1: discourse / register / indefinite particles ========
 #
@@ -1744,7 +1744,7 @@
 # LEMMA=mismo]``. Reference: R&G 1981 §7.3.
 - surface: mismo
   pos: PART
-  feats: {EMPHATIC: "YES", LEMMA: mismo}
+  feats: {EMPHATIC: true, LEMMA: mismo}
 
 # (f) Frequency adverbs — extends Phase 5f Commit 5 sentential-FREQ
 #
@@ -1814,4 +1814,4 @@
 # S&O 1972 §3.5; R&G 1981 §6.6.
 - surface: magisa
   pos: ADV
-  feats: {ADV_TYPE: MANNER, MAGISA: "YES", LEMMA: mag-isa}
+  feats: {ADV_TYPE: MANNER, MAGISA: true, LEMMA: mag-isa}

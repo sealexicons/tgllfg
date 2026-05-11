@@ -96,7 +96,7 @@ class TestCardinalMorph:
             num_cands = [c for c in cands if c.pos == "NUM"]
             assert num_cands, f"no NUM analysis for {lemma}"
             ma = num_cands[0]
-            assert ma.feats.get("CARDINAL") == "YES", f"{lemma}: CARDINAL missing"
+            assert ma.feats.get("CARDINAL") is True, f"{lemma}: CARDINAL missing"
             assert ma.feats.get("CARDINAL_VALUE") == value, (
                 f"{lemma}: CARDINAL_VALUE expected {value!r}, got "
                 f"{ma.feats.get('CARDINAL_VALUE')!r}"

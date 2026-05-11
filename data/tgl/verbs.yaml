@@ -971,7 +971,7 @@
   gloss: say, tell
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka]
-  feats: {SAY_CLASS: "YES"}
+  feats: {SAY_CLASS: true}
 
 - citation: saing
   pos: VERB
@@ -1161,7 +1161,7 @@
   # `tinanungan` "asked (recipient)" — the canonical
   # ask-recipient-as-pivot form per R&B 1986 ch.7 + S&O 1972 §10.
   affix_class: [um, mag, in_oblig, an_oblig, maka]
-  feats: {ASK_CLASS: "YES"}
+  feats: {ASK_CLASS: true}
 
 - citation: tao
   pos: VERB

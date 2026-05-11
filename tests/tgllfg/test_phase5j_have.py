@@ -76,14 +76,14 @@ class TestPositiveHavePostposed:
         parses = parse_text(sentence)
         ex_parses = [
             p for p in parses
-            if p[1].feats.get("HAVE") == "YES"
+            if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
         assert fs.feats.get("PRED") == "EXIST <SUBJ>"
         assert fs.feats.get("CLAUSE_TYPE") == "EXISTENTIAL"
         assert fs.feats.get("POLARITY") == "POS"
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
         subj = fs.feats.get("SUBJ")
         assert subj is not None
         assert subj.feats.get("LEMMA") == subj_lemma
@@ -101,11 +101,11 @@ class TestPositiveHavePostposed:
         parses = parse_text(sentence)
         ex_parses = [
             p for p in parses
-            if p[1].feats.get("HAVE") == "YES"
+            if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
         subj = fs.feats.get("SUBJ")
         assert subj is not None
         assert subj.feats.get("LEMMA") == subj_lemma
@@ -133,7 +133,7 @@ class TestPositiveHaveInternalClitic:
         parses = parse_text(sentence)
         ex_parses = [
             p for p in parses
-            if p[1].feats.get("HAVE") == "YES"
+            if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
@@ -164,13 +164,13 @@ class TestNegativeHavePostposed:
         parses = parse_text(sentence)
         ex_parses = [
             p for p in parses
-            if p[1].feats.get("HAVE") == "YES"
+            if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
         assert fs.feats.get("PRED") == "EXIST <SUBJ>"
         assert fs.feats.get("POLARITY") == "NEG"
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
         subj = fs.feats.get("SUBJ")
         assert subj is not None
         assert subj.feats.get("LEMMA") == subj_lemma
@@ -182,7 +182,7 @@ class TestNegativeHavePostposed:
         parses = parse_text("Walang aklat ako.")
         ex_parses = [
             p for p in parses
-            if p[1].feats.get("HAVE") == "YES"
+            if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
@@ -212,7 +212,7 @@ class TestNegativeHaveInternalClitic:
         parses = parse_text(sentence)
         ex_parses = [
             p for p in parses
-            if p[1].feats.get("HAVE") == "YES"
+            if p[1].feats.get("HAVE") is True
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
@@ -252,7 +252,7 @@ class TestHaveFlagOnlyOnHaveRules:
         ]
         assert len(ex_parses) >= 1
         _ct, fs, _astr, _diags = ex_parses[0]
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
 
 
 # === No phantom HAVE on V-headed / locative clauses =================
@@ -272,6 +272,6 @@ class TestNoPhantomHave:
     def test_no_phantom_have(self, sentence: str) -> None:
         parses = parse_text(sentence)
         for _ct, fs, _astr, _diags in parses:
-            assert fs.feats.get("HAVE") != "YES", (
+            assert fs.feats.get("HAVE") is not True, (
                 f"unexpected HAVE=YES on {sentence!r}: {fs.feats}"
             )

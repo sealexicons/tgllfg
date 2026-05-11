@@ -73,7 +73,7 @@ class TestPrunedRootsAreNowAdj:
         analyzer = Analyzer.from_default()
         out = analyzer.analyze_one(_tok(surface))
         adj = next(a for a in out if a.pos == "ADJ" and a.lemma == root)
-        assert adj.feats.get("PREDICATIVE") == "YES", (
+        assert adj.feats.get("PREDICATIVE") is True, (
             f"ADJ {surface!r} should carry PREDICATIVE=YES; feats={adj.feats}"
         )
 

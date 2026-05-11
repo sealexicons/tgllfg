@@ -100,7 +100,7 @@ class TestKayaNaman:
         emph_parses = [
             p for p in parses
             if p[1].feats.get("COORD") == "SO"
-            and p[1].feats.get("DISCOURSE_EMPH") == "YES"
+            and p[1].feats.get("DISCOURSE_EMPH") is True
         ]
         assert len(emph_parses) >= 1, (
             f"expected at least one COORD=SO + DISCOURSE_EMPH=YES "

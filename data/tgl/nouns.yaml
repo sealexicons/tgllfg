@@ -609,7 +609,7 @@
   # rule. ``FRAGMENT_HOST=YES`` gates the new ``S_FRAG`` rule so
   # only specific lex items (greetings / interjections) are
   # admitted as one-word matrix-S — arbitrary nouns are not.
-  feats: {FRAGMENT_HOST: "YES"}
+  feats: {FRAGMENT_HOST: true}
 
 - citation: salamin
   pos: NOUN
@@ -1078,12 +1078,12 @@
 - citation: pares
   pos: NOUN
   gloss: pair
-  feats: {MEASURE: "YES"}
+  feats: {MEASURE: true}
 
 - citation: dosena
   pos: NOUN
   gloss: dozen
-  feats: {MEASURE: "YES"}
+  feats: {MEASURE: true}
 
 # Phase 5n.C.3 Commit 2 (§18 L31): replaced the hand-coded
 # ``daandaan`` / ``libulibo`` entries with productive ``card_redup``

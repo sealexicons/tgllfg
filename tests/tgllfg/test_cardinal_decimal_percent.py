@@ -81,7 +81,7 @@ class TestDecimalPercentMorph:
         ml = analyze_tokens(toks)
         cands = [c for c in ml[0] if c.pos == "PART"]
         assert cands
-        assert cands[0].feats.get("DECIMAL_SEP") == "YES"
+        assert cands[0].feats.get("DECIMAL_SEP") is True
 
     def test_porsiyento_is_percentage_noun(self) -> None:
         toks = tokenize("porsiyento")
@@ -217,7 +217,7 @@ class TestDecimalPercentNegative:
         # interpretation (since the rule requires NUM PART NUM,
         # not NUM PART).
         assert not any(
-            f.feats.get("DECIMAL") == "YES"
+            f.feats.get("DECIMAL") is True
             for _, f, _, _ in rs
         ), "decimal without fractional produced a DECIMAL=YES parse"
 
@@ -229,7 +229,7 @@ class TestDecimalPercentNegative:
         # cardinal shape.
         assert not any(
             f.feats.get("PRED") == "CARDINAL <SUBJ>"
-            and f.feats.get("DECIMAL") == "YES"
+            and f.feats.get("DECIMAL") is True
             for _, f, _, _ in rs
         )
 
@@ -248,7 +248,7 @@ class TestDecimalPercentNegative:
         for _, f, _, _ in rs:
             obj = f.feats.get("OBJ")
             if isinstance(obj, FStructure):
-                assert obj.feats.get("DECIMAL") != "YES", (
+                assert obj.feats.get("DECIMAL") is not True, (
                     "linker matched as DECIMAL_SEP — constraining "
                     "equation missing"
                 )

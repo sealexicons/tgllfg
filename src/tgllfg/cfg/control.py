@@ -296,7 +296,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ XCOMP) = ↓3",
                 "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
                 "(↓1 CTRL_CLASS) =c 'MODAL'",
-                "(↓1 MODAL) =c 'YES'",
+                "(↓1 MODAL) =c true",
             ),
         ))
         # TRANS nested: V[CTRL_CLASS=TRANS] NP[CASE=GEN] PART
@@ -479,9 +479,9 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑) = ↓1",
             "(↑ SUBJ PRED) = 'PRO'",
             "(↑ XCOMP PRED) = 'PRO'",
-            "(↑ MODAL_STANDALONE) = 'YES'",
+            "(↑ MODAL_STANDALONE) = true",
             "(↓1 CTRL_CLASS) =c 'MODAL'",
-            "(↓1 MODAL) =c 'YES'",
+            "(↓1 MODAL) =c true",
         ),
     ))
 
@@ -500,7 +500,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ XCOMP) = ↓4",
                 "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
                 "(↓1 CTRL_CLASS) =c 'MODAL'",
-                "(↓1 MODAL) =c 'YES'",
+                "(↓1 MODAL) =c true",
             ),
         ))
         # GEN-experiencer variant (kailangan; also marginally
@@ -519,7 +519,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ XCOMP) = ↓4",
                 "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
                 "(↓1 CTRL_CLASS) =c 'MODAL'",
-                "(↓1 MODAL) =c 'YES'",
+                "(↓1 MODAL) =c true",
             ),
         ))
 
@@ -735,14 +735,14 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         [
-            "V[VOICE=OV, ASK_CLASS=YES]",
+            "V[VOICE=OV, ASK_CLASS]",
             "NP[CASE=GEN]",
             "S_INTERROG_COMP",
         ],
         _eqs(
             "(↑ OBJ-AGENT) = ↓2",
             "(↑ SUBJ) = ↓3",
-            "(↓1 ASK_CLASS) =c 'YES'",
+            "(↓1 ASK_CLASS) =c true",
             "(↓3 COMP_TYPE) =c 'INTERROG'",
         ),
     ))
@@ -751,14 +751,14 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         [
-            "V[VOICE=AV, ASK_CLASS=YES]",
+            "V[VOICE=AV, ASK_CLASS]",
             "NP[CASE=NOM]",
             "S_INTERROG_COMP",
         ],
         _eqs(
             "(↑ SUBJ) = ↓2",
             "(↑ OBJ) = ↓3",
-            "(↓1 ASK_CLASS) =c 'YES'",
+            "(↓1 ASK_CLASS) =c true",
             "(↓3 COMP_TYPE) =c 'INTERROG'",
         ),
     ))

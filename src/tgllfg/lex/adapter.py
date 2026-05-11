@@ -36,18 +36,38 @@ def cache_to_morph_data(cache: LexCache, iso_code: str = "tgl") -> MorphData:
         return MorphData()
     lang_id = lang.id
 
-    roots = [
-        Root(
-            citation=lemma.citation_form,
-            pos=lemma.pos,
-            gloss=lemma.gloss or "",
-            transitivity=lemma.transitivity,
-            affix_class=list(lemma.affix_class),
-            sandhi_flags=list(lemma.sandhi_flags),
-        )
-        for lemma in cache.lemmas
-        if lemma.language_id == lang_id
-    ]
+    # Phase 5n.C.4 Commit 9: one Root per (lemma, sense). Polysemous
+    # lemmas (kuwarto ROOM vs. FRACTION) produce multiple Roots,
+    # each carrying its sense-specific feats. Monosemous lemmas
+    # produce exactly one Root at sense_index 0 with empty feats —
+    # the same shape as the pre-C9 single-row projection.
+    roots = []
+    for lemma in cache.lemmas:
+        if lemma.language_id != lang_id:
+            continue
+        senses = cache.senses_by_lemma.get(lemma.id, ())
+        if not senses:
+            # Defensive: legacy data without a sense row falls back
+            # to an empty-feats Root so downstream stays consistent.
+            roots.append(Root(
+                citation=lemma.citation_form,
+                pos=lemma.pos,
+                gloss=lemma.gloss or "",
+                transitivity=lemma.transitivity,
+                affix_class=list(lemma.affix_class),
+                sandhi_flags=list(lemma.sandhi_flags),
+            ))
+            continue
+        for sense in senses:
+            roots.append(Root(
+                citation=lemma.citation_form,
+                pos=lemma.pos,
+                gloss=sense.gloss or lemma.gloss or "",
+                transitivity=lemma.transitivity,
+                affix_class=list(lemma.affix_class),
+                sandhi_flags=list(lemma.sandhi_flags),
+                feats=dict(sense.feats),
+            ))
 
     paradigm_cells = [
         VerbalCell(

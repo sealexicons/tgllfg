@@ -64,7 +64,7 @@ class TestExistentialParts:
         out = analyzer.analyze_one(_tok(surface))
         existentials = [
             a for a in out
-            if a.pos == "PART" and a.feats.get("EXISTENTIAL") == "YES"
+            if a.pos == "PART" and a.feats.get("EXISTENTIAL") is True
         ]
         assert len(existentials) == 1, (
             f"expected exactly one existential PART analysis for "
@@ -79,9 +79,9 @@ class TestExistentialParts:
         analyzer = Analyzer.from_default()
         part = next(
             a for a in analyzer.analyze_one(_tok(surface))
-            if a.pos == "PART" and a.feats.get("EXISTENTIAL") == "YES"
+            if a.pos == "PART" and a.feats.get("EXISTENTIAL") is True
         )
-        assert part.feats.get("EXISTENTIAL") == "YES"
+        assert part.feats.get("EXISTENTIAL") is True
         assert part.feats.get("POLARITY") == polarity
         assert part.feats.get("LEMMA") == lemma
 
@@ -99,7 +99,7 @@ class TestLocativeExistentialNasa:
         out = analyzer.analyze_one(_tok("nasa"))
         nasas = [
             a for a in out
-            if a.pos == "PART" and a.feats.get("LOC_EXISTENTIAL") == "YES"
+            if a.pos == "PART" and a.feats.get("LOC_EXISTENTIAL") is True
         ]
         assert len(nasas) == 1, (
             f"expected exactly one LOC_EXISTENTIAL PART analysis for "
@@ -113,7 +113,7 @@ class TestLocativeExistentialNasa:
             a for a in analyzer.analyze_one(_tok("nasa"))
             if a.pos == "PART"
         )
-        assert part.feats.get("LOC_EXISTENTIAL") == "YES"
+        assert part.feats.get("LOC_EXISTENTIAL") is True
         assert part.feats.get("LEMMA") == "nasa"
         # Crucially NOT EXISTENTIAL=YES (different clause-type
         # rule fires).
@@ -165,7 +165,7 @@ class TestExistentialPolaritiesAreDistinct:
         out = analyzer.analyze_one(_tok("may"))
         existentials = [
             a for a in out
-            if a.pos == "PART" and a.feats.get("EXISTENTIAL") == "YES"
+            if a.pos == "PART" and a.feats.get("EXISTENTIAL") is True
         ]
         polarities = {a.feats.get("POLARITY") for a in existentials}
         assert polarities == {"POS"}, (
@@ -177,7 +177,7 @@ class TestExistentialPolaritiesAreDistinct:
         out = analyzer.analyze_one(_tok("wala"))
         existentials = [
             a for a in out
-            if a.pos == "PART" and a.feats.get("EXISTENTIAL") == "YES"
+            if a.pos == "PART" and a.feats.get("EXISTENTIAL") is True
         ]
         polarities = {a.feats.get("POLARITY") for a in existentials}
         assert polarities == {"NEG"}, (

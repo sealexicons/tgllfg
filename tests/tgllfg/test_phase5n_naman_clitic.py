@@ -120,7 +120,7 @@ class TestKayaNamanRegression:
             "naman entry."
         )
         _ct, fs, _astr, _diags = so_parses[0]
-        assert fs.feats.get("DISCOURSE_EMPH") == "YES"
+        assert fs.feats.get("DISCOURSE_EMPH") is True
         conjuncts = fs.feats.get("CONJUNCTS")
         assert conjuncts is not None
         assert len(conjuncts) == 2

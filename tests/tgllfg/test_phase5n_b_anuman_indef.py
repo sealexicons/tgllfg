@@ -124,7 +124,7 @@ class TestProductiveWhMan:
         # via (↑) = ↓1.
         assert subj.feats.get("LEMMA") == wh_lemma
         assert subj.feats.get("INDEF") == "NEG_INDEF"
-        assert subj.feats.get("WH") == "YES"
+        assert subj.feats.get("WH") is True
 
 
 # === Productive wh + man + RC ========================================

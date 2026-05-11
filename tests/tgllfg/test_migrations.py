@@ -39,6 +39,7 @@ _EXPECTED_TABLES = {
     "voice_alias",
     "lex_metadata",
     "paradigm_cell",
+    "lemma_sense",
 }
 
 _EXPECTED_EXTENSIONS = {"pgcrypto", "pg_trgm"}
@@ -46,7 +47,8 @@ _EXPECTED_EXTENSIONS = {"pgcrypto", "pg_trgm"}
 _EXPECTED_INDEXES = {
     "ix_lemma_lang_form",
     "ix_lemma_citation_form_trgm",
-    "ix_lex_entry_lemma",
+    "ix_lex_entry_lemma_sense",
+    "ix_lemma_sense_lemma",
     "ix_particle_lang_surface",
     "ix_example_text_fts",
     "ix_paradigm_cell_lang",

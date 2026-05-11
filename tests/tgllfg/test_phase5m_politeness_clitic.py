@@ -160,7 +160,7 @@ class TestRuleAUnchanged:
         parses = parse_text("Pumupunta sana ako.")
         assert len(parses) >= 1
         _ct, fs, _astr, _diags = parses[0]
-        assert fs.feats.get("COUNTERFACTUAL") == "YES"
+        assert fs.feats.get("COUNTERFACTUAL") is True
         # And REGISTER is NOT set (sana is not a politeness clitic).
         assert fs.feats.get("REGISTER") is None
 

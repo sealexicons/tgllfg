@@ -75,7 +75,7 @@ class TestStandaloneAnswers:
         assert result is not None
         _ct, fs, _astr, _diags = result
         assert fs.feats.get("ANSWER") == answer
-        assert fs.feats.get("INTERJ") == "YES"
+        assert fs.feats.get("INTERJ") is True
         # No REGISTER on the bare PRONs (only opo / oho carry REGISTER).
         assert fs.feats.get("REGISTER") is None
 

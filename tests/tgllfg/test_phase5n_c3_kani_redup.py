@@ -77,7 +77,7 @@ def test_kani_redup_productive(surface: str, source_lemma: str) -> None:
     results = a.analyze_one(token)
     q_results = [r for r in results
                  if r.pos == "Q"
-                 and r.feats.get("DISTRIB_POSS") == "YES"]
+                 and r.feats.get("DISTRIB_POSS") is True]
     assert len(q_results) >= 1, (
         f"expected ≥1 Q DISTRIB_POSS analysis for {surface!r}"
     )
@@ -135,7 +135,7 @@ def test_3pl_kanikanila_newly_productive() -> None:
     results = a.analyze_one(token)
     q_distrib = [r for r in results
                  if r.pos == "Q"
-                 and r.feats.get("DISTRIB_POSS") == "YES"]
+                 and r.feats.get("DISTRIB_POSS") is True]
     assert len(q_distrib) == 1
     r = q_distrib[0]
     assert r.feats.get("NUM") == "PL"

@@ -48,7 +48,7 @@ class TestL66CanonicalTarget:
         assert len(parses) >= 1
         _ct, fs, _astr, _diags = parses[0]
         # HAVE flag is set
-        assert fs.feats.get("HAVE") == "YES"
+        assert fs.feats.get("HAVE") is True
         # SUBJ has ADJ containing an RC
         subj = fs.feats.get("SUBJ")
         assert subj is not None

@@ -79,7 +79,7 @@ def _adj_dual(text: str) -> FStructure | None:
             list(adj) if isinstance(adj, (set, frozenset, list)) else [adj]
         )
         for m in members:
-            if isinstance(m, FStructure) and m.feats.get("DUAL") == "YES":
+            if isinstance(m, FStructure) and m.feats.get("DUAL") is True:
                 return m
     return None
 
@@ -96,7 +96,7 @@ class TestDualMorph:
             cands = [c for c in ml[0] if c.pos == "Q"]
             assert cands, f"no Q analysis for {lemma!r}"
             ma = cands[0]
-            assert ma.feats.get("DUAL") == "YES", (
+            assert ma.feats.get("DUAL") is True, (
                 f"{lemma}: DUAL expected 'YES', got "
                 f"{ma.feats.get('DUAL')!r}"
             )
@@ -116,13 +116,13 @@ class TestDualFloat:
         adj = _adj_dual("Kumain sila pareho.")
         assert adj is not None
         assert adj.feats.get("QUANT") == "BOTH"
-        assert adj.feats.get("DUAL") == "YES"
+        assert adj.feats.get("DUAL") is True
 
     def test_kapwa_float_with_pron_subj(self) -> None:
         adj = _adj_dual("Kumain sila kapwa.")
         assert adj is not None
         assert adj.feats.get("QUANT") == "BOTH"
-        assert adj.feats.get("DUAL") == "YES"
+        assert adj.feats.get("DUAL") is True
 
     def test_pareho_float_with_nominal_subj(self) -> None:
         # ``Kumain ang bata pareho.`` "the children both ate"
@@ -136,12 +136,12 @@ class TestDualFloat:
         assert subj.feats.get("LEMMA") == "bata"
         adj = _adj_dual("Kumain ang bata pareho.")
         assert adj is not None
-        assert adj.feats.get("DUAL") == "YES"
+        assert adj.feats.get("DUAL") is True
 
     def test_kapwa_float_with_nominal_subj(self) -> None:
         adj = _adj_dual("Kumain ang bata kapwa.")
         assert adj is not None
-        assert adj.feats.get("DUAL") == "YES"
+        assert adj.feats.get("DUAL") is True
 
 
 # === Negative fixtures (per §11.2) ========================================

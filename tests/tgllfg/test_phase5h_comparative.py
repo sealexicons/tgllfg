@@ -123,7 +123,7 @@ class TestComparativePredicative:
         _ctree, fstruct, _astr, _diags = parses[0]
         assert fstruct.feats.get("PRED") == "ADJ <SUBJ>"
         assert fstruct.feats.get("ADJ_LEMMA") == lemma
-        assert fstruct.feats.get("PREDICATIVE") == "YES"
+        assert fstruct.feats.get("PREDICATIVE") is True
         # No phantom NEG polarity from the (now-fixed) hindi rule leak.
         assert fstruct.feats.get("POLARITY") is None
 

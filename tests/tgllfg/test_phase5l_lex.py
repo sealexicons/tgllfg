@@ -207,7 +207,7 @@ class TestSanaCounterfactual:
         sana = [
             a for a in out
             if a.pos == "PART"
-            and a.feats.get("COUNTERFACTUAL") == "YES"
+            and a.feats.get("COUNTERFACTUAL") is True
         ]
         assert len(sana) == 1, (
             f"expected exactly one PART[COUNTERFACTUAL=YES] for 'sana'; "
