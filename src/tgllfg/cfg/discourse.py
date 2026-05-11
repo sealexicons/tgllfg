@@ -68,7 +68,7 @@ def register_rules(rules: list[Rule]) -> None:
     # ``noong 1990`` "in 1990", ``tuwing 2026`` "every 2026" — a
     # temporal-frame PART followed by a digit-form NUM. Parallels
     # the four SEM_CLASS variants above but admits a NUM in place
-    # of N. The constraining equation ``(↓2 DIGIT_FORM) =c 'YES'``
+    # of N. The constraining equation ``(↓2 DIGIT_FORM) =c true``
     # restricts to digit-form numerics (a word-form numeric like
     # ``noong sandaan-siyamnapung`` "in 190" is theoretically
     # parseable but isn't the natural register and isn't exercised
@@ -76,12 +76,12 @@ def register_rules(rules: list[Rule]) -> None:
     # the matrix PP. (Phase 5f closing deferral, 2026-05-04.)
     rules.append(Rule(
         "PP",
-        ["PART", "NUM[CARDINAL=YES]"],
+        ["PART", "NUM[CARDINAL]"],
         [
             "(↑) = ↓1",
             "(↑ YEAR) = ↓2 CARDINAL_VALUE",
             "(↓1 TIME_FRAME)",
-            "(↓2 DIGIT_FORM) =c 'YES'",
+            "(↓2 DIGIT_FORM) =c true",
         ],
     ))
 
@@ -172,7 +172,7 @@ def register_rules(rules: list[Rule]) -> None:
     # FREQUENCY AdvP rule above; same daughter shape (S + AdvP),
     # but gated to indefinite ADVs via ``(↓2 INDEF) =c 'YES'``.
     # Indefinite ADVs are produced by the Phase 5m C8 IndefADV
-    # rule (``ADV → PART[LEMMA=kahit] ADV[WH=YES]``), which
+    # rule (``ADV → PART[LEMMA=kahit] ADV[WH]``), which
     # composes ``kahit`` with the wh-ADV inventory (saan / kailan
     # / paano / bakit). The INDEF=YES gate keeps the plain-LOCATION
     # / plain-TIME deferrals (Phase 5f C5 closing note) in force —
@@ -250,7 +250,7 @@ def register_rules(rules: list[Rule]) -> None:
     # so they don't fire as sentence-initial connectives standalone.
     # Tails are existing entries with LEMMA added in this commit:
     # ``din`` (PART[ADV=ALSO, LEMMA=din]) and ``dito``
-    # (ADP[CASE=DAT, DEIXIS=PROX, DEM=YES, LEMMA=dito]).
+    # (ADP[CASE=DAT, DEIXIS=PROX, DEM, LEMMA=dito]).
     #
     # The bukod-dito rule has mixed-POS daughters (PART + ADP)
     # because ``dito`` is the locative DEM, not a PART. Other
@@ -298,7 +298,7 @@ def register_rules(rules: list[Rule]) -> None:
     # and silently fail to match).
     rules.append(Rule(
         "PART",
-        ["PART", "ADP[CASE=DAT, DEIXIS=PROX, DEM=YES]"],
+        ["PART", "ADP[CASE=DAT, DEIXIS=PROX, DEM]"],
         [
             "(↑ DISCOURSE) = 'ALSO'",
             "(↑ DISCOURSE_POS) = 'SENTENCE_INITIAL'",

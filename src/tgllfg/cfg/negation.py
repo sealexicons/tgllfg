@@ -61,7 +61,7 @@ def register_rules(rules: list[Rule]) -> None:
     # particle daughter. Per ``compile.py::matches``, category-pattern
     # matching is non-conflict — a particle without a ``POLARITY``
     # feature absorbs the constraint and matches inappropriately. So
-    # ``halos`` (PART[APPROX=YES]) / ``tuwing`` (PART[TIME_FRAME=PERIODIC])
+    # ``halos`` (PART[APPROX]) / ``tuwing`` (PART[TIME_FRAME=PERIODIC])
     # / new Phase 5h ``mas`` (PART[COMP_DEGREE=COMPARATIVE]) all
     # silently triggered phantom negation parses (``Halos kumain ang
     # bata`` parsed with POLARITY=NEG). Adding the explicit

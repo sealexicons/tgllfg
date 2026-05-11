@@ -140,7 +140,7 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # ``May bahay na nasa bundok.`` "There is a house in the mountain"
     # — the RC body ``nasa bundok`` is a SUBJ-gapped locative-existential
-    # clause (Phase 5j Commit 4 ``S → PART[LOC_EXISTENTIAL=YES] N
+    # clause (Phase 5j Commit 4 ``S → PART[LOC_EXISTENTIAL] N
     # NP[CASE=NOM]`` minus the NOM-NP daughter, with the SUBJ slot
     # filled by REL-PRO bound to the head N). Required for the R&G
     # "Ang Manok" combined essay-paragraph (R&G p. 482, Commit 8
@@ -154,25 +154,25 @@ def register_rules(rules: list[Rule]) -> None:
     # S_GAP convention).
     rules.append(Rule(
         "S_GAP",
-        ["PART[LOC_EXISTENTIAL=YES]", "N"],
+        ["PART[LOC_EXISTENTIAL]", "N"],
         [
             "(↑ PRED) = 'LOC <SUBJ>'",
             "(↑ SUBJ) = (↑ REL-PRO)",
             "(↑ LOCATION) = ↓2",
             "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
-            "(↓1 LOC_EXISTENTIAL) =c 'YES'",
+            "(↓1 LOC_EXISTENTIAL) =c true",
         ],
     ))
     rules.append(Rule(
         "S_GAP",
-        ["PART[LOC_EXISTENTIAL=YES]", "N", "NP[CASE=GEN]"],
+        ["PART[LOC_EXISTENTIAL]", "N", "NP[CASE=GEN]"],
         [
             "(↑ PRED) = 'LOC <SUBJ>'",
             "(↑ SUBJ) = (↑ REL-PRO)",
             "(↑ LOCATION) = ↓2",
             "(↓2 POSS) = ↓3",
             "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
-            "(↓1 LOC_EXISTENTIAL) =c 'YES'",
+            "(↓1 LOC_EXISTENTIAL) =c true",
         ],
     ))
 
@@ -205,7 +205,7 @@ def register_rules(rules: list[Rule]) -> None:
     # variants:
     #
     #   1. Bare predicative-ADJ:
-    #      ``S_GAP_PREDADJ → ADJ[PREDICATIVE=YES]``
+    #      ``S_GAP_PREDADJ → ADJ[PREDICATIVE]``
     #      Covers ``maganda`` / ``matanda`` / ``mas matalino`` /
     #      ``pinakamatalino`` / ``kasingganda`` (single-token
     #      paradigm forms and mas/pinaka-wrapped variants).
@@ -239,13 +239,13 @@ def register_rules(rules: list[Rule]) -> None:
     # Phase 4 §7.4 V-pivot wrap.
     rules.append(Rule(
         "S_GAP_PREDADJ",
-        ["ADJ[PREDICATIVE=YES]"],
+        ["ADJ[PREDICATIVE]"],
         [
             "(↑ PRED) = 'ADJ <SUBJ>'",
             "(↑ SUBJ) = (↑ REL-PRO)",
             "(↑ ADJ_LEMMA) = ↓1 LEMMA",
-            "(↑ PREDICATIVE) = 'YES'",
-            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
         ],
     ))
     rules.append(Rule(
@@ -255,8 +255,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PRED) = 'ADJ <SUBJ>'",
             "(↑ SUBJ) = (↑ REL-PRO)",
             "(↑ ADJ_LEMMA) = ↓1 LEMMA",
-            "(↑ PREDICATIVE) = 'YES'",
-            "(↓1 PREDICATIVE) =c 'YES'",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
             "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
             "↓2 ∈ (↑ ADJUNCT)",
             "(↓2 ROLE) = 'EQUATIVE_STANDARD'",
@@ -975,7 +975,7 @@ def register_rules(rules: list[Rule]) -> None:
     # NP, with no overt head noun. The "head" is a phonologically
     # null PRO interpreted as the gap-filler (REL-PRO).
     #
-    # Structure: ``DET[CASE=X, DEM=NO] S_GAP``. The bare case
+    # Structure: ``DET[CASE=X, DEM=false] S_GAP``. The bare case
     # marker (``ang`` / ``ng`` / ``sa`` / ``si`` / ``ni`` /
     # ``kay``) plus a SUBJ-gapped inner clause forms the headless
     # NP. The DEM=NO constraint prevents the rule from firing on
@@ -991,9 +991,9 @@ def register_rules(rules: list[Rule]) -> None:
         # NOM uses DET (ang / si); GEN / DAT use ADP
         # (ng / sa / ni / kay).
         head_cat = (
-            f"DET[CASE={case}, DEM=NO]"
+            f"DET[CASE={case}, DEM=false]"
             if case == "NOM"
-            else f"ADP[CASE={case}, DEM=NO]"
+            else f"ADP[CASE={case}, DEM=false]"
         )
         rules.append(Rule(
             f"NP[CASE={case}]",

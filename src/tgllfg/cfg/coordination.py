@@ -424,7 +424,7 @@ def register_rules(rules: list[Rule]) -> None:
     #   ↓1 ∈ (↑ CONJUNCTS)
     #   ↓4 ∈ (↑ CONJUNCTS)
     #   (↑ COORD) = 'SO'
-    #   (↑ DISCOURSE_EMPH) = 'YES'
+    #   (↑ DISCOURSE_EMPH) = true
     #   (↓2 COORD) =c 'SO'
     #   (↓3 ADV) =c 'ALSO'
     #
@@ -465,7 +465,7 @@ def register_rules(rules: list[Rule]) -> None:
             "↓1 ∈ (↑ CONJUNCTS)",
             "↓4 ∈ (↑ CONJUNCTS)",
             "(↑ COORD) = 'SO'",
-            "(↑ DISCOURSE_EMPH) = 'YES'",
+            "(↑ DISCOURSE_EMPH) = true",
             "(↓2 COORD) =c 'SO'",
             "(↓3 ADV) =c 'ALSO'",
         ],
@@ -484,7 +484,7 @@ def register_rules(rules: list[Rule]) -> None:
             "↓1 ∈ (↑ CONJUNCTS)",
             "↓5 ∈ (↑ CONJUNCTS)",
             "(↑ COORD) = 'SO'",
-            "(↑ DISCOURSE_EMPH) = 'YES'",
+            "(↑ DISCOURSE_EMPH) = true",
             "(↓3 COORD) =c 'SO'",
             "(↓4 ADV) =c 'ALSO'",
         ],
@@ -563,7 +563,7 @@ def register_rules(rules: list[Rule]) -> None:
     #
     #   ``May aklat at lapis si Maria.`` "Maria has a book and a
     #   pencil" — the Phase 5j HAVE rule
-    #   (``S → PART[EXISTENTIAL=YES] N NP[CASE=NOM]``) takes
+    #   (``S → PART[EXISTENTIAL] N NP[CASE=NOM]``) takes
     #   bare N as the existence-asserted entity. Without an
     #   N-level coord rule the coord-N ``aklat at lapis`` cannot
     #   parse as a single N, and HAVE × coord 0-parses.
@@ -648,7 +648,7 @@ def register_rules(rules: list[Rule]) -> None:
             "↓1 ∈ (↑ CONJUNCTS)",
             "↓5 ∈ (↑ CONJUNCTS)",
             "(↑ COORD) = 'BUT_NOT'",
-            "(↑ CORREL) = 'YES'",
+            "(↑ CORREL) = true",
             "(↓3 COORD) =c 'BUT_NOT'",
             "(↓4 ADV) =c 'ALSO_INCL'",
         ],
@@ -667,7 +667,7 @@ def register_rules(rules: list[Rule]) -> None:
             "↓1 ∈ (↑ CONJUNCTS)",
             "↓4 ∈ (↑ CONJUNCTS)",
             "(↑ COORD) = 'BUT_NOT'",
-            "(↑ CORREL) = 'YES'",
+            "(↑ CORREL) = true",
             "(↓2 COORD) =c 'BUT_NOT'",
             "(↓3 ADV) =c 'ALSO_INCL'",
         ],
@@ -723,7 +723,7 @@ def register_rules(rules: list[Rule]) -> None:
         ["PART", "PART"],
         [
             "(↑ COORD) = 'OR'",
-            "(↑ UNCERTAIN) = 'YES'",
+            "(↑ UNCERTAIN) = true",
             "(↑ LEMMA) = 'o_kaya'",
             "(↓1 LEMMA) =c 'o'",
             "(↓2 LEMMA) =c 'kaya'",
@@ -735,7 +735,7 @@ def register_rules(rules: list[Rule]) -> None:
         ["PART", "PART"],
         [
             "(↑ COORD) = 'AND'",
-            "(↑ SEQUENCE) = 'YES'",
+            "(↑ SEQUENCE) = true",
             "(↑ LEMMA) = 'at_saka'",
             "(↓1 LEMMA) =c 'at'",
             "(↓2 LEMMA) =c 'saka'",
@@ -760,7 +760,7 @@ def register_rules(rules: list[Rule]) -> None:
     # = 100 + 20; etc. The bound ``'t`` clitic (Phase 5k Commit 2
     # ``split_apostrophe_t``) synthesises ``at`` between the two
     # cardinal operands, so the input reaches the grammar as
-    # ``NUM[CARDINAL=YES] PART[COORD=AND] NUM[CARDINAL=YES]``.
+    # ``NUM[CARDINAL] PART[COORD=AND] NUM[CARDINAL]``.
     #
     # The unifier's equation language (src/tgllfg/fstruct/equations.py)
     # has no arithmetic primitive — Atom and Designator are the only
@@ -772,7 +772,7 @@ def register_rules(rules: list[Rule]) -> None:
     # an equation-language extension or a post-unification projection
     # pass; both are larger scope than this single L79 closure.)
     #
-    # The rule produces NUM[CARDINAL=YES] so the existing NP-cardinal-
+    # The rule produces NUM[CARDINAL] so the existing NP-cardinal-
     # modifier rule (Phase 5f Commit 1) consumes the coordinated
     # cardinal as if it were a single NUM, allowing
     # ``apatnapu't limang aklat`` to parse as a quantified NP.
@@ -780,21 +780,21 @@ def register_rules(rules: list[Rule]) -> None:
     # Reference: S&O 1972 §4 (numeral coordination); R&G 1981
     # dialogue corpus.
     rules.append(Rule(
-        "NUM[CARDINAL=YES]",
+        "NUM[CARDINAL]",
         [
-            "NUM[CARDINAL=YES]",
+            "NUM[CARDINAL]",
             "PART[COORD=AND]",
-            "NUM[CARDINAL=YES]",
+            "NUM[CARDINAL]",
         ],
         [
-            "(↑ CARDINAL) = 'YES'",
+            "(↑ CARDINAL) = true",
             "(↑ NUM) = 'PL'",
             "(↑ COORD_OP) = 'SUM'",
             "(↑ OPERAND_1) = ↓1 CARDINAL_VALUE",
             "(↑ OPERAND_2) = ↓3 CARDINAL_VALUE",
             "(↓2 COORD) =c 'AND'",
-            "(↓1 CARDINAL) =c 'YES'",
-            "(↓3 CARDINAL) =c 'YES'",
+            "(↓1 CARDINAL) =c true",
+            "(↓3 CARDINAL) =c true",
         ],
     ))
 
@@ -864,7 +864,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ CONJ2) ∈ (↑ CONJUNCTS)",
             # Matrix
             "(↑ COORD) = 'AND'",
-            "(↑ GAPPING) = 'YES'",
+            "(↑ GAPPING) = true",
             "(↓4 COORD) =c 'AND'",
         ],
     ))
@@ -898,7 +898,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ CONJ2 SUBJ) = ↓6",
             "(↑ CONJ2) ∈ (↑ CONJUNCTS)",
             "(↑ COORD) = 'AND'",
-            "(↑ GAPPING) = 'YES'",
+            "(↑ GAPPING) = true",
             "(↓4 COORD) =c 'AND'",
         ],
     ))
@@ -941,7 +941,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ CONJ2 OBJ-PATIENT) = ↓7",
             "(↑ CONJ2) ∈ (↑ CONJUNCTS)",
             "(↑ COORD) = 'AND'",
-            "(↑ GAPPING) = 'YES'",
+            "(↑ GAPPING) = true",
             "(↓5 COORD) =c 'AND'",
         ],
     ))
@@ -989,7 +989,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ CONJ3) ∈ (↑ CONJUNCTS)",
             # Matrix
             "(↑ COORD) = 'AND'",
-            "(↑ GAPPING) = 'YES'",
+            "(↑ GAPPING) = true",
             "(↓8 COORD) =c 'AND'",
         ],
     ))

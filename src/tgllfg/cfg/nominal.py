@@ -101,8 +101,8 @@ def register_rules(rules: list[Rule]) -> None:
     # three; DAT for kanino). Cleft-style fronting (Commit 2) consumes
     # them in NOM-pivot position; in-situ wh appears in case-marked
     # argument position, requiring an ADP wrapper. These two shell
-    # rules admit ``ng + PRON[WH=YES]`` → NP[CASE=GEN] and
-    # ``sa/kay + PRON[WH=YES]`` → NP[CASE=DAT].
+    # rules admit ``ng + PRON[WH]`` → NP[CASE=GEN] and
+    # ``sa/kay + PRON[WH]`` → NP[CASE=DAT].
     #
     # Without these rules, ``Kumain ka ng ano?`` fails: the existing
     # NP[CASE=GEN] shell expects an N (NOUN-headed) daughter, not a
@@ -114,7 +114,7 @@ def register_rules(rules: list[Rule]) -> None:
     # (``(↑) = ↓1`` so CASE comes from the wrapper); matrix gets a
     # synthesized PRED (parallels Phase 4 §7.8 standalone-dem PRED:
     # 'PRO'). The wh-feature lifts onto the matrix so downstream
-    # consumers can read ``(↑ WH) = 'YES'`` off any in-situ wh-NP
+    # consumers can read ``(↑ WH) = true`` off any in-situ wh-NP
     # without traversing into the PRON daughter.
     #
     # The matrix-level Q_TYPE lift (marking the whole sentence as a
@@ -125,24 +125,24 @@ def register_rules(rules: list[Rule]) -> None:
     # follow-on if corpus pressure demands it.
     rules.append(Rule(
         "NP[CASE=GEN]",
-        ["ADP[CASE=GEN]", "PRON[WH=YES]"],
+        ["ADP[CASE=GEN]", "PRON[WH]"],
         [
             "(↑) = ↓1",
             "(↑ PRED) = 'WH-PRO'",
             "(↑ WH) = ↓2 WH",
             "(↑ WH_LEMMA) = ↓2 LEMMA",
-            "(↓2 WH) =c 'YES'",
+            "(↓2 WH) =c true",
         ],
     ))
     rules.append(Rule(
         "NP[CASE=DAT]",
-        ["ADP[CASE=DAT]", "PRON[WH=YES]"],
+        ["ADP[CASE=DAT]", "PRON[WH]"],
         [
             "(↑) = ↓1",
             "(↑ PRED) = 'WH-PRO'",
             "(↑ WH) = ↓2 WH",
             "(↑ WH_LEMMA) = ↓2 LEMMA",
-            "(↓2 WH) =c 'YES'",
+            "(↓2 WH) =c true",
         ],
     ))
 
@@ -158,7 +158,7 @@ def register_rules(rules: list[Rule]) -> None:
     # ``Magkano ito sa kanya?``.
     #
     # ``¬ (↓2 WH)`` keeps this rule disjoint from the Phase 5i
-    # C3 wh-PRON rule above (which fires on PRON[WH=YES]). The
+    # C3 wh-PRON rule above (which fires on PRON[WH]). The
     # two paths are mutually exclusive on the WH feat.
     rules.append(Rule(
         "NP[CASE=DAT]",
@@ -183,17 +183,17 @@ def register_rules(rules: list[Rule]) -> None:
     # / OBJ of a verb.
     rules.append(Rule(
         "NP[CASE=NOM]",
-        ["DET[CASE=NOM, DEM=YES]"],
+        ["DET[CASE=NOM, DEM]"],
         ["(↑) = ↓1", "(↑ PRED) = 'PRO'"],
     ))
     rules.append(Rule(
         "NP[CASE=GEN]",
-        ["ADP[CASE=GEN, DEM=YES]"],
+        ["ADP[CASE=GEN, DEM]"],
         ["(↑) = ↓1", "(↑ PRED) = 'PRO'"],
     ))
     rules.append(Rule(
         "NP[CASE=DAT]",
-        ["ADP[CASE=DAT, DEM=YES]"],
+        ["ADP[CASE=DAT, DEM]"],
         ["(↑) = ↓1", "(↑ PRED) = 'PRO'"],
     ))
 
@@ -217,7 +217,7 @@ def register_rules(rules: list[Rule]) -> None:
             [
                 "NP[CASE=NOM]",
                 f"PART[LINK={link}]",
-                "DET[CASE=NOM, DEM=YES]",
+                "DET[CASE=NOM, DEM]",
             ],
             _eqs(
                 "(↑) = ↓1",
@@ -229,7 +229,7 @@ def register_rules(rules: list[Rule]) -> None:
             [
                 "NP[CASE=GEN]",
                 f"PART[LINK={link}]",
-                "ADP[CASE=GEN, DEM=YES]",
+                "ADP[CASE=GEN, DEM]",
             ],
             _eqs(
                 "(↑) = ↓1",
@@ -241,7 +241,7 @@ def register_rules(rules: list[Rule]) -> None:
             [
                 "NP[CASE=DAT]",
                 f"PART[LINK={link}]",
-                "ADP[CASE=DAT, DEM=YES]",
+                "ADP[CASE=DAT, DEM]",
             ],
             _eqs(
                 "(↑) = ↓1",
@@ -274,7 +274,7 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             "NP[CASE=NOM]",
             [
-                "DET[CASE=NOM, DEM=YES]",
+                "DET[CASE=NOM, DEM]",
                 f"PART[LINK={link}]",
                 "N",
             ],
@@ -287,7 +287,7 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             "NP[CASE=GEN]",
             [
-                "ADP[CASE=GEN, DEM=YES]",
+                "ADP[CASE=GEN, DEM]",
                 f"PART[LINK={link}]",
                 "N",
             ],
@@ -300,7 +300,7 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             "NP[CASE=DAT]",
             [
-                "ADP[CASE=DAT, DEM=YES]",
+                "ADP[CASE=DAT, DEM]",
                 f"PART[LINK={link}]",
                 "N",
             ],
@@ -321,7 +321,7 @@ def register_rules(rules: list[Rule]) -> None:
     # cardinals (split off by ``split_linker_ng`` once the
     # cardinal stems are known surfaces) or standalone ``na``
     # after consonant-final cardinals (apat, anim, siyam). The
-    # standalone ``na`` after a NUM[CARDINAL=YES] is
+    # standalone ``na`` after a NUM[CARDINAL] is
     # disambiguated as the linker (not the ALREADY enclitic) by
     # ``disambiguate_homophone_clitics`` — see
     # ``src/tgllfg/clitics/placement.py``.
@@ -344,7 +344,7 @@ def register_rules(rules: list[Rule]) -> None:
                 f"NP[CASE={case}]",
                 [
                     marker,
-                    "NUM[CARDINAL=YES]",
+                    "NUM[CARDINAL]",
                     f"PART[LINK={link}]",
                     "N",
                 ],
@@ -361,8 +361,8 @@ def register_rules(rules: list[Rule]) -> None:
                     # non-conflict (no shared CARDINAL key) and
                     # produce empty CARDINAL_VALUE fstructs on the
                     # matrix NP. Same fix-pattern as Commit 6's
-                    # PART[DECIMAL_SEP=YES] constraint.
-                    "(↓2 CARDINAL) =c 'YES'",
+                    # PART[DECIMAL_SEP] constraint.
+                    "(↓2 CARDINAL) =c true",
                 ],
             ))
     # An N-level companion rule for bare cardinal-N use
@@ -382,7 +382,7 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             "N",
             [
-                "NUM[CARDINAL=YES]",
+                "NUM[CARDINAL]",
                 f"PART[LINK={link}]",
                 "N",
             ],
@@ -392,7 +392,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ NUM) = ↓1 NUM",
                 "(↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE",
                 "¬ (↓3 CARDINAL_VALUE)",
-                "(↓1 CARDINAL) =c 'YES'",
+                "(↓1 CARDINAL) =c true",
             ],
         ))
 
@@ -424,7 +424,7 @@ def register_rules(rules: list[Rule]) -> None:
                 f"NP[CASE={case}]",
                 [
                     marker,
-                    "NUM[ORDINAL=YES]",
+                    "NUM[ORDINAL]",
                     f"PART[LINK={link}]",
                     "N",
                 ],
@@ -436,10 +436,10 @@ def register_rules(rules: list[Rule]) -> None:
                     "¬ (↓4 ORDINAL_VALUE)",
                     # Constraining: enforce daughter is actually
                     # ORDINAL=YES (parallel to the cardinal rule's
-                    # ``(↓2 CARDINAL) =c 'YES'`` — the non-conflict
+                    # ``(↓2 CARDINAL) =c true`` — the non-conflict
                     # matcher would otherwise match CARDINAL=YES
                     # NUMs and create empty ORDINAL_VALUE fstructs).
-                    "(↓2 ORDINAL) =c 'YES'",
+                    "(↓2 ORDINAL) =c true",
                 ],
             ))
 
@@ -587,7 +587,7 @@ def register_rules(rules: list[Rule]) -> None:
     # CARDINAL_VALUE; it contributes ``QUANT`` (MANY / FEW /
     # VERY_FEW / MOST) and ``VAGUE=YES`` rides up to the matrix
     # NP for the LMT classifier and downstream consumers. The
-    # constraining equation ``(↓2 VAGUE) =c 'YES'`` enforces
+    # constraining equation ``(↓2 VAGUE) =c true`` enforces
     # the daughter is actually a vague Q (lahat / iba would
     # otherwise match by non-conflict on the absence of CARDINAL
     # / ORDINAL / VAGUE).
@@ -611,9 +611,9 @@ def register_rules(rules: list[Rule]) -> None:
                     "(↑ PRED) = ↓4 PRED",
                     "(↑ LEMMA) = ↓4 LEMMA",
                     "(↑ QUANT) = ↓2 QUANT",
-                    "(↑ VAGUE) = 'YES'",
+                    "(↑ VAGUE) = true",
                     "¬ (↓4 VAGUE)",
-                    "(↓2 VAGUE) =c 'YES'",
+                    "(↓2 VAGUE) =c true",
                 ],
             ))
 
@@ -626,9 +626,9 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # **Phase 5n.B Commit 2 (§18 L43) tightening**: ``¬ (↓1 WH)``
     # excludes wh-Q daughters from this non-wh companion rule.
-    # Pre-tightening, ``aling bata`` (Q[WH=YES] daughter) fired
+    # Pre-tightening, ``aling bata`` (Q[WH] daughter) fired
     # both this rule (producing N without WH) AND the Phase 5i
-    # Commit 6 wh-Q+N companion (producing N[WH=YES]). The non-WH
+    # Commit 6 wh-Q+N companion (producing N[WH]). The non-WH
     # output then leaked into the new Phase 5n.B Commit 2
     # predicative-N clause rule (S → N NP[CASE=NOM]) because the
     # ``¬ (↓1 WH)`` constraint there was satisfied (WH was
@@ -647,9 +647,9 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ PRED) = ↓3 PRED",
                 "(↑ LEMMA) = ↓3 LEMMA",
                 "(↑ QUANT) = ↓1 QUANT",
-                "(↑ VAGUE) = 'YES'",
+                "(↑ VAGUE) = true",
                 "¬ (↓3 VAGUE)",
-                "(↓1 VAGUE) =c 'YES'",
+                "(↓1 VAGUE) =c true",
                 "¬ (↓1 WH)",
             ],
         ))
@@ -665,17 +665,17 @@ def register_rules(rules: list[Rule]) -> None:
     # baseline-perturbation pattern Phase 5i Commit 5 closed by
     # splitting into two parallel rules).
     #
-    # This wh-Q variant constrains on ``Q[VAGUE=YES, WH=YES]`` so
+    # This wh-Q variant constrains on ``Q[VAGUE, WH]`` so
     # it fires only on Phase 5i wh-Q heads (``alin`` / ``ilan``-WH
     # / ``magkano``). The matrix N gets WH=YES + WH_LEMMA from the
     # Q daughter, on top of the QUANT / VAGUE lifts the non-wh rule
     # already provides. Phase 5i Commit 6's wh-N-cleft rule (in
-    # cfg/clause.py) consumes the resulting N[WH=YES].
+    # cfg/clause.py) consumes the resulting N[WH].
     for link in ("NA", "NG"):
         rules.append(Rule(
             "N",
             [
-                "Q[VAGUE=YES, WH=YES]",
+                "Q[VAGUE, WH]",
                 f"PART[LINK={link}]",
                 "N",
             ],
@@ -683,12 +683,12 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ PRED) = ↓3 PRED",
                 "(↑ LEMMA) = ↓3 LEMMA",
                 "(↑ QUANT) = ↓1 QUANT",
-                "(↑ VAGUE) = 'YES'",
-                "(↑ WH) = 'YES'",
+                "(↑ VAGUE) = true",
+                "(↑ WH) = true",
                 "(↑ WH_LEMMA) = ↓1 LEMMA",
                 "¬ (↓3 VAGUE)",
-                "(↓1 VAGUE) =c 'YES'",
-                "(↓1 WH) =c 'YES'",
+                "(↓1 VAGUE) =c true",
+                "(↓1 WH) =c true",
             ],
         ))
 
@@ -703,8 +703,8 @@ def register_rules(rules: list[Rule]) -> None:
     # Plan §11.1 Group H item 6 (S&O 1972 §4.7).
     #
     # 4 rules total: 3 case-marked variants
-    # (``DET/ADP[CASE=X] Q[UNIV=YES] N``) plus 1 bare-NOM
-    # variant (``Q[UNIV=YES] N``). The bare-NOM rule covers
+    # (``DET/ADP[CASE=X] Q[UNIV] N``) plus 1 bare-NOM
+    # variant (``Q[UNIV] N``). The bare-NOM rule covers
     # ``Bawat bata ay kumakain.`` "Every child eats." style
     # surfaces where bawat itself functions as the determiner-
     # equivalent.
@@ -726,9 +726,9 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ PRED) = ↓3 PRED",
                 "(↑ LEMMA) = ↓3 LEMMA",
                 "(↑ QUANT) = ↓2 QUANT",
-                "(↑ UNIV) = 'YES'",
+                "(↑ UNIV) = true",
                 "¬ (↓3 UNIV)",
-                "(↓2 UNIV) =c 'YES'",
+                "(↓2 UNIV) =c true",
             ],
         ))
 
@@ -741,10 +741,10 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PRED) = ↓2 PRED",
             "(↑ LEMMA) = ↓2 LEMMA",
             "(↑ QUANT) = ↓1 QUANT",
-            "(↑ UNIV) = 'YES'",
+            "(↑ UNIV) = true",
             "(↑ CASE) = 'NOM'",
             "¬ (↓2 UNIV)",
-            "(↓1 UNIV) =c 'YES'",
+            "(↓1 UNIV) =c true",
         ],
     ))
 
@@ -753,7 +753,7 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Closes the Phase 5f Commit 20 deferred Q + NUM piece per
     # Phase 5n.C anti-deferral discipline. Adds parallel rules
-    # mirroring the Q + N family above, with a NUM[CARDINAL=YES]
+    # mirroring the Q + N family above, with a NUM[CARDINAL]
     # complement instead of a bare N. Surfaces:
     #
     #   bawat isa       "every one / each one"
@@ -773,13 +773,13 @@ def register_rules(rules: list[Rule]) -> None:
     # Rule shape mirrors Q + N:
     #
     # 4 rules total: 3 case-marked variants
-    # (``DET/ADP[CASE=X] Q[UNIV=YES] NUM[CARDINAL=YES]``) plus
-    # 1 bare-NOM variant (``Q[UNIV=YES] NUM[CARDINAL=YES]``).
+    # (``DET/ADP[CASE=X] Q[UNIV] NUM[CARDINAL]``) plus
+    # 1 bare-NOM variant (``Q[UNIV] NUM[CARDINAL]``).
     # CARDINAL_VALUE percolates from the NUM daughter so
     # downstream consumers can read the count
     # (``bawat dalawa`` carries CARDINAL_VALUE=2).
     #
-    # The NUM bracket constraint ``[CARDINAL=YES]`` restricts the
+    # The NUM bracket constraint ``[CARDINAL]`` restricts the
     # rule to genuine cardinals (``isa`` / ``dalawa`` / ``tatlo``
     # / ...) rather than firing on any NUM token (e.g.,
     # ordinals, vague numerics). The constraining equation
@@ -789,34 +789,34 @@ def register_rules(rules: list[Rule]) -> None:
     for case, marker in _cardinal_case_marker.items():
         rules.append(Rule(
             f"NP[CASE={case}]",
-            [marker, "Q", "NUM[CARDINAL=YES]"],
+            [marker, "Q", "NUM[CARDINAL]"],
             [
                 "(↑) = ↓1",
                 "(↑ PRED) = ↓3 PRED",
                 "(↑ LEMMA) = ↓3 LEMMA",
                 "(↑ QUANT) = ↓2 QUANT",
-                "(↑ UNIV) = 'YES'",
+                "(↑ UNIV) = true",
                 "(↑ CARDINAL_VALUE) = ↓3 CARDINAL_VALUE",
                 "¬ (↓3 UNIV)",
-                "(↓2 UNIV) =c 'YES'",
-                "(↓3 CARDINAL) =c 'YES'",
+                "(↓2 UNIV) =c true",
+                "(↓3 CARDINAL) =c true",
             ],
         ))
 
     # Bare-NOM rule (parallel to the Q + N bare-NOM rule).
     rules.append(Rule(
         "NP[CASE=NOM]",
-        ["Q", "NUM[CARDINAL=YES]"],
+        ["Q", "NUM[CARDINAL]"],
         [
             "(↑ PRED) = ↓2 PRED",
             "(↑ LEMMA) = ↓2 LEMMA",
             "(↑ QUANT) = ↓1 QUANT",
-            "(↑ UNIV) = 'YES'",
+            "(↑ UNIV) = true",
             "(↑ CASE) = 'NOM'",
             "(↑ CARDINAL_VALUE) = ↓2 CARDINAL_VALUE",
             "¬ (↓2 UNIV)",
-            "(↓1 UNIV) =c 'YES'",
-            "(↓2 CARDINAL) =c 'YES'",
+            "(↓1 UNIV) =c true",
+            "(↓2 CARDINAL) =c true",
         ],
     ))
 
@@ -833,7 +833,7 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Rule shape mirrors Phase 5f Commit 15 vague-Q-modifier:
     # ``DET/ADP Q PART[LINK] N``. The constraining equation
-    # ``(↓2 DISTRIB_POSS) =c 'YES'`` gates the rule to
+    # ``(↓2 DISTRIB_POSS) =c true`` gates the rule to
     # kanikaniya / kanyakanya; non-distributive-possessive Q
     # heads (lahat / iba / vague / universal) match by absence
     # without it.
@@ -853,9 +853,9 @@ def register_rules(rules: list[Rule]) -> None:
                     "(↑ PRED) = ↓4 PRED",
                     "(↑ LEMMA) = ↓4 LEMMA",
                     "(↑ QUANT) = ↓2 QUANT",
-                    "(↑ DISTRIB_POSS) = 'YES'",
+                    "(↑ DISTRIB_POSS) = true",
                     "¬ (↓4 DISTRIB_POSS)",
-                    "(↓2 DISTRIB_POSS) =c 'YES'",
+                    "(↓2 DISTRIB_POSS) =c true",
                 ],
             ))
 
@@ -871,10 +871,10 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ PRED) = ↓3 PRED",
                 "(↑ LEMMA) = ↓3 LEMMA",
                 "(↑ QUANT) = ↓1 QUANT",
-                "(↑ DISTRIB_POSS) = 'YES'",
+                "(↑ DISTRIB_POSS) = true",
                 "(↑ CASE) = 'NOM'",
                 "¬ (↓3 DISTRIB_POSS)",
-                "(↓1 DISTRIB_POSS) =c 'YES'",
+                "(↓1 DISTRIB_POSS) =c true",
             ],
         ))
 
@@ -933,7 +933,7 @@ def register_rules(rules: list[Rule]) -> None:
     # Rule shape mirrors Phase 5f Commit 15 vague-Q-modifier
     # and Commit 21 distributive-possessive: ``DET/ADP Q
     # PART[LINK] N``. The constraining equation
-    # ``(↓2 WHOLE) =c 'YES'`` gates the rule to ``buo``;
+    # ``(↓2 WHOLE) =c true`` gates the rule to ``buo``;
     # non-WHOLE Q heads (lahat / iba / vague / universal /
     # distributive-possessive) match by absence on WHOLE
     # without it.
@@ -954,9 +954,9 @@ def register_rules(rules: list[Rule]) -> None:
                     "(↑ PRED) = ↓4 PRED",
                     "(↑ LEMMA) = ↓4 LEMMA",
                     "(↑ QUANT) = ↓2 QUANT",
-                    "(↑ WHOLE) = 'YES'",
+                    "(↑ WHOLE) = true",
                     "¬ (↓4 WHOLE)",
-                    "(↓2 WHOLE) =c 'YES'",
+                    "(↓2 WHOLE) =c true",
                 ],
             ))
 
@@ -971,10 +971,10 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ PRED) = ↓3 PRED",
                 "(↑ LEMMA) = ↓3 LEMMA",
                 "(↑ QUANT) = ↓1 QUANT",
-                "(↑ WHOLE) = 'YES'",
+                "(↑ WHOLE) = true",
                 "(↑ CASE) = 'NOM'",
                 "¬ (↓3 WHOLE)",
-                "(↓1 WHOLE) =c 'YES'",
+                "(↓1 WHOLE) =c true",
             ],
         ))
 
@@ -1001,7 +1001,7 @@ def register_rules(rules: list[Rule]) -> None:
     # possessive); this commit's measure-N rule covers the
     # linker form, which is more idiomatic for native speakers.
     #
-    # The constraining equation ``(↓1 MEASURE) =c 'YES'`` gates
+    # The constraining equation ``(↓1 MEASURE) =c true`` gates
     # the rule to measure NOUNs only — generic ``bata na
     # aklat`` ("child book"?) doesn't compose because ``bata``
     # has no MEASURE feature. ``¬ (↓3 MEASURE)`` blocks chained
@@ -1019,8 +1019,8 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ PRED) = ↓3 PRED",
                 "(↑ LEMMA) = ↓3 LEMMA",
                 "(↑ MEASURE_HEAD) = ↓1 LEMMA",
-                "(↑ MEASURE) = 'YES'",
-                "(↓1 MEASURE) =c 'YES'",
+                "(↑ MEASURE) = true",
+                "(↓1 MEASURE) =c true",
                 "¬ (↓3 MEASURE)",
             ],
         ))
@@ -1060,7 +1060,7 @@ def register_rules(rules: list[Rule]) -> None:
     # ``dos punto singko`` "2.5", ``apat punto lima`` "4.5".
     # Spanish-borrowed ``punto`` joins the integer-part cardinal
     # to the fractional-part cardinal. The output is itself a
-    # ``NUM[CARDINAL=YES]`` so the existing cardinal-NP-modifier
+    # ``NUM[CARDINAL]`` so the existing cardinal-NP-modifier
     # rules (Commit 1) and predicative-cardinal rule (Commit 4)
     # accept it unchanged.
     #
@@ -1076,16 +1076,16 @@ def register_rules(rules: list[Rule]) -> None:
     # combine ``CARDINAL_VALUE`` and ``FRACTIONAL_VALUE`` with
     # the ``DECIMAL`` marker.
     rules.append(Rule(
-        "NUM[CARDINAL=YES]",
+        "NUM[CARDINAL]",
         [
-            "NUM[CARDINAL=YES]",
-            "PART[DECIMAL_SEP=YES]",
-            "NUM[CARDINAL=YES]",
+            "NUM[CARDINAL]",
+            "PART[DECIMAL_SEP]",
+            "NUM[CARDINAL]",
         ],
         [
             "(↑) = ↓1",
             "(↑ FRACTIONAL_VALUE) = ↓3 CARDINAL_VALUE",
-            "(↑ DECIMAL) = 'YES'",
+            "(↑ DECIMAL) = true",
             # Constraining equation: enforce that the middle PART
             # daughter actually has DECIMAL_SEP=YES (i.e., is
             # ``punto``). Without this, the non-conflict pattern
@@ -1096,7 +1096,7 @@ def register_rules(rules: list[Rule]) -> None:
             # ``hindi`` vs ``huwag`` (and Commit 26 with
             # ``parang`` vs ``tila``). The constraining
             # equation rejects spurious matches at f-unification.
-            "(↓2 DECIMAL_SEP) =c 'YES'",
+            "(↓2 DECIMAL_SEP) =c true",
         ],
     ))
 
@@ -1116,7 +1116,7 @@ def register_rules(rules: list[Rule]) -> None:
     # grammar additions.
     #
     # The constraining equations enforce:
-    #   (↓1 PLURAL_MARKER) =c 'YES'   — particle is mga
+    #   (↓1 PLURAL_MARKER) =c true   — particle is mga
     #   (↓2 SEM_CLASS) =c 'TIME'      — head is clock-time
     #
     # Plural marking on regular nouns (``ang mga aklat`` "the
@@ -1129,8 +1129,8 @@ def register_rules(rules: list[Rule]) -> None:
         ["PART", "N"],
         [
             "(↑) = ↓2",
-            "(↑ APPROX) = 'YES'",
-            "(↓1 PLURAL_MARKER) =c 'YES'",
+            "(↑ APPROX) = true",
+            "(↓1 PLURAL_MARKER) =c true",
             "(↓2 SEM_CLASS) =c 'TIME'",
         ],
     ))
@@ -1147,30 +1147,30 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Three rules total:
     #
-    # 1. ``NUM → PART[APPROX=YES] NUM[CARDINAL=YES]`` wraps a
+    # 1. ``NUM → PART[APPROX] NUM[CARDINAL]`` wraps a
     #    cardinal NUM. Output is NUM (preserving CARDINAL=YES
     #    + CARDINAL_VALUE), so the matrix-NP cardinal-modifier
     #    rule (Phase 5f Commit 1) consumes it directly:
     #    ``Bumili ako ng halos sampung aklat.`` parses as
     #    ``[halos sampu]ng aklat`` with CARDINAL_VALUE=10 +
     #    APPROX=YES on the matrix NP.
-    # 2. ``Q → PART[APPROX=YES] Q`` wraps a quantifier. Output
+    # 2. ``Q → PART[APPROX] Q`` wraps a quantifier. Output
     #    is Q (preserving QUANT + VAGUE), so the existing
     #    Phase 5b partitive (``Q + NP[GEN]``) and Phase 5f
     #    Commit 15 vague-Q-modifier rules consume it:
     #    ``halos lahat ng bata`` partitive,
     #    ``halos maraming bata`` linker form.
-    # 3. ``NUM → PART[PLURAL_MARKER=YES] NUM[CARDINAL=YES]``
+    # 3. ``NUM → PART[PLURAL_MARKER] NUM[CARDINAL]``
     #    extends the Phase 5f Commit 13 mga rule from TIME
     #    NOUNs to cardinal NUMs. ``mga sampu`` "around ten"
     #    is the target; same surface uses the same lex entry,
     #    different rule.
     #
-    # The constraining equation ``(↓1 APPROX) =c 'YES'`` (rules
+    # The constraining equation ``(↓1 APPROX) =c true`` (rules
     # 1 + 2) gates the daughter to actual approximator PARTs
     # (``halos`` / ``humigitkumulang``); ``(↓1 PLURAL_MARKER)
     # =c 'YES'`` (rule 3) gates to ``mga``. The
-    # ``(↓2 CARDINAL) =c 'YES'`` constraint on rules 1 + 3
+    # ``(↓2 CARDINAL) =c true`` constraint on rules 1 + 3
     # enforces the daughter is a genuinely cardinal NUM
     # (parallel to Commit 1's cardinal NP-modifier rule).
     rules.append(Rule(
@@ -1178,9 +1178,9 @@ def register_rules(rules: list[Rule]) -> None:
         ["PART", "NUM"],
         [
             "(↑) = ↓2",
-            "(↑ APPROX) = 'YES'",
-            "(↓1 APPROX) =c 'YES'",
-            "(↓2 CARDINAL) =c 'YES'",
+            "(↑ APPROX) = true",
+            "(↓1 APPROX) =c true",
+            "(↓2 CARDINAL) =c true",
         ],
     ))
     rules.append(Rule(
@@ -1188,8 +1188,8 @@ def register_rules(rules: list[Rule]) -> None:
         ["PART", "Q"],
         [
             "(↑) = ↓2",
-            "(↑ APPROX) = 'YES'",
-            "(↓1 APPROX) =c 'YES'",
+            "(↑ APPROX) = true",
+            "(↓1 APPROX) =c true",
         ],
     ))
     rules.append(Rule(
@@ -1197,9 +1197,9 @@ def register_rules(rules: list[Rule]) -> None:
         ["PART", "NUM"],
         [
             "(↑) = ↓2",
-            "(↑ APPROX) = 'YES'",
-            "(↓1 PLURAL_MARKER) =c 'YES'",
-            "(↓2 CARDINAL) =c 'YES'",
+            "(↑ APPROX) = true",
+            "(↓1 PLURAL_MARKER) =c true",
+            "(↓2 CARDINAL) =c true",
         ],
     ))
 
@@ -1211,7 +1211,7 @@ def register_rules(rules: list[Rule]) -> None:
     # "less than ten", ``hindi bababa sa sampu`` "no less than
     # ten / at least ten", ``hindi hihigit sa sampu`` "no more
     # than ten / at most ten". Four idiomatic phrase patterns
-    # that wrap a NUM[CARDINAL=YES] standard via the DAT marker
+    # that wrap a NUM[CARDINAL] standard via the DAT marker
     # ``sa`` and modify a NUM head with COMP feature.
     #
     # Per plan §11.1 Group H item 3: "These compose existing
@@ -1232,14 +1232,14 @@ def register_rules(rules: list[Rule]) -> None:
     # unchanged.
     #
     # Solo patterns (higit / kulang): 3 daughters
-    # ``PART ADP[CASE=DAT] NUM[CARDINAL=YES]``. Negated
+    # ``PART ADP[CASE=DAT] NUM[CARDINAL]``. Negated
     # patterns (hindi bababa / hindi hihigit): 4 daughters
-    # ``PART[POLARITY=NEG] PART ADP[CASE=DAT] NUM[CARDINAL=YES]``.
+    # ``PART[POLARITY=NEG] PART ADP[CASE=DAT] NUM[CARDINAL]``.
     #
     # Constraints follow the established Phase 5f pattern:
     # ``(↓N COMP_PHRASE) =c 'X'`` gates each rule to its
     # specific lex tag; ``(↓ CASE) =c 'DAT'`` enforces ``sa``
-    # rather than ``ng`` / ``ang``; ``(↓ CARDINAL) =c 'YES'``
+    # rather than ``ng`` / ``ang``; ``(↓ CARDINAL) =c true``
     # enforces a genuinely cardinal NUM (parallel to Commit 1
     # / 16's cardinal gate).
     for comp_lex, comp_value in (("HIGIT", "GT"), ("KULANG", "LT")):
@@ -1251,7 +1251,7 @@ def register_rules(rules: list[Rule]) -> None:
                 f"(↑ COMP) = '{comp_value}'",
                 f"(↓1 COMP_PHRASE) =c '{comp_lex}'",
                 "(↓2 CASE) =c 'DAT'",
-                "(↓3 CARDINAL) =c 'YES'",
+                "(↓3 CARDINAL) =c true",
             ],
         ))
     for comp_lex, comp_value in (("BABABA", "GE"), ("HIHIGIT", "LE")):
@@ -1264,7 +1264,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↓1 POLARITY) =c 'NEG'",
                 f"(↓2 COMP_PHRASE) =c '{comp_lex}'",
                 "(↓3 CASE) =c 'DAT'",
-                "(↓4 CARDINAL) =c 'YES'",
+                "(↓4 CARDINAL) =c true",
             ],
         ))
 
@@ -1279,7 +1279,7 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Two operator PARTs (``y`` for forward-counting,
     # ``menos`` for backward) × two minute-daughter types
-    # (NUM[CARDINAL=YES] for cardinal minutes,
+    # (NUM[CARDINAL] for cardinal minutes,
     # N[SEM_CLASS=FRACTION] for fractional minutes) = 4 rules.
     #
     # Output is N (the same category as the head clock-time
@@ -1300,20 +1300,20 @@ def register_rules(rules: list[Rule]) -> None:
     # Constraining equations enforce that:
     #   (↓1 SEM_CLASS) =c 'TIME'      — head is a clock time
     #   (↓2 MINUTE_OP) =c '<OP>'      — middle PART is y or menos
-    #   (↓3 CARDINAL) =c 'YES' OR     — third daughter is right type
+    #   (↓3 CARDINAL) =c true OR     — third daughter is right type
     #   (↓3 SEM_CLASS) =c 'FRACTION'
     for op in ("Y", "MENOS"):
         # Cardinal-minute version: ``alasotso y singko``
         rules.append(Rule(
             "N",
-            ["N", "PART", "NUM[CARDINAL=YES]"],
+            ["N", "PART", "NUM[CARDINAL]"],
             [
                 "(↑) = ↓1",
                 "(↑ MINUTE_VALUE) = ↓3 CARDINAL_VALUE",
                 f"(↑ MINUTE_OP) = '{op}'",
                 "(↓1 SEM_CLASS) =c 'TIME'",
                 f"(↓2 MINUTE_OP) =c '{op}'",
-                "(↓3 CARDINAL) =c 'YES'",
+                "(↓3 CARDINAL) =c true",
             ],
         ))
         # Fractional-minute version: ``alasotso y medya``
@@ -1341,7 +1341,7 @@ def register_rules(rules: list[Rule]) -> None:
     # ``noong Mayo 5`` "on May 5" unchanged.
     #
     # The DOM digit lifts to ``DAY_OF_MONTH`` on the matrix N.
-    # Constraining ``(↓2 DIGIT_FORM) =c 'YES'`` restricts the
+    # Constraining ``(↓2 DIGIT_FORM) =c true`` restricts the
     # rule to digit-form DOM (``Mayo 5``); a word-form DOM
     # (``Mayo lima``) is grammatical but rare and not exercised
     # by the seed corpus — the digit form is the canonical
@@ -1353,12 +1353,12 @@ def register_rules(rules: list[Rule]) -> None:
     # deferred — comma tokenization not yet supported.
     rules.append(Rule(
         "N",
-        ["N", "NUM[CARDINAL=YES]"],
+        ["N", "NUM[CARDINAL]"],
         [
             "(↑) = ↓1",
             "(↑ DAY_OF_MONTH) = ↓2 CARDINAL_VALUE",
             "(↓1 SEM_CLASS) =c 'MONTH'",
-            "(↓2 DIGIT_FORM) =c 'YES'",
+            "(↓2 DIGIT_FORM) =c true",
         ],
     ))
 
@@ -1534,7 +1534,7 @@ def register_rules(rules: list[Rule]) -> None:
     #   the ``higit`` PART (Phase 5f Commit 17 numeric-comparator
     #   lex entry). Same lex polysemy — the comparative-clause
     #   path here is gated by the trailing ADJ.
-    # * ``(↓3 PREDICATIVE) =c 'YES'`` belt-and-braces on the
+    # * ``(↓3 PREDICATIVE) =c true`` belt-and-braces on the
     #   ADJ daughter (matches Phase 5h Commit 3 / 5 convention).
     #
     # Polysemy safety: ``nang higit + ADJ`` and ``higit sa N``
@@ -1551,7 +1551,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ REGISTER) = 'FORMAL'",
             "(↓1 LEMMA) =c 'nang'",
             "(↓2 COMP_PHRASE) =c 'HIGIT'",
-            "(↓3 PREDICATIVE) =c 'YES'",
+            "(↓3 PREDICATIVE) =c true",
         ],
     ))
 
@@ -1588,7 +1588,7 @@ def register_rules(rules: list[Rule]) -> None:
     #   parses as a "double intensifier" (attested colloquially).
     # * ``(↑ INTENSITY) = ↓1 INTENSITY`` lifts the particle's
     #   semantic tag onto the matrix.
-    # * ``(↑ INTENSIFIER) = 'YES'`` and ``(↓1 INTENSIFIER) =c 'YES'``
+    # * ``(↑ INTENSIFIER) = true`` and ``(↓1 INTENSIFIER) =c true``
     #   — defining + constraining belt-and-braces (matches the
     #   Phase 5g convention).
     #
@@ -1615,7 +1615,7 @@ def register_rules(rules: list[Rule]) -> None:
     # ``masyado``, or ``masyadong`` (verified by grep).
     # **Belt-and-braces ``=c`` constraints on both PART daughters**:
     # the category-pattern matcher is non-conflict (compile.py
-    # ::matches), so ``PART[INTENSIFIER=YES]`` matches any PART
+    # ::matches), so ``PART[INTENSIFIER]`` matches any PART
     # without an INTENSIFIER feature by absorption, and similarly
     # ``PART[LINK=NA]`` matches any PART without LINK. Without the
     # explicit constraining equations, ``Lubos na mas matalino
@@ -1628,16 +1628,16 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             "ADJ",
             [
-                "PART[INTENSIFIER=YES]",
+                "PART[INTENSIFIER]",
                 f"PART[LINK={link}]",
                 "ADJ",
             ],
             [
                 "(↑) = ↓3",
-                "(↑ INTENSIFIER) = 'YES'",
+                "(↑ INTENSIFIER) = true",
                 "(↑ COMP_DEGREE) = 'INTENSIVE'",
                 "(↑ INTENSITY) = ↓1 INTENSITY",
-                "(↓1 INTENSIFIER) =c 'YES'",
+                "(↓1 INTENSIFIER) =c true",
                 f"(↓2 LINK) =c '{link}'",
             ],
         ))
@@ -1664,11 +1664,11 @@ def register_rules(rules: list[Rule]) -> None:
         ["PART[INTENSITY=MODERATE]", "ADJ"],
         [
             "(↑) = ↓2",
-            "(↑ INTENSIFIER) = 'YES'",
+            "(↑ INTENSIFIER) = true",
             "(↑ COMP_DEGREE) = 'INTENSIVE'",
             "(↑ INTENSITY) = ↓1 INTENSITY",
             "(↓1 INTENSITY) =c 'MODERATE'",
-            "(↓1 INTENSIFIER) =c 'YES'",
+            "(↓1 INTENSIFIER) =c true",
         ],
     ))
 
@@ -1678,7 +1678,7 @@ def register_rules(rules: list[Rule]) -> None:
     # ``mas maraming aklat`` "more books" — comparative quantification
     # over the existing Phase 5f vague-Q heads. The Phase 5h Commit 3
     # ``mas`` PART (lex feat ``COMP_DEGREE: COMPARATIVE``) wraps a
-    # ``Q[VAGUE=YES]`` head (``marami``, ``kaunti``, ``konti``,
+    # ``Q[VAGUE]`` head (``marami``, ``kaunti``, ``konti``,
     # ``kakaunti``, ``ilan``, ``iilan``) to produce a comparative-Q.
     # The wrapped Q rides into the existing Phase 5f Commit 15
     # vague-Q NP-modifier rule unchanged: ``mas maraming aklat``
@@ -1694,7 +1694,7 @@ def register_rules(rules: list[Rule]) -> None:
     # * ``(↓1 COMP_DEGREE) =c 'COMPARATIVE'`` belt-and-braces
     #   constraint on the PART daughter (matches Commit 3
     #   convention).
-    # * ``(↓2 VAGUE) =c 'YES'`` belt-and-braces constraint on the
+    # * ``(↓2 VAGUE) =c true`` belt-and-braces constraint on the
     #   Q daughter — closes the same kind of non-conflict-matcher
     #   leak Commits 3 and 5 closed (without it, a Q without
     #   VAGUE would absorb the slot).
@@ -1717,12 +1717,12 @@ def register_rules(rules: list[Rule]) -> None:
     # constraint does not fire on them.
     rules.append(Rule(
         "Q",
-        ["PART[COMP_DEGREE=COMPARATIVE]", "Q[VAGUE=YES]"],
+        ["PART[COMP_DEGREE=COMPARATIVE]", "Q[VAGUE]"],
         [
             "(↑) = ↓2",
             "(↑ COMP_DEGREE) = 'COMPARATIVE'",
             "(↓1 COMP_DEGREE) =c 'COMPARATIVE'",
-            "(↓2 VAGUE) =c 'YES'",
+            "(↓2 VAGUE) =c true",
         ],
     ))
 
@@ -1737,8 +1737,8 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Two parallel rules:
     #
-    #   PRON → PART[LEMMA=kahit] PRON[WH=YES]   (IndefPRON)
-    #   ADV  → PART[LEMMA=kahit] ADV[WH=YES]    (IndefADV)
+    #   PRON → PART[LEMMA=kahit] PRON[WH]   (IndefPRON)
+    #   ADV  → PART[LEMMA=kahit] ADV[WH]    (IndefADV)
     #
     # Each builds an indefinite PRON / ADV by overlaying
     # ``INDEF=YES`` onto the inner wh-element's f-structure
@@ -1762,7 +1762,7 @@ def register_rules(rules: list[Rule]) -> None:
             "↓1 ∈ (↑ ADJUNCT)",
             "(↑ INDEF) = 'YES'",
             "(↓1 LEMMA) =c 'kahit'",
-            "(↓2 WH) =c 'YES'",
+            "(↓2 WH) =c true",
         ],
     ))
     rules.append(Rule(
@@ -1773,7 +1773,7 @@ def register_rules(rules: list[Rule]) -> None:
             "↓1 ∈ (↑ ADJUNCT)",
             "(↑ INDEF) = 'YES'",
             "(↓1 LEMMA) =c 'kahit'",
-            "(↓2 WH) =c 'YES'",
+            "(↓2 WH) =c true",
         ],
     ))
 
@@ -1807,7 +1807,7 @@ def register_rules(rules: list[Rule]) -> None:
         ["PRON", "PART"],
         [
             "(↑) = ↓1",
-            "(↓1 WH) =c 'YES'",
+            "(↓1 WH) =c true",
             "(↓2 ADV) =c 'EVEN'",
             "(↓2 LEMMA) =c 'man'",
             "(↑ INDEF) = 'NEG_INDEF'",
@@ -1817,7 +1817,7 @@ def register_rules(rules: list[Rule]) -> None:
     # === Phase 5m Commit 7: emphatic ``mismo`` post-N attachment =====
     #
     # ``Maria mismo`` "Maria herself", ``ang bata mismo`` "the child
-    # himself". The PART ``mismo`` (Commit 1 lex, EMPHATIC=YES,
+    # himself". The PART ``mismo`` (Commit 1 lex, EMPHATIC,
     # LEMMA=mismo) attaches as an ADJUNCT member of the NP it
     # follows. Distribution: post-NP only — pre-NP attachment is
     # ungrammatical in Tagalog (cf. Spanish ``mismo Juan`` is valid
@@ -1828,13 +1828,13 @@ def register_rules(rules: list[Rule]) -> None:
     # EMPHATIC=YES particles (the existing ``nga`` is EMPHATIC but
     # is a 2P clitic, not a post-N modifier; the LEMMA constraint
     # ensures only ``mismo`` fires here). The matrix-NP overlay
-    # ``(↑ EMPHATIC) = 'YES'`` exposes the emphatic marker at the
+    # ``(↑ EMPHATIC) = true`` exposes the emphatic marker at the
     # NP top level for downstream consumers.
     #
     # Reference: R&G 1981 §7.3.
     #
     # Phase 5n.A Commit 19 (§18 L85 follow-on): tightened the daughter
-    # category from bare ``PART`` to ``PART[LEMMA=mismo, EMPHATIC=YES]``.
+    # category from bare ``PART`` to ``PART[LEMMA=mismo, EMPHATIC]``.
     # The bare PART version was too permissive — every NP-PART
     # adjacency in the input (e.g., ``si Jose .`` with period PUNCT,
     # or ``Ana at`` in coord-NP contexts) spawned a failed mismo
@@ -1845,13 +1845,13 @@ def register_rules(rules: list[Rule]) -> None:
     # generate-and-filter at unification-time.
     rules.append(Rule(
         "NP",
-        ["NP", "PART[LEMMA=mismo, EMPHATIC=YES]"],
+        ["NP", "PART[LEMMA=mismo, EMPHATIC]"],
         [
             "(↑) = ↓1",
             "↓2 ∈ (↑ ADJUNCT)",
-            "(↓2 EMPHATIC) =c 'YES'",
+            "(↓2 EMPHATIC) =c true",
             "(↓2 LEMMA) =c 'mismo'",
-            "(↑ EMPHATIC) = 'YES'",
+            "(↑ EMPHATIC) = true",
         ],
     ))
 
@@ -1865,14 +1865,14 @@ def register_rules(rules: list[Rule]) -> None:
     # SUBJ, attaching as an ADJUNCT member of the NP.
     #
     # Distribution: scoped to ``mag-isa`` only via the
-    # ``(↓3 MAGISA) =c 'YES'`` constraining equation (matches the
+    # ``(↓3 MAGISA) =c true`` constraining equation (matches the
     # MAGISA flag set on the ``magisa`` lex entry — Phase 5n.A
     # Commit 5). Future depictive ADVs (e.g., ``siyang mabilis`` "him
     # being-quick", ``siyang madalas`` "him often") would either need
     # additional rules or a more general ``DEPICTIVE=YES`` feat — both
     # deferred until corpus pressure surfaces additional tokens.
     #
-    # The matrix-NP overlay ``(↑ MAGISA) = 'YES'`` exposes the
+    # The matrix-NP overlay ``(↑ MAGISA) = true`` exposes the
     # depictive marker at the NP top level for downstream consumers.
     #
     # Reference: S&O 1972 §3.5 (depictive secondary predicates); R&G
@@ -1884,8 +1884,8 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑) = ↓1",
             "↓3 ∈ (↑ ADJUNCT)",
             "(↓2 LINK) =c 'NG'",
-            "(↓3 MAGISA) =c 'YES'",
-            "(↑ MAGISA) = 'YES'",
+            "(↓3 MAGISA) =c true",
+            "(↑ MAGISA) = true",
         ],
     ))
 
@@ -1899,7 +1899,7 @@ def register_rules(rules: list[Rule]) -> None:
     # modified by the depictive ADV ``mag-isa`` ("alone"). The
     # ADJ-internal composition is structurally parallel to the
     # Phase 5n.A Commit 7 PRON-internal version
-    # (``NP[CASE=NOM] → PRON[CASE=NOM] PART[LINK=NG] ADV[MAGISA=YES]``)
+    # (``NP[CASE=NOM] → PRON[CASE=NOM] PART[LINK=NG] ADV[MAGISA]``)
     # but at the ADJ level so the result feeds back into the existing
     # Phase 5g Commit 2 NP-internal ADJ-modifier rules
     # (``N → N PART[LINK=N{A,G}] ADJ``).
@@ -1916,7 +1916,7 @@ def register_rules(rules: list[Rule]) -> None:
             [
                 "(↑) = ↓1",
                 "↓3 ∈ (↑ ADJUNCT)",
-                "(↓3 MAGISA) =c 'YES'",
-                "(↑ MAGISA) = 'YES'",
+                "(↓3 MAGISA) =c true",
+                "(↑ MAGISA) = true",
             ],
         ))
