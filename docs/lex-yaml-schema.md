@@ -71,7 +71,6 @@ A YAML file is a top-level **list** of LexicalEntry records.
 | field | type | notes |
 | --- | --- | --- |
 | `lemma` | string | The bare root (`kain`, `bili`, `sigaw`). |
-| `voice` | enum | `AV`, `OV`, `DV`, `IV`, `BV`, `LV`. |
 | `pred` | string | LFG PRED template. `EAT <SUBJ, OBJ>`. |
 | `a_structure` | list[string] | Theta-role order. `[AGENT, PATIENT]`. |
 | `gf_defaults` | map[string, string] | Role → GF default. `{AGENT: SUBJ, PATIENT: OBJ}`. |
@@ -80,6 +79,7 @@ A YAML file is a top-level **list** of LexicalEntry records.
 
 | field | type | default | notes |
 | --- | --- | --- | --- |
+| `voice` | enum | none | `AV`, `OV`, `DV`, `IV`, `BV`, `LV`. See note D below. |
 | `transitive` | bool | `true` | When `false`, `morph_constraints` omits `TR`. |
 | `intrinsic` | symbolic name | none | Reference to a Python intrinsic-profile constant. |
 | `intrinsic_classification` | map[role, [±r, ±o]] | empty | Inline alternative; see note A below. |
@@ -98,11 +98,20 @@ auto-filled defaults below.
 
 **Note C — `morph_constraints` (full override):** when present,
 replaces the auto-fill entirely — the loader emits exactly the
-keys listed here (plus the `VOICE` field, which must agree with
-the record's `voice`). Used by BEN / INSTR / REASON applicative
-entries originally authored as bare `LexicalEntry(...)` in
-`BASE` that intentionally under-specify `CAUS` / `TR` for a looser
-analyzer match. Mutually exclusive with `extra_constraints`.
+keys listed here (plus the `VOICE` field when `voice` is
+present, which must agree). Used by BEN / INSTR / REASON
+applicative entries originally authored as bare
+`LexicalEntry(...)` in `BASE` that intentionally under-specify
+`CAUS` / `TR` for a looser analyzer match, and by pseudo-verb
+control entries (gusto / ayaw / kaya / …) that carry no
+morphological voice. Mutually exclusive with `extra_constraints`.
+
+**Note D — `voice` is conditionally required.** Required when
+`morph_constraints` is **absent** (the auto-fill path needs it).
+Optional (and often omitted) when `morph_constraints` is
+**present** — pseudo-verb control entries author the morph-
+constraints directly with only `CTRL_CLASS` and have no
+morphological voice to declare.
 
 ### Auto-filled `morph_constraints`
 
@@ -250,6 +259,27 @@ and any TR value:
 
 The loader emits `{VOICE: IV, APPL: BEN}` exactly — no auto-fill.
 Mutually exclusive with `extra_constraints`.
+
+### Pseudo-verb control entry (no `voice`)
+
+Control verbs like `gusto` "want" have no morphological voice —
+they're uninflected pseudo-verbs. The YAML record omits `voice`
+entirely and authors `morph_constraints` directly with only the
+`CTRL_CLASS` distinguisher:
+
+```yaml
+- lemma: gusto
+  pred: "WANT <SUBJ, XCOMP>"
+  a_structure: [EXPERIENCER, COMPLEMENT]
+  gf_defaults: {EXPERIENCER: SUBJ, COMPLEMENT: XCOMP}
+  morph_constraints:
+    CTRL_CLASS: PSYCH
+  intrinsic: PSYCH_CONTROL
+```
+
+The loader emits exactly `{CTRL_CLASS: PSYCH}` — no auto-filled
+VOICE / CAUS / APPL / TR keys, matching the analyzer's
+expectation for psych pseudo-verbs.
 
 ### Inline intrinsic for a one-off shape
 
