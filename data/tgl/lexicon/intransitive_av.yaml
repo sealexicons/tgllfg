@@ -1,0 +1,126 @@
+# Intransitive AV lex entries — Phase 5n.C.4 Commit 13.
+#
+# Each record migrates one ``LexicalEntry`` originally authored as
+# an ``_entry(..., transitive=False)`` call (or as a direct
+# ``LexicalEntry(...)`` with no ``TR`` in ``morph_constraints``)
+# inside the ``BASE`` dict at ``src/tgllfg/core/lexicon.py``.
+#
+# The full schema lives in ``docs/lex-yaml-schema.md``. Briefly:
+#   * ``voice`` is the LFG voice abbreviation (here always AV).
+#   * ``transitive: false`` omits ``TR`` from morph_constraints —
+#     matches the analyzer's intransitive AV ng-bare frames.
+#   * ``extra_constraints`` adds keys beyond the auto-filled
+#     {VOICE, CAUS=NONE, APPL=NONE}; mag-…-an reciprocals use
+#     ``MOOD: SOC``.
+#   * ``intrinsic`` names a Phase 5 §8 Bresnan–Kanerva profile from
+#     ``src/tgllfg/core/lexicon.py``.
+#
+# Order within this file mirrors the entries' appearance order in
+# ``BASE`` so the parity test passes; per-lemma entries adjacent to
+# each other.
+
+# kain — eat. AV-intransitive ("Kumain ang aso") + mag-…-an
+# reciprocal ("Nagkainan sila." — they ate together).
+- lemma: kain
+  voice: AV
+  pred: "EAT <SUBJ>"
+  a_structure: [ACTOR]
+  gf_defaults:
+    ACTOR: SUBJ
+  transitive: false
+  intrinsic: AV_INTR_ACTOR
+
+- lemma: kain
+  voice: AV
+  pred: "EAT-TOGETHER <SUBJ>"
+  a_structure: [ACTOR]
+  gf_defaults:
+    ACTOR: SUBJ
+  transitive: false
+  extra_constraints:
+    MOOD: SOC
+  intrinsic: AV_INTR_ACTOR
+
+# bili — buy. AV-intransitive ("Bumili siya sa palengke") + mag-…-an
+# reciprocal ("Nagbilihan sila." — they exchanged in trade).
+- lemma: bili
+  voice: AV
+  pred: "BUY <SUBJ>"
+  a_structure: [AGENT]
+  gf_defaults:
+    AGENT: SUBJ
+  transitive: false
+  intrinsic: AV_INTR_AGENT
+
+- lemma: bili
+  voice: AV
+  pred: "BUY-EXCHANGE <SUBJ>"
+  a_structure: [AGENT]
+  gf_defaults:
+    AGENT: SUBJ
+  transitive: false
+  extra_constraints:
+    MOOD: SOC
+  intrinsic: AV_INTR_AGENT
+
+# basa — read. AV-intransitive ("Bumasa siya").
+- lemma: basa
+  voice: AV
+  pred: "READ <SUBJ>"
+  a_structure: [AGENT]
+  gf_defaults:
+    AGENT: SUBJ
+  transitive: false
+  intrinsic: AV_INTR_AGENT
+
+# sulat — write. AV-intransitive ("Sumulat siya").
+- lemma: sulat
+  voice: AV
+  pred: "WRITE <SUBJ>"
+  a_structure: [AGENT]
+  gf_defaults:
+    AGENT: SUBJ
+  transitive: false
+  intrinsic: AV_INTR_AGENT
+
+# lakad — walk. AV-intransitive bare ("Lumakad ang bata") + AV
+# motion-with-locative ("Lumakad ang bata sa palengke") — the
+# sa-NP enters via the oblique-classifier pass as OBL-LOC.
+- lemma: lakad
+  voice: AV
+  pred: "WALK <SUBJ>"
+  a_structure: [ACTOR]
+  gf_defaults:
+    ACTOR: SUBJ
+  transitive: false
+  intrinsic: AV_INTR_ACTOR
+
+- lemma: lakad
+  voice: AV
+  pred: "WALK <SUBJ, OBL-LOC>"
+  a_structure: [ACTOR, LOCATION]
+  gf_defaults:
+    ACTOR: SUBJ
+    LOCATION: OBL-LOC
+  transitive: false
+  intrinsic: AV_INTR_ACTOR_LOCATION
+
+# sigaw — shout. AV-intransitive ("Sumigaw siya").
+- lemma: sigaw
+  voice: AV
+  pred: "SHOUT <SUBJ>"
+  a_structure: [AGENT]
+  gf_defaults:
+    AGENT: SUBJ
+  transitive: false
+  intrinsic: AV_INTR_AGENT
+
+# tawag — call. AV-intransitive ("Tumawag siya").
+- lemma: tawag
+  voice: AV
+  pred: "CALL <SUBJ>"
+  a_structure: [AGENT]
+  gf_defaults:
+    AGENT: SUBJ
+  transitive: false
+  intrinsic: AV_INTR_AGENT

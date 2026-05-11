@@ -25,18 +25,42 @@ from tgllfg.core.lexicon import BASE
 from tgllfg.core.lexicon_loader import load_lex_entries
 
 
-def test_loaded_yaml_matches_base_row_by_row() -> None:
-    """For every lemma in the YAML tree, the loader's output must
-    equal what ``BASE`` has — record-for-record, in declaration
-    order."""
+def test_every_loaded_yaml_entry_appears_in_base() -> None:
+    """During C13–C15 the migration COPIES entries from BASE into
+    the YAML tree without removing them from BASE — BASE remains
+    authoritative until C16 cuts over to the loader. So the
+    parity check is *entry-level membership* (every YAML record
+    matches a BASE record for the same lemma) rather than
+    *list equality*. C16 tightens this to full list equality once
+    BASE becomes empty."""
     loaded = load_lex_entries()
     for lemma, yaml_entries in loaded.items():
         base_entries = BASE.get(lemma, [])
-        assert yaml_entries == base_entries, (
-            f"lemma {lemma!r}: YAML {len(yaml_entries)} entries "
-            f"vs BASE {len(base_entries)} entries differ — see "
-            f"per-entry diff in pytest output"
-        )
+        for entry in yaml_entries:
+            assert entry in base_entries, (
+                f"YAML entry for lemma {lemma!r} does not match any "
+                f"BASE entry: {entry!r}"
+            )
+
+
+def test_yaml_entries_appear_in_base_subsequence_order() -> None:
+    """Stronger: YAML entries for a lemma appear in the same
+    relative order as in BASE. Catches accidental reorderings
+    during migration that would change the analyzer's
+    first-match-wins selection at C16 cutover."""
+    loaded = load_lex_entries()
+    for lemma, yaml_entries in loaded.items():
+        base_entries = BASE.get(lemma, [])
+        base_idx = 0
+        for entry in yaml_entries:
+            try:
+                base_idx = base_entries.index(entry, base_idx) + 1
+            except ValueError:
+                # Out of order, or not in BASE.
+                raise AssertionError(
+                    f"YAML entry order for lemma {lemma!r} does not "
+                    f"match BASE's subsequence order at: {entry!r}"
+                ) from None
 
 
 def test_loader_is_callable_in_repo_default() -> None:
@@ -48,20 +72,22 @@ def test_loader_is_callable_in_repo_default() -> None:
 
 
 @pytest.mark.parametrize("lemma_in_base", sorted(BASE.keys()))
-def test_every_base_lemma_is_either_in_yaml_or_python_only(
-    lemma_in_base: str,
-) -> None:
-    """Surface check on the migration scoreboard: each ``BASE``
-    lemma is either still Python-only (loader output empty) or
-    YAML-migrated (loader output equals BASE). The actual equality
-    check happens in :func:`test_loaded_yaml_matches_base_row_by_row`;
-    this test is a per-lemma signal so pytest's parametrize report
-    shows the migration scoreboard at a glance.
+def test_yaml_entries_for_base_lemma_match_base(lemma_in_base: str) -> None:
+    """Per-lemma migration scoreboard. Each ``BASE`` lemma is either
+    still Python-only (loader output empty for this lemma — test
+    short-circuits as a pass) or partially / fully migrated, in
+    which case every YAML record must match a BASE record. The
+    parametrize gives pytest a per-lemma signal so the migration
+    progress is visible at a glance.
     """
     loaded = load_lex_entries()
     yaml_entries = loaded.get(lemma_in_base, [])
     base_entries = BASE[lemma_in_base]
     if not yaml_entries:
-        # Python-only — fine, this lemma hasn't been migrated yet.
+        # Not yet migrated; still Python-authoritative — fine.
         return
-    assert yaml_entries == base_entries
+    for entry in yaml_entries:
+        assert entry in base_entries, (
+            f"YAML entry for lemma {lemma_in_base!r} does not match "
+            f"any BASE entry: {entry!r}"
+        )
