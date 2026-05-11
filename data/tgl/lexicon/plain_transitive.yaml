@@ -1,0 +1,184 @@
+# Plain-transitive AV / OV lex entries — Phase 5n.C.4 Commit 14.
+#
+# Each record migrates one ``LexicalEntry`` authored via ``_entry()``
+# in the ``BASE`` dict at ``src/tgllfg/core/lexicon.py``. The
+# defining property of this file: VOICE ∈ {AV, OV}, TR=TR,
+# CAUS=NONE, APPL=NONE, no CTRL_CLASS. Applicative DV / IV / BV / LV
+# entries live in ``applicative.yaml``; causative entries in
+# ``causative.yaml``; control verbs in ``control.yaml``.
+#
+# Each lemma's AV entry precedes its OV entry to preserve the
+# BASE-side first-match-wins order (the analyzer picks the first
+# entry whose ``morph_constraints`` match the MorphAnalysis).
+
+# kain — eat. AV transitive ("Kumain siya ng mansanas") + OV
+# patient pivot ("Kinain niya ang mansanas").
+- lemma: kain
+  voice: AV
+  pred: "EAT <SUBJ, OBJ>"
+  a_structure: [AGENT, PATIENT]
+  gf_defaults:
+    AGENT: SUBJ
+    PATIENT: OBJ
+  intrinsic: AV_TR_AGENT_PATIENT
+
+- lemma: kain
+  voice: OV
+  pred: "EAT <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, PATIENT]
+  gf_defaults:
+    PATIENT: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: OV_TR_AGENT_PATIENT
+
+# bili — buy. AV-tr + OV theme-pivot.
+- lemma: bili
+  voice: AV
+  pred: "BUY <SUBJ, OBJ>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    AGENT: SUBJ
+    THEME: OBJ
+  intrinsic: AV_TR_AGENT_THEME
+
+- lemma: bili
+  voice: OV
+  pred: "BUY <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    THEME: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: OV_TR_AGENT_THEME
+
+# basa — read. AV-tr + OV theme-pivot.
+- lemma: basa
+  voice: AV
+  pred: "READ <SUBJ, OBJ>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    AGENT: SUBJ
+    THEME: OBJ
+  intrinsic: AV_TR_AGENT_THEME
+
+- lemma: basa
+  voice: OV
+  pred: "READ <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    THEME: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: OV_TR_AGENT_THEME
+
+# sulat — write. AV-tr + OV theme-pivot. Sulat also has DV / IV
+# applicative entries (migrated in C15 to applicative.yaml).
+- lemma: sulat
+  voice: AV
+  pred: "WRITE <SUBJ, OBJ>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    AGENT: SUBJ
+    THEME: OBJ
+  intrinsic: AV_TR_AGENT_THEME
+
+- lemma: sulat
+  voice: OV
+  pred: "WRITE <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    THEME: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: OV_TR_AGENT_THEME
+
+# bigay — give. AV ditransitive with 4 roles (AGENT pivot, THEME
+# typed OBJ, RECIPIENT + LOCATION as obliques). The matching DV
+# entries (Phase 5n.C.2 closure for §18 L29 / L77) live in
+# applicative.yaml since their VOICE is DV.
+- lemma: bigay
+  voice: AV
+  pred: "GIVE <SUBJ, OBJ, OBL-RECIP, OBL-LOC>"
+  a_structure: [AGENT, THEME, RECIPIENT, LOCATION]
+  gf_defaults:
+    AGENT: SUBJ
+    THEME: OBJ
+    RECIPIENT: OBL-RECIP
+    LOCATION: OBL-LOC
+  intrinsic: AV_DITRANS_AGENT_THEME_RECIP_LOC
+
+# gawa — make. AV-tr + OV patient-pivot.
+- lemma: gawa
+  voice: AV
+  pred: "MAKE <SUBJ, OBJ>"
+  a_structure: [AGENT, PATIENT]
+  gf_defaults:
+    AGENT: SUBJ
+    PATIENT: OBJ
+  intrinsic: AV_TR_AGENT_PATIENT
+
+- lemma: gawa
+  voice: OV
+  pred: "MAKE <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, PATIENT]
+  gf_defaults:
+    PATIENT: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: OV_TR_AGENT_PATIENT
+
+# tapon — throw away. AV-tr + OV theme-pivot. tapon's IV entry
+# (conveyed-theme reading) lives in applicative.yaml.
+- lemma: tapon
+  voice: AV
+  pred: "THROW <SUBJ, OBJ>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    AGENT: SUBJ
+    THEME: OBJ
+  intrinsic: AV_TR_AGENT_THEME
+
+- lemma: tapon
+  voice: OV
+  pred: "THROW <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    THEME: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: OV_TR_AGENT_THEME
+
+# sigaw — shout. AV-tr + OV theme-pivot (Phase 5n.C.4 Commit 11
+# added the BASE entries; this commit migrates them).
+- lemma: sigaw
+  voice: AV
+  pred: "SHOUT <SUBJ, OBJ>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    AGENT: SUBJ
+    THEME: OBJ
+  intrinsic: AV_TR_AGENT_THEME
+
+- lemma: sigaw
+  voice: OV
+  pred: "SHOUT <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    THEME: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: OV_TR_AGENT_THEME
+
+# tawag — call. AV-tr + OV theme-pivot (Phase 5n.C.4 Commit 11
+# additions).
+- lemma: tawag
+  voice: AV
+  pred: "CALL <SUBJ, OBJ>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    AGENT: SUBJ
+    THEME: OBJ
+  intrinsic: AV_TR_AGENT_THEME
+
+- lemma: tawag
+  voice: OV
+  pred: "CALL <SUBJ, OBJ-AGENT>"
+  a_structure: [AGENT, THEME]
+  gf_defaults:
+    THEME: SUBJ
+    AGENT: OBJ-AGENT
+  intrinsic: OV_TR_AGENT_THEME
