@@ -193,6 +193,38 @@ def full_reduplicate(base: str) -> str:
     return _raise_final_o(base) + base
 
 
+def kani_reduplicate(base: str) -> str:
+    """Distributive-possessive reduplication for DAT pronouns.
+
+    Two-syllable bases: full reduplication (``kanya`` →
+    ``kanyakanya``).
+
+    Three-or-more-syllable bases: the first copy is truncated to
+    its first two syllables, then concatenated with the full
+    base. ``kaniya`` → ``kanikaniya``; ``kanila`` → ``kanikanila``.
+    Syllables are counted by vowel nuclei.
+
+    Used by the Phase 5n.C.3 ``kani_redup`` paradigm class for
+    distributive-possessive Q surfaces (§18 L31): the 3rd-person
+    DAT pronouns yield "each one's" / "each their own" Q forms.
+    Reference: Schachter & Otanes 1972 §10 (universal
+    quantification); R&B 1986 ch.10 (distributive possessive
+    pronouns).
+    """
+    n_vowels = sum(1 for c in base if c.lower() in "aeiou")
+    if n_vowels <= 2:
+        return base + base
+    vowel_count = 0
+    truncate_at = 0
+    for i, ch in enumerate(base):
+        if ch.lower() in "aeiou":
+            vowel_count += 1
+            if vowel_count == 2:
+                truncate_at = i + 1
+                break
+    return base[:truncate_at] + base
+
+
 def d_to_r_intervocalic(form: str) -> str:
     """Replace each /d/ in ``form`` with /r/ when it is between two
     vowels. Per-root opt-in via the ``d_to_r`` sandhi flag.

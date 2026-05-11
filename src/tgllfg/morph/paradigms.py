@@ -136,6 +136,13 @@ class ParadigmCell:
     operations: list[Operation] = field(default_factory=list)
     notes: str = ""
     feats: dict[str, object] = field(default_factory=dict)
+    # Phase 5n.C.3 Commit 5: optional pos override for the derived
+    # MorphAnalysis. Empty string (default) means "use the source's
+    # pos" (root.pos for Root-based cells, "PRON" for Pronoun-based
+    # cells). Non-empty overrides — the productive ``kani_redup``
+    # paradigm derives Q-pos surfaces (distributive-possessive
+    # quantifiers) from PRON bases, so its cell sets ``pos: Q``.
+    pos: str = ""
 
 
 @dataclass
@@ -193,6 +200,14 @@ class Pronoun:
     # PERS in {1,2,3}; NUM in {SG,PL}; CASE in {NOM,GEN,DAT};
     # CLUSV in {INCL,EXCL} when applicable; HUMAN True for proper-noun-like.
     is_clitic: bool = False
+    # Phase 5n.C.3 Commit 5 (§18 L31): affix_class drives the
+    # PRON-base paradigm engine. Empty list (default) means no
+    # paradigm cells fire on this pronoun. Non-empty entries match
+    # paradigm cells in ``paradigm_cells`` with ``base_pos: PRON``
+    # whose ``affix_class`` is in this list — e.g.,
+    # ``[kani_redup]`` for 3rd-person DAT pronouns produces the
+    # distributive-possessive Q forms.
+    affix_class: list[str] = field(default_factory=list)
 
 
 @dataclass

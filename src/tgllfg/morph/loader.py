@@ -147,6 +147,7 @@ def _load_paradigm_cells(path: Path) -> list[VerbalCell]:
             aspect = rec.get("aspect", "")
         out.append(VerbalCell(
             base_pos=base_pos,
+            pos=rec.get("pos", ""),
             voice=voice,
             aspect=aspect,
             mood=rec.get("mood", "IND"),
@@ -201,10 +202,14 @@ def _load_pronouns(path: Path) -> list[Pronoun]:
     out: list[Pronoun] = []
     for i, rec in enumerate(_read_yaml(path)):
         where = f"{path}[{i}]"
+        affix_class_raw = rec.get("affix_class", [])
+        if not isinstance(affix_class_raw, list):
+            raise ValueError(f"{where}: 'affix_class' must be a list")
         out.append(Pronoun(
             surface=_require(rec, "surface", where),
             feats=dict(rec.get("feats", {})),
             is_clitic=bool(rec.get("is_clitic", False)),
+            affix_class=list(affix_class_raw),
         ))
     return out
 

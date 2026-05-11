@@ -55,6 +55,7 @@ from .sandhi import (
     attach_suffix,
     cv_reduplicate,
     full_reduplicate,
+    kani_reduplicate,
     d_to_r_intervocalic,
     infix_after_first_consonant,
     nasal_assim_prefix,
@@ -107,6 +108,13 @@ def _apply(op: Operation, base: str, flags: set[str]) -> str:
         # Phase 5n.C.3 Commit 6 ``redup_root`` op (which redups
         # AFTER prefix attachment, used by ADJ intensives).
         return full_reduplicate(base)
+    if op.op == "kani_redup":
+        # Phase 5n.C.3 Commit 5 (§18 L31): distributive-possessive
+        # redup for 3rd-person DAT pronouns. ``kanya`` (2-syl) →
+        # ``kanyakanya`` via full redup; ``kaniya`` / ``kanila``
+        # (3-syl) → first copy truncated to 2 syllables +
+        # full base (``kanikaniya`` / ``kanikanila``).
+        return kani_reduplicate(base)
     if op.op == "infix":
         return infix_after_first_consonant(base, op.value)
     if op.op == "suffix":
@@ -294,6 +302,16 @@ class Analyzer:
                 pos="PRON",
                 feats=feats,
             )
+            # Phase 5n.C.3 Commit 5 (§18 L31): PRON-base paradigm
+            # cells fire on pronouns with non-empty affix_class.
+            # The ``kani_redup`` cell (data/tgl/paradigms.yaml)
+            # derives distributive-possessive Q surfaces from
+            # 3rd-person DAT pronouns. Derived surfaces are indexed
+            # into the particles table (since the cell flips
+            # ``pos: Q``); the bare PRON entry continues to be
+            # looked up via the pronouns table.
+            if pn.affix_class:
+                self._index_pronoun_paradigms(pn)
         for r in self._data.roots:
             if r.pos == "VERB":
                 self._index_verb_paradigms(r)
@@ -363,6 +381,54 @@ class Analyzer:
                 # here and produces ``tigisa`` / ``tigdalawa`` /
                 # etc., indexed into the particles table.
                 self._index_paradigm_via_base_pos(r)
+
+    def _index_pronoun_paradigms(self, pn) -> None:  # type: ignore[no-untyped-def]
+        """Phase 5n.C.3 Commit 5: iterate paradigm cells with
+        ``base_pos: PRON`` against the pronoun, indexing derived
+        surfaces. Surfaces are routed by ``cell.pos`` (default
+        PRON): a Q-pos cell routes to the particles table (the
+        ``kani_redup`` cell flips PRON → Q for the distributive-
+        possessive quantifier output).
+        """
+        for cell in self._data.paradigm_cells:
+            if cell.base_pos != "PRON":
+                continue
+            if not _affix_class_match(cell.affix_class, pn.affix_class):
+                continue
+            # Construct a synthetic Root from the Pronoun so
+            # generate_form can apply the cell's operations.
+            from .paradigms import Root as _Root
+            synthetic = _Root(
+                citation=pn.surface,
+                pos="PRON",
+                feats=dict(pn.feats),
+                affix_class=list(pn.affix_class),
+            )
+            surface = generate_form(synthetic, cell).lower()
+            feats: dict[str, object] = {**pn.feats}
+            for k, v in cell.feats.items():
+                feats[k] = v
+            # LEMMA defaults to the source pronoun's surface (or its
+            # canonical LEMMA feat per Phase 5n.A Commit 4
+            # orthographic-variant convention).
+            canonical_lemma = feats.get("LEMMA", pn.surface)
+            if not isinstance(canonical_lemma, str):
+                canonical_lemma = pn.surface
+            out_pos = cell.pos or "PRON"
+            analysis = MorphAnalysis(
+                lemma=canonical_lemma,
+                pos=out_pos,
+                feats=feats,
+            )
+            if out_pos == "PRON":
+                # Stay in pronouns table for PRON-typed derivations
+                # (none in the current seed; reserved for future).
+                self._index.pronouns[surface] = analysis
+            else:
+                # POS-flipped derivations (Q for kani_redup,
+                # potentially others) land in particles where the
+                # grammar looks up Q / DET / etc.
+                self._index.particles.setdefault(surface, []).append(analysis)
 
     def _index_paradigm_via_base_pos(self, root: Root) -> None:
         """Index paradigm cells in ``paradigm_cells`` whose

@@ -880,3 +880,27 @@
     - {op: prefix, value: "tag"}
   feats: {SEM_CLASS: SEASON}
   notes: tag_season — araw → tagaraw, ulan → tagulan, init → taginit, lamig → taglamig, gutom → taggutom
+
+# --- Phase 5n.C.3 Commit 5: kani_redup (§18 L31) ------------------------
+# Distributive-possessive redup on 3rd-person DAT pronouns —
+# productive replacement for the Phase 5f Commit 21 hand-coded
+# ``kanikaniya`` / ``kanyakanya`` Q forms. The ``kani_redup`` op
+# (analyzer.py + sandhi.kani_reduplicate) handles two patterns:
+# 2-syllable bases (``kanya``) get full reduplication; 3-syllable
+# bases (``kaniya`` / ``kanila``) have the first copy truncated to
+# 2 syllables and concatenated with the full base.
+#
+# POS-flip: cell.pos=Q overrides the PRON base. Distributive-
+# possessive surfaces are syntactically Q (preposed quantifier
+# with linker complement, matching Phase 5f Commits 15 / 20 / 22),
+# so the derived form is indexed as Q in the particles table —
+# the same shape consumers expect.
+# References: Schachter & Otanes 1972 §10 (universal quantification);
+# R&B 1986 ch.10 (distributive possessive pronouns).
+- base_pos: PRON
+  pos: Q
+  affix_class: kani_redup
+  operations:
+    - {op: kani_redup}
+  feats: {QUANT: EACH_OWN, DISTRIB_POSS: "YES"}
+  notes: kani_redup — kanya → kanyakanya, kaniya → kanikaniya, kanila → kanikanila

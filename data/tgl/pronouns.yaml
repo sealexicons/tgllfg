@@ -92,6 +92,20 @@
   is_clitic: true
 - surface: kanya
   feats: {PERS: 3, NUM: SG, CASE: DAT}
+  # Phase 5n.C.3 Commit 5 (§18 L31): kani_redup paradigm input —
+  # yields ``kanyakanya`` (full redup; 2-syllable base).
+  affix_class: [kani_redup]
+
+# 3sg DAT orthographic variant: ``kaniya`` is the trisyllabic
+# formal-register form. Lemma is canonicalised to ``kanya`` per
+# the Phase 5j Commit 7 orthographic-variant convention so the
+# bare-PRON lookup routes both surfaces to the same canonical
+# pronoun. Phase 5n.C.3 Commit 5 (§18 L31): the kani_redup
+# paradigm fires here and produces ``kanikaniya`` (3-syllable
+# base; first copy truncated to ``kani``).
+- surface: kaniya
+  feats: {PERS: 3, NUM: SG, CASE: DAT, LEMMA: kanya}
+  affix_class: [kani_redup]
 
 # --- 3pl ---
 - surface: sila
@@ -102,6 +116,11 @@
   is_clitic: true
 - surface: kanila
   feats: {PERS: 3, NUM: PL, CASE: DAT}
+  # Phase 5n.C.3 Commit 5 (§18 L31): kani_redup paradigm input —
+  # yields ``kanikanila`` (3-syllable base; first copy truncated
+  # to ``kani``). Closes the 3pl gap left by Phase 5f Commit 21
+  # (which only hand-coded the 3sg forms).
+  affix_class: [kani_redup]
 
 # --- Phase 5e Commit 20: kita fused clitic (1sg-GEN actor + 2sg-NOM SUBJ) ---
 #
