@@ -33,12 +33,13 @@ Algorithm
 Failure
 -------
 
-On failure the unifier currently returns a `Diagnostic` rather than
-raising; the graph may be left in a partial state. Callers needing
-atomic behaviour can wrap the call in :meth:`FGraph.snapshot` and
-:meth:`FGraph.rollback`. Phase 6.A C2 will wire this snapshot /
-rollback pair into :meth:`FGraph.unify` itself so per-call
-atomicity becomes the default.
+On failure the unifier returns a `Diagnostic` rather than raising.
+:meth:`FGraph.unify` is atomic: on failure the graph is restored
+to its pre-call state via an internal :meth:`snapshot` /
+:meth:`rollback` pair (Phase 6.A C2). Callers that want to wrap
+*sequences* of unifies under a shared rollback boundary can take
+their own snapshot before the first call and roll back if any
+member of the sequence returns a failure.
 """
 
 from __future__ import annotations
@@ -377,15 +378,36 @@ class FGraph:
 
     # --- Unification -------------------------------------------------------
 
-    def unify(
+    def unify(self, a: NodeId, b: NodeId) -> Diagnostic | None:
+        """Unify two nodes, returning ``None`` on success or a
+        :class:`Diagnostic` on failure.
+
+        Atomic: on failure the graph is restored to the state it held
+        immediately before the call, via :meth:`snapshot` /
+        :meth:`rollback`. The snapshot is taken on entry and discarded
+        on success. Recursive child unifications proceed without
+        further snapshots; only the outermost call is wrapped, so a
+        single snapshot brackets the whole tree of child unifications.
+        """
+        snap = self.snapshot()
+        err = self._unify_inner(a, b, path=())
+        if err is not None:
+            self.rollback(snap)
+        return err
+
+    def _unify_inner(
         self,
         a: NodeId,
         b: NodeId,
         *,
-        path: tuple[str, ...] = (),
+        path: tuple[str, ...],
     ) -> Diagnostic | None:
-        """Unify two nodes, returning ``None`` on success or a
-        :class:`Diagnostic` on failure. Mutates the graph in place."""
+        """Non-atomic core of :meth:`unify`. Mutates the graph in place;
+        on failure the partial state is left intact (the public
+        :meth:`unify` rolls back the outer snapshot). Recurses on
+        itself, not on :meth:`unify`, so a single snapshot brackets
+        the whole tree of child unifications.
+        """
         ra = self.find(a)
         rb = self.find(b)
         if ra == rb:
@@ -472,7 +494,7 @@ class FGraph:
                 if feat not in new_value.attrs:
                     new_value.attrs[feat] = child_id
             for feat, left, right in overlap:
-                err = self.unify(left, right, path=path + (feat,))
+                err = self._unify_inner(left, right, path=path + (feat,))
                 if err is not None:
                     return err
             return None

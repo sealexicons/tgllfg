@@ -1,22 +1,29 @@
 """Phase 6.A — atomic unify via :class:`Snapshot` / :meth:`rollback`.
 
-C1 (this commit): smoke tests for the snapshot / rollback API itself.
-C2 will wire snapshot-on-entry / rollback-on-failure into
-:meth:`FGraph.unify` and add symmetric-failure property tests.
-C3 will add the Hypothesis property battery (failed-unify rollback,
-reentrancy preservation across snapshot boundaries, nested
-snapshots).
+C1: smoke tests for the snapshot / rollback API itself.
+C2 (this commit): :meth:`FGraph.unify` switches to snapshot-on-entry /
+rollback-on-failure; symmetric-failure tests verify the atomic
+contract end-to-end including recursive ComplexValue child failures.
+C3 will add the Hypothesis property battery (reentrancy preservation
+across snapshot boundaries, nested snapshots).
 """
 
 from __future__ import annotations
 
+from hypothesis import given, settings
+from hypothesis import strategies as st
+
 from tgllfg.fstruct import (
     AtomValue,
     ComplexValue,
+    Diagnostic,
     FGraph,
     SetValue,
     Snapshot,
 )
+
+
+atoms = st.text(alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ", min_size=1, max_size=5)
 
 
 class TestSnapshotRollback:
@@ -189,3 +196,128 @@ class TestSnapshotRollback:
         except dataclasses.FrozenInstanceError:
             return
         raise AssertionError("Snapshot should be frozen")
+
+
+# === C2 — atomic unify contract ============================================
+
+class TestUnifyAtomicOnFailure:
+    """:meth:`FGraph.unify` snapshots on entry and rolls back on
+    failure: the public call is atomic regardless of where in the
+    recursion the failure surfaces.
+    """
+
+    def test_atom_clash_leaves_graph_unchanged(self) -> None:
+        g = FGraph()
+        a, b = g.fresh(), g.fresh()
+        assert g.set_atom(a, "X") is None
+        assert g.set_atom(b, "Y") is None
+        # Pre-call: distinct roots, distinct atoms.
+        assert not g.equiv(a, b)
+        err = g.unify(a, b)
+        assert isinstance(err, Diagnostic)
+        assert err.kind == "atom-mismatch"
+        # Atomic: graph unchanged.
+        assert not g.equiv(a, b)
+        va, vb = g.value(a), g.value(b)
+        assert isinstance(va, AtomValue) and va.atom == "X"
+        assert isinstance(vb, AtomValue) and vb.atom == "Y"
+
+    def test_recursive_child_clash_rolls_back_parent_link(self) -> None:
+        """The key C2 win: when a ComplexValue overlap fails on a child
+        unify, the outer parent link and the merged attrs must also be
+        rolled back. Pre-C2 mutate-then-fail leaves the parent linked.
+        """
+        g = FGraph()
+        a, b = g.fresh(), g.fresh()
+        a_f, err = g.resolve_path(a, ("F",))
+        assert err is None and a_f is not None
+        b_f, err = g.resolve_path(b, ("F",))
+        assert err is None and b_f is not None
+        assert g.set_atom(a_f, "X") is None
+        assert g.set_atom(b_f, "Y") is None
+        # Also add a unique daughter on `a` (not on `b`) to confirm
+        # the attribute-merge step is also rolled back.
+        _, err = g.resolve_path(a, ("ONLY_ON_A",))
+        assert err is None
+        # Pre-call: a, b distinct; a.F and b.F distinct.
+        assert not g.equiv(a, b)
+        assert not g.equiv(a_f, b_f)
+        a_val_before = g.value(a)
+        assert isinstance(a_val_before, ComplexValue)
+        a_attrs_before = set(a_val_before.attrs.keys())
+        err = g.unify(a, b)
+        assert isinstance(err, Diagnostic)
+        assert err.kind == "atom-mismatch"
+        assert err.path == ("F",)
+        # Atomic: outer parent link rolled back; attrs rolled back;
+        # child F clash rolled back; atoms preserved.
+        assert not g.equiv(a, b)
+        assert not g.equiv(a_f, b_f)
+        a_val_after = g.value(a)
+        b_val_after = g.value(b)
+        assert isinstance(a_val_after, ComplexValue)
+        assert isinstance(b_val_after, ComplexValue)
+        assert set(a_val_after.attrs.keys()) == a_attrs_before
+        assert "ONLY_ON_A" not in b_val_after.attrs
+        va_f, vb_f = g.value(a_f), g.value(b_f)
+        assert isinstance(va_f, AtomValue) and va_f.atom == "X"
+        assert isinstance(vb_f, AtomValue) and vb_f.atom == "Y"
+
+    def test_type_mismatch_atom_vs_complex_rolls_back(self) -> None:
+        g = FGraph()
+        a, b = g.fresh(), g.fresh()
+        assert g.set_atom(a, "X") is None
+        _, err = g.resolve_path(b, ("F",))
+        assert err is None
+        err = g.unify(a, b)
+        assert isinstance(err, Diagnostic)
+        assert err.kind == "type-mismatch"
+        # Atomic.
+        assert not g.equiv(a, b)
+        va, vb = g.value(a), g.value(b)
+        assert isinstance(va, AtomValue) and va.atom == "X"
+        assert isinstance(vb, ComplexValue)
+
+    def test_unify_success_persists(self) -> None:
+        """Atomic-on-failure must not roll back successful unifications.
+        Sanity check.
+        """
+        g = FGraph()
+        a, b = g.fresh(), g.fresh()
+        assert g.set_atom(a, "X") is None
+        assert g.set_atom(b, "X") is None
+        err = g.unify(a, b)
+        assert err is None
+        assert g.equiv(a, b)
+
+    @given(atom_a=atoms, atom_b=atoms)
+    @settings(max_examples=50)
+    def test_atom_clash_is_symmetric_under_failure(
+        self, atom_a: str, atom_b: str,
+    ) -> None:
+        """Property: for distinct-atom nodes, unify in either order
+        fails and leaves the graph in the pre-call state. The atomic
+        contract is symmetric under failure.
+        """
+        if atom_a == atom_b:
+            return
+        g = FGraph()
+        a, b = g.fresh(), g.fresh()
+        assert g.set_atom(a, atom_a) is None
+        assert g.set_atom(b, atom_b) is None
+        # Forward order.
+        err_forward = g.unify(a, b)
+        assert isinstance(err_forward, Diagnostic)
+        assert err_forward.kind == "atom-mismatch"
+        assert not g.equiv(a, b)
+        va, vb = g.value(a), g.value(b)
+        assert isinstance(va, AtomValue) and va.atom == atom_a
+        assert isinstance(vb, AtomValue) and vb.atom == atom_b
+        # Reverse order: same outcome on the unchanged graph.
+        err_reverse = g.unify(b, a)
+        assert isinstance(err_reverse, Diagnostic)
+        assert err_reverse.kind == "atom-mismatch"
+        assert not g.equiv(a, b)
+        va, vb = g.value(a), g.value(b)
+        assert isinstance(va, AtomValue) and va.atom == atom_a
+        assert isinstance(vb, AtomValue) and vb.atom == atom_b
