@@ -355,3 +355,157 @@ class TestDiagnosticsCleanAcrossDepth:
                 )
                 return
         pytest.fail(f"no RC-bearing parse for {text!r}")
+
+
+# === Negative cases (Phase 6.D Commit 4) ====================================
+#
+# Per the C1 design appendix (``docs/analysis-choices.md`` "Phase 6.D
+# Commit 1"), the body shape ``XCOMP*`` (rather than the broader
+# ``{XCOMP, ADJ}*`` or ``{COMP, XCOMP}*``) enforces three island-like
+# constraints on the gap reachability:
+#
+# 1. **Non-control matrix V cannot chain via S_XCOMP** — the recursive
+#    ``S_XCOMP → V[CTRL_CLASS=...] PART[LINK] S_XCOMP`` rule fires only
+#    on PSYCH / INTRANS / TRANS / MODAL control verbs. A plain
+#    intransitive (no CTRL_CLASS) at the body's head can't carry a
+#    deeper XCOMP, so a depth-2+ chain can't compose around it.
+# 2. **No bare-V composition without the linker** — the wrap rule
+#    requires ``PART[LINK=NA|NG]`` between head and body. A
+#    head-body sequence without the linker zero-parses.
+# 3. **Gap binding doesn't cross ADJ boundaries** — for nested
+#    relative clauses (one RC inside the other), the outer head's
+#    REL-PRO is not f-identified with the inner ADJ-clause's SUBJ.
+#    The XCOMP*-only body shape doesn't include ADJ in the path; the
+#    inner clause's SUBJ is anaphorically distinct.
+# 4. **Gap binding doesn't cross COMP boundaries** — Tagalog's
+#    SUBJ-only restriction operates clause-locally; a SUBJ inside a
+#    ``na``-clause COMP isn't reachable as a relativization gap. The
+#    XCOMP* body excludes COMP traversal.
+
+
+class TestNonControlMatrixDoesntChain:
+    """A non-control V at the body's head (no ``CTRL_CLASS``)
+    can't compose with a deeper V via the S_XCOMP recursive rule.
+    The cross-clausal RC reading is not admitted."""
+
+    def test_bare_av_intrans_chain_zero_parse(self) -> None:
+        # ``tumakbo`` (run) is not a control verb. Trying to chain
+        # it with a deeper V via the S_XCOMP-bodied wrap should
+        # fail: the recursive S_XCOMP rule requires
+        # V[CTRL_CLASS=...].
+        rs = parse_text("Tumakbo ang batang tumakbo na kumain.")
+        assert rs == [], (
+            f"unexpected parses for non-control-V chain: "
+            f"{len(rs)} parse(s)"
+        )
+
+
+class TestBareVNoLinker:
+    """The wrap rule mandates a linker between head NP and body.
+    Sequences without the linker zero-parse."""
+
+    def test_no_linker_zero_parse(self) -> None:
+        rs = parse_text("Tumakbo ang bata kumain.")
+        assert rs == [], (
+            f"unexpected parses for linker-less RC: {len(rs)} parse(s)"
+        )
+
+
+class TestNestedRcNoOuterGapToInnerSubj:
+    """Nested relative clauses — outer head's REL-PRO is NOT
+    f-identified with the inner ADJ-clause's SUBJ. Each RC's gap
+    binding is anaphorically distinct (Phase 4 §7.5 convention)."""
+
+    def test_outer_gap_distinct_from_inner_rc_subj(self) -> None:
+        # ``Tumakbo ang batang nakita ng anak na kumain ng isda.``
+        # "The child that the son who ate fish saw ran."
+        # Outer RC on bata: nakita (KITA-OV, AV-readings also).
+        # Inner RC on anak: kumain (EAT-AV).
+        # Test: in every parse, the EAT-RC's bottom SUBJ id is
+        # NOT the same as the head NP's id — they're anaphorically
+        # distinct (head NP carries PRED + CASE atomically into a
+        # *separate* REL-PRO node).
+        rs = parse_text(
+            "Tumakbo ang batang nakita ng anak na kumain ng isda."
+        )
+        assert rs, "expected at least one parse"
+        for i, (_, f, _, _) in enumerate(rs):
+            # Find the matrix SUBJ NP (head of outer RC).
+            outer_head = f.feats.get("SUBJ")
+            assert isinstance(outer_head, FStructure)
+            adj = outer_head.feats.get("ADJ")
+            if not adj:
+                continue
+            for rc in adj:
+                if not (hasattr(rc, "feats") and "PRED" in rc.feats):
+                    continue
+                # Only check the inner EAT-RC (it's the one that
+                # would wrongly bind to the outer head if the FU
+                # path crossed ADJ).
+                if "EAT" not in str(rc.feats.get("PRED")):
+                    continue
+                rc_subj = rc.feats.get("SUBJ")
+                if not isinstance(rc_subj, FStructure):
+                    continue
+                assert rc_subj.id != outer_head.id, (
+                    f"parse {i}: inner RC's SUBJ id {rc_subj.id} "
+                    f"== outer head's id {outer_head.id} — "
+                    f"gap binding wrongly crossed ADJ boundary"
+                )
+
+
+class TestCrossCompNoSubjBinding:
+    """Tagalog's SUBJ-only restriction blocks relativization across
+    a ``na``-COMP. The wrap's XCOMP* body excludes COMP traversal
+    so the gap cannot bind to a COMP-internal SUBJ."""
+
+    def test_no_xcomp_depth_for_cross_comp_attempt(self) -> None:
+        # ``Tumakbo ang taong sinabi ni Maria na umalis.``
+        # Whatever readings parse, the gap is at the matrix V's
+        # SUBJ (not at the embedded ``umalis`` clause's SUBJ).
+        # Verify: every RC binding has XCOMP depth 0 (no cross-
+        # clausal binding via FU).
+        rs = parse_text("Tumakbo ang taong sinabi ni Maria na umalis.")
+        assert rs, "expected at least one parse"
+        for i, (_, f, _, _) in enumerate(rs):
+            head = f.feats.get("SUBJ")
+            if not isinstance(head, FStructure):
+                continue
+            adj = head.feats.get("ADJ")
+            if not adj:
+                continue
+            for rc in adj:
+                if not (hasattr(rc, "feats") and "PRED" in rc.feats):
+                    continue
+                d = _xcomp_depth(rc)
+                assert d == 0, (
+                    f"parse {i}: RC at PRED={rc.feats.get('PRED')!r} "
+                    f"has XCOMP depth {d}; cross-COMP gap binding "
+                    f"shouldn't occur — only XCOMP* body is admitted"
+                )
+
+
+class TestDepthOneSurfaceNoSpuriousDeepParse:
+    """A plain depth-1 RC surface (no control verbs in the body)
+    shouldn't surface a parse with XCOMP-depth > 0 via the new
+    S_XCOMP-bodied wrap. The wrap can still admit a single-V
+    S_XCOMP body, but there's no chain to traverse."""
+
+    def test_no_deeper_xcomp_for_depth_1_rc(self) -> None:
+        rs = parse_text("Tumakbo ang batang kumain.")
+        assert rs, "expected at least one parse"
+        for i, (_, f, _, _) in enumerate(rs):
+            head = f.feats.get("SUBJ")
+            if not isinstance(head, FStructure):
+                continue
+            adj = head.feats.get("ADJ")
+            if not adj:
+                continue
+            for rc in adj:
+                if not (hasattr(rc, "feats") and "PRED" in rc.feats):
+                    continue
+                d = _xcomp_depth(rc)
+                assert d == 0, (
+                    f"parse {i}: depth-1 RC has XCOMP depth {d}; "
+                    f"no spurious chain should be admitted"
+                )
