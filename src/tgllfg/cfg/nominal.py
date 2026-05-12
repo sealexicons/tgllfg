@@ -671,9 +671,13 @@ def register_rules(rules: list[Rule]) -> None:
     # Q daughter, on top of the QUANT / VAGUE lifts the non-wh rule
     # already provides. Phase 5i Commit 6's wh-N-cleft rule (in
     # cfg/clause.py) consumes the resulting N[WH].
+    # LHS advertises ``WH=true, VAGUE=true`` so the Phase 5i Commit 6
+    # wh-N cleft rule in cfg/clause.py (``S → N[WH] NP[CASE=NOM]``)
+    # admits this N at completion time under the Phase 6.C
+    # graph-constraint matcher.
     for link in ("NA", "NG"):
         rules.append(Rule(
-            "N",
+            "N[WH=true, VAGUE=true]",
             [
                 "Q[VAGUE, WH]",
                 f"PART[LINK={link}]",
@@ -1715,8 +1719,14 @@ def register_rules(rules: list[Rule]) -> None:
     # ungrammatical: cardinals carry ``CARDINAL: YES``, not
     # ``VAGUE: YES``, so the rule's category-pattern + ``=c``
     # constraint does not fire on them.
+    # LHS advertises ``VAGUE=true, COMP_DEGREE=COMPARATIVE`` so the
+    # Phase 5n.B Commit 1 predicative-Q clause rule (which expects
+    # ``Q[VAGUE]``) admits the mas-wrapped Q under the Phase 6.C
+    # graph-constraint matcher. ``(↑) = ↓2`` already shares the
+    # inner Q's f-structure (including VAGUE=true), so the LHS
+    # advertisement matches what the rule produces.
     rules.append(Rule(
-        "Q",
+        "Q[VAGUE=true, COMP_DEGREE=COMPARATIVE]",
         ["PART[COMP_DEGREE=COMPARATIVE]", "Q[VAGUE]"],
         [
             "(↑) = ↓2",

@@ -600,7 +600,9 @@ def register_rules(rules: list[Rule]) -> None:
     # case marker) — IS admitted via the new N-level rule.
     for coord in ("AND", "OR"):
         rules.append(Rule(
-            "N",
+            # LHS advertises COORD for the Phase 6.C graph-constraint
+            # matcher — same convention as the NP-coord rules above.
+            f"N[COORD={coord}]",
             [
                 "N",
                 f"PART[COORD={coord}]",
@@ -611,6 +613,55 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓3 ∈ (↑ CONJUNCTS)",
                 f"(↑ COORD) = '{coord}'",
                 "(↑ NUM) = 'PL'" if coord == "AND" else "(↑ NUM) = ↓1 NUM",
+                f"(↓2 COORD) =c '{coord}'",
+            ],
+        ))
+
+    # --- Phase 6.C C3c: predicative-ADJ coordination ---------------
+    #
+    # ``Matanda at maganda si Maria.`` "Maria is old and beautiful"
+    # — two predicative-ADJ heads conjoined by ``at`` / ``o``, with
+    # a shared SUBJ provided by the matrix predicative-ADJ-S rule.
+    #
+    # Pre-Phase-6.C this surface admitted a spurious parse via the
+    # Phase 5g manner-adverb rule (``S → ADJ PART[LINK=NA/NG] S``):
+    # the non-conflict matcher silently let ``at`` (PART[COORD=AND])
+    # fill the ``PART[LINK=NA/NG]`` slot since the two patterns
+    # shared no keys. The Phase 6.C graph-constraint matcher
+    # correctly rejects that path. This rule replaces the spurious
+    # path with a proper ADJ-coord structure: a coord-ADJ
+    # advertising ``PREDICATIVE=true, COORD=AND/OR`` so the existing
+    # Phase 5g predicative-ADJ-S rule
+    # (``S → ADJ[PREDICATIVE] NP[CASE=NOM]``) consumes it unchanged.
+    #
+    # F-structure (additive example):
+    #
+    #   ADJ_LEMMA   — undefined on the matrix coord-ADJ (each
+    #                 conjunct ADJ keeps its own ADJ_LEMMA in
+    #                 CONJUNCTS)
+    #   CONJUNCTS   — {↓1, ↓3}
+    #   COORD       — 'AND'
+    #   PREDICATIVE — true (lifted from daughters; both must be
+    #                 predicative)
+    #
+    # Both daughters are constrained to PREDICATIVE=true to keep
+    # the rule from firing on adjuncts (NP-internal ADJs that have
+    # the predicative ``maganda`` surface but no PREDICATIVE feat).
+    for coord in ("AND", "OR"):
+        rules.append(Rule(
+            f"ADJ[PREDICATIVE=true, COORD={coord}]",
+            [
+                "ADJ[PREDICATIVE]",
+                f"PART[COORD={coord}]",
+                "ADJ[PREDICATIVE]",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                f"(↑ COORD) = '{coord}'",
+                "(↑ PREDICATIVE) = true",
+                "(↓1 PREDICATIVE) =c true",
+                "(↓3 PREDICATIVE) =c true",
                 f"(↓2 COORD) =c '{coord}'",
             ],
         ))
