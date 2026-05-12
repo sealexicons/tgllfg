@@ -1,22 +1,23 @@
-"""Phase 5n.A Commit 19 — 4-conjunct flat NP coord (§18 L85).
+"""Phase 5n.A Commit 19 — N-conjunct flat NP coord (§18 L85, L85+).
 
 The Phase 5k Commit 4 3-conjunct rules produce flat CONJUNCTS sets
-for exactly 3 conjuncts. Commit 19 adds explicit 4-conjunct rules
-(Oxford + non-Oxford × NOM/GEN/DAT) producing flat 4-member
-CONJUNCTS sets for ``Maria, Juan, Pedro, at Ana`` style surfaces.
+for exactly 3 conjuncts. Phase 5n.A Commit 19 added explicit
+4-conjunct rules (Oxford + non-Oxford × NOM/GEN/DAT). Phase 5n.A
+Commit 32 added the left-recursive ``NP_LONG_LIST_<case>`` +
+4+-wrap infrastructure for unbounded N — composing under the
+Phase 6.C graph-constraint matcher, which is what unlocked the
+5+-conjunct case (L85+).
 
-5+-conjunct surfaces are NOT covered (a follow-on item):
-* The right-recursive ``NP_LONG_LIST`` non-terminal approach
-  builds the recursive list correctly but the wrap rule's
-  ``(↑) = ↓1`` doesn't compose to a top-level S.
-* Explicit 5-conjunct rules load but don't fire — possibly an
-  Earley state-explosion interaction with the Phase 5m mismo
-  NP-emphatic rule that ambiguously matches ``Ana at`` as
-  ``NP + PART``.
-
-Both routes are out of L85 scope to debug. 4-conjunct flat is
-the primary attested 4+ form in R&G 1981 / S&O 1972 corpora;
-5+-conjunct stays pinned at 0-parse as the trigger for follow-on.
+5+-conjunct surfaces are covered:
+* The 4+-wrap rule (``NP[CASE=X, COORD=AND] → NP_LONG_LIST_<X>
+  PART[COORD=AND] NP``) consumes the recursive list and emits a
+  flat ``CONJUNCTS`` set of arbitrary arity.
+* Earlier diagnostics blamed a parser-level recursion bug; the
+  actual blocker was the non-conflict matcher admitting spurious
+  binary parses (mismo NP-emphatic / 2P clitic absorption) that
+  failed late and crowded out the wrap completion. The Phase 6.C
+  strict matcher prunes those at predict time, leaving the wrap
+  free to compose.
 """
 
 from __future__ import annotations
@@ -95,20 +96,55 @@ class TestThreeConjunctRegression:
         assert len(parses) >= 1
 
 
-# === 5+-conjunct deferred (pinned at 0-parse) =============================
+# === 5/6/7-conjunct flat NP coord (Phase 6.C strict-matcher unlock) =======
 
 
-class TestFivePlusConjunctDeferred:
-    """5+-conjunct flat coord is a separate follow-on item — neither
-    the right-recursive NP_LONG_LIST approach nor the explicit
-    5-conjunct rules fire cleanly. Pinned at 0-parse as the trigger
-    for follow-on work."""
+class TestFivePlusConjunctNomCoord:
+    """5+-conjunct NOM coord — left-recursive ``NP_LONG_LIST_NOM`` +
+    4+-wrap, unlocked by the Phase 6.C strict matcher (L85+)."""
 
-    def test_5_conjunct_zero_parse_pinned(self) -> None:
+    @pytest.mark.parametrize("sentence", [
+        "Kumain si Maria, si Juan, si Pedro, si Ana at si Lola.",
+        "Kumain ang tatay, ang nanay, ang kuya, ang ate at ang lolo.",
+    ])
+    def test_5_conjunct_nom(self, sentence: str) -> None:
+        parses = parse_text(sentence)
+        assert len(parses) >= 1
+
+
+class TestSixSevenConjunctNomCoord:
+    """6/7-conjunct stress fixtures. The recursive ``NP_LONG_LIST_NOM``
+    must compose three or four times respectively before the wrap
+    rule consumes the trailing ``at NP``. Confirms the recursion is
+    unbounded under the strict matcher."""
+
+    def test_6_conjunct_nom(self) -> None:
         parses = parse_text(
-            "Kumain si Maria, si Juan, si Pedro, si Ana at si Jose."
+            "Kumain ang tatay, ang nanay, ang kuya, ang ate, "
+            "ang lolo at ang lola."
         )
-        assert len(parses) == 0, (
-            "5-conjunct coord unexpectedly parses — flip this "
-            "assertion to >= 1 when the follow-on lands."
+        assert len(parses) >= 1
+        _ct, fs, _astr, _diags = parses[0]
+        subj = fs.feats.get("SUBJ")
+        assert subj is not None
+        conj = subj.feats.get("CONJUNCTS")
+        assert conj is not None
+        assert len(conj) == 6, (
+            f"expected 6 conjuncts, got {len(conj)}"
+        )
+        assert subj.feats.get("COORD") == "AND"
+
+    def test_7_conjunct_nom(self) -> None:
+        parses = parse_text(
+            "Kumain ang tatay, ang nanay, ang kuya, ang ate, "
+            "ang lolo, ang lola at ang tito."
+        )
+        assert len(parses) >= 1
+        _ct, fs, _astr, _diags = parses[0]
+        subj = fs.feats.get("SUBJ")
+        assert subj is not None
+        conj = subj.feats.get("CONJUNCTS")
+        assert conj is not None
+        assert len(conj) == 7, (
+            f"expected 7 conjuncts, got {len(conj)}"
         )
