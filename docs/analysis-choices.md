@@ -11936,13 +11936,15 @@ bottom calibration:
 Adapting for Tagalog relativization:
 
 ```text
-(↑ REL-PRO) = (↑ XCOMP* SUBJ)
+(↑ REL-PRO) =c (↑ XCOMP* SUBJ)
 ```
 
 Body: ``XCOMP*`` (a chain of XCOMP traversals; the matrix
 clause's XCOMP daughter chains into the embedded control
 complement's XCOMP, etc.). Bottom: ``SUBJ`` (the SUBJ-only
-restriction stays at the foot per Kroeger 1993).
+restriction stays at the foot per Kroeger 1993). (The C2 form
+above uses constraining ``=c`` rather than defining ``=`` — see
+*Implementation note: constraining-form realization* below.)
 
 The plan's eq. form ``(↑ REL-PRO) = (↑ {COMP, XCOMP}* SUBJ)``
 generalizes further to admit ``COMP`` (sentential complements,
@@ -11961,16 +11963,21 @@ NP[CASE=X] → NP[CASE=X] PART[LINK=NA|NG] S_XCOMP
    ↓3 ∈ (↑ ADJ)
    (↓3 REL-PRO PRED) = (↓1 PRED)
    (↓3 REL-PRO CASE) = (↓1 CASE)
-   (↓3 REL-PRO) = (↓3 XCOMP* SUBJ)
+   (↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)
 ```
 
 The atomic-path copies (``PRED`` and ``CASE``) on REL-PRO are
 unchanged from the S_GAP wrap (anaphoric sharing — see §7.5
 above for the rationale on why we avoid full identity). The
-load-bearing change is the **binding equation** on the last
-line: ``REL-PRO`` is bound (defining, ``=``) to the SUBJ
-endpoint reached via a regex path of zero-or-more XCOMP
-traversals on ``↓3`` (the S_XCOMP daughter).
+load-bearing change is the **FU gap-binding constraint** on the
+last line: ``REL-PRO`` is verified (constraining, ``=c``) to
+equal the SUBJ endpoint reached via a regex path of zero-or-
+more XCOMP traversals on ``↓3`` (the S_XCOMP daughter). The
+K&Z 1989 binding semantics is realized by the combination of
+the body's defining-equation reentrancy (S_GAP or S_XCOMP's
+``(↑ SUBJ) = (↑ REL-PRO)``) plus this constraining-form check;
+see *Implementation note: constraining-form realization* below
+for the rationale.
 
 K&Z 1989 §3 minimality (last subsection): when multiple
 endpoints exist, the f-structure assigned to a sentence uses
@@ -11987,11 +11994,11 @@ state* for control-shared SUBJ chains; its load-bearing role is
 to express the architectural commitment that gap binding lives
 in the equation language, not in the c-structure recursion.)
 
-### Existing Phase 4 §7.5 wrap: FU replacement of the =c
+### Existing Phase 4 §7.5 wrap: FU generalization of the =c
 
-The plan §5.4 also calls for replacing the existing
+The plan §5.4 calls for replacing the existing
 ``(↓3 REL-PRO) =c (↓3 SUBJ)`` constraining equation on the
-S_GAP-bodied wrap with the FU binding ``(↓3 REL-PRO) =
+S_GAP-bodied wrap with an FU path: ``(↓3 REL-PRO) =c
 (↓3 XCOMP* SUBJ)``. For a single-clause body (depth 1), the
 zero-iteration case of XCOMP* reaches the S_GAP's own SUBJ —
 which the S_GAP body already identifies with REL-PRO via
@@ -12001,6 +12008,50 @@ consistency**: both wraps (S_GAP body and S_XCOMP body) use
 the same FU shape, and the equation documents the standard
 LFG analysis rather than the Phase 4 belt-and-braces
 constraining check.
+
+### Implementation note: constraining-form realization
+
+The plan-of-record and the K&Z 1989 §3 eq. 39 canonical form
+both express the gap binding as a defining-form FU equation:
+
+```text
+(↓3 REL-PRO) = (↓3 XCOMP* SUBJ)         ;; K&Z-canonical form
+```
+
+This form was attempted first in C2 and surfaced a tgllfg-
+unifier orchestration limitation: our two-pass evaluator
+processes defining-equations **parent-first** at each c-node,
+so the wrap rule's FU equation fires *before* the S_GAP /
+S_XCOMP body's ``(↑ SUBJ) = (↑ REL-PRO)`` has run. At that
+point, ``↓3.SUBJ`` doesn't exist yet, and the FU resolver
+returns ``no endpoint``. 61 regression tests fail as a result.
+
+The fix landed as the **constraining-form realization** above:
+
+```text
+(↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)        ;; tgllfg C2 form
+```
+
+The constraining-equation pass runs in pass 2 after the entire
+defining pass has built the f-structure, so the body's SUBJ
+binding has already created the reentrancy by the time the FU
+equation evaluates. The K&Z binding semantics is preserved
+because the *reentrancy itself* (the gap binding) is created
+by the body's defining equation; the wrap's ``=c`` only
+verifies that the reentrancy holds along the regex path.
+
+The defining-form FU evaluation is documented as a Phase 7+
+unifier extension in
+``.claude/plans/tgllfg-out-of-scope.md`` §18.2 ("FU deferred
+defining-equation evaluation"). Resolution candidates: re-pass
+failed FU defining-equations after the children process, or
+schedule FU-on-RHS defining-equations children-first. Revisit
+when a construction surfaces that requires defining-form FU
+binding — i.e., a case where the FU equation must *create* the
+reentrancy because no body equation synthesizes it. Phase 6.F
+(``sarili`` inside-out binding) is the most plausible
+motivating case if 6.F's binding has to cross levels not
+synthesized by per-depth body equations.
 
 ### What stays at S_XCOMP (per-depth threading preserved)
 
@@ -12108,10 +12159,13 @@ ADJ-clause SUBJ).
 
 ### Architectural commitments worth carrying forward
 
-- **FU binding equations on extraction wraps**. From 6.D on,
-  the canonical relativization wrap uses ``= (↑ XCOMP* SUBJ)``
-  rather than ``=c SUBJ``. The same pattern should generalize
-  to cross-clausal ay-fronting (when corpus pressure surfaces).
+- **FU constraining equations on extraction wraps**. From 6.D
+  on, the canonical relativization wrap uses
+  ``=c (↑ XCOMP* SUBJ)`` rather than ``=c SUBJ``. The K&Z
+  defining-form is on the Phase 7+ roadmap; the constraining-
+  form realization preserves the K&Z semantics under our two-
+  pass orchestration. The same pattern should generalize to
+  cross-clausal ay-fronting (when corpus pressure surfaces).
 - **K&Z 1989 §3 minimality is load-bearing**. The FU equation
   enumerates multiple endpoints in principle; minimality picks
   shortest-depth. The unifier (``fu.resolve_regex_for_read``)
