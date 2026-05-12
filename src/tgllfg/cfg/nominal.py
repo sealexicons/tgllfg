@@ -123,8 +123,14 @@ def register_rules(rules: list[Rule]) -> None:
     # every V-headed S frame; the latter is invasive. For Commit 3
     # the in-situ form parses; Q_TYPE percolation lands as a Phase 5i
     # follow-on if corpus pressure demands it.
+    # LHS advertises ``WH=true`` so the Phase 5n.B Commit 9
+    # sa-kanino cleft rule (which expects ``NP[CASE=DAT, WH]``)
+    # admits the in-situ wh-PRON-in-NP shell under the Phase 6.C
+    # graph-constraint matcher. ``(↑ WH) = ↓2 WH`` already
+    # propagates WH=true on the f-graph (the PRON daughter has
+    # WH=true).
     rules.append(Rule(
-        "NP[CASE=GEN]",
+        "NP[CASE=GEN, WH=true]",
         ["ADP[CASE=GEN]", "PRON[WH]"],
         [
             "(↑) = ↓1",
@@ -135,7 +141,7 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
     rules.append(Rule(
-        "NP[CASE=DAT]",
+        "NP[CASE=DAT, WH=true]",
         ["ADP[CASE=DAT]", "PRON[WH]"],
         [
             "(↑) = ↓1",
