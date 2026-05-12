@@ -1,11 +1,14 @@
 """Phase 6.A — atomic unify via :class:`Snapshot` / :meth:`rollback`.
 
 C1: smoke tests for the snapshot / rollback API itself.
-C2 (this commit): :meth:`FGraph.unify` switches to snapshot-on-entry /
+C2: :meth:`FGraph.unify` switches to snapshot-on-entry /
 rollback-on-failure; symmetric-failure tests verify the atomic
 contract end-to-end including recursive ComplexValue child failures.
-C3 will add the Hypothesis property battery (reentrancy preservation
-across snapshot boundaries, nested snapshots).
+C3 (this commit): Hypothesis property battery covering observable-
+state preservation under arbitrary post-snapshot mutations, atomic
+failure for arbitrary atom clashes, idempotent rollback under
+mutation, reentrancy preservation across snapshot boundaries, and
+nested snapshot stacks.
 """
 
 from __future__ import annotations
@@ -321,3 +324,249 @@ class TestUnifyAtomicOnFailure:
         va, vb = g.value(a), g.value(b)
         assert isinstance(va, AtomValue) and va.atom == atom_a
         assert isinstance(vb, AtomValue) and vb.atom == atom_b
+
+
+# === C3 — Hypothesis property battery ======================================
+
+# Reuse the atom-character-set strategy for feature names (same shape).
+features = atoms
+
+
+def _serialize_value(v: object) -> tuple:
+    """Hashable, comparable snapshot of an FValue for state equality.
+
+    ``ComplexValue.attrs`` keys are sorted; ``SetValue.members`` are
+    sorted so the comparison is insensitive to insertion order.
+    """
+    if v is None:
+        return ("None",)
+    if isinstance(v, AtomValue):
+        return ("Atom", v.atom)
+    if isinstance(v, ComplexValue):
+        return ("Complex", tuple(sorted(v.attrs.items())))
+    assert isinstance(v, SetValue)
+    return ("Set", tuple(sorted(v.members)))
+
+
+def _describe(g: FGraph, nodes: list) -> tuple:
+    """Observable state of ``g`` restricted to ``nodes``.
+
+    Captures each node's canonical root (via :meth:`FGraph.find`) plus
+    the value at each distinct root. Insensitive to internal pointer
+    state (path-compression order, post-snapshot allocations, etc.);
+    two graphs producing equal :func:`_describe` outputs are
+    observationally indistinguishable from the perspective of the
+    given node set.
+    """
+    if not nodes:
+        return ()
+    roots = [(n, g.find(n)) for n in nodes]
+    distinct = sorted({r for _, r in roots})
+    values = tuple((r, _serialize_value(g.value(r))) for r in distinct)
+    return (tuple(sorted(roots)), values)
+
+
+@st.composite
+def _small_graphs(draw: st.DrawFn, max_nodes: int = 4):
+    """Hypothesis strategy yielding ``(FGraph, list[NodeId])``.
+
+    Each node is independently left unbound, atom-bound, or made into
+    a ComplexValue with 1-2 attributes. After binding, 0-2 random
+    unifications are attempted (the call is atomic post-C2 — failures
+    leave the graph unchanged).
+    """
+    g = FGraph()
+    n = draw(st.integers(min_value=1, max_value=max_nodes))
+    nodes = [g.fresh() for _ in range(n)]
+
+    for i in range(n):
+        choice = draw(st.sampled_from(["unbound", "atom", "complex"]))
+        if choice == "atom":
+            g.set_atom(nodes[i], draw(atoms))
+        elif choice == "complex":
+            for _ in range(draw(st.integers(min_value=1, max_value=2))):
+                g.resolve_path(nodes[i], (draw(features),))
+
+    n_unifies = draw(st.integers(min_value=0, max_value=2))
+    for _ in range(n_unifies):
+        i = draw(st.integers(min_value=0, max_value=n - 1))
+        j = draw(st.integers(min_value=0, max_value=n - 1))
+        g.unify(nodes[i], nodes[j])
+
+    return g, nodes
+
+
+class TestPropertySnapshotRollback:
+    @given(state=_small_graphs())
+    @settings(max_examples=50)
+    def test_snapshot_rollback_preserves_observable_state(self, state) -> None:
+        """Snapshot, mutate (allocate + atom-bind + attempt unify with
+        a pre-snapshot node), rollback. The observable state for the
+        pre-snapshot nodes is exactly the pre-snapshot state.
+        """
+        g, nodes = state
+        pre = _describe(g, nodes)
+        snap = g.snapshot()
+        extra = g.fresh()
+        g.set_atom(extra, "Z")
+        if nodes:
+            g.unify(extra, nodes[0])  # may fail atomically; either way rolled back
+        g.rollback(snap)
+        post = _describe(g, nodes)
+        assert pre == post
+
+    @given(atom_a=atoms, atom_b=atoms)
+    @settings(max_examples=50)
+    def test_failed_unify_preserves_observable_state(
+        self, atom_a: str, atom_b: str,
+    ) -> None:
+        """For any pair of clashing atoms, ``unify`` returns a
+        :class:`Diagnostic` and the observable state is unchanged.
+        """
+        if atom_a == atom_b:
+            return
+        g = FGraph()
+        a, b = g.fresh(), g.fresh()
+        g.set_atom(a, atom_a)
+        g.set_atom(b, atom_b)
+        pre = _describe(g, [a, b])
+        err = g.unify(a, b)
+        assert isinstance(err, Diagnostic)
+        post = _describe(g, [a, b])
+        assert pre == post
+
+    @given(state=_small_graphs())
+    @settings(max_examples=50)
+    def test_idempotent_rollback_under_arbitrary_mutations(
+        self, state,
+    ) -> None:
+        """Calling :meth:`rollback` twice with the same snapshot is a
+        no-op on the second call, regardless of what mutations occurred
+        between snapshot and first rollback.
+        """
+        g, nodes = state
+        snap = g.snapshot()
+        extra = g.fresh()
+        g.set_atom(extra, "Q")
+        if nodes:
+            g.unify(extra, nodes[-1])
+        g.rollback(snap)
+        first = _describe(g, nodes)
+        g.rollback(snap)
+        second = _describe(g, nodes)
+        assert first == second
+
+
+class TestPropertyReentrancyPreservation:
+    @given(atom=atoms)
+    @settings(max_examples=50)
+    def test_pre_snapshot_equivalence_survives_rollback(
+        self, atom: str,
+    ) -> None:
+        """Two nodes unified before a snapshot remain unified after a
+        rollback to that snapshot, regardless of mutations in between.
+        """
+        g = FGraph()
+        a, b = g.fresh(), g.fresh()
+        g.set_atom(a, atom)
+        g.set_atom(b, atom)
+        assert g.unify(a, b) is None
+        assert g.equiv(a, b)
+        snap = g.snapshot()
+        c = g.fresh()
+        g.set_atom(c, "DIFFERENT")
+        g.unify(a, c)  # may fail atomically; either way rolled back
+        g.rollback(snap)
+        assert g.equiv(a, b)
+
+    def test_complex_value_reentrancy_preserved_across_rollback(self) -> None:
+        """A ComplexValue with a shared child (the canonical reentrancy
+        case) survives a snapshot/rollback intact: the post-rollback
+        graph still has the two parent nodes' ``F`` attributes pointing
+        at the same canonical root.
+        """
+        g = FGraph()
+        a, b = g.fresh(), g.fresh()
+        a_f, err = g.resolve_path(a, ("F",))
+        assert err is None and a_f is not None
+        b_f, err = g.resolve_path(b, ("F",))
+        assert err is None and b_f is not None
+        assert g.set_atom(a_f, "SHARED") is None
+        assert g.set_atom(b_f, "SHARED") is None
+        assert g.unify(a_f, b_f) is None
+        assert g.equiv(a_f, b_f)
+        snap = g.snapshot()
+        c = g.fresh()
+        assert g.set_atom(c, "OTHER") is None
+        err = g.unify(b_f, c)
+        assert isinstance(err, Diagnostic)
+        # Atomic-on-failure: a_f and b_f are still equivalent.
+        assert g.equiv(a_f, b_f)
+        g.rollback(snap)
+        # And after rollback to a snapshot that captured the reentrancy.
+        assert g.equiv(a_f, b_f)
+
+
+class TestPropertyNestedSnapshots:
+    def test_two_level_rollback_to_inner(self) -> None:
+        """Take two nested snapshots; rolling back to the inner one
+        lands at the inner state and leaves nodes allocated between
+        the two snapshots intact.
+        """
+        g = FGraph()
+        a = g.fresh()
+        _outer = g.snapshot()
+        assert g.set_atom(a, "X") is None
+        b = g.fresh()
+        inner = g.snapshot()
+        assert g.set_atom(b, "Y") is None
+        c = g.fresh()
+        g.rollback(inner)
+        assert g._next_id == 2
+        va = g.value(a)
+        vb = g.value(b)
+        assert isinstance(va, AtomValue) and va.atom == "X"
+        # `b` was allocated pre-inner-snapshot; rollback to inner keeps
+        # it but drops the set_atom that came after.
+        assert vb is None
+        assert c not in g._parent
+
+    def test_two_level_rollback_to_outer(self) -> None:
+        """The outer snapshot is non-consuming and unaffected by the
+        existence of inner snapshots; rolling back to it reverts the
+        inner mutations as well.
+        """
+        g = FGraph()
+        a = g.fresh()
+        outer = g.snapshot()
+        assert g.set_atom(a, "X") is None
+        b = g.fresh()
+        _inner = g.snapshot()
+        assert g.set_atom(b, "Y") is None
+        g.rollback(outer)
+        assert g._next_id == 1
+        assert g.value(a) is None
+        assert b not in g._parent
+
+    @given(state=_small_graphs())
+    @settings(max_examples=30)
+    def test_outer_snapshot_unaffected_by_inner_rollback(
+        self, state,
+    ) -> None:
+        """An outer snapshot survives an inner rollback intact; rolling
+        back to the outer snapshot reverts the whole sequence.
+        """
+        g, nodes = state
+        outer = g.snapshot()
+        baseline = _describe(g, nodes)
+        # Inner: allocate + bind + snapshot + bind more.
+        extra = g.fresh()
+        g.set_atom(extra, "I")
+        inner = g.snapshot()
+        more = g.fresh()
+        g.set_atom(more, "J")
+        # Rollback to inner; the outer is still valid.
+        g.rollback(inner)
+        # Rollback to outer; the whole sequence is reverted.
+        g.rollback(outer)
+        assert _describe(g, nodes) == baseline
