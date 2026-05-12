@@ -76,9 +76,12 @@ def register_rules(rules: list[Rule]) -> None:
     # underspecified referent). The plan-of-record §2 / §5.2 specs
     # the AND-forces-PL / OR-percolates-NUM split.
     for case in _NP_CASES:
-        # Additive (at) — NUM forced to PL.
+        # Additive (at) — NUM forced to PL. LHS advertises
+        # ``COORD=AND`` for the Phase 6.C graph-constraint matcher
+        # (parent rules like the L78 wide-scope hindi rule and the
+        # L83 fragment-S rule expect ``NP[..., COORD=AND]``).
         rules.append(Rule(
-            f"NP[CASE={case}]",
+            f"NP[CASE={case}, COORD=AND]",
             [
                 f"NP[CASE={case}]",
                 "PART[COORD=AND]",
@@ -95,7 +98,7 @@ def register_rules(rules: list[Rule]) -> None:
         ))
         # Disjunctive (o) — NUM percolates from the first conjunct.
         rules.append(Rule(
-            f"NP[CASE={case}]",
+            f"NP[CASE={case}, COORD=OR]",
             [
                 f"NP[CASE={case}]",
                 "PART[COORD=OR]",
@@ -168,9 +171,10 @@ def register_rules(rules: list[Rule]) -> None:
     _3CONJ_NUM_BY_COORD = {"AND": "'PL'", "OR": "↓1 NUM"}
     for case in _NP_CASES:
         for coord, num_rhs in _3CONJ_NUM_BY_COORD.items():
-            # Oxford-comma form (6 daughters).
+            # Oxford-comma form (6 daughters). LHS advertises COORD
+            # for the Phase 6.C graph-constraint matcher.
             rules.append(Rule(
-                f"NP[CASE={case}]",
+                f"NP[CASE={case}, COORD={coord}]",
                 [
                     f"NP[CASE={case}]",
                     "PUNCT[PUNCT_CLASS=COMMA]",
@@ -191,7 +195,7 @@ def register_rules(rules: list[Rule]) -> None:
             ))
             # Non-Oxford form (5 daughters).
             rules.append(Rule(
-                f"NP[CASE={case}]",
+                f"NP[CASE={case}, COORD={coord}]",
                 [
                     f"NP[CASE={case}]",
                     "PUNCT[PUNCT_CLASS=COMMA]",
@@ -535,7 +539,12 @@ def register_rules(rules: list[Rule]) -> None:
     # layer — only one fires per input.
     for case in _NP_CASES:
         rules.append(Rule(
-            f"NP[CASE={case}]",
+            # LHS advertises COORD=BUT_NOT so parent rules expecting
+            # ``NP[CASE=X, COORD=BUT_NOT]`` (notably the Phase 5n.C
+            # Commit 5 L83 fragment-S rule in cfg/clause.py) admit
+            # this LHS at completion time under the Phase 6.C
+            # graph-constraint matcher.
+            f"NP[CASE={case}, COORD=BUT_NOT]",
             [
                 f"NP[CASE={case}]",
                 "PUNCT[PUNCT_CLASS=COMMA]",
@@ -717,9 +726,14 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Reference: S&O 1972 §6.7; R&G 1981 §6.6.
 
-    # ``o kaya`` — disjunctive uncertainty
+    # ``o kaya`` — disjunctive uncertainty. LHS pattern advertises
+    # COORD=OR so parent rules expecting ``PART[COORD=OR]`` admit
+    # this rule's LHS at completion time under the Phase 6.C
+    # graph-constraint matcher; the ``(↑ COORD) = 'OR'`` defining
+    # equation below is redundant under that matcher but kept for
+    # explicitness.
     rules.append(Rule(
-        "PART",
+        "PART[COORD=OR]",
         ["PART", "PART"],
         [
             "(↑ COORD) = 'OR'",
@@ -731,7 +745,7 @@ def register_rules(rules: list[Rule]) -> None:
     ))
     # ``at saka`` — conjunctive sequence
     rules.append(Rule(
-        "PART",
+        "PART[COORD=AND]",
         ["PART", "PART"],
         [
             "(↑ COORD) = 'AND'",
@@ -743,7 +757,7 @@ def register_rules(rules: list[Rule]) -> None:
     ))
     # ``at nang`` — conjunctive consequence
     rules.append(Rule(
-        "PART",
+        "PART[COORD=AND]",
         ["PART", "PART"],
         [
             "(↑ COORD) = 'AND'",

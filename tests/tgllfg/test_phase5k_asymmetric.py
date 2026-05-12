@@ -180,7 +180,7 @@ class TestAsymmetricCTreeShape:
 
         def find_coord_np(n):
             if (
-                n.label.startswith("NP[CASE=NOM]")
+                n.label.startswith("NP[CASE=NOM")
                 and len(n.children) == 4
             ):
                 labels = [c.label for c in n.children]

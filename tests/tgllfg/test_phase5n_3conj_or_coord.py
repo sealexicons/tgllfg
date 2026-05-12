@@ -136,7 +136,7 @@ class TestCTreeShapeOR:
 
         def find_coord_np(n):
             if (
-                n.label.startswith("NP[CASE=NOM]")
+                n.label.startswith("NP[CASE=NOM")
                 and len(n.children) == 6
             ):
                 return n
@@ -164,7 +164,7 @@ class TestCTreeShapeOR:
 
         def find_coord_np(n):
             if (
-                n.label.startswith("NP[CASE=NOM]")
+                n.label.startswith("NP[CASE=NOM")
                 and len(n.children) == 5
             ):
                 return n
