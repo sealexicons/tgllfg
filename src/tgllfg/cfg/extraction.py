@@ -1010,7 +1010,7 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
-    # --- Phase 4 §7.5: relativization ---
+    # --- Phase 4 §7.5 + Phase 6.D Commit 2: relativization ---
     #
     # ``ang batang kumain ng isda`` ("the child that ate fish"):
     # head-initial NP relativization. The head NP is followed by
@@ -1027,11 +1027,48 @@ def register_rules(rules: list[Rule]) -> None:
     # which our unifier's occurs-check rejects. We instead share
     # the head NP's salient features (``PRED``, ``CASE``) with
     # REL-PRO via individual atomic-path equations, and bind the
-    # RC's SUBJ to REL-PRO inside S_GAP. The constraining
-    # equation ``(↓3 REL-PRO) =c (↓3 SUBJ)`` still pins the
-    # SUBJ-only restriction (vacuous today, non-vacuous under
-    # §7.6 non-SUBJ S_GAP frames). Documented in
-    # ``docs/analysis-choices.md`` "Phase 4 §7.5".
+    # RC's SUBJ to REL-PRO inside S_GAP. Documented in
+    # ``docs/analysis-choices.md`` "Phase 4 §7.5" / "Phase 6.D
+    # Commit 1".
+    #
+    # **Phase 6.D Commit 2 (2026-05-12) — FU gap binding.** The
+    # original Phase 4 §7.5 ``(↓3 REL-PRO) =c (↓3 SUBJ)``
+    # constraining equation is generalized to a K&Z 1989 §3
+    # eq. 39 FU path
+    #
+    #     (↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)
+    #
+    # which navigates the gap via zero-or-more XCOMP traversals.
+    # Body: ``XCOMP*`` (control chains); bottom: ``SUBJ``
+    # (Kroeger 1993 SUBJ-only). The broader plan-skeleton form
+    # ``(↑ {COMP, XCOMP}* SUBJ)`` is narrowed to XCOMP* in 6.D —
+    # Tagalog COMP-internal SUBJs aren't reachable under the
+    # SUBJ-only restriction, so widening would overgenerate.
+    #
+    # **Constraining-form realization of the LFG binding.** The
+    # design appendix C1 envisioned a defining-form equation
+    # (``= (↓3 XCOMP* SUBJ)``), but our two-pass orchestration
+    # evaluates defining-equations parent-first — at the time
+    # the wrap rule fires, the S_GAP body's
+    # ``(↑ SUBJ) = (↑ REL-PRO)`` hasn't run yet, so ↓3.SUBJ
+    # doesn't exist and a defining FU resolves to no endpoint.
+    # The K&Z 1989 binding is therefore realized as the
+    # combination of (a) the S_GAP body's defining equation
+    # creating the SUBJ=REL-PRO reentrancy, plus (b) this
+    # constraining FU equation verifying that the reentrancy
+    # holds along an XCOMP* path. Equivalent K&Z semantics; the
+    # deferred-defining-FU mechanism would be a Phase 7+
+    # unifier extension.
+    #
+    # The change is **vacuous at depth 1** (S_GAP body already
+    # binds SUBJ=REL-PRO via the body's own
+    # ``(↑ SUBJ) = (↑ REL-PRO)`` equation; the constraining FU
+    # equation's zero-iteration endpoint reaches the same
+    # f-node and the check passes). The FU form is
+    # load-bearing under the new S_XCOMP-bodied wrap below,
+    # which admits cross-clausal RCs at depths 2+ — the FU
+    # path enumerates SUBJ at every level of the XCOMP chain
+    # and verifies REL-PRO ≡ at-least-one of them.
     #
     # Six wrap rules (3 head cases × 2 linker variants) — the
     # head NP's case percolates to the matrix; both linkers (NA
@@ -1047,7 +1084,52 @@ def register_rules(rules: list[Rule]) -> None:
                     "↓3 ∈ (↑ ADJ)",
                     "(↓3 REL-PRO PRED) = (↓1 PRED)",
                     "(↓3 REL-PRO CASE) = (↓1 CASE)",
-                    "(↓3 REL-PRO) =c (↓3 SUBJ)",
+                    "(↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)",
+                ],
+            ))
+
+    # --- Phase 6.D Commit 2: S_XCOMP-bodied RC wrap (L47) ---
+    #
+    # Closes §18.1.2 L47 (long-distance wh-extraction).
+    # Cross-clausal relativization at depths 2+: ``ang batang
+    # gustong kumain`` ("the child who wants to eat"), ``ang
+    # batang gustong pumayag na kumain`` ("the child who wants
+    # to agree to eat"), and arbitrarily deeper XCOMP chains.
+    #
+    # The body is ``S_XCOMP`` (the SUBJ-gapped clause that the
+    # Phase 4 §7.6 / Phase 5c §7.6 follow-on control work
+    # produces for control complements). ``cfg/control.py``'s
+    # per-depth REL-PRO threading already unifies the bottom-of-
+    # chain SUBJ with the matrix REL-PRO across any depth; this
+    # wrap rule is the outer composer that puts an ``S_XCOMP``
+    # body alongside the head NP.
+    #
+    # The FU constraining equation is identical to the S_GAP
+    # wrap above — ``(↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)`` — but
+    # here it does real work: ``↓3`` is the S_XCOMP daughter
+    # (depth 0 of the chain), and the XCOMP* enumeration
+    # reaches the SUBJ at any depth. K&Z 1989 §3 minimality
+    # selects endpoints shortest-first; under per-depth control
+    # threading every SUBJ along the chain is the same f-node,
+    # so the depth-0 endpoint satisfies the check.
+    #
+    # Design rationale + scope boundaries: ``docs/analysis-
+    # choices.md`` "Phase 6.D Commit 1: L47 long-distance
+    # relativization via FU — design". See also the
+    # constraining-form-realization note on the S_GAP wrap
+    # above for why this isn't a defining-form binding.
+    for case in ("NOM", "GEN", "DAT"):
+        np_cat = f"NP[CASE={case}]"
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                np_cat,
+                [np_cat, f"PART[LINK={link}]", "S_XCOMP"],
+                [
+                    "(↑) = ↓1",
+                    "↓3 ∈ (↑ ADJ)",
+                    "(↓3 REL-PRO PRED) = (↓1 PRED)",
+                    "(↓3 REL-PRO CASE) = (↓1 CASE)",
+                    "(↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)",
                 ],
             ))
 
