@@ -8,6 +8,7 @@ from tgllfg.cfg import (
     Rule,
     compile_grammar,
     matches,
+    matches_strict,
     merge_features,
     parse_pattern,
 )
@@ -92,6 +93,87 @@ class TestMatches:
         a = parse_pattern("V[VOICE=PV]")
         b = parse_pattern("V[ASPECT=PFV]")
         assert matches(a, b)
+
+
+# === matches_strict (Phase 6.C C2) ========================================
+
+class TestMatchesStrict:
+    """Graph-constraint matcher: every feature the expected pattern
+    demands must be present in the candidate, and shared features
+    must agree. Replaces :func:`matches` after Phase 6.C C5; the
+    parser switches over at C4. K&Z 1989 §3 c-structure-faithfulness:
+    rules name what they need; candidates must provide.
+    """
+
+    def test_identical_match(self) -> None:
+        a = parse_pattern("NP[CASE=NOM]")
+        assert matches_strict(a, a)
+
+    def test_category_mismatch(self) -> None:
+        assert not matches_strict(
+            parse_pattern("NP"), parse_pattern("VP"),
+        )
+
+    def test_feature_conflict(self) -> None:
+        a = parse_pattern("NP[CASE=NOM]")
+        b = parse_pattern("NP[CASE=GEN]")
+        assert not matches_strict(a, b)
+        assert not matches_strict(b, a)
+
+    def test_expected_subset_of_candidate(self) -> None:
+        """The headline case: rule expects ``V[VOICE=PV]``; lex
+        provides ``V[VOICE=PV,ASPECT=PFV,TR=TR]``. Expected is a
+        subset (by key) of candidate, and shared keys agree."""
+        expected = parse_pattern("V[VOICE=PV]")
+        candidate = parse_pattern("V[VOICE=PV,ASPECT=PFV,TR=TR]")
+        assert matches_strict(expected, candidate)
+
+    def test_candidate_lacks_demanded_feat_strict_fails(self) -> None:
+        """The directional asymmetry the legacy matcher was missing:
+        expected demands ``CASE=NOM`` but candidate is bare ``NP``.
+        Legacy ``matches`` admits (no shared keys to conflict);
+        strict rejects.
+        """
+        expected = parse_pattern("NP[CASE=NOM]")
+        candidate = parse_pattern("NP")
+        assert not matches_strict(expected, candidate)
+        # Sanity: legacy matcher does admit this.
+        assert matches(expected, candidate)
+
+    def test_disjoint_features_strict_fails(self) -> None:
+        """Expected demands ``VOICE``; candidate has only ``ASPECT``.
+        Strict rejects because ``VOICE`` is absent on candidate.
+        Legacy admits because no shared key conflicts.
+        """
+        expected = parse_pattern("V[VOICE=PV]")
+        candidate = parse_pattern("V[ASPECT=PFV]")
+        assert not matches_strict(expected, candidate)
+        # Sanity: legacy matcher admits.
+        assert matches(expected, candidate)
+
+    def test_bare_expected_matches_anything_same_category(self) -> None:
+        """Expected demands nothing (bare ``NP``); any same-category
+        candidate matches, regardless of its feats. Both matchers
+        agree here."""
+        expected = parse_pattern("NP")
+        candidate_bare = parse_pattern("NP")
+        candidate_rich = parse_pattern("NP[CASE=NOM,GENDER=M]")
+        assert matches_strict(expected, candidate_bare)
+        assert matches_strict(expected, candidate_rich)
+
+    def test_candidate_extra_keys_admitted(self) -> None:
+        """Candidate richer than expected — expected demands
+        ``CASE=NOM``; candidate carries ``CASE=NOM,GENDER=M``.
+        Strict admits — the extra ``GENDER`` is not in expected so
+        it doesn't gate the match.
+        """
+        expected = parse_pattern("NP[CASE=NOM]")
+        candidate = parse_pattern("NP[CASE=NOM,GENDER=M]")
+        assert matches_strict(expected, candidate)
+
+    def test_empty_features_both_sides(self) -> None:
+        """Both bare: trivially matches under strict."""
+        assert matches_strict(parse_pattern("S"), parse_pattern("S"))
 
 
 # === merge_features =======================================================
