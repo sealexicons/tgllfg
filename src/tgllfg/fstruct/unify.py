@@ -8,8 +8,18 @@ two passes over the parsed equations:
 
 1. **Defining pass.** Apply ``DefiningEquation`` and ``SetMembership``
    against the f-graph, growing structure and unifying nodes. The
-   unifier in :mod:`tgllfg.fgraph` enforces uniqueness, type
-   compatibility, and the occurs check on this pass.
+   unifier in :mod:`tgllfg.fstruct.graph` enforces uniqueness, type
+   compatibility, and the occurs check on this pass. Per Phase 6.A
+   C2, :meth:`FGraph.unify` is **atomic** — a failed unification
+   rolls the graph back to its pre-call state via an internal
+   :meth:`FGraph.snapshot` / :meth:`FGraph.rollback` pair, so a
+   failed defining equation does not corrupt the graph for the
+   equations that follow on the same c-node. :meth:`FGraph.set_atom`,
+   :meth:`FGraph.add_to_set`, and :meth:`FGraph.resolve_path` are
+   each atomic by construction (they detect the type clash before
+   mutating). The orchestration here therefore does not snapshot
+   around individual equation calls; it simply records diagnostics
+   and proceeds.
 2. **Constraint pass.** Apply ``ConstrainingEquation``,
    ``ExistentialConstraint``, ``NegExistentialConstraint``, and
    ``NegEquation`` against the *solved* graph. These never grow the
@@ -28,12 +38,14 @@ Public API
   :mod:`tgllfg.pipeline`. Returns the projected ``FStructure``.
 * :func:`solve(root)` — full result with the live ``FGraph``, the
   root ``NodeId``, and the diagnostic list. The chart parser and the
-  well-formedness module in §4.4 will surface diagnostics through
-  this entry point.
+  well-formedness module surface diagnostics through this entry
+  point.
 
 Functional uncertainty (regular-path designators) and off-path
-constraints parse correctly but evaluate to a ``deferred`` diagnostic
-in §4.2; full evaluation lands with the chart parser in §4.3 / Phase 4.
+constraints parse correctly but evaluate to a ``deferred``
+diagnostic at :func:`_path_features` today; full evaluation lands
+in Phase 6.B per :file:`.claude/plans/tgllfg-phase-6.md` §5.2
+(``_resolve_regex_for_read``, K&Z 1989 §3 path enumeration).
 """
 
 from __future__ import annotations
