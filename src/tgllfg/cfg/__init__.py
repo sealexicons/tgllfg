@@ -7,7 +7,6 @@ from .compile import (
     compile_grammar,
     compile_rule,
     matches,
-    matches_strict,
     merge_features,
     parse_pattern,
 )
@@ -22,7 +21,6 @@ __all__ = [
     "compile_grammar",
     "compile_rule",
     "matches",
-    "matches_strict",
     "merge_features",
     "parse_pattern",
 ]

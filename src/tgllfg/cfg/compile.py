@@ -180,29 +180,6 @@ def parse_pattern(s: str) -> CategoryPattern:
 
 
 def matches(expected: CategoryPattern, candidate: CategoryPattern) -> bool:
-    """Legacy non-conflict matching (pre-Phase-6.C): same category
-    and no disagreement on any feature *shared* between the two
-    sides. Unshared keys on either side are silently admitted, which
-    produces chart pollution at high RHS-feature arity (see
-    project_parser_nonconflict_matcher memory). Phase 6.C C2 lands
-    :func:`matches_strict` alongside this function; C4 flips the
-    parser to call ``matches_strict``; C5 removes this legacy
-    function and renames the strict variant to ``matches``.
-    """
-    if expected.category != candidate.category:
-        return False
-    e = dict(expected.features)
-    c = dict(candidate.features)
-    for k in e.keys() & c.keys():
-        if e[k] != c[k]:
-            return False
-    return True
-
-
-def matches_strict(
-    expected: CategoryPattern,
-    candidate: CategoryPattern,
-) -> bool:
     """Graph-constraint matching: same category, **every feature the
     expected pattern demands must be present in the candidate**, and
     shared features must have equal values. The candidate may carry
@@ -214,11 +191,6 @@ def matches_strict(
     K&Z 1989 §3's c-structure-faithfulness argument calls for this
     directionality: rules name the features they need; the parser
     admits only candidates that provide them.
-
-    Phase 6.C C2 introduces this function alongside the legacy
-    :func:`matches`; the parser still calls ``matches`` until C4
-    flips it. C5 renames ``matches_strict`` to ``matches`` and
-    removes the legacy.
     """
     if expected.category != candidate.category:
         return False

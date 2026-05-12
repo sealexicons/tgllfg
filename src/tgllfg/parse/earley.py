@@ -56,7 +56,7 @@ from ..cfg import (
     CompiledRule,
     Grammar,
     compile_grammar,
-    matches_strict as matches,
+    matches,
 )
 from ..core.common import CNode, LexicalEntry, MorphAnalysis
 
