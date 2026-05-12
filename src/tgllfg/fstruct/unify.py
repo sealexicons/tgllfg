@@ -335,6 +335,52 @@ def _eval_defining_eq(
     if isinstance(eq.rhs, Atom):
         return graph.set_atom(lhs_node, eq.rhs.value)
 
+    # Phase 6.B C5: binding-equation context. A defining equation
+    # with a regex path on the RHS is a *binding* equation in K&Z
+    # 1989 terms — the RHS regex enumerates endpoints (read-only),
+    # K&Z minimality selects the canonical (shortest-depth) endpoint,
+    # and the equation unifies the LHS with it. The write happens via
+    # ``graph.unify`` between existing nodes; the path is not
+    # extended. (Regex on the LHS of a defining equation remains
+    # out-of-scope per ``docs/fu-evaluation.md`` §5.3 — handled by
+    # the ``_resolve_for_write`` ``deferred`` short-circuit above.)
+    rhs_has_regex = any(
+        not isinstance(e, Feature) for e in eq.rhs.path
+    )
+
+    if rhs_has_regex:
+        base_node, err = _resolve_base(
+            eq.rhs.base, up, children, right=right,
+        )
+        if err is not None:
+            return err
+        assert base_node is not None
+
+        def off_path_eval(
+            intermediate: NodeId,
+            equations: tuple[Equation, ...],
+        ) -> Diagnostic | None:
+            return _eval_off_path(
+                graph, up, children, intermediate, equations,
+            )
+
+        endpoints, err = resolve_regex_for_read(
+            graph, base_node, eq.rhs.path,
+            off_path_eval=off_path_eval,
+        )
+        if err is not None:
+            return err
+        if not endpoints:
+            return Diagnostic(
+                "constraint-failed",
+                f"FU binding equation has no endpoint: {unparse(eq)}",
+            )
+        # K&Z 1989 §3 minimality: endpoints come back shortest-first.
+        # The canonical endpoint is the first one — the shortest-depth
+        # node reachable by the regex. Unify LHS with it.
+        target = endpoints[0]
+        return graph.unify(lhs_node, target)
+
     rhs_node, err = _resolve_for_write(graph, eq.rhs, up, children, right=right)
     if err is not None:
         return err

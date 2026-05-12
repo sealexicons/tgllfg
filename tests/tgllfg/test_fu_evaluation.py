@@ -1,19 +1,28 @@
-"""Phase 6.B C2 + C3 — FSA-based FU regex-path evaluation.
+"""Phase 6.B C2 + C3 + C4 + C5 — FSA-based FU regex-path evaluation.
 
 C2: deterministic unit tests for ``resolve_regex_for_read`` covering
 the four AST node kinds (``Feature`` / ``StarFeature`` /
 ``PlusFeature`` / ``AltFeature``), their concatenations, minimality
 ordering, dedup, the cycle / reentrancy termination guarantee, and
-the C4-deferred off-path branch.
+the off-path-without-evaluator branch.
 
-C3 (this commit): integration tests for ``_eval_constraining_eq``'s
-new FU-routing branch — constraining equations with regex paths on
-the RHS resolve through the FU resolver and check existential
-matching against the LHS.
+C3: integration tests for ``_eval_constraining_eq``'s new FU-routing
+branch — constraining equations with regex paths on the RHS resolve
+through the FU resolver and check existential matching against the
+LHS.
 
-C4 will replace the off-path "deferred" branch with actual
-evaluation. C5 will wire binding equations. C7 will add the
-Hypothesis property battery.
+C4: off-path evaluation tests — off-path constraints on intermediate
+nodes filter the FSA traversal; admit / prune behavior verified
+across single-step and multi-depth chains, with both ``→``-only
+and ``→`` + ``↑`` off-path equations.
+
+C5 (this commit): binding-equation tests — defining equations with
+regex RHS (``(↑ X) = (↑ regex)``) resolve via the FU resolver,
+select the K&Z 1989 §3 minimality endpoint, and unify the LHS with
+it. Failure modes (no endpoint, off-path filter prunes all
+candidates) surface ``constraint-failed``.
+
+C7 will add the Hypothesis property battery.
 """
 
 from __future__ import annotations
@@ -588,3 +597,154 @@ class TestConstrainingEqWithFU:
         result = solve(n)
         kinds = {d.kind for d in result.diagnostics}
         assert "constraint-failed" in kinds
+
+
+# === C5 — binding-equation integration =====================================
+
+class TestBindingEqWithFU:
+    """C5 wires the FU resolver into ``_eval_defining_eq`` for
+    binding equations (``=`` with regex on RHS). The RHS regex
+    enumerates endpoints read-only; K&Z 1989 §3 minimality selects
+    the shortest-depth endpoint; ``graph.unify`` joins the LHS with
+    it. Failure modes:
+
+    * No endpoint → ``constraint-failed``.
+    * Off-path filter eliminates all candidates → also no endpoint →
+      ``constraint-failed``.
+    * Unify itself fails (e.g., atom clash between LHS and target) →
+      the unify's own ``atom-mismatch`` / ``occurs-check`` /
+      ``type-mismatch`` diagnostic surfaces.
+    """
+
+    def test_binding_at_depth_0_unifies(self) -> None:
+        """``(↑ TOPIC) = (↑ COMP* OBJ)`` with ``OBJ`` defined directly
+        at the matrix: COMP* with zero iterations reaches the matrix;
+        OBJ resolves at depth 1; TOPIC unifies with it."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ OBJ) = 'X'",
+                "(↑ TOPIC) = (↑ COMP* OBJ)",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_binding_at_deeper_depth_unifies(self) -> None:
+        """``(↑ TOPIC) = (↑ COMP* OBJ)`` with ``COMP COMP OBJ``
+        defined: TOPIC binds to the depth-2 OBJ."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ COMP COMP OBJ) = 'X'",
+                "(↑ TOPIC) = (↑ COMP* OBJ)",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_binding_picks_shortest_endpoint(self) -> None:
+        """K&Z 1989 §3 minimality: when ``OBJ`` is defined at multiple
+        COMP depths, ``(↑ TOPIC) = (↑ COMP* OBJ)`` picks the shortest
+        (the depth-1 OBJ, not the depth-2 OBJ). Verified by setting
+        the shortest-depth OBJ to 'X' and a deeper one to 'Y' — the
+        successful binding requires the shortest match, so the
+        equation succeeds (TOPIC = 'X')."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ COMP OBJ) = 'X'",
+                "(↑ COMP COMP OBJ) = 'Y'",
+                "(↑ TOPIC) = (↑ COMP* OBJ)",
+                # Subsequent check: TOPIC must equal 'X' (the shortest
+                # endpoint), not 'Y'.
+                "(↑ TOPIC) =c 'X'",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_binding_no_endpoint_fails(self) -> None:
+        """``(↑ TOPIC) = (↑ COMP* OBJ)`` with no ``OBJ`` anywhere in
+        the COMP chain: the regex resolves to no endpoint; binding
+        fails with ``constraint-failed``."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = (↑ COMP* OBJ)",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
+
+    def test_binding_with_off_path_admits(self) -> None:
+        """Binding with off-path: ``(↑ TOPIC) = (↑ XCOMP*<(→ TENSE)
+        =c 'PAST'> SUBJ)``. Off-path holds at the intermediate XCOMP;
+        the branch is admitted; TOPIC unifies with the depth-1
+        SUBJ."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ XCOMP TENSE) = 'PAST'",
+                "(↑ XCOMP SUBJ) = 'X'",
+                "(↑ TOPIC) = (↑ XCOMP*<(→ TENSE) =c 'PAST'> SUBJ)",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_binding_with_off_path_filter_fails(self) -> None:
+        """Off-path filter prunes the only candidate; no endpoint;
+        binding fails."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ XCOMP TENSE) = 'PRES'",
+                "(↑ XCOMP SUBJ) = 'X'",
+                "(↑ TOPIC) = (↑ XCOMP*<(→ TENSE) =c 'PAST'> SUBJ)",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
+
+    def test_binding_unifies_atoms_consistently(self) -> None:
+        """Binding LHS to a regex endpoint of an atom node: the unify
+        succeeds when atoms match. Setting both TOPIC and the depth-1
+        endpoint to the same atom should land without diagnostic."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'shared'",
+                "(↑ COMP OBJ) = 'shared'",
+                "(↑ TOPIC) = (↑ COMP* OBJ)",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_binding_atom_clash_surfaces_unify_diagnostic(self) -> None:
+        """Binding LHS (atom 'X') to a regex endpoint (atom 'Y'):
+        the unify fails with ``atom-mismatch``."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'X'",
+                "(↑ COMP OBJ) = 'Y'",
+                "(↑ TOPIC) = (↑ COMP* OBJ)",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "atom-mismatch" in kinds
