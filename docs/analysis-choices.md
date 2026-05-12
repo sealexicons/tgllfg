@@ -11870,3 +11870,327 @@ Out of scope for Commit 5 (corpus pressure dependent):
 - Dalrymple 2001 ch.4 §4 "Coordination and reentrancy".
 - Schachter & Otanes 1972 §10 (coord in Tagalog).
 - Ramos & Bautista 1986 ch.18 (coord in Tagalog).
+
+## Phase 6.D Commit 1: L47 long-distance relativization via FU — design
+
+**Date:** 2026-05-12. **Status:** active (design commit; grammar /
+test lands in 6.D C2-C4).
+
+### Goal
+
+Close §18.1.2 L47 (*long-distance wh-extraction*) by admitting
+relativization across an XCOMP chain of arbitrary depth. Today's
+Phase 4 §7.5 wrap rule
+
+```text
+NP[CASE=X] → NP[CASE=X] PART[LINK=NA|NG] S_GAP
+   (↑) = ↓1
+   ↓3 ∈ (↑ ADJ)
+   (↓3 REL-PRO PRED) = (↓1 PRED)
+   (↓3 REL-PRO CASE) = (↓1 CASE)
+   (↓3 REL-PRO) =c (↓3 SUBJ)
+```
+
+admits depth-1 RCs only: the body is an ``S_GAP`` (a single
+SUBJ-gapped clause). Cross-clausal cases like
+
+- *ang batang gustong kumain* "the child who wants to eat"
+- *ang batang gustong pumayag na kumain* "the child who wants to
+  agree to eat"
+
+0-parse today because no wrap rule admits an ``S_XCOMP`` body
+(the SUBJ-gapped clause that the Phase 4 §7.6 + Phase 5c §7.6
+follow-on control work produced for control complements). The
+underlying per-depth REL-PRO threading inside ``S_XCOMP``
+(``cfg/control.py``) already unifies the bottom-of-chain SUBJ
+with the matrix REL-PRO; the only missing piece is the outer
+wrap that puts an ``S_XCOMP`` body alongside the head NP.
+
+The plan-of-record (``.claude/plans/tgllfg-phase-6.md`` §5.4)
+specifies that the binding-equation form should use FU per
+Kaplan & Zaenen 1989 §3 (``docs/references/KZ89.pdf``), so the
+extension is K&Z-faithful from the start rather than relying on
+the per-depth threading as a load-bearing implementation detail.
+
+### K&Z 1989 §3 adaptation for Tagalog relativization
+
+K&Z 1989 §3 eq. 39 generalizes English topicalization to a
+body-bottom regex-path designator
+
+```text
+(↑ TOPIC) = (↑ {COMP, XCOMP}* (GF-COMP))
+```
+
+reading: ``TOPIC`` is identified with *some* GF reached by zero
+or more ``COMP``/``XCOMP`` traversals, with ``GF`` ranging over
+the non-COMP grammatical functions (the "bottom"). Body /
+bottom calibration:
+
+- **Body** — the regex shape that licenses the path. For
+  English topicalization, ``{COMP, XCOMP}*`` lets the gap appear
+  inside any nesting of complement clauses.
+- **Bottom** — the grammatical function at the foot of the
+  path. For SUBJ-only relativization (the well-known Tagalog
+  restriction; Kroeger 1993), the bottom is fixed at ``SUBJ``.
+
+Adapting for Tagalog relativization:
+
+```text
+(↑ REL-PRO) =c (↑ XCOMP* SUBJ)
+```
+
+Body: ``XCOMP*`` (a chain of XCOMP traversals; the matrix
+clause's XCOMP daughter chains into the embedded control
+complement's XCOMP, etc.). Bottom: ``SUBJ`` (the SUBJ-only
+restriction stays at the foot per Kroeger 1993). (The C2 form
+above uses constraining ``=c`` rather than defining ``=`` — see
+*Implementation note: constraining-form realization* below.)
+
+The plan's eq. form ``(↑ REL-PRO) = (↑ {COMP, XCOMP}* SUBJ)``
+generalizes further to admit ``COMP`` (sentential complements,
+e.g., reported speech / *na*-clause arguments) in the body.
+6.D scopes to ``XCOMP*`` only — see *Out of scope* below.
+
+### C-structure: new S_XCOMP-bodied wrap rule (parallel to S_GAP)
+
+6.D adds a new wrap-rule variant alongside the existing Phase 4
+§7.5 wrap. For each of three head cases and two linker variants
+(parallel to the existing six S_GAP wraps):
+
+```text
+NP[CASE=X] → NP[CASE=X] PART[LINK=NA|NG] S_XCOMP
+   (↑) = ↓1
+   ↓3 ∈ (↑ ADJ)
+   (↓3 REL-PRO PRED) = (↓1 PRED)
+   (↓3 REL-PRO CASE) = (↓1 CASE)
+   (↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)
+```
+
+The atomic-path copies (``PRED`` and ``CASE``) on REL-PRO are
+unchanged from the S_GAP wrap (anaphoric sharing — see §7.5
+above for the rationale on why we avoid full identity). The
+load-bearing change is the **FU gap-binding constraint** on the
+last line: ``REL-PRO`` is verified (constraining, ``=c``) to
+equal the SUBJ endpoint reached via a regex path of zero-or-
+more XCOMP traversals on ``↓3`` (the S_XCOMP daughter). The
+K&Z 1989 binding semantics is realized by the combination of
+the body's defining-equation reentrancy (S_GAP or S_XCOMP's
+``(↑ SUBJ) = (↑ REL-PRO)``) plus this constraining-form check;
+see *Implementation note: constraining-form realization* below
+for the rationale.
+
+K&Z 1989 §3 minimality (last subsection): when multiple
+endpoints exist, the f-structure assigned to a sentence uses
+the **shortest-path** endpoint. For the S_XCOMP-bodied wrap,
+the XCOMP* enumeration starts at the S_XCOMP f-node and tries
+zero iterations (the S_XCOMP's own SUBJ), then one
+(``XCOMP SUBJ``), then two (``XCOMP XCOMP SUBJ``), etc. Each
+intermediate level's SUBJ is unified with the matrix SUBJ via
+the per-depth threading at S_XCOMP rules, so all candidate
+endpoints land on the same canonical f-node anyway —
+minimality picks the depth-0 endpoint, and the unifier
+proceeds. (The FU mechanism is therefore *redundant in steady
+state* for control-shared SUBJ chains; its load-bearing role is
+to express the architectural commitment that gap binding lives
+in the equation language, not in the c-structure recursion.)
+
+### Existing Phase 4 §7.5 wrap: FU generalization of the =c
+
+The plan §5.4 calls for replacing the existing
+``(↓3 REL-PRO) =c (↓3 SUBJ)`` constraining equation on the
+S_GAP-bodied wrap with an FU path: ``(↓3 REL-PRO) =c
+(↓3 XCOMP* SUBJ)``. For a single-clause body (depth 1), the
+zero-iteration case of XCOMP* reaches the S_GAP's own SUBJ —
+which the S_GAP body already identifies with REL-PRO via
+``(↑ SUBJ) = (↑ REL-PRO)``, so the FU equation is vacuous in
+this case too. The replacement is **for architectural
+consistency**: both wraps (S_GAP body and S_XCOMP body) use
+the same FU shape, and the equation documents the standard
+LFG analysis rather than the Phase 4 belt-and-braces
+constraining check.
+
+### Implementation note: constraining-form realization
+
+The plan-of-record and the K&Z 1989 §3 eq. 39 canonical form
+both express the gap binding as a defining-form FU equation:
+
+```text
+(↓3 REL-PRO) = (↓3 XCOMP* SUBJ)         ;; K&Z-canonical form
+```
+
+This form was attempted first in C2 and surfaced a tgllfg-
+unifier orchestration limitation: our two-pass evaluator
+processes defining-equations **parent-first** at each c-node,
+so the wrap rule's FU equation fires *before* the S_GAP /
+S_XCOMP body's ``(↑ SUBJ) = (↑ REL-PRO)`` has run. At that
+point, ``↓3.SUBJ`` doesn't exist yet, and the FU resolver
+returns ``no endpoint``. 61 regression tests fail as a result.
+
+The fix landed as the **constraining-form realization** above:
+
+```text
+(↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)        ;; tgllfg C2 form
+```
+
+The constraining-equation pass runs in pass 2 after the entire
+defining pass has built the f-structure, so the body's SUBJ
+binding has already created the reentrancy by the time the FU
+equation evaluates. The K&Z binding semantics is preserved
+because the *reentrancy itself* (the gap binding) is created
+by the body's defining equation; the wrap's ``=c`` only
+verifies that the reentrancy holds along the regex path.
+
+The defining-form FU evaluation is documented as a Phase 7+
+unifier extension in
+``.claude/plans/tgllfg-out-of-scope.md`` §18.2 ("FU deferred
+defining-equation evaluation"). Resolution candidates: re-pass
+failed FU defining-equations after the children process, or
+schedule FU-on-RHS defining-equations children-first. Revisit
+when a construction surfaces that requires defining-form FU
+binding — i.e., a case where the FU equation must *create* the
+reentrancy because no body equation synthesizes it. Phase 6.F
+(``sarili`` inside-out binding) is the most plausible
+motivating case if 6.F's binding has to cross levels not
+synthesized by per-depth body equations.
+
+### What stays at S_XCOMP (per-depth threading preserved)
+
+The cfg/control.py S_XCOMP rules continue to thread REL-PRO
+across the chain via the existing equations
+``(↑ SUBJ) = (↑ REL-PRO)`` and ``(↑ SUBJ) = (↑ XCOMP REL-PRO)``
+at each depth. This per-depth threading does double duty:
+
+1. **Control structure-sharing** (without relativization): the
+   matrix control wrap (``(↑ SUBJ) = (↑ XCOMP REL-PRO)``) plus
+   the S_XCOMP body's per-depth equations identify the
+   controller (matrix SUBJ / experiencer) with the controllee
+   (embedded SUBJ).
+2. **Gap propagation** (with relativization): when the matrix
+   wrap sets REL-PRO via the new 6.D FU equation, the same
+   per-depth equations propagate the head NP's anaphoric
+   identity down to the bottom SUBJ.
+
+Removing the per-depth threading would force the FU equation
+to do the navigation work for control too — a deeper
+refactor that risks breaking existing control tests (1100+
+tests at the time of writing). 6.D scopes the refactor to the
+relativization wrap; eliminating the per-depth threading is
+deferred to opportunistic future cleanup (analogue to the 2
+``=c`` belt-and-braces sites the plan §4.2 decision marked for
+6.H cleanup).
+
+### Test corpus: depths 1, 2, 3, 4
+
+Parametrized fixtures in
+``tests/tgllfg/test_phase6_ldd_relativization.py`` cover:
+
+- **Depth 1** (regression): *ang batang kumain* — single-clause
+  RC body. The existing S_GAP wrap fires; the new FU equation
+  is vacuous.
+- **Depth 2** (NEW): *ang batang gustong kumain* — PSYCH
+  matrix + AV inner. The S_XCOMP wrap fires; FU traverses one
+  XCOMP to reach the embedded SUBJ.
+- **Depth 3** (NEW): *ang batang gustong pumayag na kumain* —
+  PSYCH + INTRANS + AV. Three-level chain; FU traverses two
+  XCOMP transitions.
+- **Depth 4** (NEW): *ang batang gustong pumayag na pumayag na
+  kumain* — synthetic four-level chain, parallel to the
+  existing 4-deep control test (``test_long_distance_control
+  ::TestFourDeep::test_four_deep_chain``).
+
+Each fixture asserts:
+
+- Parse succeeds (≥ 1 parse).
+- Bottom-of-chain SUBJ id == matrix-NP head id (REL-PRO
+  binding is realized).
+- No ``constraint-failed`` or ``lmt-mismatch`` blocking
+  diagnostics.
+
+### Negative cases — body restriction
+
+K&Z 1989 §3 eq. 38 (Icelandic adjunct-island analogue) demands
+the body restriction *prevent* the path from crossing certain
+boundaries. For Tagalog 6.D, the equivalent is **the path
+must not cross an ADJUNCT boundary** — the gap must be reached
+via XCOMP traversal, not through an ADJ-attached RC body's
+SUBJ. The body shape ``XCOMP*`` (not ``{XCOMP, ADJ}*``)
+enforces this directly: a SUBJ inside an ADJ daughter is not
+in the path's image.
+
+Tested as: an ADJ-attached secondary RC body inside an outer
+RC should not host the gap. The negative fixture asserts that
+the matrix RC's binding doesn't reach the inner ADJ's SUBJ
+(zero parses where the outer head NP would equate the inner
+ADJ-clause SUBJ).
+
+### What's not in 6.D scope
+
+- **COMP traversal** (sentential complements, ``na``-clauses
+  in object position). The plan's eq. form
+  ``(↑ {COMP, XCOMP}* SUBJ)`` generalizes here, but Tagalog
+  COMP carries its own SUBJ pivot (not control-shared), so the
+  semantics is different — picks a different SUBJ than what's
+  shared via control. Defer to corpus pressure / 6.E (free
+  relative kung-S as DP, which is the closest cousin
+  structurally).
+- **Non-SUBJ extraction** (OBJ / OBJ-AGENT / OBJ-CAUSER /
+  OBL across XCOMP chains). The Phase 5d Commit 5
+  non-pivot ay-fronting infrastructure (S_GAP_OBJ /
+  S_GAP_OBJ_AGENT / S_GAP_OBL / S_GAP_OBJ_CAUSER /
+  S_GAP_OBJ_PATIENT) is depth-1 today. Lifting to cross-
+  clausal would require parallel S_XCOMP_OBJ etc. families
+  with FU bindings on the appropriate bottom GFs. Out of 6.D
+  scope; tracked as corpus-driven follow-on.
+- **Eliminating per-depth REL-PRO threading at S_XCOMP**. The
+  K&Z-faithful end state has FU at the matrix wrap doing all
+  the chain navigation, with S_XCOMP rules dropping their
+  per-depth ``(↑ SUBJ) = (↑ REL-PRO)`` and ``(↑ SUBJ) =
+  (↑ XCOMP REL-PRO)`` equations. The control complement
+  binding would migrate to FU at the control matrix wrap.
+  Deferred — large refactor, no functional gain in steady
+  state (FU minimality reduces to the same endpoint the
+  per-depth threading already produces).
+- **No-FU fallback / non-control depth-2 RCs**. RCs where the
+  body has nested *non-control* clauses (e.g., adjunct
+  na-clauses, COMP-headed complements) aren't admitted by the
+  S_XCOMP-bodied wrap because S_XCOMP only fires on control-
+  verb heads. The FU equation enforces this implicitly via
+  the XCOMP*-only body.
+
+### Architectural commitments worth carrying forward
+
+- **FU constraining equations on extraction wraps**. From 6.D
+  on, the canonical relativization wrap uses
+  ``=c (↑ XCOMP* SUBJ)`` rather than ``=c SUBJ``. The K&Z
+  defining-form is on the Phase 7+ roadmap; the constraining-
+  form realization preserves the K&Z semantics under our two-
+  pass orchestration. The same pattern should generalize to
+  cross-clausal ay-fronting (when corpus pressure surfaces).
+- **K&Z 1989 §3 minimality is load-bearing**. The FU equation
+  enumerates multiple endpoints in principle; minimality picks
+  shortest-depth. The unifier (``fu.resolve_regex_for_read``)
+  guarantees deterministic ordering via the depth-sorted
+  endpoint list.
+- **No new lex entries for control verbs**. ``gusto`` /
+  ``puwede`` / ``maaari`` / ``kailangan`` / ``ayaw`` /
+  ``kaya`` etc. carry ``CTRL_CLASS`` and are already wired for
+  S_XCOMP composition; the only new infrastructure is the
+  matrix wrap variant.
+
+### Cross-references
+
+- Plan-of-record §5.4 (``.claude/plans/tgllfg-phase-6.md``).
+- K&Z 1989 §3 eq. 27-39 (``docs/references/KZ89.pdf``); the
+  topicalization template at eq. 39 and the off-path /
+  body-bottom discussion at eq. 38.
+- Kaplan & Maxwell 1988 — finite-state algorithm underlying
+  the resolver in ``src/tgllfg/fstruct/fu.py``.
+- Phase 4 §7.5 above — the S_GAP-bodied wrap that 6.D extends.
+- Phase 4 §7.6 / Phase 5c §7.6 follow-on — the S_XCOMP
+  infrastructure (in ``cfg/control.py``) that 6.D recruits as
+  the deep RC body.
+- Phase 6.B (``docs/fu-evaluation.md``) — the FU resolver
+  implementation; 6.D is the first cfg-side consumer.
+- §18.1.2 L47 entry — closed by 6.D.
+- Kroeger 1993 — Tagalog SUBJ-only relativization restriction.
+- Dalrymple 2001 ch. 14 — secondary reference for FU and LDD.
