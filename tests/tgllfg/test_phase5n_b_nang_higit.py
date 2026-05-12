@@ -38,9 +38,12 @@ def _ay_or_pred_parse(text: str) -> tuple[CNode, FStructure] | None:
 
 def _find_adj_with_comp(node: CNode) -> CNode | None:
     """Walk c-tree and return the first ADJ node (depth-first)
-    whose label is exactly 'ADJ' and whose first equation marks
+    whose label starts with 'ADJ' (post-Phase-6.C C3d the
+    nang-higit ADJ-wrapper LHS advertises feats, so the label is
+    ``ADJ[PREDICATIVE=true, COMP_DEGREE=COMPARATIVE]`` rather than
+    bare ``ADJ``) and whose first equation marks
     COMP_DEGREE=COMPARATIVE."""
-    if node.label == "ADJ":
+    if node.label.startswith("ADJ"):
         if any(
             "COMP_DEGREE) = 'COMPARATIVE'" in eq for eq in node.equations
         ):

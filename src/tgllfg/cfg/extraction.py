@@ -1078,9 +1078,15 @@ def register_rules(rules: list[Rule]) -> None:
     # modification — closing the path that the Phase 5m comment
     # ("the relative-clause grammar handles sinumang dumating")
     # had anticipated but not yet implemented.
+    # LHS advertises ``INDEF=NEG_INDEF`` so the Phase 5j Commit 9
+    # negative-existential rule (which expects
+    # ``PRON[INDEF=NEG_INDEF]``) admits this rule's LHS under the
+    # Phase 6.C graph-constraint matcher. ``(↑) = ↓1`` already
+    # propagates INDEF=NEG_INDEF on the f-graph; the LHS pattern
+    # advertises the same so completion sees it.
     for link in ("NA", "NG"):
         rules.append(Rule(
-            "PRON",
+            "PRON[INDEF=NEG_INDEF]",
             [
                 "PRON[INDEF=NEG_INDEF]",
                 f"PART[LINK={link}]",
