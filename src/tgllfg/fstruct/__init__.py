@@ -42,6 +42,9 @@ from .graph import (
     SetValue,
     Snapshot,
 )
+from .fu import (
+    resolve_regex_for_read,
+)
 from .unify import (
     SolveResult,
     build_f_structure,
@@ -87,6 +90,8 @@ __all__ = [
     "SolveResult",
     "build_f_structure",
     "solve",
+    # FU evaluation (Phase 6.B)
+    "resolve_regex_for_read",
     # well-formedness
     "PredTemplate",
     "is_governable_gf",

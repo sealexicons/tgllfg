@@ -71,6 +71,7 @@ from .equations import (
     parse_equation,
     unparse,
 )
+from .fu import resolve_regex_for_read
 from .graph import (
     AtomValue,
     ComplexValue,
@@ -212,7 +213,17 @@ def _resolve_base(
     base: Up | Down | Right,
     up: NodeId,
     children: list[NodeId],
+    *,
+    right: NodeId | None = None,
 ) -> tuple[NodeId | None, Diagnostic | None]:
+    """Resolve a base metavariable to a NodeId.
+
+    The optional ``right`` parameter binds ``→`` to a specific node;
+    it is set when evaluating off-path constraints during FU
+    regex-path traversal (Phase 6.B C4). Outside an off-path
+    context, ``right`` is ``None`` and ``→`` surfaces an
+    ``unsupported`` diagnostic.
+    """
     if isinstance(base, Up):
         return up, None
     if isinstance(base, Down):
@@ -229,6 +240,8 @@ def _resolve_base(
             f"↓{base.idx}: child index out of range (have {len(children)})",
         )
     if isinstance(base, Right):
+        if right is not None:
+            return right, None
         return None, Diagnostic(
             "unsupported",
             "→ outside an off-path constraint",
@@ -266,10 +279,12 @@ def _resolve_for_write(
     designator: Designator,
     up: NodeId,
     children: list[NodeId],
+    *,
+    right: NodeId | None = None,
 ) -> tuple[NodeId | None, Diagnostic | None]:
     """Resolve the designator with get-or-create semantics. Used for
     the lhs of defining equations and both sides of set membership."""
-    base_node, err = _resolve_base(designator.base, up, children)
+    base_node, err = _resolve_base(designator.base, up, children, right=right)
     if err is not None:
         return None, err
     feats, err = _path_features(designator)
@@ -285,11 +300,13 @@ def _resolve_for_read(
     designator: Designator,
     up: NodeId,
     children: list[NodeId],
+    *,
+    right: NodeId | None = None,
 ) -> tuple[NodeId | None, Diagnostic | None]:
     """Resolve the designator without creating intermediate nodes.
     Returns (None, None) when the path is not defined; that is not an
     error in itself, just absence."""
-    base_node, err = _resolve_base(designator.base, up, children)
+    base_node, err = _resolve_base(designator.base, up, children, right=right)
     if err is not None:
         return None, err
     feats, err = _path_features(designator)
@@ -307,8 +324,10 @@ def _eval_defining_eq(
     up: NodeId,
     children: list[NodeId],
     eq: DefiningEquation,
+    *,
+    right: NodeId | None = None,
 ) -> Diagnostic | None:
-    lhs_node, err = _resolve_for_write(graph, eq.lhs, up, children)
+    lhs_node, err = _resolve_for_write(graph, eq.lhs, up, children, right=right)
     if err is not None:
         return err
     assert lhs_node is not None
@@ -316,7 +335,53 @@ def _eval_defining_eq(
     if isinstance(eq.rhs, Atom):
         return graph.set_atom(lhs_node, eq.rhs.value)
 
-    rhs_node, err = _resolve_for_write(graph, eq.rhs, up, children)
+    # Phase 6.B C5: binding-equation context. A defining equation
+    # with a regex path on the RHS is a *binding* equation in K&Z
+    # 1989 terms — the RHS regex enumerates endpoints (read-only),
+    # K&Z minimality selects the canonical (shortest-depth) endpoint,
+    # and the equation unifies the LHS with it. The write happens via
+    # ``graph.unify`` between existing nodes; the path is not
+    # extended. (Regex on the LHS of a defining equation remains
+    # out-of-scope per ``docs/fu-evaluation.md`` §5.3 — handled by
+    # the ``_resolve_for_write`` ``deferred`` short-circuit above.)
+    rhs_has_regex = any(
+        not isinstance(e, Feature) for e in eq.rhs.path
+    )
+
+    if rhs_has_regex:
+        base_node, err = _resolve_base(
+            eq.rhs.base, up, children, right=right,
+        )
+        if err is not None:
+            return err
+        assert base_node is not None
+
+        def off_path_eval(
+            intermediate: NodeId,
+            equations: tuple[Equation, ...],
+        ) -> Diagnostic | None:
+            return _eval_off_path(
+                graph, up, children, intermediate, equations,
+            )
+
+        endpoints, err = resolve_regex_for_read(
+            graph, base_node, eq.rhs.path,
+            off_path_eval=off_path_eval,
+        )
+        if err is not None:
+            return err
+        if not endpoints:
+            return Diagnostic(
+                "constraint-failed",
+                f"FU binding equation has no endpoint: {unparse(eq)}",
+            )
+        # K&Z 1989 §3 minimality: endpoints come back shortest-first.
+        # The canonical endpoint is the first one — the shortest-depth
+        # node reachable by the regex. Unify LHS with it.
+        target = endpoints[0]
+        return graph.unify(lhs_node, target)
+
+    rhs_node, err = _resolve_for_write(graph, eq.rhs, up, children, right=right)
     if err is not None:
         return err
     assert rhs_node is not None
@@ -328,11 +393,17 @@ def _eval_set_member(
     up: NodeId,
     children: list[NodeId],
     eq: SetMembership,
+    *,
+    right: NodeId | None = None,
 ) -> Diagnostic | None:
-    elem_node, err = _resolve_for_write(graph, eq.element, up, children)
+    elem_node, err = _resolve_for_write(
+        graph, eq.element, up, children, right=right,
+    )
     if err is not None:
         return err
-    container_node, err = _resolve_for_write(graph, eq.container, up, children)
+    container_node, err = _resolve_for_write(
+        graph, eq.container, up, children, right=right,
+    )
     if err is not None:
         return err
     assert elem_node is not None and container_node is not None
@@ -346,8 +417,10 @@ def _eval_constraining_eq(
     up: NodeId,
     children: list[NodeId],
     eq: ConstrainingEquation,
+    *,
+    right: NodeId | None = None,
 ) -> Diagnostic | None:
-    lhs_node, err = _resolve_for_read(graph, eq.lhs, up, children)
+    lhs_node, err = _resolve_for_read(graph, eq.lhs, up, children, right=right)
     if err is not None:
         return err
     if lhs_node is None:
@@ -369,7 +442,69 @@ def _eval_constraining_eq(
             },
         )
 
-    rhs_node, err = _resolve_for_read(graph, eq.rhs, up, children)
+    # Phase 6.B C3/C4: regex-path RHS routes through the FU resolver
+    # in :mod:`tgllfg.fstruct.fu`. C4 also supplies an off-path
+    # evaluator so elements bearing off-path constraints filter the
+    # FSA traversal per K&Z 1989 §3 (off-path constraints live on
+    # the intermediate nodes themselves).
+    rhs_has_regex = any(
+        not isinstance(e, Feature) for e in eq.rhs.path
+    )
+
+    if rhs_has_regex:
+        base_node, err = _resolve_base(
+            eq.rhs.base, up, children, right=right,
+        )
+        if err is not None:
+            return err
+        assert base_node is not None
+
+        def off_path_eval(
+            intermediate: NodeId,
+            equations: tuple[Equation, ...],
+        ) -> Diagnostic | None:
+            return _eval_off_path(
+                graph, up, children, intermediate, equations,
+            )
+
+        endpoints, err = resolve_regex_for_read(
+            graph, base_node, eq.rhs.path,
+            off_path_eval=off_path_eval,
+        )
+        if err is not None:
+            return err
+        if not endpoints:
+            return Diagnostic(
+                "constraint-failed",
+                f"constraining equation rhs FU path has no endpoint: "
+                f"{unparse(eq)}",
+            )
+        # K&Z 1989 §3 minimality: endpoints come back shortest-first,
+        # but the constraining-eq is existential (holds iff *any*
+        # endpoint matches the LHS). Walk in minimality order so the
+        # cheapest-match path is the one that satisfies, but
+        # otherwise treat all endpoints as equally valid candidates.
+        for ep in endpoints:
+            if graph.equiv(lhs_node, ep):
+                return None
+            ep_val = graph.value(ep)
+            if (
+                isinstance(lhs_val, AtomValue)
+                and isinstance(ep_val, AtomValue)
+                and lhs_val.atom == ep_val.atom
+            ):
+                return None
+        return Diagnostic(
+            "constraint-failed",
+            f"constraining equation does not hold "
+            f"(no FU endpoint matches LHS): {unparse(eq)}",
+            detail={
+                "lhs": _value_summary(lhs_val),
+                "endpoint_count": len(endpoints),
+            },
+        )
+
+    rhs_node, err = _resolve_for_read(graph, eq.rhs, up, children, right=right)
     if err is not None:
         return err
     if rhs_node is None:
@@ -401,8 +536,12 @@ def _eval_existential(
     up: NodeId,
     children: list[NodeId],
     eq: ExistentialConstraint,
+    *,
+    right: NodeId | None = None,
 ) -> Diagnostic | None:
-    node, err = _resolve_for_read(graph, eq.designator, up, children)
+    node, err = _resolve_for_read(
+        graph, eq.designator, up, children, right=right,
+    )
     if err is not None:
         return err
     if node is None:
@@ -418,8 +557,12 @@ def _eval_neg_existential(
     up: NodeId,
     children: list[NodeId],
     eq: NegExistentialConstraint,
+    *,
+    right: NodeId | None = None,
 ) -> Diagnostic | None:
-    node, err = _resolve_for_read(graph, eq.designator, up, children)
+    node, err = _resolve_for_read(
+        graph, eq.designator, up, children, right=right,
+    )
     if err is not None:
         return err
     if node is not None:
@@ -435,8 +578,10 @@ def _eval_neg_equation(
     up: NodeId,
     children: list[NodeId],
     eq: NegEquation,
+    *,
+    right: NodeId | None = None,
 ) -> Diagnostic | None:
-    lhs_node, err = _resolve_for_read(graph, eq.lhs, up, children)
+    lhs_node, err = _resolve_for_read(graph, eq.lhs, up, children, right=right)
     if err is not None:
         return err
     # Strict reading: if lhs is undefined we fail. The classical
@@ -456,7 +601,7 @@ def _eval_neg_equation(
             f"neg equation does not hold: {unparse(eq)}",
             detail={"value": lhs_val.atom},
         )
-    rhs_node, err = _resolve_for_read(graph, eq.rhs, up, children)
+    rhs_node, err = _resolve_for_read(graph, eq.rhs, up, children, right=right)
     if err is not None:
         return err
     if rhs_node is None:
@@ -476,6 +621,61 @@ def _eval_neg_equation(
             "neg-equation-failed",
             f"neg equation does not hold: {unparse(eq)}",
         )
+    return None
+
+
+def _eval_off_path(
+    graph: FGraph,
+    up: NodeId,
+    children: list[NodeId],
+    intermediate: NodeId,
+    equations: tuple[Equation, ...],
+) -> Diagnostic | None:
+    """Evaluate off-path constraint equations against ``intermediate``.
+
+    Dispatches each equation to the appropriate read-only evaluator
+    with ``right=intermediate`` bound; returns the first failure
+    diagnostic, or ``None`` if all equations succeed. Used as the
+    ``off_path_eval`` callback by
+    :func:`tgllfg.fstruct.fu.resolve_regex_for_read` during FSA
+    traversal — failures prune the traversal branch silently.
+
+    Phase 6.B C4: supports the four read-only equation kinds. Write
+    equations (``DefiningEquation`` / ``SetMembership``) in an
+    off-path context are rejected with an ``unsupported`` diagnostic
+    — K&Z 1989 off-path constraints are inherently read-only filters.
+    """
+    for eq in equations:
+        if isinstance(eq, ConstrainingEquation):
+            d = _eval_constraining_eq(
+                graph, up, children, eq, right=intermediate,
+            )
+        elif isinstance(eq, ExistentialConstraint):
+            d = _eval_existential(
+                graph, up, children, eq, right=intermediate,
+            )
+        elif isinstance(eq, NegExistentialConstraint):
+            d = _eval_neg_existential(
+                graph, up, children, eq, right=intermediate,
+            )
+        elif isinstance(eq, NegEquation):
+            d = _eval_neg_equation(
+                graph, up, children, eq, right=intermediate,
+            )
+        elif isinstance(eq, (DefiningEquation, SetMembership)):
+            return Diagnostic(
+                "unsupported",
+                f"off-path write equation "
+                f"({type(eq).__name__}) is not allowed",
+            )
+        else:
+            return Diagnostic(
+                "unsupported",
+                f"unsupported off-path equation kind: "
+                f"{type(eq).__name__}",
+            )
+        if d is not None:
+            return d
     return None
 
 

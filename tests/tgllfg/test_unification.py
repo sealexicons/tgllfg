@@ -482,15 +482,35 @@ class TestDiagnostics:
         assert parse_errs[0].cnode_label == "N"
 
 
-# === Functional uncertainty / off-path are deferred =======================
+# === Functional uncertainty / off-path ====================================
 
-class TestDeferred:
-    def test_star_path_emits_deferred(self) -> None:
+class TestFUResidualDeferrals:
+    """Phase 6.B post-C5: regex-path FU evaluates in constraining
+    (`=c`) and binding (`=` with regex on RHS) contexts. The
+    remaining ``deferred`` path is off-path on existential
+    constraints — :func:`_eval_existential` doesn't yet route
+    through the FU resolver, so off-path elements there still
+    short-circuit via :func:`_path_features`.
+    """
+
+    def test_star_path_no_endpoint_fails_binding(self) -> None:
+        """``(↑ TOPIC) = (↑ COMP* GF)`` with no COMP or GF structure
+        in the f-graph: COMP* yields zero-iteration matrix endpoint;
+        then GF requires matrix.GF which doesn't exist; the regex
+        resolves to no endpoint; the binding fails with
+        ``constraint-failed``. Pre-Phase-6.B this emitted ``deferred``.
+        """
         n = CNode(label="N", equations=["(↑ TOPIC) = (↑ COMP* GF)"])
         result = solve(n)
-        assert any(d.kind == "deferred" for d in result.diagnostics)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
+        assert "deferred" not in kinds
 
-    def test_off_path_emits_deferred(self) -> None:
+    def test_off_path_on_existential_still_deferred(self) -> None:
+        """Off-path on an existential constraint (``(↑ COMP<(→ FIN)
+        =c '+'>)``) still surfaces ``deferred`` — :func:`_eval_existential`
+        wasn't wired through the FU resolver in §5.2 C3/C4/C5 (out of
+        scope). Future scope if corpus pressure motivates."""
         n = CNode(label="N", equations=[
             "(↑ COMP<(→ FIN) =c '+'>)",
         ])
