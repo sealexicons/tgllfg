@@ -1,4 +1,4 @@
-"""Phase 6.B C2 + C3 + C4 + C5 — FSA-based FU regex-path evaluation.
+"""Phase 6.B C2 + C3 + C4 + C5 + C6 + C7 — FSA-based FU regex-path evaluation.
 
 C2: deterministic unit tests for ``resolve_regex_for_read`` covering
 the four AST node kinds (``Feature`` / ``StarFeature`` /
@@ -16,18 +16,27 @@ nodes filter the FSA traversal; admit / prune behavior verified
 across single-step and multi-depth chains, with both ``→``-only
 and ``→`` + ``↑`` off-path equations.
 
-C5 (this commit): binding-equation tests — defining equations with
-regex RHS (``(↑ X) = (↑ regex)``) resolve via the FU resolver,
-select the K&Z 1989 §3 minimality endpoint, and unify the LHS with
-it. Failure modes (no endpoint, off-path filter prunes all
-candidates) surface ``constraint-failed``.
+C5: binding-equation tests — defining equations with regex RHS
+(``(↑ X) = (↑ regex)``) resolve via the FU resolver, select the
+K&Z 1989 §3 minimality endpoint, and unify the LHS with it.
+Failure modes (no endpoint, off-path filter prunes all candidates)
+surface ``constraint-failed``.
 
-C7 will add the Hypothesis property battery.
+C6: parametrized K&Z 1989 §3 fixtures — eq. 30 (TOPIC =
+COMP* OBJ), eq. 38 (Icelandic adjunct island, approximated with
+single-feature body), eq. 39 (English topicalization, approximated
+with single-feature body × bottom alternation).
+
+C7 (this commit): Hypothesis property battery — termination,
+determinism, finite endpoint sets, base-as-shortest-endpoint for
+``F*``, and binding-symmetric-under-rollback (uses 6.A atomic unify).
 """
 
 from __future__ import annotations
 
 import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from tgllfg.core.common import CNode
 from tgllfg.fstruct import (
@@ -37,6 +46,8 @@ from tgllfg.fstruct import (
     Designator,
     Feature,
     FGraph,
+    NodeId,
+    PathElement,
     PlusFeature,
     StarFeature,
     Up,
@@ -984,3 +995,253 @@ class TestKZFixturesParametrized:
         result = solve(n)
         kinds = {d.kind for d in result.diagnostics}
         assert "constraint-failed" in kinds
+
+
+# === C7 — Hypothesis property battery ======================================
+
+# Small feature-name pool used both for graph construction and path
+# generation. Single-letter names + a few canonical GFs gives good
+# overlap probability without exploding the search space.
+_FU_FEATS = ("F", "G", "H", "SUBJ", "OBJ", "COMP", "XCOMP", "TOPIC")
+_FU_ATOMS = ("X", "Y", "Z", "PAST", "PRES")
+
+
+@st.composite
+def _fu_setup(
+    draw: st.DrawFn,
+    max_nodes: int = 4,
+    max_path_len: int = 3,
+) -> tuple[FGraph, NodeId, tuple[PathElement, ...]]:
+    """Hypothesis strategy: build a small FGraph and pair it with a
+    randomly generated path. Returns ``(graph, base_node, path)``.
+
+    Each node is independently left unbound, atom-bound, or made into
+    a ``ComplexValue`` with 1-3 attributes pointing at other nodes;
+    after structure-building, 0-3 ``unify`` calls are attempted to
+    add reentrancy. The path is 0-3 elements drawn from the four AST
+    node kinds (literal, star, plus, alt). Off-path constraints on
+    elements are not generated — those are exercised by the C2/C3/C4
+    deterministic tests.
+    """
+    g = FGraph()
+    n_nodes = draw(st.integers(min_value=1, max_value=max_nodes))
+    nodes = [g.fresh() for _ in range(n_nodes)]
+
+    # Per-node: leave unset, atom-bind, or build a ComplexValue.
+    for i, n in enumerate(nodes):
+        kind = draw(st.sampled_from(["unset", "atom", "complex"]))
+        if kind == "atom":
+            g.set_atom(n, draw(st.sampled_from(_FU_ATOMS)))
+        elif kind == "complex":
+            n_feats = draw(st.integers(min_value=1, max_value=3))
+            for _ in range(n_feats):
+                feat = draw(st.sampled_from(_FU_FEATS))
+                # Create the child via resolve_path; optionally
+                # collapse it onto another existing node via unify
+                # (atomic, so failures from occurs-check / atom
+                # clash leave the graph unchanged).
+                child, err = g.resolve_path(n, (feat,))
+                if err is not None or child is None:
+                    continue
+                if draw(st.booleans()) and len(nodes) > 1:
+                    target_idx = draw(
+                        st.integers(min_value=0, max_value=n_nodes - 1),
+                    )
+                    if target_idx != i:
+                        g.unify(child, nodes[target_idx])
+
+    # 0-3 extra unify pairs for reentrancy. Atomic; failures fine.
+    n_extra_unifies = draw(st.integers(min_value=0, max_value=3))
+    for _ in range(n_extra_unifies):
+        i = draw(st.integers(min_value=0, max_value=n_nodes - 1))
+        j = draw(st.integers(min_value=0, max_value=n_nodes - 1))
+        g.unify(nodes[i], nodes[j])
+
+    base = nodes[0]
+
+    n_elems = draw(st.integers(min_value=0, max_value=max_path_len))
+    path: list[PathElement] = []
+    for _ in range(n_elems):
+        elem_kind = draw(
+            st.sampled_from(["feature", "star", "plus", "alt"]),
+        )
+        if elem_kind == "feature":
+            path.append(Feature(draw(st.sampled_from(_FU_FEATS))))
+        elif elem_kind == "star":
+            path.append(StarFeature(draw(st.sampled_from(_FU_FEATS))))
+        elif elem_kind == "plus":
+            path.append(PlusFeature(draw(st.sampled_from(_FU_FEATS))))
+        else:
+            n_alts = draw(st.integers(min_value=2, max_value=3))
+            names = tuple(
+                draw(st.sampled_from(_FU_FEATS)) for _ in range(n_alts)
+            )
+            path.append(AltFeature(names))
+
+    return g, base, tuple(path)
+
+
+class TestFUProperties:
+    """Hypothesis property battery for the FU resolver. Verifies the
+    invariants the design appendix §9.4 commits to: termination,
+    minimality determinism, finite endpoint sets, and binding-
+    symmetric-under-rollback (which leans on 6.A atomic unify).
+    """
+
+    @given(setup=_fu_setup())
+    @settings(max_examples=100, deadline=2000)
+    def test_resolver_terminates_on_random_setups(
+        self,
+        setup: tuple[FGraph, NodeId, tuple[PathElement, ...]],
+    ) -> None:
+        """For any small FGraph + random path,
+        :func:`resolve_regex_for_read` terminates and returns a
+        well-typed result. The mere fact that we reach the
+        post-call assertion proves termination on the search space
+        explored by Hypothesis.
+        """
+        g, base, path = setup
+        endpoints, err = resolve_regex_for_read(g, base, path)
+        assert isinstance(endpoints, list)
+        assert err is None or err.kind in {"deferred", "unsupported"}
+        for ep in endpoints:
+            assert isinstance(ep, int)
+
+    @given(setup=_fu_setup())
+    @settings(max_examples=100, deadline=2000)
+    def test_resolver_is_deterministic_across_runs(
+        self,
+        setup: tuple[FGraph, NodeId, tuple[PathElement, ...]],
+    ) -> None:
+        """Two consecutive calls on the same ``(graph, base, path)``
+        return identical results. Minimality ordering is canonical
+        — no randomness in the resolver itself.
+        """
+        g, base, path = setup
+        e1, err1 = resolve_regex_for_read(g, base, path)
+        e2, err2 = resolve_regex_for_read(g, base, path)
+        assert e1 == e2
+        assert (err1 is None) == (err2 is None)
+        if err1 is not None and err2 is not None:
+            assert err1.kind == err2.kind
+
+    @given(setup=_fu_setup())
+    @settings(max_examples=100, deadline=2000)
+    def test_endpoints_bounded_by_visited_set(
+        self,
+        setup: tuple[FGraph, NodeId, tuple[PathElement, ...]],
+    ) -> None:
+        """The endpoint set is finite, and dedup ensures each
+        canonical node appears at most once even if multiple paths
+        reach it.
+        """
+        g, base, path = setup
+        endpoints, _err = resolve_regex_for_read(g, base, path)
+        # Endpoints are canonical roots; dedup means each NodeId
+        # appears once.
+        assert len(endpoints) == len(set(endpoints))
+
+    @given(setup=_fu_setup())
+    @settings(max_examples=50, deadline=2000)
+    def test_empty_path_returns_canonical_base(
+        self,
+        setup: tuple[FGraph, NodeId, tuple[PathElement, ...]],
+    ) -> None:
+        """``resolve_regex_for_read(g, base, ())`` always returns
+        ``[graph.find(base)]`` — the empty regex matches the empty
+        string, reaching the base node.
+        """
+        g, base, _ = setup
+        endpoints, err = resolve_regex_for_read(g, base, ())
+        assert err is None
+        assert endpoints == [g.find(base)]
+
+    @given(setup=_fu_setup(), feat=st.sampled_from(_FU_FEATS))
+    @settings(max_examples=50, deadline=2000)
+    def test_star_always_includes_canonical_base(
+        self,
+        setup: tuple[FGraph, NodeId, tuple[PathElement, ...]],
+        feat: str,
+    ) -> None:
+        """``F*`` always succeeds with the canonical base as the
+        first (shortest-depth) endpoint, since zero iterations of
+        ``F`` are admissible. This is K&Z 1989's minimality
+        guarantee for star-paths: the zero-step accept dominates.
+        """
+        g, base, _ = setup
+        endpoints, err = resolve_regex_for_read(
+            g, base, (StarFeature(feat),),
+        )
+        assert err is None
+        canonical = g.find(base)
+        assert endpoints[0] == canonical
+
+    @given(setup=_fu_setup())
+    @settings(max_examples=50, deadline=2000)
+    def test_resolver_does_not_mutate_graph(
+        self,
+        setup: tuple[FGraph, NodeId, tuple[PathElement, ...]],
+    ) -> None:
+        """The resolver is read-only. Capture the pre-call graph
+        state, run the resolver, verify the state is unchanged.
+        """
+        g, base, path = setup
+        before_next_id = g._next_id
+        before_parent = dict(g._parent)
+        before_rank = dict(g._rank)
+        before_store_keys = set(g._store.keys())
+        resolve_regex_for_read(g, base, path)
+        # Internal pointer-state may evolve (path compression in
+        # ``find()`` rewrites ``_parent`` opportunistically), but the
+        # graph's *observable* state — node count, equivalence
+        # classes, store keys — must be unchanged.
+        assert g._next_id == before_next_id
+        # Equivalence classes preserved: every pre-existing node's
+        # canonical root is the same as it was.
+        for n in before_parent:
+            # Re-canonicalize by walking the (possibly compressed)
+            # parent chain.
+            root = n
+            while g._parent[root] != root:
+                root = g._parent[root]
+            # The pre-call root is also a fixed point of the pre-call
+            # parent map (find is idempotent on roots).
+            pre_root = n
+            while before_parent[pre_root] != pre_root:
+                pre_root = before_parent[pre_root]
+            assert root == pre_root
+        assert set(g._store.keys()) == before_store_keys
+        # Rank may have changed only through path compression
+        # bookkeeping, but actually it doesn't change in find — only
+        # ``_link`` mutates rank. So rank should be unchanged too.
+        assert g._rank == before_rank
+
+    @given(setup=_fu_setup(), atom=st.sampled_from(_FU_ATOMS))
+    @settings(max_examples=50, deadline=2000)
+    def test_binding_symmetric_under_rollback(
+        self,
+        setup: tuple[FGraph, NodeId, tuple[PathElement, ...]],
+        atom: str,
+    ) -> None:
+        """6.A atomic-unify + FU integration: take a snapshot, run a
+        binding attempt against the first endpoint of the regex, then
+        rollback. Re-run the resolver. The result must be identical
+        — the resolver is read-only and rollback restores the graph
+        completely.
+        """
+        g, base, path = setup
+        endpoints_before, err_before = resolve_regex_for_read(
+            g, base, path,
+        )
+        if err_before is not None or not endpoints_before:
+            return  # nothing to bind against
+        snap = g.snapshot()
+        lhs = g.fresh()
+        g.set_atom(lhs, atom)  # may or may not clash on unify below
+        g.unify(lhs, endpoints_before[0])  # atomic; OK if it fails
+        g.rollback(snap)
+        endpoints_after, err_after = resolve_regex_for_read(
+            g, base, path,
+        )
+        assert endpoints_after == endpoints_before
+        assert (err_before is None) == (err_after is None)
