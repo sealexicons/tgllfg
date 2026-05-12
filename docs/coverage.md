@@ -1412,9 +1412,11 @@ organized by §18 entry rather than by construction family.
 - L85 — 4-conjunct flat NP coord
   ``Kumain si Maria, si Juan, si Pedro at si Ana.`` (Oxford and
   non-Oxford forms across NOM/GEN/DAT). 5+-conjunct flat coord
-  is **deferred to Phase 5n.C** — root cause is the parser's
-  non-conflict category-pattern matcher; see
-  ``project_parser_nonconflict_matcher`` memory.
+  (L85+) carried to Phase 5n.A Commit 19a as recursive
+  ``NP_LONG_LIST_<case>`` infrastructure; **5+-conjunct unlocked
+  in Phase 6.C** under the graph-constraint matcher (stress
+  fixtures for 6 / 7-conjunct in
+  ``tests/tgllfg/test_phase5n_4conj_coord.py``).
 - L86 — disjunctive 3-conjunct flat NP coord
   ``Kumain si Maria, si Juan, o si Pedro.``
 
@@ -1454,10 +1456,11 @@ Out of scope for Phase 5n.A (carried to Phase 5n.B / 5n.C / Phase
 6 — see plan-of-record §3.5 / project memory):
 
 - **5+-conjunct flat NP coord** (``Kumain si Maria, si Juan, si
-  Pedro, si Ana at si Jose.``) — parser non-conflict matcher
-  pollutes the chart at high arity. Phase 5n.C, requires either
-  parser-level support for defining category-pattern constraints
-  or grammar-wide tightening of category daughter feats.
+  Pedro, si Ana at si Lola.``) — carried via the Phase 5n.A
+  Commit 19a recursive ``NP_LONG_LIST_<case>`` infrastructure;
+  closed in Phase 6.C (PR #TBD, 2026-05-12) under the graph-
+  constraint matcher, which prunes the non-conflict chart
+  pollution at predict time.
 - L29 DV PFV gap + L77 gapping closed by Phase 5n.C.2
   (PR #TBD, 2026-05-10): L29 via 8 high-frequency DV PFV
   fixtures + ``verbs.yaml`` ``an_oblig`` additions for
@@ -1495,8 +1498,9 @@ deferral backlog. 26 commits closing 25 §18.1 inventory items
 (L30, L39-L46, L50-L56, L58, L59, L96-L103) plus an engineering
 commit (C11.5) introducing the `slow` pytest marker / T2 bucket /
 `test-both` parallel script. The remaining §18 entries (L77, L78,
-L83 + 5+-conjunct flat coord L85 partial) carry forward to
-Phase 5n.C as planned.
+L83 + 5+-conjunct flat coord L85+) carry forward to
+Phase 5n.C / 6.C as planned (L77/L78/L83 closed in 5n.C.1/.2;
+L85+ closed in Phase 6.C).
 
 The 26 corpus fixtures cover one representative surface per
 inventory-item closure:

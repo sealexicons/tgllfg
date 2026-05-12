@@ -10859,18 +10859,23 @@ essay paragraph (all added); Commit 17 surfaced the equation-
 language-has-no-arithmetic constraint (decided in-commit per
 Phase 5f Commit 9 precedent).
 
-**Non-conflict matcher project finding** (Commit 19 / 19a): the
-tgllfg Earley parser's category-pattern matcher accepts
-``Cat[X=Y]`` daughters that lack the ``X`` feature on the
-candidate, deferring rejection to constraining-equation
-unification. This works for low-arity rules but pollutes the
-chart at high arity (5+-conjunct flat NP coord 0-parses despite
+**Non-conflict matcher project finding** (Commit 19 / 19a):
+the tgllfg Earley parser's category-pattern matcher historically
+accepted ``Cat[X=Y]`` daughters that lacked the ``X`` feature
+on the candidate, deferring rejection to constraining-equation
+unification. This worked for low-arity rules but polluted the
+chart at high arity (5+-conjunct flat NP coord 0-parsed despite
 correct recursive infrastructure because every binary parse path
-ambiguously matches the Phase 5m mismo NP-emphatic rule and
-gets rejected at unification). Documented in
-``project_parser_nonconflict_matcher`` memory; deferred to
-Phase 5n.C with two routes to a real fix (parser-level defining
-category constraints, or grammar-wide narrower daughter feats).
+ambiguously matched the Phase 5m mismo NP-emphatic rule and got
+rejected at unification). **Closed in Phase 6.C (2026-05-12):**
+the matcher was replaced with feature-presence-required
+(graph-constraint) matching per K&Z 1989 §3 c-structure
+faithfulness. Every cfg/ module's LHS feat-set was audited
+to advertise the features it supplies; the strict matcher prunes
+the spurious binary fanout at predict time. 5+-conjunct flat NP
+coord unlocked without any new rules (the recursive
+``NP_LONG_LIST_<case>`` infrastructure from Commit 19a composed
+unchanged).
 
 The same pattern surfaced in Commit 29 (kita-fusion was firing on
 any GEN-PRON via the same non-conflict leak); there the scope
@@ -11019,28 +11024,33 @@ New PREP entries ``bukod`` and ``maliban`` in
 ``cfg/discourse.py`` that attaches ``bukod sa NP`` /
 ``maliban sa NP`` as ADJUNCT[PREP_TYPE=EXCEPTIVE].
 
-## Phase 5n.A Commit 19 / 19a: 4+-conjunct flat NP coord (§18 L85)
+## Phase 5n.A Commit 19 / 19a: N-conjunct flat NP coord (§18 L85, L85+)
 
 Commit 19 added explicit 4-conjunct rules (Oxford + non-Oxford
 × NOM/GEN/DAT). Commit 19a refactored to a left-recursive
 ``NP_LONG_LIST_<case>`` non-terminal with base + recursive +
-wrap rules. The 4-conjunct case fires via the base + wrap; 5+-
-conjunct stays pinned at 0-parse.
+wrap rules. The 4-conjunct case fired via the base + wrap; 5+-
+conjunct (L85+) was originally pinned at 0-parse.
 
-**Root cause** (per ``project_parser_nonconflict_matcher``
-memory): the parser's category-pattern matcher is non-conflict.
-For 5+-conjunct, every binary parse path (Catalan C(N-1)
-parses) ambiguously matches the Phase 5m mismo NP-emphatic rule
-``NP → NP PART`` on each NP+PART adjacency — including spurious
-matches like ``si Jose .`` or ``si A at`` — and the constraining
-equations reject them at unification, polluting every parse path.
-For 4-conjunct (5 binary parses), at least one survives; for
-5-conjunct (14 binary parses), all 14 fail.
+**Original root-cause analysis** (per
+``project_parser_nonconflict_matcher`` memory, now superseded):
+the parser's category-pattern matcher was non-conflict. For
+5+-conjunct, every binary parse path (Catalan C(N-1) parses)
+ambiguously matched the Phase 5m mismo NP-emphatic rule
+``NP → NP PART`` on each NP+PART adjacency, and the constraining
+equations rejected them at unification, polluting every parse
+path. For 4-conjunct (5 binary parses), at least one survived;
+for 5-conjunct (14 binary parses), all 14 failed.
 
-**Status**: deferred to Phase 5n.C. Two routes to a real fix
-documented in the project memory: (1) parser-level defining
-category-pattern feats at predict time, or (2) grammar-wide
-audit tightening every rule's bracketed-feat daughters.
+**Closed in Phase 6.C (2026-05-12)**: the matcher swap to
+feature-presence-required (graph-constraint) matching prunes
+the spurious binary fanout at predict time. The Commit 19a
+recursive infrastructure composed unchanged for arbitrary N;
+6 / 7-conjunct stress fixtures live in
+``tests/tgllfg/test_phase5n_4conj_coord.py``. The matrix
+``NP[CASE=X, COORD=AND]`` LHS on the 4+-wrap rules — added in
+Phase 6.C C3b alongside the binary / 3-conjunct coord LHS
+updates — supplies the COORD feature parents now require.
 
 ## Phase 5n.A Commit 20: disjunctive 3-conjunct flat NP coord (§18 L86)
 
@@ -11807,12 +11817,13 @@ the gapping rule produces an additional real-gapping parse with
 parse (more meaningful structure; per Phase 4 §7.9 heuristics);
 the spurious parse stays admissible but lower-ranked.
 
-The parser's non-conflict matcher (see
-``project_parser_nonconflict_matcher`` memory) is the source of
-the spurious parses. Phase 6's graph-constrained unification
-parser is expected to eliminate them by checking feature
-compatibility at predict time. Until then, ranking is the
-mitigation.
+The legacy non-conflict matcher was historically the source of
+these spurious parses. **Phase 6.C (2026-05-12) replaced it with
+the graph-constraint matcher**, which checks feature compatibility
+at predict time and prunes the spurious binary fanout before
+constraining-equation rejection. The gapping rule's matrix marker
+(``COORD=AND`` + ``GAPPING=YES``) continues to keep the real
+gapping parse ranked above any residual binary readings.
 
 ### Scope: AV+DV 2 and 3 conjunct; OBJ-only gapping deferred
 
@@ -11851,8 +11862,10 @@ Out of scope for Commit 5 (corpus pressure dependent):
   reused) — ``src/tgllfg/cfg/coordination.py:78-112``.
 - Phase 5k clausal-S coord (``S → S PART[COORD=AND] S``,
   parallel pattern) — ``src/tgllfg/cfg/coordination.py:350+``.
-- ``project_parser_nonconflict_matcher`` memory — the spurious
-  parse caveat is parser-level; Phase 6 supersedes.
+- Phase 6.C matcher swap (2026-05-12) — superseded the spurious-
+  parse caveat above; the legacy
+  ``project_parser_nonconflict_matcher`` memory was deprecated
+  in 6.C C7 closing docs.
 - Bresnan 2001 ch.16 §3 "Coordination" (PRED-sharing analysis).
 - Dalrymple 2001 ch.4 §4 "Coordination and reentrancy".
 - Schachter & Otanes 1972 §10 (coord in Tagalog).
