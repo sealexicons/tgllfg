@@ -1,18 +1,24 @@
-"""Phase 6.B C2 — FSA-based FU regex-path evaluation.
+"""Phase 6.B C2 + C3 — FSA-based FU regex-path evaluation.
 
-C2 (this commit): deterministic unit tests for ``resolve_regex_for_read``
-covering the four AST node kinds (``Feature`` / ``StarFeature`` /
+C2: deterministic unit tests for ``resolve_regex_for_read`` covering
+the four AST node kinds (``Feature`` / ``StarFeature`` /
 ``PlusFeature`` / ``AltFeature``), their concatenations, minimality
 ordering, dedup, the cycle / reentrancy termination guarantee, and
 the C4-deferred off-path branch.
 
-C3 will wire the resolver into ``unify.py``'s constraining-eq pass.
+C3 (this commit): integration tests for ``_eval_constraining_eq``'s
+new FU-routing branch — constraining equations with regex paths on
+the RHS resolve through the FU resolver and check existential
+matching against the LHS.
+
 C4 will replace the off-path "deferred" branch with actual
-evaluation. C7 will add the Hypothesis property battery.
+evaluation. C5 will wire binding equations. C7 will add the
+Hypothesis property battery.
 """
 
 from __future__ import annotations
 
+from tgllfg.core.common import CNode
 from tgllfg.fstruct import (
     AltFeature,
     Atom,
@@ -24,6 +30,7 @@ from tgllfg.fstruct import (
     StarFeature,
     Up,
     resolve_regex_for_read,
+    solve,
 )
 
 
@@ -344,3 +351,138 @@ class TestKZ1989Fixtures:
         # f0.COMP.SUBJ would be a depth-1 endpoint, which we did not
         # build. So no SUBJ via single body step.
         assert endpoints == []
+
+
+# === C3 — constraining-eq integration ======================================
+
+def _blocking(result) -> list:
+    return [d for d in result.diagnostics if d.is_blocking()]
+
+
+class TestConstrainingEqWithFU:
+    """C3 wires the FU resolver into ``_eval_constraining_eq``: a
+    constraining equation with a regex path on the RHS resolves
+    through the FU resolver and checks existential matching against
+    the LHS. End-to-end via :func:`solve`.
+    """
+
+    def test_star_path_matches_at_zero_depth(self) -> None:
+        """``(↑ TOPIC) =c (↑ COMP* OBJ)`` succeeds via the zero-COMP
+        path when ``TOPIC`` and ``OBJ`` share an atom directly at
+        the matrix node."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'X'",
+                "(↑ OBJ) = 'X'",
+                "(↑ TOPIC) =c (↑ COMP* OBJ)",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_star_path_matches_at_deeper_depth(self) -> None:
+        """``(↑ TOPIC) =c (↑ COMP* OBJ)`` succeeds at depth 2 when
+        ``TOPIC`` shares its atom with a deep ``COMP.COMP.OBJ``."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'X'",
+                "(↑ COMP COMP OBJ) = 'X'",
+                "(↑ TOPIC) =c (↑ COMP* OBJ)",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_star_path_no_match_fails(self) -> None:
+        """No COMP-depth has an OBJ matching the TOPIC atom."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'X'",
+                "(↑ COMP OBJ) = 'Y'",
+                "(↑ TOPIC) =c (↑ COMP* OBJ)",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
+
+    def test_star_path_no_endpoint_fails(self) -> None:
+        """``OBJ`` doesn't exist at any COMP depth, so the FU path
+        resolves to no endpoint."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'X'",
+                "(↑ TOPIC) =c (↑ COMP* OBJ)",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
+
+    def test_plus_excludes_zero_depth(self) -> None:
+        """``(↑ TOPIC) =c (↑ COMP+ OBJ)`` requires ≥ 1 COMP step;
+        ``OBJ`` at depth 0 doesn't satisfy."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'X'",
+                "(↑ OBJ) = 'X'",
+                "(↑ TOPIC) =c (↑ COMP+ OBJ)",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
+
+    def test_plus_matches_at_depth_1(self) -> None:
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'X'",
+                "(↑ COMP OBJ) = 'X'",
+                "(↑ TOPIC) =c (↑ COMP+ OBJ)",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_alt_matches_xcomp_branch(self) -> None:
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'X'",
+                "(↑ XCOMP SUBJ) = 'X'",
+                "(↑ TOPIC) =c (↑ {COMP|XCOMP} SUBJ)",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_off_path_still_deferred(self) -> None:
+        """C3 doesn't yet handle off-path; the constraining-eq still
+        surfaces a ``deferred`` informational diagnostic via the
+        plain-path resolver. C4 flips this. (LHS is defined here so
+        the constraint-failed branch on undefined-lhs doesn't fire
+        before the off-path RHS gets evaluated.)"""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'X'",
+                "(↑ TOPIC) =c (↑ XCOMP*<(→ TENSE) =c 'PAST'> SUBJ)",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "deferred" in kinds

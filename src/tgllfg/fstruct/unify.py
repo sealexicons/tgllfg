@@ -71,6 +71,7 @@ from .equations import (
     parse_equation,
     unparse,
 )
+from .fu import resolve_regex_for_read
 from .graph import (
     AtomValue,
     ComplexValue,
@@ -366,6 +367,55 @@ def _eval_constraining_eq(
             detail={
                 "expected": eq.rhs.value,
                 "actual": _value_summary(lhs_val),
+            },
+        )
+
+    # Phase 6.B C3: regex-path RHS routes through the FU resolver in
+    # :mod:`tgllfg.fstruct.fu`. Off-path on any element still surfaces
+    # ``deferred`` (via the plain-path branch below) until C4 lands.
+    rhs_has_regex = any(
+        not isinstance(e, Feature) for e in eq.rhs.path
+    )
+    rhs_has_off_path = any(e.off_path for e in eq.rhs.path)
+
+    if rhs_has_regex and not rhs_has_off_path:
+        base_node, err = _resolve_base(eq.rhs.base, up, children)
+        if err is not None:
+            return err
+        assert base_node is not None
+        endpoints, err = resolve_regex_for_read(
+            graph, base_node, eq.rhs.path,
+        )
+        if err is not None:
+            return err
+        if not endpoints:
+            return Diagnostic(
+                "constraint-failed",
+                f"constraining equation rhs FU path has no endpoint: "
+                f"{unparse(eq)}",
+            )
+        # K&Z 1989 §3 minimality: endpoints come back shortest-first,
+        # but the constraining-eq is existential (holds iff *any*
+        # endpoint matches the LHS). Walk in minimality order so the
+        # cheapest-match path is the one that satisfies, but
+        # otherwise treat all endpoints as equally valid candidates.
+        for ep in endpoints:
+            if graph.equiv(lhs_node, ep):
+                return None
+            ep_val = graph.value(ep)
+            if (
+                isinstance(lhs_val, AtomValue)
+                and isinstance(ep_val, AtomValue)
+                and lhs_val.atom == ep_val.atom
+            ):
+                return None
+        return Diagnostic(
+            "constraint-failed",
+            f"constraining equation does not hold "
+            f"(no FU endpoint matches LHS): {unparse(eq)}",
+            detail={
+                "lhs": _value_summary(lhs_val),
+                "endpoint_count": len(endpoints),
             },
         )
 
