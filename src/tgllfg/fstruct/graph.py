@@ -33,10 +33,12 @@ Algorithm
 Failure
 -------
 
-On failure the unifier returns a `Diagnostic` rather than raising.
-The graph may be left in a partial state; callers that need atomic
-behaviour should snapshot before unifying. Atomic rollback is not a
-§4.2 deliverable.
+On failure the unifier currently returns a `Diagnostic` rather than
+raising; the graph may be left in a partial state. Callers needing
+atomic behaviour can wrap the call in :meth:`FGraph.snapshot` and
+:meth:`FGraph.rollback`. Phase 6.A C2 will wire this snapshot /
+rollback pair into :meth:`FGraph.unify` itself so per-call
+atomicity becomes the default.
 """
 
 from __future__ import annotations
@@ -138,6 +140,47 @@ class Diagnostic:
         being returned. Informational kinds (``deferred``,
         ``unsupported``) are non-blocking."""
         return self.kind not in NON_BLOCKING_KINDS
+
+
+# === Snapshot ==============================================================
+
+def _copy_value(v: FValue) -> FValue:
+    """Deep-copy the mutable parts of an :class:`FValue` so it can be
+    held inside a :class:`Snapshot` independent of subsequent in-place
+    mutations on the original.
+
+    ``ComplexValue.attrs`` and ``SetValue.members`` are mutated in place
+    by :meth:`FGraph.resolve_path`, :meth:`FGraph.add_to_set`, and
+    :meth:`FGraph.unify`; the snapshot must therefore copy them.
+    ``AtomValue`` is treated as immutable by convention (the project
+    never mutates ``AtomValue.atom`` in place — values are replaced) and
+    is returned unchanged.
+    """
+    if isinstance(v, AtomValue):
+        return v
+    if isinstance(v, ComplexValue):
+        return ComplexValue(attrs=dict(v.attrs))
+    return SetValue(members=set(v.members))
+
+
+@dataclass(frozen=True)
+class Snapshot:
+    """Opaque capture of an :class:`FGraph` state, suitable for rollback.
+
+    Returned by :meth:`FGraph.snapshot` and consumed by
+    :meth:`FGraph.rollback`. Treat as immutable — do not introspect or
+    mutate the fields. A single snapshot may be rolled back to any
+    number of times (rollback is idempotent and non-consuming).
+
+    Node ids allocated after the snapshot become invalid after a
+    rollback to that snapshot: the `_next_id` counter is reset and the
+    parent / rank / store entries for the dropped nodes are gone.
+    Callers should not retain references to such ids across a rollback.
+    """
+    next_id: int
+    parent: Mapping[NodeId, NodeId]
+    rank: Mapping[NodeId, int]
+    store: Mapping[NodeId, FValue]
 
 
 # === Graph =================================================================
@@ -300,6 +343,38 @@ class FGraph:
                     stack.append(cv)
         return False
 
+    # --- Snapshot / rollback ----------------------------------------------
+
+    def snapshot(self) -> Snapshot:
+        """Capture the current graph state.
+
+        Returns an opaque :class:`Snapshot` value that can be passed to
+        :meth:`rollback`. The snapshot is detached from the live graph:
+        subsequent mutations on this :class:`FGraph` (allocations, links,
+        attribute writes, set additions) do not affect it, and a single
+        snapshot may be rolled back to any number of times.
+        """
+        return Snapshot(
+            next_id=self._next_id,
+            parent=dict(self._parent),
+            rank=dict(self._rank),
+            store={n: _copy_value(v) for n, v in self._store.items()},
+        )
+
+    def rollback(self, snap: Snapshot) -> None:
+        """Restore the graph to the state captured by ``snap``.
+
+        Nodes allocated after the snapshot are dropped (the
+        :attr:`_next_id` counter is reset). Unification links,
+        attribute writes, and set-membership additions made after the
+        snapshot are reversed. Idempotent — ``snap`` may be passed again
+        to revert subsequent mutations.
+        """
+        self._next_id = snap.next_id
+        self._parent = dict(snap.parent)
+        self._rank = dict(snap.rank)
+        self._store = {n: _copy_value(v) for n, v in snap.store.items()}
+
     # --- Unification -------------------------------------------------------
 
     def unify(
@@ -444,5 +519,6 @@ __all__ = [
     "DiagKind",
     "NON_BLOCKING_KINDS",
     "Diagnostic",
+    "Snapshot",
     "FGraph",
 ]
