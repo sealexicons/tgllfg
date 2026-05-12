@@ -1876,8 +1876,12 @@ def register_rules(rules: list[Rule]) -> None:
     # (na / pa / daw / rin / lang / nga / ba / ho / po / kasi /
     # ...) — only ``man`` (the EVEN/CONCESSIVE particle) functions
     # as a productive negative-indef builder.
+    # LHS advertises ``INDEF=NEG_INDEF`` so the Phase 5j Commit 9
+    # negative-existential rule (which expects
+    # ``PRON[INDEF=NEG_INDEF]``) admits this productive wh+man
+    # PRON under the Phase 6.C graph-constraint matcher.
     rules.append(Rule(
-        "PRON",
+        "PRON[INDEF=NEG_INDEF]",
         ["PRON", "PART"],
         [
             "(↑) = ↓1",
