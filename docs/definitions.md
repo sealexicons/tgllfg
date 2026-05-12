@@ -237,6 +237,7 @@ appear in the bottom section.
 | Path compression / union by rank | `src/tgllfg/fstruct/graph.py` | Tarjan 1975. |
 | Occurs-check | `src/tgllfg/fstruct/graph.py` | Robinson 1965; Knight 1989 §2.4. |
 | Two-pass unification (defining → constraining) | `src/tgllfg/fstruct/unify.py:solve` | Kaplan & Bresnan 1982 §3.6. |
+| Atomic unification (snapshot / rollback) | `src/tgllfg/fstruct/graph.py:FGraph.unify` | Per-mutation undo journal; on failure the graph rewinds to its pre-call state. |
 | Equation-language EBNF | `src/tgllfg/fstruct/equations.py` | Kaplan & Bresnan 1982 (notation); Bresnan 2001 ch. 4. |
 
 ### LFG semantics

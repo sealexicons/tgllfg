@@ -40,6 +40,7 @@ from .graph import (
     FValue,
     NodeId,
     SetValue,
+    Snapshot,
 )
 from .unify import (
     SolveResult,
@@ -81,6 +82,7 @@ __all__ = [
     "NodeId",
     "NON_BLOCKING_KINDS",
     "SetValue",
+    "Snapshot",
     # unifier orchestration
     "SolveResult",
     "build_f_structure",
