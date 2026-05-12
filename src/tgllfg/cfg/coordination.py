@@ -76,9 +76,12 @@ def register_rules(rules: list[Rule]) -> None:
     # underspecified referent). The plan-of-record §2 / §5.2 specs
     # the AND-forces-PL / OR-percolates-NUM split.
     for case in _NP_CASES:
-        # Additive (at) — NUM forced to PL.
+        # Additive (at) — NUM forced to PL. LHS advertises
+        # ``COORD=AND`` for the Phase 6.C graph-constraint matcher
+        # (parent rules like the L78 wide-scope hindi rule and the
+        # L83 fragment-S rule expect ``NP[..., COORD=AND]``).
         rules.append(Rule(
-            f"NP[CASE={case}]",
+            f"NP[CASE={case}, COORD=AND]",
             [
                 f"NP[CASE={case}]",
                 "PART[COORD=AND]",
@@ -95,7 +98,7 @@ def register_rules(rules: list[Rule]) -> None:
         ))
         # Disjunctive (o) — NUM percolates from the first conjunct.
         rules.append(Rule(
-            f"NP[CASE={case}]",
+            f"NP[CASE={case}, COORD=OR]",
             [
                 f"NP[CASE={case}]",
                 "PART[COORD=OR]",
@@ -168,9 +171,10 @@ def register_rules(rules: list[Rule]) -> None:
     _3CONJ_NUM_BY_COORD = {"AND": "'PL'", "OR": "↓1 NUM"}
     for case in _NP_CASES:
         for coord, num_rhs in _3CONJ_NUM_BY_COORD.items():
-            # Oxford-comma form (6 daughters).
+            # Oxford-comma form (6 daughters). LHS advertises COORD
+            # for the Phase 6.C graph-constraint matcher.
             rules.append(Rule(
-                f"NP[CASE={case}]",
+                f"NP[CASE={case}, COORD={coord}]",
                 [
                     f"NP[CASE={case}]",
                     "PUNCT[PUNCT_CLASS=COMMA]",
@@ -191,7 +195,7 @@ def register_rules(rules: list[Rule]) -> None:
             ))
             # Non-Oxford form (5 daughters).
             rules.append(Rule(
-                f"NP[CASE={case}]",
+                f"NP[CASE={case}, COORD={coord}]",
                 [
                     f"NP[CASE={case}]",
                     "PUNCT[PUNCT_CLASS=COMMA]",
@@ -210,17 +214,18 @@ def register_rules(rules: list[Rule]) -> None:
                 ],
             ))
 
-    # --- Phase 5n.A Commit 19: 4+-conjunct flat NP coord (§18 L85) ---
+    # --- Phase 5n.A Commit 19 + Phase 6.C: N-conjunct flat NP coord ---
+    # (§18 L85, L85+)
     #
     # The Phase 5k Commit 4 3-conjunct rules above produce a flat
-    # CONJUNCTS set only for exactly-3 conjuncts. This commit adds a
+    # CONJUNCTS set only for exactly-3 conjuncts. This block adds a
     # left-recursive ``NP_LONG_LIST_<case>`` non-terminal that
     # accumulates 3+ NPs separated by commas into one CONJUNCTS set,
-    # then a wrap rule that consumes the list + ``at`` + final NP to
-    # form a flat n-conjunct NP. The wrap fires cleanly for n=4
-    # (using the base 3-NP list); for n≥5 the recursive list builds
-    # correctly (visible in fragments) but the wrap doesn't compose
-    # to a top-level S due to a parser-level interaction (see below).
+    # then wrap rules (Oxford + non-Oxford) that consume the list +
+    # ``at`` + final NP to form a flat N-conjunct NP. Under the
+    # Phase 6.C graph-constraint matcher the wrap composes for all
+    # N ≥ 4 — 6/7-conjunct stress fixtures live in
+    # ``tests/tgllfg/test_phase5n_4conj_coord.py``.
     #
     # **Targeted CONJUNCTS sharing**: ``(↑ CONJUNCTS) = (↓1 CONJUNCTS)``
     # is a defining equation that unifies the matrix's CONJUNCTS
@@ -229,23 +234,21 @@ def register_rules(rules: list[Rule]) -> None:
     # This avoids the full-f-struct sharing (``(↑) = ↓1``) that
     # would conflict with matrix CASE/COORD/NUM equations.
     #
-    # **5+-conjunct still 0-parses** despite the recursive rules
-    # being present and the recursive list being built correctly.
-    # Root cause (per drill-down): the parser's category-pattern
-    # matcher is non-conflict — at high N, every binary parse path
-    # ambiguously matches the Phase 5m mismo NP-emphatic rule
-    # (``NP → NP PART``) on each NP+PART adjacency. All 14 binary
-    # parses for 5-NP fail well-formedness with mismo constraint
-    # failures (or the 2P clitic absorption rule's CLITIC_CLASS=2P
-    # failure). 4-NP succeeds because at least one of its 5
-    # parses survives. The fix requires either parser-level
-    # support for **defining** category-pattern constraints (rather
-    # than non-conflict + late constraining) or per-rule narrower
-    # category constraints across the grammar — both broader scope
-    # than this single L85 closure.
-    #
-    # The 5+-conjunct case stays pinned in tests as the trigger for
-    # the parser-level / grammar-wide tightening work.
+    # **Why N≥5 needed the strict matcher**: under the legacy
+    # non-conflict matcher the 4+-wrap LHS (bare ``NP``) collided
+    # with every parent NP expectation — including those that
+    # demanded mutually-exclusive features like CASE=GEN or
+    # COORD={OR,BUT}. Each high-N parse fanned out into binary
+    # readings the Phase 5m mismo rule (``NP → NP PART``) latched
+    # onto, then died at well-formedness on mismo / 2P clitic
+    # constraint failures. The Phase 6.C strict matcher requires
+    # parents to spell out the features they demand and parents'
+    # rules to advertise the features they supply (here
+    # ``COORD=AND``), pruning the spurious binary fanout at predict
+    # time and freeing the wrap to compose. The 4-conjunct case
+    # squeaked through under the old matcher because it had only
+    # one recursive step; n≥5 added two or more steps, multiplying
+    # the spurious paths past the parser's tolerance.
     #
     # The Phase 5k 3-conjunct rules continue to fire on exactly-3-
     # conjunct surfaces (which have ``at`` between conjunct 2 and 3);
@@ -285,9 +288,13 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓3 ∈ (↑ CONJUNCTS)",
             ],
         ))
-        # 4+-conjunct wrap (Oxford comma form): list + comma + at + NP
+        # 4+-conjunct wrap (Oxford comma form): list + comma + at + NP.
+        # LHS advertises COORD=AND so matrix consumers (S frames,
+        # wide-scope NEG, L83 fragment, etc.) admit the wrap under
+        # the Phase 6.C graph-constraint matcher — same convention
+        # as the binary / 3-conjunct coord rules above.
         rules.append(Rule(
-            f"NP[CASE={case}]",
+            f"NP[CASE={case}, COORD=AND]",
             [
                 f"NP_LONG_LIST_{case}",
                 "PUNCT[PUNCT_CLASS=COMMA]",
@@ -305,7 +312,7 @@ def register_rules(rules: list[Rule]) -> None:
         ))
         # 4+-conjunct wrap (non-Oxford form): list + at + NP
         rules.append(Rule(
-            f"NP[CASE={case}]",
+            f"NP[CASE={case}, COORD=AND]",
             [
                 f"NP_LONG_LIST_{case}",
                 "PART[COORD=AND]",
@@ -535,7 +542,12 @@ def register_rules(rules: list[Rule]) -> None:
     # layer — only one fires per input.
     for case in _NP_CASES:
         rules.append(Rule(
-            f"NP[CASE={case}]",
+            # LHS advertises COORD=BUT_NOT so parent rules expecting
+            # ``NP[CASE=X, COORD=BUT_NOT]`` (notably the Phase 5n.C
+            # Commit 5 L83 fragment-S rule in cfg/clause.py) admit
+            # this LHS at completion time under the Phase 6.C
+            # graph-constraint matcher.
+            f"NP[CASE={case}, COORD=BUT_NOT]",
             [
                 f"NP[CASE={case}]",
                 "PUNCT[PUNCT_CLASS=COMMA]",
@@ -591,7 +603,9 @@ def register_rules(rules: list[Rule]) -> None:
     # case marker) — IS admitted via the new N-level rule.
     for coord in ("AND", "OR"):
         rules.append(Rule(
-            "N",
+            # LHS advertises COORD for the Phase 6.C graph-constraint
+            # matcher — same convention as the NP-coord rules above.
+            f"N[COORD={coord}]",
             [
                 "N",
                 f"PART[COORD={coord}]",
@@ -602,6 +616,55 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓3 ∈ (↑ CONJUNCTS)",
                 f"(↑ COORD) = '{coord}'",
                 "(↑ NUM) = 'PL'" if coord == "AND" else "(↑ NUM) = ↓1 NUM",
+                f"(↓2 COORD) =c '{coord}'",
+            ],
+        ))
+
+    # --- Phase 6.C C3c: predicative-ADJ coordination ---------------
+    #
+    # ``Matanda at maganda si Maria.`` "Maria is old and beautiful"
+    # — two predicative-ADJ heads conjoined by ``at`` / ``o``, with
+    # a shared SUBJ provided by the matrix predicative-ADJ-S rule.
+    #
+    # Pre-Phase-6.C this surface admitted a spurious parse via the
+    # Phase 5g manner-adverb rule (``S → ADJ PART[LINK=NA/NG] S``):
+    # the non-conflict matcher silently let ``at`` (PART[COORD=AND])
+    # fill the ``PART[LINK=NA/NG]`` slot since the two patterns
+    # shared no keys. The Phase 6.C graph-constraint matcher
+    # correctly rejects that path. This rule replaces the spurious
+    # path with a proper ADJ-coord structure: a coord-ADJ
+    # advertising ``PREDICATIVE=true, COORD=AND/OR`` so the existing
+    # Phase 5g predicative-ADJ-S rule
+    # (``S → ADJ[PREDICATIVE] NP[CASE=NOM]``) consumes it unchanged.
+    #
+    # F-structure (additive example):
+    #
+    #   ADJ_LEMMA   — undefined on the matrix coord-ADJ (each
+    #                 conjunct ADJ keeps its own ADJ_LEMMA in
+    #                 CONJUNCTS)
+    #   CONJUNCTS   — {↓1, ↓3}
+    #   COORD       — 'AND'
+    #   PREDICATIVE — true (lifted from daughters; both must be
+    #                 predicative)
+    #
+    # Both daughters are constrained to PREDICATIVE=true to keep
+    # the rule from firing on adjuncts (NP-internal ADJs that have
+    # the predicative ``maganda`` surface but no PREDICATIVE feat).
+    for coord in ("AND", "OR"):
+        rules.append(Rule(
+            f"ADJ[PREDICATIVE=true, COORD={coord}]",
+            [
+                "ADJ[PREDICATIVE]",
+                f"PART[COORD={coord}]",
+                "ADJ[PREDICATIVE]",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                f"(↑ COORD) = '{coord}'",
+                "(↑ PREDICATIVE) = true",
+                "(↓1 PREDICATIVE) =c true",
+                "(↓3 PREDICATIVE) =c true",
                 f"(↓2 COORD) =c '{coord}'",
             ],
         ))
@@ -717,9 +780,14 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Reference: S&O 1972 §6.7; R&G 1981 §6.6.
 
-    # ``o kaya`` — disjunctive uncertainty
+    # ``o kaya`` — disjunctive uncertainty. LHS pattern advertises
+    # COORD=OR so parent rules expecting ``PART[COORD=OR]`` admit
+    # this rule's LHS at completion time under the Phase 6.C
+    # graph-constraint matcher; the ``(↑ COORD) = 'OR'`` defining
+    # equation below is redundant under that matcher but kept for
+    # explicitness.
     rules.append(Rule(
-        "PART",
+        "PART[COORD=OR]",
         ["PART", "PART"],
         [
             "(↑ COORD) = 'OR'",
@@ -731,7 +799,7 @@ def register_rules(rules: list[Rule]) -> None:
     ))
     # ``at saka`` — conjunctive sequence
     rules.append(Rule(
-        "PART",
+        "PART[COORD=AND]",
         ["PART", "PART"],
         [
             "(↑ COORD) = 'AND'",
@@ -743,7 +811,7 @@ def register_rules(rules: list[Rule]) -> None:
     ))
     # ``at nang`` — conjunctive consequence
     rules.append(Rule(
-        "PART",
+        "PART[COORD=AND]",
         ["PART", "PART"],
         [
             "(↑ COORD) = 'AND'",

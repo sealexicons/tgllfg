@@ -60,15 +60,31 @@ class TestParsePattern:
             parse_pattern("NP[CASE==NOM]")
 
 
-# === matches ==============================================================
+# === matches (Phase 6.C graph-constraint matching) ========================
 
 class TestMatches:
+    """Graph-constraint matcher (Phase 6.C, post-C5): same category;
+    every feature the expected pattern demands must be present in the
+    candidate; shared features must agree. The candidate may carry
+    features the expected doesn't (lex entries are typically richer
+    than rule expectations). K&Z 1989 §3 c-structure-faithfulness:
+    rules name what they need; candidates must provide.
+
+    Pre-Phase-6.C the matcher was *non-conflict*: bracketed feats
+    on the expected side were optional on the candidate side. C5
+    removed the legacy implementation (see
+    ``project_parser_nonconflict_matcher`` memory for the bug
+    pattern that motivated the change).
+    """
+
     def test_identical_match(self) -> None:
         a = parse_pattern("NP[CASE=NOM]")
         assert matches(a, a)
 
     def test_category_mismatch(self) -> None:
-        assert not matches(parse_pattern("NP"), parse_pattern("VP"))
+        assert not matches(
+            parse_pattern("NP"), parse_pattern("VP"),
+        )
 
     def test_feature_conflict(self) -> None:
         a = parse_pattern("NP[CASE=NOM]")
@@ -77,21 +93,50 @@ class TestMatches:
         assert not matches(b, a)
 
     def test_expected_subset_of_candidate(self) -> None:
-        # Rule expects V[VOICE=PV]; lex provides V with extra features.
+        """The headline case: rule expects ``V[VOICE=PV]``; lex
+        provides ``V[VOICE=PV,ASPECT=PFV,TR=TR]``. Expected is a
+        subset (by key) of candidate, and shared keys agree."""
         expected = parse_pattern("V[VOICE=PV]")
         candidate = parse_pattern("V[VOICE=PV,ASPECT=PFV,TR=TR]")
         assert matches(expected, candidate)
 
-    def test_candidate_subset_of_expected(self) -> None:
-        # Candidate is generic; expected is specific. No conflict.
+    def test_candidate_lacks_demanded_feat_fails(self) -> None:
+        """The directional asymmetry of graph-constraint matching:
+        expected demands ``CASE=NOM`` but candidate is bare ``NP``;
+        the candidate doesn't satisfy the demand."""
         expected = parse_pattern("NP[CASE=NOM]")
         candidate = parse_pattern("NP")
+        assert not matches(expected, candidate)
+
+    def test_disjoint_features_fails(self) -> None:
+        """Expected demands ``VOICE``; candidate has only ``ASPECT``.
+        The matcher rejects because ``VOICE`` is absent on
+        candidate."""
+        expected = parse_pattern("V[VOICE=PV]")
+        candidate = parse_pattern("V[ASPECT=PFV]")
+        assert not matches(expected, candidate)
+
+    def test_bare_expected_matches_anything_same_category(self) -> None:
+        """Expected demands nothing (bare ``NP``); any same-category
+        candidate matches, regardless of its feats."""
+        expected = parse_pattern("NP")
+        candidate_bare = parse_pattern("NP")
+        candidate_rich = parse_pattern("NP[CASE=NOM,GENDER=M]")
+        assert matches(expected, candidate_bare)
+        assert matches(expected, candidate_rich)
+
+    def test_candidate_extra_keys_admitted(self) -> None:
+        """Candidate richer than expected — expected demands
+        ``CASE=NOM``; candidate carries ``CASE=NOM,GENDER=M``. The
+        extra ``GENDER`` doesn't gate the match.
+        """
+        expected = parse_pattern("NP[CASE=NOM]")
+        candidate = parse_pattern("NP[CASE=NOM,GENDER=M]")
         assert matches(expected, candidate)
 
-    def test_disjoint_features_no_conflict(self) -> None:
-        a = parse_pattern("V[VOICE=PV]")
-        b = parse_pattern("V[ASPECT=PFV]")
-        assert matches(a, b)
+    def test_empty_features_both_sides(self) -> None:
+        """Both bare: trivially matches."""
+        assert matches(parse_pattern("S"), parse_pattern("S"))
 
 
 # === merge_features =======================================================

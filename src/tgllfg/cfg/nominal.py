@@ -123,8 +123,14 @@ def register_rules(rules: list[Rule]) -> None:
     # every V-headed S frame; the latter is invasive. For Commit 3
     # the in-situ form parses; Q_TYPE percolation lands as a Phase 5i
     # follow-on if corpus pressure demands it.
+    # LHS advertises ``WH=true`` so the Phase 5n.B Commit 9
+    # sa-kanino cleft rule (which expects ``NP[CASE=DAT, WH]``)
+    # admits the in-situ wh-PRON-in-NP shell under the Phase 6.C
+    # graph-constraint matcher. ``(↑ WH) = ↓2 WH`` already
+    # propagates WH=true on the f-graph (the PRON daughter has
+    # WH=true).
     rules.append(Rule(
-        "NP[CASE=GEN]",
+        "NP[CASE=GEN, WH=true]",
         ["ADP[CASE=GEN]", "PRON[WH]"],
         [
             "(↑) = ↓1",
@@ -135,7 +141,7 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
     rules.append(Rule(
-        "NP[CASE=DAT]",
+        "NP[CASE=DAT, WH=true]",
         ["ADP[CASE=DAT]", "PRON[WH]"],
         [
             "(↑) = ↓1",
@@ -671,9 +677,13 @@ def register_rules(rules: list[Rule]) -> None:
     # Q daughter, on top of the QUANT / VAGUE lifts the non-wh rule
     # already provides. Phase 5i Commit 6's wh-N-cleft rule (in
     # cfg/clause.py) consumes the resulting N[WH].
+    # LHS advertises ``WH=true, VAGUE=true`` so the Phase 5i Commit 6
+    # wh-N cleft rule in cfg/clause.py (``S → N[WH] NP[CASE=NOM]``)
+    # admits this N at completion time under the Phase 6.C
+    # graph-constraint matcher.
     for link in ("NA", "NG"):
         rules.append(Rule(
-            "N",
+            "N[WH=true, VAGUE=true]",
             [
                 "Q[VAGUE, WH]",
                 f"PART[LINK={link}]",
@@ -1173,8 +1183,12 @@ def register_rules(rules: list[Rule]) -> None:
     # ``(↓2 CARDINAL) =c true`` constraint on rules 1 + 3
     # enforces the daughter is a genuinely cardinal NUM
     # (parallel to Commit 1's cardinal NP-modifier rule).
+    # LHS advertises ``CARDINAL=true`` on the NUM-output rules so
+    # downstream cardinal-NP-modifier rules (which expect
+    # ``NUM[CARDINAL]``) admit these approximated NUMs under the
+    # Phase 6.C graph-constraint matcher.
     rules.append(Rule(
-        "NUM",
+        "NUM[CARDINAL=true]",
         ["PART", "NUM"],
         [
             "(↑) = ↓2",
@@ -1193,7 +1207,7 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
     rules.append(Rule(
-        "NUM",
+        "NUM[CARDINAL=true]",
         ["PART", "NUM"],
         [
             "(↑) = ↓2",
@@ -1242,9 +1256,15 @@ def register_rules(rules: list[Rule]) -> None:
     # rather than ``ng`` / ``ang``; ``(↓ CARDINAL) =c true``
     # enforces a genuinely cardinal NUM (parallel to Commit 1
     # / 16's cardinal gate).
+    # LHS advertises CARDINAL=true so downstream NP-from-NUM
+    # projection rules (which expect ``NUM[CARDINAL]``) admit
+    # these comparator NUMs under the Phase 6.C graph-constraint
+    # matcher. ``(↑) = ↓3`` / ``(↑) = ↓4`` propagates CARDINAL=true
+    # from the daughter cardinal NUM, so the LHS advertisement
+    # matches the runtime state.
     for comp_lex, comp_value in (("HIGIT", "GT"), ("KULANG", "LT")):
         rules.append(Rule(
-            "NUM",
+            "NUM[CARDINAL=true]",
             ["PART", "ADP", "NUM"],
             [
                 "(↑) = ↓3",
@@ -1256,7 +1276,7 @@ def register_rules(rules: list[Rule]) -> None:
         ))
     for comp_lex, comp_value in (("BABABA", "GE"), ("HIHIGIT", "LE")):
         rules.append(Rule(
-            "NUM",
+            "NUM[CARDINAL=true]",
             ["PART", "PART", "ADP", "NUM"],
             [
                 "(↑) = ↓4",
@@ -1477,8 +1497,16 @@ def register_rules(rules: list[Rule]) -> None:
     # Audit before merging: none of the 1229 baseline corpus
     # entries contain ``mas`` (verified by grep on
     # tests/tgllfg/data/coverage_corpus.yaml).
+    # LHS advertises ``PREDICATIVE=true, COMP_DEGREE=COMPARATIVE`` so
+    # the Phase 5g Commit 3 predicative-ADJ-S rule
+    # (``S → ADJ[PREDICATIVE] NP[CASE=NOM]``) admits the mas-wrapped
+    # ADJ under the Phase 6.C graph-constraint matcher. Per
+    # roadmap §12.1, all ma- ADJ lex entries carry PREDICATIVE=true,
+    # so ``(↑) = ↓2`` (which shares the inner ADJ's f-structure)
+    # always produces a wrapped ADJ with PREDICATIVE=true on the
+    # f-graph; the LHS advertisement matches that runtime state.
     rules.append(Rule(
-        "ADJ",
+        "ADJ[PREDICATIVE=true, COMP_DEGREE=COMPARATIVE]",
         ["PART[COMP_DEGREE=COMPARATIVE]", "ADJ"],
         [
             "(↑) = ↓2",
@@ -1542,8 +1570,12 @@ def register_rules(rules: list[Rule]) -> None:
     # ``higit sa N`` requires a NUM head and a DAT-NP standard;
     # ``nang higit + ADJ`` requires an ADJ daughter. The two
     # paths are structurally disjoint.
+    # Same LHS advertise as the mas / intensifier ADJ-wrappers
+    # above so the Phase 5g predicative-ADJ-S rule admits the
+    # ``nang higit``-wrapped ADJ under the Phase 6.C graph-
+    # constraint matcher.
     rules.append(Rule(
-        "ADJ",
+        "ADJ[PREDICATIVE=true, COMP_DEGREE=COMPARATIVE]",
         ["PART[LEMMA=nang]", "PART[COMP_PHRASE=HIGIT]", "ADJ"],
         [
             "(↑) = ↓3",
@@ -1624,9 +1656,16 @@ def register_rules(rules: list[Rule]) -> None:
     # ``=c`` equations close the leak — same pattern as Phase 5h
     # Commit 3's ``(↓1 POLARITY) =c 'NEG'`` fix on the hindi-
     # negation rule.
+    # LHS advertises ``PREDICATIVE=true, INTENSIFIER=true,
+    # COMP_DEGREE=INTENSIVE`` so the Phase 5g predicative-ADJ-S rule
+    # admits the wrapped ADJ under the Phase 6.C graph-constraint
+    # matcher. ``(↑) = ↓3`` shares the inner ADJ's f-structure;
+    # per roadmap §12.1 ADJ lex entries carry PREDICATIVE=true,
+    # so the wrapped output reliably has PREDICATIVE=true on the
+    # f-graph.
     for link in ("NA", "NG"):
         rules.append(Rule(
-            "ADJ",
+            "ADJ[PREDICATIVE=true, INTENSIFIER=true, COMP_DEGREE=INTENSIVE]",
             [
                 "PART[INTENSIFIER]",
                 f"PART[LINK={link}]",
@@ -1660,7 +1699,8 @@ def register_rules(rules: list[Rule]) -> None:
     # ``PART[INTENSITY=MODERATE]`` filters at the matcher layer
     # (belt-and-braces).
     rules.append(Rule(
-        "ADJ",
+        # Same LHS advertise as the with-linker variant above.
+        "ADJ[PREDICATIVE=true, INTENSIFIER=true, COMP_DEGREE=INTENSIVE]",
         ["PART[INTENSITY=MODERATE]", "ADJ"],
         [
             "(↑) = ↓2",
@@ -1715,8 +1755,14 @@ def register_rules(rules: list[Rule]) -> None:
     # ungrammatical: cardinals carry ``CARDINAL: YES``, not
     # ``VAGUE: YES``, so the rule's category-pattern + ``=c``
     # constraint does not fire on them.
+    # LHS advertises ``VAGUE=true, COMP_DEGREE=COMPARATIVE`` so the
+    # Phase 5n.B Commit 1 predicative-Q clause rule (which expects
+    # ``Q[VAGUE]``) admits the mas-wrapped Q under the Phase 6.C
+    # graph-constraint matcher. ``(↑) = ↓2`` already shares the
+    # inner Q's f-structure (including VAGUE=true), so the LHS
+    # advertisement matches what the rule produces.
     rules.append(Rule(
-        "Q",
+        "Q[VAGUE=true, COMP_DEGREE=COMPARATIVE]",
         ["PART[COMP_DEGREE=COMPARATIVE]", "Q[VAGUE]"],
         [
             "(↑) = ↓2",
@@ -1754,6 +1800,21 @@ def register_rules(rules: list[Rule]) -> None:
     # SubordClause; ``Kahit sino …`` builds a PRON.
     #
     # Reference: R&G 1981 §6.6.
+    # Two sibling rule shapes:
+    #
+    # 1. Bare-PRON LHS — retained for Phase 5m / 5n compatibility:
+    #    legacy non-conflict matcher allowed the wrapped PRON to
+    #    project to any-case NP via the bare LHS, so e.g.,
+    #    ``Kumain siya kahit ano.`` could fit ``kahit ano`` into
+    #    the OBJ (CASE=GEN) slot even though ``ano`` is lex'd
+    #    CASE=NOM. The lex doesn't carry GEN/DAT variants for the
+    #    wh-PRONs, so without this fallback that cross-case usage
+    #    0-parses.
+    # 2. Per-CASE parameterized LHS — added in Phase 6.C C3d for
+    #    the graph-constraint matcher. Advertises CASE so the
+    #    NP-from-PRON projection (``NP[CASE=X] → PRON[CASE=X]``)
+    #    admits the wrapped PRON under strict matching for the
+    #    same-case slot.
     rules.append(Rule(
         "PRON",
         ["PART", "PRON"],
@@ -1765,8 +1826,21 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 WH) =c true",
         ],
     ))
+    for case in ("NOM", "GEN", "DAT"):
+        rules.append(Rule(
+            f"PRON[INDEF=YES, CASE={case}]",
+            ["PART", f"PRON[CASE={case}]"],
+            [
+                "(↑) = ↓2",
+                "↓1 ∈ (↑ ADJUNCT)",
+                "(↑ INDEF) = 'YES'",
+                "(↓1 LEMMA) =c 'kahit'",
+                "(↓2 WH) =c true",
+                f"(↓2 CASE) =c '{case}'",
+            ],
+        ))
     rules.append(Rule(
-        "ADV",
+        "ADV[INDEF=YES]",
         ["PART", "ADV"],
         [
             "(↑) = ↓2",
@@ -1802,8 +1876,12 @@ def register_rules(rules: list[Rule]) -> None:
     # (na / pa / daw / rin / lang / nga / ba / ho / po / kasi /
     # ...) — only ``man`` (the EVEN/CONCESSIVE particle) functions
     # as a productive negative-indef builder.
+    # LHS advertises ``INDEF=NEG_INDEF`` so the Phase 5j Commit 9
+    # negative-existential rule (which expects
+    # ``PRON[INDEF=NEG_INDEF]``) admits this productive wh+man
+    # PRON under the Phase 6.C graph-constraint matcher.
     rules.append(Rule(
-        "PRON",
+        "PRON[INDEF=NEG_INDEF]",
         ["PRON", "PART"],
         [
             "(↑) = ↓1",
@@ -1843,17 +1921,23 @@ def register_rules(rules: list[Rule]) -> None:
     # constraint adds defining-equation pressure on the predicted
     # daughter so the parser can prune at predict-time rather than
     # generate-and-filter at unification-time.
-    rules.append(Rule(
-        "NP",
-        ["NP", "PART[LEMMA=mismo, EMPHATIC]"],
-        [
-            "(↑) = ↓1",
-            "↓2 ∈ (↑ ADJUNCT)",
-            "(↓2 EMPHATIC) =c true",
-            "(↓2 LEMMA) =c 'mismo'",
-            "(↑ EMPHATIC) = true",
-        ],
-    ))
+    # LHS parameterized over CASE so matrix rules expecting
+    # ``NP[CASE=X]`` admit the mismo-attached NP under the
+    # Phase 6.C graph-constraint matcher. ``(↑) = ↓1`` already
+    # propagates CASE on the f-graph; the LHS pattern advertises
+    # it.
+    for case in ("NOM", "GEN", "DAT"):
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [f"NP[CASE={case}]", "PART[LEMMA=mismo, EMPHATIC]"],
+            [
+                "(↑) = ↓1",
+                "↓2 ∈ (↑ ADJUNCT)",
+                "(↓2 EMPHATIC) =c true",
+                "(↓2 LEMMA) =c 'mismo'",
+                "(↑ EMPHATIC) = true",
+            ],
+        ))
 
     # === Phase 5n.A Commit 7: depictive ``mag-isa`` post-PRON via linker (§18 L62+L63) =====
     #

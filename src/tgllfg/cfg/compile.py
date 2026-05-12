@@ -29,11 +29,35 @@ The parser asks "does pattern A match pattern B?" in three contexts:
 * COMPLETE — does a completing edge's LHS match a waiting parent's
   RHS expectation?
 
-In all three the relation is *non-conflict*: the categories must be
-equal and any feature shared between the two sides must have the
-same value. Either side may carry features the other does not — a
-rule may be specialised (``NP[CASE=NOM]``) or generic (``NP``), and
-a token's analysis is typically richer than the rule's expectation.
+The post-Phase-6.C relation is **graph-constraint**: the categories
+must be equal, every feature the expected pattern demands must be
+present in the candidate, and shared features must have equal values.
+The candidate may carry features the expected doesn't — lex entries
+are typically richer than rule expectations, and that asymmetry is
+how richer information propagates up the parse — but a rule's
+bracketed feat (``NP[CASE=NOM]``) requires the candidate to carry
+that feat. K&Z 1989 §3's c-structure-faithfulness argument calls
+for this directionality: rules name the features they need, and the
+parser admits only candidates that provide them.
+
+Legacy *non-conflict* relation (pre-Phase-6.C): the rule's bracketed
+feats were optional on the candidate side — shared keys had to
+agree, but unshared keys were silently admitted on either side.
+That admitted spurious matches at high RHS-feature arity, producing
+chart pollution that pinned several constructions in §18.1.2
+(notably L85+ 5+-conjunct flat NP coord). The bug pattern is
+recorded internally; Phase 6.C resolves it.
+
+Phase 6.C rollout stages: this commit (C1) updates the module
+docstring to describe the post-flip semantics; C2 introduces
+``matches_strict`` alongside the legacy ``matches`` (with
+accurate per-function docstrings for each); C3a-f audit the
+``cfg/`` modules and adjust where rules silently relied on
+shared-key absence; C4 flips the parser to ``matches_strict``;
+C5 renames ``matches_strict`` to ``matches`` and removes the
+legacy. Until C5 lands, the function docstrings (not this
+module docstring) remain the source of truth for runtime
+behavior.
 """
 
 from __future__ import annotations
@@ -156,16 +180,25 @@ def parse_pattern(s: str) -> CategoryPattern:
 
 
 def matches(expected: CategoryPattern, candidate: CategoryPattern) -> bool:
-    """Non-conflict matching: same category and no disagreement on
-    any feature shared between the two sides."""
+    """Graph-constraint matching: same category, **every feature the
+    expected pattern demands must be present in the candidate**, and
+    shared features must have equal values. The candidate may carry
+    features the expected doesn't — lex entries are typically richer
+    than rule expectations, and that asymmetry is how richer
+    information propagates up the parse — but a rule's bracketed feat
+    (``NP[CASE=NOM]``) requires the candidate to carry it.
+
+    K&Z 1989 §3's c-structure-faithfulness argument calls for this
+    directionality: rules name the features they need; the parser
+    admits only candidates that provide them.
+    """
     if expected.category != candidate.category:
         return False
     e = dict(expected.features)
     c = dict(candidate.features)
-    for k in e.keys() & c.keys():
-        if e[k] != c[k]:
-            return False
-    return True
+    if not e.keys() <= c.keys():
+        return False
+    return all(e[k] == c[k] for k in e)
 
 
 def merge_features(

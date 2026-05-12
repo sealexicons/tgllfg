@@ -1146,7 +1146,7 @@ def register_rules(rules: list[Rule]) -> None:
     # wh-questions (audit confirmed at Commit 1), so no baseline
     # entries flip.
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=WH]",
         ["PRON[WH, CASE=NOM]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
@@ -1194,7 +1194,7 @@ def register_rules(rules: list[Rule]) -> None:
     # S_INTERROG_COMP rule's constraint. So embedded bare-form
     # composes seamlessly.
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=WH]",
         ["PRON[WH, CASE=NOM]", "V[VOICE=AV]"],
         [
             "(↑) = ↓2",
@@ -1229,7 +1229,7 @@ def register_rules(rules: list[Rule]) -> None:
     # takes N directly. The headless-RC SUBJ is NP[CASE=NOM] as
     # in the PRON cleft.
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=WH]",
         ["N[WH]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
@@ -1270,7 +1270,7 @@ def register_rules(rules: list[Rule]) -> None:
     # ``PRED='WH <SUBJ>'``, ``WH_LEMMA='alin'``). Tests admit
     # ``>= 1`` parses for ``Alin ang aklat?``.
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=WH]",
         ["Q[WH]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
@@ -1300,7 +1300,7 @@ def register_rules(rules: list[Rule]) -> None:
     # Q[WH] with a trailing DAT-NP — the structural pattern
     # is identical for ``Ilan`` and other amount/count wh-Qs.
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=WH]",
         ["Q[WH]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
@@ -1326,7 +1326,7 @@ def register_rules(rules: list[Rule]) -> None:
     # PRED template (still ``WH <SUBJ>``) — the WH_LEMMA carries
     # the lexical content (kanino vs sino).
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=WH]",
         ["PRON[WH, CASE=DAT]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
@@ -1368,7 +1368,7 @@ def register_rules(rules: list[Rule]) -> None:
     # kanino in ADJUNCT; this rule's parse holds it in POSS. Tests
     # accept ``>= 1`` parse with the POSS-slot shape.
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=WH]",
         ["PRON[WH, CASE=DAT]", "N", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'BE-N <SUBJ>'",
@@ -1413,7 +1413,7 @@ def register_rules(rules: list[Rule]) -> None:
     # ``PRED='WH <SUBJ>'`` / ``Q_TYPE=WH`` / ``WH_LEMMA``
     # propagated from the matrix NP.
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=WH]",
         ["NP[CASE=DAT, WH]", "NP[CASE=NOM]"],
         [
             "(↑ PRED) = 'WH <SUBJ>'",
@@ -1471,7 +1471,7 @@ def register_rules(rules: list[Rule]) -> None:
     # post-Commit-1 the two forms diverge structurally and need
     # separate rules.
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=TAG]",
         [
             "S",
             "PUNCT[PUNCT_CLASS=COMMA]",
@@ -1487,7 +1487,7 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=TAG]",
         [
             "S",
             "PART[NEG_TAG]",
@@ -1546,7 +1546,7 @@ def register_rules(rules: list[Rule]) -> None:
     # corpus entries contain any wh-ADV (Commit 1 audit), so no
     # baseline flips.
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=WH]",
         ["ADV[WH]", "S"],
         [
             "(↑) = ↓2",
@@ -1574,7 +1574,7 @@ def register_rules(rules: list[Rule]) -> None:
     # when the residue is a verb-headed clause with its own SUBJ
     # (e.g., ``ka pumunta``).
     rules.append(Rule(
-        "S",
+        "S[Q_TYPE=WH]",
         ["PRON[WH, CASE=DAT]", "S"],
         [
             "(↑) = ↓2",

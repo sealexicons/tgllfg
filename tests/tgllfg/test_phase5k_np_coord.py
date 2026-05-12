@@ -238,9 +238,13 @@ class TestCoordCTreeShape:
     def test_nom_coord_three_daughters(self) -> None:
         parses = parse_text("Kumain si Maria at si Juan.")
         ctree, _fs, _astr, _diags = parses[0]
-        # Walk the c-tree to find the coord NP node.
+        # Walk the c-tree to find the coord NP node. Phase 6.C C3b
+        # promoted the binary-coord LHS to ``NP[CASE=NOM, COORD=AND]``
+        # so the parent label is ``NP[CASE=NOM, COORD=AND]`` post-C3b;
+        # ``startswith("NP[CASE=NOM")`` (no closing bracket) covers
+        # both the pre-C3b ``NP[CASE=NOM]`` form and the new form.
         def find_coord_np(n):
-            if n.label.startswith("NP[CASE=NOM]") and len(n.children) == 3:
+            if n.label.startswith("NP[CASE=NOM") and len(n.children) == 3:
                 labels = [c.label for c in n.children]
                 if any(lbl.startswith("PART") for lbl in labels):
                     return n

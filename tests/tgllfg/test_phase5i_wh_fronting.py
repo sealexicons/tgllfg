@@ -78,14 +78,20 @@ class TestCleftWhCTreeShape:
         parses = parse_text("Sino ang kumain?")
         assert len(parses) == 1
         ctree, _fs, _astr, _diags = parses[0]
-        assert ctree.label == "S"
+        # Phase 6.C C3e: wh-cleft matrix S LHS advertises
+        # ``Q_TYPE=WH`` so consumers (e.g., the S_INTERROG_COMP
+        # wrap) admit the matrix under the graph-constraint
+        # matcher. The c-tree label is therefore "S[Q_TYPE=WH]",
+        # not bare "S".
+        assert ctree.label.startswith("S")
         assert len(ctree.children) == 2
         # First child: PRON (the wh)
         wh = ctree.children[0]
         assert wh.label.startswith("PRON")
-        # Second child: NP[CASE=NOM] (the headless RC)
+        # Second child: NP[CASE=NOM] (the headless RC; Phase 6.C
+        # may have promoted the LHS to ``NP[CASE=NOM, ...]``).
         np = ctree.children[1]
-        assert np.label.startswith("NP[CASE=NOM]")
+        assert np.label.startswith("NP[CASE=NOM")
 
 
 # === Headless RC composition ==========================================
