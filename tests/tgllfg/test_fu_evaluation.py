@@ -27,6 +27,8 @@ C7 will add the Hypothesis property battery.
 
 from __future__ import annotations
 
+import pytest
+
 from tgllfg.core.common import CNode
 from tgllfg.fstruct import (
     AltFeature,
@@ -748,3 +750,237 @@ class TestBindingEqWithFU:
         result = solve(n)
         kinds = {d.kind for d in result.diagnostics}
         assert "atom-mismatch" in kinds
+
+
+# === C6 — K&Z 1989 §3 fixture parametrizations =============================
+
+class TestKZFixturesParametrized:
+    """K&Z 1989 §3 canonical equations exercised end-to-end via
+    :func:`solve`. C2 had unit-level resolver tests for eq. 30 / 39
+    against synthetic FGraphs; C6 adds parametrized integration
+    tests through the full constraining + binding eval paths
+    landed in C3 / C5, with off-path filtering from C4.
+
+    Approximations: K&Z uses set-complement notation ``(GF-ADJ)``
+    and ``(GF-COMP)`` in eqs. 38 / 39. Set-complement is out of
+    scope per ``docs/fu-evaluation.md`` §3 and
+    ``tgllfg-out-of-scope.md`` §18.1.3; here we approximate with
+    explicit GF alternations. The K&Z structural argument (body
+    restriction filters which paths the regex can take) carries
+    through unchanged.
+    """
+
+    @pytest.mark.parametrize("depth", [0, 1, 2, 3])
+    def test_eq30_topic_binds_obj_at_depth(self, depth: int) -> None:
+        """K&Z eq. 30: ``(↑ TOPIC) = (↑ COMP* OBJ)``.
+
+        Parametrized over the COMP-chain depth. At each depth ``N``,
+        a single ``OBJ`` is defined at ``COMP^N`` and the FU
+        binding resolves to it. The follow-on ``=c`` check confirms
+        TOPIC equals that endpoint's atom.
+        """
+        comp_chain = " ".join(["COMP"] * depth)
+        deep_path = (
+            f"(↑ {comp_chain} OBJ)" if depth > 0 else "(↑ OBJ)"
+        )
+        n = CNode(
+            label="N",
+            equations=[
+                f"{deep_path} = 'X'",
+                "(↑ TOPIC) = (↑ COMP* OBJ)",
+                "(↑ TOPIC) =c 'X'",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"depth={depth}: unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_eq30_minimality_picks_shortest(self) -> None:
+        """K&Z 1989 §3 minimality: when ``OBJ`` is defined at multiple
+        COMP depths, the binding picks the shortest. The deeper OBJ
+        is unreachable from the K&Z perspective — it's there in the
+        f-graph but minimality skips past it.
+        """
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ COMP OBJ) = 'shortest'",
+                "(↑ COMP COMP OBJ) = 'deeper'",
+                "(↑ TOPIC) = (↑ COMP* OBJ)",
+                "(↑ TOPIC) =c 'shortest'",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_eq30_no_obj_anywhere_fails(self) -> None:
+        """K&Z eq. 30 with no OBJ in the COMP chain: regex resolves
+        to no endpoint; binding fails with ``constraint-failed``."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ COMP COMP COMP) = 'deep'",
+                "(↑ TOPIC) = (↑ COMP* OBJ)",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
+
+    def test_eq38_body_restricts_traversal(self) -> None:
+        """K&Z eq. 38 (Icelandic adjunct island), simplified.
+
+        K&Z's body ``(GF-ADJ)*`` (set complement on GF) is out of
+        scope per ``docs/fu-evaluation.md`` §3, and the related
+        ``{F | G}*`` (Kleene on alternation) is not parsed by the
+        current equation grammar — both deferred via
+        ``tgllfg-out-of-scope.md`` §18.1.3. Here we approximate the
+        K&Z island constraint with a single-feature body
+        ``COMP*``: the body admits the COMP-chain SUBJ but cannot
+        reach a SUBJ behind an ``ADJ`` step.
+
+        Setup: ``matrix.COMP.SUBJ`` is reachable via the body;
+        ``matrix.ADJ.SUBJ`` is not. TOPIC binds to
+        ``matrix.COMP.SUBJ``.
+        """
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ COMP SUBJ) = 'comp_subj'",
+                "(↑ ADJ SUBJ) = 'adj_subj'",
+                "(↑ TOPIC) = (↑ COMP* SUBJ)",
+                "(↑ TOPIC) =c 'comp_subj'",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_eq38_island_unreachable_subj_fails(self) -> None:
+        """When the only ``SUBJ`` is inside ``ADJ``, the body
+        ``COMP*`` cannot reach it (ADJ isn't in the body
+        alternation); the regex has no endpoint; binding fails.
+        """
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ ADJ SUBJ) = 'island_only'",
+                "(↑ TOPIC) = (↑ COMP* SUBJ)",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
+
+    def test_eq39_topicalization_via_xcomp(self) -> None:
+        """K&Z eq. 39 (English topicalization), approximated.
+
+        K&Z's body ``{COMP | XCOMP}*`` and bottom ``(GF-COMP)`` are
+        not directly parseable (``{F | G}*`` deferred per
+        ``tgllfg-out-of-scope.md`` §18.1.3; set-complement deferred
+        per §18.1.3 too). Here we approximate body as ``XCOMP*``
+        (single-feature) and bottom as ``{SUBJ | OBJ | OBL}``
+        (explicit non-COMP alternation).
+        """
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ XCOMP SUBJ) = 'extracted'",
+                "(↑ TOPIC) = (↑ XCOMP* {SUBJ | OBJ | OBL})",
+                "(↑ TOPIC) =c 'extracted'",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_eq39_topicalization_via_comp_obj(self) -> None:
+        """K&Z eq. 39 (English topicalization), via COMP body and
+        OBJ bottom. Demonstrates the body-bottom partition by
+        switching both: body ``COMP*``, bottom
+        ``{SUBJ | OBJ | OBL}``. The OBJ endpoint reached at
+        ``COMP.OBJ`` is the topicalized constituent.
+        """
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ COMP OBJ) = 'extracted'",
+                "(↑ TOPIC) = (↑ COMP* {SUBJ | OBJ | OBL})",
+                "(↑ TOPIC) =c 'extracted'",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    @pytest.mark.parametrize("body_gf", ["COMP", "XCOMP"])
+    @pytest.mark.parametrize("bottom_gf", ["SUBJ", "OBJ"])
+    def test_eq39_body_bottom_combinations(
+        self, body_gf: str, bottom_gf: str,
+    ) -> None:
+        """Cartesian product of body single-feature × bottom
+        alternation. Each combination succeeds when the corresponding
+        ``f-graph`` path is defined.
+        """
+        n = CNode(
+            label="N",
+            equations=[
+                f"(↑ {body_gf} {bottom_gf}) = 'val'",
+                f"(↑ TOPIC) = (↑ {body_gf}* {{SUBJ | OBJ}})",
+                "(↑ TOPIC) =c 'val'",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"body={body_gf} bottom={bottom_gf}: "
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_eq39_off_path_tense_filter(self) -> None:
+        """K&Z 1989 off-path example combined with the eq. 39
+        body-bottom partition: ``(↑ TOPIC) = (↑ XCOMP*<(→ TENSE)
+        =c 'PAST'> {SUBJ | OBJ})``. The off-path filter restricts
+        the body to PAST-tensed intermediates; with TENSE=PAST at
+        the intermediate XCOMP, the binding succeeds.
+        """
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ XCOMP TENSE) = 'PAST'",
+                "(↑ XCOMP SUBJ) = 'extracted'",
+                (
+                    "(↑ TOPIC) = "
+                    "(↑ XCOMP*<(→ TENSE) =c 'PAST'> {SUBJ | OBJ})"
+                ),
+                "(↑ TOPIC) =c 'extracted'",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_eq39_off_path_tense_filter_blocks_wrong_tense(self) -> None:
+        """Same shape as ``test_eq39_off_path_tense_filter`` but the
+        intermediate XCOMP has TENSE='PRES'; off-path filter prunes
+        the branch; no endpoint; binding fails."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ XCOMP TENSE) = 'PRES'",
+                "(↑ XCOMP SUBJ) = 'extracted'",
+                (
+                    "(↑ TOPIC) = "
+                    "(↑ XCOMP*<(→ TENSE) =c 'PAST'> {SUBJ | OBJ})"
+                ),
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds

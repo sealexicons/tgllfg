@@ -127,6 +127,15 @@ Every element optionally carries off-path constraints (§6).
   The unifier would have to invent intermediate nodes for the
   unbounded `COMP*` traversal — semantically ill-defined in
   standard LFG. See §5.
+- **Kleene applied to alternation** (`{F | G}*` / `{F | G}+`).
+  The equation grammar treats `AltFeature` as a single
+  `PathElement` and doesn't compose it with `*` / `+`. K&Z 1989
+  eqs. 38 / 39 use this construction in their body alternations
+  (e.g., `{COMP, XCOMP}*`); the Phase 6.B K&Z fixtures
+  (`tests/tgllfg/test_fu_evaluation.py::TestKZFixturesParametrized`)
+  approximate with single-feature bodies (`COMP*` / `XCOMP*`).
+  AST extension is well-scoped but not motivated by any current
+  Tagalog construction. See `tgllfg-out-of-scope.md` §18.1.3.
 
 ## 4. Evaluation algorithm
 
