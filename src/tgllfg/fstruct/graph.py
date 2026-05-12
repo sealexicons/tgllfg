@@ -34,12 +34,23 @@ Failure
 -------
 
 On failure the unifier returns a `Diagnostic` rather than raising.
-:meth:`FGraph.unify` is atomic: on failure the graph is restored
-to its pre-call state via an internal :meth:`snapshot` /
-:meth:`rollback` pair (Phase 6.A C2). Callers that want to wrap
-*sequences* of unifies under a shared rollback boundary can take
-their own snapshot before the first call and roll back if any
-member of the sequence returns a failure.
+:meth:`FGraph.unify` is atomic: on failure the graph is restored to
+its pre-call state. Per Phase 6.A C5, atomicity is backed by a
+**per-mutation undo journal** rather than an eager whole-graph copy.
+:meth:`snapshot` is O(1) (it stores the current journal length);
+:meth:`rollback` is O(mutations-since-snapshot). When no snapshot is
+outstanding the journal is empty and mutations are committed by
+construction. Callers that want to wrap *sequences* of unifies under
+a shared rollback boundary can take their own snapshot before the
+first call and roll back if any member of the sequence returns a
+failure.
+
+Path compression in :meth:`find` is skipped while a snapshot is
+outstanding (``_snapshot_depth > 0``). Compressing during a
+transaction could leave dangling `_parent[X] = Y` entries after a
+rollback that drops `Y`, so we forgo the optimization until the
+graph is back at depth 0. Find remains correct in either mode —
+compression is a pure optimization.
 """
 
 from __future__ import annotations
@@ -145,23 +156,11 @@ class Diagnostic:
 
 # === Snapshot ==============================================================
 
-def _copy_value(v: FValue) -> FValue:
-    """Deep-copy the mutable parts of an :class:`FValue` so it can be
-    held inside a :class:`Snapshot` independent of subsequent in-place
-    mutations on the original.
-
-    ``ComplexValue.attrs`` and ``SetValue.members`` are mutated in place
-    by :meth:`FGraph.resolve_path`, :meth:`FGraph.add_to_set`, and
-    :meth:`FGraph.unify`; the snapshot must therefore copy them.
-    ``AtomValue`` is treated as immutable by convention (the project
-    never mutates ``AtomValue.atom`` in place — values are replaced) and
-    is returned unchanged.
-    """
-    if isinstance(v, AtomValue):
-        return v
-    if isinstance(v, ComplexValue):
-        return ComplexValue(attrs=dict(v.attrs))
-    return SetValue(members=set(v.members))
+# Sentinel for "no prior entry" in journal records. Distinguishes
+# "this key was missing from the dict" from "the value was None" —
+# important because ``None`` is a legitimate ``_store`` absence
+# marker (unset nodes don't appear in ``_store`` at all).
+_MISSING: object = object()
 
 
 @dataclass(frozen=True)
@@ -169,50 +168,85 @@ class Snapshot:
     """Opaque capture of an :class:`FGraph` state, suitable for rollback.
 
     Returned by :meth:`FGraph.snapshot` and consumed by
-    :meth:`FGraph.rollback`. Treat as immutable — do not introspect or
-    mutate the fields. A single snapshot may be rolled back to any
-    number of times (rollback is idempotent and non-consuming).
+    :meth:`FGraph.rollback`. Internally, a snapshot is a high-water
+    mark into the FGraph's undo journal: rollback unwinds all
+    mutations recorded after the snapshot was taken.
+
+    Both fields are public-but-opaque — callers should treat them as
+    identifying tokens, not as introspectable graph state. A single
+    snapshot may be rolled back to any number of times so long as no
+    new mutations have been recorded since the previous rollback to
+    it (idempotent and non-consuming under that condition).
 
     Node ids allocated after the snapshot become invalid after a
-    rollback to that snapshot: the `_next_id` counter is reset and the
-    parent / rank / store entries for the dropped nodes are gone.
-    Callers should not retain references to such ids across a rollback.
+    rollback to that snapshot: ``_next_id`` is reset and the parent /
+    rank / store entries for the dropped nodes are gone. Callers
+    should not retain references to such ids across a rollback.
     """
     next_id: int
-    parent: Mapping[NodeId, NodeId]
-    rank: Mapping[NodeId, int]
-    store: Mapping[NodeId, FValue]
+    journal_length: int
 
 
 # === Graph =================================================================
 
 class FGraph:
-    """An f-structure graph with union-find and value storage."""
+    """An f-structure graph with union-find and value storage.
+
+    Atomic unify is backed by the ``_journal``: when one or more
+    snapshots are outstanding (``_snapshot_depth > 0``) every
+    mutation appends an undo entry to ``_journal`` before applying.
+    :meth:`rollback` pops entries past the snapshot's
+    ``journal_length`` and applies them. When ``_snapshot_depth``
+    returns to 0 the journal is dropped — mutations outside any
+    transaction are committed by construction and don't pay the
+    journal cost.
+    """
 
     def __init__(self) -> None:
         self._next_id: int = 0
         self._parent: dict[NodeId, NodeId] = {}
         self._rank: dict[NodeId, int] = {}
         self._store: dict[NodeId, FValue] = {}
+        # Undo journal entries. Each is a tuple ``(kind, *args)``;
+        # see :meth:`_undo` for the per-kind unwind logic.
+        self._journal: list[tuple] = []
+        self._snapshot_depth: int = 0
 
     # --- Allocation and traversal -----------------------------------------
 
     def fresh(self) -> NodeId:
         """Allocate a new unset node and return its id."""
         n = self._next_id
+        if self._snapshot_depth:
+            j = self._journal
+            j.append(("next_id", self._next_id))
+            j.append(("parent", n, _MISSING))
+            j.append(("rank", n, _MISSING))
         self._next_id += 1
         self._parent[n] = n
         self._rank[n] = 0
         return n
 
     def find(self, n: NodeId) -> NodeId:
-        """Return the canonical root for `n`, with path compression."""
+        """Return the canonical root for `n`.
+
+        Path compression runs only outside any outstanding snapshot
+        (``_snapshot_depth == 0``); inside a transaction we forgo it
+        to avoid introducing dangling parent entries when the
+        compression target is a post-snapshot node that gets dropped
+        by a rollback.
+        """
+        parent = self._parent
+        if self._snapshot_depth:
+            while parent[n] != n:
+                n = parent[n]
+            return n
         path: list[NodeId] = []
-        while self._parent[n] != n:
+        while parent[n] != n:
             path.append(n)
-            n = self._parent[n]
+            n = parent[n]
         for p in path:
-            self._parent[p] = n
+            parent[p] = n
         return n
 
     def value(self, n: NodeId) -> FValue | None:
@@ -228,6 +262,8 @@ class FGraph:
         n = self.find(n)
         v = self._store.get(n)
         if v is None:
+            if self._snapshot_depth:
+                self._journal.append(("store", n, _MISSING))
             self._store[n] = AtomValue(atom)
             return None
         if isinstance(v, AtomValue):
@@ -251,10 +287,15 @@ class FGraph:
         container = self.find(container)
         v = self._store.get(container)
         if v is None:
+            if self._snapshot_depth:
+                self._journal.append(("store", container, _MISSING))
             self._store[container] = SetValue(members={member})
             return None
         if isinstance(v, SetValue):
-            v.members.add(member)
+            if member not in v.members:
+                if self._snapshot_depth:
+                    self._journal.append(("members", v, member))
+                v.members.add(member)
             return None
         return Diagnostic(
             "set-membership-clash",
@@ -279,6 +320,8 @@ class FGraph:
             v = self._store.get(cur)
             if v is None:
                 child = self.fresh()
+                if self._snapshot_depth:
+                    self._journal.append(("store", cur, _MISSING))
                 self._store[cur] = ComplexValue(attrs={feat: child})
                 cur = child
             elif isinstance(v, ComplexValue):
@@ -286,6 +329,8 @@ class FGraph:
                     cur = v.attrs[feat]
                 else:
                     child = self.fresh()
+                    if self._snapshot_depth:
+                        self._journal.append(("attrs", v, feat, _MISSING))
                     v.attrs[feat] = child
                     cur = child
             else:
@@ -347,34 +392,95 @@ class FGraph:
     # --- Snapshot / rollback ----------------------------------------------
 
     def snapshot(self) -> Snapshot:
-        """Capture the current graph state.
+        """Capture a snapshot of the current graph state.
 
-        Returns an opaque :class:`Snapshot` value that can be passed to
-        :meth:`rollback`. The snapshot is detached from the live graph:
-        subsequent mutations on this :class:`FGraph` (allocations, links,
-        attribute writes, set additions) do not affect it, and a single
-        snapshot may be rolled back to any number of times.
+        Returns an opaque :class:`Snapshot` value that can be passed
+        to :meth:`rollback` to undo any mutations made after this
+        call. The snapshot itself is O(1): it records the current
+        journal high-water mark and increments the snapshot-depth
+        counter. The first outstanding snapshot is what activates the
+        journal-recording fast path in mutators.
         """
+        self._snapshot_depth += 1
         return Snapshot(
             next_id=self._next_id,
-            parent=dict(self._parent),
-            rank=dict(self._rank),
-            store={n: _copy_value(v) for n, v in self._store.items()},
+            journal_length=len(self._journal),
         )
 
     def rollback(self, snap: Snapshot) -> None:
         """Restore the graph to the state captured by ``snap``.
 
-        Nodes allocated after the snapshot are dropped (the
-        :attr:`_next_id` counter is reset). Unification links,
-        attribute writes, and set-membership additions made after the
-        snapshot are reversed. Idempotent — ``snap`` may be passed again
-        to revert subsequent mutations.
+        Pops journal entries from the end down to
+        ``snap.journal_length``, applying each undo in reverse order.
+        Decrements ``_snapshot_depth``; when it returns to zero (no
+        outstanding snapshots) the journal is cleared.
+
+        Idempotent: calling :meth:`rollback` twice with the same
+        ``snap`` value is a no-op on the second call when no new
+        mutations have been recorded in between. ``_snapshot_depth``
+        is clamped at zero on extra rollbacks so the bookkeeping
+        stays consistent.
         """
-        self._next_id = snap.next_id
-        self._parent = dict(snap.parent)
-        self._rank = dict(snap.rank)
-        self._store = {n: _copy_value(v) for n, v in snap.store.items()}
+        journal = self._journal
+        target = snap.journal_length
+        while len(journal) > target:
+            self._undo(journal.pop())
+        if self._snapshot_depth > 0:
+            self._snapshot_depth -= 1
+        if self._snapshot_depth == 0:
+            journal.clear()
+
+    def _commit(self, snap: Snapshot) -> None:
+        """Discard ``snap`` without rolling back; its mutations
+        become permanent (subject to any outer outstanding snapshot
+        still being able to roll them back).
+
+        Used internally by :meth:`unify` on the success path. Not part
+        of the public API — external callers that want to drop a
+        snapshot just let the reference go out of scope; any mutations
+        they made stay in the journal until the next rollback or
+        until ``_snapshot_depth`` returns to zero by some other path.
+        """
+        if self._snapshot_depth > 0:
+            self._snapshot_depth -= 1
+        if self._snapshot_depth == 0:
+            self._journal.clear()
+
+    def _undo(self, entry: tuple) -> None:
+        """Apply a single journal entry's undo action."""
+        kind = entry[0]
+        if kind == "parent":
+            _, n, old = entry
+            if old is _MISSING:
+                self._parent.pop(n, None)
+            else:
+                self._parent[n] = old
+        elif kind == "rank":
+            _, n, old = entry
+            if old is _MISSING:
+                self._rank.pop(n, None)
+            else:
+                self._rank[n] = old
+        elif kind == "store":
+            _, n, old = entry
+            if old is _MISSING:
+                self._store.pop(n, None)
+            else:
+                self._store[n] = old
+        elif kind == "attrs":
+            _, cv, feat, old = entry
+            if old is _MISSING:
+                cv.attrs.pop(feat, None)
+            else:
+                cv.attrs[feat] = old
+        elif kind == "members":
+            _, sv, member = entry
+            sv.members.discard(member)
+        elif kind == "next_id":
+            _, old = entry
+            self._next_id = old
+        else:
+            raise AssertionError(f"unknown journal entry kind: {kind!r}")
 
     # --- Unification -------------------------------------------------------
 
@@ -384,15 +490,24 @@ class FGraph:
 
         Atomic: on failure the graph is restored to the state it held
         immediately before the call, via :meth:`snapshot` /
-        :meth:`rollback`. The snapshot is taken on entry and discarded
-        on success. Recursive child unifications proceed without
-        further snapshots; only the outermost call is wrapped, so a
-        single snapshot brackets the whole tree of child unifications.
+        :meth:`rollback`. The snapshot is committed on success
+        (via :meth:`_commit`) — mutations remain in the journal only
+        while an outer transaction is still outstanding. Recursive
+        child unifications proceed without further snapshots; a
+        single outer snapshot brackets the whole tree of child
+        unifications.
+
+        Fast path: when the two arguments already share a canonical
+        root, no mutation is possible and the snapshot is skipped.
         """
+        if self.find(a) == self.find(b):
+            return None
         snap = self.snapshot()
         err = self._unify_inner(a, b, path=())
         if err is not None:
             self.rollback(snap)
+        else:
+            self._commit(snap)
         return err
 
     def _unify_inner(
@@ -402,11 +517,11 @@ class FGraph:
         *,
         path: tuple[str, ...],
     ) -> Diagnostic | None:
-        """Non-atomic core of :meth:`unify`. Mutates the graph in place;
-        on failure the partial state is left intact (the public
-        :meth:`unify` rolls back the outer snapshot). Recurses on
-        itself, not on :meth:`unify`, so a single snapshot brackets
-        the whole tree of child unifications.
+        """Non-atomic core of :meth:`unify`. Mutates the graph in
+        place; on failure the partial state is left intact (the
+        public :meth:`unify` rolls back the outer snapshot). Recurses
+        on itself, not on :meth:`unify`, so a single snapshot
+        brackets the whole tree of child unifications.
         """
         ra = self.find(a)
         rb = self.find(b)
@@ -433,6 +548,9 @@ class FGraph:
                 )
             new_root = self._link(ra, rb)
             if new_root == ra:
+                if self._snapshot_depth:
+                    self._journal.append(("store", ra, _MISSING))
+                    self._journal.append(("store", rb, vb))
                 self._store[ra] = vb
                 self._store.pop(rb, None)
             return None
@@ -446,6 +564,9 @@ class FGraph:
                 )
             new_root = self._link(ra, rb)
             if new_root == rb:
+                if self._snapshot_depth:
+                    self._journal.append(("store", rb, _MISSING))
+                    self._journal.append(("store", ra, va))
                 self._store[rb] = va
                 self._store.pop(ra, None)
             return None
@@ -480,7 +601,12 @@ class FGraph:
             other_root = rb if new_root == ra else ra
             new_value = va if new_root == ra else vb
             other_value = vb if new_root == ra else va
-            self._store[new_root] = new_value
+            # ``_store[new_root]`` is already ``new_value`` (the value
+            # at the winning root pre-link), so the assignment is a
+            # no-op and we skip journalling it. Only the pop of the
+            # losing root's store entry is a real mutation.
+            if self._snapshot_depth:
+                self._journal.append(("store", other_root, other_value))
             self._store.pop(other_root, None)
 
             # Snapshot the overlap before mutating new_value.attrs so
@@ -490,8 +616,11 @@ class FGraph:
                 for feat in other_value.attrs
                 if feat in new_value.attrs
             ]
+            depth = self._snapshot_depth
             for feat, child_id in other_value.attrs.items():
                 if feat not in new_value.attrs:
+                    if depth:
+                        self._journal.append(("attrs", new_value, feat, _MISSING))
                     new_value.attrs[feat] = child_id
             for feat, left, right in overlap:
                 err = self._unify_inner(left, right, path=path + (feat,))
@@ -505,9 +634,17 @@ class FGraph:
         other_root = rb if new_root == ra else ra
         new_set = va if new_root == ra else vb
         other_set = vb if new_root == ra else va
-        self._store[new_root] = new_set
+        # ``_store[new_root]`` is already ``new_set`` — same no-op
+        # pattern as the ComplexValue case above.
+        depth = self._snapshot_depth
+        if depth:
+            self._journal.append(("store", other_root, other_set))
         self._store.pop(other_root, None)
-        new_set.members |= other_set.members
+        for m in other_set.members:
+            if m not in new_set.members:
+                if depth:
+                    self._journal.append(("members", new_set, m))
+                new_set.members.add(m)
         return None
 
     def _link(self, ra: NodeId, rb: NodeId) -> NodeId:
@@ -515,12 +652,20 @@ class FGraph:
         Returns the new root."""
         ranka = self._rank[ra]
         rankb = self._rank[rb]
+        depth = self._snapshot_depth
         if ranka < rankb:
+            if depth:
+                self._journal.append(("parent", ra, self._parent[ra]))
             self._parent[ra] = rb
             return rb
         if ranka > rankb:
+            if depth:
+                self._journal.append(("parent", rb, self._parent[rb]))
             self._parent[rb] = ra
             return ra
+        if depth:
+            self._journal.append(("parent", rb, self._parent[rb]))
+            self._journal.append(("rank", ra, self._rank[ra]))
         self._parent[rb] = ra
         self._rank[ra] = ranka + 1
         return ra

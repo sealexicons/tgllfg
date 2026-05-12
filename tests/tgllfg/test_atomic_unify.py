@@ -139,28 +139,35 @@ class TestSnapshotRollback:
         assert c not in g._parent
         assert c not in g._rank
 
-    def test_snapshot_independent_of_subsequent_mutations(self) -> None:
-        """A snapshot taken at time T must not be affected by mutations
-        between T and rollback; tests the defensive-copy contract."""
+    def test_rollback_restores_complex_attrs_to_pre_snapshot_keys(self) -> None:
+        """After arbitrary post-snapshot ``ComplexValue.attrs``
+        mutations, rollback restores the attrs to their pre-snapshot
+        key set. Replaces the C1 defensive-copy test — the journal-
+        based implementation in 6.A C5 has no separate snapshot copy
+        to introspect; the equivalent observable property is the
+        rollback semantics itself.
+        """
         g = FGraph()
         root = g.fresh()
-        # Allocate a ComplexValue at `root` so we can mutate its attrs.
-        child, err = g.resolve_path(root, ("F",))
+        _, err = g.resolve_path(root, ("F",))
         assert err is None
         snap = g.snapshot()
-        # Mutate the live graph's ComplexValue.attrs dict in place via
-        # a second resolve_path step.
+        # Mutate the live ComplexValue.attrs dict in place via a
+        # second resolve_path step.
         _, err = g.resolve_path(root, ("G",))
         assert err is None
-        # Snapshot's stored ComplexValue should still have just {"F"}.
-        snap_root = snap.store[root]
-        assert isinstance(snap_root, ComplexValue)
-        assert set(snap_root.attrs.keys()) == {"F"}
-        # After rollback, the live graph's ComplexValue is also {"F"}.
+        # Pre-rollback: the live ComplexValue has both F and G.
+        live_root_before = g.value(root)
+        assert isinstance(live_root_before, ComplexValue)
+        assert set(live_root_before.attrs.keys()) == {"F", "G"}
         g.rollback(snap)
-        live_root = g.value(root)
-        assert isinstance(live_root, ComplexValue)
-        assert set(live_root.attrs.keys()) == {"F"}
+        # Post-rollback: G removed, F preserved. The ComplexValue
+        # instance is the same object — journal-based rollback
+        # mutates in place via the undo log, preserving Python
+        # identity for downstream reentrancy.
+        live_root_after = g.value(root)
+        assert live_root_after is live_root_before
+        assert set(live_root_after.attrs.keys()) == {"F"}
 
     def test_multiple_snapshots_can_target_distinct_points(self) -> None:
         g = FGraph()
