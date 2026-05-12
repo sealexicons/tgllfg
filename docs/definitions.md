@@ -238,6 +238,7 @@ appear in the bottom section.
 | Occurs-check | `src/tgllfg/fstruct/graph.py` | Robinson 1965; Knight 1989 §2.4. |
 | Two-pass unification (defining → constraining) | `src/tgllfg/fstruct/unify.py:solve` | Kaplan & Bresnan 1982 §3.6. |
 | Atomic unification (snapshot / rollback) | `src/tgllfg/fstruct/graph.py:FGraph.unify` | Per-mutation undo journal; on failure the graph rewinds to its pre-call state. |
+| Functional uncertainty (regex-path evaluation) | `src/tgllfg/fstruct/fu.py:resolve_regex_for_read` | Kaplan & Zaenen 1989 §3 / Kaplan & Maxwell 1988; FSA traversal with visited-set; K&Z minimality clause picks shortest endpoint. |
 | Equation-language EBNF | `src/tgllfg/fstruct/equations.py` | Kaplan & Bresnan 1982 (notation); Bresnan 2001 ch. 4. |
 
 ### LFG semantics
