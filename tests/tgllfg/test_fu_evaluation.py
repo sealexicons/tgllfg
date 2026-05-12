@@ -470,19 +470,121 @@ class TestConstrainingEqWithFU:
             f"unexpected blocking: {_blocking(result)}"
         )
 
-    def test_off_path_still_deferred(self) -> None:
-        """C3 doesn't yet handle off-path; the constraining-eq still
-        surfaces a ``deferred`` informational diagnostic via the
-        plain-path resolver. C4 flips this. (LHS is defined here so
-        the constraint-failed branch on undefined-lhs doesn't fire
-        before the off-path RHS gets evaluated.)"""
+    def test_off_path_holds_admits_branch(self) -> None:
+        """Phase 6.B C4: off-path ``(→ TENSE) =c 'PAST'`` holds at
+        the intermediate XCOMP; the FSA branch is admitted, the
+        deeper SUBJ matches TOPIC, and the constraining equation
+        succeeds. Replaces the C3 ``test_off_path_still_deferred``."""
         n = CNode(
             label="N",
             equations=[
-                "(↑ TOPIC) = 'X'",
+                "(↑ TOPIC) = 'shared'",
+                "(↑ XCOMP TENSE) = 'PAST'",
+                "(↑ XCOMP SUBJ) = 'shared'",
+                "(↑ TOPIC) =c (↑ XCOMP*<(→ TENSE) =c 'PAST'> SUBJ)",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_off_path_fails_prunes_branch(self) -> None:
+        """Off-path ``(→ TENSE) =c 'PAST'`` fails at the intermediate
+        XCOMP (TENSE is 'PRES'); that branch is pruned during FSA
+        traversal, no endpoint matches the LHS, and the constraining
+        equation fails."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'shared'",
+                "(↑ XCOMP TENSE) = 'PRES'",
+                "(↑ XCOMP SUBJ) = 'shared'",
                 "(↑ TOPIC) =c (↑ XCOMP*<(→ TENSE) =c 'PAST'> SUBJ)",
             ],
         )
         result = solve(n)
         kinds = {d.kind for d in result.diagnostics}
-        assert "deferred" in kinds
+        assert "constraint-failed" in kinds
+
+    def test_off_path_can_reference_matrix(self) -> None:
+        """Off-path constraints can mix ``→`` (intermediate) with
+        ``↑`` (matrix). Here ``(→ INT_TAG) =c (↑ MAT_TAG)`` checks
+        that the intermediate's INT_TAG equals the matrix's MAT_TAG.
+        """
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'shared'",
+                "(↑ MAT_TAG) = 'M'",
+                "(↑ XCOMP INT_TAG) = 'M'",
+                "(↑ XCOMP SUBJ) = 'shared'",
+                (
+                    "(↑ TOPIC) =c "
+                    "(↑ XCOMP*<(→ INT_TAG) =c (↑ MAT_TAG)> SUBJ)"
+                ),
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_off_path_matrix_reference_mismatch_fails(self) -> None:
+        """Same shape as above but the intermediate's INT_TAG diverges
+        from the matrix's MAT_TAG; off-path fails, branch pruned,
+        constraint fails."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'shared'",
+                "(↑ MAT_TAG) = 'M'",
+                "(↑ XCOMP INT_TAG) = 'OTHER'",
+                "(↑ XCOMP SUBJ) = 'shared'",
+                (
+                    "(↑ TOPIC) =c "
+                    "(↑ XCOMP*<(→ INT_TAG) =c (↑ MAT_TAG)> SUBJ)"
+                ),
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
+
+    def test_off_path_at_multiple_chain_depths(self) -> None:
+        """Off-path is checked at every intermediate XCOMP. With a
+        2-deep XCOMP chain where both intermediates have TENSE=PAST,
+        the chain admits and the constraint succeeds at depth 2."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'shared'",
+                "(↑ XCOMP TENSE) = 'PAST'",
+                "(↑ XCOMP XCOMP TENSE) = 'PAST'",
+                "(↑ XCOMP XCOMP SUBJ) = 'shared'",
+                "(↑ TOPIC) =c (↑ XCOMP*<(→ TENSE) =c 'PAST'> SUBJ)",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"unexpected blocking: {_blocking(result)}"
+        )
+
+    def test_off_path_breaks_chain_mid_depth(self) -> None:
+        """A 2-deep XCOMP chain where the *second* intermediate has
+        TENSE=PRES; off-path passes at depth 1 (PAST) but fails at
+        depth 2 (PRES), so no depth-2 endpoint. No SUBJ at depth 1.
+        Constraint fails."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = 'shared'",
+                "(↑ XCOMP TENSE) = 'PAST'",
+                "(↑ XCOMP XCOMP TENSE) = 'PRES'",
+                "(↑ XCOMP XCOMP SUBJ) = 'shared'",
+                "(↑ TOPIC) =c (↑ XCOMP*<(→ TENSE) =c 'PAST'> SUBJ)",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
