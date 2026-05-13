@@ -1291,3 +1291,75 @@ def register_rules(rules: list[Rule]) -> None:
                     "(↓4 REL-PRO) =c (↓4 SUBJ)",
                 ],
             ))
+
+
+    # --- Phase 6.E Commit 2: free relative kung-S as DP (§18.1 L93) ---
+    #
+    # ``Galit ako sa kung sino ang nag-record.``
+    #     "I'm angry at whoever recorded it."         (DAT-OBL)
+    # ``Tumakbo ang kung sino ang gutom.``
+    #     "Whoever was hungry ran."                   (NOM-SUBJ)
+    # ``Bumili ako ng kung ano ang mura.``
+    #     "I bought whatever was cheap."              (GEN-OBJ)
+    #
+    # Closes §18.1.2 L93. A ``kung``-headed wh-clause functions as a
+    # non-COMP NP argument of the matrix predicate — the free-relative
+    # reading ("whoever did X" / "whatever was X-ed"). Parallel to the
+    # Phase 5e Commit 5 headless / free relative rule above, but the
+    # body is a kung-S (``S_INTERROG_COMP``) rather than a SUBJ-gapped
+    # ``S_GAP``.
+    #
+    # **Structure**: ``CASE-MARKER[DEM=false] S_INTERROG_COMP``. The
+    # bare case-marker (``ang`` for NOM via ``DET``; ``ng`` for GEN,
+    # ``sa`` for DAT via ``ADP``) plus the kung-wrapped wh-cleft forms
+    # the free-relative NP. ``DEM=false`` excludes demonstrative DET /
+    # ADP entries (``ito`` / ``iyan`` / ``iyon``); the morph analyzer
+    # default-fills ``DEM=false`` on non-demonstrative DET / ADP
+    # entries so the matcher accepts ``ang`` / ``ng`` / ``sa`` here.
+    #
+    # **F-structure**: ``PRED='PRO'`` (the free-relative head),
+    # ``FREE_REL=true`` (marker for downstream consumers),
+    # ``WH_LEMMA`` lifted from the inner S (the wh-pivot's lemma).
+    # The kung-S sits in the head NP's ``ADJ`` set as a clausal
+    # modifier. ``MARKER`` propagates from the case-marker daughter.
+    #
+    # The constraining equations on ``↓2`` gate the rule to the
+    # **wh-variant** of ``S_INTERROG_COMP`` (Phase 5i Commit 8):
+    # ``COMP_TYPE=INTERROG`` plus ``Q_TYPE=WH``. The yes/no-with-ba
+    # variant (Phase 5n.B Commit 11) sets ``COMP_QTYPE=YES_NO`` and
+    # ``Q_TYPE=YES_NO`` on the f-structure; the bare-declarative
+    # variant (Phase 5n.B Commit 11) sets ``COMP_QTYPE=YES_NO`` and
+    # has no ``Q_TYPE``. The ``(↓2 Q_TYPE) =c 'WH'`` check fails for
+    # both alternative variants, blocking spurious free-relative
+    # parses on declarative or yes/no kung-S.
+    #
+    # **Disambiguation from indirect-Q kung-S** (Phase 5i Commit 8 +
+    # Phase 5n.A Commit 29): selectional. The matrix predicate's
+    # argument frame selects either ``S_INTERROG_COMP`` (COMP-binding
+    # under KNOW-class / ASK-class) or a case-marked ``NP`` (this
+    # rule). Both parses coexist on surfaces where the matrix frame
+    # admits both shapes — the free-relative path is disjoint from
+    # the indirect-Q path at the c-structure boundary.
+    #
+    # Design rationale + scope: ``docs/analysis-choices.md``
+    # "Phase 6.E Commit 1: L93 free relative kung-S as DP — design".
+    for case in ("NOM", "GEN", "DAT"):
+        head_cat = (
+            f"DET[CASE={case}, DEM=false]"
+            if case == "NOM"
+            else f"ADP[CASE={case}, DEM=false]"
+        )
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [head_cat, "S_INTERROG_COMP"],
+            [
+                "(↑ PRED) = 'PRO'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ FREE_REL) = true",
+                "(↑ WH_LEMMA) = ↓2 WH_LEMMA",
+                "(↑ MARKER) = ↓1 MARKER",
+                "↓2 ∈ (↑ ADJ)",
+                "(↓2 COMP_TYPE) =c 'INTERROG'",
+                "(↓2 Q_TYPE) =c 'WH'",
+            ],
+        ))

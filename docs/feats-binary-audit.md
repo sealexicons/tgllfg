@@ -27,7 +27,7 @@ inspection: comment text containing capitalized words followed by
 `# wh-Q polysemy ...` comment), and prefix-matching artifacts
 (`RESULT` matched a value `result` from prose) are dropped.
 
-## The 50 binary feats — migration targets
+## The 51 binary feats — migration targets
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
 Python `True`/`False`. Grammar rule patterns use the `[X]` shorthand
@@ -57,6 +57,7 @@ negative.
 | `EXISTENTIAL` | clause is existential (`may`, `mayroon`) |
 | `EXTRACTED` | NP-of-extraction marker |
 | `FRAGMENT_HOST` | clause licenses NP-fragment answers |
+| `FREE_REL` | NP is a free-relative kung-S head (Phase 6.E) |
 | `GAPPING` | matrix carries a gapping conjunction |
 | `HAVE` | possessive predicate marker |
 | `HUMAN` | NP/PRON is human-class |
