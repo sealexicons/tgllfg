@@ -13515,3 +13515,132 @@ it (it is redundant under Q[DUAL] daughter + strict matcher).
   ``=c`` sites that *could* be dropped under the strict matcher
   remain in place; the plan-of-record §4.2 limits 6.H to the 2
   explicitly-tagged sites.
+
+### What landed (2026-05-12)
+
+Phase 6.H landed in 4 numbered commits (C1 design appendix +
+C2 L33 grammar + tests + C3 L85+ stress + C4 ``=c`` cleanup) +
+C5 closing docs sweep. test-fast: 7 198 passed + 1 xfailed
+(~68s). test-slow: 19 passed (~20s). test-both combined:
+7 217 + 1 xfailed (~68s). check: clean on 313 source files.
+
+#### L33 — three-variant split, not two
+
+The C1 sketch had a two-variant split on the base float rule
+(bare Q vs. Q[DUAL=true] with ``(↑ SUBJ NUM) =c 'PL'``). The
+single ``=c 'PL'`` constraint zero-parsed five test-corpus
+fixtures using nominal SUBJs (``Kumain ang bata pareho.`` /
+``Kumain ang bata kapwa.`` and friends). Tagalog NPs without
+``mga`` are number-neutral — the bare NP ``ang bata`` has no
+NUM feat in its f-structure, so strict ``=c 'PL'`` fails.
+
+C2 landed a **three-variant split**:
+
+1. Bare Q (no DUAL): unconstrained NUM. Covers ``lahat`` /
+   ``marami`` / ``konti``.
+2. Q[DUAL=true] + PL antecedent: ``(↑ SUBJ NUM) =c 'PL'``.
+   Covers PL pronouns (``sila`` / ``kami`` / ``tayo`` /
+   ``kayo``) and PL-marked cardinals (``ang dalawang bata``
+   projects NUM=PL).
+3. Q[DUAL=true] + NUM-unmarked antecedent: ``¬ (↑ SUBJ NUM)``.
+   Covers Tagalog's number-neutral bare NPs.
+
+SG antecedents fail both DUAL variants — variant 2 wants PL,
+variant 3 wants NUM-undefined. The Phase 5f Commit 23 clause-
+initial rules' SUBJ daughter is already ``PRON[CASE=NOM]``
+(pronouns always have NUM set), so only ``(↑ SUBJ NUM) =c
+'PL'`` is needed there (no three-variant split).
+
+#### Predicative-ADJ polysemy is structurally out of L33 scope
+
+``pareho`` and ``kapwa`` are polysemous — also lex'd in
+``adjectives.yaml`` as ``ADJ[EQUATIVE=true, COMP_DEGREE=
+EQUATIVE]`` (Phase 5h Commit 2 equative-identity predicate)
+in addition to the Q[DUAL] particle entry. After C2,
+``*Pareho siyang kumain.`` still produces 2 parses — both via
+the predicative-ADJ rule (``S → ADJ NP``) with ``pareho`` as
+the predicate and ``siyang kumain`` as a pronoun-headed RC
+NP ("the one who ate is the same"). PRED is ``'ADJ <SUBJ>'``
+(literal), not ``'kumain <SUBJ>'``. Structurally distinct
+from the Q-floated reading; the L33 fix targets only the
+Q-floated path.
+
+The test helpers ``_has_dual_q_reading`` /
+``_count_dual_q_parses`` in
+``tests/tgllfg/test_phase6_floated_q_agreement.py`` filter
+for the Q-floated reading (matrix's ``ADJ`` contains a
+``DUAL=true`` Q member). The filter is the right shape:
+the predicative-ADJ rule licenses parses like ``Pareho ang
+kanilang sapatos.`` "their shoes are the same" legitimately,
+and a count-based test would mis-handle the polysemy. Filter
+by f-structure shape, not parse count.
+
+Recorded as Out-of-scope item §5 alongside the original five
+(other floated Q's, DU NUM, cross-clausal dual-Q agreement,
+Q gender / case, broader ``=c`` cleanup).
+
+#### ``mga`` NP-pluralization gap surfaced and formally tracked
+
+L33 closure probing surfaced a pre-existing gap: ``Kumain ang
+mga bata.`` zero-parses today. ``mga`` is lex'd as
+``PART[PLURAL_MARKER=true]`` (Phase 5f Commit 14
+``particles.yaml``) and the NP-internal pluralization rule
+(``DET PART[mga] N`` producing NP[NUM=PL]) was deferred at
+that time as "substantial scope" (``docs/analysis-choices.md``
+Phase 5f Commit 14 design appendix, line 7187).
+
+This gap was documented only in-source until 6.H surfaced it
+during L33 probe regression analysis. Phase 6.H C5 closing
+docs adds a formal entry to ``.claude/plans/tgllfg-out-of-
+scope.md`` §18.1.1 Corpus-deferred. Canonical PL forms parse
+fine today via cardinal-NP (``ang dalawang bata``) and PL
+pronouns; revisit when corpus pressure surfaces unconstrained
+``mga`` NP-pluralization as motivating.
+
+The L33 fix specifically accommodates ``mga``-marked NPs once
+the gap closes: variant 2 (``(↑ SUBJ NUM) =c 'PL'``) fires
+when the NP projects NUM=PL via ``mga``, parallel to the
+cardinal-NP case verified today.
+
+#### Architectural commitments worth carrying forward
+
+- **Rule-split for NUM agreement on number-neutral NPs**. Where
+  a constraint should fire on "PL or unmarked" but not "SG",
+  split into two rule variants (``=c 'PL'`` + ``¬ NUM``) rather
+  than seek a NUM-disjunction operator. The split is
+  observably cheap (post-Phase-6.C strict matcher's predict-
+  time pruning means non-matching variants don't proliferate
+  chart entries).
+- **Filter by f-structure shape, not parse count, when
+  polysemy is in play**. Lex polysemy (``pareho`` Q vs. ADJ)
+  produces multiple legal parses via different rules; a
+  count-based agreement test conflates the rule paths. Filter
+  on the agreement-relevant f-structure shape (here: ADJ
+  set membership of the DUAL Q).
+- **Surface deferrals while probing**. The ``mga``
+  NP-pluralization gap was tracked only as a source comment
+  for ~8 days before L33 probing surfaced it. The closing-docs
+  sweep is the right time to fold informal source-comment
+  deferrals into the formal §18 inventory.
+
+#### Final 6.H status
+
+- test-fast: 7 198 passed + 1 xfailed (~68s) — ``not postgres
+  and not slow``. +24 from 6.G baseline (21 new L33 + 3 new
+  L85+ stress).
+- test-slow: 19 passed (~20s) — ``slow`` only.
+- test-both: 7 198 + 19 = 7 217 total passed + 1 xfailed (~68s
+  combined).
+- check: clean on 313 source files.
+
+No deferrals introduced. Recorded out-of-scope items (other
+floated Q's, DU NUM, cross-clausal dual-Q agreement, Q
+gender / case, broader ``=c`` cleanup, predicative-ADJ
+polysemy) are structurally not L33 cases. The ``mga``
+NP-pluralization gap was promoted from informal source-comment
+deferral to formal §18.1.1 Corpus-deferred entry as part of
+this sweep.
+
+After 6.H, §18.1.2 inventory shrinks from 2 → 1 (only L105
+remains, closes in 6.I). After 6.I + 6.J, §18.1.2 closes
+entirely.
