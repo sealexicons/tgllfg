@@ -12544,3 +12544,290 @@ unrelated to 6.E). Lint clean (311 source files). No deferrals
 introduced; the in-situ wh and DAT-pivot wh-PRON items
 itemized in *Out of scope* above carry forward to corpus-
 pressure follow-ups, not Phase 6 work.
+
+## Phase 6.F Commit 1: L104 sarili anaphora via binding equation — design
+
+**Date:** 2026-05-12. **Status:** active (design commit; grammar /
+test lands in 6.F C2-C3).
+
+### Goal
+
+Close §18.1.2 L104 (*anaphora resolution / binding for
+``sarili``*) by adding a binding equation that makes the
+reflexive ``sarili``'s antecedent reentrant with its binder.
+The Phase 5m Commit 1 / Commit 6 work established the lex
+entry (``sarili`` is a NOUN with ``SEM_CLASS=REFLEXIVE``) and
+the c-structure composition (``ang sarili NIYA`` parses as a
+regular ``D + N + GEN-PRON`` NP via existing Phase 4 grammar).
+The Phase 5m closing commits pinned the absence of binding —
+``tests/tgllfg/test_phase5m_reflexive_sarili.py::TestAnaphora\
+Deferred::test_no_antecedent_reentrancy_today`` asserts
+``subj.feats.get("ANTECEDENT") is None``. Phase 6.F flips that
+pin: the f-structure of a reflexive NP gets an ``ANTECEDENT``
+feat pointing at the binder.
+
+### Tagalog binding theory: actor-binder, not pivot-binder
+
+Tagalog reflexive binding diverges from English-style "SUBJ
+binds reflexive in its domain" in a load-bearing way. Per
+Kroeger 1993 §2.3 (and the post-Kroeger LFG tradition adopted
+in ``project_tgllfg_phase4_status``'s voice commitments), the
+reflexive ``sarili`` is bound by the **actor** of the matrix
+clause, not by the grammatical pivot (the ``ang``-marked NP /
+SUBJ). The actor surfaces at different GFs across voices:
+
+- **AV voice**: actor = ``SUBJ`` (e.g., *Nakita siya ng aso.*
+  is structurally OV-like, but plain AV-transitives like
+  *Kumain siya ng kanin.* have actor = SUBJ).
+- **OV / DV / IV voice**: actor = the non-pivot GEN-marked
+  argument. In tgllfg's current paradigm this surfaces as
+  ``OBJ`` for plain transitives (*Nakita niya ang sarili
+  niya.* has SUBJ = sarili, OBJ = niya) or ``OBJ-AGENT`` for
+  multi-argument frames (causatives, applicatives).
+
+The pinned test case *Nakita niya ang sarili niya.* is OV-
+patterned: ``ang sarili niya`` is the SUBJ pivot (patient),
+``niya`` is the OBJ (actor / binder). The binding identifies
+``SUBJ.ANTECEDENT = OBJ``.
+
+### Binding-equation form
+
+The Phase 6.B Commit 5 binding-equation context wires
+``_eval_defining_eq`` to support regex-RHS defining
+equations: the resolver enumerates endpoints, K&Z 1989 §3
+minimality picks the shortest-depth canonical endpoint, and
+``graph.unify(lhs_node, target)`` creates the reentrancy
+(see ``docs/fu-evaluation.md`` §6.5). This makes the
+binding-equation site work out of the box.
+
+The local-domain binding equation:
+
+```text
+(↑ SUBJ ANTECEDENT) = (↑ {SUBJ | OBJ | OBJ-AGENT})
+```
+
+read: "the ANTECEDENT of the matrix SUBJ is the f-structure
+reached by traversing SUBJ, OBJ, or OBJ-AGENT from the matrix
+root." The K&Z alternation ``{SUBJ | OBJ | OBJ-AGENT}`` is a
+single-step regex path; the resolver evaluates it against the
+matrix f-graph, enumerates the GFs that are present, and
+picks the shortest path that satisfies the constraint —
+crucially, the path must NOT terminate at the reflexive
+itself (the self-binding case).
+
+**Cross-clausal extension (XCOMP body)**:
+
+```text
+(↑ SUBJ ANTECEDENT) = (↑ XCOMP* {SUBJ | OBJ | OBJ-AGENT})
+```
+
+navigates through zero-or-more XCOMP traversals to reach the
+binder. Per tgllfg's per-depth REL-PRO threading at
+``cfg/control.py`` S_XCOMP rules, the matrix SUBJ is already
+structure-shared with the XCOMP body's SUBJ at every depth;
+the cross-clausal form picks up the matrix actor (typically
+SUBJ in PSYCH-control, OBJ in OV-control) regardless of
+embedding depth.
+
+### Where the equation lives: matrix-rule placement
+
+The binding equation is placed on the **matrix S rule** where
+the reflexive surfaces as an argument. ↑ in the equation is
+the matrix S; the equation accesses ``↑.SUBJ`` (containing
+sarili) and ``↑.OBJ`` / ``↑.OBJ-AGENT`` (the binder). This
+avoids the inside-out FU pattern (which tgllfg's resolver
+doesn't natively support — see *Out of scope* below for the
+inside-out-FU stay).
+
+To keep the equation from firing on non-reflexive SUBJs, it's
+guarded by a **lemma-or-SEM_CLASS gate** at the f-structure
+level — see *Implementation note* below for the tagging
+question (lift SEM_CLASS to the outer NP, or gate on LEMMA).
+
+### Self-binding exclusion
+
+The naive alternation ``{SUBJ | OBJ | OBJ-AGENT}`` would
+enumerate SUBJ as a valid endpoint at depth 1 — and SUBJ is
+the reflexive itself. Unifying ``SUBJ.ANTECEDENT`` with
+``SUBJ`` would create a cycle (the ANTECEDENT pointer leads
+back to the holder of ANTECEDENT). Per ``fstruct/graph.py``'s
+occurs-check, this would be rejected at unify time.
+
+The K&Z 1989 §3 minimality clause picks the *shortest valid*
+endpoint. If SUBJ is invalidated by the occurs-check, the
+resolver should fall through to OBJ / OBJ-AGENT. **Phase 6.B's
+resolver does not currently retry on occurs-check failure** —
+the resolver returns endpoints shortest-first and the
+``_eval_defining_eq`` site unifies with the first. If that
+fails, the equation reports `no endpoint`.
+
+Two paths to fix the self-binding case:
+
+1. **Resolver-side retry**: extend ``resolve_regex_for_read``
+   to filter endpoints that would cause cyclic unification.
+   Surfaced as a 6.F C2 implementation question; if
+   substantial, deferred to a Phase 7+ unifier extension.
+2. **Equation-side exclusion**: write the binding as two
+   parallel rules that exclude the self-binding case
+   syntactically — i.e., the rule that fires when ``sarili``
+   is at SUBJ binds to OBJ / OBJ-AGENT only (excluding SUBJ
+   from the alternation). For the canonical OV pattern, this
+   is just ``(↑ SUBJ ANTECEDENT) = (↑ OBJ)``.
+
+The C2 work will start with path 2 (equation-side exclusion)
+because it doesn't require unifier changes; the resolver-side
+retry can land in a follow-on if cross-clausal cases need it.
+
+### Tagging the binding site: SEM_CLASS lift vs. LEMMA gate
+
+The Phase 5m lex entry sets ``SEM_CLASS=REFLEXIVE`` on the
+NOUN ``sarili``. The c-structure projection lifts this to the
+N daughter via ``N → NOUN`` (``(↑) = ↓1``), but the outer
+NP's projection ``NP → DET + N`` only lifts ``PRED`` and
+``LEMMA`` from the N daughter — ``SEM_CLASS`` stays on the N
+node and does **not** appear on the outer NP's f-structure.
+
+The matrix rule's binding-equation gate therefore can't be
+``(↑ SUBJ SEM_CLASS) =c 'REFLEXIVE'`` without first lifting
+SEM_CLASS through the NP projection. Two options:
+
+- **Option A: Lift SEM_CLASS at the NP projection**. Add
+  ``(↑ SEM_CLASS) = ↓2 SEM_CLASS`` to the ``NP → DET + N``
+  rule (and parallel D + N rules). Consistent with how
+  ``PRED`` / ``LEMMA`` already lift. Cost: minor — modifies a
+  rule that fires very often; no expected regressions because
+  SEM_CLASS isn't currently consumed downstream of NP.
+- **Option B: Gate on LEMMA at the matrix level**. Replace
+  the SEM_CLASS gate with ``(↑ SUBJ LEMMA) =c 'sarili'``.
+  Narrower (only fires on the exact lemma), but lexically
+  brittle — a future ``sariling-katauhan`` "self-personhood"
+  multiword reflexive wouldn't compose.
+
+Recommendation: **Option A** (SEM_CLASS lift). The
+SEM_CLASS feat is already declared as a meaningful tag in
+Phase 5m's planning notes, and lifting it makes downstream
+analytics (binding theory, anaphora resolution) more general.
+
+### Sample binding for the pinned test
+
+For *Nakita niya ang sarili niya.* (OV-pattern):
+
+```text
+Matrix S f-structure:
+   PRED  = 'KITA <SUBJ, OBJ>'
+   VOICE = 'AV'         ; per nakita's lex entry
+   SUBJ  = ↓3 (ang sarili niya)
+       PRED       = 'NOUN(↑ FORM)'
+       LEMMA      = 'sarili'
+       CASE       = 'NOM'
+       SEM_CLASS  = 'REFLEXIVE'   ; lifted at NP projection (Option A)
+       POSS       = ↓3.NP[CASE=GEN]   (the inner GEN-PRON niya, id=30)
+       ANTECEDENT = ↑.OBJ            ; set by binding equation, id=22
+   OBJ   = ↓2 (niya)
+       NUM        = 'SG'
+       CASE       = 'GEN'
+       is_clitic  = true
+```
+
+After the binding equation fires, ``SUBJ.ANTECEDENT.id ==
+OBJ.id`` — the deferred-test invariant flips from "no
+ANTECEDENT" to "ANTECEDENT == OBJ".
+
+### What's in scope for 6.F
+
+- **NP-projection SEM_CLASS lift**: add to the NP-from-D + N
+  rule (and parallel rules) so SEM_CLASS surfaces on the
+  outer NP's f-structure.
+- **Local-domain binding equation** on the canonical
+  transitive matrix S rule (V + GEN-NP + NOM-NP):
+  ``(↑ SUBJ ANTECEDENT) = (↑ OBJ)`` when SUBJ.SEM_CLASS ==
+  REFLEXIVE.
+- **Two-rule split or constraining-gate** for the
+  SEM_CLASS=REFLEXIVE branch — TBD by the rule-engine's
+  preference; the equivalent of a "rule variant fires on
+  reflexive SUBJ" pattern.
+- **Cross-clausal binding** (sarili across XCOMP boundary
+  in PSYCH-control like *Gusto kong makita ang sarili ko.*)
+  — the per-depth control threading propagates the binding
+  via SUBJ structure-sharing; verified in C3.
+- **Pinned-test flip**: ``test_no_antecedent_reentrancy_\
+  today`` flips from ``is None`` to ``is not None`` AND
+  reentrancy with the binder.
+- **Extended test corpus**: sarili at SUBJ (OV), at OBJ
+  (AV), with 1sg / 2sg / 3sg / 3pl GEN-PRON possessor
+  agreeing with the binder.
+
+### What's out of scope for 6.F (corpus-pressure / Phase 7+)
+
+- **Inside-out FU designators** (``((SUBJ ↑) GF)``-style).
+  tgllfg's FU resolver is outside-in only (read regex paths
+  from a base node down). Adding inside-out support is a
+  Phase 7+ unifier extension. Phase 6.F sidesteps by placing
+  binding equations on matrix rules.
+- **Resolver-side cyclic-endpoint pruning**. The K&Z 1989 §3
+  minimality clause as currently implemented in
+  ``resolve_regex_for_read`` returns shortest-first endpoints
+  without retrying on occurs-check failure. Phase 6.F C2
+  works around via equation-side exclusion of the self-
+  binding case. Resolver-side filtering remains Phase 7+.
+- **Cross-COMP binding** (binding through a COMP-bound
+  na-clause, e.g., *Sinabi niya na nakita niya ang sarili
+  niya.*). Tagalog binding theory says reflexives don't
+  cross finite-clause boundaries; the resolver should NOT
+  enumerate through COMP. Verified absent in the regex path
+  (no COMP traversal in the binding path).
+- **Reciprocal ``magkakapatid``-style binding** (multi-
+  argument reciprocals). Separate construction; not in §18.1.
+- **Binding through PP-internal sarili** (e.g., *Tumakbo si
+  Maria papunta sa sarili niya.* "Maria ran toward
+  herself"). The papunta-PP wraps the sarili NP in an OBL
+  GF that the matrix rule doesn't directly see; binding
+  through PP-OBL likely needs a separate rule variant or
+  the inside-out FU extension. Deferred to corpus pressure.
+- **HUMAN feat propagation between binder and bindee**.
+  Coherence checks (binder must be HUMAN if reflexive is
+  HUMAN, etc.) are downstream of binding; not in scope.
+
+### Architectural commitments worth carrying forward
+
+- **Tagalog binding is actor-not-pivot**. Per Kroeger 1993,
+  the reflexive's binder is the actor (SUBJ in AV, OBJ /
+  OBJ-AGENT in non-AV). All binding equations in 6.F (and
+  Phase 7+ binding rules for ``ibang-tao`` / etc.) follow
+  this rule.
+- **Binding-equation context (Phase 6.B C5) is the natural
+  carrier**. Defining-equation with regex RHS is the K&Z
+  binding shape; the resolver enumerates endpoints and the
+  unifier creates the reentrancy via ``graph.unify``. 6.F is
+  the first Tagalog-grammar consumer of this code path.
+- **SEM_CLASS lifts at the NP boundary**. The Phase 5m
+  diagnostic-tag claim is generalized to "lifted at NP, used
+  by binding gates". Future SEM_CLASS-based gating (e.g., for
+  ``walang sinuman`` PRON-headed RCs, ``mismo`` emphatic
+  reflexives, etc.) reuses the lifted path.
+- **No inside-out FU for 6.F**. The matrix-rule placement
+  is sufficient for local-domain binding and works in
+  cross-clausal cases via the existing per-depth threading.
+  Inside-out FU stays parked as a Phase 7+ unifier extension
+  motivated by future binding work (long-distance ``ibang-
+  tao``, picture-NP binding) if those surface in corpus.
+
+### Cross-references
+
+- Plan-of-record §5.6 (``.claude/plans/tgllfg-phase-6.md``).
+- K&Z 1989 §3 (``docs/references/KZ89.pdf``); binding-via-FU
+  discussion is implicit in their TOPIC = (TOPIC GF) form.
+- Phase 5m Commit 1 (``data/tgl/nouns.yaml`` ``sarili`` lex
+  entry; ``SEM_CLASS=REFLEXIVE``).
+- Phase 5m Commit 6 (``tests/tgllfg/test_phase5m_\
+  reflexive_sarili.py``; ``TestAnaphoraDeferred`` pinned
+  test for flipping).
+- Phase 6.B Commit 5 (``src/tgllfg/fstruct/unify.py``
+  ``_eval_defining_eq`` binding-equation context;
+  ``docs/fu-evaluation.md`` §6.5).
+- Phase 6.D Commit 2 (the per-depth REL-PRO threading at
+  S_XCOMP that 6.F reuses for cross-clausal binding).
+- Kroeger 1993 §2.3 — Tagalog binding theory: actor binds
+  reflexive, not pivot.
+- Ramos 1971 — Tagalog binding domains; secondary reference.
+- §18.1.2 L104 entry — closed by 6.F.
