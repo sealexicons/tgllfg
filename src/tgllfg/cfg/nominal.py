@@ -61,13 +61,38 @@ def register_rules(rules: list[Rule]) -> None:
     # determiners (no DEIXIS feature; CASE/MARKER stay consistent
     # with the rule's case constraint) and lifts demonstrative
     # deixis onto the matrix without per-deixis rule explosion.
+    # Phase 6.G Commit 2: SHARE+SHARE pattern (L32). The NP's
+    # f-structure unifies with BOTH the case-marker daughter (↓1)
+    # and the N daughter (↓2) — propagating CASE/MARKER/DEM from
+    # the marker and PRED/LEMMA/SEM_CLASS/SEASON/any-N-internal-
+    # modifier-feats from N onto the matrix NP, without empty-
+    # f-node pollution. The explicit ``(↑ PRED) = ↓2 PRED`` and
+    # ``(↑ LEMMA) = ↓2 LEMMA`` lifts become implicit via the
+    # share — dropped. See ``docs/analysis-choices.md`` "Phase
+    # 6.G Commit 1" for the empty-f-node analysis.
+    #
+    # **N-level-RC exclusion** (``¬ (↓2 N_RC)``). The Phase
+    # 5n.A C8 N-level RC rule (``cfg/extraction.py``: ``N → N
+    # PART[LINK] S_GAP``) was added for existential bare-N RCs
+    # (``May bahay na nasa bundok``). Under SHARE+SHARE its
+    # output N would feed the simple NP rule, producing a parse
+    # that duplicates the canonical NP-level RC wrap (Phase 4
+    # §7.5). The N-level RC marks its output with ``N_RC = true``
+    # (a binary feat declared in ``core/feats.py BINARY_FEATS``);
+    # this simple NP rule's ``¬ (↓2 N_RC)`` blocks it from
+    # consuming N-level-RC'd Ns, leaving the NP-level RC path as
+    # the unique surface route for case-marked NP-headed RCs.
+    # (Negative-existential on a tag feat works at pass-2 because
+    # the tag feat is set by the N-level RC's own defining
+    # equation; the canonical path's NP-level RC adds ADJ but
+    # never N_RC, so the two paths are distinguishable at pass 2.)
     rules.append(Rule(
         "NP[CASE=NOM]",
         ["DET[CASE=NOM]", "N"],
         [
             "(↑) = ↓1",
-            "(↑ PRED) = ↓2 PRED",
-            "(↑ LEMMA) = ↓2 LEMMA",
+            "(↑) = ↓2",
+            "¬ (↓2 N_RC)",
         ],
     ))
     rules.append(Rule(
@@ -75,8 +100,8 @@ def register_rules(rules: list[Rule]) -> None:
         ["ADP[CASE=GEN]", "N"],
         [
             "(↑) = ↓1",
-            "(↑ PRED) = ↓2 PRED",
-            "(↑ LEMMA) = ↓2 LEMMA",
+            "(↑) = ↓2",
+            "¬ (↓2 N_RC)",
         ],
     ))
     rules.append(Rule(
@@ -84,8 +109,8 @@ def register_rules(rules: list[Rule]) -> None:
         ["ADP[CASE=DAT]", "N"],
         [
             "(↑) = ↓1",
-            "(↑ PRED) = ↓2 PRED",
-            "(↑ LEMMA) = ↓2 LEMMA",
+            "(↑) = ↓2",
+            "¬ (↓2 N_RC)",
         ],
     ))
 

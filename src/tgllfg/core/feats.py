@@ -57,6 +57,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "MIRATIVE",
         "MODAL",
         "MODAL_STANDALONE",
+        "N_RC",
         "NEG_TAG",
         "ORDINAL",
         "ORTHOGRAPHIC_TERMINATOR",

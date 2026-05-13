@@ -278,20 +278,20 @@ class TestCrossClausalDeferred:
 # === SEM_CLASS=REFLEXIVE on morph layer ==============================
 
 
-class TestSemClassReflexiveOnMorph:
-    """The Commit 1 lex tags ``sarili`` with ``SEM_CLASS=REFLEXIVE``,
-    available to grammar rules via constraining equations (none in
-    Phase 5m; Phase 6 binding uses it). The feat does NOT propagate
-    to f-structure — consistent with Phase 5f SEM_CLASS-tagged nouns
-    (``beses`` / ``ulit`` / ``doble``)."""
+class TestSemClassReflexiveOnFStructure:
+    """Phase 6.G C2 (§18.1.2 L32): the simple NP-from-DET+N rule
+    uses SHARE+SHARE projection, so ``SEM_CLASS`` declared on the
+    NOUN lex entry (e.g., ``sarili`` → ``SEM_CLASS=REFLEXIVE``)
+    surfaces on the matrix NP's f-structure. (Pre-Phase-6.G the
+    feat stayed on the inner N daughter only — flipped here as
+    part of the L32 NP-projection widening.)"""
 
-    def test_sem_class_reflexive_not_in_subj_fstructure(self) -> None:
-        """Negative pin — verifies non-propagation matches the
-        existing convention."""
+    def test_sem_class_reflexive_lifts_to_subj_fstructure(self) -> None:
+        """Positive — verifies SEM_CLASS propagation to NP."""
         parses = parse_text("Nakita niya ang sarili niya.")
         _ct, fs, _astr, _diags = parses[0]
         subj = fs.feats.get("SUBJ")
         assert subj is not None
-        # SEM_CLASS doesn't propagate to f-structure (this is the
-        # current convention; not a Phase 5m bug).
-        assert subj.feats.get("SEM_CLASS") is None
+        # SEM_CLASS propagates to f-structure post-6.G (closes the
+        # Phase 6.F C2 SEM_CLASS-lift deferral as part of L32).
+        assert subj.feats.get("SEM_CLASS") == "REFLEXIVE"
