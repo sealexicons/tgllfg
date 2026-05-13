@@ -380,3 +380,19 @@ is already a contiguous block that can move whole-cloth).
   parser error rather than a silent ignore. This is a deliberate
   contract — silent ignores have bitten the codebase before
   (`yes`/`true` collation in YAML 1.1, etc.).
+* **`Particle.affix_class` (Phase 6.I)** — a parallel addition to
+  the particle-side YAML schema (`data/tgl/particles.yaml`),
+  outside this LexEntry schema's scope but worth recording here
+  for cross-reference. Phase 6.I added an optional `affix_class:
+  list[str]` field on particle records to enable productive
+  paradigm dispatch (Phase 5n.C.3 Commit 5 `Pronoun.affix_class`
+  precedent). Empty by default; non-empty entries match paradigm
+  cells whose `base_pos` equals the particle's `pos` and whose
+  `affix_class` is in the list. Used in 6.I by the `minsan` entry
+  (`affix_class: [adv_redup]`) to opt into the `pa-X-X`
+  ADV-FREQUENCY reduplication paradigm cell. The static
+  `paminsanminsan` lex entry was removed; the productive analyzer
+  output is byte-for-byte identical to the pre-removal static
+  analysis. See `data/tgl/paradigms.yaml` for the `adv_redup` cell
+  shape and `src/tgllfg/morph/analyzer.py:_index_particle_paradigms`
+  for the dispatch.
