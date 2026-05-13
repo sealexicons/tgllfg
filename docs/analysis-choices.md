@@ -12194,3 +12194,353 @@ ADJ-clause SUBJ).
 - §18.1.2 L47 entry — closed by 6.D.
 - Kroeger 1993 — Tagalog SUBJ-only relativization restriction.
 - Dalrymple 2001 ch. 14 — secondary reference for FU and LDD.
+
+## Phase 6.E Commit 1: L93 free relative kung-S as DP — design
+
+**Date:** 2026-05-12. **Status:** active (design commit; grammar /
+test lands in 6.E C2).
+
+### Goal
+
+Close §18.1.2 L93 (*free relative ``kung sino`` / ``kung ano`` as
+DPs*) by admitting a ``kung``-headed wh-clause as a non-COMP NP
+argument of a matrix predicate. Today's Phase 5i Commit 8
+infrastructure (``cfg/control.py``) parses ``kung sino ang kumain``
+as ``S_INTERROG_COMP`` — a closed sentential complement bound to
+matrix ``COMP`` only under KNOW-class or ASK-class predicates.
+Surfaces where the kung-S fills an OBJ / OBL / SUBJ argument of a
+matrix predicate — e.g.,
+
+- *Galit ako sa kung sino ang nag-record.* "I'm angry at whoever
+  recorded it." (DAT-OBL on ``galit``)
+- *Gusto ko kung sino ang dumating.* "I want whoever came."
+  (OBJ on ``gusto`` — non-COMP NP slot)
+- *Hindi ko kakausapin kung sino ang mayabang.* "I won't talk to
+  whoever is boastful." (OBJ on ``kausap``)
+
+0-parse today because no NP rule admits an ``S_INTERROG_COMP``
+daughter. The argument-frame side of the matrix predicate is
+already wired for NP arguments (``gusto`` has
+``PRED='GUSTO <SUBJ, OBJ>'`` with OBJ as ``NP[CASE=NOM]``); the
+only missing piece is the wrap that re-categorizes the
+``kung``-headed wh-clause as an NP.
+
+The plan-of-record (``.claude/plans/tgllfg-phase-6.md`` §5.5)
+specifies that the wh-pivot-to-matrix binding should be K&Z 1989-
+faithful, exploiting the FU resolver landed in Phase 6.B. The
+canonical wh-cleft kung-S surfaces don't strictly require FU
+(the wh-PRON's LEMMA is fixed at the inner S's ``WH_LEMMA`` feat),
+but the FU form documents the standard analysis and accommodates
+future in-situ variants.
+
+### K&Z 1989 §3 adaptation for Tagalog free relatives
+
+K&Z 1989 §3 free-relative analysis treats the wh-clause as an
+NP whose head is the wh-PRON, with the rest of the clause as an
+adjunct-like modifier. The f-structure for *whoever came* is
+approximately:
+
+```text
+PRED      = 'PRO'                ; the free-relative "the one"
+PRON-TYPE = 'FREE-REL'           ; marker
+WH_LEMMA  = 'who'                ; the binder's lemma
+ADJ       ∋ { PRED = 'COME <SUBJ>',
+              SUBJ = ↑ }         ; reentrant with the head
+```
+
+Adapting for Tagalog (where the wh-PRON appears inside a
+``kung``-headed wh-cleft, not a bare wh-phrase):
+
+```text
+NP[CASE=X] → CASE-MARKER[CASE=X] S_INTERROG_COMP[Q_TYPE=WH]
+   (↑ PRED)     = 'PRO'
+   (↑ CASE)     = '{X}'
+   (↑ FREE_REL) = true
+   (↑ WH_LEMMA) = ↓2 WH_LEMMA
+   ↓2 ∈ (↑ ADJ)
+   (↓2 COMP_TYPE) =c 'INTERROG'
+   (↓2 Q_TYPE)    =c 'WH'
+```
+
+Body: zero traversals — the wh-pivot's ``WH_LEMMA`` is at the top
+of the S_INTERROG_COMP under the canonical wh-cleft analysis
+(Phase 5i Commit 2). Bottom: ``WH_LEMMA``. The trivially-zero-step
+"FU" path is a direct atomic-path copy, not a regex enumeration.
+
+The FU shape generalizes to in-situ wh — e.g., a hypothetical
+``kung kumain ng ano si Maria`` "whatever Maria ate of" with
+``ano`` at OBJ rather than cleft-pivot — via the regex form
+
+```text
+(↑ WH_LEMMA) =c (↓2 {SUBJ, OBJ, OBJ2, OBL-DAT, OBL-LOC}* WH_LEMMA)
+```
+
+In-situ wh is not in scope for 6.E (no corpus pressure today;
+canonical wh-cleft kung-S is the attested form per S&O 1972 §6).
+Documented as a follow-on in *Out of scope* below.
+
+### C-structure: new NP-from-kung-S wrap rule
+
+6.E adds an NP wrap-rule family that consumes
+``S_INTERROG_COMP[Q_TYPE=WH]`` as a non-COMP argument. For each of
+three head cases (NOM via ``ang``; GEN via ``ng``; DAT via ``sa``),
+one rule:
+
+```text
+NP[CASE=NOM] → DET[CASE=NOM, DEM=false] S_INTERROG_COMP[Q_TYPE=WH]
+NP[CASE=GEN] → ADP[CASE=GEN, DEM=false] S_INTERROG_COMP[Q_TYPE=WH]
+NP[CASE=DAT] → ADP[CASE=DAT, DEM=false] S_INTERROG_COMP[Q_TYPE=WH]
+```
+
+Equations on each rule:
+
+```text
+(↑ PRED)       = 'PRO'
+(↑ CASE)       = '{NOM|GEN|DAT}'
+(↑ FREE_REL)   = true
+(↑ WH_LEMMA)   = ↓2 WH_LEMMA
+↓2 ∈ (↑ ADJ)
+(↓2 COMP_TYPE) =c 'INTERROG'
+(↓2 Q_TYPE)    =c 'WH'
+```
+
+The wh-PRON's ``HUMAN`` lex feat — true for *sino*, absent for
+*ano* / *alin* — is **not** lifted onto the free-relative NP head
+in 6.E. The Phase 5i Commit 2 wh-cleft rule lifts only
+``LEMMA → WH_LEMMA`` from the wh-PRON daughter onto the inner S;
+``HUMAN`` (and any other lex feats on the PRON) stay on the PRON
+node, which is not reachable from the ``S_INTERROG_COMP``'s
+f-structure projection. Downstream consumers needing the HUMAN
+distinction can dispatch on ``WH_LEMMA`` (``sino``→HUMAN,
+``ano``/``alin``→non-HUMAN). A future extension may lift HUMAN at
+the Phase 5i C2 rule directly (one-line change there) — see *Out
+of scope* below.
+
+The ``DEM=false`` guard parallels the Phase 5e Commit 5 headless-RC
+rule: demonstratives (``ito`` / ``iyan`` / ``iyon``) carry
+``DEM=true`` and don't compose into free relatives.
+
+### F-structure semantics: free relative as headless NP
+
+The NP's f-structure mirrors the Phase 5e Commit 5 headless-RC
+shape (``ang kumain`` "the one who ate"), with two differences:
+
+1. The body is a ``kung``-wrapped wh-cleft (``S_INTERROG_COMP``),
+   not a SUBJ-gapped ``S_GAP``.
+2. ``FREE_REL=true`` and ``WH_LEMMA=X`` mark the head as a
+   free-relative pivot rather than an anaphoric implicit head.
+
+The two paths are deliberately disjoint at the f-structure
+boundary: the Phase 5e headless RC has ``FREE_REL=undefined`` and
+``WH_LEMMA=undefined``; the 6.E free relative has both set. A
+downstream semantic stage (out of scope for 6.E) consumes the
+distinction.
+
+### Disambiguation: free relative vs indirect Q
+
+The same surface — ``kung sino ang kumain`` — has two licit
+analyses:
+
+- **Indirect Q** (Phase 5i C8): bound as matrix ``COMP`` under
+  KNOW-class or ASK-class predicates. *Alam ko kung sino ang
+  kumain.* "I know who ate."
+- **Free relative** (6.E): bound as a non-COMP NP argument under
+  ordinary matrix predicates. *Galit ako sa kung sino ang
+  nag-record.* "I'm angry at whoever recorded it."
+
+Disambiguation is **selectional**: the matrix predicate's argument
+frame selects either ``COMP`` (KNOW/ASK) or a regular case-marked
+NP. The grammar produces both parses where the surface is
+genuinely ambiguous (e.g., ``Itinatanong niya kung sino ang kumain``
+— "He is asking who ate" / "He is asking the person who ate" —
+the latter free-relative reading is awkward but not ill-formed).
+The 6.E rule does not gate against KNOW/ASK matrix frames; the
+matrix rule's category-pattern admission (which is
+``S_INTERROG_COMP``, not ``NP``) blocks the free-relative path
+from feeding the indirect-Q COMP slot.
+
+### Implementation note: no FU resolver invocation at depth 0
+
+The ``(↑ WH_LEMMA) = ↓2 WH_LEMMA`` equation is a depth-0 atomic-
+path copy. The FU resolver landed in Phase 6.B (``fstruct/fu.py``)
+is not invoked at this depth — the equation evaluator's
+``_path_features`` resolver handles atomic-path copies directly.
+The K&Z 1989 binding semantics is therefore realized as a direct
+attribute reference, not as a regex-path enumeration. The FU shape
+becomes load-bearing only if the in-situ wh extension (above) is
+later authored; documented in *Out of scope* below.
+
+The Phase 6.B FU resolver is therefore *not* a strict prerequisite
+for 6.E's canonical scope. The 6.E entry sits under §18.1.2's
+"Phase 6 dependent" bucket because the **graph-constraint matcher
+tightening** (Phase 6.C) is what makes
+``S_INTERROG_COMP[Q_TYPE=WH]`` a tight enough pattern to fire only
+on wh-Q kung-S — pre-6.C the matcher's shared-key-absence semantics
+admitted the yes/no and bare-declarative variants too, which would
+overgenerate free-relative parses.
+
+### Test corpus design (C2 outline)
+
+The C2 test file (``tests/tgllfg/test_phase6_free_relative_kung.py``)
+will cover:
+
+**Positive — case variants × wh-PRON variants**:
+
+- DAT-OBL on *galit*: ``Galit ako sa kung sino ang nag-record.``
+- GEN on *malay* or similar: ``Walang malay si Juan kung saan
+  pumunta si Maria.`` (saan-variant; selectional via *malay*)
+- NOM on *gusto*: ``Gusto ko kung sino ang dumating.``
+- NOM on a transitive AV: ``Pinakain niya kung sino ang gutom.``
+
+**Positive — wh-PRON paradigm**:
+
+- *sino* (HUMAN, NOM-pivot): "whoever"
+- *ano* (non-HUMAN, NOM-pivot): "whatever"
+- *alin* (selectional, NOM-pivot): "whichever"
+- *saan* (locative): "wherever" — note this requires the
+  ``saan``-wh-cleft path (Phase 5i Commit 4); covered if
+  wh-locative cleft fires.
+
+**Positive — f-structure assertions**:
+
+- Free-relative NP has ``PRED='PRO'``, ``FREE_REL=true``,
+  ``WH_LEMMA=<lemma>``.
+- The kung-S sits in ``ADJ`` (single-entry set).
+- The kung-S's ``COMP_TYPE='INTERROG'`` and ``Q_TYPE='WH'``.
+- For *sino*-class: ``HUMAN=true`` lifts onto the free-relative NP.
+
+**Negative — yes/no and bare-declarative kung-S don't free-relate**:
+
+- ``*Galit ako sa kung kumain si Maria.`` (yes/no kung-S in DAT
+  argument slot) — 0-parse expected.
+- ``*Galit ako sa kung sino kumain.`` (bare-form kung-S, which is
+  S[Q_TYPE=WH] without S_INTERROG_COMP wrap) — admits or rejects
+  depending on whether the bare-form rule lifts COMP_TYPE; expected
+  0-parse if COMP_TYPE is absent, and the ``=c 'INTERROG'`` guard
+  fires.
+
+**Negative — free relative doesn't crossfire into KNOW/ASK COMP**:
+
+- ``Alam ko kung sino ang kumain.`` still parses as Phase 5i C8
+  indirect-Q (with kung-S as COMP), and the f-structure has
+  ``COMP_TYPE='INTERROG'`` on the COMP slot. The 6.E rule does
+  not produce an extra spurious parse here because *alam*'s frame
+  ``KNOW <SUBJ, COMP>`` selects ``S_INTERROG_COMP``, not ``NP``.
+- ``Tinanong niya kung sino ang kumain.`` (ASK-class) — similar:
+  the ASK frame's OBJ-AGENT is the asker, and the asked-thing is
+  ``S_INTERROG_COMP`` (matrix OBJ), not an NP. The 6.E rule
+  would produce a parallel parse where ``kung sino ang kumain``
+  is wrapped as an NP[CASE=NOM] and ``Tinanong niya [NP]`` —
+  this is a genuine syntactic ambiguity ("He asked the one who
+  ate" — free-rel reading vs. "He asked who ate" — indirect-Q
+  reading). Both parses are licit; the test asserts ≥ 1 of each.
+
+### What's in scope for 6.E
+
+- Three NP wrap rules (NOM / GEN / DAT) consuming
+  ``S_INTERROG_COMP[Q_TYPE=WH]``.
+- Free-relative f-structure marking (``PRED='PRO'``, ``FREE_REL``,
+  ``WH_LEMMA``, ``HUMAN`` lift).
+- Test corpus across case and wh-PRON variants.
+- The Phase 5e Commit 5 headless-RC rule is **not** modified — it
+  continues to handle ``ang kumain`` "the one who ate" via S_GAP;
+  the 6.E free-relative path is a parallel, disjoint construction.
+
+### Out of scope for 6.E (documented as future work)
+
+- **In-situ wh inside kung-S**. The ``(↑ WH_LEMMA) =c (↓2 {SUBJ,
+  OBJ, OBJ2, OBL-*}* WH_LEMMA)`` FU form (above) supports
+  hypothetical in-situ wh-Q surfaces, but no canonical Tagalog
+  attestation per S&O 1972 / R&B 1986; deferred to corpus pressure.
+- **Multiple-wh kung-S**. Surfaces like ``Tutulong ako sa kung sino
+  kung ano`` "I'll help whoever with whatever" — multi-wh free
+  relatives; not in scope for 6.E. Deferred until corpus pressure.
+- **Possessive kung-S**. Surfaces like ``ang aklat ni kung sino``
+  "the book of whoever" — kung-S as GEN-possessor. Should fall out
+  of the GEN-NP rule if the possessor-position composes with the
+  GEN-NP, but not test-covered in 6.E. Verify in 6.J.
+- **DAT-pivot wh-PRONs** (``kanino`` "to whom"). The Phase 5i C2
+  wh-cleft is NOM-pivot only; ``kanino`` was deferred to a Phase
+  5i follow-on. If a *kung kanino* free relative appears in
+  corpus, 6.E rule extends straightforwardly once the DAT-pivot
+  wh-cleft is authored.
+- **Free relative as matrix S argument** (independent S-level
+  cleft). E.g., ``Si Juan ang kung sino ang nag-record.`` "Juan
+  is the one who recorded it." — the kung-S sits in an
+  ``ay``-style equational cleft. The 6.E NP rule produces the NP;
+  whether the matrix cleft rule (Phase 5e ay-fronting) accepts
+  this NP shape is a downstream verification.
+- **HUMAN lift onto the free-relative NP head**. A small Phase 5i
+  C2 extension (adding ``(↑ HUMAN) = ↓1 HUMAN`` on the wh-cleft
+  rule) would let 6.E lift ``HUMAN`` from the inner S onto the
+  matrix free-relative NP. Useful for downstream pronoun
+  resolution / binding theory. Not in 6.E scope; downstream
+  consumers dispatch on ``WH_LEMMA`` until then.
+
+### Architectural commitments worth carrying forward
+
+- **Free-relative f-structure shape is distinct from indirect Q**.
+  ``FREE_REL=true`` marks the free-relative NP head; absent on
+  indirect-Q COMP-bound kung-S. Downstream semantic / a-structure
+  stages can disambiguate.
+- **Selectional disambiguation between free-rel and indirect-Q**.
+  No grammar-side gating against KNOW/ASK matrix frames; the
+  matrix predicate's argument frame (NP vs. COMP) is the
+  selector. Both parses can coexist when the surface is
+  genuinely ambiguous.
+- **Phase 6.B FU resolver is not load-bearing at depth 0**. The
+  6.E rules use direct atomic-path copies, which are evaluated
+  by the existing ``_path_features`` resolver. The FU shape is
+  documented for in-situ wh extensibility but not invoked under
+  canonical wh-cleft surfaces.
+- **No new lex entries**. The existing
+  ``kung[COMP_TYPE=INTERROG]`` particle and the wh-PRON lex
+  entries (``sino`` / ``ano`` / ``alin`` etc.) already carry the
+  necessary feats; the 6.E rule consumes them via the existing
+  Phase 5i wh-cleft path.
+
+### Cross-references
+
+- Plan-of-record §5.5 (``.claude/plans/tgllfg-phase-6.md``).
+- K&Z 1989 §3 (``docs/references/KZ89.pdf``); free-relative
+  analysis discussion.
+- Phase 5e Commit 5 above — headless-RC rule that 6.E parallels
+  for the free-relative variant.
+- Phase 5i Commit 2 above — wh-cleft rule producing the inner
+  S[Q_TYPE=WH] f-structure that S_INTERROG_COMP wraps.
+- Phase 5i Commit 8 above — KNOW-class indirect-Q wrap that
+  6.E disambiguates from.
+- Phase 5n.A Commit 29 above — ASK-class indirect-Q wrap;
+  6.E coexists with this path under selectional disambiguation.
+- §18.1.2 L93 entry — closed by 6.E.
+- S&O 1972 §6 — wh-Q analysis underlying the wh-cleft structure
+  that 6.E consumes via S_INTERROG_COMP.
+
+### What landed (2026-05-12)
+
+C2 grammar landed three NP wrap rules in
+``src/tgllfg/cfg/extraction.py`` matching the design exactly —
+one rule per case (NOM via ``DET[CASE=NOM, DEM=false]``; GEN /
+DAT via ``ADP[CASE=X, DEM=false]``) with the equation set above.
+``FREE_REL`` was added to ``src/tgllfg/core/feats.py``
+``BINARY_FEATS`` (50 → 51), with companion bumps to
+``docs/feats-binary-audit.md`` and the Phase 5n.C.4 audit-
+counter test per the "update both" guard.
+
+C2 tests landed at ``tests/tgllfg/test_phase6_free_relative_kung.py``
+— 15 tests across 9 classes covering: basic free-relative
+parsing in NOM / GEN / DAT slots; f-structure shape assertions
+(``PRED='PRO'``, ``FREE_REL=True``, ``WH_LEMMA`` lifted, kung-S
+in ``ADJ``, inner SUBJ as headless RC); the wh-PRON paradigm
+(sino / ano / alin); bare-form colloquial kung-S; selectional
+disambiguation (alam + tinanong indirect-Q parses regress
+unchanged); negative cases (yes/no + bare-declarative kung-S
+correctly reject Q_TYPE=WH gate); and regressions (Phase 5e C5
+headless RC + Phase 5i C2 wh-cleft Q still parse).
+
+Final 6.E status: 7 150 fast tests + 19 slow + 1 xfail (the
+test_kahit_ano_in_obj cross-case-lex carry-forward from 6.C,
+unrelated to 6.E). Lint clean (311 source files). No deferrals
+introduced; the in-situ wh and DAT-pivot wh-PRON items
+itemized in *Out of scope* above carry forward to corpus-
+pressure follow-ups, not Phase 6 work.
