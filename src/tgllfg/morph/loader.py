@@ -188,12 +188,16 @@ def _load_particles(path: Path) -> list[Particle]:
     out: list[Particle] = []
     for i, rec in enumerate(_read_yaml(path)):
         where = f"{path}[{i}]"
+        affix_class_raw = rec.get("affix_class", [])
+        if not isinstance(affix_class_raw, list):
+            raise ValueError(f"{where}: 'affix_class' must be a list")
         out.append(Particle(
             surface=_require(rec, "surface", where),
             pos=_require(rec, "pos", where),
             feats=dict(rec.get("feats", {})),
             is_clitic=bool(rec.get("is_clitic", False)),
             clitic_class=rec.get("clitic_class", ""),
+            affix_class=list(affix_class_raw),
         ))
     return out
 

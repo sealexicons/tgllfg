@@ -306,6 +306,14 @@ class Analyzer:
                     feats=feats,
                 )
             )
+            # Phase 6.I Commit 2 (§18 L105): PART-base paradigm cells
+            # fire on particles with non-empty affix_class. The
+            # ``adv_redup`` cell (data/tgl/paradigms.yaml) derives
+            # productive ``pa-X-X`` ADV-FREQUENCY surfaces from base
+            # ADV roots like ``minsan`` (→ ``paminsanminsan`` with
+            # canonical hyphenated LEMMA ``paminsan-minsan``).
+            if p.affix_class:
+                self._index_particle_paradigms(p)
         for pn in self._data.pronouns:
             feats = dict(pn.feats)
             if pn.is_clitic:
@@ -455,6 +463,77 @@ class Analyzer:
                 # potentially others) land in particles where the
                 # grammar looks up Q / DET / etc.
                 self._index.particles.setdefault(surface, []).append(analysis)
+
+    def _index_particle_paradigms(self, p) -> None:  # type: ignore[no-untyped-def]
+        """Phase 6.I Commit 2 (§18 L105): iterate paradigm cells with
+        ``base_pos`` matching the particle's ``pos`` (typically ADV),
+        indexing derived surfaces. Mirrors
+        :meth:`_index_pronoun_paradigms` for the PART namespace.
+
+        LEMMA construction for cells whose final op is ``redup_root``
+        inserts a hyphen between the pre-redup base and the redup'd
+        copy (``paminsan`` + ``-`` + ``minsan`` = ``paminsan-minsan``)
+        to preserve the canonical hyphenated form. Other cells fall
+        through to the source particle's LEMMA / surface default.
+        """
+        for cell in self._data.paradigm_cells:
+            if cell.base_pos != p.pos:
+                continue
+            if not _affix_class_match(cell.affix_class, p.affix_class):
+                continue
+            from .paradigms import Root as _Root
+            synthetic = _Root(
+                citation=p.surface,
+                pos=p.pos,
+                feats=dict(p.feats),
+                affix_class=list(p.affix_class),
+            )
+            surface = generate_form(synthetic, cell).lower()
+            feats: dict[str, object] = {**p.feats}
+            for k, v in cell.feats.items():
+                feats[k] = v
+            # Canonical LEMMA for redup_root-final cells: the
+            # pre-redup base hyphenated with the root citation
+            # (``paminsan-minsan``). For other cells, fall through
+            # to the source particle's LEMMA feat or surface.
+            if cell.operations and cell.operations[-1].op == "redup_root":
+                pre_redup_root = _Root(
+                    citation=p.surface,
+                    pos=p.pos,
+                    feats=dict(p.feats),
+                    affix_class=list(p.affix_class),
+                )
+                pre_redup_cell = type(cell)(  # shallow clone w/o last op
+                    **{
+                        **{
+                            f.name: getattr(cell, f.name)
+                            for f in cell.__dataclass_fields__.values()
+                        },
+                        "operations": list(cell.operations[:-1]),
+                    }
+                )
+                pre_redup_base = generate_form(
+                    pre_redup_root, pre_redup_cell
+                )
+                canonical_lemma = f"{pre_redup_base}-{p.surface}"
+            else:
+                canonical_lemma_obj = feats.get("LEMMA", p.surface)
+                canonical_lemma = (
+                    canonical_lemma_obj
+                    if isinstance(canonical_lemma_obj, str)
+                    else p.surface
+                )
+            # Stamp LEMMA into feats so downstream consumers see the
+            # canonical form (mirrors the existing particle-loading
+            # convention at the top of this method's caller).
+            feats["LEMMA"] = canonical_lemma
+            out_pos = cell.pos or p.pos
+            analysis = MorphAnalysis(
+                lemma=canonical_lemma,
+                pos=out_pos,
+                feats=feats,
+            )
+            self._index.particles.setdefault(surface, []).append(analysis)
 
     def _index_paradigm_via_base_pos(self, root: Root) -> None:
         """Index paradigm cells in ``paradigm_cells`` whose
