@@ -13644,3 +13644,231 @@ this sweep.
 After 6.H, §18.1.2 inventory shrinks from 2 → 1 (only L105
 remains, closes in 6.I). After 6.I + 6.J, §18.1.2 closes
 entirely.
+
+## Phase 6.I Commit 1: L105 productive ADV reduplication — design
+
+Ninth sub-PR of Phase 6 (last functional sub-PR before 6.J
+cumulative closing docs). Closes §18.1.2 L105 — productive
+reduplication of ``paminsan-minsan`` "occasionally" and (the
+infrastructure for) other reduplicated ADV stems.
+
+After 6.I, §18.1.2 closes entirely; 6.J ships only cumulative
+docs / memory hygiene.
+
+### 1. Lexical baseline
+
+``minsan`` "sometimes / once" is lex'd in ``particles.yaml``
+as ``ADV[ADV_TYPE=FREQUENCY, FREQ_VALUE=SOMETIMES, LEMMA=
+minsan]``. The reduplicated form ``paminsan-minsan``
+"occasionally" is lex'd as a separate **static** entry:
+
+```yaml
+- surface: paminsanminsan
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: OCCASIONAL,
+          LEMMA: paminsan-minsan}
+```
+
+The Phase 5f Commit 14 ``merge_hyphen_compounds`` tokenizer
+pre-pass collapses ``paminsan-minsan`` (three tokens
+``paminsan`` ``-`` ``minsan``) into the single token
+``paminsanminsan`` for analyzer lookup. The static entry's
+``LEMMA: paminsan-minsan`` carries the canonical hyphenated
+form back through.
+
+L105 calls for **productive** derivation: a paradigm cell
+that derives ``paminsan-minsan``-class surfaces from base
+ADV-FREQUENCY roots, with the productive ``pa-`` prefix and
+root reduplication encoding the OCCASIONAL frequency shift.
+
+### 2. Paradigm cell shape
+
+The cell mirrors the Phase 5n.C.3 Commit 9 ``redup_wh_plural``
+precedent (closest existing productive-redup pattern). The
+ops are ``[prefix "pa", redup_root]`` — the same shape used
+by ``redup_intens_adj`` (Phase 5n.C.3 Commit 7) for ADJ
+intensives like ``magandaganda``.
+
+```yaml
+- base_pos: ADV
+  affix_class: adv_redup
+  operations:
+    - {op: prefix, value: "pa"}
+    - {op: redup_root}
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: OCCASIONAL}
+  notes: adv_redup — minsan → paminsanminsan (L105)
+```
+
+The cell's ``feats`` shifts ``FREQ_VALUE`` from the source's
+``SOMETIMES`` to the derived ``OCCASIONAL``. ``ADV_TYPE=
+FREQUENCY`` is set explicitly to override any non-FREQUENCY
+ADV-base that wires ``affix_class: [adv_redup]`` in the
+future (defensive; bare ``minsan`` already has it).
+
+### 3. Particle paradigm dispatch (new infrastructure)
+
+Currently, the paradigm engine dispatches on root POS in
+``analyzer.py`` (NOUN / ADJ / NUM / PRON) — particles do
+**not** participate. Adding ADV-redup requires:
+
+#### 3.1 ``Particle.affix_class`` field
+
+Add ``affix_class: list[str]`` to the ``Particle`` dataclass
+(``morph/paradigms.py:186``) and a loader hook
+(``morph/loader.py``) to parse ``affix_class`` from YAML
+records. Empty by default — no behavior change for existing
+particles.
+
+#### 3.2 ``_index_particle_paradigms`` method
+
+New method on ``MorphologicalAnalyzer`` parallel to
+``_index_pronoun_paradigms`` (line 411). Iterates
+``self._data.paradigm_cells`` filtering by
+``cell.base_pos == particle.pos`` (so a cell with
+``base_pos: ADV`` fires only on particles with
+``pos: ADV``) and ``_affix_class_match(cell.affix_class,
+p.affix_class)``. For each match: synthesize a Root from
+the Particle, run ``generate_form``, index the derived
+surface into ``self._index.particles`` with the merged
+feats.
+
+Dispatch wired from the particle-loading loop (analyzer.py
+line 302-308 — the existing ``self._index.particles.
+setdefault(...)`` block).
+
+#### 3.3 LEMMA construction for redup_root-final cells
+
+The static entry's ``LEMMA: paminsan-minsan`` preserves the
+canonical hyphenated form. Productive derivation needs an
+equivalent. Approaches considered:
+
+1. **Hard-code LEMMA in cell.feats**. Wrong shape — the cell
+   fires on multiple roots and LEMMA varies per root.
+2. **LEMMA template in cell.feats with ``{root}`` placeholder**.
+   New mini-DSL; complexity > value for a single use-case
+   today.
+3. **Compute from surface**. The cell's last op is
+   ``redup_root``, which appends ``root.citation`` to the
+   prefixed base. The canonical hyphenated LEMMA is the
+   prefixed base + ``"-"`` + ``root.citation``. The
+   dispatcher tracks the pre-redup_root base by re-applying
+   the ops without the trailing ``redup_root`` (or by
+   capturing intermediate state in a new
+   ``generate_form_with_split`` helper).
+
+**Decision: Option 3** — compute LEMMA from the cell's op
+sequence. The dispatcher applies all ops *except* the final
+``redup_root`` (if present) to get the pre-redup base, then
+LEMMA = ``pre_redup_base + "-" + root.citation``.
+
+For cells that don't end in ``redup_root``, LEMMA defaults
+to ``root.citation`` (the source ADV's surface) — the
+existing default in ``_index_paradigm_via_base_pos``.
+
+For ``minsan`` + the ``adv_redup`` cell:
+
+- Pre-redup base: ``"pa" + "minsan"`` = ``"paminsan"``.
+- Generated surface: ``"paminsan" + "minsan"`` = ``"paminsanminsan"``.
+- Canonical LEMMA: ``"paminsan" + "-" + "minsan"`` = ``"paminsan-minsan"``.
+
+Both match the current static entry's behavior.
+
+### 4. Root-side wiring
+
+Modify the existing ``minsan`` lex entry to add
+``affix_class: [adv_redup]``:
+
+```yaml
+- surface: minsan
+  pos: ADV
+  affix_class: [adv_redup]
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: SOMETIMES,
+          LEMMA: minsan}
+```
+
+The bare ``minsan`` analysis continues to index unchanged via
+the existing particle-loading loop (the affix_class addition
+is purely for paradigm cell matching).
+
+### 5. Static entry removal
+
+After C2's paradigm-engine extension lands and C3's
+``minsan`` wiring fires, the static
+``paminsanminsan`` entry in ``particles.yaml`` becomes
+redundant. C3 removes it and verifies the productive
+analyzer output matches the pre-removal static analysis
+(same surface, same feats, same LEMMA).
+
+### 6. Other reduplicated ADV stems
+
+The plan title says "Productive redup of ``paminsan-minsan``
+and other reduplicated ADV stems". The 6.I lex audit finds
+**no other** ADV-FREQUENCY entries with a parallel ``pa-X-X``
+form attested in S&O 1972 §3.5, R&B 1986 ch. 4, or the
+existing corpus:
+
+- ``madalas`` "often" — no ``pamadalas-madalas`` form.
+- ``palagi`` / ``lagi`` "always" — no ``pa-`` redup.
+- ``parati`` (synonym of ``palagi``) — already pa-prefixed in
+  citation; no further redup.
+
+Other Tagalog ADV redup patterns exist (e.g., ``araw-araw``
+"daily" — but this is NOUN-class, not ADV), but they don't
+share the ``pa-X-X`` morphology and are out of L105 scope.
+
+The productive ADV-redup infrastructure is therefore
+**inventory-of-one** today, but enables future entries via
+simple lex-side wiring (``affix_class: [adv_redup]``). The
+empty-inventory case is intentional: matching the Phase 6.G
+pattern of "productive-paradigm infrastructure even when only
+one current entry uses it".
+
+### 7. Sub-commit ledger (post-design sign-off)
+
+- **C2** — Paradigm-engine extension: ``Particle.affix_class``
+  field + ``_index_particle_paradigms`` method + LEMMA
+  computation for redup_root-final cells + ``adv_redup``
+  paradigm cell. No lex changes; the cell fires on no
+  current entries (since no particle has ``affix_class:
+  [adv_redup]`` yet). Tests verify the engine wiring works.
+  ``hatch run test-both`` gate.
+- **C3** — Migrate ``minsan`` lex entry: add ``affix_class:
+  [adv_redup]``; remove the static ``paminsanminsan`` entry.
+  Verify the productive analyzer output equals the
+  pre-removal static analysis. Flip
+  ``test_paminsan_minsan_single_parse`` to assert via the
+  productive mechanism (the surface-level assertion stays;
+  add a probe that the new analysis carries the productive
+  feats). ``hatch run test-both`` gate.
+- **C4** — Closing docs.
+
+### 8. Scope clarifications / out-of-scope items
+
+- **Hyphen-merge tokenizer pre-pass retention**. The
+  ``merge_hyphen_compounds`` pre-pass continues to collapse
+  ``paminsan-minsan`` → ``paminsanminsan`` at tokenization
+  time. The productive paradigm generates the joined form
+  ``paminsanminsan`` (no hyphen), so analyzer lookup still
+  uses the joined surface. The hyphen-merge pre-pass is
+  **not** removed in 6.I — it's still load-bearing for the
+  many other hyphen-compound surfaces (``tag-init`` /
+  ``daan-daan`` / ``humigit-kumulang`` / ``tig-isa`` /
+  ``kani-kaniya`` / ``mag-isa`` / ``magkapareho`` etc.).
+- **POS-flipping ADV cells**. The current ``adv_redup`` cell
+  outputs ADV (same as base). Future cells could POS-flip
+  (e.g., NOUN ``araw-araw`` from NOUN ``araw``), but that's
+  out of L105 scope — the dispatch infrastructure supports
+  ``cell.pos`` overrides (parallel to ``kani_redup``
+  PRON → Q), enabled when needed.
+- **Non-FREQUENCY ADV redup**. If a corpus surfaces a non-
+  FREQUENCY ADV redup pattern, a parallel cell with different
+  ``feats`` lands; the infrastructure supports it.
+- **Sandhi on adv_redup**. The current ``minsan`` redup is
+  vowel-initial concatenation without sandhi. If a future
+  ADV-redup root requires sandhi (e.g., final /d/ → /r/),
+  the existing ``d_to_r`` post-processor in ``generate_form``
+  handles it via ``root.sandhi_flags``.
+- **Productive paradigm for other corpus-attested ADV redup
+  forms**. The lex audit found no immediate candidates beyond
+  ``paminsan-minsan``; future Tagalog corpus expansion may
+  surface more.
