@@ -928,3 +928,93 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓4 ∈ (↑ ADJUNCT)",
             ),
         ))
+
+    # Phase 6.F Commit 2: sarili anaphora binding (§18.1.2 L104).
+    #
+    # ``Nakita niya ang sarili niya.``  "She saw herself."
+    # ``Kumain siya ng sarili niya.``   "He ate of himself." (rare)
+    #
+    # Closes §18.1.2 L104. Tagalog reflexive ``sarili`` is bound by
+    # the **actor**, not the (grammatical) SUBJ pivot, per Kroeger
+    # 1993 §2.3. The actor surfaces at:
+    #
+    # * ``SUBJ`` in true-AV (the actor is the ang-NP pivot).
+    # * ``OBJ`` in AV-syntactic-OV surfaces (e.g., ``nakita`` is
+    #   lex'd VOICE=AV but the ang-NP is the patient; OBJ holds
+    #   the actor).
+    # * ``OBJ-AGENT`` in OV / DV / IV plain transitives.
+    # * ``OBJ-CAUSER`` in causative variants.
+    #
+    # The binding equation places ``ANTECEDENT`` on the reflexive
+    # NP's f-structure, pointing at the actor's f-structure
+    # (graph-level reentrancy via the Phase 6.B C5 binding-equation
+    # context — ``_eval_defining_eq`` unifies LHS with the
+    # shortest-depth endpoint of the RHS path).
+    #
+    # **Gating via LEMMA, not SEM_CLASS**. The Phase 5m lex entry
+    # sets ``SEM_CLASS=REFLEXIVE`` on the NOUN sarili, but the
+    # ``NP → DET/ADP + N`` projection in ``cfg/nominal.py`` lifts
+    # only ``PRED`` and ``LEMMA`` from the N daughter — adding a
+    # SEM_CLASS lift would create empty f-structures for nouns
+    # without SEM_CLASS (verified during 6.F C2 implementation).
+    # Gating on ``LEMMA =c 'sarili'`` is narrower but doesn't
+    # require modifying the high-traffic NP projection rule.
+    #
+    # **Two rule variants per voice / order**: one for sarili at
+    # SUBJ (binds to obj_target), one for sarili at obj_target
+    # (binds to SUBJ). Both fire alongside the non-bound variants
+    # above when LEMMA gate passes — the test corpus assertions
+    # find the parse with the ANTECEDENT feat set.
+    #
+    # Design rationale + scope: ``docs/analysis-choices.md``
+    # "Phase 6.F Commit 1: L104 sarili anaphora via binding
+    # equation — design".
+    for voice, obj_target, extras in voice_specs:
+        feat_strs = [f"VOICE={voice}"] + [f"{k}={v}" for k, v in extras]
+        v_cat = f"V[{', '.join(feat_strs)}]"
+        # === sarili at SUBJ → binds to obj_target ===
+        # NOM-GEN order (SUBJ = ↓2, obj_target = ↓3)
+        rules.append(Rule(
+            "S",
+            [v_cat, "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                f"(↑ {obj_target}) = ↓3",
+                "(↑ SUBJ LEMMA) =c 'sarili'",
+                f"(↑ SUBJ ANTECEDENT) = (↑ {obj_target})",
+            ),
+        ))
+        # GEN-NOM order (SUBJ = ↓3, obj_target = ↓2)
+        rules.append(Rule(
+            "S",
+            [v_cat, "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                f"(↑ {obj_target}) = ↓2",
+                "(↑ SUBJ LEMMA) =c 'sarili'",
+                f"(↑ SUBJ ANTECEDENT) = (↑ {obj_target})",
+            ),
+        ))
+        # === sarili at obj_target → binds to SUBJ ===
+        # NOM-GEN order (SUBJ = ↓2, obj_target = ↓3)
+        rules.append(Rule(
+            "S",
+            [v_cat, "NP[CASE=NOM]", "NP[CASE=GEN]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                f"(↑ {obj_target}) = ↓3",
+                f"(↑ {obj_target} LEMMA) =c 'sarili'",
+                f"(↑ {obj_target} ANTECEDENT) = (↑ SUBJ)",
+            ),
+        ))
+        # GEN-NOM order (SUBJ = ↓3, obj_target = ↓2)
+        rules.append(Rule(
+            "S",
+            [v_cat, "NP[CASE=GEN]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓3",
+                f"(↑ {obj_target}) = ↓2",
+                f"(↑ {obj_target} LEMMA) =c 'sarili'",
+                f"(↑ {obj_target} ANTECEDENT) = (↑ SUBJ)",
+            ),
+        ))
