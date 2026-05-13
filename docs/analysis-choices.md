@@ -13245,3 +13245,273 @@ No deferrals introduced. Items recorded as out-of-scope (COMP
 percolation, MEASURE-on-coord, DEIXIS-on-bare-NP, MEASURE
 lex-blocked) are structurally not L32 cases, not deferred
 work.
+
+## Phase 6.H Commit 1: L33 floated-Q agreement + L85+ stress + =c cleanup — design
+
+Eighth sub-PR of Phase 6. Three closure threads land together as
+the cleanup-and-verify sub-PR before 6.I (L105) and 6.J (closing
+docs):
+
+1. **§18.1.2 L33** — floated-Q number agreement. The Phase 4 §7.8
+   float rule and the Phase 5f Commit 23 clause-initial dual-Q
+   rules attach ``Q[DUAL=true]`` (``pareho`` / ``kapwa``) to NOM
+   antecedents without a NUM agreement check; the SG-SUBJ + DUAL-Q
+   surfaces overgenerate today.
+2. **§18.1.2 L85+ verification stress** — 6.C C6 added 5/6/7-
+   conjunct fixtures; the plan calls for 8/9/10-conjunct stress to
+   confirm the recursion is truly unbounded.
+3. **The 2 explicitly-tagged ``=c`` non-conflict-matcher-leak
+   cleanup sites** — ``clause.py:730`` and ``control.py:548`` are
+   redundant under the post-6.C strict matcher and ship as the
+   final removal of matcher-leak compensation.
+
+After 6.H, §18.1.2 reduces from 2 → 1 (only L105 remains; closes
+in 6.I).
+
+### 1. L33 floated-Q number agreement
+
+#### 1.1 Lexical baseline
+
+``pareho`` and ``kapwa`` are lex'd in ``particles.yaml`` as
+``Q[QUANT=BOTH, DUAL=true]``. Their semantic precondition is "two-
+or-more entities" — the antecedent (matrix SUBJ) must be PL (or
+DU; modern Tagalog has no free DU PRONs, so PL is the only
+realized NUM that satisfies DUAL semantics).
+
+#### 1.2 The two rule families today
+
+- **Phase 4 §7.8 base float rule** (``cfg/clitic.py:48-52``) —
+  single ``S → S Q`` rule attaches *any* Q (DUAL or not, vague or
+  not, ``lahat`` or ``pareho``) at clause-final position as a
+  member of the matrix's ``ADJ`` set. No NUM constraint.
+- **Phase 5f Commit 23 clause-initial dual-Q rules**
+  (``cfg/clitic.py:73-140``) — 6 rules (3 AV-arity frames × 2
+  linker variants) fire on ``Q[DUAL]`` + ``PRON[CASE=NOM]`` + ``PART
+  [LINK]`` + V. ``(↓1 DUAL) =c true`` belt-and-braces present;
+  PRON is unconstrained for NUM.
+
+Probe of the current overgeneration:
+
+```text
+1  Kumain sila pareho.    PL SUBJ + DUAL Q — should parse ✓
+1  Kumain siya pareho.    SG SUBJ + DUAL Q — should ZERO-PARSE ✗
+3  Pareho silang kumain.  PL SUBJ + DUAL Q — should parse ✓
+3  Pareho siyang kumain.  SG SUBJ + DUAL Q — should ZERO-PARSE ✗
+1  Kumain sila kapwa.     PL SUBJ + DUAL Q — should parse ✓
+1  Kumain siya kapwa.     SG SUBJ + DUAL Q — should ZERO-PARSE ✗
+```
+
+All four ``*siya``-with-DUAL-Q surfaces parse today; L33 is the
+fix.
+
+#### 1.3 Design choice: equation-side gating
+
+Two natural designs:
+
+- **Design A — equation-side gating.** Split the base float rule
+  into Q (no DUAL) and Q[DUAL=true] variants; add
+  ``(↑ SUBJ NUM) =c 'PL'`` to the DUAL variant. Mirror in the
+  Phase 5f Commit 23 rules.
+- **Design B — lex-side restriction.** Have PRON lex entries
+  declare NUM-compatibility with DUAL Q's upstream (e.g., split
+  SG / PL PRON variants with disjoint POS). Lex churn across 8+
+  pronouns for narrow benefit; rejected.
+
+**Design A is chosen.** Equation-side gating is the K&Z 1989 §3
+idiom for agreement constraints (cf. eq. 17 illustrating
+subject-verb agreement via constraining equations).
+
+#### 1.4 Constraining vs. defining
+
+The constraint form is a **constraining equation** ``(↑ SUBJ
+NUM) =c 'PL'``, not a defining equation ``(↑ SUBJ NUM) = 'PL'``.
+
+- Constraining fires only if ``SUBJ.NUM`` is already set (always
+  the case — PRON lex entries set NUM on the SUBJ projection).
+- A defining equation would overwrite ``SG`` with ``PL`` and the
+  failure would surface as a later unification conflict — same
+  observable outcome but worse diagnostic (failure surfaces at
+  the wrong site).
+
+#### 1.5 Why no DUAL propagation
+
+The plan-skeleton's pseudo-equation ``(↑ FLOAT DUAL) = (↑
+ANTECEDENT DUAL)`` would propagate ``DUAL`` from antecedent to
+the float. Two reasons this is not the right shape:
+
+- **No DUAL PRONs to propagate from.** Modern Tagalog has no
+  free DU PRON; the historical 1.IN.DU ``kita`` only appears as a
+  fused clitic, never as a free PRON. There is nothing on the
+  antecedent's NUM-DUAL axis to propagate.
+- **Empty-f-node pollution** (the same Phase 6.G issue). The
+  unifier's ``(↑ X) = ↓i X`` is creating-if-absent semantics —
+  applying it to ``DUAL`` would create empty-FStructure
+  placeholders on every non-DUAL Q-antecedent pair. The
+  ``TestEmptyFNodeTolerance`` precedent (6.G) accepts the
+  convention for binary feats on direct lifts; but here the
+  semantically-correct constraint is one-directional (Q→SUBJ),
+  not symmetric propagation.
+
+The constraint thus lives on Q's side (the Q[DUAL=true]
+requirement triggers the rule variant), and the agreement check
+is on the antecedent's NUM only.
+
+#### 1.6 Grammar diff sketch
+
+**Base float rule split** (``cfg/clitic.py:48-52``):
+
+```python
+# Q without DUAL — unconstrained NUM
+rules.append(Rule(
+    "S",
+    ["S", "Q"],
+    [
+        "(↑) = ↓1",
+        "↓2 ∈ (↑ ADJ)",
+        "(↓2 ANTECEDENT) = (↑ SUBJ)",
+        "¬ (↓2 DUAL)",
+    ],
+))
+# Q[DUAL] — antecedent must be PL
+rules.append(Rule(
+    "S",
+    ["S", "Q[DUAL]"],
+    [
+        "(↑) = ↓1",
+        "↓2 ∈ (↑ ADJ)",
+        "(↓2 ANTECEDENT) = (↑ SUBJ)",
+        "(↓2 DUAL) =c true",
+        "(↑ SUBJ NUM) =c 'PL'",
+    ],
+))
+```
+
+**Phase 5f Commit 23 clause-initial dual-Q rules** (``cfg/
+clitic.py:73-140``) — append ``(↑ SUBJ NUM) =c 'PL'`` to each of
+the 6 variants (the SUBJ slot is already PRON[CASE=NOM] from
+↓2).
+
+#### 1.7 Tests
+
+New file: ``tests/tgllfg/test_phase6_floated_q_agreement.py``
+covering:
+
+- ``TestFloatRuleDualAgreement`` — float-rule variant (``Kumain
+  sila pareho.`` parses, ``*Kumain siya pareho.`` zero-parses);
+  parametrized for {``pareho``, ``kapwa``} × {``sila`` /
+  ``siya``}.
+- ``TestClauseInitialDualAgreement`` — clause-initial variant
+  (``Pareho silang kumain.`` parses, ``*Pareho siyang kumain.``
+  zero-parses); same parametrization × 2 linker variants × 3
+  AV-arity frames.
+- ``TestNonDualQUnaffected`` — regression: ``lahat`` /
+  ``marami`` / ``konti`` floats compose with both SG and PL
+  antecedents (no NUM constraint on non-DUAL Q's).
+
+### 2. L85+ 8/9/10-conjunct stress
+
+Phase 6.C C6 added 5/6/7-conjunct fixtures (``TestFivePlus
+ConjunctNomCoord`` + ``TestSixSevenConjunctNomCoord`` in
+``tests/tgllfg/test_phase5n_4conj_coord.py``). The plan calls
+for 8/9/10-conjunct stress fixtures to confirm the recursion is
+truly unbounded.
+
+New class: ``TestEightNineTenConjunctNomCoord``. Each surface
+has the form ``Kumain ang X1, ang X2, ..., ang X_{N-1} at ang
+XN.``
+
+Vocab: kinship terms from ``data/tgl/nouns.yaml`` (tatay /
+nanay / kuya / ate / lolo / lola / tito / tita / pinsan /
+kapatid). At 10 conjuncts we exhaust the canonical roster; any
+lex gap surfaces as a parse failure and is closed by adding the
+lex entry (parallel to the 6/7-conjunct stress pattern).
+
+### 3. =c cleanup
+
+Two sites drop:
+
+#### 3.1 clause.py:730 — predicative-Q ``(↓1 VAGUE) =c true``
+
+```python
+rules.append(Rule(
+    "S",
+    ["Q[VAGUE]", "NP[CASE=NOM]"],
+    [
+        "(↑ PRED) = 'Q-PREDICATIVE <SUBJ>'",
+        # ...
+        "(↓1 VAGUE) =c true",   # ← drop
+        "¬ (↓1 WH)",
+    ],
+))
+```
+
+The ``Q[VAGUE]`` daughter pattern in the RHS list already gates
+``VAGUE=true`` on the candidate under the post-6.C strict
+matcher (``expected.keys() ⊆ candidate.keys()`` + shared-key
+compat). The ``=c`` is redundant.
+
+#### 3.2 control.py:548 — wh-indirect-Q ``=c COMP_TYPE`` and ``=c Q_TYPE``
+
+```python
+rules.append(Rule(
+    "S_INTERROG_COMP",
+    ["PART[COMP_TYPE=INTERROG]", "S[Q_TYPE=WH]"],
+    [
+        "(↑) = ↓2",
+        "(↑ COMP_TYPE) = 'INTERROG'",
+        "(↓1 COMP_TYPE) =c 'INTERROG'",  # ← drop
+        "(↓2 Q_TYPE) =c 'WH'",           # ← drop
+    ],
+))
+```
+
+Both ``=c`` are redundant: the PART[COMP_TYPE=INTERROG] and
+S[Q_TYPE=WH] daughter patterns gate them under strict matching.
+
+#### 3.3 Scope clarification
+
+The plan-of-record's §4.2 decision is explicit: drop only the
+2 sites that are explicitly tagged as "non-conflict-matcher
+leak" in the source code. The other ~373 ``=c`` sites are
+legitimate semantic gating (voice selection, completeness
+conditions, etc.) that survive the parser swap untouched; broad
+cleanup is opportunistic future-phase work.
+
+The ``(↓1 DUAL) =c true`` belt-and-braces in the Phase 5f
+Commit 23 clause-initial rules (clitic.py:90 / 113 / 138) is
+*not* tagged as a non-conflict-matcher leak in source; it is
+left in place for 6.H. Future opportunistic cleanup may remove
+it (it is redundant under Q[DUAL] daughter + strict matcher).
+
+### 4. Sub-commit ledger (post-design sign-off)
+
+- **C2** — L33: split base float rule + add NUM constraint to
+  Phase 5f Commit 23 rules + author L33 tests.
+  ``hatch run test-both`` gate.
+- **C3** — L85+: 8/9/10-conjunct stress fixtures. ``hatch run
+  test-both`` gate (test-only commit; the new fixtures exercise
+  the post-6.C recursion).
+- **C4** — Drop the 2 ``=c`` leak sites. ``hatch run test-both``
+  gate.
+- **C5** — Closing docs.
+
+### 5. Out-of-scope items (structurally, not deferred)
+
+- **Other floated Q agreement** — vague-Q's (``marami`` /
+  ``konti``) and ``lahat`` compose with SG / mass / collective
+  antecedents semantically; no NUM constraint applies.
+- **DU NUM** — if a future Phase adds free DU PRONs (e.g.,
+  ``kita`` lifted from clitic-only status), the constraint
+  becomes ``(↑ SUBJ NUM) =c 'PL' ∨ 'DU'``; current scope is
+  PL only.
+- **Cross-clausal dual-Q agreement** — the inside-out FU
+  designator needed to bind a clause-internal dual-Q to a
+  matrix antecedent is Phase 7+ unifier extension (same path
+  as the cross-clausal sarili deferral from 6.F).
+- **Floated-Q gender / case agreement** — Tagalog Qs have no
+  gender; CASE is fixed via the NOM-antecedent restriction
+  (DUAL Q's bind NOM-PRONs only).
+- **Bracketed-feat tightening of other rules** — additional
+  ``=c`` sites that *could* be dropped under the strict matcher
+  remain in place; the plan-of-record §4.2 limits 6.H to the 2
+  explicitly-tagged sites.
