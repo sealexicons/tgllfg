@@ -13988,3 +13988,166 @@ inventory items (L32 / L33 / L47 / L85+ / L93 / L104 /
 L105 / parser non-conflict-matcher) have been resolved
 across Phases 6.C through 6.I. Phase 6.J cumulative closing
 docs is all that remains.
+
+## Phase 6 cumulative summary (2026-05-13)
+
+Phase 6 delivered the canonical Kaplan & Zaenen 1989 LFG
+architecture for tgllfg across 10 sub-PRs (6.A–6.J),
+spanning ~3 weeks of implementation. The transition is
+complete; §18.1.2 closes entirely.
+
+### Architectural changes (Phase 6.A–6.C)
+
+- **6.A — Atomic unification.** `FGraph.unify` rewritten
+  with snapshot/rollback semantics via per-mutation undo
+  journal. Hard prerequisite for FU evaluation, which
+  enumerates multiple endpoints and requires per-attempt
+  rollback on failure. PR #37 (`610ba8f`).
+- **6.B — Functional uncertainty.** `_resolve_regex_for_read`
+  in `fstruct/fu.py` implements the Kaplan & Maxwell 1988
+  FSA traversal with visited-set cycle prevention, K&Z 1989
+  §3 minimality clause, off-path constraint evaluation, and
+  binding-equation context (regex RHS + reentrant LHS). The
+  evaluator supports concatenation, `F*`, `F+`, `F | G`
+  alternation; `{F | G}*` Kleene-on-alternation parked as
+  Phase 7+ AST extension. PR #38 (`dad22c4`).
+- **6.C — Graph-constraint matcher.** `cfg/compile.py:matches`
+  switched from "non-conflict" semantics (which silently
+  admitted shared-key-absence matches) to strict matching
+  (`expected.keys() ⊆ candidate.keys()` + value compat on
+  shared keys). The strict matcher is what K&Z 1989 §3
+  c-structure faithfulness demands and what makes
+  bracketed-feat daughter patterns load-bearing. ~50%
+  test-fast wall-time speedup as a side effect (predict-time
+  pruning removes spurious binary fanout). PR #39
+  (`9bb2ec3`). Closes §18.1.2 non-conflict-matcher +
+  L85+ 5+-conjunct flat NP coord.
+
+### §18.1.2 inventory closures (Phase 6.D–6.I)
+
+The seven L-numbered §18.1.2 carry-forwards landed across
+six sub-PRs, each picking up one or two related closures:
+
+<!-- markdownlint-disable MD013 -->
+
+| Phase | PR | §18.1.2 closure | Realization |
+| --- | --- | --- | --- |
+| 6.D | #40 (`4721fc5`) | L47 long-distance wh-extraction | S_XCOMP-bodied RC wrap rules with K&Z 1989 §3 eq. 39 constraining-form binding `(↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)`. |
+| 6.E | #41 (`731ad29`) | L93 free relative `kung sino` / `kung ano` as DPs | 3 NP wrap rules consuming `S_INTERROG_COMP[Q_TYPE=WH]` with `FREE_REL=true` head marker. |
+| 6.F | #42 (`67ab020`) | L104 `sarili` anaphora binding | 24 binding-rule variants in `cfg/control.py` mirroring the transitive `voice_specs` loop (Kroeger 1993 §2.3 actor-binder); LEMMA-gated. |
+| 6.G | #43 (`711aeb4`) | L32 NP-from-N projection of modifier feats | SHARE+SHARE `(↑) = ↓1, (↑) = ↓2` on simple NP rules + explicit APPROX/DISTRIB lifts on cardinal-NP rule; `N_RC` tag-feat blocks N→NP RC double-firing. |
+| 6.H | #44 (`3349e2f`) | L33 floated-Q number agreement + L85+ stress + 2 `=c` cleanup | Three-variant base float rule split (bare Q / Q[DUAL]+`=c 'PL'` / Q[DUAL]+`¬ NUM`); 8/9/10-conjunct stress fixtures; 2 explicitly-tagged matcher-leak sites dropped. |
+| 6.I | #45 (`a1469af`) | L105 productive ADV reduplication | New `Particle.affix_class` field + `_index_particle_paradigms` analyzer dispatch + `adv_redup` paradigm cell; static `paminsanminsan` migrated to productive derivation from `minsan`. |
+
+<!-- markdownlint-enable MD013 -->
+
+### Cross-cutting architectural commitments
+
+These patterns surfaced during Phase 6 and are worth carrying
+forward into future phases:
+
+- **K&Z 1989 §3 c-structure faithfulness**. No phantom NP
+  daughters or empty-extraction-site non-terminals; long-
+  distance dependencies live in the equation language and
+  the unifier, not in c-structure rules.
+- **Constraining-form `=c` over defining-form `=` for
+  graph-existing endpoints**. The constraining form fires
+  only when the path is already defined; gives correct
+  diagnostics at the right site and avoids creating-if-absent
+  pollution.
+- **Rule-split for "PL or undefined" semantics**. Use a
+  rule-variant approach (`=c 'PL'` + `¬ NUM`) rather than
+  seeking a NUM-disjunction operator. Post-6.C strict-matcher
+  predict-time pruning makes rule splits cheap.
+- **Tag-feat blocks for N-level-vs-NP-level ambiguity**.
+  When SHARE+SHARE introduces ambiguity with companion N-level
+  rules, tag the N-level output with a distinct binary feat
+  (e.g., `N_RC`) and add `¬ (↓2 N_RC)` to the NP-level rule.
+- **Anti-deferral closure pattern**. Fold related deferrals
+  into the same fix where infrastructure overlaps (e.g.,
+  Phase 6.F C2 SEM_CLASS-lift deferral folded into 6.G L32
+  closure).
+- **Inventory-of-one infrastructure is fine**. Phase 6.G's
+  SHARE+SHARE NP rules and 6.I's `adv_redup` paradigm cell
+  each have only one current consumer but enable trivial
+  future extension via lex-side wiring.
+- **Particle paradigm dispatch parallels pronoun dispatch**.
+  Phase 6.I's `_index_particle_paradigms` follows the
+  Phase 5n.C.3 Commit 5 `_index_pronoun_paradigms` pattern;
+  future PART-class productive derivations reuse the
+  infrastructure by setting `base_pos` on the paradigm cell.
+
+### Phase 7+ unifier extensions parked
+
+Items deferred during Phase 6 to a future unifier-extension
+phase (see `.claude/plans/tgllfg-out-of-scope.md` §18.1.3):
+
+- **FU deferred defining-equation evaluation** (from 6.D).
+  Defining-equations with regex-path RHS evaluate parent-
+  first at the c-node's f-graph snapshot during pass 1;
+  endpoints introduced by child equations aren't yet visible.
+  Phase 6.D worked around by switching the canonical K&Z 1989
+  §3 eq. 39 binding form `(↓3 REL-PRO) = (↓3 XCOMP* SUBJ)`
+  to constraining form `=c` (evaluates in pass 2 after
+  children).
+- **FU inside-out designators** (from 6.F). Standard
+  Dalrymple 2001 ch. 14 inside-out path designators
+  (`((SUBJ ↑) GF)`-style) are not currently supported by
+  `resolve_regex_for_read`. Phase 6.F worked around by
+  placing sarili binding equations on matrix S rules;
+  cross-clausal sarili in XCOMP bodies is the deferred
+  motivating case (pinned by `TestCrossClausalDeferred`).
+- **FU resolver-side cyclic-endpoint pruning** (from 6.F).
+  K&Z 1989 §3 minimality picks the shortest-depth endpoint;
+  if the canonical endpoint causes a cyclic unification, the
+  resolver currently returns it and `graph.unify` fails.
+  Phase 6.F used equation-side exclusion (separate rule
+  variants per voice spec) instead.
+- **Per-XCOMP binding rules for cross-clausal sarili**
+  (from 6.F). Alternative path to inside-out FU; awaits
+  cross-clausal sarili surfacing as motivating.
+- **`{F | G}*` Kleene on alternation** (from 6.B C6). AST
+  extension is well-scoped but not yet motivated by Tagalog
+  applications.
+- **Conditional-lift mechanism for atomic-path defining
+  equations** (from 6.G). The unifier's `(↑ X) = ↓i X` is
+  creating-if-absent; for binary-feat lifts on optional
+  modifiers, SHARE+SHARE works around but a conditional-lift
+  primitive would be cleaner.
+
+### Test counts across Phase 6
+
+- Pre-Phase-6 (6.A entry point): 7 024 fast tests.
+- Post-Phase-6 (6.I exit): 7 200 fast + 19 slow + 1 xfail =
+  7 219 combined; lint clean on 313 source files.
+- Net Phase 6 test-corpus growth: +176 fast tests (+2.5%
+  test count) across new construction classes:
+  cross-clausal RC (19 tests), free-relative kung-S (15
+  tests), sarili binding (parametrized + parametrized cross-
+  clausal, ~10 tests), NP-from-N projection (13 tests),
+  floated-Q agreement (21 tests), L85+ stress (3 tests),
+  productive ADV redup (2 tests), plus FU evaluator property
+  tests (Phase 6.B), atomic-unify property tests (Phase 6.A),
+  and graph-constraint matcher unit tests (Phase 6.C).
+
+### Performance impact
+
+- Phase 6.A atomic-unify: no measurable regression on the
+  green path (rollback only fires on failure).
+- Phase 6.B FU evaluator: no measurable regression — FU
+  evaluation is bounded by f-graph size (≤ hundreds of nodes
+  for canonical Tagalog sentences), not grammar size.
+- Phase 6.C strict matcher: ~50% test-fast wall-time
+  speedup. The strict matcher prunes spurious binary fanout
+  at predict time that the old non-conflict matcher passed
+  through to late-fail at the constraining-equation pass.
+
+### Closing carry-forward to Phase 7+
+
+Phase 7 is **not yet planned**. The Phase 7+ unifier
+extensions listed above are awaiting either corpus pressure
+(cross-clausal sarili / non-XCOMP-controlled COMP traversal)
+or a clear architectural motivation (Kleene-on-alternation
+construction). The codebase is feature-complete for the
+canonical Tagalog construction inventory as covered by S&O
+1972, R&B 1986, R&G 1981, and Kroeger 1993.
