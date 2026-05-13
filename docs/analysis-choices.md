@@ -13173,3 +13173,75 @@ listing them clarifies the L32 scope rather than deferring them.
 - Phase 6.F C2 (``project_phase6f_progress``; SEM_CLASS lift
   deferral folded into 6.G).
 - §18.1.2 L32 entry — closed by 6.G.
+
+### What landed (2026-05-12)
+
+C2 grammar landed via **SHARE+SHARE** on the 3 simple
+NP-from-DET/ADP+N rules in ``src/tgllfg/cfg/nominal.py``
+(``(↑) = ↓1, (↑) = ↓2``). Implementation note vs the C1
+appendix's Option B preference: the appendix favored
+share-with-N + explicit DET lifts due to a feared FORM
+conflict. Implementation verified FORM isn't set on DET via
+equations (only via lex, which doesn't unify), so the simpler
+Option A (SHARE+SHARE) was used. Modifier feats from N
+(``SEM_CLASS``, ``SEM_CLASS='SEASON'``, plus any N-internal
+modifier-composition feats) propagate to NP via structure-
+sharing — no empty-f-node pollution.
+
+C2 also addressed an **N-level-RC ambiguity** the SHARE+SHARE
+introduced: the Phase 5n.A C8 N-level RC rule's output N
+would, when consumed by the simple NP rule, produce a parse
+equivalent to the canonical NP-level RC wrap (Phase 4 §7.5).
+Resolution: the N-level RC tags its output with ``(↑ N_RC) =
+true`` (binary feat; added to ``BINARY_FEATS`` with companion
+audit doc + counter bump); the simple NP rule's
+``¬ (↓2 N_RC)`` constraint blocks consumption of N-level-RC'd
+Ns. Distinguishable at pass-2 because the tag is set by the
+N-level RC's own defining equation, while the canonical
+NP-level RC path adds ADJ to N via shared-f-structure but
+never sets ``N_RC``. The N-level RC stays load-bearing for the
+existential bare-N case (``May bahay na nasa bundok``) — the
+existential rule consumes bare N directly.
+
+A parallel ``¬ (↓2 CARDINAL_VALUE)`` constraint on the simple
+NP rule blocks the N-level cardinal-composition rule (Phase 5f
+Commit 1 companion) from feeding the simple NP rule, keeping
+the dedicated NP-level cardinal rule as the unique surface
+route for case-marked cardinal NPs.
+
+C3 grammar added explicit ``(↑ APPROX) = ↓2 APPROX`` and
+``(↑ DISTRIB) = ↓2 DISTRIB`` lifts to the dedicated cardinal-NP
+rule (lifts the modifier feats from the inner NUM daughter
+when present). The unifier's creating-if-absent semantics
+creates empty ``FStructure`` placeholders on bare cardinals
+without an APPROX or DISTRIB wrapper; downstream consumers
+checking ``is True`` correctly skip the placeholder. The
+empty-f-node convention is pinned by the
+``TestEmptyFNodeTolerance`` class in C3.
+
+C3 tests landed at ``tests/tgllfg/test_phase6_np_projection.py``
+— 13 tests across 6 classes covering: ``SEM_CLASS`` lifts
+(REFLEXIVE + SEASON); cardinal modifier feats
+(CARDINAL_VALUE, NUM, APPROX, DISTRIB); ORDINAL_VALUE; WHOLE;
+the ``¬ CARDINAL_VALUE`` block on the simple NP rule; the
+``¬ N_RC`` block + existential RC + canonical NP-level RC
+preservation; and the empty-f-node tolerance convention.
+
+C2 also flipped the Phase 5m ``test_sem_class_reflexive_not_in_
+subj_fstructure`` pin to ``test_sem_class_reflexive_lifts_to_
+subj_fstructure`` — closing the Phase 6.F C2 SEM_CLASS-lift
+deferral as part of L32.
+
+Final 6.G status:
+
+- test-fast: 7 174 passed + 1 xfail (~64s) — ``not postgres
+  and not slow``.
+- test-slow: 19 passed (~19s) — ``slow`` only.
+- test-both: 7 174 + 19 = 7 193 total passed + 1 xfail (~66s
+  combined).
+- check: clean on 312 source files.
+
+No deferrals introduced. Items recorded as out-of-scope (COMP
+percolation, MEASURE-on-coord, DEIXIS-on-bare-NP, MEASURE
+lex-blocked) are structurally not L32 cases, not deferred
+work.
