@@ -56,12 +56,19 @@ not the `ng`-NP — confirmed by the ungrammaticality of
 constructions where the `ng`-NP is intended as the binder and
 the `ang`-NP is the bound element.
 
-**Parser status.** Reflexive binding is currently a docs-only
-analysis. The `sarili` lex entry parses; the unifier does not
-enforce the binding constraint. Phase 6 (FU) is the natural
-point to add a constraining equation roughly of the form
-`(↑ SUBJ INDEX) =c (↑ OBJ POSS INDEX)` once `INDEX` features
-exist on PRON / NOUN heads.
+**Parser status (post-Phase 6.F).** Reflexive binding is
+**enforced** by the parser as of Phase 6.F (PR #42 ``67ab020``,
+§18.1.2 L104). 24 binding-rule variants in ``cfg/control.py``
+mirror the transitive ``voice_specs`` loop and add binding
+equations of the form ``(↑ SUBJ ANTECEDENT) = (↑ <obj_target>)``
+(or the reverse direction, depending on where the ``sarili``
+surfaces). LEMMA-gated via ``=c 'sarili'``. Per Kroeger 1993
+§2.3 actor-binder theory — Tagalog reflexives are bound by the
+matrix actor, not the grammatical pivot. Cross-clausal binding
+(sarili in XCOMP body, binder at matrix level) does not fire
+under 6.F's matrix-rule equations and is deferred as Phase 7+
+unifier extension (inside-out FU designators per Dalrymple 2001
+ch. 14, or per-XCOMP binding rules).
 
 ### 1.2 Quantifier float (`lahat`)
 
@@ -93,9 +100,16 @@ thematic role the pivot is.
   for the intended reading because `bata` would be the
   `ng`-NP, not the pivot.
 
-Phase 6 will lift the SUBJ-only restriction across nested
-XCOMP / COMP via FU (§13.3); the SUBJ-only constraint stays
-in force at the bottom of the path.
+Phase 6.D (PR #40 ``4721fc5``, §18.1.2 L47) lifts the
+SUBJ-only restriction across nested XCOMP via FU. The
+S_XCOMP-bodied RC wrap rules in ``cfg/extraction.py`` admit
+relativization through control chains of arbitrary depth via
+the constraining-form binding ``(↓3 REL-PRO) =c (↓3 XCOMP*
+SUBJ)`` (K&Z 1989 §3 eq. 39 adapted to Tagalog XCOMP body).
+The SUBJ-only constraint stays in force at the bottom of the
+path (the gap site is always at the inner SUBJ). Cross-clausal
+COMP traversal is **not** in 6.D scope — COMP carries its own
+SUBJ pivot, not control-shared; corpus-pressure follow-on.
 
 ## 2. Objecthood: OBJ vs OBJ-θ vs OBL
 
@@ -263,15 +277,20 @@ for a future implementation commit.
   compare the GF assignment of the `sa`-NP. Currently a
   manual check; should become an automated diagnostic helper
   in `tests/tgllfg/diagnostics/`.
-- **Reflexive binding** (Phase 6). The `sarili` reflexive's
-  binding domain is currently docs-only. Phase 6 FU is the
-  natural point to add a binding equation; until then,
-  reflexive sentences parse but the binding is not checked.
-- **Floated-quantifier number agreement** (Phase 5g+). `lahat`
-  floats to the SUBJ, but the floated Q's interpretation
-  should also enforce that the SUBJ's `NUM` features are
-  PL / collective. Currently the float lifts; the agreement
-  is implicit.
+- **Reflexive binding** — **closed in Phase 6.F** (PR #42
+  ``67ab020``, §18.1.2 L104). The ``sarili`` reflexive is now
+  bound to the matrix actor via 24 binding-rule variants in
+  ``cfg/control.py`` (Kroeger 1993 §2.3). See §1.1 for the
+  current parser status. Cross-clausal binding remains
+  deferred (Phase 7+ inside-out FU).
+- **Floated-quantifier number agreement** — **closed in
+  Phase 6.H** (PR #44 ``3349e2f``, §18.1.2 L33). The Phase 4
+  §7.8 base float rule splits into three variants (bare Q
+  unconstrained NUM / Q[DUAL] with ``=c 'PL'`` / Q[DUAL] with
+  ``¬ NUM``) and the Phase 5f Commit 23 clause-initial dual-Q
+  rules each gain ``(↑ SUBJ NUM) =c 'PL'``. ``lahat`` (not
+  DUAL) remains unconstrained on NUM since Tagalog NPs without
+  ``mga`` are number-neutral.
 - **Adjective class — paradigm-absence diagnostic** (Phase 5g).
   The analytical commitment in plan §12.1 is `POS=ADJ +
   [PREDICATIVE+]`. The diagnostic for the commitment is the
