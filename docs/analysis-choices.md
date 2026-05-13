@@ -12831,3 +12831,70 @@ ANTECEDENT" to "ANTECEDENT == OBJ".
   reflexive, not pivot.
 - Ramos 1971 — Tagalog binding domains; secondary reference.
 - §18.1.2 L104 entry — closed by 6.F.
+
+### What landed (2026-05-12)
+
+C2 grammar landed 24 binding-rule variants in
+``src/tgllfg/cfg/control.py``, mirroring the existing transitive
+``voice_specs`` loop (6 voice_specs × 2 NP orders × 2 binding
+directions). Each variant fires when SUBJ or the obj_target
+(``OBJ`` for AV; ``OBJ-AGENT`` for OV / DV / IV plain;
+``OBJ-CAUSER`` for the CAUS=DIRECT variants) has
+``LEMMA =c 'sarili'``, setting ``ANTECEDENT`` to the matrix
+actor's f-structure via the Phase 6.B C5 binding-equation
+context (``_eval_defining_eq`` unifies LHS with the shortest-
+depth endpoint of the RHS path).
+
+**Implementation note: LEMMA gating, not SEM_CLASS lift**. The
+design appendix laid out two gating options. Option A
+(SEM_CLASS lift at the NP projection) was attempted first and
+surfaced an unifier quirk: ``(↑ SEM_CLASS) = ↓2 SEM_CLASS`` is
+not a no-op when ``↓2`` has no SEM_CLASS — the unifier creates
+an empty ``FStructure`` node at ``↑.SEM_CLASS`` (verified by
+probe: ``Tumakbo ang bata.`` yielded
+``SUBJ.SEM_CLASS=FStructure(feats={}, id=25)``). The C2 grammar
+took Option B (gate on ``LEMMA =c 'sarili'`` directly) instead,
+which is narrower (only fires on the exact lemma) but doesn't
+pollute every NP with an empty SEM_CLASS f-node.
+
+C2 tests landed at
+``tests/tgllfg/test_phase5m_reflexive_sarili.py`` —
+``TestAnaphoraDeferred`` was flipped to
+``TestAnaphoraResolution`` with a ``_find_bound_parse`` helper
+that finds the bound parse among the 2-parse output (the new
+binding rule fires alongside the existing non-binding rule for
+sarili surfaces). 4 parametrized tests across the canonical
+1sg / 2sg / 3sg / 3pl GEN-PRON variants.
+
+C3 extended the corpus with 7 more tests:
+
+- ``TestSariliAtAVObject`` (3 parametrized): ``Kumain X ng
+  sarili X.`` verifies ``(↑ OBJ ANTECEDENT) = (↑ SUBJ)`` — the
+  SUBJ-bound direction for true AV transitives.
+- ``TestSariliAtOVSubject`` (3 parametrized): ``Kinain X ang
+  sarili X.`` verifies ``(↑ SUBJ ANTECEDENT) = (↑ OBJ-AGENT)``
+  — the OBJ-AGENT-bound direction for OV pivots.
+- ``TestCrossClausalDeferred`` (1 pinned test): ``Gusto kong
+  kumain ng sarili ko.`` parses cleanly today but no binding
+  fires; recorded as the deferred xfail-style pin (the
+  assertion message nudges the future flip).
+
+**Cross-clausal deferral**: the matrix PSYCH-control rule
+doesn't see the embedded sarili directly, so the C2 matrix-rule
+binding equations don't fire on cross-XCOMP sarili. Resolution
+paths recorded as Phase 7+ scope:
+
+1. Inside-out FU designators (substantial unifier extension).
+2. Per-XCOMP binding rules traversing from S_XCOMP body up to
+   the matrix's binder (voluminous; awaits cross-clausal
+   sarili surfacing in corpus).
+
+The TestCrossClausalDeferred pin will detect future enablement
+without code changes.
+
+Final 6.F status: 7 161 fast tests + 19 slow + 1 xfail (the
+test_kahit_ano_in_obj cross-case-lex carry-forward from 6.C,
+unrelated to 6.F). Lint clean (311 source files). No new
+deferrals introduced beyond the cross-clausal item already
+itemized in *Out of scope* above (and the Phase 7+
+inside-out-FU / resolver-side-cyclic-pruning entries from C1).
