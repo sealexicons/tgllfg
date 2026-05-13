@@ -13872,3 +13872,119 @@ one current entry uses it".
   forms**. The lex audit found no immediate candidates beyond
   ``paminsan-minsan``; future Tagalog corpus expansion may
   surface more.
+
+### What landed (2026-05-13)
+
+Phase 6.I landed in 4 numbered commits (C1 design appendix +
+C2 paradigm-engine extension + C3 lex migration + tests + C4
+closing docs). test-fast: 7 200 passed + 1 xfailed (~67s).
+test-slow: 19 passed (~20s). test-both combined: 7 219 + 1
+xfailed (~67s). check: clean on 313 source files.
+
+#### C2 → C3 — design realized faithfully
+
+The C2 paradigm-engine extension landed as designed (no
+expansion of scope):
+
+- ``Particle.affix_class: list[str]`` added with empty-list
+  default; existing particles get a no-op field.
+- ``_load_particles`` extended to parse ``affix_class`` from
+  YAML with list-typed validation.
+- ``_index_particle_paradigms`` method added parallel to
+  ``_index_pronoun_paradigms``; dispatched from the
+  particle-loading loop only when ``p.affix_class`` is
+  non-empty (zero overhead for the typical case).
+- LEMMA construction for redup_root-final cells builds a
+  shallow clone of the cell with the trailing ``redup_root``
+  op stripped, re-runs ``generate_form`` to obtain the
+  pre-redup base, then sets ``canonical_lemma =
+  pre_redup_base + "-" + p.surface``. Other cells fall
+  through to ``feats.get("LEMMA", p.surface)``.
+
+The C3 migration produced an analysis identical (byte-for-
+byte equal) to the pre-migration static entry:
+
+```python
+# Pre-migration (static entry):
+MorphAnalysis(
+    lemma='paminsan-minsan',
+    pos='ADV',
+    feats={'ADV_TYPE': 'FREQUENCY',
+           'FREQ_VALUE': 'OCCASIONAL',
+           'LEMMA': 'paminsan-minsan'}
+)
+# Post-migration (productive via adv_redup cell):
+MorphAnalysis(
+    lemma='paminsan-minsan',
+    pos='ADV',
+    feats={'ADV_TYPE': 'FREQUENCY',
+           'FREQ_VALUE': 'OCCASIONAL',
+           'LEMMA': 'paminsan-minsan'}
+)
+```
+
+The downstream parse-pipeline and f-structure see no
+difference; the existing parametrized fixture
+``("Pumupunta ako paminsan-minsan.", "PUNTA", "paminsan-
+minsan", "OCCASIONAL")`` passes via the productive path
+without test changes.
+
+#### Test coverage: same-surface assertions + productive-mechanism pins
+
+The original pinned test ``test_paminsan_minsan_single_parse``
+stays (single-parse invariant preserved across the migration);
+docstring updated to describe the post-6.I mechanism. New
+``TestPaminsanMinsanProductive`` class adds 2 explicit
+productive-mechanism assertions:
+
+- ``test_productive_analysis_matches_baseline``: the analysis
+  carries the canonical hyphenated LEMMA, FREQ_VALUE, and
+  ADV_TYPE.
+- ``test_bare_minsan_unaffected``: the bare ``minsan``
+  SOMETIMES analysis indexes unchanged.
+
+#### Architectural commitments worth carrying forward
+
+- **Particle paradigm dispatch parallels pronoun dispatch**.
+  The new ``_index_particle_paradigms`` method follows the
+  Phase 5n.C.3 Commit 5 ``_index_pronoun_paradigms``
+  pattern — same synthetic-Root construction, same affix-
+  class filtering, same per-cell LEMMA-merge logic. Future
+  PART-class productive derivations (DET / ADP / Q) can
+  reuse the same dispatch infrastructure by setting
+  ``base_pos`` on the paradigm cell.
+- **LEMMA construction for redup_root-final cells via
+  pre-redup-base hyphenation**. The pattern generalizes to
+  any future cell ending in ``redup_root`` — no per-cell
+  LEMMA template needed. The dispatcher inspects the cell's
+  final op and applies the hyphenation rule
+  ``pre_redup_base + "-" + root.citation`` automatically.
+- **Inventory-of-one infrastructure is fine when the
+  infrastructure benefit is clear**. Mirrors the Phase 6.G
+  pattern (SHARE+SHARE on 3 simple NP rules, even though
+  only L32 closure exercised it initially). Future Tagalog
+  corpus expansion can wire additional ADV redup forms via
+  lex-side ``affix_class: [adv_redup]`` without paradigm-
+  cell changes.
+
+#### Final 6.I status
+
+- test-fast: 7 200 passed + 1 xfailed (~67s) — +2 from 6.H
+  baseline (the 2 new productive-mechanism tests in
+  ``TestPaminsanMinsanProductive``).
+- test-slow: 19 passed (~20s) — slow only.
+- test-both: 7 200 + 19 = 7 219 total passed + 1 xfailed
+  (~67s combined).
+- check: clean on 313 source files.
+
+No deferrals introduced. The structural out-of-scope items
+in §8 (hyphen-merge pre-pass retention, POS-flipping ADV
+cells, non-FREQUENCY ADV redup, sandhi, other ADV redup
+forms) are forward-looking infrastructure capacities, not
+deferred L105 work.
+
+After 6.I, **§18.1.2 closes entirely** — all 8 §18.1.2
+inventory items (L32 / L33 / L47 / L85+ / L93 / L104 /
+L105 / parser non-conflict-matcher) have been resolved
+across Phases 6.C through 6.I. Phase 6.J cumulative closing
+docs is all that remains.
