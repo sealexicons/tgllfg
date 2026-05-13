@@ -190,6 +190,14 @@ class Particle:
     feats: dict[str, object] = field(default_factory=dict)
     is_clitic: bool = False
     clitic_class: str = ""
+    # Phase 6.I Commit 2 (§18 L105): affix_class drives the
+    # particle-base paradigm engine. Empty list (default) means no
+    # paradigm cells fire on this particle. Non-empty entries match
+    # paradigm cells in ``paradigm_cells`` whose ``base_pos`` matches
+    # this particle's ``pos`` and whose ``affix_class`` is in this
+    # list — e.g., ``[adv_redup]`` on the ``minsan`` ADV entry
+    # produces the productive ``paminsan-minsan`` OCCASIONAL form.
+    affix_class: list[str] = field(default_factory=list)
 
 
 @dataclass

@@ -1000,3 +1000,38 @@
     - {op: redup_root}
   feats: {NUM: PL}
   notes: redup_wh_plural — ano → anoano, sino → sinosino, kanino → kaninokanino, alin → alinalin (L49)
+
+# --- Phase 6.I Commit 2: adv_redup (§18 L105) ---------------------------
+# Productive ``pa-X-X`` reduplication of ADV-FREQUENCY roots —
+# ``paminsan-minsan`` "occasionally" from ``minsan`` "sometimes".
+# The Phase 5f Commit 14 ``merge_hyphen_compounds`` tokenizer pre-pass
+# collapses the canonical hyphenated input to the single-token surface
+# this paradigm generates (``paminsanminsan``); the analyzer's
+# ``_index_particle_paradigms`` (Phase 6.I C2 new infrastructure)
+# computes the canonical hyphenated LEMMA ``paminsan-minsan`` from
+# the pre-redup base.
+#
+# Operations: ``[prefix pa, redup_root]``. Order matters — the
+# Phase 5n.C.3 Commit 6 ``redup_root`` op appends the root after the
+# prefix is attached, so ``pa`` appears only on the first copy
+# (``paminsan`` + ``minsan`` = ``paminsanminsan``). Distinct from
+# ``full_redup`` (Commit 2) which would put ``pa-`` on both copies.
+#
+# Cell.feats: ``ADV_TYPE=FREQUENCY`` + ``FREQ_VALUE=OCCASIONAL`` —
+# the productive shift from the base's ``SOMETIMES`` to the derived
+# ``OCCASIONAL`` meaning. ``ADV_TYPE`` is set explicitly to override
+# any non-FREQUENCY ADV-base that wires ``affix_class: [adv_redup]``
+# in the future (defensive; current base ``minsan`` is FREQUENCY).
+#
+# Inventory of one today (``minsan``) — future ADV-FREQUENCY entries
+# requiring a parallel ``pa-X-X`` form land via lex-side
+# ``affix_class: [adv_redup]`` wiring without paradigm-cell changes.
+# References: Schachter & Otanes 1972 §3.5 (frequency adverb
+# reduplication); R&B 1986 ch.4 (productive reduplication).
+- base_pos: ADV
+  affix_class: adv_redup
+  operations:
+    - {op: prefix, value: "pa"}
+    - {op: redup_root}
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: OCCASIONAL}
+  notes: adv_redup — minsan → paminsanminsan / LEMMA paminsan-minsan (L105 productive frequency redup)
