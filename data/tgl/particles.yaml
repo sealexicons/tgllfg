@@ -1749,14 +1749,25 @@
 # (f) Frequency adverbs — extends Phase 5f Commit 5 sentential-FREQ
 #
 # ``madalas`` "often", ``palagi`` "always", ``lagi`` "always
-# (clitic-host variant)", ``minsan`` "sometimes / once",
-# ``paminsan-minsan`` "occasionally" (opaque hyphenated token —
-# productive redup deferred to Phase 6). All carry ADV_TYPE=
-# FREQUENCY which routes through the existing Phase 5f Commit 5
-# rule ``S → S AdvP[FREQ]`` in cfg/discourse.py. The new FREQ_VALUE
-# feat (HIGH / HABITUAL / SOMETIMES / OCCASIONAL) is diagnostic
-# only — it doesn't gate any grammar rule. Reference: S&O 1972
-# §3.5.
+# (clitic-host variant)", ``minsan`` "sometimes / once". All carry
+# ADV_TYPE=FREQUENCY which routes through the existing Phase 5f
+# Commit 5 rule ``S → S AdvP[FREQ]`` in cfg/discourse.py. The new
+# FREQ_VALUE feat (HIGH / HABITUAL / SOMETIMES / OCCASIONAL) is
+# diagnostic only — it doesn't gate any grammar rule. Reference:
+# S&O 1972 §3.5.
+#
+# Phase 6.I Commit 3 (§18.1.2 L105 close): ``paminsan-minsan``
+# "occasionally" is now produced **productively** by the Phase 6.I
+# Commit 2 ``adv_redup`` paradigm cell in ``data/tgl/paradigms.yaml``
+# rather than as a static entry. The ``minsan`` entry below carries
+# ``affix_class: [adv_redup]`` to opt into the productive derivation;
+# the analyzer's new ``_index_particle_paradigms`` method generates
+# the joined surface ``paminsanminsan`` with canonical hyphenated
+# LEMMA ``paminsan-minsan`` and FREQ_VALUE=OCCASIONAL. The previous
+# static ``paminsanminsan`` entry has been removed. The Phase 5f
+# Commit 14 ``merge_hyphen_compounds`` tokenizer pre-pass continues
+# to collapse the hyphenated input form to the joined surface for
+# analyzer lookup (unchanged).
 - surface: madalas
   pos: ADV
   feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: HIGH, LEMMA: madalas}
@@ -1768,10 +1779,8 @@
   feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: HABITUAL, LEMMA: lagi}
 - surface: minsan
   pos: ADV
+  affix_class: [adv_redup]
   feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: SOMETIMES, LEMMA: minsan}
-- surface: paminsanminsan
-  pos: ADV
-  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: OCCASIONAL, LEMMA: paminsan-minsan}
 
 # Phase 5n.B Commit 4 (§18 L40): pinaka- superlative ADV-FREQUENCY
 # variants. Parallel to the Q-superlative entries above; the
