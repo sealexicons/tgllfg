@@ -123,6 +123,18 @@ def register_rules(rules: list[Rule]) -> None:
     # to REL-PRO and the SUBJ-only constraint are preserved.
     # Required for R&G "Ang Manok" combined essay-paragraph and
     # ``May bahay na nasa bundok`` style sentences.
+    #
+    # Phase 6.G C2: the produced N is tagged with ``N_RC = true``
+    # so the simple NP-from-DET+N rule (``cfg/nominal.py``) can
+    # reject it via ``¬ (↓2 N_RC)``. Under the Phase 6.G
+    # SHARE+SHARE projection, an N-level-RC'd N consumed by the
+    # simple NP rule would produce a parse equivalent to the
+    # NP-level RC wrap (Phase 4 §7.5) — the tag prevents that
+    # spurious ambiguity. The N-level RC stays load-bearing for the
+    # existential bare-N case where the existential rule consumes
+    # bare N directly (not through the simple NP path). ``N_RC``
+    # is a binary feat (Phase 5n.C.4 bool convention); declared in
+    # ``core/feats.py`` BINARY_FEATS.
     for link in ("NA", "NG"):
         rules.append(Rule(
             "N",
@@ -132,6 +144,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓3 ∈ (↑ ADJ)",
                 "(↓3 REL-PRO PRED) = (↓1 PRED)",
                 "(↓3 REL-PRO) =c (↓3 SUBJ)",
+                "(↑ N_RC) = true",
             ],
         ))
 

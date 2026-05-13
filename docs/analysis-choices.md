@@ -12898,3 +12898,350 @@ unrelated to 6.F). Lint clean (311 source files). No new
 deferrals introduced beyond the cross-clausal item already
 itemized in *Out of scope* above (and the Phase 7+
 inside-out-FU / resolver-side-cyclic-pruning entries from C1).
+
+## Phase 6.G Commit 1: L32 NP-from-N projection widening — design
+
+**Date:** 2026-05-12. **Status:** active (design commit; grammar
+/ test lands in 6.G C2-C3).
+
+### Goal
+
+Close §18.1.2 L32 (*NP-from-N projection of modifier features*)
+by widening the NP projection so modifier features
+(``CARDINAL_VALUE``, ``ORDINAL_VALUE``, ``SEASON``, ``APPROX``,
+``COMP``, ``MEASURE``, ``DISTRIB``, ``WHOLE``, plus the
+Phase 6.F-deferred ``SEM_CLASS``) lift from inner N (or NUM /
+Q) onto the matrix NP.
+
+Per the user's **anti-deferral guidance** for Phase 6.G: this
+commit closes L32 **completely**. No partial work pushed to
+Phase 7+; the design covers every modifier-feat path. The
+``SEM_CLASS`` lift item (deferred from Phase 6.F C2 when the
+naive ``(↑ X) = ↓2 X`` lift surfaced an empty-f-node issue) is
+folded into 6.G as part of the same fix.
+
+### The empty-f-node problem (Phase 6.F C2 finding)
+
+Probed during Phase 6.F C2: adding ``(↑ SEM_CLASS) = ↓2
+SEM_CLASS`` to the simple NP-from-DET+N rule yields
+``SUBJ.SEM_CLASS = FStructure(feats={}, id=N)`` on NPs whose
+head N has no SEM_CLASS (verified with ``Tumakbo ang bata.``).
+The unifier's ``_resolve_for_write`` for an atomic-path RHS
+creates a fresh empty f-node when the source path is undefined
+— there's no "if-defined-then-lift" short-circuit. The lift
+therefore pollutes every NP with empty f-nodes for every
+non-applicable modifier feat.
+
+The same issue surfaces if we naively try to lift APPROX,
+SEASON, etc. on multi-daughter NP rules. The Phase 5f Commits
+1 / 7 / 14 / 16 workaround was to produce NP directly from
+each modifier-bearing rule with the specific lift, avoiding
+the bare NP-from-DET+N path. That works for the
+modifier-bearing NPs but leaves the L32 problem standing for
+NPs whose head N is an N-internal composition (e.g.,
+``N → NUM[CARDINAL] PART[LINK] N``) that the bare NP rule
+consumes.
+
+### Solution: SHARE+SHARE pattern (bidirectional f-structure sharing)
+
+LFG canonically expresses head-sharing via ``(↑) = ↓i``. The
+existing NP-from-DET+N rule shares ``↑`` with the DET daughter
+(``(↑) = ↓1``), then explicit-lifts PRED + LEMMA from N. The
+empty-f-node issue arises only with the **explicit-lift** form,
+not the **share** form.
+
+The fix: add ``(↑) = ↓j`` for the modifier-bearing daughter j,
+sharing ↑ with both DET (↓1) and N (↓2) simultaneously. ↓1
+and ↓2 unify into a single f-structure; any feat defined on
+either side propagates to ↑ automatically, *without* creating
+empty f-nodes for undefined feats.
+
+For the canonical 3 NP-from-DET/ADP+N rules:
+
+```text
+NP[CASE=X] → CASE-MARKER[CASE=X] N
+   (↑) = ↓1
+   (↑) = ↓2
+```
+
+Result: NP gets ``CASE``, ``MARKER``, ``DEM`` from DET (DEIXIS
+when demonstrative), plus ``PRED``, ``LEMMA``, ``FORM``,
+``SEM_CLASS`` (if set), and any modifier feats on N (when N is
+an N-internal composition). No empty f-nodes; the explicit
+PRED + LEMMA lifts become redundant and can be dropped.
+
+For multi-daughter modifier-bearing NP rules (cardinal, ordinal,
+season, approx, etc.), the same pattern: share ↑ with the
+case-marker AND with the modifier-bearing daughter. Lifts that
+were necessary because of explicit-lift pollution become
+implicit via shared structure. Empty f-nodes never get created
+because no explicit ``(↑ X) = ↓j X`` is needed.
+
+### Conflict analysis
+
+Bidirectional sharing unifies the case-marker and modifier
+daughters into one f-structure. We must verify no feat
+collisions.
+
+- **CASE**: only on DETs/ADPs. N never carries CASE. ✓
+- **MARKER**: only on DETs/ADPs. ✓
+- **DEM**: morph analyzer default-fills DEM=false on
+  non-demonstrative DETs/ADPs (per ``analyzer.py:269``). N
+  never carries DEM. ✓
+- **DEIXIS**: only on demonstrative DETs (``ito`` / ``iyan``
+  / ``iyon``). N never carries DEIXIS. ✓
+- **PRED**: N sets via ``(↑ PRED) = 'NOUN(↑ FORM)'``; DET
+  doesn't have PRED. ✓
+- **LEMMA**: only on N (from NOUN lex entry). DET doesn't
+  have LEMMA. ✓
+- **FORM**: every N has FORM (the surface form). DETs also
+  have FORM. **Potential conflict**: DET FORM = "ang"; N
+  FORM = "bata"; they differ. **However**, the existing rule
+  uses ``(↑) = ↓1`` which already shares with DET, including
+  DET.FORM. If we ALSO share with N, FORM unifies — values
+  conflict — unify fails.
+
+The FORM conflict is the only real concern. **Resolution**:
+exclude FORM from the shared structure by not advertising it
+on either daughter at the NP-projection step. Looking at
+NOUN's f-structure: FORM is set via the NOUN lex entry. Looking
+at DET's: also set. The conflict is real.
+
+**Two ways out**:
+
+1. **Drop the share with DET, use share with N + explicit
+   lifts from DET**. Keep ``(↑) = ↓2`` (share with N),
+   add ``(↑ CASE) = ↓1 CASE``, ``(↑ MARKER) = ↓1 MARKER``,
+   ``(↑ DEM) = ↓1 DEM``. DEM is a binary feat that the morph
+   analyzer always sets on DETs/ADPs, so the lift is safe.
+   DEIXIS would have to be either lifted explicitly (empty-f-
+   node risk on non-demonstratives) or omitted (lose access at
+   NP level).
+2. **Use ``(↑) = ↓1`` and ``(↑) = ↓2`` and accept FORM
+   collision: only one of DET.FORM and N.FORM wins**. The
+   unifier-level "first defined wins" semantics is order-
+   dependent and probably broken on equality.
+
+Option 1 is the cleaner approach. **The DEIXIS empty-f-node
+risk is acceptable** because DEIXIS is a string atom (PROX /
+MED / DIST), not a binary, and downstream consumers can
+check for the specific values rather than presence. Or we can
+lift DEIXIS only in a dedicated demonstrative-NP rule
+variant.
+
+Actually, **re-evaluation**: looking more carefully at the
+empty-f-node behavior, the issue arises from
+``_resolve_for_write`` creating a fresh node when the source
+path is undefined. The behavior is the same for atomic
+(string) and bool feats. So **DEIXIS would create the same
+empty-node pollution**.
+
+The cleanest path is:
+
+- **Share with N (``(↑) = ↓2``)** to lift all of N's feats
+  (including modifier feats via N-internal composition).
+- **Explicit-lift only the always-defined DET feats**: CASE,
+  MARKER, DEM (the morph analyzer ensures these are present).
+- **Drop the DEIXIS lift**: demonstrative NPs use a separate
+  rule (Phase 5e Commit 16 dedicated dem-NP rule) which can
+  lift DEIXIS itself.
+
+### Audit of currently-failing modifier-feat lifts
+
+Probed against the post-6.F grammar:
+
+<!-- markdownlint-disable MD013 -->
+| Feat | On simple NP? | Where set | Phase 6.G action |
+| --- | --- | --- | --- |
+| ``CARDINAL_VALUE`` | yes (via dedicated cardinal-NP rule) | NUM | no change to dedicated rule; share-with-N picks it up when N is internally cardinal-composed |
+| ``ORDINAL_VALUE`` | yes (via dedicated ordinal-NP rule) | NUM | no change to dedicated rule; share-with-N picks it up for N-internal composition |
+| ``SEASON`` | **no** | N (lex `tag-init`) | share-with-N closes |
+| ``APPROX`` | **no** | NUM-wrapper (via PART[APPROX] + NUM rule) | needs share-with-NUM on the cardinal-NP rule, or lift on the cardinal-NP rule |
+| ``COMP`` (comparative) | n/a | comparative-ADJ rule produces predicative-ADJ, not NP modifier | not L32 scope |
+| ``MEASURE`` | yes (via dedicated measure-NP rule) | NUM-measure rule | no change |
+| ``DISTRIB`` | **no** | NUM-distrib (tig-) wrapper | needs share-with-NUM on the distrib-NP rule |
+| ``WHOLE`` | yes (via dedicated whole-NP rule) | Q (buo) | no change |
+| ``SEM_CLASS`` | **no** (6.F deferral) | N (sarili, time nouns) | share-with-N closes |
+<!-- markdownlint-enable MD013 -->
+
+So Phase 6.G C2 needs to:
+
+1. Update the 3 simple NP-from-DET/ADP+N rules to use
+   share-with-N (``(↑) = ↓2``) + explicit lifts for DET feats
+   (CASE / MARKER / DEM).
+2. Update the cardinal-NP rule to add share-with-NUM (lifts
+   APPROX automatically).
+3. Update the distrib-NP rule (Phase 5f Commit 19 tig-) to add
+   share-with-NUM.
+4. Update the Phase 5e Commit 16 demonstrative-NP rule (if
+   needed) to handle DEIXIS lift via dedicated structure.
+
+### Implications for existing tests
+
+The plan §5.7 says:
+
+> Tests that walk down to read the modifier on the inner N
+> daughter update to read it on the NP (or both — keep
+> walk-down compat for one release).
+
+Under the SHARE+SHARE pattern, N's f-structure IS NP's
+f-structure (they're unified). Walk-down via the inner N
+daughter accesses **the same** f-structure as the outer NP.
+Tests that walk down continue to pass without modification.
+Phase 6.G C3 adds parallel NP-level assertions; both pass.
+
+**Two tests need updates**:
+
+1. ``tests/tgllfg/test_phase5m_reflexive_sarili.py::TestSem\
+   ClassReflexiveOnMorph::test_sem_class_reflexive_not_in_\
+   subj_fstructure`` (Phase 5m C6) — pins SEM_CLASS NOT on
+   the SUBJ f-structure. Under 6.G's lift, SEM_CLASS WILL be
+   on SUBJ. Flip the test to assert ``SEM_CLASS ==
+   'REFLEXIVE'`` is present (or rename to
+   ``test_sem_class_lifts_to_subj_fstructure``).
+2. ``tests/tgllfg/test_approximators.py`` — the line-66-69
+   docstring "Tests walk down to the daughter NUM to read
+   APPROX" becomes stale. Update the docstring; tests stay.
+
+No other test impacts expected — all existing tests use
+walk-down which preserves the same f-structure under unified
+sharing.
+
+### What's in scope for 6.G
+
+- 3 simple NP-from-DET/ADP+N rule updates (share-with-N
+  pattern; explicit DET-feat lifts).
+- Cardinal-NP rule update (share-with-NUM, lifts APPROX).
+- Distrib-NP rule update (share-with-NUM, lifts DISTRIB
+  marker).
+- Per-modifier test parametrization (C3): cardinal, ordinal,
+  season, approx, measure, distrib, whole, plus SEM_CLASS.
+- Update of the Phase 5m SEM_CLASS pin test.
+- "What landed" post-script in this design appendix (C4).
+
+### What's out of scope (genuinely, not deferred)
+
+- **COMP percolation onto NP**. COMP marks predicative
+  comparative ADJ surfaces (Phase 5h ``mas matalino``), not
+  NP modifiers. The closest case is comparative N use which
+  isn't currently in scope.
+- **MEASURE on multi-NP coord**. Already-percolating; no
+  cross-coord issue surfaced.
+- **DEIXIS percolation on bare-NP path**. Demonstrative DETs
+  use a dedicated rule (Phase 5e Commit 16); the bare DET
+  case has no DEIXIS to lift. The dedicated demonstrative rule
+  can be audited in a follow-on if a non-redundant DEIXIS
+  access path surfaces.
+
+These items are **structurally not modifier-feat-lift cases**;
+listing them clarifies the L32 scope rather than deferring them.
+
+### Architectural commitments worth carrying forward
+
+- **SHARE+SHARE pattern over explicit-lift** for f-structure
+  feat propagation across NP-shell daughters. The unifier's
+  ``(↑ X) = ↓i X`` is creating-if-absent (verified during
+  6.F C2); ``(↑) = ↓i`` is share-without-pollution.
+- **N-internal composition propagates naturally**. The
+  ``N → NUM PART[LINK] N`` rule (Phase 5f Commit 1) produces
+  an N with CARDINAL_VALUE. Under SHARE+SHARE, that N's
+  CARDINAL_VALUE surfaces on the matrix NP when the bare
+  NP-from-DET+N rule consumes it. Closes a long-standing L32
+  case without dedicated rule shapes.
+- **DEIXIS access stays at the demonstrative-NP layer**. The
+  bare NP-from-DET+N rule lifts CASE / MARKER / DEM but not
+  DEIXIS, because non-demonstrative DETs don't have DEIXIS
+  and the explicit-lift would create empty f-nodes.
+  Demonstrative NPs handle DEIXIS in their dedicated rule.
+- **Phase 6.F SEM_CLASS deferral folded in**. The Phase 6.F
+  C2 SEM_CLASS-lift item is closed by the same SHARE+SHARE
+  pattern; no separate follow-up needed.
+
+### Cross-references
+
+- Plan-of-record §5.7 (``.claude/plans/tgllfg-phase-6.md``).
+- Phase 5f Commit 1 (``cfg/nominal.py`` cardinal-NP rule —
+  6.G adds share-with-NUM for APPROX lift).
+- Phase 5f Commit 7 (ordinal-NP rule — already lifts
+  ORDINAL_VALUE).
+- Phase 5f Commit 14 (season-NP rule — N-level lex; 6.G
+  closes via simple NP rule share-with-N).
+- Phase 5f Commit 16 (approximators — 6.G closes the
+  documented APPROX percolation limitation).
+- Phase 5f Commit 19 (distributive ``tig-`` — 6.G closes
+  DISTRIB percolation).
+- Phase 6.F C2 (``project_phase6f_progress``; SEM_CLASS lift
+  deferral folded into 6.G).
+- §18.1.2 L32 entry — closed by 6.G.
+
+### What landed (2026-05-12)
+
+C2 grammar landed via **SHARE+SHARE** on the 3 simple
+NP-from-DET/ADP+N rules in ``src/tgllfg/cfg/nominal.py``
+(``(↑) = ↓1, (↑) = ↓2``). Implementation note vs the C1
+appendix's Option B preference: the appendix favored
+share-with-N + explicit DET lifts due to a feared FORM
+conflict. Implementation verified FORM isn't set on DET via
+equations (only via lex, which doesn't unify), so the simpler
+Option A (SHARE+SHARE) was used. Modifier feats from N
+(``SEM_CLASS``, ``SEM_CLASS='SEASON'``, plus any N-internal
+modifier-composition feats) propagate to NP via structure-
+sharing — no empty-f-node pollution.
+
+C2 also addressed an **N-level-RC ambiguity** the SHARE+SHARE
+introduced: the Phase 5n.A C8 N-level RC rule's output N
+would, when consumed by the simple NP rule, produce a parse
+equivalent to the canonical NP-level RC wrap (Phase 4 §7.5).
+Resolution: the N-level RC tags its output with ``(↑ N_RC) =
+true`` (binary feat; added to ``BINARY_FEATS`` with companion
+audit doc + counter bump); the simple NP rule's
+``¬ (↓2 N_RC)`` constraint blocks consumption of N-level-RC'd
+Ns. Distinguishable at pass-2 because the tag is set by the
+N-level RC's own defining equation, while the canonical
+NP-level RC path adds ADJ to N via shared-f-structure but
+never sets ``N_RC``. The N-level RC stays load-bearing for the
+existential bare-N case (``May bahay na nasa bundok``) — the
+existential rule consumes bare N directly.
+
+A parallel ``¬ (↓2 CARDINAL_VALUE)`` constraint on the simple
+NP rule blocks the N-level cardinal-composition rule (Phase 5f
+Commit 1 companion) from feeding the simple NP rule, keeping
+the dedicated NP-level cardinal rule as the unique surface
+route for case-marked cardinal NPs.
+
+C3 grammar added explicit ``(↑ APPROX) = ↓2 APPROX`` and
+``(↑ DISTRIB) = ↓2 DISTRIB`` lifts to the dedicated cardinal-NP
+rule (lifts the modifier feats from the inner NUM daughter
+when present). The unifier's creating-if-absent semantics
+creates empty ``FStructure`` placeholders on bare cardinals
+without an APPROX or DISTRIB wrapper; downstream consumers
+checking ``is True`` correctly skip the placeholder. The
+empty-f-node convention is pinned by the
+``TestEmptyFNodeTolerance`` class in C3.
+
+C3 tests landed at ``tests/tgllfg/test_phase6_np_projection.py``
+— 13 tests across 6 classes covering: ``SEM_CLASS`` lifts
+(REFLEXIVE + SEASON); cardinal modifier feats
+(CARDINAL_VALUE, NUM, APPROX, DISTRIB); ORDINAL_VALUE; WHOLE;
+the ``¬ CARDINAL_VALUE`` block on the simple NP rule; the
+``¬ N_RC`` block + existential RC + canonical NP-level RC
+preservation; and the empty-f-node tolerance convention.
+
+C2 also flipped the Phase 5m ``test_sem_class_reflexive_not_in_
+subj_fstructure`` pin to ``test_sem_class_reflexive_lifts_to_
+subj_fstructure`` — closing the Phase 6.F C2 SEM_CLASS-lift
+deferral as part of L32.
+
+Final 6.G status:
+
+- test-fast: 7 174 passed + 1 xfail (~64s) — ``not postgres
+  and not slow``.
+- test-slow: 19 passed (~19s) — ``slow`` only.
+- test-both: 7 174 + 19 = 7 193 total passed + 1 xfail (~66s
+  combined).
+- check: clean on 312 source files.
+
+No deferrals introduced. Items recorded as out-of-scope (COMP
+percolation, MEASURE-on-coord, DEIXIS-on-bare-NP, MEASURE
+lex-blocked) are structurally not L32 cases, not deferred
+work.

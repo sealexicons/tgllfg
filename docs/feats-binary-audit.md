@@ -27,7 +27,7 @@ inspection: comment text containing capitalized words followed by
 `# wh-Q polysemy ...` comment), and prefix-matching artifacts
 (`RESULT` matched a value `result` from prose) are dropped.
 
-## The 51 binary feats — migration targets
+## The 52 binary feats — migration targets
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
 Python `True`/`False`. Grammar rule patterns use the `[X]` shorthand
@@ -70,6 +70,7 @@ negative.
 | `MIRATIVE` | particle is mirative |
 | `MODAL` | clause carries a modal head |
 | `MODAL_STANDALONE` | modal is non-complement-taking standalone |
+| `N_RC` | N is an N-level-RC head (Phase 6.G; tag for the simple-NP-rule disambiguation) |
 | `NEG_TAG` | clause is a negative tag-Q |
 | `ORDINAL` | NUM is ordinal (`pang-`) |
 | `ORTHOGRAPHIC_TERMINATOR` | sentence-final punctuation |
