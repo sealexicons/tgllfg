@@ -12515,3 +12515,32 @@ will cover:
 - §18.1.2 L93 entry — closed by 6.E.
 - S&O 1972 §6 — wh-Q analysis underlying the wh-cleft structure
   that 6.E consumes via S_INTERROG_COMP.
+
+### What landed (2026-05-12)
+
+C2 grammar landed three NP wrap rules in
+``src/tgllfg/cfg/extraction.py`` matching the design exactly —
+one rule per case (NOM via ``DET[CASE=NOM, DEM=false]``; GEN /
+DAT via ``ADP[CASE=X, DEM=false]``) with the equation set above.
+``FREE_REL`` was added to ``src/tgllfg/core/feats.py``
+``BINARY_FEATS`` (50 → 51), with companion bumps to
+``docs/feats-binary-audit.md`` and the Phase 5n.C.4 audit-
+counter test per the "update both" guard.
+
+C2 tests landed at ``tests/tgllfg/test_phase6_free_relative_kung.py``
+— 15 tests across 9 classes covering: basic free-relative
+parsing in NOM / GEN / DAT slots; f-structure shape assertions
+(``PRED='PRO'``, ``FREE_REL=True``, ``WH_LEMMA`` lifted, kung-S
+in ``ADJ``, inner SUBJ as headless RC); the wh-PRON paradigm
+(sino / ano / alin); bare-form colloquial kung-S; selectional
+disambiguation (alam + tinanong indirect-Q parses regress
+unchanged); negative cases (yes/no + bare-declarative kung-S
+correctly reject Q_TYPE=WH gate); and regressions (Phase 5e C5
+headless RC + Phase 5i C2 wh-cleft Q still parse).
+
+Final 6.E status: 7 150 fast tests + 19 slow + 1 xfail (the
+test_kahit_ano_in_obj cross-case-lex carry-forward from 6.C,
+unrelated to 6.E). Lint clean (311 source files). No deferrals
+introduced; the in-situ wh and DAT-pivot wh-PRON items
+itemized in *Out of scope* above carry forward to corpus-
+pressure follow-ups, not Phase 6 work.
