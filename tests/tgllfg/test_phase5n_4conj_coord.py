@@ -148,3 +148,66 @@ class TestSixSevenConjunctNomCoord:
         assert len(conj) == 7, (
             f"expected 7 conjuncts, got {len(conj)}"
         )
+
+
+# === 8/9/10-conjunct stress fixtures (Phase 6.H C3) =======================
+
+
+class TestEightNineTenConjunctNomCoord:
+    """8/9/10-conjunct stress fixtures — push the left-recursive
+    ``NP_LONG_LIST_NOM`` rule to compose five / six / seven times
+    before the 4+-wrap rule consumes the trailing ``at NP``.
+    Confirms the Phase 6.C strict-matcher prediction that the
+    recursion generalizes to arbitrary N past the 5/6/7-conjunct
+    sweet spot landed in 6.C C6 (§18.1.2 L85+ stress verification
+    per Phase 6.H plan §5.8 C2)."""
+
+    def test_8_conjunct_nom(self) -> None:
+        parses = parse_text(
+            "Kumain ang tatay, ang nanay, ang kuya, ang ate, "
+            "ang lolo, ang lola, ang tito at ang tita."
+        )
+        assert len(parses) >= 1
+        _ct, fs, _astr, _diags = parses[0]
+        subj = fs.feats.get("SUBJ")
+        assert subj is not None
+        conj = subj.feats.get("CONJUNCTS")
+        assert conj is not None
+        assert len(conj) == 8, (
+            f"expected 8 conjuncts, got {len(conj)}"
+        )
+        assert subj.feats.get("COORD") == "AND"
+
+    def test_9_conjunct_nom(self) -> None:
+        parses = parse_text(
+            "Kumain ang tatay, ang nanay, ang kuya, ang ate, "
+            "ang lolo, ang lola, ang tito, ang tita "
+            "at ang pinsan."
+        )
+        assert len(parses) >= 1
+        _ct, fs, _astr, _diags = parses[0]
+        subj = fs.feats.get("SUBJ")
+        assert subj is not None
+        conj = subj.feats.get("CONJUNCTS")
+        assert conj is not None
+        assert len(conj) == 9, (
+            f"expected 9 conjuncts, got {len(conj)}"
+        )
+        assert subj.feats.get("COORD") == "AND"
+
+    def test_10_conjunct_nom(self) -> None:
+        parses = parse_text(
+            "Kumain ang tatay, ang nanay, ang kuya, ang ate, "
+            "ang lolo, ang lola, ang tito, ang tita, "
+            "ang pinsan at ang kapatid."
+        )
+        assert len(parses) >= 1
+        _ct, fs, _astr, _diags = parses[0]
+        subj = fs.feats.get("SUBJ")
+        assert subj is not None
+        conj = subj.feats.get("CONJUNCTS")
+        assert conj is not None
+        assert len(conj) == 10, (
+            f"expected 10 conjuncts, got {len(conj)}"
+        )
+        assert subj.feats.get("COORD") == "AND"

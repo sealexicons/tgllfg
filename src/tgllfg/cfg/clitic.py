@@ -45,10 +45,61 @@ def register_rules(rules: list[Rule]) -> None:
     # ``QUANT``; a binding equation links it to SUBJ. Pre-NP
     # partitive usage (``lahat ng bata``) is deferred — that
     # form needs a QP non-terminal.
+    #
+    # Phase 6.H Commit 2 (§18 L33): split the original single
+    # ``S → S Q`` rule into three variants for floated-Q number
+    # agreement. The bare-Q variant covers ``lahat`` /
+    # ``marami`` / ``konti`` (no NUM constraint — semantically
+    # permits SG, mass, and collective antecedents). The two
+    # DUAL-Q variants cover ``pareho`` / ``kapwa``
+    # (``Q[DUAL=true]``) and admit the antecedent SUBJ at either
+    # of:
+    #
+    # * ``(↑ SUBJ NUM) =c 'PL'`` — PL antecedent (typically a
+    #   PL pronoun: sila / kami / tayo / kayo, or an
+    #   ``mga``-marked NP).
+    # * ``¬ (↑ SUBJ NUM)`` — NUM-unmarked antecedent (typically
+    #   a bare NP: ``ang bata`` / ``si Maria``; Tagalog NPs
+    #   without ``mga`` are number-neutral and compatible with
+    #   DUAL semantics).
+    #
+    # SG antecedents fail both DUAL variants: variant A wants PL,
+    # variant B wants NUM-undefined. Pre-Phase-6.H, ``*Kumain
+    # siya pareho.`` (SG SUBJ + DUAL Q) overgenerated; the two-
+    # variant split zero-parses it via constraining-equation
+    # conflict at unify time. Cf. Kroeger 1993 §3 idiom for
+    # agreement-by-constraining-equation.
     rules.append(Rule(
         "S",
         ["S", "Q"],
-        ["(↑) = ↓1", "↓2 ∈ (↑ ADJ)", "(↓2 ANTECEDENT) = (↑ SUBJ)"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJ)",
+            "(↓2 ANTECEDENT) = (↑ SUBJ)",
+            "¬ (↓2 DUAL)",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["S", "Q[DUAL]"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJ)",
+            "(↓2 ANTECEDENT) = (↑ SUBJ)",
+            "(↓2 DUAL) =c true",
+            "(↑ SUBJ NUM) =c 'PL'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["S", "Q[DUAL]"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJ)",
+            "(↓2 ANTECEDENT) = (↑ SUBJ)",
+            "(↓2 DUAL) =c true",
+            "¬ (↑ SUBJ NUM)",
+        ],
     ))
 
 
@@ -68,6 +119,14 @@ def register_rules(rules: list[Rule]) -> None:
     # were both eaten by the lion") is rarer and adds voice
     # interaction beyond the canonical AV registers in the seed
     # corpus.
+    #
+    # Phase 6.H Commit 2 (§18 L33): each variant gains
+    # ``(↑ SUBJ NUM) =c 'PL'`` — the DUAL Q semantically requires
+    # a PL antecedent, parallel to the base float rule's DUAL
+    # variant above. Pre-Phase-6.H, ``*Pareho siyang kumain.``
+    # (SG SUBJ + DUAL Q) overgenerated; the constraint zero-
+    # parses it via constraining-equation conflict at unify
+    # time.
     for link in ("NA", "NG"):
         # AV intransitive: ``Pareho silang kumain.``
         rules.append(Rule(
@@ -88,6 +147,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓1 ∈ (↑ ADJ)",
                 "(↓1 ANTECEDENT) = (↑ SUBJ)",
                 "(↓1 DUAL) =c true",
+                "(↑ SUBJ NUM) =c 'PL'",
             ],
         ))
         # AV transitive: ``Pareho silang kumain ng isda.``
@@ -111,6 +171,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓1 ∈ (↑ ADJ)",
                 "(↓1 ANTECEDENT) = (↑ SUBJ)",
                 "(↓1 DUAL) =c true",
+                "(↑ SUBJ NUM) =c 'PL'",
             ],
         ))
         # AV ditransitive: ``Pareho silang kumain ng isda sa palengke.``
@@ -136,6 +197,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓1 ∈ (↑ ADJ)",
                 "(↓1 ANTECEDENT) = (↑ SUBJ)",
                 "(↓1 DUAL) =c true",
+                "(↑ SUBJ NUM) =c 'PL'",
             ],
         ))
 

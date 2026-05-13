@@ -542,18 +542,22 @@ def register_rules(rules: list[Rule]) -> None:
     # The S_INTERROG_COMP non-terminal lifts its inner S
     # f-structure (``(↑) = ↓2``) and adds ``COMP_TYPE=INTERROG``;
     # the inner S must already carry ``Q_TYPE=WH`` (from a Phase
-    # 5i Commit 2 / 4 / 6 wh-fronting / wh-N-cleft rule). The
-    # belt-and-braces ``=c`` constraints lock down both the
-    # complementizer's COMP_TYPE and the inner clause's Q_TYPE,
-    # closing any non-conflict-matcher leaks.
+    # 5i Commit 2 / 4 / 6 wh-fronting / wh-N-cleft rule).
+    #
+    # Phase 6.H Commit 4 (§18.1.2 cleanup): the previously-present
+    # belt-and-braces ``(↓1 COMP_TYPE) =c 'INTERROG'`` and
+    # ``(↓2 Q_TYPE) =c 'WH'`` are redundant under the post-6.C
+    # strict matcher. The ``PART[COMP_TYPE=INTERROG]`` and
+    # ``S[Q_TYPE=WH]`` daughter patterns in the RHS list already
+    # gate both feats. Dropped as the second of the two
+    # explicitly-tagged non-conflict-matcher-leak sites per the
+    # Phase 6.H plan §5.8 C3.
     rules.append(Rule(
         "S_INTERROG_COMP",
         ["PART[COMP_TYPE=INTERROG]", "S[Q_TYPE=WH]"],
         [
             "(↑) = ↓2",
             "(↑ COMP_TYPE) = 'INTERROG'",
-            "(↓1 COMP_TYPE) =c 'INTERROG'",
-            "(↓2 Q_TYPE) =c 'WH'",
         ],
     ))
     # Phase 5n.B Commit 11 (§18 L54): yes/no indirect-Q variants.

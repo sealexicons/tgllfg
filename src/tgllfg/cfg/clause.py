@@ -725,17 +725,19 @@ def register_rules(rules: list[Rule]) -> None:
     # VAGUE=YES] (non-wh "a few" reading). The wh entry feeds the
     # cleft; the FEW entry feeds this predicative-Q rule.
     #
-    # **Belt-and-braces** ``(↓1 VAGUE) =c true`` mirrors the Phase
-    # 5h Commit 7 wrapper convention — closes the same kind of
-    # non-conflict-matcher leak by constraining the f-structure
-    # daughter explicitly (rather than relying on the c-tree
-    # category-pattern alone).
-    #
     # Cardinal contrast — ``Tatlo ang aklat.`` parses via the Phase
     # 5f Commit 4 predicative-cardinal rule (NUM[CARDINAL] head),
     # which has no VAGUE feat and so does not fire this rule. Each
     # predicative shape (vague-Q, cardinal, ADJ) has its own clause
     # rule with disjoint head categories.
+    #
+    # Phase 6.H Commit 4 (§18.1.2 cleanup): the previously-present
+    # belt-and-braces ``(↓1 VAGUE) =c true`` is redundant under the
+    # post-6.C strict matcher (``expected.keys() ⊆ candidate.keys()``
+    # + shared-key compat). The ``Q[VAGUE]`` daughter pattern in the
+    # RHS list already gates the candidate's VAGUE feat. Dropped as
+    # one of the two explicitly-tagged non-conflict-matcher-leak
+    # sites per the Phase 6.H plan §5.8 C3.
     rules.append(Rule(
         "S",
         ["Q[VAGUE]", "NP[CASE=NOM]"],
@@ -745,7 +747,6 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ Q_LEMMA) = ↓1 LEMMA",
             "(↑ QUANT) = ↓1 QUANT",
             "(↑ PREDICATIVE) = true",
-            "(↓1 VAGUE) =c true",
             "¬ (↓1 WH)",
         ],
     ))
