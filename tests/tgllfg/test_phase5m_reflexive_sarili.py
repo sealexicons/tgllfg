@@ -95,28 +95,55 @@ class TestSariliAsObject:
         assert obj.feats.get("LEMMA") == "sarili" or obj.feats.get("CASE") == "GEN"
 
 
-# === Anaphora resolution deferred =====================================
+# === Anaphora resolution via binding equation (Phase 6.F) ============
 
 
-class TestAnaphoraDeferred:
-    """Anaphora resolution — binding ``sarili NIYA`` to its
-    antecedent SUBJ in the matrix S — is Phase 6 work. Phase 5m
-    only does the c-structure composition; the f-structure has
-    NO ``ANTECEDENT`` reentrancy linking the sarili NP's POSS to
-    the matrix actor.
+class TestAnaphoraResolution:
+    """Phase 6.F C2 (§18.1.2 L104): the matrix transitive rule emits
+    a binding-equation variant gated on ``(↑ SUBJ LEMMA) =c 'sarili'``
+    that sets ``(↑ SUBJ ANTECEDENT) = (↑ <obj_target>)``. The
+    reflexive's ANTECEDENT feat becomes reentrant with the matrix
+    actor (per Kroeger 1993 §2.3 actor-binding theory; the actor
+    is OBJ in tgllfg's AV-pivot frames, OBJ-AGENT in OV / DV / IV).
 
-    This test pins the absence of binding so closure during
-    Phase 6 (when the binding equation
-    ``(SARILI POSS) = (matrix SUBJ-of-antecedent)`` lands)
-    flips it detectably."""
+    The binding rule fires alongside the non-binding transitive
+    rule (both compose for reflexive SUBJs), so the test finds the
+    parse with the ANTECEDENT feat among the 2-parse output."""
 
-    def test_no_antecedent_reentrancy_today(self) -> None:
-        parses = parse_text("Nakita niya ang sarili niya.")
-        _ct, fs, _astr, _diags = parses[0]
-        subj = fs.feats.get("SUBJ")
-        assert subj is not None
-        # No ANTECEDENT feat on the SUBJ today.
-        assert subj.feats.get("ANTECEDENT") is None
+    @staticmethod
+    def _find_bound_parse(text: str):
+        """Return ``(fs, antecedent)`` for the parse whose SUBJ has
+        an ANTECEDENT feat; ``(None, None)`` if no bound parse."""
+        for _, fs, _, _ in parse_text(text):
+            subj = fs.feats.get("SUBJ")
+            if subj is None:
+                continue
+            ant = subj.feats.get("ANTECEDENT")
+            if ant is not None:
+                return fs, ant
+        return None, None
+
+    def test_subj_antecedent_reentrant_with_obj(self) -> None:
+        fs, ant = self._find_bound_parse("Nakita niya ang sarili niya.")
+        assert fs is not None, "no parse with SUBJ.ANTECEDENT"
+        # ANTECEDENT is reentrant with the matrix actor — OBJ in
+        # AV-pivot syntax for ``nakita``.
+        obj = fs.feats.get("OBJ")
+        assert obj is not None
+        assert ant.id == obj.id, (
+            f"ANTECEDENT (id={ant.id}) is not reentrant with OBJ "
+            f"(id={obj.id})"
+        )
+
+    @pytest.mark.parametrize("sent", SARILI_AS_SUBJ)
+    def test_antecedent_per_possessor(self, sent: str) -> None:
+        """The 1sg / 2sg / 3sg / 3pl GEN-PRON variants all admit
+        the binding."""
+        fs, ant = self._find_bound_parse(sent)
+        assert fs is not None, f"no bound parse for {sent!r}"
+        obj = fs.feats.get("OBJ")
+        assert obj is not None
+        assert ant.id == obj.id, f"binding broken on {sent!r}"
 
 
 # === SEM_CLASS=REFLEXIVE on morph layer ==============================
