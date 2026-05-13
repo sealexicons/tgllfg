@@ -86,6 +86,18 @@ def register_rules(rules: list[Rule]) -> None:
     # the tag feat is set by the N-level RC's own defining
     # equation; the canonical path's NP-level RC adds ADJ but
     # never N_RC, so the two paths are distinguishable at pass 2.)
+    # Additional N-level-modifier exclusion: the N-level cardinal
+    # rule below (``N → NUM[CARDINAL] PART[LINK] N``, Phase 5f
+    # Commit 1 companion) and other N-modifier compositions
+    # produce an N with the modifier's value feat already lifted
+    # (``CARDINAL_VALUE`` on N for cardinal; ``DISTRIB`` on N for
+    # tig-distrib via paradigm). Under SHARE+SHARE, that N's
+    # value feat would propagate to NP via the simple rule —
+    # duplicating the dedicated NP-level cardinal / distrib /
+    # etc. rules (Phase 5f Commits 1 / 19). The negative-
+    # existential guards block the simple NP rule from consuming
+    # such pre-modified Ns, leaving the dedicated NP-level rules
+    # as the unique surface route for case-marked modifier NPs.
     rules.append(Rule(
         "NP[CASE=NOM]",
         ["DET[CASE=NOM]", "N"],
@@ -93,6 +105,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑) = ↓1",
             "(↑) = ↓2",
             "¬ (↓2 N_RC)",
+            "¬ (↓2 CARDINAL_VALUE)",
         ],
     ))
     rules.append(Rule(
@@ -102,6 +115,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑) = ↓1",
             "(↑) = ↓2",
             "¬ (↓2 N_RC)",
+            "¬ (↓2 CARDINAL_VALUE)",
         ],
     ))
     rules.append(Rule(
@@ -111,6 +125,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑) = ↓1",
             "(↑) = ↓2",
             "¬ (↓2 N_RC)",
+            "¬ (↓2 CARDINAL_VALUE)",
         ],
     ))
 
@@ -369,6 +384,19 @@ def register_rules(rules: list[Rule]) -> None:
     # not NP, so a second cardinal cannot wrap a cardinal-
     # modified NP. (Cardinal coordination is a separate
     # construction; lands with Group C mixed numbers / Phase 5k.)
+    # Phase 6.G C3: APPROX + DISTRIB lift onto cardinal-modified
+    # NP. The Phase 5f Commit 16 approximator-wrap rule
+    # (``NUM[CARDINAL=true] → PART[APPROX=true] NUM``) sets
+    # ``(↑ APPROX) = true`` on its NUM output; the Phase 5n.C.3
+    # ``tig_distrib`` paradigm sets ``(↑ DISTRIB) = true`` on its
+    # NUM output (e.g., ``tigisa``). The cardinal-NP rule consumes
+    # those NUMs as ↓2; the Phase 6.G L32-closure extension adds
+    # explicit ``(↑ APPROX) = ↓2 APPROX`` and ``(↑ DISTRIB) = ↓2
+    # DISTRIB`` lifts so the modifier feats surface on the matrix
+    # NP. For non-APPROX / non-DISTRIB cardinals (bare ``isang
+    # aklat``), the lifts create empty f-nodes at ``NP.APPROX`` /
+    # ``NP.DISTRIB``; downstream consumers checking the value as
+    # ``is True`` skip the empty case naturally.
     for case, marker in _cardinal_case_marker.items():
         for link in ("NA", "NG"):
             rules.append(Rule(
@@ -385,6 +413,8 @@ def register_rules(rules: list[Rule]) -> None:
                     "(↑ LEMMA) = ↓4 LEMMA",
                     "(↑ NUM) = ↓2 NUM",
                     "(↑ CARDINAL_VALUE) = ↓2 CARDINAL_VALUE",
+                    "(↑ APPROX) = ↓2 APPROX",
+                    "(↑ DISTRIB) = ↓2 DISTRIB",
                     "¬ (↓4 CARDINAL_VALUE)",
                     # Constraining: enforce the daughter is actually
                     # CARDINAL=YES, not just any NUM. Without this,
