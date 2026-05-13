@@ -562,7 +562,56 @@ Property tests land in `tests/tgllfg/test_fu_evaluation.py`
 
 ---
 
-**Status:** design appendix, awaiting user sign-off per Phase 6
-plan §8.4 + `feedback_tgllfg_effort_protocol`. C2 onwards (FSA
-implementation, wire-in, off-path eval, binding context, tests)
-begin after sign-off.
+## 11. Post-implementation status (Phase 6.B → 6.J)
+
+**Status: implemented and load-bearing across Phase 6.B–6.I.**
+
+The design captured in §§1–9 landed in Phase 6.B (PR #38
+``dad22c4``) as the FSA-based regex-path resolver in
+``src/tgllfg/fstruct/fu.py`` with property tests in
+``tests/tgllfg/test_fu_evaluation.py``. Phase 6.B's C5
+binding-equation context (regex RHS + reentrant LHS) is the
+load-bearing primitive used by:
+
+- **Phase 6.D L47** — Long-distance relativization via
+  ``(↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)`` on the new
+  S_XCOMP-bodied RC wraps in ``cfg/extraction.py``.
+  Constraining-form (``=c``) implementation; defining-form
+  was attempted but blocked by parent-first defining-pass
+  timing (the body's ``(↑ SUBJ) = (↑ REL-PRO)`` hasn't run
+  yet at the wrap's pass). Deferred-defining-FU recorded as
+  Phase 7+ unifier extension.
+- **Phase 6.E L93** — Free relative ``kung sino`` / ``kung
+  ano`` as DPs uses an atomic-path lift (``(↑ WH_LEMMA) =
+  ↓2 WH_LEMMA``) at depth 0, not FU. The Phase-6 dependency
+  for 6.E is the Phase 6.C strict matcher, not the FU
+  resolver.
+- **Phase 6.F L104** — Reflexive ``sarili`` binding uses
+  binding equations on matrix S rules (where ``↑`` is the
+  matrix and the binder is directly accessible); inside-out
+  FU designators (Dalrymple 2001 ch. 14) are not yet
+  supported by ``resolve_regex_for_read`` and were deferred
+  as Phase 7+ unifier extension.
+
+The FSA resolver supports concatenation, ``F*``, ``F+``,
+``F | G`` alternation, and off-path constraints as designed.
+One out-of-scope item surfaced during 6.B C6: ``{F | G}*``
+(Kleene on alternation) — not present in the current Tagalog
+applications, parked as Phase 7+ AST extension (see
+``tgllfg-out-of-scope.md`` §18.1.3).
+
+K&Z 1989 §3 minimality clause is enforced (shortest-path
+endpoint selection) and verified by property tests against
+synthesized cyclic and acyclic f-graphs.
+
+After Phase 6.J merges, the FU evaluator has been
+load-bearing in production for ~6 weeks across 5 sub-PRs with
+no performance regression or correctness issues.
+
+**Phase 7+ unifier extensions** parked during Phase 6
+(documented in ``tgllfg-out-of-scope.md`` §18.1.3):
+
+- FU deferred defining-equation evaluation (from 6.D).
+- FU inside-out designators (from 6.F).
+- FU resolver-side cyclic-endpoint pruning (from 6.F).
+- ``{F | G}*`` Kleene on alternation (from 6.B C6).
