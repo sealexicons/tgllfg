@@ -164,33 +164,42 @@ polysemous bases produce multiple rows). **147** distinct bases.
 
 ### Top 25 missing-from-lex R&B bases
 
+(Sorted alphabetically by `base`. Glosses and affix classes post-
+OCR-cleanup; see "Caveats" below for the cleanup rules.)
+
 | Base | Gloss (R&B) | Affix class (R&B) |
 | --- | --- | --- |
 | `aksaya` | waste | mag- -in -an |
 | `alaala` | remember | -um- -in |
 | `alaala` | worry | mag- -in |
 | `alaga` | take care of | mag- -an |
-| `asa` | expect / rely on | -um- -an |
+| `asa` | expect, rely on | -um- -an |
+| `asso` | converse with | maki- |
 | `away` | start a quarrel with | -um- -in |
 | `away` | quarrel with each other | mag- |
-| `ayos` | go or come down | -um- |
-| `babad` | soak | mag- -in |
-| `baka` | put / install | mag- i- |
-| `bakas` | leave a trace | mag- -an |
-| `balak` | plan | mag- -in -an |
-| `balat` | peel | mag- -in |
-| `balik` | return | -um- -in -an i- |
-| `balita` | hear news | maka- |
-| `balita` | tell news | mag- -in |
-| `bangka` | go boating | mag- |
-| `banggit` | mention | -um- -in i- |
-| `bati` | greet | -um- |
-| `bati` | greet each other | mag- |
-| `bigyan` | give | -um- -an |
-| `bili` | buy | -um- -in -an i- ipang- |
-| `bilang` | count | -um- -in -an |
-| `bingit` | be on the verge | -um- |
-| `bisita` | visit | -um- |
+| `balita` | report | mag- i- -an |
+| `balita` | hear as rumor | maka- ma- -an |
+| `buhay` | have life, live | ma- |
+| `dilig` | water | mag- -in / -an |
+| `dinig` | hear | maka- ma- |
+| `galit` | use | -um- -in -an |
+| `gamot` | cure / heal | -um- / mag- -in ipang- |
+| `ganap` | perform | -um- -in / -an |
+| `ganap` | occur, take place | -in |
+| `gasta` | spend | -um- -in -an / pag- -an ika- |
+| `gulat` | be surprised | ma- ika- |
+| `gulo` | be disorderly | ika- |
+| `gutom` | be hungry | ma- ika- |
+| `haba` | lengthen | -an |
+| `hinga` | breathe | -um- |
+| `hinto` | stop | -an |
+| `ibig` | love | -um- -in |
+
+Note: `asso` is almost certainly an OCR mis-extraction; the
+source headword is probably `USAP` "converse with" (the `maki-`
+affix-class signature is consistent with `makipag-usap`).
+Headword-level OCR mis-extractions like this are tracked under
+"Caveats" below.
 
 Several R&B-missing bases are already implied by §4's
 transcription-failure list (`balak`, `tanim`, …) — converging
@@ -210,6 +219,20 @@ evidence that those gaps are real.
   canonicalized to ``alaala`` (paren stripped) — this loses
   the distinction R&B encodes between ``alaala`` (memory) and
   ``alala`` (worry). Wave 2 should emit both surface keys.
+- A few headwords arrive OCR-mangled at the extractor (e.g.
+  `asso` is almost certainly source `USAP` "converse with").
+  Wave 2 should add a fuzzy-headword-recovery pass keyed on
+  the paradigm-form lines that follow the headword.
+- **Gloss / affix-class OCR cleanup applied** (commit follows
+  this report): `»` and `*` in R&B glosses both render the
+  source's italicized comma; the patterns `dor`, `sendr`,
+  `changer`, `selfr`, `lifer`, `expectf` render `do,`, `send,`,
+  `change,`, `self,`, `life,`, `expect,` respectively (italic
+  comma reads as `r` or `f` after specific letter contexts);
+  `ì` in `pulì` and `ó` in `cióse` both render `l` (italic-l
+  with serif noise). Spacing around `/` separators is
+  normalized to ` / `. Wave 2 should extend the cleanup table
+  if new OCR patterns surface.
 
 ## 6. Wave 1 conclusions
 
