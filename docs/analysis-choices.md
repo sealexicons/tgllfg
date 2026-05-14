@@ -15102,3 +15102,113 @@ TestKahitAnoAsObject`` from xfail to passing test (the Phase
 
 Regression: 7295 → 7306 fast pass (+10 new + 1 xfail
 flipped). No baseline regressions. ``hatch run check`` clean.
+
+## Phase 7a.H Commit 1: §18.1.1 item 1 resumptive pronouns — reclassify to §18.1.3
+
+Eighth sub-PR of Phase 7a (combined with 7a.I + 7a.J per
+user directive). Closes §18.1.1 item 1 — resumptive pronouns
+in relative clauses — by reclassifying to §18.1.3 with
+strengthened rationale.
+
+**Pre-Phase-7a.H rationale (Phase 5e Commit 7):**
+"Modern Tagalog uses voice alternation (Kroeger 1993 §5)
+as the canonical strategy for non-SUBJ relativization;
+resumptive pronouns are marginal in written Tagalog and lack
+a corpus-attested stable form across S&O 1972, Ramos 1971,
+R&B 1986, R&G 1981. Revisit if a resumptive-rich corpus
+emerges."
+
+**Phase 7a.H closure (per plan-of-record §3.9):**
+strengthened with the **observation that Phase 6.D L47
+already implements the canonical voice-alternation strategy
+via FU `(↓3 XCOMP* SUBJ) =c <ant>`** — the mainstream LFG
+mechanism (functional identification with a gap,
+voice-morphology-licensed). The construction's deferral is
+**not corpus-deficiency-soluble**: the typological premise
+(Tagalog uses resumptive relativization) is factually
+incorrect for canonical Tagalog. The canonical mechanism is
+already in place. Revisit only on substantial corpus
+pressure from non-canonical / colloquial sources.
+
+Move from §18.1.1 (corpus-deferred) to §18.1.3 (other
+future work).
+
+Docs-only commit; markdownlint clean.
+
+## Phase 7a.I Commit 2: §18.1.1 item 9 tila modal-particle — reclassify to §18.1.3
+
+Closes §18.1.1 item 9 — modal-particle reading of `tila` —
+by reclassifying to §18.1.3.
+
+**Pre-Phase-7a.I rationale (Phase 5m planning sign-off):**
+"Recommended NO at Phase 5m planning sign-off (§9.1 Q6);
+existing Phase 5d raising-verb analysis covers canonical
+use. Revisit only if non-clausal `tila` ellipsis surfaces
+in corpus."
+
+**Phase 7a.I closure (per plan-of-record §2.2):** confirms
+the reclassification with the S&O 1972-grounded analysis:
+
+> S&O 1972 canonically treats `tila` as an initial sentence
+> adverb meaning "it seems," parallel to `baka` "maybe," and
+> attests it with a sentential complement/environment (*Tila
+> magkakaroon ng parti bukas* "It seems there's going to be
+> a party tomorrow"). Kroeger 1993 (accessible dissertation
+> text) does not address `tila` directly. No current evidence
+> from the core grammars requires a productive non-clausal
+> `tila` rule.
+
+**Implementation policy:**
+
+- Current `RAISING_BARE` analysis (`particles.yaml:550-552`;
+  Phase 5d Commit 1) **retained as engineering approximation**
+  for clausal `tila` strings.
+- Do **not** add a second modal-particle adjunct variant in
+  v1 — would create parse ambiguity without commensurate
+  coverage gain.
+- A future cleanup may prefer an `ADJUNCT/MODAL` analysis
+  over raising if the grammar is refactored (S&O's category
+  label is `ADV`, not `V`); tracked as a Phase 7+
+  engineering-decision parking-lot item.
+- Standalone `Tila.` / `Tila siya.` / `Tila lang.` treated as
+  ellipsis / discourse fragments unless non-colloquial corpus
+  or grammar evidence shows them to be productive.
+
+**Structural diagnostic for future revisit:** the question
+is not "is the post-`tila` material non-clausal" but "is the
+post-`tila` material an independently licensed
+clause/predicate." If yes, current coverage suffices. If
+`tila` productively combines with DP/particle-only material
+without recoverable ellipsis, the modal-particle variant
+becomes justified.
+
+Move from §18.1.1 (corpus-deferred) to §18.1.3 (other
+future work).
+
+Docs-only commit; markdownlint clean.
+
+## Phase 7a.J Commit 3: §18.1.1 item 4 statistical disambiguation — reclassify to §18.1.3
+
+Closes §18.1.1 item 4 — statistical disambiguation over the
+packed forest — by reclassifying to §18.1.3.
+
+**Pre-Phase-7a.J rationale (Phase 4 §7.9):** "Phase 4 §7.9
+ships a heuristic ranker; a small neural ranker trained on a
+gold corpus would replace it. Blocked on a larger gold corpus
+than currently exists; revisit when ~5k+ disambiguated parses
+are available."
+
+**Phase 7a.J closure (per plan-of-record §2.1; user directive
+2026-05-13):** confirms the reclassification on the grounds
+that closure requires **~5k+ gold-disambiguated parses — a
+downstream-tooling problem (corpus authoring + ML), not a
+Tagalog-grammar problem**. The Phase 4 §7.9 heuristic ranker
+covers v1 use cases. The blocking dependency is corpus
+authoring at scale, which is independently a §18.1.3 item
+(see "Corpus authoring at scale"), not a grammar coverage
+gap.
+
+Move from §18.1.1 (corpus-deferred) to §18.1.3 (other
+future work).
+
+Docs-only commit; markdownlint clean.
