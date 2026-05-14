@@ -15318,20 +15318,31 @@ explicitly deferred for cause:
 
 ### Carry-forward to Phase 7+
 
-§18.1.3 (other-future-work-dependent) carries forward:
+§18.1.3 (other-future-work-dependent) carries forward **17
+items in three groups**:
 
-- The 7 Phase 6+ unifier extensions parked at Phase 6
-  close (FU deferred-defining, inside-out designators,
-  resolver-side cyclic-endpoint pruning, `{F | G}*`
-  Kleene-on-alternation, per-XCOMP binding rules, etc.).
-- 4 Phase 7a-added items (Non-AV RECPFV, resumptive
-  pronouns, `tila` modal-particle, statistical
-  disambiguation) — all reclassified with strengthened
-  rationale.
+- **6 pre-Phase-6 scope-expansion tracks** (in §18.1.3 since
+  the v1 plan): Glue semantics and meaning representations;
+  wider Philippine-type coverage (Cebuano / Hiligaynon /
+  Ilokano); richer noun ontology for OBL semantic
+  disambiguation; all-fragments mode; sentence-level tooling
+  (discourse / anaphora / information-structure beyond
+  TOPIC / FOCUS); no-comma asymmetric coordination.
+- **7 Phase 6+ unifier extensions** parked at Phase 6 close:
+  FU regex-path set-complement; FU defining-on-regex-LHS;
+  FU Kleene-on-alternation (`{F | G}*` / `{F | G}+`); FU
+  deferred defining-equation evaluation; FU inside-out
+  designators; FU resolver-side cyclic-endpoint pruning;
+  per-XCOMP binding rules for cross-clausal sarili.
+- **4 Phase 7a-added reclassifications** (moved from §18.1.1
+  by Phase 7a.C / 7a.H / 7a.I / 7a.J with strengthened
+  rationale): Non-AV RECPFV morphological paradigm;
+  resumptive pronouns in relative clauses; modal-particle
+  reading of `tila`; statistical disambiguation over the
+  packed forest.
 
 Phase 7 is **not yet planned**. The codebase is
 feature-complete for the canonical Tagalog construction
 inventory across S&O 1972, R&B 1986, R&G 1981, R&C 1990,
-and Kroeger 1993. Future-work items remain in §18.1.3
-awaiting either corpus pressure or clear architectural
-motivation.
+and Kroeger 1993. The 17 §18.1.3 items remain awaiting
+either corpus pressure or clear architectural motivation.
