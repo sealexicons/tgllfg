@@ -358,6 +358,56 @@ def _is_pre_ay_pron(
     )
 
 
+def _is_pre_ang_pred_pron(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is a NOM PRON-clitic immediately
+    followed by an ``ang`` / ``si`` NOM determiner — signaling a
+    PRON-pivot predicational sentence (``Ako ang guro.``,
+    ``Siya si Juan.``).
+
+    Phase 8.X: sibling of ``_is_pre_ay_pron`` for the non-``ay``
+    PRON-pivot construction. Without this check, the Wackernagel
+    pass hoists ``Ako`` (``is_clitic=true`` per Phase 5n.A C2) out
+    of initial position past the ``ang`` anchor, producing the
+    token stream ``ang ako guro`` which no rule covers. With this
+    check, the PRON stays in initial position so the Phase 8.X
+    Commit 2 rule ``S → PRON[CASE=NOM] NP[CASE=NOM]`` fires on
+    the natural left-to-right surface.
+
+    Restricted to NOM PRON-clitics — the NOM-PRON / GEN-PRON /
+    DAT-PRON paradigms are case-disjoint (``ako`` vs ``ko`` vs
+    ``akin``), so this can't false-positive on a non-NOM-PRON.
+
+    Restricted to ``DET[CASE=NOM, DEM=false]`` right-context — the
+    DEM-marked DETs (``ito`` / ``iyan`` / ``iyon``) have their own
+    PRON-pivot grammar coverage (PRON + bare-DEM-subject parses
+    via the standalone-DEM rule wrapping to NP). Excluding DEM here
+    is harmless coverage-wise and stays narrowly targeted at the
+    ``ang`` / ``si`` predication.
+    """
+    if not _is_pron_clitic(analyses[i]):
+        return False
+    # NOM-only: ``ako`` / ``ka`` / ``siya`` / ``kami`` / ``tayo``
+    # / ``kayo`` / ``sila``. The other clitic PRONs (``ko`` GEN,
+    # ``mo`` GEN, ``ko`` DAT, etc.) are case-distinct surfaces.
+    if not any(
+        ma.pos == "PRON" and ma.feats.get("CASE") == "NOM"
+        and ma.feats.get("is_clitic") is True
+        for ma in analyses[i]
+    ):
+        return False
+    if i + 1 >= len(analyses):
+        return False
+    next_cands = analyses[i + 1]
+    return any(
+        ma.pos == "DET"
+        and ma.feats.get("CASE") == "NOM"
+        and ma.feats.get("DEM") is not True
+        for ma in next_cands
+    )
+
+
 def _is_post_embedded_v_pron(
     analyses: list[list[MorphAnalysis]], i: int, matrix_v_idx: int
 ) -> bool:
@@ -790,6 +840,7 @@ def reorder_clitics(
         and not _is_pre_linker_pron(analyses, i)
         and not _is_post_embedded_v_pron(analyses, i, anchor_idx)
         and not _is_pre_ay_pron(analyses, i)
+        and not _is_pre_ang_pred_pron(analyses, i)
     ]
     adv_indices = [
         i for i, cands in enumerate(analyses)
