@@ -198,34 +198,38 @@ class TestModalCtrlClassDistinct:
 # === Commit 7 watchpoint: documented temporary regression ==========
 
 
-class TestNoLinkerModalIsZeroParses:
+class TestNoLinkerModalIsColloquialParses:
     """``Hindi ka dapat kumain.`` (no explicit linker between
     ``dapat`` and ``kumain``) parsed pre-Commit-6 as ``EAT
-    <SUBJ>`` POLARITY=NEG via silent-dropping ``dapat``. Post-
-    Commit-6 the strip stops firing and the sentence returns 0
-    parses — and **stays at 0** post-Commit-7 too, because the
-    canonical Tagalog modal+complement form requires the linker
-    (``Hindi ka dapat na kumain.``). The no-linker form is
-    marginal / colloquial and not supported by the Phase 5j
-    Commit 7 modal control wrap (which requires
-    ``PART[LINK=NA|NG]`` between the modal V and the embedded
-    S_XCOMP).
+    <SUBJ>`` POLARITY=NEG via silent-dropping ``dapat``.
+    Phase 5j Commit 6 stopped the silent-drop, and Phase 5j
+    Commit 7 left the no-linker form at 0 parses to avoid
+    re-introducing the ambiguity.
 
-    This test pins the post-Commit-6 / post-Commit-7 0-parse
-    behavior. The **with-linker** counterpart
-    ``Hindi ka dapat na kumain.`` parses correctly post-Commit-7
-    — covered by Phase 5j Commit 7 tests
-    (``test_phase5j_modal_control.py``).
+    **Phase 7a.E §3.6 (2026-05-14):** the no-linker form is now
+    admitted with ``REGISTER='COLLOQUIAL'`` tagged on the
+    matrix — downstream consumers can filter colloquial parses,
+    eliminating the silent-drop ambiguity concern Phase 5j
+    Commit 7 had. The canonical linker form
+    (``Hindi ka dapat na kumain.``) still parses without the
+    REGISTER tag (formal register).
     """
 
-    def test_no_linker_form_is_zero_parses(self) -> None:
+    def test_no_linker_form_parses_colloquial(self) -> None:
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("Hindi ka dapat kumain.")
-        assert len(parses) == 0, (
-            "Hindi ka dapat kumain. (no linker) should have 0 "
-            "parses — the canonical form requires the linker "
-            "(Hindi ka dapat NA kumain.). If you're seeing "
-            "parses here, the modal control wrap may have been "
-            "extended to a no-linker variant — verify the "
-            "matrix-PRED shape and update this test."
+        assert parses, (
+            "Hindi ka dapat kumain. should parse via Phase 7a.E "
+            "§3.6 no-linker colloquial modal rule"
+        )
+        # Verify the matrix has REGISTER=COLLOQUIAL — this
+        # distinguishes Phase 7a.E parses from the formal
+        # linker variant.
+        colloquial_parses = [
+            p for p in parses
+            if p[1].feats.get("REGISTER") == "COLLOQUIAL"
+        ]
+        assert colloquial_parses, (
+            "at least one parse should carry REGISTER=COLLOQUIAL "
+            "(the Phase 7a.E §3.6 no-linker variant marker)"
         )

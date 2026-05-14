@@ -523,6 +523,92 @@ def register_rules(rules: list[Rule]) -> None:
             ),
         ))
 
+    # Phase 7a.E §3.5: modal with full-NP SUBJ inside embedded clause.
+    #
+    # `Dapat na kumain si Maria.` "Maria should eat" — the Phase 5j
+    # modal rule above requires the SUBJ NP to surface between the
+    # modal and the linker (`Dapat si Maria na kumain.` — marked /
+    # rare order). The canonical Tagalog order for full-NP SUBJ is
+    # verb-initial inside the embedded clause: V[modal] + linker +
+    # [V + NP]. This variant accepts a regular S as the embedded
+    # daughter and structure-shares matrix SUBJ with embedded SUBJ.
+    #
+    # Semantically: matches the existing control rule's behavior
+    # (matrix's lex PRED `DAPAT <SUBJ, XCOMP>` makes SUBJ thematic);
+    # the structure-share `(↑ SUBJ) = (↑ XCOMP SUBJ)` unifies the
+    # matrix SUBJ slot with the embedded clause's SUBJ. References:
+    # S&O 1972 §5.30, R&G 1981 ch. 6 (modal constructions).
+    #
+    # The `(↓1 CTRL_CLASS) =c 'MODAL'` filter prevents cross-firing
+    # on other linker-bound matrix-V constructions (raising verbs
+    # mukha / baka use CTRL_CLASS=RAISING, not MODAL).
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            [
+                "V[CTRL_CLASS=MODAL]",
+                f"PART[LINK={link}]",
+                "S",
+            ],
+            _eqs(
+                "(↑ XCOMP) = ↓3",
+                "(↑ SUBJ) = (↑ XCOMP SUBJ)",
+                "(↓1 CTRL_CLASS) =c 'MODAL'",
+                "(↓1 MODAL) =c true",
+            ),
+        ))
+
+    # Phase 7a.E §3.6: no-linker colloquial modal.
+    #
+    # `Hindi ka dapat kumain.` "You shouldn't eat" — colloquial
+    # Tagalog drops the linker between the modal and embedded V.
+    # Pre-Phase-5j-Commit-7 this surface silently parsed by
+    # dropping `dapat` (yielding bare `EAT <SUBJ>` POLARITY=NEG);
+    # Commit 7 zero-parsed the no-linker form to avoid the silent
+    # drop. Phase 7a.E §3.6 restores the surface with explicit
+    # REGISTER=COLLOQUIAL tagging — downstream consumers can filter
+    # colloquial parses, eliminating the silent-drop ambiguity.
+    #
+    # Same equations as the linker variant minus the linker
+    # daughter (clitic-NP between modal and S_XCOMP). REGISTER feat
+    # added to the matrix to flag the colloquial register.
+    rules.append(Rule(
+        "S",
+        [
+            "V[CTRL_CLASS=MODAL]",
+            "NP[CASE=NOM]",
+            "S_XCOMP",
+        ],
+        _eqs(
+            "(↑ SUBJ) = ↓2",
+            "(↑ XCOMP) = ↓3",
+            "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+            "(↓1 CTRL_CLASS) =c 'MODAL'",
+            "(↓1 MODAL) =c true",
+            "(↑ REGISTER) = 'COLLOQUIAL'",
+        ),
+    ))
+
+    # Phase 7a.E §3.6 combined with §3.5: full-NP SUBJ AND no
+    # linker (colloquial). `Dapat kumain si Maria.` — colloquial
+    # form of `Dapat na kumain si Maria.`. Structure-shares
+    # matrix SUBJ with embedded S's SUBJ (raising-style; matches
+    # the §3.5 linker variant minus the linker daughter).
+    rules.append(Rule(
+        "S",
+        [
+            "V[CTRL_CLASS=MODAL]",
+            "S",
+        ],
+        _eqs(
+            "(↑ XCOMP) = ↓2",
+            "(↑ SUBJ) = (↑ XCOMP SUBJ)",
+            "(↓1 CTRL_CLASS) =c 'MODAL'",
+            "(↓1 MODAL) =c true",
+            "(↑ REGISTER) = 'COLLOQUIAL'",
+        ),
+    ))
+
     # Phase 5i Commit 8: indirect-question embedding under KNOW-
     # class predicates (``alam``). The matrix predicate takes a
     # CLOSED sentential complement (COMP), not an open XCOMP — the
