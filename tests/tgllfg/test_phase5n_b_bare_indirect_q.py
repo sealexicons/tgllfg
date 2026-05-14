@@ -94,16 +94,46 @@ class TestEmbeddedBareForm:
 # === Disambiguation: kahit-X excluded ================================
 
 
-class TestKahitXExcluded:
-    """The ``¬ (↓1 INDEF)`` constraint excludes kahit-X
-    indefinite PRONs (Phase 5m kahit-WH composition produces
-    PRON[INDEF=YES, WH=YES]). ``Kahit sino kumain.`` 0-parses;
-    the canonical form is ``Kahit sino ay kumain.`` (Phase 5n.B
-    Commit 20 deferral)."""
+class TestKahitXExcludedFromBareIndirectQ:
+    """The ``¬ (↓1 INDEF)`` constraint on the Phase 5n.B C10
+    bare-indirect-Q rule (``S → PRON[WH, NOM] V[AV]``) excludes
+    kahit-X indefinite PRONs (Phase 5m kahit-WH composition
+    produces ``PRON[INDEF=YES, WH=YES]``).
 
-    def test_kahit_sino_kumain_zero_parse(self) -> None:
+    **Phase 7a.F closure (2026-05-14):** ``Kahit sino kumain.``
+    now parses via the new Phase 7a.F kahit-X no-ay colloquial
+    rule (TOPIC-fronting with REGISTER=COLLOQUIAL), but NOT via
+    the bare-indirect-Q rule (which would produce ``Q_TYPE=WH``).
+    The exclusion this class pins is still active: kahit-X
+    surfaces don't trigger the bare-indirect-Q wh-Q reading.
+    """
+
+    def test_kahit_sino_kumain_not_a_bare_indirect_q(self) -> None:
         parses = parse_text("Kahit sino kumain.")
-        assert len(parses) == 0
+        # Parse should exist (Phase 7a.F), and the surviving
+        # parse must come from the Phase 7a.F TOPIC-fronting rule
+        # (matrix has TOPIC bound to the kahit-X NP), NOT from
+        # the Phase 5n.B C10 bare-indirect-Q rule (which would
+        # bind SUBJ directly with no TOPIC).
+        assert parses, (
+            "Kahit sino kumain. should parse via Phase 7a.F "
+            "no-ay colloquial rule"
+        )
+        # Every parse should have TOPIC set (Phase 7a.F rule
+        # signature). The bare-indirect-Q rule would NOT set
+        # TOPIC. If a parse has neither TOPIC nor REGISTER=
+        # COLLOQUIAL, it's the bare-indirect-Q rule firing
+        # incorrectly.
+        for p in parses:
+            fs = p[1]
+            topic = fs.feats.get("TOPIC")
+            register = fs.feats.get("REGISTER")
+            assert topic is not None or register == "COLLOQUIAL", (
+                "Kahit sino kumain. parses should all carry "
+                "TOPIC (Phase 7a.F rule signature) — the Phase "
+                "5n.B C10 bare-indirect-Q rule's ¬ (↓1 INDEF) "
+                "constraint still excludes kahit-X"
+            )
 
 
 # === Regression: existing wh-cleft (with ang) unchanged =============

@@ -179,18 +179,27 @@ class TestKahitConcessivePreserved:
 # === Deferred: kahit-X as fronted SUBJ ================================
 
 
-class TestKahitFrontedSubjectDeferred:
-    """``Kahit sino kumain.`` (kahit-X as fronted SUBJ before V)
-    does NOT parse today: there is no rule that admits an
-    indefinite-PRON in pre-V topic position.
+class TestKahitFrontedSubjectColloquial:
+    """``Kahit sino kumain.`` (kahit-X as fronted SUBJ before V).
 
-    Closure path (Phase 5n or beyond): an indef-PRON-as-topic
-    rule analogous to Phase 5l SubordClause-topic
-    (``S → SubordClause PART[LINK=AY] S`` with TOPIC + ADJUNCT
-    overlay). For indefinite-PRON the ay-fronted form
-    (``Kahit sino ay kumain.``) is the canonical structure.
+    **Phase 7a.F closure (2026-05-14):** parses now via the new
+    Phase 7a.F kahit-X no-ay colloquial rule
+    (``S → NP[CASE=NOM] S_GAP`` gated on ``INDEF=YES``) with
+    ``REGISTER='COLLOQUIAL'`` on the matrix. The canonical
+    ay-fronted form (``Kahit sino ay kumain.``) still parses
+    without the REGISTER tag (formal register).
     """
 
-    def test_pre_v_kahit_sino_zero_parse(self) -> None:
+    def test_pre_v_kahit_sino_parses_colloquial(self) -> None:
         parses = parse_text("Kahit sino kumain.")
-        assert len(parses) == 0
+        assert parses, (
+            "Kahit sino kumain. should parse via Phase 7a.F "
+            "kahit-X no-ay colloquial rule"
+        )
+        colloquial = [
+            p for p in parses
+            if p[1].feats.get("REGISTER") == "COLLOQUIAL"
+        ]
+        assert colloquial, (
+            "at least one parse should carry REGISTER=COLLOQUIAL"
+        )
