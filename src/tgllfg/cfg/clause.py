@@ -1558,6 +1558,39 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # Phase 7a.D: wh-ADV with linker fronting (§18.1.1 item 5).
+    #
+    # `Paanong kumain ang aso?` "How would the dog eat?" — wh-ADV
+    # + linker (na / -ng) + S. The plan-of-record §3.4 calls out
+    # `paano` specifically, but the rule's structure is generic
+    # over ADV[WH] — the Phase 5i Commit 4 bare variant above is
+    # also generic, and modern Tagalog permits the linker-bound
+    # form across all wh-ADVs (paano / papaano / saan / kailan /
+    # bakit). The linker variant adds emphasis or interrogative
+    # particle force to the wh-fronting.
+    #
+    # Equations mirror the bare variant exactly except daughter
+    # indices shift by one (S is ↓3 vs ↓2). No new feats are
+    # introduced: Q_TYPE=WH + WH_LEMMA identifies the question
+    # type; downstream consumers dispatch on WH_LEMMA when they
+    # need to distinguish manner / place / time / reason questions.
+    # The plan's `(↑ ASK_MANNER) = true` equation is dropped (no
+    # parallel ASK_* feats exist for the other wh-types; adding
+    # one paano-specific atom would be inconsistent with the
+    # established convention).
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S[Q_TYPE=WH]",
+            ["ADV[WH]", f"PART[LINK={link}]", "S"],
+            [
+                "(↑) = ↓3",
+                "(↑ Q_TYPE) = 'WH'",
+                "(↑ WH_LEMMA) = ↓1 LEMMA",
+                "↓1 ∈ (↑ ADJUNCT)",
+                "(↓1 WH) =c true",
+            ],
+        ))
+
     # Phase 5i Commit 9: DAT-wh fronting (sibling to Commit 4).
     #
     #   ``Kanino ka pumunta?``        "To whom did you go?"
