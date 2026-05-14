@@ -514,19 +514,35 @@ naturalistic-vs-curated gap remains the headline finding.
 
 ## 15. Wave 3 failure-cluster sampling
 
-Heuristic clustering of the 893 zero-parse rows (464 from S&O +
-429 from R&G Conv):
+Heuristic clustering of the 881 zero-parse rows (459 from S&O +
+422 from R&G Conv) **after Phase 8.Q OOV-probe correction**:
 
 | Cluster | S&O | R&G Conv | Total | Share |
 | --- | ---: | ---: | ---: | ---: |
-| other (heterogeneous) | 286 | 264 | 550 | 61.6% |
-| clitic-fused-token | 82 | 61 | 143 | 16.0% |
-| construction-gap (no OOV) | 42 | 20 | 62 | 6.9% |
-| proper-noun-only | 34 | 27 | 61 | 6.8% |
-| english-bleed | 18 | 34 | 52 | 5.8% |
-| clock-time (``alas``) | 0 | 11 | 11 | 1.2% |
+| other (heterogeneous) | 302 | 282 | 584 | 66.3% |
+| clitic-fused-token (now real lex gaps in -ng) | 57 | 27 | 84 | 9.5% |
+| construction-gap (no OOV) | 44 | 24 | 68 | 7.7% |
+| proper-noun-only | 34 | 29 | 63 | 7.2% |
+| english-bleed | 18 | 37 | 55 | 6.2% |
+| clock-time (``alas``) | 1 | 11 | 12 | 1.4% |
 | speaker-tag-bleed | 0 | 10 | 10 | 1.1% |
-| affix-fragment | 2 | 2 | 4 | 0.4% |
+| affix-fragment | 3 | 2 | 5 | 0.6% |
+
+**Phase 8.Q correction note**: the pre-8.Q version of this
+table reported the ``clitic-fused-token`` cluster as 143
+(16.0%) — making it appear to be the second-largest failure
+class. Phase 8.Q (PR #63) fixed the OOV probe in
+``scripts/harvest_exemplars.py`` to apply ``split_linker_ng``
+before reporting OOV (the probe was missing the linker-split
+step that the real parser pipeline applies — see
+``docs/analysis-choices.md`` "Phase 8.Q" entry). After the
+correction, the cluster shrinks to 84 (9.5%) — and the
+remaining 84 are mostly **real lex gaps for words ending in
+-ng** (``tulong`` help, ``tanong`` question, ``kanto``
+corner, ``marunong`` knowledgeable, ``pulong`` meeting), not
+clitic-glue. The actual clitic-glue decomposition was working
+all along; the audit's "16% clitic-fused-token cluster" was
+a probe artifact.
 
 ### Diag-kind histogram (Wave 3 aggregate)
 
@@ -676,14 +692,19 @@ in §16 below.
   waves)**, not 99.6%. Up from the post-Wave-2 5% baseline
   largely because R&G Conversational lifts the average. The
   curated-corpus / naturalistic-corpus gap is real.
-- **Wave 3 shifts the failure landscape**: the largest cluster
-  is now ``clitic-fused-token`` (16% across both Wave 3
-  sources). Examples: ``akong`` (= ``ako`` + ``ng``), ``bang``
-  (= ``ba`` + ``ng``), ``anong`` (= ``ano`` + ``ng``),
-  ``kong`` (= ``ko`` + ``ng``), ``siyangnag``. This is partly
-  natural Tagalog clitic-fusion phenomena and partly OCR
-  whitespace-drop. The morph analyzer should treat these as
-  candidates for decomposition.
+- **Wave 3 cluster taxonomy** (post-Phase-8.Q probe fix): the
+  largest cluster after ``other (heterogeneous)`` is now
+  ``construction-gap`` (~7.7%), not ``clitic-fused-token``.
+  The pre-8.Q audit reported clitic-fused-token at 16% but
+  that was a probe artifact — see §15 and
+  ``docs/analysis-choices.md`` "Phase 8.Q" for the
+  correction. The clitic-glue decomposition
+  (``split_linker_ng`` in ``src/tgllfg/text/clitics.py``) was
+  already working correctly; the audit's OOV probe was
+  missing the linker-split step. The genuine word-fusion
+  cases that remain (``bibilhinko``, ``siyangnag``) are 4
+  total Wave 3 rows and depend on missing verb-paradigm
+  cells (Phase 8.B territory).
 - **Wave 3 adds Phase 8 candidates** beyond the existing 16:
   - **``alas``-construction** (clock time, 11 R&G Conv rows;
     Spanish numerals for hours).
