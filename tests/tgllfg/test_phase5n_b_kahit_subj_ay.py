@@ -107,23 +107,38 @@ class TestKahitWithTransitiveV:
 # === Non-ay form remains deferred =====================================
 
 
-class TestNonAyFormDeferred:
-    """The non-``ay`` form (``Kahit sino kumain.``) remains
-    deferred per §18.2 line 100 — closure path is via the
-    canonical ``ay``-form. Pin the 0-parse so a future change
-    that admits the non-``ay`` form is detected."""
+class TestNonAyFormParsesColloquial:
+    """The non-``ay`` form (``Kahit sino kumain.``) was deferred
+    by Phase 5n.B C20 — closure path expected via the canonical
+    ``ay``-form.
+
+    **Phase 7a.F closure (2026-05-14):** the non-``ay`` form is
+    now admitted via a new rule
+    (``S → NP[CASE=NOM] S_GAP`` gated on ``INDEF=YES``) with
+    explicit ``REGISTER='COLLOQUIAL'`` tagging on the matrix —
+    downstream consumers can filter colloquial parses. The
+    canonical ``ay``-fronted form still parses without the
+    REGISTER tag (formal register).
+    """
 
     @pytest.mark.parametrize("sentence", [
         "Kahit sino kumain.",
         "Kahit ano kumain.",
         "Kahit alin kumain.",
     ])
-    def test_non_ay_form_zero_parse(self, sentence: str) -> None:
+    def test_non_ay_form_parses_colloquial(self, sentence: str) -> None:
         parses = parse_text(sentence)
-        assert len(parses) == 0, (
-            f"{sentence!r} parsed unexpectedly — non-ay kahit-X "
-            f"SUBJ form has been admitted; either close the "
-            f"§18.2 L100 deferral note or remove this pin."
+        assert parses, (
+            f"{sentence!r} should parse via Phase 7a.F kahit-X "
+            f"no-ay colloquial rule"
+        )
+        colloquial = [
+            p for p in parses
+            if p[1].feats.get("REGISTER") == "COLLOQUIAL"
+        ]
+        assert colloquial, (
+            f"{sentence!r} should produce at least one parse with "
+            f"REGISTER=COLLOQUIAL (the Phase 7a.F no-ay variant)"
         )
 
 

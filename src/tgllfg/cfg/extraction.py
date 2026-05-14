@@ -772,6 +772,43 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 7a.F: kahit-X SUBJ no-`ay` colloquial (§18.1.1 item 8) ---
+    #
+    # `Kahit sino kumain.` "Anyone could eat" — colloquial Tagalog
+    # admits the pre-V kahit-X SUBJ fronting WITHOUT the `ay`
+    # particle. Phase 5n.B C20 closed the canonical `ay`-fronted
+    # form (`Kahit sino ay kumain.`); this variant drops the
+    # `ay` daughter for the colloquial register.
+    #
+    # The rule mirrors the Phase 4 §7.4 ay-fronted rule above
+    # exactly except:
+    #   - drops the PART[LINK=AY] daughter (daughter indices
+    #     shift: S_GAP becomes ↓2);
+    #   - gates the NP daughter to INDEF=YES, preventing
+    #     overgeneration on bare-NP SUBJ-fronting (which
+    #     colloquial Tagalog disallows; only indefinite-NP
+    #     fronting is admissible without `ay`);
+    #   - adds (↑ REGISTER) = 'COLLOQUIAL' so downstream
+    #     consumers can filter colloquial parses.
+    #
+    # INDEF=YES is the feat the Phase 5m Commit 8 IndefPRON rule
+    # (`PRON → PART PRON` with `(↓1 LEMMA) =c 'kahit'`) sets on
+    # kahit-X compositions. Any future indefinite construction
+    # that compositionally sets INDEF=YES will also license this
+    # colloquial fronting.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=NOM]", "S_GAP"],
+        [
+            "(↑) = ↓2",
+            "(↑ TOPIC) = ↓1",
+            "(↓2 REL-PRO) = ↓1",
+            "(↓2 REL-PRO) =c (↓2 SUBJ)",
+            "(↓1 INDEF) =c 'YES'",
+            "(↑ REGISTER) = 'COLLOQUIAL'",
+        ],
+    ))
+
     # --- Phase 5n.B Commit 3: ADJ-pivot ay-fronting wrap (§18 L39) ---
     #
     # ``Si Maria ay maganda.`` "Maria is beautiful."
