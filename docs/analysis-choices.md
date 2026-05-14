@@ -14270,3 +14270,158 @@ clean; existing ``test_mga_approximation.py`` Phase 5f
 tests unaffected (the helper iterates parses and returns
 the first ADJUNCT match by lemma, so adding a second
 parse doesn't break it).
+
+## Phase 7a.B Commit 1: §18.1.1 item 2 magsi + magpa-an distributive AV — design
+
+Second sub-PR of Phase 7a (corpus-deferred §18.1.1 closures
+per ``.claude/plans/tgllfg-phase-7a.md``). Closes §18.1.1
+item 2 — two distributive AV affix classes:
+
+1. **``magsi-``** plural-actor AV prefix (`magsikanta` "sing
+   (pl.)") — canonically S&O 1972 §5.15.
+2. **``magpa-…-an``** causative-reciprocal-distributive
+   circumfix (`nagpatawagan` "called one another") —
+   reciprocal-distributive subtype only; locative-
+   distributive subtype empirically negative (deferred).
+
+### 1. ``magsi-`` plural-actor AV (S&O §5.15)
+
+S&O 1972 §5.15 documents ``magsi-`` as the optional
+PLURALIZED AV formation that occurs only with a plural topic.
+Canonical examples (S&O Chart 18):
+
+```text
+-um- base    →   magsi-       (kumanta → magsikanta)
+mag-(+X) base →  magsipag-(+X) (mag-aral → magsipag-aral)
+mang- base   →   magsipang-   (mangisda → magsipangisda)
+```
+
+Standard 3-aspect AV paradigm:
+
+| Aspect | Form | Surface (`kanta` base) |
+| --- | --- | --- |
+| PFV | nagsi-V | `nagsikanta` |
+| IPFV | nagsisi-V | `nagsisikanta` |
+| CTPL | magsisi-V | `magsisikanta` |
+| basic | magsi-V | `magsikanta` |
+
+**Phase 7a.B scope:** implements only the ``magsi-``
+paradigm (for ``-um-`` verbs). The ``magsipag-`` and
+``magsipang-`` variants for ``mag-`` and ``mang-`` verbs
+are morphologically distinct paradigm cells; deferred as
+follow-on work. The ``-nga-`` infix variant (e.g.,
+``mangagsikanta``) is also out of scope — S&O notes it does
+not change meaning.
+
+Cells emit ``{DISTRIB: true}``. No CAUS/RECP/MOOD feats
+(the construction is pure pluralization, not reciprocal or
+causative).
+
+### 2. ``magpa-…-an`` causative-distributive circumfix
+
+The user-source consultation (2026-05-13) claimed two
+productive subtypes:
+
+1. **Reciprocal-distributive** (`magpakainan` "feed one
+   another"; `nagpatawagan` "called one another";
+   `magpahiraman` "lend one another")
+2. **Locative-distributive** (`magpinturahan` "paint all
+   over"; `magpatakan` "drop onto"; `magpaupuan` "seat
+   distributively across loci")
+
+**Empirical verification (2026-05-14, via GT):**
+
+<!-- markdownlint-disable MD013 -->
+
+| Test clause | GT output | Verdict |
+| --- | --- | --- |
+| `Nagpatawagan sila kahapon.` | "They called each other yesterday." | reciprocal-distributive PRODUCTIVE |
+| `Nagpinturahan namin ang bahay.` | "We painted the house." | no locative-distributive sense |
+| `Magpatakan natin ng tubig ang mga halaman.` | "Let's water the plants." | no distribution sense |
+| `Magpaupuan natin ang mga bisita.` | "Let's seat the guests." | no distribution sense |
+| `Nagpalagayan kami ng bulaklak sa mesa.` | "We placed flowers on the table." | no distribution sense |
+
+<!-- markdownlint-enable MD013 -->
+
+**Conclusion:** the reciprocal-distributive reading is
+robustly productive (1 / 1 positive); the locative-
+distributive reading is empirically NOT distinct from
+plain locative-focus / `-an` LV in modern Tagalog
+(0 / 3 positive). Phase 7a.B implements only the
+reciprocal-distributive reading; the locative-distributive
+subtype is dropped from the v1 scope per this evidence.
+
+### 3. ``magpa-…-an`` cell shape
+
+Three aspect cells (PFV/IPFV/CTPL) emit
+``{DISTRIB: true, RECP: true, CAUS: INDIRECT, MOOD: SOC}``
+— parallel to the existing ``mag_an`` reciprocal-AV cells
+(Phase 5e Commit 12; MOOD=SOC + RECP=true) with the
+causative ``pa-`` layer added.
+
+| Aspect | Operations | Surface (`tawag` base) |
+| --- | --- | --- |
+| PFV | suffix `an` + prefix `pa` + prefix `nag` | `nagpatawagan` |
+| IPFV | suffix `an` + prefix `pa` + cv_redup + prefix `nag` | `nagpapatawagan` |
+| CTPL | suffix `an` + prefix `pa` + cv_redup + prefix `mag` | `magpapatawagan` |
+
+The cv_redup duplicates the ``pa`` outer-prefix (same
+pattern as the existing ``magpa`` IPFV/CTPL cells produce
+``nagpapakain`` / ``magpapakain``).
+
+### 4. Reference-grammar attestation note
+
+R&B 1986 and S&O 1972 do not explicitly document the
+``magpa-…-an`` circumfix as a productive AV paradigm.
+S&O's nearest forms (`magpagandahan`, `magpatayan`,
+`magpari-parian` on p. 357) are analyzed as ``mag-`` +
+derived-nominal-in-``-an``, not as ``magpa-…-an``
+circumfix. The Phase 7a.A reciprocal-distributive
+implementation is grounded in the user-source consultation
+plus the GT-confirmed productivity of ``nagpatawagan``,
+not in direct reference-grammar attestation. **Risk
+acknowledged**: if a future reference-grammar scan shows
+``magpa-…-an`` is genuinely analyzed as ``mag-`` +
+derived-nominal, the implementation should be revisited.
+
+### 5. Starter verb sets
+
+**``magsi``** (`-um-` verbs only; per S&O §5.15):
+
+- `kanta` (sing) — S&O canonical example
+- `kain` (eat)
+- `basa` (read)
+- `inom` (drink)
+- `sulat` (write)
+
+**``magpa_an``** (verbs licensing causative-reciprocal
+reading):
+
+- `kain` (eat) — GT example: `magpakainan` "feed one another"
+- `tawag` (call) — GT-confirmed: `nagpatawagan`
+- `hiram` (borrow / lend) — `magpahiraman` "lend one another"
+- `upo` (sit) — `magpaupuan` "seat one another / share seating"
+
+All four roots are already in ``data/tgl/verbs.yaml``.
+The starter set adds the new ``magsi`` / ``magpa_an``
+strings to their ``affix_class`` lists; no new lex entries.
+
+### 6. Tests
+
+``tests/tgllfg/test_phase7a_b_distrib_av.py`` covers:
+
+- ``TestMagsiMorphology`` (parametrized over 5 verb bases ×
+  3 aspects, 15 tests): verifies the analyzer generates
+  ``nagsi-V`` / ``nagsisi-V`` / ``magsisi-V`` surfaces with
+  ``DISTRIB=true``.
+- ``TestMagpaAnMorphology`` (parametrized over 4 verb bases
+  × 3 aspects, 12 tests): verifies the analyzer generates
+  ``nagpa-V-an`` / ``nagpapa-V-an`` / ``magpapa-V-an``
+  surfaces with ``DISTRIB=true, RECP=true, CAUS=INDIRECT``.
+- ``TestMagpaAnReciprocalClause`` (3 tests): parses
+  ``Nagpatawagan sila.``, ``Nagpakainan ang mga bata.``,
+  ``Magpahiraman tayo ng aklat.``; verifies SUBJ + the
+  reciprocal-distributive feats on the verb.
+- ``TestExistingParadigmsUnchanged`` (regression, 4 tests):
+  ``magpakain``, ``nagkainan``, ``kumain``, ``magkakainan``
+  still parse with their pre-Phase-7a.B feats.
