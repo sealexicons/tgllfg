@@ -813,41 +813,67 @@ _PARSE_SOURCES = [
 ]
 
 
+def oov_probe(text: str) -> list[str]:
+    """Tokenize ``text`` and return surface forms whose morph
+    analyses are all ``pos='_UNK'`` (the analyzer's fallback for
+    words it cannot derive any paradigm form for). Used by Phase 8.J
+    to surface lex-OOV signal even on zero-parse-no-fragment rows
+    where the parser produces no diagnostics.
+
+    Filters out pure-punctuation tokens (``'``, ``(``, ``:``, etc.)
+    and single-character tokens (almost always OCR character-spacing
+    artifacts, not real OOV words).
+
+    **Phase 8.Q**: applies ``split_linker_ng`` between tokenization
+    and morph analysis so the probe mirrors the actual parser
+    pipeline (``src/tgllfg/core/pipeline.py`` line 130 — Phase 4
+    §7.5 detaches the bound ``-ng`` linker before morph). Without
+    this step, vowel-final clitic-glued forms like ``akong`` (=
+    ``ako`` + ``-ng``), ``bang`` (= ``ba`` + ``-ng``), ``anong``
+    (= ``ano`` + ``-ng``), ``magandang`` (= ``maganda`` + ``-ng``)
+    were reported as OOV — the probe's pre-8.Q output overstated
+    the lex-gap signal and produced a spurious "clitic-fused-token
+    cluster" in the Wave 3 audit (covered in
+    ``docs/coverage-audit-2026-05.md`` §16 and corrected in
+    ``docs/analysis-choices.md`` "Phase 8.Q").
+
+    Module-level since Phase 8.Q so the probe is importable for
+    testing.
+    """
+    from tgllfg.text.tokenizer import tokenize
+    from tgllfg.text.clitics import split_linker_ng
+    from tgllfg.morph.analyzer import analyze_tokens
+
+    try:
+        toks = tokenize(text)
+        toks = split_linker_ng(toks)
+        analyses = analyze_tokens(toks)
+        unk: list[str] = []
+        for t, a_list in zip(toks, analyses):
+            if not re.search(r"[a-zA-Z]", t.surface):
+                continue
+            if len(t.surface) < 2:
+                continue
+            # The synthetic linker token from split_linker_ng has
+            # surface ``-ng`` and pos PART — not an OOV signal,
+            # skip explicitly to avoid noise.
+            if t.surface == "-ng":
+                continue
+            if not a_list:
+                unk.append(t.surface)
+                continue
+            if all(getattr(a, "pos", None) == "_UNK" for a in a_list):
+                unk.append(t.surface)
+        return unk
+    except Exception:
+        return []
+
+
 def cmd_parse() -> None:
     from tgllfg.core.pipeline import parse_text_with_fragments
-    from tgllfg.text.tokenizer import tokenize
-    from tgllfg.morph.analyzer import analyze_tokens
 
     import random
     rng = random.Random(42)
-
-    def oov_probe(text: str) -> list[str]:
-        """Tokenize ``text`` and return surface forms whose morph
-        analyses are all ``pos='_UNK'`` (the analyzer's fallback for
-        words it cannot derive any paradigm form for). Used by 8.J to
-        surface lex-OOV signal even on zero-parse-no-fragment rows
-        where the parser produces no diagnostics.
-
-        Filters out pure-punctuation tokens (``'``, ``(``, ``:``, etc.)
-        and single-character tokens (almost always OCR character-
-        spacing artifacts, not real OOV words)."""
-        try:
-            toks = tokenize(text)
-            analyses = analyze_tokens(toks)
-            unk: list[str] = []
-            for t, a_list in zip(toks, analyses):
-                if not re.search(r"[a-zA-Z]", t.surface):
-                    continue
-                if len(t.surface) < 2:
-                    continue
-                if not a_list:
-                    unk.append(t.surface)
-                    continue
-                if all(getattr(a, "pos", None) == "_UNK" for a in a_list):
-                    unk.append(t.surface)
-            return unk
-        except Exception:
-            return []
 
     for in_name, out_name, sample_cap in _PARSE_SOURCES:
         in_path = EXEMPLARS_DIR / in_name

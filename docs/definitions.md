@@ -296,6 +296,7 @@ extends the same machinery to PART (via `Particle.affix_class`).
 | MORPH | Morphology | The rule-cascade morphological analyzer / generator (Phase 2 / 2C). |
 | MR | Merge Request | Synonym for PR in some shops; user uses both. |
 | OCR | Optical Character Recognition | Used to ingest dictionary scans during Phase 2C scale-up. |
+| OOV | Out-Of-Vocabulary | A surface form the morph analyzer can't analyze — falls through to `pos='_UNK'`. The Phase 8 coverage audit (`docs/coverage-audit-2026-05.md`) reports OOV inventories per source as a lex-gap signal. Probed by `oov_probe` in `scripts/harvest_exemplars.py`; Phase 8.Q corrected the probe to apply `split_linker_ng` before reporting, removing false positives on clitic-glued surfaces (`akong` = `ako` + `-ng`, etc.). |
 | ORM | Object-Relational Mapper | SQLAlchemy 2.x. |
 | OS | Operating System | |
 | PDF | Portable Document Format | |
@@ -323,7 +324,29 @@ extends the same machinery to PART (via `Particle.affix_class`).
 | K | Kroeger 1993, *Phrase Structure and Grammatical Relations in Tagalog*. |
 | R71 | Ramos 1971, *Tagalog Dictionary*. |
 | R&B | Ramos & Bautista 1986, *Handbook of Tagalog Verbs*. |
+| R&C | Ramos & Cena 1990, *Modern Tagalog: Grammatical Explanations and Exercises for Non-native Speakers*. |
+| R&G | Ramos & Goulet 1981 — *Conversational Tagalog* (PALI 25) and *Intermediate Tagalog: Developing Cultural Awareness through Language*. |
 | S&O | Schachter & Otanes 1972, *Tagalog Reference Grammar*. |
+| K&Z | Kaplan & Zaenen 1989, "Long-Distance Dependencies, Constituent Structure, and Functional Uncertainty". |
+
+### Coverage audit / harvest
+
+Terms used in the Phase 8 audit work (`docs/coverage-audit-2026-05.md`, `.claude/plans/tgllfg-harvest-audit.md`, Phase 8 plan).
+
+| Term | Notes |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Wave 1 | First audit wave (PR #56): R&G hand-transcriptions (`rg81-excerpts.md`) + R&B 1986 verb-base inventory. 118 sentences. |
+| Wave 2 | Second audit wave (PR #56): R&C 1990 + R&G Intermediate + Ramos 1971 Dictionary. ~1100 sentences. |
+| Wave 3 | Third audit wave (PR #59): S&O 1972 + R&G Conversational, both via `pdftotext -layout` from Acrobat-OCR'd PDFs. 1000 sentences (500/source). |
+| clitic-glue / clitic-fused | A surface form whose underlying analysis is `base + clitic` (typically the bound `-ng` linker on vowel-final hosts: `akong` = `ako` + `-ng`, `magandang` = `maganda` + `-ng`). Handled by `split_linker_ng` in `src/tgllfg/text/clitics.py`. Phase 8.Q showed the audit's "clitic-fused-token cluster" was a probe artifact, not a parser gap. |
+| `-ng` linker | The bound enclitic linker for vowel-final hosts (consonant-final hosts take the free particle `na`). Phase 4 §7.5 splits it via `split_linker_ng` before morph analysis. |
+| word-fusion | OCR or transcription artifact where two separate words run together as one surface (`bibilhinko` = `bibilhin` + `ko`). Distinct from clitic-glue (which is natural Tagalog cliticization). |
+| DEM-pivot | A predicational clause whose pivot (predicate-position daughter) is a demonstrative determiner: `Ito ang aklat.` "This is the book." Phase 8.X closure. |
+| PRON-pivot | A predicational clause whose pivot is a (non-wh) personal pronoun: `Ako ang guro.` "I am the teacher." Phase 8.X closure (N-headed-pivot-NP subset); V-pivot variant (`Tayo ang lumakad.`) remains in Phase 8.S. |
+| two-NP equational | A predicational clause whose pivot AND subject are both full NPs: `Si Juan ito.` (Si-pivot, Phase 8.Y) / `Ang lalaki ang doktor.` (ang-pivot, Phase 8.Z). PRED = `'BE-NP <SUBJ>'`. |
+| pseudo-cleft | A focus-marked clause of the form `<NP> ang <V-headed-NP>` where the V-headed NP is a headless relative ("the one who Xed"). E.g., `Ang nanay ang nagluto.` "It's the mother who cooked." / "The mother is the one who cooked." Currently zero-parsing in tgllfg (the headless RC doesn't wrap to NP[CASE=NOM]); Phase 8 follow-on. |
+| ay-fronting / ay-inverted | The Phase 4 §7.4 topicalization construction `<NP> ay <S>` where the fronted NP is the topic (and typically SUBJ). Examples: `Ako ay kumain.` (V-clause; works), `Ito ay aklat.` (N-pred; Phase 8.Y). |
+| naturalistic baseline | The clean-parse rate against unprepared reference-grammar text. As of Phase 8.Z: 7.4% → 8.0% on 2220 sentences across Waves 1+2+3, vs 99.6% on the curated `coverage_corpus.yaml`. |
 
 ## 2. References — algorithms, processes, and analytical decisions
 

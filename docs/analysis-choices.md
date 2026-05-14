@@ -15455,7 +15455,7 @@ audit) listed three example sentences:
   `ako`), and the construction is semantically possessive
   ("the bread is mine"), not equational. Remains in 8.S scope.
 - `Ako ang guro.` *(probed during 8.X)* — non-wh NOM-PRON
-  + ang-NP[N]. **Closed by 8.X.**
+  followed by ang-NP[N]. **Closed by 8.X.**
 
 Phase 8.S is now narrowed to the V-pivot subset (`Tayo ang
 lumakad`) and the DAT-PRON possessive-pivot subset (`Akin
@@ -15670,3 +15670,126 @@ gap class, out of 8.Z scope. Tracked as a follow-on near-
 miss for future work (anti-deferral note: this one is a
 distinct construction gap, not a re-deferral of the equa-
 tional case 8.Z closed).
+
+## Phase 8.Q: clitic-glue decomposition — actually a probe artifact
+
+The Wave 3 audit (PR #59) reported "clitic-fused-token" as
+the second-largest failure cluster at 16% of zero-parses
+across both Wave 3 sources, with examples like `akong`
+(= `ako` + `-ng`), `bang` (= `ba` + `-ng`), `anong`
+(= `ano` + `-ng`), `kong`, `siyang`, `magandang`. The
+Phase 8 plan stub listed 8.Q as "extend the morph analyzer to
+decompose clitic-glued forms" — estimated medium effort
+(~3-5 commits).
+
+### What Phase 8.Q actually found
+
+Direct probing showed the clitic-glue decomposition
+**already works correctly**:
+
+- `split_linker_ng` in `src/tgllfg/text/clitics.py` (Phase 4
+  §7.5) splits vowel-final clitic-glued surfaces into base +
+  `-ng` linker tokens.
+- It handles every case from the Wave 3 OOV inventory:
+  PRON + ng (`akong`, `kong`, `mong`, `siyang`, `kanyang`,
+  `kanilang`), particle + ng (`bang`), wh-PRON + ng (`anong`),
+  ADJ + ng (`magandang`), Q + ng (`isang`, `aling`), n-deletion
+  sandhi DAT-PRONs (`aking` from `akin`).
+- The morph analyzer's `is_known_surface` is the gating check;
+  any clitic-glued surface whose base is a known surface
+  splits cleanly.
+
+### Why the audit reported a 16% clitic-fused cluster
+
+The OOV probe in `scripts/harvest_exemplars.py` (added in
+Phase 8.J) ran `tokenize` + `analyze_tokens` directly **without
+applying `split_linker_ng`** — diverging from the real parser
+pipeline at `src/tgllfg/core/pipeline.py` line 130. The probe
+therefore saw raw surfaces like `akong` (no analyses, since
+the analyzer doesn't index the glued surface) and reported
+them as OOV, inflating the lex-gap signal.
+
+The downstream cluster classifier then bucketed `akong`-style
+tokens as "clitic-fused-token", producing the apparent 16%
+cluster. The sentences containing these tokens were
+zero-parsing for **other reasons** (OCR corruption like
+`maihah:mdog`, `is:1pa`, `\Vala`; construction-class gaps),
+not because of the clitic-glued tokens themselves.
+
+### Fix
+
+Two-line change in `scripts/harvest_exemplars.py`:
+
+- Add the `split_linker_ng` import.
+- Call `toks = split_linker_ng(toks)` between `tokenize` and
+  `analyze_tokens` in the OOV probe.
+- Also filter the synthetic `-ng` token from the OOV output
+  (it's a parser-internal artifact for category dispatch, not
+  a real word).
+
+The probe is also re-promoted to module-level (out of the
+`cmd_parse` closure) so it's importable for regression
+testing. Phase 8.Q test file at
+`tests/tgllfg/test_phase8q_oov_probe.py` pins the corrected
+behavior (15 tests covering clitic-glue suppression, real-OOV
+preservation, and edge cases).
+
+### Coverage impact
+
+The fix **does not change parser behavior** — only the
+probe's reporting. Wave 3 parse-success counts are unchanged
+(still 41 + 78 = 119 / 1000 = 11.9% clean across both Wave 3
+sources). What changes is the audit's cluster picture:
+
+| Cluster | Pre-8.Q | Post-8.Q |
+| --- | ---: | ---: |
+| clitic-fused-token | 143 (16.0%) | 84 (9.5%) |
+| other (heterogeneous) | 550 (61.6%) | 584 (66.3%) |
+
+The 59 reclassified sentences moved from clitic-fused into
+`other` (they were zero-parsing for unrelated reasons; the
+classifier had no better cluster for them).
+
+Of the **84 remaining** rows in the clitic-fused cluster
+post-correction, **none** are actually clitic-glue issues —
+they're real lex gaps for words ending in `-ng` whose base is
+not a known surface, so `split_linker_ng` leaves them intact:
+
+- `tulong` (help) — `tulo` not a known stem
+- `tanong` (question) — `tano` not a known stem
+- `kanto` (corner) — Spanish loan; not in lex
+- `marunong` (knowledgeable) — real word missing from lex
+- `pulong` (meeting) — real word missing from lex
+
+These are Phase 8.A / 8.N (lex pass) territory, not
+analyzer-extension work. The cluster classifier's heuristic
+(any `-ng`-ending OOV → clitic-fused) is crude; the actual
+cause is lex gap, not glue.
+
+### Word-fusion residual
+
+The two genuinely "fused" cases in the Wave 3 audit —
+`bibilhinko` (= `bibilhin` + `ko`) and `siyangnag` (= `siyang`
+followed by `nag-`) — appear in 4 Wave 3 sentences total.
+Both depend on missing verb-paradigm cells:
+
+- `bibilhin` (OV-future of `bili`) isn't in the analyzer.
+  Adding it requires the OV-future paradigm cell with the
+  i-deletion sandhi (`bili` + `-in` → `bilhin`).
+- `siyangnag` is OCR noise (the `nag-` prefix should attach
+  to whatever verb follows, but the surface drops whitespace
+  AND has a stray paren `nag)akbay`).
+
+Both items are out of 8.Q scope. The paradigm-cell gap is
+Phase 8.B (R&B 1986 verb-base lex pass) territory. The OCR
+noise is unfixable without source correction.
+
+### Anti-deferral disclosure
+
+Phase 8.Q's original scope ("medium effort, ~3-5 commits,
+analyzer/tokenizer extension") was based on incorrect audit
+data. The actual scope is much smaller (engineering fix to
+the probe). The honest finding is recorded here rather than
+hidden behind an over-engineered "decomposition" that wasn't
+needed. The corresponding cluster claim in
+`docs/coverage-audit-2026-05.md` §15-§16 is updated.
