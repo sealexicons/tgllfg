@@ -723,7 +723,7 @@ Real-world example sentences mined from the OCR'd companion
 .txt of *Intermediate Tagalog: Developing Cultural Awareness
 Through Language* (Teresita V. Ramos & Rosalina Morales Goulet,
 University Press of Hawaii, 1981) under
-``data/tgl/dictionaries/``. Filtering kept only sentences whose
+``data/tgl/references/``. Filtering kept only sentences whose
 vocabulary is fully covered by the seed lexicon and that the
 Phase 4 grammar parses successfully. This satisfies the §7.10
 plan-text "drawn from a Tagalog reference grammar"; expanding
