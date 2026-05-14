@@ -935,6 +935,107 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 8.Y Commit 1: ay-inverted N-pivot predication ----
+    #
+    # ``Ito ay aklat.``       "This is a book."
+    # ``Ako ay guro.``        "I am a teacher."
+    # ``Iyon ay tatay ko.``   "That is my dad."
+    #
+    # Closes the 8.Y near-miss surfaced during 8.X probing
+    # (docs/analysis-choices.md "Phase 8.X" entry). The Phase 5n.B
+    # Commit 2 N-pivot rule (``S → N NP[CASE=NOM]``) accepts
+    # ``Aklat ito.`` "This is a book" (N-pivot, DEM-subject). The
+    # mirror ay-inverted form ``Ito ay aklat.`` topicalizes the
+    # DEM subject to sentence-initial position — the same predicat-
+    # ional content, different surface order.
+    #
+    # The Phase 4 §7.4 family of ay-fronting rules covers V-headed
+    # clauses (``S → NP[NOM] ay S_GAP``), predicative-ADJ clauses
+    # (``S → NP[NOM] ay S_GAP_PREDADJ``), and SubordClause topics
+    # (``S → SubordClause ay S``). This rule adds the N-headed
+    # predication variant without a parallel ``S_GAP_PREDN`` gap
+    # non-terminal — the equation set is small enough that direct
+    # construction is simpler than threading a gap clause.
+    #
+    # F-structure shape (mirrors the N-pivot rule but with SUBJ
+    # bound to the fronted ↓1 daughter instead of the right-side
+    # ↓2):
+    #
+    #   PRED        = 'BE-N <SUBJ>'
+    #   SUBJ        = ↓1 (the fronted NP — DEM, PRON, or other NOM-NP)
+    #   TOPIC       = ↓1 (LFG discourse function for ay-fronting)
+    #   N_LEMMA     = the predicate noun's lemma
+    #   PREDICATIVE = true
+    #
+    # The right daughter ``N`` covers bare N, ADJ-modified N
+    # (``maliit na bahay``), Q-modified N (``maraming aklat``),
+    # and mas-comparative-modified N — same as the Phase 5n.B
+    # N-pivot rule's left daughter.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=NOM]", "PART[LINK=AY]", "N"],
+        [
+            "(↑ PRED) = 'BE-N <SUBJ>'",
+            "(↑ SUBJ) = ↓1",
+            "(↑ TOPIC) = ↓1",
+            "(↑ N_LEMMA) = ↓3 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "¬ (↓3 WH)",
+        ],
+    ))
+
+
+    # --- Phase 8.Y Commit 2: Si-NP pivot + NOM-NP subject -------
+    #
+    # ``Si Juan ito.``         "This is Juan."
+    # ``Si Maria iyan.``       "That is Maria."
+    # ``Si Juan ang doktor.``  "Juan is the doctor."
+    #
+    # Closes the 8.Y near-miss surfaced during 8.X probing. The
+    # Phase 5n.B N-pivot rule's docstring explicitly notes:
+    #
+    #     "NPs (DET-marked, CASE-bearing) do NOT match — a left-
+    #     edge ``ang doktor`` does not fire this rule, which keeps
+    #     two-NP equational surfaces (``Ang lalaki ang doktor.``)
+    #     out of scope. Those remain as out-of-scope until corpus
+    #     pressure surfaces them."
+    #
+    # The Wave 3 audit surfaced ``Si Juan ito.`` as a zero-parse,
+    # and probing during 8.X confirmed ``Si Juan ang doktor.``
+    # has the same gap. Closing the Si-pivot subset of two-NP
+    # equational here. The fully-general ang-pivot variant
+    # (``Ang lalaki ang doktor.``) is intentionally not closed:
+    # it's not in the audit zero-parse list, and the broader two-
+    # ang variant has known parse-ambiguity interactions with
+    # pseudo-cleft (``Ang nanay ang nagluto.`` — V-headed subject
+    # NP under cleft analysis) that should be triaged separately
+    # when corpus pressure surfaces it.
+    #
+    # The ``MARKER=SI`` gate restricts this rule to si-marked
+    # proper-noun NPs as the pivot, avoiding the ang-pivot
+    # ambiguity above.
+    #
+    # F-structure shape:
+    #
+    #   PRED        = 'BE-NP <SUBJ>'
+    #   SUBJ        = ↓2 (the right-side NOM-NP subject)
+    #   PRED-NP     = ↓1 (the predicate NP, preserved as a sub-
+    #                  fstructure for consumers that need the
+    #                  proper-noun identity)
+    #   PREDICATIVE = true
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=NOM]", "NP[CASE=NOM]"],
+        [
+            "(↓1 MARKER) =c 'SI'",
+            "(↑ PRED) = 'BE-NP <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ PRED-NP) = ↓1",
+            "(↑ PREDICATIVE) = true",
+        ],
+    ))
+
+
     # --- Phase 5h Commit 6: equative two-NP standard frames -----
     #
     # ``Kasingganda ni Maria si Ana.``
