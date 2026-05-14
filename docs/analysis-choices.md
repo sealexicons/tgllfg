@@ -14425,3 +14425,155 @@ strings to their ``affix_class`` lists; no new lex entries.
 - ``TestExistingParadigmsUnchanged`` (regression, 4 tests):
   ``magpakain``, ``nagkainan``, ``kumain``, ``magkakainan``
   still parse with their pre-Phase-7a.B feats.
+
+## Phase 7a.C Commit 1: §18.1.1 item 3 katatapos raising + Non-AV RECPFV reclassification — design
+
+Third sub-PR of Phase 7a. Two coordinated sub-closures landed
+in one sub-PR per the plan-of-record §3.3:
+
+1. **Non-AV RECPFV deferral — reclassify from §18.1.1 to
+   §18.1.3** with the strengthened structural rationale
+   (extends Phase 5e Commit 23 closure).
+2. **`katatapos + V` raising wiring** — the analytic
+   alternative for non-AV "just-finished" readings,
+   delivering the construction Phase 5e Commit 23 sketched
+   but didn't implement.
+
+### 1. Non-AV RECPFV — structural diagnostic (extends Phase 5e Commit 23)
+
+Phase 5e Commit 23 (``analysis-choices.md`` lines 5430-5530)
+already documented the paradigm evidence: R&B 1986 (Handbook
+of Tagalog Verbs) lists Recent Perfective only under AF /
+A2F (both AV-shaped) for every entry; never under OF / DF /
+IF / BF / LF / RF. Phase 7a.C adds the **structural
+diagnostic** for the gap: recent-perfective forms
+independently lack the ``ang``-marked direct pivot that
+defines non-AV voices structurally — non-AV columns are
+structurally unavailable, not just descriptively absent.
+
+This moves the item from "corpus-deferred (§18.1.1)" to
+"permanently out-of-scope (§18.1.3)" in
+``.claude/plans/tgllfg-out-of-scope.md``. Forms like
+``*kakakainin`` / ``*kakabinasá`` are noncanonical /
+do-not-generate; absence of paradigm rules is sufficient.
+Revisit only on a primary-source counterexample.
+
+### 2. `katatapos + V` analytic alternative — implementation
+
+For non-AV "just-finished" readings (e.g., "the fish had
+just been eaten" with OV pivot), the canonical Tagalog
+analytic alternative is ``katatapos + V[non-AV]`` with
+matrix raising from the embedded V's SUBJ. Plan-of-record
+§3.3 sketches:
+
+```text
+S → V[lemma=tapos, ASPECT=RECPFV] V[non-finite]
+   (↑ XCOMP) = ↓2
+   (↑ SUBJ) = (↑ XCOMP SUBJ)
+   (↑ PRED) = 'JUST-FINISHED <XCOMP> SUBJ'
+```
+
+**Implementation:** the existing Phase 5d Commit 1 bare-
+raising rule (``cfg/control.py:868-875``) is structurally
+``S → V[CTRL_CLASS=RAISING_BARE] S``, which is exactly the
+shape needed — no new grammar rule required. We wire
+``katatapos`` into the raising machinery via two static lex
+additions:
+
+- **``data/tgl/particles.yaml``**: new particle entry for
+  surface ``katatapos`` with feats ``{CTRL_CLASS:
+  RAISING_BARE, LEMMA: tapos, ASPECT: RECPFV}``. Co-exists
+  with the morphologically-generated AV-RECPFV analysis
+  (``CTRL_CLASS=NONE``) from the existing paradigm cell;
+  the parser selects between them by rule fit.
+- **``data/tgl/lexicon/control.yaml``**: new lex entry
+  ``lemma: tapos`` with ``pred: "JUST-FINISHED <XCOMP>
+  SUBJ"``, ``intrinsic: RAISING``, and morph_constraints
+  matching the particle entry (CTRL_CLASS / LEMMA /
+  ASPECT). Parallel to the existing ``tila``, ``parang``,
+  ``mukha``, ``baka`` raising entries.
+
+The PRED template ``JUST-FINISHED <XCOMP> SUBJ`` follows
+the existing raising-verb convention (``APPARENTLY <XCOMP>
+SUBJ`` for tila, ``SEEMS-LIKE <XCOMP> SUBJ`` for parang) —
+thematic args in angle brackets, non-thematic SUBJ outside.
+
+### 3. Verified coverage
+
+The wiring delivers the construction's value:
+
+| Sentence | Inner voice | SUBJ raised from | Parses |
+| --- | --- | --- | --- |
+| `Katatapos kumain ang aso.` | AV-PFV | `ang aso` | yes |
+| `Katatapos kumain ako.` | AV-PFV (PRON) | `ako` | yes |
+| `Katatapos kumakain ang bata.` | AV-IPFV | `ang bata` | yes |
+| **`Katatapos kainin ko ang isda.`** | **OV-CTPL** | **`ang isda` (OV pivot)** | yes |
+| **`Katatapos kinain ng aso ang isda.`** | **OV-PFV** | **`ang isda` (OV pivot)** | yes |
+| `Katatapos kumain ang mga bata.` | AV-PFV + Phase 7a.A mga-NP | `ang mga bata` (NUM=PL) | yes |
+
+The OV cases demonstrate the construction's value: the
+non-AV pivot (`ang isda`) raises to matrix SUBJ via the
+existing structure-sharing equation, delivering the
+"non-AV just-finished" reading that the morphological
+non-AV RECPFV paradigm doesn't provide (and per §1 above
+can't provide structurally).
+
+### 4. Scope limitations
+
+Two surfaces explicitly out of v1 scope (not bugs, just
+pre-existing grammar limits):
+
+- **Bare OV embedded without overt GEN actor**
+  (``Katatapos kainin ang isda.``): the inner ``kainin
+  ang isda`` doesn't parse standalone (Phase 4 §7 OV
+  grammar limit — OV CTPL/imperative without GEN actor
+  has no clause frame). Future-tense imperative OV needs
+  an actor.
+- **Linker form** (``Katatapos kong kumain.`` "I had just
+  finished eating"): the ``kong`` linker form is a 2nd-
+  position GEN clitic between matrix and embedded V — a
+  different syntactic shape than ``S → V[RAISING_BARE]
+  S``. The linker raising rule (``V[RAISING] + LINK + S``)
+  is for ``mukha`` / ``baka`` with ``na`` / ``-ng``
+  between matrix V and embedded clause, not between
+  matrix V and a clitic.
+
+Both limitations are documented in the test file's scope-
+limits class.
+
+### 5. Tests
+
+``tests/tgllfg/test_phase7a_c_recpfv_katatapos.py`` covers
+12 fixtures:
+
+- ``TestKatatapasMorphology`` (2 tests): the new RAISING_BARE
+  analysis appears in ``analyze_tokens``; the existing AV-
+  RECPFV CTRL_CLASS=NONE analysis is preserved.
+- ``TestKatatapasRaisingClause`` (6 tests, partly
+  parametrized): AV intransitive, AV with NOM pronoun,
+  AV-IPFV embedded, two OV cases (parametrized) verifying
+  the pivot-raised SUBJ, and the mga-NP interaction
+  (Phase 7a.A composition).
+- ``TestExistingRaisingUnaffected`` (2 tests): tila /
+  parang still produce APPARENTLY / SEEMS-LIKE PRED
+  templates.
+- ``TestScopeLimits`` (2 tests): explicit pin of the two
+  documented scope limitations (OV-no-actor + linker-kong).
+
+Regression: 7242 → 7255 fast pass (+12 new + 1 incidental
+from a parametric expansion picking up the new entry); 19
+slow pass + 1 xfail unchanged. ``hatch run check`` clean.
+
+### 6. Reference-grammar grounding
+
+Both sub-closures cite established reference-grammar
+evidence:
+
+- **Non-AV RECPFV reclassification:** R&B 1986 Handbook
+  paradigm evidence (Phase 5e Commit 23); S&O 1972 §5.31
+  (recent-perfective formation primarily AV).
+- **`katatapos + V` analytic construction:** S&O 1972 §5.13
+  documents ``tapos`` recent-perfective forms; the
+  raising-bare matrix is parallel to `tila` (S&O §5.18
+  sentence-adverb analysis) — same syntactic shape, same
+  Phase 5d machinery.
