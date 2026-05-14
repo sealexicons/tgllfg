@@ -14151,3 +14151,122 @@ or a clear architectural motivation (Kleene-on-alternation
 construction). The codebase is feature-complete for the
 canonical Tagalog construction inventory as covered by S&O
 1972, R&B 1986, R&G 1981, and Kroeger 1993.
+
+## Phase 7a.A Commit 1: §18.1.1 #11 NP-internal ``mga`` plural — design
+
+First sub-PR of Phase 7a (corpus-deferred §18.1.1 closures
+per ``.claude/plans/tgllfg-phase-7a.md``). Closes
+§18.1.1 item 11 — plural marking of regular nouns via the
+``mga`` particle. The deferral was promoted from informal
+stress-test gap to formal §18.1.1 by Phase 6.H closing
+notes; Phase 7a.A closes it via a three-daughter case-
+parallel extension of the existing simple-NP rules.
+
+### 1. Lexical baseline
+
+The ``mga`` particle is already lex'd at
+``data/tgl/particles.yaml:1114-1116`` with
+``PLURAL_MARKER: true``. The entry pre-dates Phase 7a; it
+was added by Phase 5f Commit 14 to gate the time-
+approximator rule (``N → PART[mga] N[SEM_CLASS=TIME]``).
+No lex changes for Phase 7a.A.
+
+### 2. Rule shape
+
+Three case-parallel rules in ``cfg/nominal.py`` extend the
+existing simple-NP shells (lines 101-130) with a PART
+daughter between the case-marker and head N:
+
+```text
+NP[CASE=X] → CASE-MARKER[CASE=X] PART N
+   (↑) = ↓1                      share f-struct with case-marker
+   (↑) = ↓3                      share f-struct with head N
+   (↑ NUM) = 'PL'                set plural number on matrix NP
+   (↓2 PLURAL_MARKER) =c true    gate the PART daughter to ``mga``
+   ¬ (↓3 N_RC)                   mirror simple-NP exclusion
+   ¬ (↓3 CARDINAL_VALUE)         mirror simple-NP exclusion
+```
+
+For X ∈ {NOM, GEN, DAT} with CASE-MARKER ∈ {DET, ADP, ADP}
+respectively (the same case-marker lex types the simple-NP
+rules use).
+
+### 3. Composition with Phase 6.H floated-Q
+
+The new rule's ``(↑ NUM) = 'PL'`` defining equation feeds
+the Phase 6.H DUAL-Q variant's ``(↑ SUBJ NUM) =c 'PL'``
+constraining equation (``cfg/clitic.py``). This closes the
+canonical ``Kumain ang mga bata pareho.`` "The children ate
+together" case probed but not closed during Phase 6.H —
+the floated-Q rule was correct, but no rule produced a
+NUM=PL feat on the matrix subject NP for ``ang mga bata``.
+
+### 4. Negative-existential rationale
+
+The ``¬ (↓3 N_RC)`` and ``¬ (↓3 CARDINAL_VALUE)`` guards
+mirror the simple-NP rules' exclusions:
+
+- **N_RC** blocks this rule from consuming an N-level RC's
+  output (which would duplicate the canonical NP-level RC
+  path; Phase 5n.A C8 / Phase 6.G C1).
+- **CARDINAL_VALUE** blocks consuming a cardinal-modified
+  N (which would duplicate the dedicated NP-level cardinal-
+  modifier rule; Phase 5f Commit 1).
+
+No new binary feats are introduced. Both feats are already
+in the binary-feats inventory: ``N_RC`` per Phase 6.G C3
+(``core/feats.py BINARY_FEATS``); ``CARDINAL_VALUE`` is a
+value-feat used existentially throughout the cardinal-NP
+rules.
+
+### 5. Intentional ambiguity with Phase 5f approximator rules
+
+The Phase 5f Commit 14 time-approximator
+(``N → PART N[SEM_CLASS=TIME]``) and Phase 5f Commit 16
+cardinal-approximator (``NUM[CARDINAL] → PART
+NUM[CARDINAL]``) also consume ``mga`` but produce different
+outputs (``N`` and ``NUM`` respectively) with ``APPROX=true``
+rather than ``NUM=PL``.
+
+- **Non-time, non-cardinal Ns** (``aklat``, ``bata``,
+  ``aso``): only the new Phase 7a.A rule fires.
+- **Time-class Ns** (clock-times like ``alasotso``): both
+  paths fire and produce distinct f-structures (NUM=PL via
+  the new rule vs APPROX=true via the time-approximator).
+  Both readings are linguistically valid. The coexistence
+  is exercised by
+  ``test_phase7a_a_mga_plural.py::TestMgaApproximatorCoexistence``.
+- **Cardinal NUMs** (``sampu``, ``tatlo``): only the
+  cardinal-approximator path fires; the new rule's ↓3
+  expects N (not NUM).
+
+The ambiguity for time Ns is accepted — the readings are
+genuinely distinct in spoken Tagalog. No disambiguation
+policy is added.
+
+### 6. Tests
+
+``tests/tgllfg/test_phase7a_a_mga_plural.py`` covers 11
+fixtures across five classes:
+
+- ``TestMgaNPBasicCases`` (5 tests): NOM SUBJ (``Kumain ang
+  mga bata.``, ``Tumakbo ang mga aso.``); GEN OBJ (``Bumili
+  ako ng mga aklat.``, ``Kumain ang aso ng mga isda.``);
+  DAT ADJUNCT (``Pumunta ako sa mga bahay.``).
+- ``TestMgaFloatedQ`` (2 tests): ``Kumain ang mga bata
+  pareho/kapwa.`` — the Phase 6.H canonical case now closes.
+- ``TestMgaApproximatorCoexistence`` (1 test): ``Pumunta
+  ako sa mga alasotso.`` — both NUM=PL and APPROX=true
+  readings appear.
+- ``TestMgaCardinalApproximatorPath`` (1 test): ``Bumili
+  ako ng mga sampung aklat.`` — cardinal-approximator path
+  unchanged.
+- ``TestSimpleNPUnchanged`` (2 tests): ``Kumain ang bata.``
+  and ``Bumili ako ng isang aklat.`` regression on simple-NP
+  and cardinal-NP paths.
+
+Regression: 7200 → 7211 fast tests; ``hatch run check``
+clean; existing ``test_mga_approximation.py`` Phase 5f
+tests unaffected (the helper iterates parses and returns
+the first ADJUNCT match by lemma, so adding a second
+parse doesn't break it).

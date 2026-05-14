@@ -130,6 +130,89 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 7a.A: NP-internal ``mga`` plural marker -----------
+    #
+    # Closes §18.1.1 #11 (``mga`` plural marker on regular nouns).
+    # Surface: ``ang mga aklat`` "the books"; ``ng mga aklat`` "of
+    # the books"; ``sa mga aklat`` "to the books". The construction
+    # was promoted to formal §18.1.1 by Phase 6.H closing notes;
+    # Phase 7a.A closes it via a three-daughter case-parallel
+    # extension of the existing simple-NP rules above.
+    #
+    # Rule shape:
+    #
+    #   NP[CASE=X] → CASE-MARKER[CASE=X] PART N
+    #     (↑) = ↓1                      share f-struct with case-marker
+    #     (↑) = ↓3                      share f-struct with head N
+    #     (↑ NUM) = 'PL'                set plural number on matrix NP
+    #     (↓2 PLURAL_MARKER) =c true    gate the PART daughter to ``mga``
+    #     ¬ (↓3 N_RC)                   mirror simple-NP exclusion
+    #     ¬ (↓3 CARDINAL_VALUE)         mirror simple-NP exclusion
+    #
+    # The ``(↑ NUM) = 'PL'`` defining equation feeds the Phase 6.H
+    # floated-Q DUAL-rule's constraining equation
+    # ``(↑ SUBJ NUM) =c 'PL'`` (``cfg/clitic.py``) — closing the
+    # canonical ``Kumain ang mga bata pareho.`` "The children ate
+    # together" case probed but not closed during Phase 6.H.
+    #
+    # Negative existentials mirror the simple-NP rules (N_RC,
+    # CARDINAL_VALUE). The N_RC guard prevents this rule from
+    # consuming an N-level RC's output (which would duplicate the
+    # canonical NP-level RC path; Phase 5n.A C8 / Phase 6.G C1).
+    # The CARDINAL_VALUE guard prevents consuming a cardinal-
+    # modified N (which would duplicate the dedicated NP-level
+    # cardinal-modifier rule; Phase 5f Commit 1).
+    #
+    # **Ambiguity with Phase 5f approximator rules** (intentional).
+    # The Phase 5f time-approximator (``N → PART N[SEM_CLASS=TIME]``)
+    # and cardinal-approximator (``NUM[CARDINAL] → PART NUM[CARDINAL]``)
+    # also consume ``mga`` but produce DIFFERENT outputs (N and NUM
+    # respectively) with APPROX=true rather than NUM=PL. For
+    # non-time, non-cardinal Ns like ``aklat`` only this new rule
+    # fires. For time Ns like ``oras``, both paths fire and produce
+    # distinct f-structures (NUM=PL vs APPROX=true) — both
+    # linguistically valid readings of ``mga oras``. For cardinal
+    # NUMs like ``sampu`` only the approximator path fires (this
+    # rule's ↓3 expects N, not NUM). Ambiguity for time Ns is
+    # accepted; the readings are genuinely distinct.
+    rules.append(Rule(
+        "NP[CASE=NOM]",
+        ["DET[CASE=NOM]", "PART", "N"],
+        [
+            "(↑) = ↓1",
+            "(↑) = ↓3",
+            "(↑ NUM) = 'PL'",
+            "(↓2 PLURAL_MARKER) =c true",
+            "¬ (↓3 N_RC)",
+            "¬ (↓3 CARDINAL_VALUE)",
+        ],
+    ))
+    rules.append(Rule(
+        "NP[CASE=GEN]",
+        ["ADP[CASE=GEN]", "PART", "N"],
+        [
+            "(↑) = ↓1",
+            "(↑) = ↓3",
+            "(↑ NUM) = 'PL'",
+            "(↓2 PLURAL_MARKER) =c true",
+            "¬ (↓3 N_RC)",
+            "¬ (↓3 CARDINAL_VALUE)",
+        ],
+    ))
+    rules.append(Rule(
+        "NP[CASE=DAT]",
+        ["ADP[CASE=DAT]", "PART", "N"],
+        [
+            "(↑) = ↓1",
+            "(↑) = ↓3",
+            "(↑ NUM) = 'PL'",
+            "(↓2 PLURAL_MARKER) =c true",
+            "¬ (↓3 N_RC)",
+            "¬ (↓3 CARDINAL_VALUE)",
+        ],
+    ))
+
+
     # --- Phase 5i Commit 3: in-situ wh-PRON in case-marked NP ---
     #
     # ``Kumain ka ng ano?``    "You ate (some) what?" (echo / casual)
