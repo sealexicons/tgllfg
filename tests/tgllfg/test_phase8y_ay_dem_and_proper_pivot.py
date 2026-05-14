@@ -151,21 +151,15 @@ class TestSiNpPivotTwoNpEquational:
         assert pred_np.feats.get("MARKER") == "SI"
 
 
-# === Disambiguation: ang-pivot does not fire =========================
-
-
-class TestAngPivotDoesNotFire:
-    """The ``(↓1 MARKER) =c 'SI'`` constraint restricts Rule 2 to
-    si-marked left daughters. ``Ang lalaki ang doktor.`` does not
-    fire this rule (intentional — fully-general two-NP equational
-    remains deferred per the Phase 5n.B docstring)."""
-
-    def test_ang_pivot_ang_subject_still_fails(self) -> None:
-        parses = parse_text("Ang lalaki ang doktor.")
-        # No BE-NP parse should fire; the two-ang case is out of
-        # scope.
-        for _ct, fs, _astr, _diags in parses:
-            assert fs.feats.get("PRED") != "BE-NP <SUBJ>"
+# === Note: ang-pivot disambiguation lifted in Phase 8.Z ==============
+#
+# The 8.Y first draft kept ``(↓1 MARKER) =c 'SI'`` on Rule 2 to
+# restrict it to si-marked proper-noun pivots, citing potential
+# parse-ambiguity with pseudo-cleft. Phase 8.Z dropped that gate
+# after diagnostic probing showed pseudo-cleft was itself zero-
+# parsing (so the gate prevented closure of one construction
+# class without benefit to another). The ang-pivot equational
+# tests live in ``test_phase8z_ang_pivot_equational.py``.
 
 
 # === Regression: existing rules unaffected ============================

@@ -985,35 +985,36 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
-    # --- Phase 8.Y Commit 2: Si-NP pivot + NOM-NP subject -------
+    # --- Phase 8.Y Commit 2 / Phase 8.Z: NP-pivot two-NP equational -----
     #
-    # ``Si Juan ito.``         "This is Juan."
-    # ``Si Maria iyan.``       "That is Maria."
-    # ``Si Juan ang doktor.``  "Juan is the doctor."
+    # ``Si Juan ito.``           "This is Juan."
+    # ``Si Maria iyan.``         "That is Maria."
+    # ``Si Juan ang doktor.``    "Juan is the doctor."
+    # ``Ang lalaki ang doktor.`` "The man is the doctor."  (Phase 8.Z)
+    # ``Ang nanay ang nagluto.`` "The mother is the one who cooked."
+    #                             (pseudo-cleft equational; Phase 8.Z)
     #
-    # Closes the 8.Y near-miss surfaced during 8.X probing. The
-    # Phase 5n.B N-pivot rule's docstring explicitly notes:
+    # The Phase 5n.B N-pivot rule's docstring originally deferred
+    # two-NP equational ("Those remain as out-of-scope until corpus
+    # pressure surfaces them"). 8.Y closed the Si-pivot subset
+    # after the Wave 3 audit surfaced ``Si Juan ito.``. 8.Z (this
+    # commit) drops the SI gate: the user verified ``Ang lalaki
+    # ang doktor.`` as the natural reading ("The man is the
+    # doctor."), so the fully-general two-NP equational case is
+    # closed here too.
     #
-    #     "NPs (DET-marked, CASE-bearing) do NOT match — a left-
-    #     edge ``ang doktor`` does not fire this rule, which keeps
-    #     two-NP equational surfaces (``Ang lalaki ang doktor.``)
-    #     out of scope. Those remain as out-of-scope until corpus
-    #     pressure surfaces them."
-    #
-    # The Wave 3 audit surfaced ``Si Juan ito.`` as a zero-parse,
-    # and probing during 8.X confirmed ``Si Juan ang doktor.``
-    # has the same gap. Closing the Si-pivot subset of two-NP
-    # equational here. The fully-general ang-pivot variant
-    # (``Ang lalaki ang doktor.``) is intentionally not closed:
-    # it's not in the audit zero-parse list, and the broader two-
-    # ang variant has known parse-ambiguity interactions with
-    # pseudo-cleft (``Ang nanay ang nagluto.`` — V-headed subject
-    # NP under cleft analysis) that should be triaged separately
-    # when corpus pressure surfaces it.
-    #
-    # The ``MARKER=SI`` gate restricts this rule to si-marked
-    # proper-noun NPs as the pivot, avoiding the ang-pivot
-    # ambiguity above.
+    # **Original concern about pseudo-cleft ambiguity, resolved**:
+    # Phase 8.Y's first draft kept the SI gate citing potential
+    # ambiguity with pseudo-cleft (``Ang nanay ang nagluto.``).
+    # Diagnostic probing for 8.Z confirmed pseudo-cleft was itself
+    # zero-parsing under the pre-existing grammar — so the gate
+    # was preventing closure of one construction class without
+    # benefit to another. The 8.Z rule subsumes both: when the
+    # right-side NP is a headless RC (``ang nagluto``), the same
+    # equational f-structure obtains, and the topicalization /
+    # focus distinction between pseudo-cleft and equational
+    # readings is information-structural rather than truth-
+    # conditional in Tagalog (S&O 1972 §6.2 / Kroeger 1993 §2.5).
     #
     # F-structure shape:
     #
@@ -1021,17 +1022,23 @@ def register_rules(rules: list[Rule]) -> None:
     #   SUBJ        = ↓2 (the right-side NOM-NP subject)
     #   PRED-NP     = ↓1 (the predicate NP, preserved as a sub-
     #                  fstructure for consumers that need the
-    #                  proper-noun identity)
+    #                  pivot's identity / lemma / MARKER)
     #   PREDICATIVE = true
     rules.append(Rule(
         "S",
         ["NP[CASE=NOM]", "NP[CASE=NOM]"],
         [
-            "(↓1 MARKER) =c 'SI'",
             "(↑ PRED) = 'BE-NP <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "(↑ PRED-NP) = ↓1",
             "(↑ PREDICATIVE) = true",
+            # Gate on the pivot — keep wh-PRONs (``Sino`` /
+            # ``Ano`` / ``Alin``) routing through the Phase 5i
+            # Commit 2 wh-PRON cleft (``S → PRON[WH, CASE=NOM]
+            # NP[CASE=NOM]``) as the canonical wh path; otherwise
+            # ``Sino ang kumain?`` would get a spurious BE-NP
+            # parse in addition to the wh-cleft parse.
+            "¬ (↓1 WH)",
         ],
     ))
 
