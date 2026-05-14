@@ -14840,3 +14840,123 @@ test (1 fixture, was 0-parses).
 Regression: 7270 → 7280 fast pass (+10 new fixtures in 7a.E
 test file; the Phase 5j test update is in place not added).
 ``hatch run check`` clean.
+
+## Phase 7a.F Commit 1: §18.1.1 item 8 kahit-X no-`ay` colloquial — design
+
+Sixth sub-PR of Phase 7a (per plan-of-record §3.7). Closes
+§18.1.1 item 8 — pre-V kahit-X SUBJ in non-``ay`` form
+(``Kahit sino kumain.`` "Anyone could eat"). Phase 5n.B
+Commit 20 closed the canonical ``ay``-fronted form; this
+variant drops the ``ay`` for the colloquial register.
+
+### 1. Pre-Phase-7a.F state
+
+Phase 4 §7.4 has the ay-fronted rule
+(``cfg/extraction.py:764-773``):
+
+```text
+S → NP[CASE=NOM] PART[LINK=AY] S_GAP
+   (↑) = ↓3
+   (↑ TOPIC) = ↓1
+   (↓3 REL-PRO) = ↓1
+   (↓3 REL-PRO) =c (↓3 SUBJ)
+```
+
+Phase 5n.B Commit 20 was a TESTS-ONLY commit that pinned
+kahit-X compatibility with this rule (``Kahit sino ay
+kumain.`` parses 1× via the generic ay-rule; the kahit-X
+PRON carries ``INDEF=YES`` from the Phase 5m C8 IndefPRON
+rule). The no-ay form (``Kahit sino kumain.``) zero-parsed
+and was pinned by three deferred-test classes across the
+codebase:
+
+- ``test_phase5n_b_kahit_subj_ay.py::TestNonAyFormDeferred``
+- ``test_phase5m_indefinite_kahit.py::TestKahitFrontedSubjectDeferred``
+- ``test_phase5n_b_bare_indirect_q.py::TestKahitXExcluded``
+
+### 2. New rule
+
+```text
+S → NP[CASE=NOM] S_GAP
+   (↑) = ↓2
+   (↑ TOPIC) = ↓1
+   (↓2 REL-PRO) = ↓1
+   (↓2 REL-PRO) =c (↓2 SUBJ)
+   (↓1 INDEF) =c 'YES'
+   (↑ REGISTER) = 'COLLOQUIAL'
+```
+
+Mirrors the Phase 4 §7.4 ay-fronted rule above exactly except:
+
+- **Drops the ``PART[LINK=AY]`` daughter** — daughter
+  indices shift by one (S_GAP is ↓2 instead of ↓3).
+- **Gates the NP daughter to ``INDEF=YES``** — preventing
+  overgeneration on bare-NP pre-V SUBJ (which colloquial
+  Tagalog disallows; only indefinite-NP fronting is
+  admissible without ``ay``).
+- **Adds ``(↑ REGISTER) = 'COLLOQUIAL'``** — downstream
+  consumers can filter colloquial parses.
+
+``INDEF=YES`` is the feat the Phase 5m Commit 8 IndefPRON
+rule (``PRON → PART PRON`` with ``(↓1 LEMMA) =c 'kahit'``)
+sets on kahit-X compositions. Any future indefinite
+construction that compositionally sets ``INDEF=YES`` will
+also license this colloquial fronting.
+
+### 3. Test updates across three files
+
+Three pre-Phase-7a.F deferred-test classes had to be
+rewritten to reflect the closure:
+
+- ``test_phase5n_b_kahit_subj_ay.py``:
+  ``TestNonAyFormDeferred`` →
+  ``TestNonAyFormParsesColloquial`` — asserts parse +
+  ``REGISTER='COLLOQUIAL'``.
+- ``test_phase5m_indefinite_kahit.py``:
+  ``TestKahitFrontedSubjectDeferred`` →
+  ``TestKahitFrontedSubjectColloquial`` — same.
+- ``test_phase5n_b_bare_indirect_q.py``:
+  ``TestKahitXExcluded`` →
+  ``TestKahitXExcludedFromBareIndirectQ`` — preserves the
+  Phase 5n.B C10 bare-indirect-Q rule's ``¬ (↓1 INDEF)``
+  exclusion (kahit-X still doesn't trigger that rule's
+  wh-Q reading); asserts the surviving parse comes from
+  the Phase 7a.F rule (TOPIC binding) not the bare-indirect-Q
+  rule (which would have no TOPIC).
+
+### 4. Verified coverage
+
+| Sentence | Variant | REGISTER |
+| --- | --- | --- |
+| `Kahit sino ay kumain.` | Phase 5n.B C20 ay-fronted | formal |
+| `Kahit sino kumain.` | §7a.F no-ay | COLLOQUIAL |
+| `Kahit ano kumain.` | §7a.F no-ay | COLLOQUIAL |
+| `Kahit alin kumain.` | §7a.F no-ay | COLLOQUIAL |
+| `Kahit sino kumakain.` | §7a.F no-ay + AV-IPFV | COLLOQUIAL |
+| `Kahit sino bumili ng aklat.` | §7a.F no-ay + AV-trans | COLLOQUIAL |
+| `Kumain kahit sino.` | Phase 5m C8 post-V SUBJ | n/a (formal) |
+
+### 5. Tests
+
+``tests/tgllfg/test_phase7a_f_kahit_no_ay.py`` covers 15
+fixtures across 4 classes:
+
+- ``TestKahitNoAyColloquial`` (10 tests, parametrized): five
+  no-ay surfaces (sino / ano / alin × AV intransitive +
+  AV-IPFV + AV-transitive). Each verifies REGISTER=
+  COLLOQUIAL and TOPIC.LEMMA bound to the kahit-X PRON,
+  with INDEF=YES propagation.
+- ``TestAyFrontedFormUnaffected`` (3 tests, parametrized):
+  Phase 5n.B C20 ay-fronted forms still parse without the
+  COLLOQUIAL tag (formal).
+- ``TestPostVSubjUnaffected`` (1 test): Phase 5m C8 post-V
+  SUBJ form (`Kumain kahit sino.`) unchanged.
+- ``TestBareNPDoesNotFront`` (1 test): the INDEF=YES gate
+  works — bare proper-noun pre-V SUBJ doesn't trigger the
+  COLLOQUIAL rule.
+
+Plus 3 in-place test class renames across the three pre-
+existing deferred-test files.
+
+Regression: 7280 → 7295 fast pass (+15 new). No baseline
+regressions. ``hatch run check`` clean.
