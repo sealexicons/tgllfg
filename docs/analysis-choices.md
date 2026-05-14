@@ -15346,3 +15346,130 @@ feature-complete for the canonical Tagalog construction
 inventory across S&O 1972, R&B 1986, R&G 1981, R&C 1990,
 and Kroeger 1993. The 17 §18.1.3 items remain awaiting
 either corpus pressure or clear architectural motivation.
+
+## Phase 8.X: DEM-pivot + non-wh PRON-pivot predicational clauses
+
+The three-wave coverage audit (PRs #56-#59) surfaced an
+unexpected near-miss: `Ito ang tatay ko.` "This is my dad."
+and `Ito ang bahay ko.` "This is my house." — both textbook
+`DEM ang NP-POSS` predications — produced zero parses on
+the Wave 3 sample. Diagnostic probing also showed
+`Ako ang guro.` "I am the teacher." failing the same way,
+even though the simpler `Doktor ako.` "I am a doctor."
+(Phase 5n.B Commit 2 predicative-N rule) works.
+
+### Root cause
+
+Two separate gaps in concert:
+
+1. **No clause rule existed for DEM-as-predicate or non-wh
+   PRON-as-predicate.** The Phase 5g predicative-ADJ rule
+   (`Maganda ang aklat.`), the Phase 5n.B predicative-N rule
+   (`Aklat ito.` — N pivot, DEM-as-subject), the Phase 5n.B
+   predicative-Q rule, and the Phase 5i wh-PRON cleft rule
+   together covered ADJ / Q / N / wh-PRON pivots — but no rule
+   accepted a DEM-marked DET or a non-wh NOM PRON as the left
+   daughter of an `S → X NP[CASE=NOM]` clause.
+2. **The Wackernagel clitic-placement pass hoisted the
+   sentence-initial PRON.** Phase 5n.A Commit 2 marked
+   `ako` / `siya` / `tayo` / `kami` / `kayo` /
+   `sila` with `is_clitic: true` (to fix `Hindi ako
+   kumain`). The placement pass therefore moves a
+   sentence-initial NOM-PRON to second position, **even when
+   that NOM-PRON is functioning as the predicate of a
+   PRON-pivot cleft**. After reorder, `Ako ang guro.`
+   becomes `ang ako guro`, which no rule covers.
+
+### Resolution
+
+Two new clause rules in `cfg/clause.py` (sibling to the
+predicative-N rule):
+
+- `S → DET[CASE=NOM, DEM] NP[CASE=NOM]` — DEM-pivot.
+  `(↑ PRED) = 'BE-DEM <SUBJ>'`; lifts `DEIXIS` from the
+  demonstrative (PROX / MED / DIST). DEM_LEMMA is *not* lifted
+  — see "Carve-out" below.
+- `S → PRON[CASE=NOM] NP[CASE=NOM]` — non-wh PRON-pivot.
+  `(↑ PRED) = 'BE-PRON <SUBJ>'`; lifts `NUM` and `CLUSV`
+  from the pronoun. PRON_LEMMA and PERS are *not* lifted —
+  same reason. Gated by `¬ (↓1 WH)` to keep the Phase 5i
+  wh-PRON cleft as the canonical wh path.
+
+One new placement-side companion in `clitics/placement.py`:
+`_is_pre_ang_pred_pron` — sibling of `_is_pre_ay_pron`.
+Suppresses Wackernagel hoisting when a NOM PRON-clitic is
+immediately followed by a NOM determiner (`ang` / `si`),
+preserving sentence-initial position so the new PRON-pivot
+rule can fire on the natural left-to-right surface.
+
+### Carve-out: PRON_LEMMA / DEM_LEMMA / PERS not lifted
+
+The non-wh PRON entries in `data/tgl/pronouns.yaml` do not
+register `LEMMA` as a feature (only the wh-PRON `sino`
+does — that's why the Phase 5i wh-cleft can lift
+`WH_LEMMA`). The DEM determiner entries likewise omit
+`LEMMA`. Additionally, `PERS` in those entries is
+registered as a Python `int` (`PERS: 1`), and integer
+feature values do not currently propagate from morph analysis
+to f-structure (only string atoms and bools do — `NUM`,
+`CLUSV`, `CASE`, and `is_clitic` flow through).
+
+Rather than touch the entire pronouns + DET lexicon (which
+would be a broader change with cross-cutting implications),
+8.X uses the features that *do* propagate. `DEIXIS` uniquely
+identifies the demonstrative (PROX = ito, MED = iyan, DIST =
+iyon); `NUM` + `CLUSV` jointly distinguish 1sg / 2sg / 3sg
+/ 1pl-inclusive / 1pl-exclusive / 2pl / 3pl up to person. The
+lemma / PERS carve-out is recorded here so a future
+engineering pass (re-enabling integer-feat propagation, or
+adding `LEMMA` to the relevant YAML entries) can revisit and
+extend the rules' equation set.
+
+### Phase 8 coverage impact
+
+Re-running `scripts/harvest_exemplars.py parse` on the same
+Wave 3 sample (seed=42, 500 per source):
+
+| Source | Before 8.X | After 8.X |
+| --- | ---: | ---: |
+| S&O 1972 | 36 / 500 (7.2%) | 40 / 500 (8.0%) |
+| R&G Conversational | 71 / 500 (14.2%) | 75 / 500 (15.0%) |
+
+Aggregate cumulative naturalistic baseline (Waves 1+2+3,
+2220 sents): **7.4% → 7.8%**. Modest but in the predicted
+direction; the +8 clean parses are the DEM-pivot and
+PRON-pivot sentences in the Wave 3 sample.
+
+### Partial closure of Phase 8.S
+
+Phase 8.S (pronominal-pivot clefts, surfaced in the Wave 3
+audit) listed three example sentences:
+
+- `Tayo ang lumakad.` — PRON pivot + V-headed ang-NP
+  subject. *Still failing.* The pivot subject is a VP-
+  nominalization (`ang lumakad` "the one who walked"), which
+  requires a separate NP-projection from a tensed V. Remains
+  in 8.S scope.
+- `Akin ang tinapay.` — DAT-PRON possessive pivot. *Still
+  failing.* The PRON here is in DAT case (`akin`, not
+  `ako`), and the construction is semantically possessive
+  ("the bread is mine"), not equational. Remains in 8.S scope.
+- `Ako ang guro.` *(probed during 8.X)* — non-wh NOM-PRON
+  + ang-NP[N]. **Closed by 8.X.**
+
+Phase 8.S is now narrowed to the V-pivot subset (`Tayo ang
+lumakad`) and the DAT-PRON possessive-pivot subset (`Akin
+ang tinapay`).
+
+### Out-of-scope follow-ons surfaced
+
+Two related construction patterns also surfaced as failing
+during 8.X probing but are explicitly out of 8.X scope:
+
+- `Ito ay aklat.` — `ay`-inverted DEM-pivot. Needs a
+  parallel extension to the Phase 4 §7.4 `ay`-fronting rule
+  family. Phase 8 follow-on candidate.
+- `Si Juan ito.` — proper-noun-NP-pivot + DEM-subject. The
+  N-pivot rule accepts bare `N` (`Doktor ito.` works); the
+  `si`-marked proper-NP doesn't reduce to bare N, so the
+  rule doesn't fire. Phase 8 follow-on candidate.
