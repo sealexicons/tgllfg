@@ -15212,3 +15212,126 @@ Move from §18.1.1 (corpus-deferred) to §18.1.3 (other
 future work).
 
 Docs-only commit; markdownlint clean.
+
+## Phase 7a Cumulative Summary
+
+Phase 7a complete 2026-05-14. **§18.1.1 closes entirely**
+— all 11 corpus-deferred items either closed with new
+grammar / lex rules or reclassified to §18.1.3 with
+strengthened rationale. Phase 7a delivered across 11
+sub-PRs (7a.A–7a.K):
+
+### Sub-PR ledger
+
+<!-- markdownlint-disable MD013 -->
+
+| Sub-PR | Closes | Mechanism |
+| --- | --- | --- |
+| 7a.A | §18.1.1 #11 — `mga` plural marker | 3 case-parallel NP-internal rules; `NUM=PL` on matrix NP |
+| 7a.B | §18.1.1 #2 — magsi + magpa-an | 6 paradigm cells; 7 verb-entry affix_class updates |
+| 7a.C | §18.1.1 #3 — non-AV RECPFV | Reclassify §18.1.3 + `katatapos+V` raising-from-XCOMP wiring |
+| 7a.D | §18.1.1 #5 — `paano` wh-MANNER linker | 2 wh-ADV linker-fronting rules (`cfg/clause.py`) |
+| 7a.E | §18.1.1 #6+7 — modal full-NP + no-linker | 4 modal-rule variants; `REGISTER=COLLOQUIAL` |
+| 7a.F | §18.1.1 #8 — kahit-X no-`ay` | 1 ay-fronting variant; 3 in-place test renames |
+| 7a.G | §18.1.1 #10 — kahit-X non-NOM | 2 any-case NP-projection rules; xfail flipped |
+| 7a.H | §18.1.1 #1 — resumptive pronouns | Reclassify §18.1.3 (Phase 6.D L47 already canonical) |
+| 7a.I | §18.1.1 #9 — `tila` modal-particle | Reclassify §18.1.3 (S&O sentence-adverb classification) |
+| 7a.J | §18.1.1 #4 — statistical disambiguation | Reclassify §18.1.3 (downstream-tooling problem) |
+| 7a.K | Closing docs | This entry + `docs/definitions.md` sweep |
+
+<!-- markdownlint-enable MD013 -->
+
+7a.H + 7a.I + 7a.J combined into a single bundled PR per user
+directive 2026-05-14.
+
+### Test count growth
+
+| Phase end | Fast tests | Slow tests | xfail |
+| --- | --- | --- | --- |
+| Phase 6.J close | 7174 | 19 | 1 |
+| Phase 7a.A close | 7211 | 19 | 1 |
+| Phase 7a.B close | 7242 | 19 | 1 |
+| Phase 7a.C close | 7255 | 19 | 1 |
+| Phase 7a.D close | 7270 | 19 | 1 |
+| Phase 7a.E close | 7280 | 19 | 1 |
+| Phase 7a.F close | 7295 | 19 | 1 |
+| Phase 7a.G close | 7306 | 19 | 0 (Phase 6.C C3f flipped) |
+| Phase 7a.[HIJ] close | 7306 | 19 | 0 (docs-only) |
+| Phase 7a.K close | 7306 | 19 | 0 |
+
+Phase 7a adds **+132 fast tests** over Phase 6.J close
+and flips the **Phase 6.C C3f xfail** to passing.
+
+### New feats / atoms introduced
+
+- `ASPECT_TYPE` enum, atom `JUST_FINISHED` (Phase 7a.C —
+  matrix lift from `katatapos + V` raising).
+- `REGISTER` atom `COLLOQUIAL` (Phase 7a.E §3.6 + Phase
+  7a.F — new value on the existing REGISTER feat that
+  already had POLITE / COLLOQUIAL_POLITE / LITERARY for
+  Phase 5m politeness).
+
+No new binary feats. All other Phase 7a uses (DISTRIB,
+RECP, MOOD=SOC, INDEF=YES, NUM=PL) were existing feats
+established by prior phases.
+
+### New affix classes
+
+- `magsi` (Phase 7a.B) — plural-actor AV pluralizer; 3
+  aspect cells.
+- `magpa_an` (Phase 7a.B) — reciprocal-distributive
+  causative circumfix; 3 aspect cells.
+
+### Phase 7a closing-status / parking-lot items
+
+These were considered during Phase 7a planning but
+explicitly deferred for cause:
+
+- **Locative-distributive subtype of `magpa-…-an`** (Phase
+  7a.B): GT-confirmed NOT productive (0/3 positive vs 1/1
+  for reciprocal-distributive). Implementation scope-cut to
+  reciprocal-distributive only.
+- **`magsipag-` / `magsipang-` variants of magsi** (Phase
+  7a.B): S&O §5.15 documents these for `mag-` / `mang-`
+  base classes; deferred. Phase 7a.B closes only the simpler
+  `magsi` for `-um-` verbs.
+- **OV bare-no-actor `Katatapos kainin ang isda.`** (Phase
+  7a.C): zero-parses today because the inner `kainin ang
+  isda` doesn't parse standalone (pre-existing OV grammar
+  limit). Not a Phase 7a.C issue.
+- **Linker-form `Katatapos kong kumain.`** (Phase 7a.C):
+  different syntactic construction (2nd-position GEN clitic
+  between matrix and embedded V); not routed through
+  `RAISING_BARE`. Out of v1 scope.
+- **`tila` ADJUNCT/MODAL refactor** (Phase 7a.I): S&O's
+  category label is `ADV`, not `V`; a future grammar refactor
+  may prefer `ADJUNCT/MODAL` over the current `RAISING_BARE`
+  engineering approximation. Tracked as a Phase 7+
+  engineering-decision parking-lot item.
+- **Kahit-X OBJ over-generation** (Phase 7a.G): each
+  OBJ-position kahit-X surface produces 3 parses (canonical
+  OBJ + ADJUNCT + residual artifact). Downstream filter
+  recipe (`OBJ.INDEF=YES + LEMMA + WH`) documented in the
+  Phase 7a.G design entry; consumers can pick the canonical
+  reading. Investigation of the 3rd "residual" parse
+  deferred to future cleanup.
+
+### Carry-forward to Phase 7+
+
+§18.1.3 (other-future-work-dependent) carries forward:
+
+- The 7 Phase 6+ unifier extensions parked at Phase 6
+  close (FU deferred-defining, inside-out designators,
+  resolver-side cyclic-endpoint pruning, `{F | G}*`
+  Kleene-on-alternation, per-XCOMP binding rules, etc.).
+- 4 Phase 7a-added items (Non-AV RECPFV, resumptive
+  pronouns, `tila` modal-particle, statistical
+  disambiguation) — all reclassified with strengthened
+  rationale.
+
+Phase 7 is **not yet planned**. The codebase is
+feature-complete for the canonical Tagalog construction
+inventory across S&O 1972, R&B 1986, R&G 1981, R&C 1990,
+and Kroeger 1993. Future-work items remain in §18.1.3
+awaiting either corpus pressure or clear architectural
+motivation.
