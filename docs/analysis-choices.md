@@ -14694,3 +14694,149 @@ Three changes from the plan:
 
 Regression: 7255 → 7270 fast pass (+15 new). No baseline
 regressions. ``hatch run check`` clean.
+
+## Phase 7a.E Commit 1: §18.1.1 items 6 + 7 modal-rule variants — design
+
+Fifth sub-PR of Phase 7a (per plan-of-record §3.5 + §3.6).
+Closes §18.1.1 items 6 + 7 — two coordinated modal-construction
+extensions of the Phase 5j Commit 7 modal-control rule.
+
+### 1. Pre-Phase-7a.E modal-control state
+
+Phase 5j Commit 7 (``cfg/control.py:488-524``) added the canonical
+modal-control rule for `dapat` / `puwede` / `maaari` / `kailangan`
+with two case variants (NOM-actor, GEN-experiencer) × two linker
+variants (NA, NG):
+
+```text
+S → V[CTRL_CLASS=MODAL] NP[CASE={NOM|GEN}] PART[LINK={NA|NG}] S_XCOMP
+   (↑ SUBJ) = ↓2
+   (↑ XCOMP) = ↓4
+   (↑ SUBJ) = (↑ XCOMP REL-PRO)
+```
+
+This works for clitic-NP SUBJ (``Dapat akong kumain.`` "I should
+eat"). The matrix NP slot is between modal and linker; clitic
+placement absorbs the GEN clitic + linker as `kong` etc.
+
+Phase 5j Commit 7 also deliberately left ``Hindi ka dapat
+kumain.`` (no-linker) at 0 parses to avoid the silent-drop
+ambiguity. The test
+``test_phase5j_modal_lex.py::TestNoLinkerModalIsZeroParses``
+pinned this 0-parse behavior with an explicit instruction
+"verify the matrix-PRED shape and update this test" if the
+no-linker variant gets added.
+
+### 2. §3.5 — Full-NP SUBJ inside embedded clause
+
+**Surface:** ``Dapat na kumain si Maria.`` "Maria should eat."
+
+The canonical Tagalog word order for full-NP SUBJ is
+verb-initial inside the embedded clause: `modal | linker |
+[V + NP]`. The Phase 5j rule's matrix NP slot (between modal
+and linker) requires the marked / rare order
+``Dapat si Maria na kumain.``; for the canonical order, no rule
+existed.
+
+**New rules** (two variants, NA / NG linker):
+
+```text
+S → V[CTRL_CLASS=MODAL] PART[LINK={NA|NG}] S
+   (↑ XCOMP) = ↓3
+   (↑ SUBJ) = (↑ XCOMP SUBJ)
+   (↓1 CTRL_CLASS) =c 'MODAL'
+   (↓1 MODAL) =c true
+```
+
+Structure-share `(↑ SUBJ) = (↑ XCOMP SUBJ)` unifies the matrix
+SUBJ slot with the embedded clause's SUBJ. The matrix's lex
+PRED (``DAPAT <SUBJ, XCOMP>``) keeps SUBJ thematic — same
+control semantics as Phase 5j, just with a different surface
+distribution of the SUBJ NP.
+
+### 3. §3.6 — No-linker colloquial
+
+**Surface:** ``Hindi ka dapat kumain.`` (clitic-NP); ``Dapat
+kumain si Maria.`` (full-NP).
+
+Colloquial Tagalog drops the linker between modal and embedded
+V. Pre-Phase-7a.E this surface zero-parsed (Phase 5j Commit 7's
+deliberate gap). Phase 7a.E §3.6 admits the surface with
+explicit ``REGISTER='COLLOQUIAL'`` tagging on the matrix —
+downstream consumers can filter colloquial parses, addressing
+Phase 5j Commit 7's silent-drop ambiguity concern.
+
+**New rules** (two variants — clitic-NP via S_XCOMP, full-NP
+via S):
+
+```text
+S → V[CTRL_CLASS=MODAL] NP[CASE=NOM] S_XCOMP
+   (↑ SUBJ) = ↓2
+   (↑ XCOMP) = ↓3
+   (↑ SUBJ) = (↑ XCOMP REL-PRO)
+   ...
+   (↑ REGISTER) = 'COLLOQUIAL'
+
+S → V[CTRL_CLASS=MODAL] S
+   (↑ XCOMP) = ↓2
+   (↑ SUBJ) = (↑ XCOMP SUBJ)
+   ...
+   (↑ REGISTER) = 'COLLOQUIAL'
+```
+
+The clitic-NP variant mirrors the Phase 5j rule minus the
+linker daughter; the full-NP variant mirrors the §3.5 rule
+minus the linker. Both tag the matrix with
+``REGISTER='COLLOQUIAL'``.
+
+### 4. Phase 5j Commit 7 test update
+
+The deliberately-pinned 0-parse test in
+``test_phase5j_modal_lex.py::TestNoLinkerModalIsZeroParses`` is
+updated to ``TestNoLinkerModalIsColloquialParses`` per the
+test's own embedded instructions ("If you're seeing parses
+here, the modal control wrap may have been extended to a
+no-linker variant — verify the matrix-PRED shape and update
+this test."). The new assertion verifies the matrix carries
+``REGISTER='COLLOQUIAL'``, satisfying Phase 5j Commit 7's
+silent-drop-avoidance constraint by making the colloquial
+status explicit.
+
+### 5. Verified coverage
+
+| Sentence | Variant | Parses |
+| --- | --- | --- |
+| `Dapat akong kumain.` | Phase 5j clitic-NP + linker (regression) | yes |
+| `Dapat na kumain si Maria.` | §3.5 full-NP + NA linker | yes |
+| `Pwedeng kumain si Maria.` | §3.5 full-NP + NG linker | yes |
+| `Maaaring kumain si Maria.` | §3.5 full-NP + NG linker | yes |
+| `Hindi ka dapat kumain.` | §3.6 clitic-NP no-linker | yes (REGISTER=COLLOQUIAL) |
+| `Dapat kumain si Maria.` | §3.6 full-NP no-linker | yes (REGISTER=COLLOQUIAL) |
+| `Hindi dapat kumain si Maria.` | §3.6 full-NP no-linker + negation | yes (REGISTER=COLLOQUIAL) |
+| `Hindi ka dapat na kumain.` | Phase 5j clitic-NP + linker (regression) | yes (formal) |
+
+### 6. Tests
+
+``tests/tgllfg/test_phase7a_e_modal_variants.py`` covers 10
+fixtures across 3 classes:
+
+- ``TestFullNPModalLinker`` (4 tests, parametrized):
+  parses `Dapat na kumain si Maria.`, `Pwedeng kumain si
+  Maria.`, `Maaaring kumain si Maria.`, `Dapat na kumain
+  ang bata.` (mix of personal-name and full-NP SUBJ).
+  Verifies modal PRED + correct SUBJ binding.
+- ``TestNoLinkerColloquialModal`` (3 tests): three no-linker
+  surfaces (`Hindi ka dapat kumain.`, `Dapat kumain si
+  Maria.`, `Hindi dapat kumain si Maria.`). Each verifies at
+  least one parse with REGISTER=COLLOQUIAL.
+- ``TestPhase5jModalRegression`` (3 tests, parametrized):
+  Phase 5j canonical clitic + linker forms still parse,
+  with at least one non-COLLOQUIAL (formal) reading.
+
+Plus the updated
+``test_phase5j_modal_lex.py::TestNoLinkerModalIsColloquialParses``
+test (1 fixture, was 0-parses).
+
+Regression: 7270 → 7280 fast pass (+10 new fixtures in 7a.E
+test file; the Phase 5j test update is in place not added).
+``hatch run check`` clean.
