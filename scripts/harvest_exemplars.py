@@ -423,6 +423,179 @@ def extract_rg_intermediate() -> Iterator[Exemplar]:
             )
 
 
+# === Source 6: S&O 1972 + Source 7: R&G 1981 Conversational ===============
+#
+# Both are pdftotext -layout outputs of Acrobat-OCR'd PDFs. Pages are
+# delimited by form-feed (``\f``). Front matter (TOC, preface, copyright)
+# precedes the first numbered body page; the body extends to the index.
+
+
+# Word-initial ``rn`` before a vowel was originally ``m`` (the Acrobat-OCR
+# pass mis-renders the ``m`` glyph as ``rn`` in some italic body text).
+# Conservative: word-initial only, vowel-following only — avoids the
+# Spanish-loan stem ``barniz`` and the ``arnis`` martial-art term.
+_OCR_RN_INITIAL_RE = re.compile(r"\brn(?=[aeiouAEIOU])")
+
+
+def _ocr_cleanup(text: str) -> str:
+    """OCR-cleanup pass for Acrobat-OCR Wave 3 sources: word-initial
+    ``rn`` before a vowel → ``m``. Applied on top of the standard
+    ``normalize_orthography`` so the parser sees ``mga`` not ``rnga``."""
+    return _OCR_RN_INITIAL_RE.sub("m", text)
+
+
+def _pages_from_pdftotext(path: Path) -> Iterator[tuple[int, str]]:
+    """Yield ``(page_num, page_text)`` pairs from a pdftotext -layout
+    file. Page numbers are 1-indexed PDF pages (not book pages — the
+    PDF includes front matter the book's page numbering excludes)."""
+    text = path.read_text(encoding="utf-8")
+    for i, page in enumerate(text.split("\f"), start=1):
+        if page.strip():
+            yield i, page
+
+
+# Page-header banner: ALL-CAPS chapter title + right-aligned page
+# number, e.g. ``VERBALS  329`` or ``NOMINALS AND THEIR EXPANSIONS  91``.
+_PAGE_HEADER_RE = re.compile(r"^[A-Z][A-Z'\- ]{2,40}\s+\d{1,3}\s*$")
+
+# Phonetic notation: ``/ba·lu·n bah/`` etc. These are not natural
+# sentences; reject anywhere they appear inside a line.
+_PHONETIC_RE = re.compile(r"/[a-z'\- :·]+/")
+
+
+def _looks_like_index_page(page_text: str) -> bool:
+    """Heuristic for S&O 1972 index pages: > 40% of non-blank lines
+    end in ``..., NNN`` (comma-separated page-number references)."""
+    lines = [ln for ln in page_text.splitlines() if ln.strip()]
+    if not lines:
+        return False
+    index_lines = sum(
+        1 for ln in lines
+        if re.search(r",\s*\d{1,3}\s*(?:[a-z]{0,3})?\s*$", ln)
+    )
+    return index_lines >= 0.4 * len(lines)
+
+
+def _emit_sentence(raw_text: str) -> str | None:
+    """Pass ``raw_text`` through the Wave-2.5 cleanup pipeline + the
+    Tagalog-marker + sentence-shape filters. Return cleaned text or
+    None if the line should be dropped.
+
+    Caller is responsible for handling per-sentence splitting via
+    ``_split_sentences`` before calling this."""
+    cleaned = _clean_sentence_text(raw_text)
+    if cleaned is None:
+        return None
+    if _PHONETIC_RE.search(cleaned):
+        return None
+    if not _is_sentence_shape(cleaned):
+        return None
+    if not _looks_like_tagalog(cleaned):
+        return None
+    return cleaned
+
+
+def extract_so1972() -> Iterator[Exemplar]:
+    """Walk S&O 1972 *Tagalog Reference Grammar* (pdftotext output)
+    for Tagalog example sentences.
+
+    Skip PDF pages 1-23 (front matter: cover, copyright, TOC, preface)
+    and the INDEX (heuristic via ``_looks_like_index_page``). Reject
+    lines containing brace-alternation paradigm content (``{`` / ``}``)
+    or phonetic notation (slash-bracketed IPA-style strings)."""
+    path = REFERENCES_DIR / "Tagalog-Reference-Grammar-Schachter-Otanes.txt"
+    sent_idx = 0
+
+    for page_num, page_text in _pages_from_pdftotext(path):
+        if page_num < 24:
+            continue
+        if _looks_like_index_page(page_text):
+            continue
+
+        for raw_line in page_text.splitlines():
+            stripped = raw_line.strip()
+            if not stripped:
+                continue
+            if _PAGE_HEADER_RE.match(stripped):
+                continue
+            # Brace-alternation paradigm lines.
+            if "{" in stripped or "}" in stripped:
+                continue
+            for sent in _split_sentences(stripped):
+                cleaned = _emit_sentence(sent)
+                if cleaned is None:
+                    continue
+                sent_idx += 1
+                yield Exemplar(
+                    source="so1972",
+                    locator=f"page-{page_num}/sent-{sent_idx}",
+                    text_raw=cleaned,
+                    text_normalized=_ocr_cleanup(normalize_orthography(cleaned)),
+                    has_gloss=False,
+                    gloss_en=None,
+                    marked_ungrammatical=cleaned.startswith(("*", "?")),
+                    ocr_quality="acrobat-ocr",
+                )
+
+
+# Speaker-tagged dialog line: ``BEN:`` / ``LINDA:`` / ``A:``. Allows
+# up to 8 ASCII-uppercase characters before the colon (covers names
+# like ``LINDA`` and the short ``A``/``B`` patterns).
+_DIALOG_SPEAKER_RE = re.compile(r"^([A-Z][A-Z]{0,8})\s*:\s+(.+)$")
+
+
+def extract_rg_conversational() -> Iterator[Exemplar]:
+    """Walk R&G 1981 Conversational Tagalog (pdftotext output).
+
+    Sibling of ``extract_rg_intermediate`` — same authors, same era,
+    similar pedagogical format (dialogs + drill exercises). Skip PDF
+    pages 1-12 (cover, plan-of-text, intro, TOC). Recognize speaker-
+    tagged dialog lines (``BEN: ...``) and numbered exercises (``1.
+    ...``)."""
+    path = REFERENCES_DIR / "814610085-Conversational-Tagalog-a-Functional-Situational-Approach.txt"
+    sent_idx = 0
+
+    for page_num, page_text in _pages_from_pdftotext(path):
+        if page_num < 13:
+            continue
+
+        for raw_line in page_text.splitlines():
+            stripped = raw_line.strip()
+            if not stripped:
+                continue
+            if _PAGE_HEADER_RE.match(stripped):
+                continue
+
+            m = _DIALOG_SPEAKER_RE.match(stripped)
+            if m:
+                line_text = m.group(2).strip()
+                kind = "dialog"
+            else:
+                mn = re.match(r"^\s*\d+\.\s+(.+)$", raw_line)
+                if mn:
+                    line_text = mn.group(1).strip()
+                    kind = "numbered"
+                else:
+                    line_text = stripped
+                    kind = "prose"
+
+            for sent in _split_sentences(line_text):
+                cleaned = _emit_sentence(sent)
+                if cleaned is None:
+                    continue
+                sent_idx += 1
+                yield Exemplar(
+                    source="rg-conversational",
+                    locator=f"page-{page_num}/{kind}/sent-{sent_idx}",
+                    text_raw=cleaned,
+                    text_normalized=_ocr_cleanup(normalize_orthography(cleaned)),
+                    has_gloss=False,
+                    gloss_en=None,
+                    marked_ungrammatical=cleaned.startswith(("*", "?")),
+                    ocr_quality="acrobat-ocr",
+                )
+
+
 # === Source 5: Ramos 1971 Dictionary (verb-example sentences) =============
 
 
@@ -621,6 +794,8 @@ def cmd_extract() -> None:
         ("wave2-rc1990.jsonl", extract_rc1990()),
         ("wave2-rg-intermediate.jsonl", extract_rg_intermediate()),
         ("wave2-ramos1971.jsonl", extract_ramos1971()),
+        ("wave3-so1972.jsonl", extract_so1972()),
+        ("wave3-rg-conversational.jsonl", extract_rg_conversational()),
     ]
     for fname, it in pairs:
         path = EXEMPLARS_DIR / fname
@@ -633,6 +808,8 @@ _PARSE_SOURCES = [
     ("wave2-rc1990.jsonl", "wave2-rc1990-parse-results.jsonl", 500),
     ("wave2-rg-intermediate.jsonl", "wave2-rg-intermediate-parse-results.jsonl", 500),
     ("wave2-ramos1971.jsonl", "wave2-ramos1971-parse-results.jsonl", 500),
+    ("wave3-so1972.jsonl", "wave3-so1972-parse-results.jsonl", 500),
+    ("wave3-rg-conversational.jsonl", "wave3-rg-conversational-parse-results.jsonl", 500),
 ]
 
 
@@ -776,10 +953,10 @@ def cmd_report() -> None:
         print(f"ERROR: {parse_path} not found; run 'parse' first", file=sys.stderr)
         sys.exit(1)
 
-    records = [json.loads(l) for l in parse_path.open(encoding="utf-8")]
+    records = [json.loads(ln) for ln in parse_path.open(encoding="utf-8")]
     verbs = []
     if verbs_path.exists():
-        verbs = [json.loads(l) for l in verbs_path.open(encoding="utf-8")]
+        verbs = [json.loads(ln) for ln in verbs_path.open(encoding="utf-8")]
 
     bucket_counts: Counter[str] = Counter(r["bucket"] for r in records)
     by_chapter: dict[str, Counter[str]] = defaultdict(Counter)

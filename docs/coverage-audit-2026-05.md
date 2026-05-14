@@ -1,11 +1,12 @@
-# Coverage audit — Waves 1 + 2
+# Coverage audit — Waves 1 + 2 + 3
 
 > **Status:** Wave 1 pilot snapshot (2026-05-14) + Wave 2 expansion
-> (same date). See ``.claude/plans/tgllfg-harvest-audit.md`` for the
-> plan-of-record and ``.claude/plans/tgllfg-phase-8.md`` for the
-> Phase 8 remediation stub. Wave 3 (S&O 1972 + R&G Conversational,
-> Acrobat-OCR-only) is the go/no-go decision point after this Wave 2
-> data lands. §1-§7 below cover Wave 1; §8 onwards covers Wave 2.
+> (same date) + Wave 3 expansion (2026-05-14, after PR #58 Phase 8.P
+> extractor cleanup). See ``.claude/plans/tgllfg-harvest-audit.md``
+> for the plan-of-record and ``.claude/plans/tgllfg-phase-8.md`` for
+> the Phase 8 remediation stub. §1-§7 cover Wave 1; §§8-12 cover
+> Wave 2; §§13-16 cover Wave 3 (S&O 1972 + R&G Conversational,
+> Acrobat-OCR via ``pdftotext -layout``).
 
 ## Headline
 
@@ -430,18 +431,288 @@ rate but will sharpen the failure-cluster signal).
   Phase 8.J (bucketer-side improvement) is now higher priority
   to unblock further cluster-discovery work in Wave 3.
 
-## 12. Wave 3 go/no-go
+## 12. Wave 3 go/no-go (DONE — see §§13-16)
 
-**Recommendation: GO**, but with bucketer-side improvement
-(Phase 8.J) landed first.
+**Recommendation at Wave 2 close: GO**, with bucketer-side
+improvement (Phase 8.J) landed first.
 
-Wave 2 confirms that even noisy OCR sources produce useful
-failure signal once the parse-coverage and lex-gap conclusions
-are framed in aggregate. Wave 3 (S&O 1972 + R&G Conversational,
-Acrobat-OCR) will add ~600 sentences and likely surface S&O-
-specific clusters (more formal-register constructions; richer
-particle inventory). The OCR-noise tax is real but the absolute
-signal additions are worth the cost. Landing Phase 8.J first
-(walk-all-blocked-edges in the bucketer) ensures Wave 3
-diagnostics aren't dominated by the no-diag bucket the way
-Wave 1 + Wave 2 have been.
+**Outcome:** Wave 3 landed after Phase 8.J (PR #57) and Phase 8.P
+(PR #58). PDFs converted via ``pdftotext -layout`` from poppler
+(installed 2026-05-14). Both sources yielded usable signal — the
+Acrobat-OCR-noise tax was less severe than predicted (no
+``mga → rnga`` corruption in pdftotext output; scattered
+italic-glyph artifacts in vocab tables, filtered by the
+Tagalog-marker heuristic). **R&G Conversational achieved
+14.2% clean-parse rate — the highest of any naturalistic
+source** — because its sentences are shorter and more colloquial
+than the other Wave 2 reference grammars.
+
+## 13. Wave 3 sources
+
+- ``data/tgl/references/Tagalog-Reference-Grammar-Schachter-Otanes.txt``
+  — Schachter & Otanes 1972 *Tagalog Reference Grammar*. 678-page
+  formal reference grammar; the canonical structural reference
+  for Tagalog. Converted via ``pdftotext -layout``; front matter
+  (PDF pages 1-23: cover, copyright, TOC, preface) skipped; INDEX
+  pages skipped via a heuristic (>= 40% of lines end in
+  ``..., NNN`` page-number references). 1313 candidate sentences
+  extracted from the body.
+- ``data/tgl/references/814610085-Conversational-Tagalog-a-Functional-Situational-Approach.txt``
+  — Ramos & Goulet 1981 *Conversational Tagalog: A
+  Functional-Situational Approach* (PALI Language Texts 25). 180
+  pages of pedagogical material organized in 25 lessons (dialogs,
+  vocab, drills, activities). Sibling volume to R&G 1981
+  Intermediate but earlier in the sequence (less complex
+  vocabulary; shorter sentences). Converted via ``pdftotext
+  -layout``; front matter (PDF pages 1-12) skipped. 772 candidate
+  sentences extracted.
+
+Both PDFs are Acrobat-OCR tier (text layer baked in by Adobe
+Acrobat OCR, not post-processed). One known artifact-class —
+word-initial ``rn`` before a vowel reading as ``m`` — is cleaned
+up in ``normalize_orthography`` (regex ``\brn(?=[aeiouAEIOU])``);
+other italic-glyph OCR artifacts (``magandci`` for ``magandá``,
+``Lik6d`` for ``likód``, ``pamiLya`` for ``pamilya``) are mostly
+confined to vocab-table content that the ``_looks_like_tagalog``
+filter rejects.
+
+Per-source extraction caps: 500 sentences run through the parser
+(random sample with seed 42 for each source — both sources exceed
+the cap).
+
+## 14. Wave 3 sentence-parse bucket distribution
+
+| Source | parse-1 | parse-N | zero-frag | zero-no-frag | Total | Clean parse % |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| S&O 1972 | 34 | 2 | 341 | 123 | 500 | 7.2% |
+| R&G Conversational | 53 | 18 | 339 | 90 | 500 | 14.2% |
+| **Wave 3 total** | **87** | **20** | **680** | **213** | **1000** | **10.7%** |
+
+R&G Conversational's **14.2%** is the highest clean-parse rate of
+any naturalistic source — comfortably above R&G Intermediate
+(5.2%), R&C 1990 (3.8%), and even the Wave 1 transcriptions
+(9.3%, which included the curated ANG MANOK fixtures). The lift
+is driven by the book's design: short colloquial dialog and
+drill exercises (``Kumusta ang nanay mo?``, ``Ano ang pangalan
+mo?``, ``Mabuti naman``) that exercise constructions Phase 5g-
+Phase 7a already handle. S&O 1972 at 7.2% is on par with R&G
+Intermediate; its formal-register prose is longer and more
+complex but the canonical-example density compensates somewhat.
+
+**Cumulative naturalistic baseline (Waves 1 + 2 + 3, 2220
+naturalistic sentences):**
+
+| Wave | Sources | Sents | Clean parses | Rate |
+| --- | --- | ---: | ---: | ---: |
+| Wave 1 | rg81 transcriptions | 118 | 11 | 9.3% |
+| Wave 2 | RC 1990 + RG Int. + Ramos | 1102 | 47 | 4.3% |
+| Wave 3 | S&O 1972 + RG Conv. | 1000 | 107 | 10.7% |
+| **Total** | | **2220** | **165** | **7.4%** |
+
+vs **99.6%** on the curated ``coverage_corpus.yaml`` — the
+naturalistic-vs-curated gap remains the headline finding.
+
+## 15. Wave 3 failure-cluster sampling
+
+Heuristic clustering of the 893 zero-parse rows (464 from S&O +
+429 from R&G Conv):
+
+| Cluster | S&O | R&G Conv | Total | Share |
+| --- | ---: | ---: | ---: | ---: |
+| other (heterogeneous) | 286 | 264 | 550 | 61.6% |
+| clitic-fused-token | 82 | 61 | 143 | 16.0% |
+| construction-gap (no OOV) | 42 | 20 | 62 | 6.9% |
+| proper-noun-only | 34 | 27 | 61 | 6.8% |
+| english-bleed | 18 | 34 | 52 | 5.8% |
+| clock-time (``alas``) | 0 | 11 | 11 | 1.2% |
+| speaker-tag-bleed | 0 | 10 | 10 | 1.1% |
+| affix-fragment | 2 | 2 | 4 | 0.4% |
+
+### Diag-kind histogram (Wave 3 aggregate)
+
+| Diag kind | S&O | R&G Conv | Total |
+| --- | ---: | ---: | ---: |
+| constraint-failed | 780 | 954 | 1734 |
+| existential-failed | 206 | 284 | 490 |
+| completeness-failed | 32 | 25 | 57 |
+| lmt-mismatch | 32 | 21 | 53 |
+| atom-mismatch | 3 | 15 | 18 |
+| coherence-failed | 16 | 2 | 18 |
+| neg-existential-failed | 2 | 7 | 9 |
+
+Phase 8.J (walk-all-blocked-edges, PR #57) is paying off: the
+no-diag bucket is no longer the dominant signal. ``constraint-
+failed`` is now the largest category — these are rows where the
+parser reached F-structure constraint-checking but a constraint
+failed, indicating "near-miss" parses worth investigating.
+
+### Representative S&O 1972 failures
+
+**Construction-gap rows (no OOV; clean Tagalog the parser fails
+on):**
+
+- ``Tayo ang lumakad.`` — pronominal cleft (``tayo`` as
+  ang-marked pivot). ``completeness-failed`` on PRED 'LAKAD'.
+- ``Tayo nga ang maglinis ng bahay.`` — same pivot pattern with
+  particle ``nga`` and a transitive verb.
+- ``Akin ang tinapay.`` — possessive-pronoun pivot (``akin`` as
+  ang-marked predicate over ``tinapay``).
+- ``Hindi si Juan ang darating kundi si Pedro.`` — negative
+  cleft with ``kundi`` (but / except).
+- ``Para sa iyo, binili ko ito.`` — comma-fronted ``Para sa NP``
+  benefactive (sibling of Phase 8.D comma-fronted topic).
+- ``Parang kayo ako.`` — ``parang`` (like / similar to)
+  comparative predication.
+- ``Mabait na mabait kayo.`` — ``ADJ na ADJ`` intensification
+  reduplication.
+- ``(Ka)singhirap ko siya.`` — equative ``(ka)sing-`` over a
+  simple base (cf. Phase 5h L38 / Phase 8.L).
+- ``Sino ba siya?`` — wh-Q ``Sino`` predicating over a
+  pronominal subject.
+- ``Ni si Juan ay hindi nakapunta doon.`` — ``Ni X ay hindi Y``
+  "not even X did Y" construction.
+- ``Maganda pala ito, a!`` — sentence-final ``a`` exclamation
+  particle.
+- ``Aalis na (ho/po) ako.`` — parenthesized politeness-particle
+  alternation.
+
+**OOV-driven failures (top lex gaps from S&O):**
+
+- Proper nouns: ``Rosa`` (15), ``Ben`` (8), ``Maynila`` (4),
+  ``Jose`` (3) — common Filipino names and place names.
+- Real lex gaps: ``pandanggo`` (folk dance, 7), ``sulat``
+  (letter, 6), ``liksyon`` (lesson, 6), ``narito`` (here, 5),
+  ``opisina`` (office, 5), ``kasangkapan`` (furniture, 5),
+  ``pulong`` (meeting, 5), ``opisyal`` (officer), ``hukbo``
+  (army), ``panganay`` (eldest), ``kantong`` (corner-LIN).
+- Word-fusion / clitic-glue OOV: ``akong`` (10) = ``ako`` +
+  ``ng``; ``siyangnag`` = ``siyang`` + ``nag``; ``bibilhinko``
+  (4) = ``bibilhin`` + ``ko`` — these are OCR-rendered
+  whitespace drops or natural Tagalog clitic fusion the analyzer
+  doesn't decompose.
+- Slot-label OOV from grammar prose: ``af``, ``of``, ``cf`` —
+  S&O's voice-slot abbreviations leak through the
+  ``_looks_like_tagalog`` heuristic on lines like
+  ``OF: Alisin mo ang bigas sa sako``. Extractor cleanup
+  candidate.
+
+### Representative R&G Conversational failures
+
+**Construction-gap rows (no OOV; clean Tagalog):**
+
+- ``Ito ang tatay ko.`` / ``Ito ang bahay ko.`` — simple
+  ``DEM ang NP-POSS`` predication. Surprising that this fails;
+  worth a diagnostic deep-dive.
+- ``Kotse namin iyan.`` — ``N-POSS DEM`` predication with
+  ``namin`` clitic.
+- ``Diyan ka na.`` — locative imperative (``Diyan ka na``
+  "you be there" — leave-taking formula).
+- ``Pumasok ka ba kahapon?`` — AV + ``ba`` + temporal adverb.
+  ``constraint-failed``.
+- ``Inumin ninyo sa kaniya.`` — OV imperative with sa-PP.
+- ``Sa a-dos ng Nobyembre.`` — date construction
+  (``a-NUM ng MONTH``).
+- ``Mayaman nga siya pero naman.`` — ``pero naman``
+  concessive particle combination.
+
+**Clock-time cluster (``alas`` + numeral):**
+
+- ``Naglalaro ako ng alas singko.`` — ``alas singko`` = "5
+  o'clock". Spanish-loan clock-time construction (Tagalog
+  retains Spanish numerals for clock times: ``alas una``,
+  ``alas dos``, ``alas tres``, ..., ``alas dose``).
+- ``Gumigising ako ng alas sais.`` — "I wake at 6".
+- ``Ano ang ginagawa nila sa alas siyete ng hapon?`` —
+  "What do they do at 7 in the afternoon?"
+
+**OOV-driven failures (top lex gaps from R&G Conv):**
+
+- Greeting / common: ``kumusta`` (10 — already in Phase 8.N),
+  ``nasaan`` (6 — locative wh), ``kunin`` (7 — V form),
+  ``gagawin`` (5 — V form).
+- Clock + measure: ``alas`` (12) — see clock-time cluster.
+- Proper nouns: ``fred`` (7), ``bob`` (6), ``malou`` (5),
+  ``avenida`` (5 — street name).
+- Word-fusion / clitic-glue: ``bang`` (10) = ``ba`` + ``ng``;
+  ``anong`` (10) = ``ano`` + ``ng``; ``kong`` (6) = ``ko`` +
+  ``ng`` — these are natural Tagalog clitic fusion that the
+  morph analyzer should handle.
+- Speaker-tag bleed: ``s3``, ``s4`` (4 each), ``gng`` (4 —
+  ``Gng.`` "Mrs." abbreviation) — extractor cleanup candidate.
+- Affix fragments: ``nag`` (9) — bare prefix where the
+  following stem failed to attach in OCR.
+- English bleed: ``the`` (17), ``you`` (7), ``to`` (8), ``in``
+  (6), ``of`` (5), ``it`` (5), ``is`` (4) — multi-column
+  layout artifacts. The ``_looks_like_tagalog`` heuristic
+  catches the worst but not all.
+
+### Wave 3 extractor noise (known caveats)
+
+- **Multi-column layout bleed in R&G Conversational**:
+  ``pdftotext -layout`` flattens two-column pages line-by-line,
+  joining left-column dialog with right-column English vocab
+  glosses. The ``_looks_like_tagalog`` heuristic catches the
+  worst cases but leaves some English-bleed rows in the
+  harvest. Phase 8 extractor-cleanup candidate.
+- **Speaker-tag artifacts in R&G Conversational**: lines like
+  ``S2: Mabuti rin.`` or ``Gng. Garcia ay ...`` should have the
+  tag stripped before parsing. The existing
+  ``_DIALOG_SPEAKER_RE`` catches single-token-name speakers but
+  not ``Gng.``-style abbreviations.
+- **Italic-glyph OCR artifacts in vocab tables**: ``magandci``
+  for ``magandá``, ``Lik6d`` for ``likód``, ``pamiLya`` for
+  ``pamilya``. Mostly filtered by the Tagalog-marker heuristic.
+- **S&O voice-slot prose leakage**: chapter prose explaining
+  voice morphology uses slot abbreviations (``AF:``, ``OF:``,
+  ``cf.``) that leak through when followed by a Tagalog example
+  on the same line.
+
+These extractor issues are tractable; Phase 8 candidates listed
+in §16 below.
+
+## 16. Updated cross-wave conclusions (post-Wave-3)
+
+- **Naturalistic parse rate is 7.4% (2220 sentences across 3
+  waves)**, not 99.6%. Up from the post-Wave-2 5% baseline
+  largely because R&G Conversational lifts the average. The
+  curated-corpus / naturalistic-corpus gap is real.
+- **Wave 3 shifts the failure landscape**: the largest cluster
+  is now ``clitic-fused-token`` (16% across both Wave 3
+  sources). Examples: ``akong`` (= ``ako`` + ``ng``), ``bang``
+  (= ``ba`` + ``ng``), ``anong`` (= ``ano`` + ``ng``),
+  ``kong`` (= ``ko`` + ``ng``), ``siyangnag``. This is partly
+  natural Tagalog clitic-fusion phenomena and partly OCR
+  whitespace-drop. The morph analyzer should treat these as
+  candidates for decomposition.
+- **Wave 3 adds Phase 8 candidates** beyond the existing 16:
+  - **``alas``-construction** (clock time, 11 R&G Conv rows;
+    Spanish numerals for hours).
+  - **Pronominal-pivot clefts** (``Tayo ang lumakad``,
+    ``Akin ang tinapay``): ``constraint-failed`` /
+    ``completeness-failed`` — likely a missing role-mapping
+    rule on cleft-with-pronoun-pivot.
+  - **Negative cleft with ``kundi``**
+    (``Hindi si X ang Y kundi si Z``): correction construction.
+  - **``parang`` similative** comparative (``Parang kayo
+    ako``).
+  - **``Ni X ay hindi Y`` "not even"** focus-negation.
+  - **Sentence-final ``a!`` exclamation particle**.
+  - **``Gng.`` / ``S2:`` / ``Bb.`` speaker-tag pre-strip** for
+    R&G Conv extractor (Phase 8 engineering, post-Wave-3).
+  - **Clitic-glue decomposition** (``akong`` / ``bang`` /
+    ``anong`` / ``kong``): morph-analyzer extension or
+    pre-tokenizer pass. High impact across both Wave 3
+    sources.
+- **Surprising near-miss**: ``Ito ang tatay ko.`` /
+  ``Ito ang bahay ko.`` — simple ``DEM ang NP-POSS`` predication
+  fails despite being a textbook fixture. Worth a diagnostic
+  deep-dive (paste these into the parser and inspect the
+  constraint failure).
+- **Lex gaps still dominate** absolute failure count, even
+  with Wave 3's improvements. Phase 8.A + 8.B + 8.N (lex
+  passes) remain the highest-ROI first moves.
+- **R&G Conversational provides the cleanest naturalistic
+  signal** — short, colloquial, and well-covered by Phase
+  5g-Phase 7a. Future regression-monitoring against
+  ``coverage_corpus.yaml`` could profitably add R&G Conv
+  fixtures as a "naturalistic" tier.
