@@ -14577,3 +14577,120 @@ evidence:
   raising-bare matrix is parallel to `tila` (S&O §5.18
   sentence-adverb analysis) — same syntactic shape, same
   Phase 5d machinery.
+
+## Phase 7a.D Commit 1: §18.1.1 item 5 wh-ADV linker fronting — design
+
+Fourth sub-PR of Phase 7a (per plan-of-record §3.4). Closes
+§18.1.1 item 5 — `paano` linker fronting (`Paanong kumain
+ang aso?` "How would the dog eat?"). The plan called out
+`paano` specifically, but the new rule is generic over
+``ADV[WH]`` and incidentally covers the parallel
+``saang`` / ``kailang`` / etc. forms at no additional cost.
+
+### 1. Lexical baseline
+
+`paano` and `papaano` are already lex'd in
+``data/tgl/particles.yaml`` with
+``{WH: true, ADV_TYPE: MANNER}``. Other wh-ADVs follow the
+same shape: ``saan`` (LOCATION), ``kailan`` (TIME), ``bakit``
+(REASON). No lex changes for Phase 7a.D.
+
+### 2. Pre-Phase-7a.D state
+
+The Phase 5i Commit 4 adverbial wh rule
+(``cfg/clause.py:1549-1559``) handles the **bare** wh-ADV
+form:
+
+```text
+S[Q_TYPE=WH] → ADV[WH] S
+   (↑) = ↓2
+   (↑ Q_TYPE) = 'WH'
+   (↑ WH_LEMMA) = ↓1 LEMMA
+   ↓1 ∈ (↑ ADJUNCT)
+   (↓1 WH) =c true
+```
+
+Verified: ``Paano kumain ang aso?`` parses today (1 parse)
+via this rule. The gap is the **linker-bound** form:
+``Paanong kumain ang aso?`` zero-parses today.
+
+### 3. Rule shape (new)
+
+Two parallel variants (one per linker atom):
+
+```text
+S[Q_TYPE=WH] → ADV[WH] PART[LINK=NA] S
+S[Q_TYPE=WH] → ADV[WH] PART[LINK=NG] S
+   (↑) = ↓3
+   (↑ Q_TYPE) = 'WH'
+   (↑ WH_LEMMA) = ↓1 LEMMA
+   ↓1 ∈ (↑ ADJUNCT)
+   (↓1 WH) =c true
+```
+
+Equations mirror the bare variant exactly except daughter
+indices shift by one (S=↓3 vs ↓2). Generic over ``ADV[WH]``
+— the new rule covers paano, papaano, saan, kailan, bakit
+when followed by NA or NG linker.
+
+### 4. Deviations from plan-of-record §3.4
+
+The plan sketched (proposed but revised in implementation):
+
+```text
+S[Q_TYPE=WH] → PART[wh-MANNER, LEMMA=paano] PART[LINK] S
+   (↑ ASK_MANNER) = true
+   (↓1 ADV_TYPE) =c 'WH-MANNER'
+```
+
+Three changes from the plan:
+
+1. **Generic `ADV[WH]` instead of `PART[LEMMA=paano]`.** The
+   existing Phase 5i bare-wh rule is already generic; the
+   linker variant mirrors it. The new rule incidentally
+   covers ``saang`` / ``kailang`` / etc., which were a
+   parallel gap not separately tracked in §18.1.1.
+2. **`(↓1 WH) =c true` instead of `(↓1 ADV_TYPE) =c
+   'WH-MANNER'`.** The existing convention uses bare
+   `ADV_TYPE` atoms (`MANNER`, `LOCATION`, etc.); the plan's
+   `WH-MANNER` compound atom would break the established
+   pattern. The bare-wh rule uses `(↓1 WH) =c true` and the
+   linker variant does the same.
+3. **`(↑ ASK_MANNER) = true` dropped.** No parallel
+   `ASK_*` feats exist for the other wh-types
+   (`ASK_LOCATION` for saan, `ASK_TIME` for kailan, etc.);
+   adding one paano-specific atom would be inconsistent.
+   Downstream consumers dispatch on `WH_LEMMA` when they
+   need to distinguish question types — same convention as
+   Phase 5i.
+
+### 5. Verified coverage
+
+| Sentence | wh-ADV | Linker | Parses |
+| --- | --- | --- | --- |
+| `Paano kumain ang aso?` | paano | — (bare) | yes (Phase 5i) |
+| `Paanong kumain ang aso?` | paano | -ng (NG) | yes (new) |
+| `Paano na kumain ang aso?` | paano | na (NA) | yes (new + Phase 5i mixed parses) |
+| `Saang kumain ang aso?` | saan | -ng | yes (new, incidental) |
+| `Kailang kumain ang aso?` | kailan | -ng | yes (new, incidental) |
+
+### 6. Tests
+
+``tests/tgllfg/test_phase7a_d_wh_linker_fronting.py`` covers
+15 fixtures:
+
+- ``TestNGLinkerWhAdvFronting`` (10 tests, partly
+  parametrized): -ng linker variant for paano (3 sentences)
+  / saan / kailan. Verifies Q_TYPE=WH, WH_LEMMA, ADJUNCT
+  membership, ADV_TYPE=MANNER propagation on paano, and
+  inner-S verbal PRED percolation.
+- ``TestNALinkerWhAdvFronting`` (2 tests, parametrized):
+  na linker variant for paano / saan. Pins at-least-one
+  wh-Q reading (na is also an enclitic, so multiple
+  parses are admissible).
+- ``TestBareWhAdvUnaffected`` (3 tests, parametrized): the
+  Phase 5i bare wh-ADV rule still produces wh-Q parses
+  for paano, saan, bakit.
+
+Regression: 7255 → 7270 fast pass (+15 new). No baseline
+regressions. ``hatch run check`` clean.
