@@ -14960,3 +14960,145 @@ existing deferred-test files.
 
 Regression: 7280 → 7295 fast pass (+15 new). No baseline
 regressions. ``hatch run check`` clean.
+
+## Phase 7a.G Commit 1: §18.1.1 item 10 kahit-X in non-NOM slots — design
+
+Seventh sub-PR of Phase 7a (per plan-of-record §3.8). Closes
+§18.1.1 item 10 — kahit-X wh-PRONs in non-NOM argument slots
+(GEN-OBJ, DAT-OBL/recipient).
+
+### 1. Pre-Phase-7a.G state
+
+The Phase 6.C C3d case-parameterized IndefPRON rules
+(``cfg/nominal.py:1967-1979``) produce ``PRON[INDEF=YES,
+CASE=X]`` for X ∈ {NOM, GEN, DAT} but only fire when the
+daughter wh-PRON's lex CASE matches the matrix output CASE.
+``sino`` / ``ano`` / ``alin`` are lex'd as CASE=NOM only —
+so the GEN / DAT C3d variants never fire on them, leaving
+``kahit ano`` etc. unable to fill non-NOM slots. The Phase
+6.C C3f xfail (``test_kahit_ano_in_obj``) pinned this gap.
+
+### 2. Lex-variant approach attempted and abandoned
+
+Plan §3.8 option (a) — adding GEN / DAT lex variants of
+``sino`` / ``ano`` / ``alin`` to ``data/tgl/pronouns.yaml``
+— was attempted first. **Result: collision.** The morph
+analyzer indexes pronouns by surface key
+(``morph/analyzer.py:174``: ``pronouns: dict[str,
+MorphAnalysis]``), so multiple entries with the same surface
+collide and only one survives. NOM-position regressions
+result.
+
+Switched to plan §3.8 option (b): "an any-case wh-indef
+projection rule".
+
+### 3. NP-level projection rule
+
+Two new rules in ``cfg/nominal.py``, parallel to the Phase
+5i Commit 3 in-situ wh-PRON shell rules (``cfg/nominal.py:
+172-193``) but with the ADP daughter replaced by a bare PART
+gated to ``kahit``:
+
+```text
+NP[CASE=GEN, WH=true] → PART PRON[WH]
+NP[CASE=DAT, WH=true] → PART PRON[WH]
+   (↑ PRED) = 'WH-PRO'
+   (↑ INDEF) = 'YES'
+   (↑ WH) = ↓2 WH
+   (↑ LEMMA) = ↓2 LEMMA
+   (↑ WH_LEMMA) = ↓2 LEMMA
+   ↓1 ∈ (↑ ADJUNCT)
+   (↓1 LEMMA) =c 'kahit'
+   (↓2 WH) =c true
+   (↓2 CASE) =c 'NOM'
+```
+
+The bare PRON daughter doesn't have a CASE constraint at the
+category level; the constraining equation
+``(↓2 CASE) =c 'NOM'`` gates to NOM-source wh-PRONs only.
+The matrix's CASE is set by the LHS atom (GEN or DAT). The
+``(↓2 CASE) =c 'NOM'`` constraint prevents kanino (which is
+lex'd CASE=DAT) from triggering this rule — it's already
+handled by the existing Phase 6.C C3d DAT-IndefPRON rule.
+
+### 4. Empirical validation (GT 2026-05-14)
+
+The three target surfaces all produce canonical OBJ-reading
+GT translations:
+
+| Sentence | GT output | Reading |
+| --- | --- | --- |
+| `Kumain siya kahit ano.` | "He will eat anything." | kahit ano = anything (OBJ) |
+| `Kumain siya kahit sino.` | "He ate anyone." | kahit sino = anyone (OBJ) |
+| `Kumain siya kahit alin.` | "He ate whatever." | kahit alin = whatever (OBJ) |
+
+The OBJ reading is canonical in modern Tagalog. Phase 7a.G
+delivers this reading.
+
+### 5. Over-generation and filter guidance
+
+The new rule introduces **3 parses** for each `Kumain siya
+kahit ano.`-style surface (was 0 pre-Phase-7a.G):
+
+- **Parse [a]: ``PRED='EAT <SUBJ>'`` with ADJUNCT-bound
+  kahit-X.** A non-canonical clause-level adjunct reading
+  ("he ate, whatever-his-choice"). Activated as a side effect
+  of the new NP-projection rule being available.
+- **Parse [b]: ``PRED='EAT <SUBJ, OBJ>'`` with
+  ``OBJ.INDEF=YES`` and ``OBJ.LEMMA`` set to the wh-PRON
+  lemma.** The canonical OBJ reading (matches GT).
+- **Parse [c]: ``PRED='EAT <SUBJ>'`` with no overt OBJ or
+  ADJUNCT.** A residual / packed-forest artifact; the
+  kahit-X surface doesn't connect to any matrix role.
+  Investigation deferred; downstream filters trivially
+  exclude it.
+
+**Downstream filter (recommended for ranker / classifier /
+consumer that wants only the canonical OBJ reading):**
+
+```python
+def is_canonical_indef_obj_parse(parses, wh_lemma):
+    for parse in parses:
+        obj = parse.fs.feats.get("OBJ")
+        if (
+            isinstance(obj, FStructure)
+            and obj.feats.get("INDEF") == "YES"
+            and obj.feats.get("LEMMA") == wh_lemma
+            and obj.feats.get("WH") is True
+        ):
+            return parse
+    return None
+```
+
+Filtering on ``OBJ.INDEF=YES`` and ``OBJ.LEMMA == <wh_lemma>``
+and ``OBJ.WH is True`` uniquely picks the canonical reading
+across all surfaces tested. The Phase 7a.G test file
+``tests/tgllfg/test_phase7a_g_kahit_non_nom.py`` uses this
+same discriminator via the ``_obj_indef_parse`` helper.
+
+### 6. Tests
+
+``tests/tgllfg/test_phase7a_g_kahit_non_nom.py`` covers 10
+fixtures across 4 classes:
+
+- ``TestKahitXInOBJ`` (5 tests, parametrized): five OBJ-
+  position surfaces (ano/sino/alin × kumain / bumili).
+  Each verifies the canonical OBJ-INDEF reading exists via
+  the ``_obj_indef_parse`` filter helper.
+- ``TestKaninoUnchanged`` (1 test): the NOM-source gate
+  ``(↓2 CASE) =c 'NOM'`` works — ``kahit kanino`` stays at
+  1 parse (the existing Phase 6.C C3d DAT-IndefPRON rule
+  handles it; the new rule doesn't double-fire).
+- ``TestNOMFormsRegression`` (3 tests, parametrized):
+  Phase 5m C8 / Phase 7a.F / Phase 5n.B C20 NOM-position
+  kahit-X surfaces unaffected.
+- ``TestKahitSaanUnchanged`` (1 test): the IndefADV path
+  for `saan` is unaffected (the new rule has PRON[WH]
+  daughter; saan is ADV).
+
+Plus an in-place flip of ``test_phase5m_indefinite_kahit.py::
+TestKahitAnoAsObject`` from xfail to passing test (the Phase
+6.C C3f xfail).
+
+Regression: 7295 → 7306 fast pass (+10 new + 1 xfail
+flipped). No baseline regressions. ``hatch run check`` clean.

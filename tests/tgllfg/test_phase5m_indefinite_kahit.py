@@ -99,24 +99,18 @@ class TestKahitSinoAsSubject:
 
 
 class TestKahitAnoAsObject:
-    """``kahit ano`` composes as an OBJ in AV-transitive frames
-    (``Kumain siya ng kahit ano`` would be the GEN-marked form;
-    the bare-OBJ form here uses NOM marking via the AV-trans
-    pattern that admits unmarked NOM-pivot OBJs)."""
+    """``kahit ano`` composes as an OBJ in AV-transitive frames.
 
-    @pytest.mark.xfail(
-        reason=(
-            "Phase 6.C C3f: relies on non-conflict matcher accidentally "
-            "admitting NOM-PRON projection into a GEN-OBJ slot for "
-            "indefinite wh-PRON wrappers. ``ano``/``sino``/``alin`` are "
-            "lex'd CASE=NOM only; the strict (graph-constraint) matcher "
-            "rejects cross-case projection. Proper fix needs either lex "
-            "extensions (CASE=GEN/DAT variants of wh-PRONs) or an "
-            "any-case wh-indef projection rule. Tracking for post-C4 "
-            "scope; the test stays xfail until that lands."
-        ),
-        strict=False,
-    )
+    **Phase 7a.G closure (2026-05-14):** the test passes via the
+    new any-case wh-indef NP-projection rule in
+    ``cfg/nominal.py`` that admits ``PART[kahit] + PRON[WH]`` as
+    ``NP[CASE=GEN, WH=true, INDEF=YES]`` directly. The
+    previously-xfail'd Phase 6.C C3f cross-case-projection gap
+    is now closed by the NP-level projection (option (b) per
+    plan §3.8; option (a) — lex variants — was blocked by the
+    analyzer's surface-keyed indexing).
+    """
+
     def test_kahit_ano_in_obj(self) -> None:
         """``Kumain siya kahit ano.`` "She ate anything." — has
         multiple parses due to existing AV-trans/intrans
