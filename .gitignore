@@ -51,6 +51,9 @@ Thumbs.db
 # excluded from the repo for binary-size and licensing reasons.
 data/tgl/references/
 
+# Exemplar harvest output (derived from gitignored references/).
+data/tgl/exemplars/
+
 # Per-project plan files (live alongside the repo for convenience but
 # remain personal working notes, not project artifacts).
 .claude/plans/
