@@ -15569,11 +15569,11 @@ dispatch set**, not category brackets.
   Not in the Wave 3 audit zero-parse list (was my own probe
   extrapolation during 8.X); leaving deferred until corpus
   pressure or a dedicated N-modifier-inventory refactor.
-- `Ang lalaki ang doktor.` — fully-general two-NP equational
-  with ang-pivot. The Phase 5n.B N-pivot rule docstring
-  defers this to corpus pressure; the Wave 3 audit did not
-  surface it. Closing it would require disambiguation logic
-  against pseudo-cleft.
+- `Ang lalaki ang doktor.` — *originally listed as carve-out;
+  closed in Phase 8.Z below.* User verified the natural reading
+  ("The man is the doctor."), and probing for 8.Z confirmed
+  pseudo-cleft is itself zero-parsing under the pre-existing
+  grammar, so the disambiguation concern was hypothetical.
 
 ### Coverage impact
 
@@ -15596,3 +15596,77 @@ real Tagalog patterns, but not high-frequency in pedagogical
 or descriptive prose. The motivation for closing them is
 correctness against the surfaced gaps, not parse-rate
 optimization.
+
+## Phase 8.Z: generalize 8.Y Rule 2 to ang-pivot equational
+
+Drops the `(↓1 MARKER) =c 'SI'` gate from the Phase 8.Y
+two-NP equational rule. The user verified `Ang lalaki ang
+doktor.` "The man is the doctor." as the natural reading
+(Google Translate produces the equational gloss; native-
+speaker check by user confirms). The 8.Y carve-out citing
+"parse-ambiguity with pseudo-cleft" was unjustified by the
+actual parser state — diagnostic probing for 8.Z confirmed
+pseudo-cleft (`Ang lalaki ang nagluto.`) was itself zero-
+parsing under the pre-existing grammar, so the gate was
+preventing closure of one construction class without benefit
+to another. Per the anti-deferral principle (Phase 5n debt-
+clearing precedent), the gate is removed.
+
+### Rule shape (post-8.Z)
+
+```text
+S → NP[CASE=NOM] NP[CASE=NOM]
+    (↑ PRED)        = 'BE-NP <SUBJ>'
+    (↑ SUBJ)        = ↓2
+    (↑ PRED-NP)     = ↓1
+    (↑ PREDICATIVE) = true
+    ¬ (↓1 WH)
+```
+
+### Two-step closure: WH gate added
+
+A naive removal of the SI gate caused a regression cascade:
+wh-PRON cleft sentences (`Sino ang kumain?`, `Ano ang kinain
+mo?`) gained a spurious BE-NP parse alongside the canonical
+wh-cleft parse. The reason: wh-PRONs (`Sino`, `Ano`, `Alin`)
+are PRON[WH=true, CASE=NOM], which wraps to NP[CASE=NOM] via
+the bare-PRON NP rule (`NP[CASE=NOM] → PRON[CASE=NOM]` in
+`cfg/nominal.py`). So the new rule fires on `[Sino] [ang
+kumain]` with both daughters as NP[NOM], producing a
+duplicate parse.
+
+Fix: add `¬ (↓1 WH)` to the rule body. This keeps wh-PRONs
+routed exclusively through the Phase 5i Commit 2 wh-PRON
+cleft rule (`S → PRON[WH, CASE=NOM] NP[CASE=NOM]`). The same
+constraint was used by Phase 8.X on the non-wh PRON-pivot
+rule.
+
+### Coverage impact
+
+Re-running the seed=42 Wave 3 parse sample (500 sentences
+per source):
+
+| Source | After 8.Y | After 8.Z |
+| --- | ---: | ---: |
+| S&O 1972 | 40 / 500 (8.0%) | 41 / 500 (8.2%) |
+| R&G Conversational | 77 / 500 (15.4%) | 78 / 500 (15.6%) |
+
+Cumulative naturalistic baseline (Waves 1+2+3, 2220 sents):
+7.9% → 8.0%. The shift includes some sentences that moved
+from `parse-success-1` to `parse-success-N` — the new rule
+introduces ambiguity for sentences whose surface admits both
+an existing parse and the new equational parse. The
+ambiguity is structurally real (the surfaces are equational-
+compatible); disambiguation is a downstream concern.
+
+### Still zero-parsing
+
+`Ang lalaki ang nagluto.` (pseudo-cleft equational reading)
+remains zero-parsing post-8.Z. The blocker is the headless-
+RC `ang nagluto` not wrapping to NP[CASE=NOM] under the
+current Phase 5e Commit 5 free-relative rule's gating —
+investigated during 8.Z probing, confirmed as a separate
+gap class, out of 8.Z scope. Tracked as a follow-on near-
+miss for future work (anti-deferral note: this one is a
+distinct construction gap, not a re-deferral of the equa-
+tional case 8.Z closed).
