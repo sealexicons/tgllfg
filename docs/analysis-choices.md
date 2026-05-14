@@ -15473,3 +15473,126 @@ during 8.X probing but are explicitly out of 8.X scope:
   N-pivot rule accepts bare `N` (`Doktor ito.` works); the
   `si`-marked proper-NP doesn't reduce to bare N, so the
   rule doesn't fire. Phase 8 follow-on candidate.
+
+(Both follow-on candidates closed in Phase 8.Y immediately
+below — per the anti-deferral principle, surfaced gaps are
+closed rather than left as new deferrals.)
+
+## Phase 8.Y: ay-inverted N-pivot + Si-NP-pivot two-NP equational
+
+Phase 8.Y closes the two near-misses surfaced during 8.X
+probing (the "Out-of-scope follow-ons surfaced" entries in the
+Phase 8.X writeup above). Per the anti-deferral principle —
+when corpus pressure or diagnostic probing surfaces a gap,
+close it rather than queueing a "Phase 8 follow-on candidate"
+— both were promoted into Phase 8.Y as one bundled PR.
+
+### Rule 1: ay-inverted N-pivot
+
+`Ito ay aklat.` "This is a book.", `Ako ay guro.` "I am a
+teacher.", `Iyon ay bahay ko.` "That is my house." — the
+ay-fronted mirror of the Phase 5n.B N-pivot rule
+(`S → N NP[CASE=NOM]`). The Phase 4 §7.4 ay-fronting family
+covers V-headed clauses (`S_GAP`), predicative-ADJ clauses
+(`S_GAP_PREDADJ`), and SubordClause topics; this rule adds
+the N-headed-predicate variant without a parallel
+`S_GAP_PREDN` gap non-terminal — the equation set is small
+enough that direct construction is simpler than threading a
+gap clause.
+
+Shape (mirrors the N-pivot rule with SUBJ bound to the
+fronted ↓1):
+
+```text
+S → NP[CASE=NOM] PART[LINK=AY] N
+    (↑ PRED)        = 'BE-N <SUBJ>'
+    (↑ SUBJ)        = ↓1
+    (↑ TOPIC)       = ↓1
+    (↑ N_LEMMA)     = ↓3 LEMMA
+    (↑ PREDICATIVE) = true
+    ¬ (↓3 WH)
+```
+
+SUBJ and TOPIC both reference the fronted NP (ay-fronting
+is topicalization in LFG terms; both gf and discourse
+function point to the same node).
+
+### Rule 2: Si-NP pivot two-NP equational
+
+`Si Juan ito.` "This is Juan.", `Si Maria iyan.`, `Si Pedro
+iyon.`, `Si Juan ang doktor.` "Juan is the doctor." — the
+Phase 5n.B N-pivot rule docstring explicitly defers two-NP
+equational to corpus pressure, and the Wave 3 audit surfaced
+`Si Juan ito.` as a zero-parse. The Si-pivot variant is
+closed here.
+
+Shape:
+
+```text
+S → NP[CASE=NOM] NP[CASE=NOM]
+    (↓1 MARKER)     =c 'SI'
+    (↑ PRED)        = 'BE-NP <SUBJ>'
+    (↑ SUBJ)        = ↓2
+    (↑ PRED-NP)     = ↓1
+    (↑ PREDICATIVE) = true
+```
+
+The constraining equation `(↓1 MARKER) =c 'SI'` restricts the
+pivot to si-marked proper-noun NPs. The fully-general ang-pivot
+variant (`Ang lalaki ang doktor.`) was NOT in the audit zero-
+parse list and has known parse-ambiguity interactions with
+pseudo-cleft (`Ang nanay ang nagluto.`); leaving it deferred
+is consistent with the original Phase 5n.B intent. If corpus
+pressure surfaces it, the rule generalizes by dropping the
+MARKER constraint.
+
+### Rule-2 syntax note
+
+The initial draft of Rule 2 used a category-level feature
+constraint `NP[CASE=NOM, MARKER=SI]`. That form did not
+match — the parser's non-conflict feature matcher uses a
+limited set of "indexed" features for category dispatch, and
+`MARKER` is not in that set. Converting to an explicit `=c`
+constraining equation in the body resolved the match. Pattern
+to remember for future rule additions: **use `=c` constraint
+equations for restricting on features outside the indexed
+dispatch set**, not category brackets.
+
+### Carve-outs (intentionally not closed in 8.Y)
+
+- `Ito ay aklat ko.` — ay-inverted N-pivot with possessor-
+  modified N. The possessor rule binds at NP level
+  (`NP[CASE=NOM] → NP[CASE=NOM] NP[CASE=GEN]`), so `aklat ko`
+  is NP, not N. Widening 8.Y Rule 1's right daughter from
+  `N` to `NP[CASE=NOM]` would converge it with two-NP
+  equational; a clean closure needs an N-level possessor rule.
+  Not in the Wave 3 audit zero-parse list (was my own probe
+  extrapolation during 8.X); leaving deferred until corpus
+  pressure or a dedicated N-modifier-inventory refactor.
+- `Ang lalaki ang doktor.` — fully-general two-NP equational
+  with ang-pivot. The Phase 5n.B N-pivot rule docstring
+  defers this to corpus pressure; the Wave 3 audit did not
+  surface it. Closing it would require disambiguation logic
+  against pseudo-cleft.
+
+### Coverage impact
+
+Re-running the seed=42 Wave 3 parse sample (500 sentences per
+source):
+
+| Source | After 8.X | After 8.Y |
+| --- | ---: | ---: |
+| S&O 1972 | 40 / 500 (8.0%) | 40 / 500 (8.0%) |
+| R&G Conversational | 75 / 500 (15.0%) | 77 / 500 (15.4%) |
+
+Modest: +2 sentences (both in R&G Conversational; the
+audit sample contains few `Si X DEM` and `X ay N` shapes by
+chance). The cumulative naturalistic baseline (Waves 1+2+3,
+2220 sents) moves from 7.8% to 7.9%.
+
+The small numerical bump reflects how thinly distributed
+these particular constructions are in the corpus — they're
+real Tagalog patterns, but not high-frequency in pedagogical
+or descriptive prose. The motivation for closing them is
+correctness against the surfaced gaps, not parse-rate
+optimization.
