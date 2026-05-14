@@ -214,3 +214,24 @@
   morph_constraints:
     CTRL_CLASS: RAISING_BARE
   intrinsic: RAISING
+
+# Phase 7a.C: katatapos as recent-completive raising-bare matrix
+# for the analytic alternative to non-AV RECPFV (which doesn't
+# exist as a morphological paradigm — see Phase 5e Commit 23 +
+# Phase 7a.C in analysis-choices.md). Surface: `Katatapos
+# kainin ang isda.` "The fish had just been eaten." The matrix
+# `katatapos` raises the embedded V's SUBJ to its own SUBJ;
+# the embedded V's voice / pivot is free. Particle entry lives
+# at `data/tgl/particles.yaml` (surface: katatapos); this lex
+# entry attaches the JUST-FINISHED PRED template + raising
+# argument structure.
+- lemma: tapos
+  pred: "JUST-FINISHED <XCOMP> SUBJ"
+  a_structure: [COMPLEMENT]
+  gf_defaults:
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: RAISING_BARE
+    LEMMA: tapos
+    ASPECT: RECPFV
+  intrinsic: RAISING
