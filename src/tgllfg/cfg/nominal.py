@@ -1977,6 +1977,52 @@ def register_rules(rules: list[Rule]) -> None:
                 f"(↓2 CASE) =c '{case}'",
             ],
         ))
+
+    # Phase 7a.G (§18.1.1 item 10): NP-level projection of
+    # `kahit + wh-PRON` directly into case-marked NPs for
+    # non-NOM argument slots (GEN-OBJ, DAT-OBL/recipient).
+    #
+    # Background: the Phase 6.C C3d case-parameterized IndefPRON
+    # rules above only fire when the daughter wh-PRON's lex CASE
+    # matches the matrix output CASE. But `sino` / `ano` / `alin`
+    # are lex'd as CASE=NOM only (the analyzer indexes pronouns
+    # by surface in a dict-of-single, so multiple CASE variants
+    # of the same surface collide). The plan-of-record §3.8
+    # outlines two paths: (a) lex variants (blocked by the
+    # analyzer-indexing limitation) or (b) an any-case wh-indef
+    # projection rule. This implements (b).
+    #
+    # Two rules mirror the Phase 5i C3 in-situ wh-PRON shell
+    # rules (nominal.py:172-193) but replace the ADP daughter
+    # with a bare PART (gated to `kahit`):
+    #
+    #   NP[CASE=GEN, WH=true] → PART PRON[WH]
+    #   NP[CASE=DAT, WH=true] → PART PRON[WH]
+    #
+    # The bare PRON daughter need not have matching CASE (the
+    # matrix's CASE is set by the LHS LHS atom), so the NOM-only
+    # `sino` / `ano` / `alin` lex entries can fill these projections.
+    for case in ("GEN", "DAT"):
+        rules.append(Rule(
+            f"NP[CASE={case}, WH=true]",
+            ["PART", "PRON[WH]"],
+            [
+                "(↑ PRED) = 'WH-PRO'",
+                "(↑ INDEF) = 'YES'",
+                "(↑ WH) = ↓2 WH",
+                "(↑ LEMMA) = ↓2 LEMMA",
+                "(↑ WH_LEMMA) = ↓2 LEMMA",
+                "↓1 ∈ (↑ ADJUNCT)",
+                "(↓1 LEMMA) =c 'kahit'",
+                "(↓2 WH) =c true",
+                # Gate to NOM-source wh-PRONs only. The DAT-source
+                # `kanino` already has a CASE=DAT lex variant that
+                # the Phase 6.C C3d DAT-IndefPRON rule handles
+                # natively; this rule's purpose is the cross-case
+                # projection for NOM-only wh-PRONs (ano/sino/alin).
+                "(↓2 CASE) =c 'NOM'",
+            ],
+        ))
     rules.append(Rule(
         "ADV[INDEF=YES]",
         ["PART", "ADV"],
