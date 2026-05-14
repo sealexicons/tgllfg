@@ -163,8 +163,9 @@
   # Phase 4 §7.7: pa_in (pinabasa "made-read") and magpa
   # (nagpabasa "had-read", biclausal causative). Phase 5d
   # Commit 2: pa_an (pinabasahan "read-at"; locative-pivot
-  # causative DV).
-  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an]
+  # causative DV). Phase 7a.B Commit 2: magsi (magsibasa
+  # "read (pl.)", plural-actor AV).
+  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an, magsi]
 
 - citation: bati
   pos: VERB
@@ -552,7 +553,9 @@
   pos: VERB
   gloss: borrow (an object)
   transitivity: TR
-  affix_class: [um, mag, in_oblig, maka]
+  # Phase 7a.B Commit 2: magpa_an (magpahiraman "lend one another",
+  # reciprocal-distributive causative AV).
+  affix_class: [um, mag, in_oblig, maka, magpa_an]
 
 - citation: hubad
   pos: VERB
@@ -613,8 +616,9 @@
   # Phase 4 §7.7: pa_in (pininom "made-drink") and magpa
   # (nagpainom "had-drink", biclausal causative). Phase 5d
   # Commit 2: pa_an (pinainuman "drunk-at"; locative-pivot
-  # causative DV).
-  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an]
+  # causative DV). Phase 7a.B Commit 2: magsi (magsiinom
+  # "drink (pl.)", plural-actor AV).
+  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an, magsi]
 
 - citation: ipon
   pos: VERB
@@ -667,14 +671,18 @@
   # (pinakainan "fed-at"; locative-pivot causative DV).
   # Phase 5e Commit 12: mag_an (nagkainan "ate together",
   # reciprocal / social).
-  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an, mag_an]
+  # Phase 7a.B Commit 2: magsi (magsikain "eat (pl.)", plural-actor
+  # AV) + magpa_an (nagpakainan "feed one another",
+  # reciprocal-distributive causative AV).
+  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an, mag_an, magsi, magpa_an]
 
 - citation: kanta
   pos: VERB
   gloss: sing
   transitivity: INTR
-  # mag- / um- / i-.
-  affix_class: [um, mag, i_oblig, maka]
+  # mag- / um- / i-. Phase 7a.B Commit 2: magsi (magsikanta
+  # "sing (pl.)", S&O §5.15 canonical example).
+  affix_class: [um, mag, i_oblig, maka, magsi]
 
 # Phase 5e Commit 21: kape as denominal mag- verb. The mag-NOUN
 # pattern is productive for verbs of consumption / engagement
@@ -1080,8 +1088,9 @@
   # R&B 237: -um- / -in / i- / -an. Both -um- and mag- in AV.
   # Phase 4 §7.7: ipag (ipinagsulat "wrote-for", benefactive IV).
   # Phase 5c §7.7 follow-on: ika (ikinasulat "[reason for which]
-  # X wrote", reason applicative IV).
-  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, ipag, ika]
+  # X wrote", reason applicative IV). Phase 7a.B Commit 2:
+  # magsi (magsisulat "write (pl.)", plural-actor AV).
+  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, ipag, ika, magsi]
 
 - citation: sundo
   pos: VERB
@@ -1195,8 +1204,10 @@
   pos: VERB
   gloss: call
   transitivity: TR
-  # R&B 262: -um- / -in.
-  affix_class: [um, in_oblig, maka]
+  # R&B 262: -um- / -in. Phase 7a.B Commit 2: magpa_an
+  # (nagpatawagan "called one another", reciprocal-distributive
+  # causative AV — GT-confirmed productive).
+  affix_class: [um, in_oblig, maka, magpa_an]
 
 - citation: tawid
   pos: VERB
@@ -1339,7 +1350,9 @@
   gloss: sit
   transitivity: INTR
   # Vowel-initial: -um- and -in- prefix rather than infix.
-  affix_class: [um, ma, maka]
+  # Phase 7a.B Commit 2: magpa_an (magpaupuan "seat one another /
+  # share seating", reciprocal-distributive causative AV).
+  affix_class: [um, ma, maka, magpa_an]
 
 - citation: urong
   pos: VERB

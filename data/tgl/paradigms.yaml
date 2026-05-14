@@ -105,6 +105,59 @@
     - {op: prefix, value: "mag"}
   notes: maglinis, magbigay (mag- + base for hortative SOC; takes 1pl-INCL `tayo` SUBJ)
 
+# === AV — magsi- plural-actor (Phase 7a.B Commit 2 / §18.1.1 #2) ========
+#
+# S&O 1972 §5.15 documents `magsi-` as the optional PLURALIZED AV
+# formation, occurring only with a plural topic: `magsikanta sila`
+# "they sing (pl.)", `magsikain sila ng kanin` "they eat rice (pl.)".
+# Standard 3-aspect AV paradigm: PFV `nagsi-V`, IPFV `nagsisi-V`,
+# CTPL `magsisi-V`. The cv_redup applies to the `si` outer-prefix
+# (parallel to magpa's cv_redup of `pa`).
+#
+# Phase 7a.B scope: applies only to roots whose affix_class
+# includes `magsi` (= -um- verbs). The S&O §5.15 variants
+# `magsipag-` (for mag- bases) and `magsipang-` (for mang- bases)
+# are morphologically distinct paradigm cells; deferred as
+# follow-on work. The -nga- infix variant (e.g., `mangagsikanta`)
+# is also out of scope per S&O note that it doesn't change meaning.
+#
+# Cells emit DISTRIB=true. No CAUS/RECP/MOOD — magsi- is pure
+# pluralization, not reciprocal or causative.
+- voice: AV
+  aspect: PFV
+  mood: IND
+  transitivity: ''
+  affix_class: magsi
+  feats: {DISTRIB: true}
+  operations:
+    - {op: prefix, value: "si"}
+    - {op: prefix, value: "nag"}
+  notes: nagsikanta, nagsikain (-um- base → nagsi- realis PFV)
+
+- voice: AV
+  aspect: IPFV
+  mood: IND
+  transitivity: ''
+  affix_class: magsi
+  feats: {DISTRIB: true}
+  operations:
+    - {op: prefix, value: "si"}
+    - {op: cv_redup}
+    - {op: prefix, value: "nag"}
+  notes: nagsisikanta, nagsisikain (cv-redup of `si` outer-prefix)
+
+- voice: AV
+  aspect: CTPL
+  mood: IND
+  transitivity: ''
+  affix_class: magsi
+  feats: {DISTRIB: true}
+  operations:
+    - {op: prefix, value: "si"}
+    - {op: cv_redup}
+    - {op: prefix, value: "mag"}
+  notes: magsisikanta, magsisikain (irrealis CTPL — mag- prefix)
+
 # === AV — Actor Voice (mang- distributive class) =========================
 #
 # The mang- prefix exhibits nasal substitution: the prefix's final ng
@@ -807,6 +860,86 @@
     - {op: suffix, value: an}
     - {op: prefix, value: "mag"}
   notes: magkakainan, magbibigayan
+
+# --- magpa-...-an reciprocal-distributive causative (Phase 7a.B) -------
+#
+# Closes §18.1.1 item 2 (magpa-...-an half). The circumfix combines
+# `mag-` AV + `pa-` causative + `-an` reciprocal/distributive, yielding
+# canonical reciprocal-distributive readings: `nagpatawagan sila`
+# "they called one another", `nagpakainan ang mga bata` "the children
+# fed each other", `magpahiraman tayo ng aklat` "let's lend each other
+# books".
+#
+# Empirical scope (verified via GT 2026-05-14, see analysis-choices.md
+# Phase 7a.B Commit 1 §2): the reciprocal-distributive reading is
+# productive (`nagpatawagan` → "called each other"); the locative-
+# distributive subtype claimed by the user-source consultation is NOT
+# productive in modern Tagalog (4 negative GT tests; readings collapse
+# to plain locative-focus). Phase 7a.B implements reciprocal-
+# distributive only; locative-distributive deferred indefinitely.
+#
+# Cell shape mirrors `mag_an` reciprocal-AV (Phase 5e Commit 12;
+# MOOD=SOC + RECP=true) with the causative `pa-` layer added between
+# the `nag`/`mag` realis/irrealis prefix and the root. The cv_redup
+# duplicates the `pa` outer-prefix in IPFV/CTPL — same pattern as the
+# existing `magpa` IPFV/CTPL cells (producing `nagpapakain` /
+# `magpapakain`).
+#
+# Cells emit {MOOD: SOC, RECP: true, DISTRIB: true}.
+#
+# CAUS=INDIRECT was considered but DROPPED — the existing AV-SOC
+# clause frame (used by mag_an reciprocal) constrains CAUS=NONE on
+# the verb (CAUS=INDIRECT verbs go through the biclausal magpa
+# XCOMP frame instead). The morphological `pa-` is preserved in the
+# surface form but the f-structure treats magpa_an semantically like
+# mag_an plus DISTRIB=true. GT-confirmed productive readings
+# ("called each other", "fed each other") suggest the causative
+# layer is morphologically present but semantically bleached in
+# modern usage anyway.
+#
+# Reference-grammar caveat: S&O 1972 and R&B 1986 do not document
+# this circumfix as a productive AV paradigm; S&O's closest forms
+# (e.g., `magpagandahan`, `magpatayan`) are analyzed as `mag-` +
+# derived-nominal-in-`-an`. Phase 7a.B grounds the implementation in
+# user-source consultation + GT-productivity test, not direct
+# reference-grammar attestation.
+- voice: AV
+  aspect: PFV
+  mood: SOC
+  transitivity: ''
+  affix_class: magpa_an
+  feats: {MOOD: SOC, RECP: true, DISTRIB: true}
+  operations:
+    - {op: suffix, value: an}
+    - {op: prefix, value: "pa"}
+    - {op: prefix, value: "nag"}
+  notes: nagpatawagan, nagpakainan (realis PFV — reciprocal-distributive)
+
+- voice: AV
+  aspect: IPFV
+  mood: SOC
+  transitivity: ''
+  affix_class: magpa_an
+  feats: {MOOD: SOC, RECP: true, DISTRIB: true}
+  operations:
+    - {op: suffix, value: an}
+    - {op: prefix, value: "pa"}
+    - {op: cv_redup}
+    - {op: prefix, value: "nag"}
+  notes: nagpapatawagan, nagpapakainan (cv-redup of `pa` outer-prefix)
+
+- voice: AV
+  aspect: CTPL
+  mood: SOC
+  transitivity: ''
+  affix_class: magpa_an
+  feats: {MOOD: SOC, RECP: true, DISTRIB: true}
+  operations:
+    - {op: suffix, value: an}
+    - {op: prefix, value: "pa"}
+    - {op: cv_redup}
+    - {op: prefix, value: "mag"}
+  notes: magpapatawagan, magpapakainan (irrealis CTPL)
 
 # === Phase 5n.C.3: non-verbal paradigm cells (base_pos != VERB) =========
 #
