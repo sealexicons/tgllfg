@@ -153,6 +153,270 @@ def extract_transcriptions() -> Iterator[Exemplar]:
             )
 
 
+# === Tagalog-sentence heuristic ==========================================
+
+
+# Common Tagalog function words / particles that almost any Tagalog
+# sentence will contain. If a line contains none of these, it's
+# probably English (or a vocabulary entry, or a noisy OCR line).
+_TGL_MARKERS = {
+    "ang", "ng", "sa", "mga", "si", "ni", "kay", "nang", "at", "o",
+    "pa", "na", "ba", "nga", "po", "ho", "daw", "raw", "pala",
+    "naman", "lang", "lamang", "din", "rin", "may", "mayroon",
+    "wala", "ako", "ikaw", "ka", "siya", "kami", "tayo", "kayo",
+    "sila", "ko", "mo", "niya", "namin", "natin", "ninyo", "nila",
+    "akin", "iyo", "kanya", "amin", "atin", "inyo", "kanila",
+    "ito", "iyan", "iyon", "ng-",
+}
+
+# English function words that suggest the line is English prose.
+_EN_MARKERS = {
+    "the", "of", "and", "or", "to", "in", "is", "are", "was",
+    "were", "this", "that", "these", "those", "with", "from",
+    "for", "but", "not", "be", "have", "has", "had",
+}
+
+
+def _looks_like_tagalog(text: str) -> bool:
+    """Heuristic: tokens overlap with Tagalog function-word set and
+    not (only) English. Requires at least 2 distinct Tagalog markers
+    to reject ambiguous lines (``may`` is both Tagalog and English)."""
+    toks = re.findall(r"[a-zA-Z']+", text.lower())
+    if not toks or len(toks) < 3:
+        return False
+    # Reject OCR-character-spaced lines — many single-letter "tokens"
+    # signal letter-by-letter spacing (common in Ramos 1971 OCR).
+    single_char = sum(1 for t in toks if len(t) == 1)
+    if single_char > len(toks) * 0.4:
+        return False
+    tgl = {t for t in toks if t in _TGL_MARKERS}
+    en = {t for t in toks if t in _EN_MARKERS}
+    if len(tgl) < 2:
+        return False
+    if len(en) > len(tgl):
+        return False
+    return True
+
+
+def _is_sentence_shape(text: str) -> bool:
+    """First char uppercase or quoted; ends with terminal punctuation;
+    has at least 3 tokens."""
+    t = text.strip()
+    if len(t) < 4:
+        return False
+    if not (t[0].isupper() or t[0] in "\"'("):
+        return False
+    if not t.rstrip(")\"'").endswith((".", "?", "!")):
+        return False
+    return len(t.split()) >= 3
+
+
+# === Source 3: R&C 1990 (sentence harvest) ================================
+
+
+_RC_CHAPTER_RE = re.compile(r"^Chapter\s+(\d+)\.\s+(.+?)\s*$")
+
+
+def extract_rc1990() -> Iterator[Exemplar]:
+    """Walk Modern Tagalog (R&C 1990) for Tagalog example sentences.
+
+    Skips: front matter (before "Chapter 1"); vocabulary tables; word-
+    pair drill blocks (root + affix -> form).
+    Picks up: sentence-shaped lines in chapter bodies, exercise
+    blocks, and grammar-note example panels.
+    """
+    path = REFERENCES_DIR / "901132785-Modern-Tagalog.txt"
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+
+    chapter = None
+    section = None
+    sent_idx = 0
+    in_body = False
+    seen_chapters: set[str] = set()
+
+    for raw in lines:
+        line = raw.rstrip()
+        m = _RC_CHAPTER_RE.match(line.strip())
+        if m:
+            # Skip TOC entries: chapter heading in TOC ends with a page
+            # number (digit run at end), while body-chapter headings
+            # don't. Also skip chapter we've already seen in body.
+            label = f"Ch{m.group(1)}-{m.group(2)[:40]}"
+            if re.search(r"\d+\s*$", m.group(2)):
+                continue
+            if label in seen_chapters:
+                continue
+            seen_chapters.add(label)
+            chapter = label
+            section = None
+            in_body = True
+            continue
+        if not in_body:
+            continue
+        stripped = line.strip()
+        if not stripped:
+            continue
+        # Skip page footer lines like "4        Tagalog Sounds" (digit
+        # at line start followed by spaces).
+        if re.match(r"^\s*\d+\s{2,}", line):
+            continue
+        if stripped == stripped.title() and len(stripped) < 60 and ":" not in stripped:
+            if len(stripped.split()) <= 8 and not stripped.endswith((".", "?", "!")):
+                section = stripped
+                continue
+
+        m = re.match(r"^\s*\d+\.\s+(.+)$", line)
+        if m:
+            sent = m.group(1).strip()
+        else:
+            sent = stripped
+
+        if not _is_sentence_shape(sent):
+            continue
+        if not _looks_like_tagalog(sent):
+            continue
+
+        sent_idx += 1
+        loc = f"{chapter}"
+        if section:
+            loc += f"/{section}"
+        loc += f"/sent-{sent_idx}"
+        yield Exemplar(
+            source="rc1990",
+            locator=loc,
+            text_raw=sent,
+            text_normalized=normalize_orthography(sent),
+            has_gloss=False,
+            gloss_en=None,
+            marked_ungrammatical=sent.startswith(("*", "?")),
+            ocr_quality="clean-ocr",
+        )
+
+
+# === Source 4: R&G 1981 Intermediate (sentence harvest) ===================
+
+
+_RG_PAGE_RE = re.compile(r"^---\s*Page\s+(\d+)\s*---\s*$")
+_RG_SPEAKER_RE = re.compile(r"^([A-Z])(?:\d+)?:\s+(.+)$")
+
+
+def extract_rg_intermediate() -> Iterator[Exemplar]:
+    """Walk R&G 1981 Intermediate for Tagalog sentences.
+
+    Sources of sentences in this book:
+    - Dialog lines: ``A: ...`` / ``B: ...`` (speaker-tagged).
+    - Exercise items: ``1. ...`` / ``2. ...`` (numbered).
+    - Pedagogical-unit titles in the TOC (gold; clean sentences).
+
+    Skips: English explanatory prose (filtered by Tagalog-marker
+    heuristic), Vocabulary lists (mostly word→gloss pairs).
+    """
+    path = REFERENCES_DIR / "Intermediate-Tagalog-developing-cultural-awareness-through-language_compress.txt"
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+
+    page = 0
+    sent_idx = 0
+
+    for raw in lines:
+        line = raw.rstrip()
+        m = _RG_PAGE_RE.match(line)
+        if m:
+            page = int(m.group(1))
+            continue
+
+        stripped = line.strip()
+        if not stripped:
+            continue
+
+        m = _RG_SPEAKER_RE.match(stripped)
+        if m:
+            sent = m.group(2).strip()
+            kind = "dialog"
+        else:
+            mn = re.match(r"^\s*\d+\.\s+(.+)$", line)
+            if mn:
+                sent = mn.group(1).strip()
+                kind = "numbered"
+            else:
+                sent = stripped
+                kind = "prose"
+
+        if not _is_sentence_shape(sent):
+            continue
+        if not _looks_like_tagalog(sent):
+            continue
+
+        sent_idx += 1
+        yield Exemplar(
+            source="rg-intermediate",
+            locator=f"page-{page}/{kind}/sent-{sent_idx}",
+            text_raw=sent,
+            text_normalized=normalize_orthography(sent),
+            has_gloss=False,
+            gloss_en=None,
+            marked_ungrammatical=sent.startswith(("*", "?")),
+            ocr_quality="clean-ocr",
+        )
+
+
+# === Source 5: Ramos 1971 Dictionary (verb-example sentences) =============
+
+
+_RAMOS_ENTRY_RE = re.compile(r"^([a-zàáâèéêìíîòóôùúûñ'-]+(?:\s+\([A-Za-z]+\))?)\s+(n\.|v\.|adj\.|adv\.|conj\.|interj\.|prep\.|pron\.|part\.)\s*(.+)?$")
+
+
+def extract_ramos1971() -> Iterator[Exemplar]:
+    """Walk Ramos 1971 Dictionary for Tagalog example sentences.
+
+    The dictionary lists ~4000 headwords; each verb entry has an
+    inline Tagalog example. Extract those (skip word-pair gloss
+    fragments; skip headword + POS metadata lines).
+    """
+    path = REFERENCES_DIR / "746927054-OceanofPDF-com-Tagalog-Dictionary-Teresita-v-Ramos.txt"
+    text = path.read_text(encoding="utf-8")
+    lines = text.splitlines()
+
+    current_headword: str | None = None
+    sent_idx = 0
+    in_body = False
+
+    for raw in lines:
+        line = raw.rstrip()
+        stripped = line.strip()
+
+        if not in_body:
+            if re.match(r"^[a-z]+\s+[a-z]+'?", stripped) and ("n." in stripped or "v." in stripped or "adj." in stripped):
+                in_body = True
+            else:
+                continue
+
+        m = _RAMOS_ENTRY_RE.match(stripped)
+        if m:
+            current_headword = m.group(1).split()[0]
+            continue
+
+        if not _is_sentence_shape(stripped):
+            continue
+        if not _looks_like_tagalog(stripped):
+            continue
+        if not current_headword:
+            continue
+
+        sent_idx += 1
+        yield Exemplar(
+            source="ramos1971",
+            locator=f"entry-{current_headword}/sent-{sent_idx}",
+            text_raw=stripped,
+            text_normalized=normalize_orthography(stripped),
+            has_gloss=False,
+            gloss_en=None,
+            marked_ungrammatical=stripped.startswith(("*", "?")),
+            ocr_quality="clean-ocr",
+        )
+
+
 # === Source 2: R&B 1986 (verb-base inventory) =============================
 
 
@@ -272,44 +536,78 @@ def extract_rb86_verb_inventory() -> Iterator[VerbEntry]:
 # === Stages: extract, parse, report ======================================
 
 
+def _write_jsonl(path: Path, items: Iterator) -> int:
+    n = 0
+    with path.open("w", encoding="utf-8") as fh:
+        for item in items:
+            fh.write(json.dumps(asdict(item), ensure_ascii=False) + "\n")
+            n += 1
+    return n
+
+
 def cmd_extract() -> None:
     EXEMPLARS_DIR.mkdir(parents=True, exist_ok=True)
 
-    exemplars_path = EXEMPLARS_DIR / "wave1-exemplars.jsonl"
-    n_exemplars = 0
-    with exemplars_path.open("w", encoding="utf-8") as fh:
-        for ex in extract_transcriptions():
-            fh.write(json.dumps(asdict(ex), ensure_ascii=False) + "\n")
-            n_exemplars += 1
-    print(f"  → {exemplars_path.relative_to(REPO_ROOT)} ({n_exemplars} exemplars)")
+    pairs: list[tuple[str, Iterator]] = [
+        ("wave1-exemplars.jsonl", extract_transcriptions()),
+        ("wave1-rb86-verbs.jsonl", extract_rb86_verb_inventory()),
+        ("wave2-rc1990.jsonl", extract_rc1990()),
+        ("wave2-rg-intermediate.jsonl", extract_rg_intermediate()),
+        ("wave2-ramos1971.jsonl", extract_ramos1971()),
+    ]
+    for fname, it in pairs:
+        path = EXEMPLARS_DIR / fname
+        n = _write_jsonl(path, it)
+        print(f"  → {path.relative_to(REPO_ROOT)} ({n})")
 
-    verbs_path = EXEMPLARS_DIR / "wave1-rb86-verbs.jsonl"
-    n_verbs = 0
-    with verbs_path.open("w", encoding="utf-8") as fh:
-        for ve in extract_rb86_verb_inventory():
-            fh.write(json.dumps(asdict(ve), ensure_ascii=False) + "\n")
-            n_verbs += 1
-    print(f"  → {verbs_path.relative_to(REPO_ROOT)} ({n_verbs} verb entries)")
+
+_PARSE_SOURCES = [
+    ("wave1-exemplars.jsonl", "wave1-parse-results.jsonl", None),
+    ("wave2-rc1990.jsonl", "wave2-rc1990-parse-results.jsonl", 500),
+    ("wave2-rg-intermediate.jsonl", "wave2-rg-intermediate-parse-results.jsonl", 500),
+    ("wave2-ramos1971.jsonl", "wave2-ramos1971-parse-results.jsonl", 500),
+]
 
 
 def cmd_parse() -> None:
     from tgllfg.core.pipeline import parse_text_with_fragments
 
-    in_path = EXEMPLARS_DIR / "wave1-exemplars.jsonl"
-    out_path = EXEMPLARS_DIR / "wave1-parse-results.jsonl"
+    import random
+    rng = random.Random(42)
 
-    if not in_path.exists():
-        print(f"ERROR: {in_path} not found; run 'extract' first", file=sys.stderr)
-        sys.exit(1)
+    for in_name, out_name, sample_cap in _PARSE_SOURCES:
+        in_path = EXEMPLARS_DIR / in_name
+        out_path = EXEMPLARS_DIR / out_name
+        if not in_path.exists():
+            print(f"  (skip {in_name}; not found)")
+            continue
+        print(f"\n[parse] {in_name}")
+        _parse_one(in_path, out_path, parse_text_with_fragments, sample_cap, rng)
+
+
+def _parse_one(
+    in_path: Path,
+    out_path: Path,
+    parse_fn,
+    sample_cap: int | None,
+    rng,
+) -> None:
+    """Inner parser-driver loop for a single JSONL input file."""
 
     n = 0
     bucket_counts: Counter[str] = Counter()
-    with in_path.open(encoding="utf-8") as in_fh, out_path.open("w", encoding="utf-8") as out_fh:
-        for line in in_fh:
+    with in_path.open(encoding="utf-8") as in_fh:
+        records = [line for line in in_fh]
+    if sample_cap is not None and len(records) > sample_cap:
+        records = rng.sample(records, sample_cap)
+        print(f"  sampling {sample_cap} of {len(records)} records (seed=42)")
+
+    with out_path.open("w", encoding="utf-8") as out_fh:
+        for line in records:
             ex = json.loads(line)
             text = ex["text_normalized"]
             try:
-                result = parse_text_with_fragments(text, n_best=3)
+                result = parse_fn(text, n_best=3)
                 n_parses = len(result.parses)
                 n_fragments = len(result.fragments)
                 if n_parses >= 2:
@@ -351,12 +649,12 @@ def cmd_parse() -> None:
             out_fh.write(json.dumps(asdict(rec), ensure_ascii=False) + "\n")
             bucket_counts[bucket] += 1
             n += 1
-            if n % 25 == 0:
+            if n % 50 == 0:
                 print(f"  …parsed {n}", file=sys.stderr)
 
     print(f"  → {out_path.relative_to(REPO_ROOT)} ({n} records)")
     for b, c in bucket_counts.most_common():
-        print(f"      {b:30s} {c:4d}  ({c/n:5.1%})")
+        print(f"      {b:30s} {c:4d}  ({c / n:5.1%})")
 
 
 def cmd_report() -> None:
