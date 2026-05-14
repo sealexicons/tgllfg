@@ -202,7 +202,7 @@ the gap.
 
 Per-verb citations live as YAML comments in `data/tgl/verbs.yaml`
 referencing R&B 1986 page numbers. The Ramos 1971 dictionary OCR
-and the R&B 1986 PDF live under `data/tgl/dictionaries/`
+and the R&B 1986 PDF live under `data/tgl/references/`
 (gitignored) for grep-verification during seed authoring; the
 binaries are not redistributed. Schachter & Otanes 1972 and Kroeger
 1993 are cited by section number in commit messages.
@@ -5539,7 +5539,7 @@ surface, with IV-REASON being a "short" form of the longer
 
 ### Evidence from the Handbook of Tagalog Verbs
 
-The Handbook (Ramos & Schachter; ``data/tgl/dictionaries/``)
+The Handbook (Ramos & Schachter; ``data/tgl/references/``)
 lists Reason Focus (RF) Cont with two surface variants
 separated by ``/`` for vowel-initial roots:
 
@@ -11908,7 +11908,7 @@ wrap that puts an ``S_XCOMP`` body alongside the head NP.
 
 The plan-of-record (``.claude/plans/tgllfg-phase-6.md`` §5.4)
 specifies that the binding-equation form should use FU per
-Kaplan & Zaenen 1989 §3 (``docs/references/KZ89.pdf``), so the
+Kaplan & Zaenen 1989 §3 (``data/tgl/references/Kaplan-Zaenen-1989-LSS-CStruct-FU.pdf``), so the
 extension is K&Z-faithful from the start rather than relying on
 the per-depth threading as a load-bearing implementation detail.
 
@@ -12180,7 +12180,7 @@ ADJ-clause SUBJ).
 ### Cross-references
 
 - Plan-of-record §5.4 (``.claude/plans/tgllfg-phase-6.md``).
-- K&Z 1989 §3 eq. 27-39 (``docs/references/KZ89.pdf``); the
+- K&Z 1989 §3 eq. 27-39 (``data/tgl/references/Kaplan-Zaenen-1989-LSS-CStruct-FU.pdf``); the
   topicalization template at eq. 39 and the off-path /
   body-bottom discussion at eq. 38.
 - Kaplan & Maxwell 1988 — finite-state algorithm underlying
@@ -12502,7 +12502,7 @@ will cover:
 ### Cross-references
 
 - Plan-of-record §5.5 (``.claude/plans/tgllfg-phase-6.md``).
-- K&Z 1989 §3 (``docs/references/KZ89.pdf``); free-relative
+- K&Z 1989 §3 (``data/tgl/references/Kaplan-Zaenen-1989-LSS-CStruct-FU.pdf``); free-relative
   analysis discussion.
 - Phase 5e Commit 5 above — headless-RC rule that 6.E parallels
   for the free-relative variant.
@@ -12815,7 +12815,7 @@ ANTECEDENT" to "ANTECEDENT == OBJ".
 ### Cross-references
 
 - Plan-of-record §5.6 (``.claude/plans/tgllfg-phase-6.md``).
-- K&Z 1989 §3 (``docs/references/KZ89.pdf``); binding-via-FU
+- K&Z 1989 §3 (``data/tgl/references/Kaplan-Zaenen-1989-LSS-CStruct-FU.pdf``); binding-via-FU
   discussion is implicit in their TOPIC = (TOPIC GF) form.
 - Phase 5m Commit 1 (``data/tgl/nouns.yaml`` ``sarili`` lex
   entry; ``SEM_CLASS=REFLEXIVE``).

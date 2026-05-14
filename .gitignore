@@ -47,12 +47,9 @@ Thumbs.db
 *.bak
 *.log
 
-# Reference dictionaries / corpora staged for Phase 3 ingestion;
+# Reference works staged locally for grep / corpus mining;
 # excluded from the repo for binary-size and licensing reasons.
-data/tgl/dictionaries/
-
-# Other reference documents
-docs/references/
+data/tgl/references/
 
 # Per-project plan files (live alongside the repo for convenience but
 # remain personal working notes, not project artifacts).

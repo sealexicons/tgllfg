@@ -467,7 +467,7 @@ these entries.
   *Formal Issues in Lexical-Functional Grammar*, CSLI Lecture
   Notes. The foundational FU paper; §3 specifies the regex-path
   designators, decidability proofs, and minimality clause that
-  Phase 6.B implements. PDF in `docs/references/KZ89.pdf`
+  Phase 6.B implements. PDF in `data/tgl/references/Kaplan-Zaenen-1989-LSS-CStruct-FU.pdf`
   (gitignored).
 - **Knight 1989.** Knight, Kevin. 1989. "Unification: A Multidisciplinary
   Survey." *ACM Computing Surveys* 21(1): 93–124.
@@ -486,11 +486,11 @@ these entries.
   added once the literature review completes.
 - **Ramos 1971.** Ramos, Teresita V. 1971. *Tagalog Dictionary*. University
   of Hawaii Press. (User holds a purchased copy; an electronic copy is
-  staged under `data/tgl/dictionaries/`, gitignored.)
+  staged under `data/tgl/references/`, gitignored.)
 - **Ramos & Bautista 1986.** Ramos, Teresita V. and Maria Lourdes
   Bautista. 1986. *Handbook of Tagalog Verbs: Inflections, Modes, and
   Aspects*. University of Hawaii Press. (User holds a purchased
-  electronic copy under `data/tgl/dictionaries/`, gitignored. Cited
+  electronic copy under `data/tgl/references/`, gitignored. Cited
   inline in `data/tgl/verbs.yaml` as "R&B" with page numbers.)
 - **Robinson 1965.** Robinson, J. A. 1965. "A Machine-Oriented Logic
   Based on the Resolution Principle." *Journal of the ACM* 12(1): 23–41.

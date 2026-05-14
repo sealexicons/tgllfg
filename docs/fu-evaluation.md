@@ -9,7 +9,7 @@ specified here.
 
 Cross-references:
 
-- `docs/references/KZ89.pdf` — Kaplan & Zaenen 1989, "Long-Distance
+- `data/tgl/references/Kaplan-Zaenen-1989-LSS-CStruct-FU.pdf` — Kaplan & Zaenen 1989, "Long-Distance
   Dependencies, Constituent Structure, and Functional Uncertainty",
   in *Formal Issues in Lexical-Functional Grammar* (ed. Dalrymple
   et al.), ch. 3.
@@ -547,7 +547,7 @@ Property tests land in `tests/tgllfg/test_fu_evaluation.py`
   Constituent Structure, and Functional Uncertainty." In M.
   Baltin & A. Kroch (eds.), *Alternative Conceptions of Phrase
   Structure*. (Reprinted in Dalrymple et al. 1995, *Formal Issues
-  in LFG*, CSLI Lecture Notes.) `docs/references/KZ89.pdf`.
+  in LFG*, CSLI Lecture Notes.) `data/tgl/references/Kaplan-Zaenen-1989-LSS-CStruct-FU.pdf`.
 - **Kaplan & Maxwell 1988.** "An Algorithm for Functional
   Uncertainty." Proceedings of COLING-88.
 - **Dalrymple 2001.** *Lexical Functional Grammar*. CSLI
@@ -557,7 +557,7 @@ Property tests land in `tests/tgllfg/test_fu_evaluation.py`
 - **Ramos 1971.** *Tagalog Structures*. University of Hawaii Press.
 - **Kroeger 1993.** *Phrase Structure and Grammatical Relations
   in Tagalog*. CSLI.
-- **R&B 1986** — `data/tgl/dictionaries/` (per
+- **R&B 1986** — `data/tgl/references/` (per
   `reference_tagalog_pdf_resources` memory).
 
 ---
