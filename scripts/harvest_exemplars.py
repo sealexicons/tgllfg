@@ -212,6 +212,59 @@ def _is_sentence_shape(text: str) -> bool:
     return len(t.split()) >= 3
 
 
+# Phase 8.P cleanups for Wave 2.5 extractor noise.
+#
+# English-prefix labels seen in Ramos 1971 paradigm-example fields:
+# ``Actor Focus:`` / ``Goal Focus:`` / etc.
+_ENGLISH_PREFIX_RE = re.compile(
+    r"^(?:Actor|Goal|Locative|Benefactive|Instrumental|Causative|Reciprocal|Distributive|Reason|Object|Directional|Aptative|Indicative|Intensive)\s+(?:Focus|Voice)?\s*:\s*",
+    re.IGNORECASE,
+)
+
+# Parenthesized English-only prompts seen in R&C 1990 / R&G Intermediate
+# exercises: ``(who) ang nagdala ng saging?`` (English-prompt slot).
+# Detect a paren span containing 1-3 lowercase English words.
+_ENGLISH_PAREN_RE = re.compile(r"\(\s*[a-z][a-z\s]{0,30}\s*\)")
+
+# Quoted English-only spans: ``'men's wear'`` / ``'dialog'`` (single-
+# quoted lowercase / mixed-case spans with at least one space inside or
+# the whole span looking like one English word).
+_QUOTED_ENGLISH_RE = re.compile(r"'[a-zA-Z][a-zA-Z\s']{1,30}'")
+
+
+def _clean_sentence_text(text: str) -> str | None:
+    """Apply 8.P cleanups: strip English-prefix labels; reject lines
+    with parenthesized English prompts; reject lines with quoted
+    English-only spans. Return cleaned text, or ``None`` if the line
+    should be dropped entirely."""
+    text = text.strip()
+    # Cleanup 1: strip English-prefix labels.
+    text = _ENGLISH_PREFIX_RE.sub("", text)
+    # Cleanup 2: reject parenthesized English prompts (these are
+    # exercise slots, not natural Tagalog).
+    if _ENGLISH_PAREN_RE.search(text):
+        return None
+    # Cleanup 4: reject quoted English-only spans (foreign-word
+    # citations the parser can't reasonably handle).
+    if _QUOTED_ENGLISH_RE.search(text):
+        return None
+    text = text.strip()
+    if not text:
+        return None
+    return text
+
+
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z\"'(])")
+
+
+def _split_sentences(text: str) -> list[str]:
+    """Cleanup 3: split multi-sentence captures on terminal punctuation
+    followed by uppercase-or-quote. Returns a list of one-sentence
+    strings."""
+    parts = _SENTENCE_SPLIT_RE.split(text)
+    return [p.strip() for p in parts if p.strip()]
+
+
 # === Source 3: R&C 1990 (sentence harvest) ================================
 
 
@@ -269,30 +322,34 @@ def extract_rc1990() -> Iterator[Exemplar]:
 
         m = re.match(r"^\s*\d+\.\s+(.+)$", line)
         if m:
-            sent = m.group(1).strip()
+            raw = m.group(1).strip()
         else:
-            sent = stripped
+            raw = stripped
 
-        if not _is_sentence_shape(sent):
-            continue
-        if not _looks_like_tagalog(sent):
-            continue
+        for sent in _split_sentences(raw):
+            cleaned = _clean_sentence_text(sent)
+            if cleaned is None:
+                continue
+            if not _is_sentence_shape(cleaned):
+                continue
+            if not _looks_like_tagalog(cleaned):
+                continue
 
-        sent_idx += 1
-        loc = f"{chapter}"
-        if section:
-            loc += f"/{section}"
-        loc += f"/sent-{sent_idx}"
-        yield Exemplar(
-            source="rc1990",
-            locator=loc,
-            text_raw=sent,
-            text_normalized=normalize_orthography(sent),
-            has_gloss=False,
-            gloss_en=None,
-            marked_ungrammatical=sent.startswith(("*", "?")),
-            ocr_quality="clean-ocr",
-        )
+            sent_idx += 1
+            loc = f"{chapter}"
+            if section:
+                loc += f"/{section}"
+            loc += f"/sent-{sent_idx}"
+            yield Exemplar(
+                source="rc1990",
+                locator=loc,
+                text_raw=cleaned,
+                text_normalized=normalize_orthography(cleaned),
+                has_gloss=False,
+                gloss_en=None,
+                marked_ungrammatical=cleaned.startswith(("*", "?")),
+                ocr_quality="clean-ocr",
+            )
 
 
 # === Source 4: R&G 1981 Intermediate (sentence harvest) ===================
@@ -333,33 +390,37 @@ def extract_rg_intermediate() -> Iterator[Exemplar]:
 
         m = _RG_SPEAKER_RE.match(stripped)
         if m:
-            sent = m.group(2).strip()
+            raw = m.group(2).strip()
             kind = "dialog"
         else:
             mn = re.match(r"^\s*\d+\.\s+(.+)$", line)
             if mn:
-                sent = mn.group(1).strip()
+                raw = mn.group(1).strip()
                 kind = "numbered"
             else:
-                sent = stripped
+                raw = stripped
                 kind = "prose"
 
-        if not _is_sentence_shape(sent):
-            continue
-        if not _looks_like_tagalog(sent):
-            continue
+        for sent in _split_sentences(raw):
+            cleaned = _clean_sentence_text(sent)
+            if cleaned is None:
+                continue
+            if not _is_sentence_shape(cleaned):
+                continue
+            if not _looks_like_tagalog(cleaned):
+                continue
 
-        sent_idx += 1
-        yield Exemplar(
-            source="rg-intermediate",
-            locator=f"page-{page}/{kind}/sent-{sent_idx}",
-            text_raw=sent,
-            text_normalized=normalize_orthography(sent),
-            has_gloss=False,
-            gloss_en=None,
-            marked_ungrammatical=sent.startswith(("*", "?")),
-            ocr_quality="clean-ocr",
-        )
+            sent_idx += 1
+            yield Exemplar(
+                source="rg-intermediate",
+                locator=f"page-{page}/{kind}/sent-{sent_idx}",
+                text_raw=cleaned,
+                text_normalized=normalize_orthography(cleaned),
+                has_gloss=False,
+                gloss_en=None,
+                marked_ungrammatical=cleaned.startswith(("*", "?")),
+                ocr_quality="clean-ocr",
+            )
 
 
 # === Source 5: Ramos 1971 Dictionary (verb-example sentences) =============
@@ -398,24 +459,29 @@ def extract_ramos1971() -> Iterator[Exemplar]:
             current_headword = m.group(1).split()[0]
             continue
 
-        if not _is_sentence_shape(stripped):
-            continue
-        if not _looks_like_tagalog(stripped):
-            continue
         if not current_headword:
             continue
 
-        sent_idx += 1
-        yield Exemplar(
-            source="ramos1971",
-            locator=f"entry-{current_headword}/sent-{sent_idx}",
-            text_raw=stripped,
-            text_normalized=normalize_orthography(stripped),
-            has_gloss=False,
-            gloss_en=None,
-            marked_ungrammatical=stripped.startswith(("*", "?")),
-            ocr_quality="clean-ocr",
-        )
+        for sent in _split_sentences(stripped):
+            cleaned = _clean_sentence_text(sent)
+            if cleaned is None:
+                continue
+            if not _is_sentence_shape(cleaned):
+                continue
+            if not _looks_like_tagalog(cleaned):
+                continue
+
+            sent_idx += 1
+            yield Exemplar(
+                source="ramos1971",
+                locator=f"entry-{current_headword}/sent-{sent_idx}",
+                text_raw=cleaned,
+                text_normalized=normalize_orthography(cleaned),
+                has_gloss=False,
+                gloss_en=None,
+                marked_ungrammatical=cleaned.startswith(("*", "?")),
+                ocr_quality="clean-ocr",
+            )
 
 
 # === Source 2: R&B 1986 (verb-base inventory) =============================
