@@ -165,6 +165,49 @@ def _canonicalize_headword(h: str) -> str:
     h = re.sub(r"[()]", "", h)
     h = h.rstrip("'")
     return h.lower()
+
+
+# OCR-corruption fixups for R&B 1986 glosses. The patterns are
+# OCR-engine artifacts on the source's italicized gloss text:
+#
+#   ``»`` and ``*``  → comma (column-rendering of italic comma)
+#   ``r `` / ``f ``  → ``, `` (italic-comma-after-letter context)
+#   ``ì`` / ``ó``    → ``l`` (italic-l body with serif noise)
+#
+# The trailing-letter patterns are anchored to specific observed
+# substitutions; applying them blindly would corrupt legitimate
+# English words ending in ``r`` (e.g., ``changer`` IS a real word
+# but in this corpus only appears as the OCR'd ``change,``).
+_GLOSS_LETTER_FIXUPS = {
+    "dor make": "do, make",
+    "sendr bring": "send, bring",
+    "changer replace": "change, replace",
+    "selfr insist": "self, insist",
+    "lifer live": "life, live",
+    "expectf rely": "expect, rely",
+    "pulì": "pull",
+    "cióse": "close",
+}
+
+
+def _clean_gloss(g: str) -> str:
+    """Apply OCR-corruption fixups + spacing normalization to a
+    R&B 1986 gloss."""
+    g = g.replace("»", ",").replace("*", ",")
+    for bad, good in _GLOSS_LETTER_FIXUPS.items():
+        g = g.replace(bad, good)
+    g = re.sub(r"\s*/\s*", " / ", g)
+    g = re.sub(r",(\S)", r", \1", g)
+    g = re.sub(r"\s+", " ", g).strip()
+    return g
+
+
+def _clean_affix_class(a: str) -> str:
+    """Spacing normalization around ``/`` separators in affix-class
+    signatures (e.g. ``-um-/mag-`` → ``-um- / mag-``)."""
+    a = re.sub(r"\s*/\s*", " / ", a)
+    a = re.sub(r"\s+", " ", a).strip()
+    return a
 _SLOT_TOKENS = {"ACT", "OBJ", "DIR", "BEN", "INS", "LOC", "REA", "RF", "BF",
                 "DF", "OF", "AF", "IF", "LF", "ACTU"}
 
@@ -220,8 +263,8 @@ def extract_rb86_verb_inventory() -> Iterator[VerbEntry]:
             yield VerbEntry(
                 source="rb86",
                 base=_canonicalize_headword(pending_headword),
-                affix_class_raw=affix_sig,
-                gloss=gloss,
+                affix_class_raw=_clean_affix_class(affix_sig),
+                gloss=_clean_gloss(gloss),
                 locator=f"page-{page_idx}/{pending_headword}",
             )
 
