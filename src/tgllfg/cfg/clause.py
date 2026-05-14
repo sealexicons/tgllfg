@@ -826,6 +826,115 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 8.X Commit 1: DEM-pivot clause ------------------
+    #
+    # ``Ito ang aklat.``       "This is the book."
+    # ``Ito ang tatay ko.``    "This is my dad."
+    # ``Iyan ang bahay.``      "That is the house."
+    # ``Iyon ang trabaho ni Juan.``
+    #                          "That is Juan's job."
+    #
+    # Closes the Phase 8.X audit gap surfaced in
+    # docs/coverage-audit-2026-05.md §15 (R&G Conversational
+    # construction-gap rows: ``Ito ang tatay ko.`` / ``Ito ang
+    # bahay ko.``). The Wave 3 diagnostic showed both Wave-3
+    # sources contain naturalistic DEM-pivot predications that
+    # the grammar didn't license — the N-pivot rule above only
+    # accepts bare-N left daughters, and the wh-cleft rule (§5i)
+    # only accepts wh-PRONs.
+    #
+    # Demonstratives are categorized as ``DET[CASE=NOM, DEM]``
+    # by the morph analyzer (see particles.yaml / cfg/nominal.py
+    # Phase 4 §7.8 — the same category that wraps to ``NP[CASE=
+    # NOM]`` via the standalone-DEM rule). Here the bare DET[DEM]
+    # serves as the predicate; the ang-NP is the subject.
+    #
+    # F-structure shape (mirroring the N-pivot rule):
+    #
+    #   PRED        = 'BE-DEM <SUBJ>'
+    #   DEIXIS      = lifted from the DEM (PROX / MED / DIST) —
+    #                 uniquely identifies the demonstrative;
+    #                 ``ito`` → PROX, ``iyan`` → MED, ``iyon`` → DIST.
+    #   PREDICATIVE = true
+    #   SUBJ        = the NOM-NP subject
+    #
+    # DEM_LEMMA is NOT lifted: per ``data/tgl/pronouns.yaml`` the
+    # DEM determiner entries (and similarly the non-wh PRON
+    # entries) do not register LEMMA as a feature — the
+    # ``MorphAnalysis.lemma`` attribute exists but does not flow
+    # through to f-structure (cf. the wh-PRON ``sino`` entry which
+    # does include ``LEMMA: sino`` and thus supports ``(↑ WH_LEMMA)
+    # = ↓1 LEMMA``). DEIXIS provides equivalent identification.
+    rules.append(Rule(
+        "S",
+        ["DET[CASE=NOM, DEM]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BE-DEM <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ DEIXIS) = ↓1 DEIXIS",
+            "(↑ PREDICATIVE) = true",
+        ],
+    ))
+
+
+    # --- Phase 8.X Commit 2: non-wh PRON-pivot clause ---------
+    #
+    # ``Ako ang guro.``        "I am the teacher."
+    # ``Siya ang kaibigan ko.``
+    #                          "He/she is my friend."
+    # ``Kami ang nanalo.``     "We are the winners."
+    #
+    # Closes the noun-pivot subset of Phase 8.S (pronominal-
+    # pivot clefts) surfaced in docs/coverage-audit-2026-05.md
+    # §15. The diagnostic for 8.X also surfaced this gap — the
+    # N-pivot rule above accepts ``Aklat ito.`` (bare-N pivot)
+    # but not ``Ako ang guro.`` (bare-PRON pivot), and the
+    # wh-PRON cleft (§5i Commit 2) only fires when ``WH=true``.
+    #
+    # **Scope vs Phase 8.S**: this rule closes the simple
+    # ``PRON[NOM] + NP[NOM-headed-by-N]`` case (e.g. ``Ako ang
+    # guro``). The remaining 8.S residual is the VP-pivot variant
+    # where the pivot's ang-NP is a verb-headed nominalization
+    # (``Tayo ang lumakad`` = "It's us who walked") and the
+    # DAT-PRON possessive-pivot variant (``Akin ang tinapay``
+    # = "The bread is mine"). Those need separate analysis and
+    # remain in Phase 8.S.
+    #
+    # **Gating**: ``¬ (↓1 WH)`` excludes wh-PRONs (``sino``,
+    # ``ano``, ``alin``) from firing this rule and producing a
+    # spurious non-wh parse for wh-cleft sentences.
+    #
+    # F-structure shape:
+    #
+    #   PRED        = 'BE-PRON <SUBJ>'
+    #   NUM / CLUSV = lifted from the pronoun (string atoms in
+    #                 ``data/tgl/pronouns.yaml``; propagate cleanly)
+    #   PREDICATIVE = true
+    #   SUBJ        = the NOM-NP subject
+    #
+    # PRON_LEMMA and PERS are NOT lifted: the non-wh PRON entries
+    # in ``data/tgl/pronouns.yaml`` do not register LEMMA as a
+    # feature, and ``PERS`` is registered as a Python ``int`` which
+    # does not currently propagate to f-structure (NUM and CLUSV
+    # are strings and do propagate). NUM + CLUSV jointly
+    # distinguish 1sg / 2sg / 3sg / 1pl-inclusive / 1pl-exclusive /
+    # 2pl / 3pl up to person, which is sufficient for downstream
+    # consumers in scope today. A future engineering pass on the
+    # integer-feature path would re-enable the PERS lift.
+    rules.append(Rule(
+        "S",
+        ["PRON[CASE=NOM]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BE-PRON <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ NUM) = ↓1 NUM",
+            "(↑ CLUSV) = ↓1 CLUSV",
+            "(↑ PREDICATIVE) = true",
+            "¬ (↓1 WH)",
+        ],
+    ))
+
+
     # --- Phase 5h Commit 6: equative two-NP standard frames -----
     #
     # ``Kasingganda ni Maria si Ana.``
