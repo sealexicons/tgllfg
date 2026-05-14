@@ -97,6 +97,7 @@ group.
 | ---------- | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
 | ABIL | Abilitative mood | `maka-` class (e.g. `nakakain` "was able to eat"). |
 | ASPECT | Aspect feature | F-structure attribute taking PFV / IPFV / CTPL / RECPFV. |
+| ASPECT_TYPE | Enum sub-aspect | Phase 7a.C: `JUST_FINISHED` lifted to matrix by `katatapos + V` raising-from-XCOMP (`Katatapos kainin ang isda.` "The fish had just been eaten"). Distinguishes the analytic "just-finished" matrix from a synthetic ASPECT=RECPFV form. |
 | CTPL | Contemplative aspect | "Future" / irrealis. CV-redup without realis `-in-`. |
 | IMP | Imperative mood | Phase 4 §7.2. |
 | IND | Indicative mood | The default mood feature value. |
@@ -210,7 +211,7 @@ for the canonical list (52 entries as of Phase 6.G).
 | Q_TYPE | Enum | `WH`, `YES_NO`, `TAG`. Phase 5i clausal-question-type marker. |
 | QUESTION | Binary | Phase 5i question-marker on `ba`; lifts to matrix `Q_TYPE=YES_NO`. |
 | RECP | Binary | Reciprocal-construction marker. |
-| REGISTER | Enum | `POLITE`, `COLLOQUIAL_POLITE`, `LITERARY`. Phase 5m politeness register. |
+| REGISTER | Enum | `POLITE`, `COLLOQUIAL_POLITE`, `LITERARY` (Phase 5m politeness register), `COLLOQUIAL` (Phase 7a.E §3.6 no-linker modal + Phase 7a.F kahit-X no-ay — colloquial-register matrix marker that downstream consumers can filter on). |
 | RESULTATIVE | Binary | Phase 5n.A `naka-` resultative stative-locative marker. |
 | SEM_CLASS | Enum | `REFLEXIVE` (`sarili`), `SEASON` (`tag-`-prefixed), `TIME` (clock), etc. Lifts to NP via Phase 6.G SHARE+SHARE. |
 | UNIV | Binary | Phase 5m universal-quantifier marker (`kahit-X` family). |
@@ -230,6 +231,8 @@ for the canonical list (52 entries as of Phase 6.G).
 | mag | mag- AV class (e.g. *naglinis*). |
 | maka | maka- abilitative AV class (MOOD=ABIL). |
 | mang | mang- distributive AV class with nasal substitution. |
+| magsi | Phase 7a.B — plural-actor AV pluralizer (S&O 1972 §5.15). 3 aspect cells (`nagsi-V`, `nagsisi-V`, `magsisi-V`); fires on `-um-` verbs. Emits `DISTRIB=true`. |
+| magpa_an | Phase 7a.B — reciprocal-distributive causative AV circumfix. 3 aspect cells (`nagpa-V-an`, `nagpapa-V-an`, `magpapa-V-an`). Emits `{MOOD: SOC, RECP: true, DISTRIB: true}`. Locative-distributive subtype dropped per GT-empirical evidence; reciprocal-distributive reading only. |
 | um | -um- AV class (e.g. *kumain*). |
 
 ### Non-verbal paradigm-cell labels (`paradigms.yaml` `affix_class:`)
