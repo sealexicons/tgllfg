@@ -57,6 +57,7 @@ class ParseRecord:
     n_fragments: int
     oov_tokens: list[str] = field(default_factory=list)
     diag_summary: str = ""
+    diag_kinds: dict[str, int] = field(default_factory=dict)
 
 
 # === Orthography normalization ===========================================
@@ -571,9 +572,39 @@ _PARSE_SOURCES = [
 
 def cmd_parse() -> None:
     from tgllfg.core.pipeline import parse_text_with_fragments
+    from tgllfg.text.tokenizer import tokenize
+    from tgllfg.morph.analyzer import analyze_tokens
 
     import random
     rng = random.Random(42)
+
+    def oov_probe(text: str) -> list[str]:
+        """Tokenize ``text`` and return surface forms whose morph
+        analyses are all ``pos='_UNK'`` (the analyzer's fallback for
+        words it cannot derive any paradigm form for). Used by 8.J to
+        surface lex-OOV signal even on zero-parse-no-fragment rows
+        where the parser produces no diagnostics.
+
+        Filters out pure-punctuation tokens (``'``, ``(``, ``:``, etc.)
+        and single-character tokens (almost always OCR character-
+        spacing artifacts, not real OOV words)."""
+        try:
+            toks = tokenize(text)
+            analyses = analyze_tokens(toks)
+            unk: list[str] = []
+            for t, a_list in zip(toks, analyses):
+                if not re.search(r"[a-zA-Z]", t.surface):
+                    continue
+                if len(t.surface) < 2:
+                    continue
+                if not a_list:
+                    unk.append(t.surface)
+                    continue
+                if all(getattr(a, "pos", None) == "_UNK" for a in a_list):
+                    unk.append(t.surface)
+            return unk
+        except Exception:
+            return []
 
     for in_name, out_name, sample_cap in _PARSE_SOURCES:
         in_path = EXEMPLARS_DIR / in_name
@@ -582,7 +613,8 @@ def cmd_parse() -> None:
             print(f"  (skip {in_name}; not found)")
             continue
         print(f"\n[parse] {in_name}")
-        _parse_one(in_path, out_path, parse_text_with_fragments, sample_cap, rng)
+        _parse_one(in_path, out_path, parse_text_with_fragments,
+                   sample_cap, rng, oov_probe)
 
 
 def _parse_one(
@@ -591,6 +623,7 @@ def _parse_one(
     parse_fn,
     sample_cap: int | None,
     rng,
+    oov_probe,
 ) -> None:
     """Inner parser-driver loop for a single JSONL input file."""
 
@@ -619,22 +652,32 @@ def _parse_one(
                 else:
                     bucket = "zero-parse-no-fragment"
                 diag_summary = ""
-                oov = []
-                if n_parses == 0 and result.fragments:
-                    frag = result.fragments[0]
-                    diags = getattr(frag, "diagnostics", []) or []
-                    if diags:
-                        diag_summary = str(diags[0])[:200]
-                        for d in diags:
+                diag_kinds: Counter[str] = Counter()
+                oov: list[str] = []
+                if n_parses == 0:
+                    # 8.J: walk all fragments, not just [0].
+                    all_diags: list = []
+                    for frag in result.fragments:
+                        diags = getattr(frag, "diagnostics", []) or []
+                        all_diags.extend(diags)
+                    if all_diags:
+                        diag_summary = str(all_diags[0])[:200]
+                        for d in all_diags:
                             s = str(d)
-                            m = re.search(r"unknown (?:word|lexeme|token):\s*['\"]?(\w+)", s, re.IGNORECASE)
+                            m = re.search(
+                                r"kind=['\"](\w[\w-]*)['\"]", s
+                            )
                             if m:
-                                oov.append(m.group(1))
+                                diag_kinds[m.group(1)] += 1
+                    # 8.J: probe lex-OOV via morph analyzer for ALL
+                    # zero-parse rows (including zero-parse-no-fragment).
+                    oov = oov_probe(text)
             except Exception as e:
                 bucket = "tokenizer-fail"
                 n_parses = 0
                 n_fragments = 0
                 diag_summary = f"EXCEPTION: {type(e).__name__}: {e}"[:200]
+                diag_kinds = Counter()
                 oov = []
 
             rec = ParseRecord(
@@ -645,6 +688,7 @@ def _parse_one(
                 n_fragments=n_fragments,
                 oov_tokens=oov,
                 diag_summary=diag_summary,
+                diag_kinds=dict(diag_kinds),
             )
             out_fh.write(json.dumps(asdict(rec), ensure_ascii=False) + "\n")
             bucket_counts[bucket] += 1
