@@ -16722,3 +16722,70 @@ effort scale.
 
 `hatch run test-both`: 7582 passed in 78.08s (was 7573; +9
 new tests).
+
+## Phase 8.U: `parang` similative with NP standard
+
+Closes the audit-named `Parang kayo ako.` ("I'm like you") via
+one new rule in `cfg/clause.py` parallel to the Phase 5e Commit
+26 bare-N comparative rule:
+
+```text
+S → V[COMPARATIVE, CTRL_CLASS=RAISING_BARE] NP[CASE=NOM] NP[CASE=NOM]
+
+  (↑ PRED) = 'LIKE <SUBJ, OBJ>'
+  (↑ OBJ)  = ↓2   (the standard)
+  (↑ SUBJ) = ↓3   (the comparee)
+  (↓1 COMPARATIVE) =c true
+```
+
+The Phase 5e Commit 26 rule has a bare `N` second daughter
+(handles `Parang aso ang bata.`). The audit-target uses a PRON
+as the standard; PRON doesn't project to `N` but builds as
+`NP[CASE=NOM]` via the standalone-PRON-as-NP path. The new
+parallel rule admits any `NP[CASE=NOM]`-shaped standard —
+PRON (`kayo`), proper-name NP (`si Juan`), or case-marked NP
+(`ang lalaki`).
+
+### Audit-driven discovery
+
+Per the audit-before-scheduling discipline, the
+`/tmp/audit_parang.py` probe ran first and found 17 corpus
+candidates with `parang`. Of those:
+
+- 2 already parsed pre-8.U (existing evidential parang + S, or
+  bare-N comparative).
+- 15 fail with orthogonal blockers — all 15 are OOV-noun cases
+  (`gulong`, `makopa`, `pisngi`, `buhay`, `palasyo`, `pison`)
+  or different-construction issues (negation, wh-Q, evidential
+  with predicative-NP complement). NONE are 8.U-scope.
+
+The audit-target `Parang kayo ako.` is the only direct closure
+— and it was actually a constructed example, not in the corpus
+proper. Pre-8.U it parsed 2× as `SEEMS-LIKE` (evidential) but
+zero times as `LIKE` (comparative). Post-8.U it parses 1× LIKE
+plus 2× SEEMS-LIKE (genuine surface ambiguity between the two
+readings).
+
+### Spurious-ambiguity note
+
+The new NP-NP rule shape could in principle apply to bare-N
+standards too if bare N projected to NP[CASE=NOM]. By Phase 5f
+Commit 1 design intent, case-less N→NP is not in the grammar
+— so `Parang aso ang bata.` continues to fire ONLY the existing
+bare-N rule + the evidential rule, with no extra path from the
+8.U rule.
+
+### Test plan
+
+8 new tests in `tests/tgllfg/test_phase8u_parang_similative.py`:
+
+- 4 sentence-level checks confirming the LIKE comparative
+  reading is available for PRON-standard / Si-NP-standard /
+  ang-NP-standard cases
+- 2 non-regression for the bare-N case (Phase 5e C26)
+- 1 non-regression for evidential parang + S (Phase 5d C1)
+- 1 out-of-scope pin (OOV-blocked corpus case
+  `Parang makopa ang pisngi mo.`)
+
+`hatch run test-both`: 7590 passed in 78.27s (was 7582; +8
+new tests).
