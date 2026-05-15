@@ -16035,3 +16035,118 @@ rather than re-deferred from 8.N's lex pass:
 Anti-deferral note: none of the above are re-deferrals of 8.N-
 closed gaps. Each is a distinct construction or a-structure
 question that lives in its own sub-PR scope.
+
+## Phase 8.B: R&B 1986 verb-base sweep + `pag_an` paradigm cell
+
+Closes the §5 audit gap on `docs/coverage-audit-2026-05.md` —
+the 71 R&B 1986 verb bases that the harvest extractor showed as
+missing from `data/tgl/verbs.yaml` (post-8.A/8.N). Adds 52 new
+VERB entries and lands the `pag_an` paradigm-cell follow-on
+from Phase 8.A (for `pinagbintangan`-style mag-class LF PFV
+surfaces).
+
+### Lex inventory triage
+
+The 71 raw missing bases broke down across four buckets:
+
+| Bucket | Count | Action |
+| --- | ---: | --- |
+| A — clean adds (unambiguous bases) | 40 | added |
+| B — affix-class OCR normalize (e.g. `-urn-` → `-um-`) | 9 | added |
+| C — pa-prefix false positive (e.g. `patay` is a real base) | 1 | added |
+| D — OCR-fix renames (`parilala` → `pakilala`, `linot` → `limot`) | 2 | added |
+| E — pa-/pag- prefixed derivations of existing bases | 12 | **dropped** |
+| F — OCR spelling collisions with existing lex (`asso` → `usap`) | 2 | **dropped** |
+| G — already in nouns.yaml / adjectives.yaml | 5 | **dropped** |
+
+Total added: **52 entries**. Total dropped from 8.B scope: **19**
+(productive derivations of existing bases; OCR collisions; or
+roots already covered by adjectival / nominal paradigms).
+
+### Affix-class translation rules
+
+| R&B notation | YAML cell |
+| --- | --- |
+| `-um-` | `um` |
+| `mag-` | `mag` |
+| `ma-` | `ma` |
+| `mang-` | `mang` |
+| `maka-` | `maka` |
+| `-in` | `in_oblig` |
+| `-an` | `an_oblig` |
+| `i-` | `i_oblig` |
+| `ika-` | `ika` |
+| `ipag-` | `ipag` |
+| `ipang-` | `ipang` |
+| `pag-...-an` | `pag_an` (new) |
+
+Every entry's `affix_class` ends in `maka` (aptative), per the
+Phase 8.A convention. Polysemous bases collapse into a single
+entry with multi-sense gloss and union'd `affix_class`.
+
+### `pag_an` paradigm cell
+
+The Phase 8.A follow-on. The cell generates the LF (DV) circumfix
+`pag-X-an` for mag-class verbs of accusation / experience /
+collective action. Surface inflection table:
+
+```
+INF   pagbintangan       ← pag- + X + -an              (deferred)
+PFV   pinagbintangan     ← pag- + X + -an + -in- infix
+IPFV  pinagbibintangan   ← cv_redup + pag- + X + -an + -in-
+CTPL  pagbibintangan     ← cv_redup + pag- + X + -an   (no -in-)
+```
+
+Cell shape mirrors the existing `pa_an` (DIRECT-causative DV)
+cell, with `pag` prefix in place of `pa` and no `CAUS` feature.
+
+Lex wiring: 6 of the 52 new entries declare `pag_an` —
+`gasta`, `laro`, `pili`, `sikap`, plus `bintang` (the 8.A
+trigger; its `affix_class` was extended in this PR) and the new
+`sakay` entry. Verified surfaces:
+
+- ✅ `pinagbintangan`, `pinagbibintangan`, `pagbibintangan`
+- ✅ `pinagsikapan`, `pinagsisikapan`, `pagsisikapan`
+- ✅ `pinaggastahan` (via the analyzer's h-insertion pipeline
+  for `/a/`-final stems)
+
+### `dinig` d→r sandhi
+
+Added `sandhi_flags: [d_to_r]` to the new `dinig` entry, enabling
+the canonical `narinig` (heard) and `maririnig` (will hear) via
+the analyzer's between-vowels d/r alternation. Same flag is
+already in use on `bayad`, `dating`, `dama`. R&B implicitly
+documents the alternation in its surface forms.
+
+### Known coverage edges (deferred to a paradigm sub-PR)
+
+These are *distinct paradigm gaps* surfaced during 8.B probing,
+not re-deferrals of 8.B-closed entries. Each is pinned via a test
+in `TestPhase8bPagAnVowelFinalDeferred` (will flip to passing when
+the paradigm work lands):
+
+- **Vowel-final stems ending in `/o/` / `/i/` / `/u/`** under the
+  `pag_an` cell: `laro` → expected `pinaglaruan` (o→u raising +
+  no h-insertion); `pili` → expected `pinagpilian` (no h-
+  insertion). The analyzer's existing h-insertion handles
+  `/a/`-final stems (`gasta` → `pinaggastahan`) but not o→u or
+  the no-h variants. Separate sandhi-flag pass needed.
+- **`ika` cell with TR-only constraint vs INTR R&B bases**: R&B
+  records `ika-` for stative INTR bases (`gulo`, `punit`,
+  `buhay`, `gutom`, `talo`) but the analyzer's `ika` cell has
+  `transitivity: TR`. INTR registrations don't generate
+  `ikinagulo`-style "became X because of" surfaces. Either relax
+  the cell's TR constraint or drop `ika` from INTR registrations.
+- **`magka-` reciprocal/coincidence cell** (`magkasakit` "became
+  sick", `magkasalubong` "met accidentally", `magkasama` "were
+  companions"): no paradigm cell exists; the senses are silently
+  dropped from the new entries' `affix_class` lists. Separate
+  paradigm-extension work.
+
+### Out of 8.B scope (skipped from R&B inventory)
+
+12 pa-/pag- prefixed derivations of existing bases (productive,
+handled by analyzer composition); 2 OCR spelling collisions
+(`asso` for `usap`, `lari` for `laki`); 5 already-in-other-POS
+roots (`galit`, `gulat`, `gutom`, `haba`, `puno` — verbal-state
+senses produced by `ma_adj` / `ma-` derivation paradigms).
