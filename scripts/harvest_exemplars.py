@@ -231,15 +231,53 @@ _ENGLISH_PAREN_RE = re.compile(r"\(\s*[a-z][a-z\s]{0,30}\s*\)")
 # the whole span looking like one English word).
 _QUOTED_ENGLISH_RE = re.compile(r"'[a-zA-Z][a-zA-Z\s']{1,30}'")
 
+# Trailing parenthesized span at end of line, separated from the
+# preceding text by whitespace. The match captures the inner content
+# so ``_is_english_gloss`` can decide whether to strip.
+_TRAILING_PAREN_RE = re.compile(r"\s+\(([^)]+?)\)\s*$")
+
+
+def _is_english_gloss(content: str) -> bool:
+    """Heuristic: parenthesized span is an English gloss if it starts
+    with an uppercase letter, contains ≥ 2 alphabetic tokens, and has
+    no Tagalog markers. The capital-letter + ≥ 2-token gate keeps the
+    rule from stripping legitimate Tagalog parentheticals (which tend
+    to be single-word interjections or lowercase clitics) while still
+    catching gloss spans like ``(A friend of mine.)`` or
+    ``(Good morning.)`` that lack ``_EN_MARKERS`` function words."""
+    text = content.strip()
+    if not text or not text[0].isupper():
+        return False
+    toks = re.findall(r"[a-zA-Z']+", text.lower())
+    if len(toks) < 2:
+        return False
+    tgl = {t for t in toks if t in _TGL_MARKERS}
+    return len(tgl) == 0
+
+
+def _strip_trailing_english_gloss(text: str) -> str:
+    """Strip a trailing English-shaped parenthetical (e.g., a
+    pedagogical-aid translation) from a line. The rest of the line
+    (the Tagalog portion) is returned unchanged. Idempotent."""
+    m = _TRAILING_PAREN_RE.search(text)
+    if not m:
+        return text
+    if _is_english_gloss(m.group(1)):
+        return text[:m.start()].rstrip()
+    return text
+
 
 def _clean_sentence_text(text: str) -> str | None:
-    """Apply 8.P cleanups: strip English-prefix labels; reject lines
-    with parenthesized English prompts; reject lines with quoted
-    English-only spans. Return cleaned text, or ``None`` if the line
-    should be dropped entirely."""
+    """Apply 8.P + 8.W cleanups: strip English-prefix labels; strip
+    trailing English glosses; reject lines with parenthesized English
+    prompts; reject lines with quoted English-only spans. Return
+    cleaned text, or ``None`` if the line should be dropped entirely."""
     text = text.strip()
     # Cleanup 1: strip English-prefix labels.
     text = _ENGLISH_PREFIX_RE.sub("", text)
+    # Cleanup 1.5 (8.W): strip trailing parenthesized English glosses
+    # (``(A friend of mine.)``) before the later paren-rejection check.
+    text = _strip_trailing_english_gloss(text)
     # Cleanup 2: reject parenthesized English prompts (these are
     # exercise slots, not natural Tagalog).
     if _ENGLISH_PAREN_RE.search(text):
@@ -254,13 +292,26 @@ def _clean_sentence_text(text: str) -> str | None:
     return text
 
 
-_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+(?=[A-Z\"'(])")
+# Title abbreviations whose closing period must NOT trigger a
+# sentence split. Tagalog: ``Gng.`` (Mrs.) / ``Bb.`` (Miss) / ``G.``
+# (Ginoong — Mr.). English (in citations and loanwords): ``Mr.`` /
+# ``Mrs.`` / ``Dr.`` / ``Sr.`` / ``Jr.`` / ``St.`` / ``Sgt.``. Each
+# entry contributes a fixed-width negative lookbehind anchored at the
+# closing period.
+_TITLE_ABBREVS = ("Gng", "Bb", "Mrs", "Mr", "Dr", "Sr", "Jr", "St", "Sgt", "G")
+
+_SENTENCE_SPLIT_RE = re.compile(
+    "".join(f"(?<!\\b{a}\\.)" for a in _TITLE_ABBREVS)
+    + r"(?<=[.!?])\s+(?=[A-Z\"'(])"
+)
 
 
 def _split_sentences(text: str) -> list[str]:
     """Cleanup 3: split multi-sentence captures on terminal punctuation
-    followed by uppercase-or-quote. Returns a list of one-sentence
-    strings."""
+    followed by uppercase-or-quote. The closing period of a Tagalog or
+    English title abbreviation (``Gng.``, ``Bb.``, ``Mr.``, etc.) is
+    NOT treated as sentence-final — see ``_TITLE_ABBREVS``. Returns a
+    list of one-sentence strings."""
     parts = _SENTENCE_SPLIT_RE.split(text)
     return [p.strip() for p in parts if p.strip()]
 
@@ -538,10 +589,45 @@ def extract_so1972() -> Iterator[Exemplar]:
                 )
 
 
-# Speaker-tagged dialog line: ``BEN:`` / ``LINDA:`` / ``A:``. Allows
-# up to 8 ASCII-uppercase characters before the colon (covers names
-# like ``LINDA`` and the short ``A``/``B`` patterns).
-_DIALOG_SPEAKER_RE = re.compile(r"^([A-Z][A-Z]{0,8})\s*:\s+(.+)$")
+# Speaker-tagged dialog line: ``BEN:`` / ``LINDA:`` / ``A:`` and the
+# numbered-speaker variants ``S1:`` / ``S2:`` / ``S3:`` / ``S4:`` used
+# in R&G Conversational drill-exercise dialogs. Also tolerates the
+# OCR-degenerate ``Sl:`` / ``Sll:`` (digit ``1`` mis-rendered as
+# lowercase ``l``) which appear frequently in the Acrobat-OCR output.
+# Up to 8 chars after the leading uppercase letter, all of which must
+# be uppercase / digit / lowercase-l.
+_DIALOG_SPEAKER_RE = re.compile(r"^([A-Z][A-Zl0-9]{0,8})\s*:\s+(.+)$")
+
+# Parenthetical-direction speaker tag prefix: ``S1 (to S2):`` /
+# ``B (to C):`` / ``(to S3):`` / ``(To S2)`` (without colon, seen in
+# OCR), plus the sentence-type-label variants ``S1 (Sentence):`` /
+# ``S3 (Response):`` used in some R&G Conv drill blocks. Strip the
+# full prefix; what's left is the actual utterance. Closing-paren OCR
+# variants tolerated: paren may be ``)`` or ``:`` (a common Acrobat-
+# OCR misread on tight italic punctuation).
+_DIRECTION_PREFIX_RE = re.compile(
+    r"^(?:\(?\s*[A-Z][A-Zl0-9]{0,8}\s*)?"
+    r"\(\s*(?:[Tt]o\s+[A-Z][A-Zl0-9]{0,8}|"
+    r"(?:Sentence|Response|Question|Answer|Echo|Reply|Sagot))"
+    r"\s*[\):]\s*[:)]?\s*"
+)
+
+# Column-gutter signature in pdftotext -layout output for two-column
+# pages: ≥ 10 consecutive whitespace chars internal to a non-empty
+# line. Beyond that threshold, the run almost always reflects a column
+# boundary in the source PDF rather than rendered intra-sentence
+# spacing (the latter is generally 1-3 chars even on justified text).
+_COLUMN_GUTTER_RE = re.compile(r"\s{10,}")
+
+
+def _split_column_gutter(line: str) -> list[str]:
+    """Split a line on column-gutter-shaped whitespace runs (see
+    ``_COLUMN_GUTTER_RE``). Returns one segment per column-segment;
+    each is stripped but otherwise unchanged. Caller's downstream
+    sentence-shape + Tagalog-marker filters reject the junk halves
+    that frequently emerge from this split (English column-bleed,
+    stray fragments)."""
+    return [seg.strip() for seg in _COLUMN_GUTTER_RE.split(line) if seg.strip()]
 
 
 def extract_rg_conversational() -> Iterator[Exemplar]:
@@ -550,8 +636,8 @@ def extract_rg_conversational() -> Iterator[Exemplar]:
     Sibling of ``extract_rg_intermediate`` — same authors, same era,
     similar pedagogical format (dialogs + drill exercises). Skip PDF
     pages 1-12 (cover, plan-of-text, intro, TOC). Recognize speaker-
-    tagged dialog lines (``BEN: ...``) and numbered exercises (``1.
-    ...``)."""
+    tagged dialog lines (``BEN: ...``, ``S1: ...``, ``S1 (to S2): ...``)
+    and numbered exercises (``1. ...``)."""
     path = REFERENCES_DIR / "814610085-Conversational-Tagalog-a-Functional-Situational-Approach.txt"
     sent_idx = 0
 
@@ -566,34 +652,51 @@ def extract_rg_conversational() -> Iterator[Exemplar]:
             if _PAGE_HEADER_RE.match(stripped):
                 continue
 
-            m = _DIALOG_SPEAKER_RE.match(stripped)
-            if m:
-                line_text = m.group(2).strip()
-                kind = "dialog"
-            else:
-                mn = re.match(r"^\s*\d+\.\s+(.+)$", raw_line)
-                if mn:
-                    line_text = mn.group(1).strip()
-                    kind = "numbered"
+            # Split on column-gutter shape FIRST. R&G Conv's pdftotext
+            # output frequently joins adjacent columns (e.g., an
+            # English heading on the left and a dialog line on the
+            # right) into a single physical line separated by a wide
+            # whitespace gap. Treating each gutter-segment as an
+            # independent line lets the speaker-tag / numbered /
+            # direction-prefix checks below operate column-locally
+            # rather than against the full bled line. Also extract a
+            # leading-numbered prefix from the raw line, for the case
+            # of a numbered drill item that fits in a single column.
+            numbered_match = re.match(r"^\s*\d+\.\s+(.+)$", raw_line)
+            for segment in _split_column_gutter(stripped):
+                # Strip parenthetical-direction speaker tag prefix
+                # (``S1 (to S2): ...`` / ``B (to C): ...``).
+                dm = _DIRECTION_PREFIX_RE.match(segment)
+                if dm:
+                    line_text = segment[dm.end():].strip()
+                    kind = "dialog"
                 else:
-                    line_text = stripped
-                    kind = "prose"
+                    m = _DIALOG_SPEAKER_RE.match(segment)
+                    if m:
+                        line_text = m.group(2).strip()
+                        kind = "dialog"
+                    elif numbered_match and segment == stripped:
+                        line_text = numbered_match.group(1).strip()
+                        kind = "numbered"
+                    else:
+                        line_text = segment
+                        kind = "prose"
 
-            for sent in _split_sentences(line_text):
-                cleaned = _emit_sentence(sent)
-                if cleaned is None:
-                    continue
-                sent_idx += 1
-                yield Exemplar(
-                    source="rg-conversational",
-                    locator=f"page-{page_num}/{kind}/sent-{sent_idx}",
-                    text_raw=cleaned,
-                    text_normalized=_ocr_cleanup(normalize_orthography(cleaned)),
-                    has_gloss=False,
-                    gloss_en=None,
-                    marked_ungrammatical=cleaned.startswith(("*", "?")),
-                    ocr_quality="acrobat-ocr",
-                )
+                for sent in _split_sentences(line_text):
+                    cleaned = _emit_sentence(sent)
+                    if cleaned is None:
+                        continue
+                    sent_idx += 1
+                    yield Exemplar(
+                        source="rg-conversational",
+                        locator=f"page-{page_num}/{kind}/sent-{sent_idx}",
+                        text_raw=cleaned,
+                        text_normalized=_ocr_cleanup(normalize_orthography(cleaned)),
+                        has_gloss=False,
+                        gloss_en=None,
+                        marked_ungrammatical=cleaned.startswith(("*", "?")),
+                        ocr_quality="acrobat-ocr",
+                    )
 
 
 # === Source 5: Ramos 1971 Dictionary (verb-example sentences) =============
@@ -1045,6 +1148,8 @@ def cmd_report() -> None:
     lines.append("")
     lines.append("## Zero-parse examples (top 30)")
     lines.append("")
+    lines.append("<!-- markdownlint-disable MD013 -->")
+    lines.append("")
     lines.append("| Locator | Text | Bucket | OOV tokens | Diagnostic |")
     lines.append("| --- | --- | --- | --- | --- |")
     for r in zero_parses[:30]:
@@ -1052,6 +1157,8 @@ def cmd_report() -> None:
         diag = r["diag_summary"].replace("|", "\\|")[:80] or "—"
         text = r["text"].replace("|", "\\|")[:60]
         lines.append(f"| `{r['locator']}` | {text} | {r['bucket']} | {oov} | {diag} |")
+    lines.append("")
+    lines.append("<!-- markdownlint-enable MD013 -->")
     lines.append("")
     lines.append("## OOV-token frequency (top 30)")
     lines.append("")
