@@ -16090,7 +16090,7 @@ The Phase 8.A follow-on. The cell generates the LF (DV) circumfix
 `pag-X-an` for mag-class verbs of accusation / experience /
 collective action. Surface inflection table:
 
-```
+```text
 INF   pagbintangan       ← pag- + X + -an              (deferred)
 PFV   pinagbintangan     ← pag- + X + -an + -in- infix
 IPFV  pinagbibintangan   ← cv_redup + pag- + X + -an + -in-
@@ -16150,3 +16150,120 @@ handled by analyzer composition); 2 OCR spelling collisions
 (`asso` for `usap`, `lari` for `laki`); 5 already-in-other-POS
 roots (`galit`, `gulat`, `gutom`, `haba`, `puno` — verbal-state
 senses produced by `ma_adj` / `ma-` derivation paradigms).
+
+## Phase 8.W: R&G Conversational extractor improvements
+
+**Engineering** sub-PR, not a parser change. Three discrete
+fixes to `scripts/harvest_exemplars.py`'s
+`extract_rg_conversational` (and supporting helpers in
+`_clean_sentence_text` / `_split_sentences`) close noise classes
+the three-wave audit surfaced in
+`data/tgl/exemplars/wave3-rg-conversational.jsonl`.
+
+The parser is untouched. The improvement is mechanical: cleaner
+exemplars produce a cleaner audit numerator, raising the
+naturalistic baseline from **9.3% → 10.9%** cumulative and from
+**14.2% → 21.8%** on R&G Conv specifically.
+
+### Fix 1: speaker-tag widening + parenthetical-direction strip
+
+The pre-8.W `_DIALOG_SPEAKER_RE`
+(`^([A-Z][A-Z]{0,8})\s*:\s+(.+)$`) required all-uppercase speaker
+labels. R&G Conv's drill-exercise dialogs use numbered speakers
+(`S1`, `S2`, `S3`, `S4`) which fell through to the prose branch
+with their `S2:` prefix retained, polluting 22 exemplar rows. The
+OCR also frequently misrenders the digit `1` as a lowercase `l`,
+yielding `Sl:` / `Sll:` variants.
+
+Widened to `^([A-Z][A-Zl0-9]{0,8})\s*:\s+(.+)$` — same shape, now
+admits the digit and lowercase-l variants.
+
+Additionally, parenthetical-direction prefixes like
+`S1 (to S2): ...` / `B (to C): ...` / `(to S3): ...` /
+`(To S2) ...` (paren-only, no colon — seen in OCR) need
+independent handling. A new `_DIRECTION_PREFIX_RE` strips the
+full prefix; the residual is classified as `dialog`. The regex
+also accepts the closing-paren-OCR'd-as-colon variant `B (to Cl:`
+seen on tight italic lines.
+
+The regex also folds in `S1 (Sentence):` / `S3 (Response):`
+sentence-type labels (2 source-level instances) — same shape, so
+generalizing the inner-paren alternation costs one regex term.
+
+### Fix 2: title-abbreviation split protection
+
+`_split_sentences` was splitting on the period closing common
+Tagalog and English title abbreviations
+(`Gng.` Mrs., `Bb.` Miss, `Mr.`, `Mrs.`, `Dr.`, `Sr.`, `Jr.`,
+`St.`, `Sgt.`, `G.`), yielding 5-6 truncated fragments per
+extract like `"Ito si Bb."` (with `"Santos."` lost as a
+sentence-shape failure on the next part).
+
+Each title abbreviation now contributes a fixed-width negative
+lookbehind anchored at the closing period:
+
+```python
+_TITLE_ABBREVS = ("Gng", "Bb", "Mrs", "Mr", "Dr", "Sr", "Jr",
+                  "St", "Sgt", "G")
+_SENTENCE_SPLIT_RE = re.compile(
+    "".join(f"(?<!\\b{a}\\.)" for a in _TITLE_ABBREVS)
+    + r"(?<=[.!?])\s+(?=[A-Z\"'(])"
+)
+```
+
+Python's `re` accepts multiple variable-width lookbehinds when
+each is fixed-width on its own; this compiles. The fix is
+universal — all extractors that call `_split_sentences` benefit.
+
+### Fix 3: column-gutter bleed filter + trailing-English-gloss strip
+
+R&G Conv's pdftotext-layout output for two-column drill pages
+sometimes joins adjacent columns into a single physical line
+with a wide whitespace gap between them, yielding rows like:
+
+```text
+S3:           Sa bahay.                                    kumusta      ka?
+Saan ka galing?                                                       ko.
+```
+
+A new `_split_column_gutter` helper splits on internal ≥ 10-char
+whitespace runs (the signature is rare in single-column text;
+intra-sentence justified spacing is generally 1-3 chars). The
+extract flow restructures: column-gutter split runs FIRST on each
+raw line, then speaker-tag / direction-prefix / numbered checks
+run per segment. Junk halves (English column-bleed, stray
+fragments like `ko.`) get filtered downstream by
+`_emit_sentence`'s sentence-shape + Tagalog-marker gates.
+
+Separately, a `_strip_trailing_english_gloss` helper removes
+pedagogical-aid translations from the end of a Tagalog line:
+
+```text
+"Magandang umaga po. (Good morning.)" → "Magandang umaga po."
+"Kaibigan ko siya. (A friend of mine.)" → "Kaibigan ko siya."
+"(Kaibigan ko siya.) (A friend of mine.)" → "(Kaibigan ko siya.)"
+```
+
+The heuristic: the trailing paren content starts with an
+uppercase letter, has ≥ 2 alphabetic tokens, and contains no
+Tagalog-marker words. The capital-letter and ≥ 2-token gates
+prevent stripping of legitimate Tagalog parentheticals (which
+are typically single-word interjections or lowercase clitics).
+
+The helper runs inside `_clean_sentence_text` so all extractors
+benefit, not just R&G Conv.
+
+### Impact
+
+| Metric | Pre-8.W | Post-8.W | Δ |
+| --- | ---: | ---: | ---: |
+| R&G Conv extracted rows | 772 | 679 | −12% (noise dropped) |
+| R&G Conv `S<digit>:` residual | 22 | 0 | −22 |
+| R&G Conv parse-success rate | 14.2% | 21.8% | +7.6 pp |
+| Cumulative naturalistic baseline | 9.3% | 10.9% | +1.6 pp |
+
+51 new unit tests in
+`tests/tgllfg/test_phase8w_rg_conv_extractor.py` cover all four
+helpers: widened speaker regex, direction-prefix strip, title-
+abbreviation split protection, trailing-English-gloss strip,
+column-gutter split.
