@@ -105,6 +105,43 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 8.U: comparative `parang` with NP standard ---
+    #
+    # Companion to the Phase 5e Commit 26 rule above. The bare-N
+    # variant of `parang` admits standards like ``parang aso``,
+    # ``parang malaking aso`` — bare-N or modified-N. Audit-named
+    # target ``Parang kayo ako.`` ("I'm like you") uses a PRON as
+    # the standard, which doesn't project to N (it builds as
+    # NP[CASE=NOM] via the standalone-PRON-as-NP path). This
+    # parallel rule admits any NP[CASE=NOM]-shaped standard —
+    # bare PRON (``kayo``, ``ako``), proper-name NP
+    # (``si Juan``), or case-marked NP (``ang lalaki``) — with
+    # the same equation set.
+    #
+    # No double-firing risk on the existing bare-N targets
+    # (``Parang aso ang bata.``) because bare ``aso`` projects
+    # only to N, not NP[CASE=NOM] — the case-less N→NP wrap is
+    # intentionally absent (Phase 5f Commit 1 design note).
+    #
+    # References: Schachter & Otanes 1972 §13 (similative
+    # comparison); R&G 1981 §6 (parang and tila evidentials/
+    # comparatives).
+    rules.append(Rule(
+        "S",
+        [
+            "V[COMPARATIVE, CTRL_CLASS=RAISING_BARE]",
+            "NP[CASE=NOM]",
+            "NP[CASE=NOM]",
+        ],
+        [
+            "(↑ PRED) = 'LIKE <SUBJ, OBJ>'",
+            "(↑ OBJ) = ↓2",
+            "(↑ SUBJ) = ↓3",
+            "(↓1 COMPARATIVE) =c true",
+        ],
+    ))
+
+
     # --- Phase 5f Commit 4: predicative cardinal -----------------
     #
     # ``Dalawa sila.`` "There are two of them."
