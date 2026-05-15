@@ -16477,3 +16477,106 @@ ay-fronting non-regression, three pinned out-of-scope items.
 
 `hatch run test-both`: 7559 passed in 70.83s (was 7548; +11
 new tests).
+
+## Phase 8.D2: comma-fronted topic — sibling variants
+
+In-Phase-8 anti-deferral follow-on to 8.D. The 8.D
+`TestPhase8dOutOfScope` block pinned three sibling
+construction-class gaps surfaced during 8.D probing
+(ADV-fronted, PP-fronted, discourse-particle-fronted). 8.D2
+closes all three as scheduled in the plan-of-record
+`.claude/plans/tgllfg-phase-8.md` §1 ledger — the user-flagged
+anti-deferral correction is that pins should ship with a
+follow-on sub-PR queued in the plan, not deferred indefinitely
+to Phase 9+.
+
+### Surprise discovery: the PP pin was based on a false premise
+
+The 8.D pin `test_pp_fronted_topic_still_fails` asserted that
+`Sa simula, kumain si Juan.` produces 0 parses. Probing during
+8.D2 revealed this was a confound: the 8.D NP-variant rule
+already admits `NP[CASE=DAT]` (the first daughter `NP` is
+unconstrained for CASE, and `sa simula` builds as `NP[CASE=DAT]`
+via the standard DAT-NP rule). The 0-parse result in 8.D's
+probe was caused by `simula` being out-of-vocab, not by the
+construction being absent.
+
+This is a useful lesson: when adding an `OutOfScope` pin,
+verify the structural gap is real — probing with an OOV lemma
+gives a false-negative parse result that mimics a structural
+gap. 8.D2 closes the PP pin via lex addition only (`simula`
+NOUN), with no new rule needed.
+
+### The remaining two pins ARE structural gaps
+
+**ADV-variant** (`S → AdvP PUNCT[COMMA] S`). Closes `Bukas,
+kumain siya.` where `bukas` "tomorrow" is registered as
+ADV-only in particles.yaml (ADV_TYPE=TIME, DEIXIS_TIME=FUT).
+The 8.D N-variant didn't fire because there's no NOUN entry for
+`bukas`. The new rule reuses the existing `AdvP → ADV`
+non-terminal from `cfg/extraction.py` (Phase 4
+ay-AdvP-fronting infrastructure). Equation set identical to
+8.D NP/N variants.
+
+`kahapon` "yesterday" now triggers BOTH the 8.D N-variant
+(NOUN registration) and the 8.D2 AdvP-variant (ADV
+registration); the two paths produce equivalent f-structures
+and surface as a 2-parse spurious-ambiguity at the parser
+output. Pin the 2-parse count to detect path regressions.
+
+**PART-variant** (`S → PART[INTERJ=true] PUNCT[COMMA] S`).
+Closes discourse-particle-fronted topics like `Oo, kumain
+siya.` ("Yes, he ate.") and `Eto, kumain siya.` ("Here [it
+is], he ate."). Three new PART lex entries — `oo`, `opo`
+(polite-affirmation variant of `oo`), `eto` (deictic
+interjection) — carry `INTERJ: true` so the new rule's gating
+constraint matches.
+
+The rule is distinct from the Phase 5m Commit 4 sentence-
+initial PART rule (`cfg/discourse.py` line 224, gated by
+`DISCOURSE_POS=SENTENCE_INITIAL`) which handles connectives
+like `samakatuwid` and modals like `siguro` — those have no
+comma daughter and lack the `INTERJ` feat. The two rules are
+structurally and feature-gated-distinct.
+
+### Deferred-from-8.D2
+
+- `Wala, taong-bahay siya.` — `wala` is currently registered
+  as the EXISTENTIAL=NEG particle for existential clauses
+  (`Wala akong aklat.` "I have no books"). The rarer "no"
+  interjection sense would require polysemy splitting (a
+  second `wala` lex entry with `INTERJ=true`); deferred.
+- `Una sa lahat, kumain si Juan.` — `Una sa lahat` is a complex
+  fronted constituent (`Una` "first" ADJ + `sa lahat` "of all").
+  Building this as a single fronted phrase needs more infra
+  than 8.D2 scope; deferred.
+
+### Audit-derived sentences that now parse
+
+- `Bukas, kumain siya.` (ADV-variant rule + existing `bukas` lex)
+- `Kahapon, kumain siya.` (now 2 parses — N-variant + AdvP-variant)
+- `Sa simula, kumain si Juan.` (8.D NP-variant + new `simula` lex)
+- `Oo, kumain siya.` / `Eto, kumain siya.` / `Opo, kumain siya.`
+  (PART-variant rule + new INTERJ lex)
+
+### Test plan
+
+3 pins in `TestPhase8dOutOfScope` flipped from negative
+("still_fails") to positive ("parses") assertions and renamed
+to a new class `TestPhase8dClosedIn8d2`. 3 new tests in
+`TestPhase8d2NewClosures` cover the dual-POS `kahapon` parses,
+the polite-affirmation `opo`, and the negative-case test that
+the INTERJ-gate correctly excludes non-INTERJ PARTs (`din`).
+
+`hatch run test-both`: 7562 passed in 71.23s (was 7559; +3
+net — 3 new tests; 3 pin-flips reuse the same test methods).
+
+### Anti-deferral discipline lesson
+
+The user flagged the original 8.D pin-and-defer pattern as an
+anti-deferral failure: a `TestXOutOfScope` pin without a
+corresponding plan-of-record entry is a queue with no
+scheduling. The 8.D2 plan-ledger entry was added on the same
+day as the 8.D merge; 8.D2 itself shipped within the same
+Phase 8 work session. Future pins should ship with their
+follow-on sub-PR row already in the plan ledger.

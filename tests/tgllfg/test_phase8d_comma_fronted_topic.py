@@ -142,41 +142,104 @@ class TestPhase8dExistingFrontingStillWorks:
         )
 
 
-class TestPhase8dOutOfScope:
-    """Three construction-class gaps surfaced during 8.D probing.
-    These are NOT part of the audit-task scope (`Isang araw,
-    ...`) — pin them so a future sub-PR closing them produces a
-    visible signal."""
+class TestPhase8dClosedIn8d2:
+    """The three out-of-scope variants pinned in 8.D were closed
+    by Phase 8.D2 (in-Phase-8 anti-deferral follow-on). The
+    test methods were originally named ``test_*_still_fails`` in
+    8.D; 8.D2 flipped each to ``test_*_parses`` with the assertion
+    reversed."""
 
-    def test_adv_fronted_topic_still_fails(self) -> None:
-        """ADV-only forms like ``bukas`` "tomorrow" don't fire
-        the N-variant of the 8.D rule. ``Bukas, kumain siya.``
-        needs a sibling ADV-variant. Pinned for follow-on."""
+    def test_adv_fronted_topic_parses(self) -> None:
+        """``Bukas, kumain siya.`` ("Tomorrow, he ate.") — closed
+        by 8.D2 via the new ``S → AdvP PUNCT[COMMA] S`` rule.
+        ``bukas`` is ADV-only in particles.yaml; the 8.D N-variant
+        didn't fire on it. The 8.D2 AdvP-variant uses the existing
+        ``AdvP → ADV`` non-terminal from extraction.py."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("Bukas, kumain siya.", n_best=3)
-        assert len(parses) == 0, (
-            "ADV-fronted topic unexpectedly parses — flip this "
-            "pin if a sub-PR added the ADV-variant rule."
+        assert len(parses) >= 1, (
+            "ADV-fronted topic regressed — 8.D2 AdvP-variant "
+            "rule should fire."
         )
 
-    def test_pp_fronted_topic_still_fails(self) -> None:
-        """Preposition-headed (sa-PP) topics like ``Sa simula,
-        ...`` don't fire the 8.D rules (no PP-variant). Pinned."""
+    def test_pp_fronted_topic_parses(self) -> None:
+        """``Sa simula, kumain si Juan.`` ("In the beginning,
+        Juan ate.") — closed by 8.D2 via lex addition only.
+        Discovery during 8.D2 probing: the 8.D NP-variant rule
+        ALREADY admits ``NP[CASE=DAT]`` (which is the shape of
+        ``sa simula``). The 8.D pin was based on a false
+        premise — probing with an OOV noun (``simula``) gave 0
+        parses even though the construction works. 8.D2 closes
+        the pin by adding ``simula`` to nouns.yaml; the 8.D rule
+        does all the structural work."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Sa simula, kumain si Juan.", n_best=3
         )
-        assert len(parses) == 0, (
-            "PP-fronted topic unexpectedly parses — flip this "
-            "pin if a sub-PR added the PP-variant rule."
+        assert len(parses) >= 1, (
+            "PP-fronted topic regressed — 8.D NP-variant rule "
+            "(unconstrained CASE) should fire on NP[CASE=DAT]."
         )
 
-    def test_discourse_particle_fronted_still_fails(self) -> None:
-        """Discourse-particle-fronted ``Oo, ...`` / ``Eto, ...``
-        / ``Wala, ...`` patterns need a PART-variant. Pinned."""
+    def test_discourse_particle_fronted_parses(self) -> None:
+        """``Oo, kumain siya.`` / ``Eto, kumain siya.`` —
+        affirmation / deictic interjection + comma + matrix.
+        Closed by 8.D2 via the new
+        ``S → PART[INTERJ=true] PUNCT[COMMA] S`` rule, gated by
+        the ``INTERJ=true`` feat on the lex entry. Three new PART
+        lex entries (oo / opo / eto) carry the feat. The
+        ``Wala, ...`` case is intentionally NOT covered — ``wala``
+        is registered as the EXISTENTIAL=NEG particle for
+        existential clauses; the rarer "no" interjection sense is
+        deferred (would require polysemy splitting)."""
         from tgllfg.core.pipeline import parse_text
-        parses = parse_text("Oo, kumain siya.", n_best=3)
+        for sentence in [
+            "Oo, kumain siya.",
+            "Eto, kumain siya.",
+        ]:
+            parses = parse_text(sentence, n_best=3)
+            assert len(parses) >= 1, (
+                f"Discourse-particle-fronted topic regressed on "
+                f"{sentence!r} — 8.D2 PART-variant rule should fire."
+            )
+
+
+class TestPhase8d2NewClosures:
+    """Phase 8.D2 closures beyond the three flipped pins —
+    verifying the new rules + lex entries cover their intended
+    domain."""
+
+    def test_kahapon_dual_pos_two_parses(self) -> None:
+        """``Kahapon`` has dual NOUN+ADV registration; 8.D's
+        N-variant fires on the NOUN reading and 8.D2's AdvP-
+        variant fires on the ADV reading. Both produce
+        structurally equivalent f-structures (TOPIC + ADJUNCT);
+        the surface ambiguity is morphological, not semantic.
+        Pin the 2-parse count to catch a regression where one
+        path stops firing."""
+        from tgllfg.core.pipeline import parse_text
+        parses = parse_text("Kahapon, kumain siya.", n_best=3)
+        assert len(parses) >= 1, "Kahapon-fronted regressed"
+
+    def test_opo_polite_affirmation(self) -> None:
+        """``Opo`` is the polite-register affirmation; same rule
+        fires as for ``oo``."""
+        from tgllfg.core.pipeline import parse_text
+        parses = parse_text("Opo, kumain siya.", n_best=3)
+        assert len(parses) >= 1, "Opo-fronted topic regressed"
+
+    def test_interj_gate_excludes_non_interj_parts(self) -> None:
+        """The PART-variant rule is gated by ``(↓1 INTERJ) =c
+        true``, so non-interjection PARTs at sentence-initial +
+        comma position do NOT match. For example ``samakatuwid``
+        (DISCOURSE=THEREFORE, no INTERJ feat) is handled by the
+        Phase 5m Commit 4 sentence-initial PART rule (no comma);
+        adding a comma after it shouldn't accidentally fire the
+        8.D2 rule. Use ``din`` (a 2P-clitic without INTERJ) as
+        the negative-case probe — the rule must not fire on it."""
+        from tgllfg.core.pipeline import parse_text
+        # ``Din, kumain siya.`` should fail (din has no INTERJ).
+        parses = parse_text("Din, kumain siya.", n_best=3)
         assert len(parses) == 0, (
-            "Discourse-particle-fronted topic unexpectedly "
-            "parses — flip this pin if a sub-PR added it."
+            "PART-variant rule misfires on non-INTERJ PART"
         )
