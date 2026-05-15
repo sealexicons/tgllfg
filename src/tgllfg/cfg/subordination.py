@@ -130,6 +130,35 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- (d) Post-matrix attachment WITH comma ------------------------
+    #
+    # ``S → S PUNCT[PUNCT_CLASS=COMMA] SubordClause``
+    #
+    # Equations:
+    #   (↑) = ↓1                       # matrix is the pre-comma S
+    #   ↓3 ∈ (↑ ADJUNCT)              # SubordClause joins ADJUNCT set
+    #
+    # Phase 8.M-bundled Phase 5l completion (anti-deferral). The
+    # existing Phase 5l rules cover pre-matrix-with-comma (rule c)
+    # and post-matrix-no-comma (rule b), but the post-matrix-WITH-
+    # comma shape ``S, kapag/nang/habang/bago/... S`` was missing.
+    # Audit-driven corpus pressure: 68 candidates across all
+    # temporal/causal/concessive subords (bago=15, para=13,
+    # kung=8, kahit=7, habang=7, dahil=6, kasi=4, hanggang=3,
+    # pagkatapos=3, nang=2). Directly closes 2 ``nang`` corpus
+    # targets (``Nasa daan na si Max, nang bumuhos...``, ``At
+    # lumiwanag ang langit, nang huminto...``); the remaining 66
+    # candidates fire if their orthogonal OOV/clitic-glue blockers
+    # also close.
+    rules.append(Rule(
+        "S",
+        ["S", "PUNCT[PUNCT_CLASS=COMMA]", "SubordClause"],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+
     # === Phase 5l Commit 4: concessive SubordClause builder ============
     #
     # ``SubordClause → PART[COMP_TYPE=CONC] S``
@@ -240,6 +269,29 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBORD_TYPE) = 'TEMP_SINCE'",
             "(↓1 PREP_TYPE) =c 'SOURCE'",
             "(↓2 COMP_TYPE) =c 'TEMP_SINCE'",
+        ],
+    ))
+
+    # === Phase 8.M: TEMP_WHEN SubordClause builder ====================
+    # — ``nang`` "when (X happened)"
+    #
+    # ``SubordClause → PART[COMP_TYPE=TEMP_WHEN] S``  for bare ``nang``
+    #
+    # Distinct from the Phase 5l C7 ``mula nang`` TEMP_SINCE rule above,
+    # which requires the PREP[SOURCE] ``mula`` daughter. The bare-``nang``
+    # form heads the audit-named ``Nang dumating si Ben, ...`` (S&O 1972
+    # p.196) / ``Nang tamaan siya ng baseball...`` (R&C 1990) class.
+    # The ``nang`` PART has TWO lex entries (Phase 8.M particles.yaml):
+    # ``TEMP_SINCE`` (only fires composed with ``mula``) and
+    # ``TEMP_WHEN`` (fires bare). The chart's =c constraints route each
+    # rule to its matching lex variant without spurious ambiguity.
+    rules.append(Rule(
+        "SubordClause",
+        ["PART[COMP_TYPE=TEMP_WHEN]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ SUBORD_TYPE) = 'TEMP_WHEN'",
+            "(↓1 COMP_TYPE) =c 'TEMP_WHEN'",
         ],
     ))
 
