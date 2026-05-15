@@ -15793,3 +15793,83 @@ the probe). The honest finding is recorded here rather than
 hidden behind an over-engineered "decomposition" that wasn't
 needed. The corresponding cluster claim in
 `docs/coverage-audit-2026-05.md` §15-§16 is updated.
+
+## Phase 8.A: Wave 1 lex pass
+
+Closes the lex-gap inventory from `docs/coverage-audit-2026-05.md`
+§4 "Probable lex gaps (verbs)" — the 17-entry shortlist from the
+Wave 1 audit (rg81 transcriptions). 10 of those entries
+required actual lex addition or update; 7 were already present
+(`bahay`, `bukid`, `bunot`, `gulay`, `itlog`, `manok`, plus
+`balak` — already a verb entry).
+
+### Entries added / updated
+
+Verbs (7 new + 1 update):
+
+- `tanim` plant (TR) — `[mag, i_oblig, an_oblig, maka]` per
+  R&B 1986 page 255 (AF `magtanim`, OF `itanim`, LF `tanimàn`).
+- `tuka` peck (TR) — `[um, in_oblig, maka]`. Canonical animal-
+  action signature; audit-surfaced `tinutuka` (-in IPFV-OF).
+- `sapit` arrive (INTR) — `[um, maka]`. Motion verb parallel
+  to `dating` but more formal-register.
+- `dungaw` look out (window) (INTR) — `[um, maka]`. Audit-
+  surfaced `dumungaw` (-um- PFV).
+- `putak` cluck, cackle (INTR) — `[um, maka]`. Animal sound-
+  emission; audit-surfaced `pumutak`.
+- `bintang` accuse (TR) — `[mag, an_oblig, maka]`. AF
+  `magbintang` works; DV PFV `binintangan` works. The audit-
+  surfaced `pinagbintangan` (`pag-X-an` LF PFV) remains
+  unanalyzed — a separate paradigm-cell gap (see "Out of 8.A
+  scope" below).
+- `taba` become fat (INTR) — `[um, maka]`. Inchoative stative;
+  audit-surfaced `tumaba`.
+- `pasok` enter / put in (TR) — affix_class extended from
+  `[um, in_oblig, maka]` to
+  `[um, mag, in_oblig, i_oblig, an_oblig, maka]`. R&B 1986
+  page 184 records two senses; the pre-8.A signature only
+  covered "enter". The audit surfaced `ipinasok` (i- PFV "was
+  put in") from the second sense.
+
+Nouns (3 new):
+
+- `palay` rice (unhusked).
+- `damo` grass / weeds. (Homophonous with the verb `damo`
+  "pluck grass" already in `verbs.yaml`; POS context
+  disambiguates.)
+- `tasa` cup.
+
+### Coverage impact
+
+Across the seed=42 audit samples:
+
+| Source | Before 8.A | After 8.A | Delta |
+| --- | ---: | ---: | ---: |
+| Wave 1 (rg81 transcr., 118 sents) | 11 (9.3%) | 18 (15.3%) | +7 (+6.0pp) |
+| Wave 2 RC 1990 (500 sampled) | 19 (3.8%) | 27 (5.4%) | +8 |
+| Wave 2 RG Intermediate (500 sampled) | 26 (5.2%) | 34 (6.8%) | +8 |
+| Wave 2 Ramos 1971 (222 sampled) | 8 (3.6%) | 8 (3.6%) | 0 |
+| Wave 3 S&O 1972 (500 sampled) | 40 (8.0%) | 41 (8.2%) | +1 |
+| Wave 3 R&G Conv. (500 sampled) | 78 (15.6%) | 78 (15.6%) | 0 |
+| **Cumulative (2220 sents)** | **183 (8.24%)** | **206 (9.28%)** | **+23 (+1.04pp)** |
+
+Wave 1 sees the largest lift (Wave 1 is the source of the
+audit-surfaced gaps). Wave 2 RC 1990 and RG Intermediate see
+secondary lifts because they cite some of the same common
+verbs / nouns in their own examples. Wave 3 sees minimal
+impact — the verbs added are Wave 1-specific.
+
+### Out of 8.A scope
+
+- `pinagbintangan` (the `pag-X-an` LF PFV form of `bintang`).
+  The analyzer has no `pag_an` paradigm cell for `mag-` class
+  verbs of accusation / experience. Adding it is paradigm-
+  engine extension (Phase 8.B-class work), not lex. Tracked
+  via the 8.A test pin (`TestPhase8aOutOfScope::test_pag_an_pf_still_unk`).
+  Anti-deferral note: this is a distinct paradigm-cell gap, not
+  a re-deferral of an 8.A-closed lex gap.
+- The 84 remaining `-ng`-ending OOVs that Phase 8.Q exposed
+  (`tulong`, `tanong`, `kanto`, `marunong`, `pulong`) are still
+  lex gaps but not in the 8.A target list — they belong to
+  Phase 8.N (Wave-2 lex pass) and Phase 8.B (R&B 1986 wider
+  pass).
