@@ -16580,3 +16580,65 @@ scheduling. The 8.D2 plan-ledger entry was added on the same
 day as the 8.D merge; 8.D2 itself shipped within the same
 Phase 8 work session. Future pins should ship with their
 follow-on sub-PR row already in the plan ledger.
+
+## Phase 8.E: `mga` + DEM PRON head
+
+Closes the audit-surfaced construction-class gap (10 corpus
+candidates across 5342 exemplars) with a single new rule
+appended to `cfg/nominal.py`:
+
+```text
+NP[CASE=NOM] → DET[CASE=NOM] PART DET[CASE=NOM, DEM]
+
+  (↑)            = ↓1            share with case-marker
+  (↑ PRED)       = 'PRO'         synthesized DEM-PRED
+  (↑ NUM)        = 'PL'          mga marks plural
+  (↑ DEIXIS)     = ↓3 DEIXIS     lift DEM's deixis
+  (↓2 PLURAL_MARKER) =c true     gate ↓2 to ``mga``
+```
+
+Sibling to the Phase 7a.A `mga` + N rule (same shape, N head)
+and the Phase 4 §7.8 standalone-DEM NP rule (DEM head without
+`mga`). The third daughter is a DEM-marked DET; the matrix
+gets a synthesized `PRED='PRO'` like the standalone-DEM rule,
+with NUM=PL and DEIXIS lifted from the DEM.
+
+### Audit-driven scoping (NOM-only)
+
+The `/tmp/audit_mga_dem.py` probe found 10 corpus candidates,
+all with NOM-form DEMs (`ito` / `iyan` / `iyon`). Zero corpus
+hits for GEN-DEM (`mga nito` / `mga niyan` / `mga niyon`) or
+DAT-DEM (`mga dito` / `mga riyan` / `mga doon`). Per the
+"audit-before-scheduling" discipline established in 8.D2, the
+GEN/DAT variants are NOT in 8.E scope — adding them would be a
+~3-line parallel rule but with 0 corpus pressure today. Pinned
+in `TestPhase8eOutOfScope` so a future audit-pressure-driven
+sub-PR can flip them.
+
+### Direct corpus closures (delta from rule alone)
+
+| Source | Sentence | Pre-8.E | Post-8.E |
+| --- | --- | ---: | ---: |
+| wave1 ANG PAMILYA | `Kinakain niya ang mga ito.` | 0 | 1 |
+| wave3 SO 1972 §X | `Para sa mga gusto ko ang mga iyon ...` (variant) | 0 | 1 |
+
+Other 8 audit candidates remain zero-parse due to orthogonal
+blockers — OOV verbs (`Itapon` imperative of `itapon`,
+`Basahan` LF of `basa`, `Kurdn` OCR-of-`Kunin`) and OCR junk
+(`m.angabubulokang`, `mg:i`, etc.). These don't reduce the
+8.E rule's correctness; they're separate audit gaps for lex
+and OCR-cleanup work.
+
+### Test plan
+
+11 new tests in `tests/tgllfg/test_phase8e_mga_dem.py`:
+
+- 3 sentence-level parses covering all three deixis values
+- 4 f-structure shape tests (PRED='PRO', NUM='PL', DEIXIS lift
+  for each of PROX/MED/DIST)
+- 2 non-regression tests (Phase 7a.A mga+N, Phase 4 §7.8
+  standalone-DEM)
+- 2 out-of-scope pins (GEN/DAT mga+DEM, zero-corpus-pressure)
+
+`hatch run test-both`: 7573 passed in 74.14s (was 7562; +11
+new tests).
