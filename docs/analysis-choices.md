@@ -16789,3 +16789,142 @@ bare-N rule + the evidential rule, with no extra path from the
 
 `hatch run test-both`: 7590 passed in 78.27s (was 7582; +8
 new tests).
+
+## Phase 8.M: `nang` temporal "when" + post-matrix-comma rule
+
+Closes the audit-named ``Nang tamaan siya ng baseball...``
+(R&C 1990) / ``Nang dumating si Ben, ...`` (S&O 1972) construction
+class via two changes bundled in one PR.
+
+### Commit 1: `nang` as bare TEMP_WHEN subordinator
+
+Pre-8.M, ``nang`` was registered in `data/tgl/particles.yaml`
+only as `PART[COMP_TYPE=TEMP_SINCE, SUBORD_VARIANT=SINCE]` —
+which fires composed with `mula` via the Phase 5l Commit 7
+`mula nang` rule. The bare ``Nang VERB ..., S`` "when X
+happened, S" reading was unregistered. Audit-driven probe
+(`/tmp/audit_nang.py`) found 191 corpus tokens of `nang`
+across the seven reference grammars, classified as:
+
+| Use class | Count |
+| --- | --- |
+| TEMPORAL ("when") — 8.M scope | 23 |
+| MEASURE (`nang dalawang oras`) | 11 |
+| CONTRACT (`na` + linker `ng`: `wala nang`) | 10 |
+| ATNANG (`at nang` purpose) | 7 |
+| REDUP_INTENSIVE (`tanong nang tanong`) | 5 |
+| PREFIX (`nang-agaw` mang- allomorph) | many |
+| OTHER (mostly manner-marker `nang ADJ`) | 135 |
+
+Commit 1 adds a second `nang` lex entry with
+`COMP_TYPE=TEMP_WHEN, SUBORD_VARIANT=WHEN` plus a parallel
+SubordClause builder rule in `cfg/subordination.py`:
+
+```text
+SubordClause → PART[COMP_TYPE=TEMP_WHEN] S
+
+  (↑) = ↓2
+  (↑ SUBORD_TYPE) = 'TEMP_WHEN'
+  (↓1 COMP_TYPE) =c 'TEMP_WHEN'
+```
+
+The `mula nang` TEMP_SINCE rule is unaffected — its
+`(↓2 COMP_TYPE) =c 'TEMP_SINCE'` constraint routes it to the
+original (TEMP_SINCE) lex entry; bare `nang` routes to the
+new (TEMP_WHEN) entry. No spurious-ambiguity is introduced
+(verified by `TestPhase8mNangNotSpurious` test class).
+
+### Commit 2: post-matrix-WITH-comma attachment rule
+
+The Phase 5l matrix attachment rule set covered:
+
+- Rule (a): `S → PART[COND] S` (sentence-initial, no comma)
+- Rule (b): `S → S SubordClause` (post-matrix, no comma)
+- Rule (c): `S → SubordClause , S` (pre-matrix, with comma)
+
+The post-matrix-WITH-comma shape was missing — Phase 5l
+implicitly assumed the comma always preceded the matrix.
+Audit-driven probe (`/tmp/audit_postmatrix_comma.py`) found
+**68 corpus candidates** across all subord families:
+
+| Subord | Count |
+| --- | --- |
+| `bago` | 15 |
+| `para` | 13 |
+| `kung` | 8 |
+| `kahit` | 7 |
+| `habang` | 7 |
+| `dahil` | 6 |
+| `kasi` | 4 |
+| `hanggang` | 3 |
+| `pagkatapos` | 3 |
+| `nang` | 2 |
+
+This breadth justified including the rule as an in-PR
+expansion rather than pinning as a Phase 8.M2 follow-on. The
+new rule:
+
+```text
+S → S PUNCT[PUNCT_CLASS=COMMA] SubordClause
+
+  (↑) = ↓1
+  ↓3 ∈ (↑ ADJUNCT)
+```
+
+is parallel to rule (b) (post-matrix, no comma), with the
+comma between. SUBORD_TYPE-agnostic — admits any subord that
+forms a SubordClause via the existing builders.
+
+### Audit-corpus closure: 0 direct, infrastructure-class
+
+All 18-23 corpus candidates with `nang` TEMPORAL have at
+least one orthogonal blocker:
+
+- OOV verbs: `bumuhos`, `lumiwanag`, `huminto`, `lumindol`,
+  `nangyari`, `tamaan`, `naging`, `nanaginip`,
+  `mapagtanto` (a future 8.B-class lex pass would close).
+- Clitic-glue: matrix wh-Q `ano'ng` (Phase 8.Q-class).
+- Post-comma NOM-PRON-pivot chart issue: matrix `tinawag
+  niya ako` (and similar) fails when preceded by any subord
+  plus comma. Pre-existing, affects all temporal subords —
+  documented as Phase 8.M follow-on diagnostic.
+- OCR junk: S&O 1972 has multiple corpus dups with garbled
+  text (`dum:iting`, `unibcrsidad`, etc.).
+
+Direct corpus closures = 0. Constructed minimal-pair
+closures (this PR):
+
+- `Nang kumain siya, umalis ako.` (C1)
+- `Tumakbo ang aso, nang umalis si Juan.` (C2 new shape)
+- `Kumain si Juan, kapag aalis si Pedro.` (C2 generalizes
+  to all subords)
+- `Umalis siya, bago kumain si Juan.` (C2 for bago)
+- `Tumakbo si Maria, habang umiyak si Pedro.` (C2 for habang)
+
+Per audit-before-scheduling discipline, 0 direct corpus
+closures would normally defer a sub-PR. 8.M ships anyway
+because:
+
+1. The plan-of-record sanctions 8.M explicitly under Wave D.
+2. The audit-named target IS in published reference material
+   (R&C 1990, S&O 1972) — the corpus failures are
+   downstream of OOV lex, not infrastructure gaps.
+3. Closing the construction class unblocks all future
+   8.B-class lex passes from extending parse coverage.
+
+### Test plan
+
+18 new tests in `tests/tgllfg/test_phase8m_nang_temporal.py`:
+
+- 6 sentence-level closures for C1 (pre-matrix + post-matrix-
+  no-comma `nang` cases, verifying SUBORD_TYPE=TEMP_WHEN)
+- 4 sentence-level closures for C2 (post-matrix-comma across
+  4 subord families: `nang`, `kapag`, `habang`, `bago`)
+- 3 regressions (mula-nang, kapag pre-/post-matrix)
+- 2 non-spuriousness tests (no TEMP_WHEN leak in mula-nang,
+  no TEMP_SINCE leak in bare-nang)
+- 3 out-of-scope pins (OOV-blocked audit target, post-comma
+  NOM-PRON-pivot chart issue, C2-with-OOV audit target)
+
+`hatch run test-both`: 7608 passed in 74.33s (was 7590;
++18 new tests).
