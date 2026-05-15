@@ -41,6 +41,11 @@
   gloss: smelly, foul
   affix_class: [ma_adj]
 
+- citation: bago
+  pos: ADJ
+  gloss: new (homophonous with the temporal subordinator "before" in particles.yaml; the ADJ sense is the audit-cited usage in "Bagong ani ang palay")
+  affix_class: []
+
 - citation: bait
   pos: ADJ
   gloss: kind, well-behaved
