@@ -1854,3 +1854,27 @@
 - surface: magisa
   pos: ADV
   feats: {ADV_TYPE: MANNER, MAGISA: true, LEMMA: mag-isa}
+
+# === Phase 8.D2: discourse-interjection PARTs ===========================
+#
+# Affirmation / negation / deictic interjections used sentence-
+# initially with a comma break (``Oo, kumain siya.`` "Yes, he ate.").
+# The ``INTERJ: true`` feature gates the Phase 8.D2 PART-variant of
+# the comma-fronted topic rule in ``cfg/clause.py``
+# (``S → PART[INTERJ=true] PUNCT[COMMA] S``); other PARTs (linkers,
+# 2P clitics, coordinators, etc.) lack the feat and don't match.
+#
+# ``opo`` is the polite-affirmation register form of ``oo`` (same
+# semantics, REGISTER=POLITE per Phase 5m convention).
+#
+# References: Schachter & Otanes 1972 §15 (interjections);
+# R&G 1981 §3 (greetings + affirmations).
+- surface: oo
+  pos: PART
+  feats: {INTERJ: true, AFFIRM: true, LEMMA: oo}
+- surface: opo
+  pos: PART
+  feats: {INTERJ: true, AFFIRM: true, REGISTER: POLITE, LEMMA: opo}
+- surface: eto
+  pos: PART
+  feats: {INTERJ: true, DEICTIC: true, LEMMA: eto}

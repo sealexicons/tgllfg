@@ -2765,3 +2765,80 @@ def register_rules(rules: list[Rule]) -> None:
             "↓1 ∈ (↑ ADJUNCT)",
         ],
     ))
+
+
+    # === Phase 8.D2: comma-fronted topic siblings ======================
+    #
+    # In-Phase-8 anti-deferral follow-on to 8.D. The 8.D
+    # ``TestPhase8dOutOfScope`` block pinned three sibling
+    # construction-class gaps surfaced during 8.D probing
+    # (``Bukas, kumain siya.``, ``Sa simula, ...``,
+    # ``Oo, kumain siya.``). 8.D2 closes them as scheduled in the
+    # plan-of-record `.claude/plans/tgllfg-phase-8.md` §1 ledger.
+    #
+    # Discovery during 8.D2 probing: the PP-fronted case
+    # (``Sa simula, ...``) was NOT a structural gap — the 8.D
+    # NP-variant rule already admits ``NP[CASE=DAT]`` (which is what
+    # ``sa simula`` builds as). The only blocker was the OOV noun
+    # ``simula``. The pin in 8.D was based on a wrong premise
+    # (probing with an OOV noun gives 0 parses even when the
+    # construction works); 8.D2 closes it via lex addition only,
+    # plus flipping the negative pin to a positive assertion.
+    #
+    # The remaining two pins (ADV-fronted, PART-fronted) ARE
+    # structural gaps and need new rules.
+
+    # --- 8.D2 ADV-variant: ``S → AdvP PUNCT[COMMA] S`` ----------------
+    #
+    # Closes ``Bukas, kumain siya.`` ("Tomorrow, he ate.") where
+    # ``bukas`` is registered as ADV-only in particles.yaml
+    # (ADV_TYPE=TIME, DEIXIS_TIME=FUT). The N-variant doesn't fire
+    # (no NOUN entry for ``bukas``) so the AdvP-variant is needed.
+    # ``kahapon`` "yesterday" works in 8.D via its dual NOUN+ADV
+    # registration; this rule additionally admits the ADV-only
+    # forms.
+    #
+    # The AdvP non-terminal already exists in ``cfg/extraction.py``
+    # as ``AdvP → ADV`` (Phase 4 ay-AdvP-fronting infrastructure);
+    # 8.D2 reuses it as the first daughter of the comma variant.
+    # Equation set is identical to the 8.D NP/N variants.
+    rules.append(Rule(
+        "S",
+        ["AdvP", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
+        [
+            "(↑) = ↓3",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+
+    # --- 8.D2 PART-variant: ``S → PART[INTERJ=true] PUNCT[COMMA] S`` --
+    #
+    # Closes discourse-particle-fronted topics like
+    # ``Oo, kumain siya.`` ("Yes, he ate.") /
+    # ``Eto, kumain siya.`` ("Here [it is], he ate.") /
+    # ``Opo, kumain siya.`` (polite-affirmation variant of ``Oo``).
+    # The fronted PART is an affirmation / negation / deictic
+    # interjection occupying its own intonation phrase (signalled
+    # by the comma).
+    #
+    # The Phase 5m Commit 4 sentence-initial PART rule
+    # (``cfg/discourse.py`` line 224) handles connectives like
+    # ``samakatuwid`` and modal particles like ``siguro`` — those
+    # are gated by ``DISCOURSE_POS=SENTENCE_INITIAL`` and have NO
+    # comma daughter. The 8.D2 interjection-comma variant is
+    # structurally distinct (separate intonation, comma daughter)
+    # and gated by ``INTERJ=true`` so it fires only on the
+    # affirmation / negation / deictic interjections registered
+    # with that feat (8.D2 lex addition: ``oo`` / ``eto`` /
+    # ``opo``).
+    rules.append(Rule(
+        "S",
+        ["PART", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
+        [
+            "(↑) = ↓3",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↓1 INTERJ) =c true",
+        ],
+    ))
