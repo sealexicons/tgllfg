@@ -27,56 +27,6 @@
 # (S&O), Kroeger 1993 ch. 4. R&B page numbers in comments where the
 # verb's full paradigm is documented.
 
-# === Control verbs (CTRL_CLASS) ==========================================
-# Verbs that select an XCOMP complement clause introduced by the
-# linker (`na` / `-ng`). The `feats: {CTRL_CLASS: INTRANS|TRANS}`
-# field (Phase 4 §7.6) flags the verb's class for the grammar's
-# control wrap rules in cfg/control.py. Inflected control verbs
-# (regular AV / OV / DV paradigms) live here; the uninflected
-# pseudo-verb psych predicates (gusto / ayaw / kaya) live in
-# particles.yaml because they have no verbal morphology to drive
-# paradigm generation.
-
-- citation: payag
-  pos: VERB
-  gloss: agree
-  transitivity: INTR
-  # AV-only intransitive control verb: pumayag (PFV) / pumapayag
-  # (IPFV) / papayag (CTPL). The complement is an XCOMP introduced
-  # by the linker; matrix SUBJ controls the embedded SUBJ.
-  affix_class: [um, maka]
-  feats: {CTRL_CLASS: INTRANS}
-
-- citation: pilit
-  pos: VERB
-  gloss: force, compel
-  transitivity: TR
-  # Transitive control: pivot is forcee (matrix SUBJ in OV/DV);
-  # GEN-NP is forcer (matrix OBJ). pinilit = OV PFV.
-  affix_class: [um, in_oblig, an_oblig, maka]
-  feats: {CTRL_CLASS: TRANS}
-
-- citation: utos
-  pos: VERB
-  gloss: order, command
-  transitivity: TR
-  # DV pivot is recipient/orderee. inutusan = "ordered someone".
-  affix_class: [um, in_oblig, an_oblig, maka]
-  feats: {CTRL_CLASS: TRANS}
-
-
-# === Inflectional verbs ==================================================
-# Verb roots in alphabetical order by citation form. Each entry's
-# `affix_class` list (Phase 2 vocabulary: um / mag / mang / maka /
-# in_oblig / an_oblig / i_oblig, plus applicative / causative /
-# reciprocal extensions) determines which paradigm cells fire for
-# that root. R&B page numbers are cited inline where the verb's
-# full paradigm is documented. Phase 2C "bulk verb scale-up A/B/C"
-# section markers from the pre-reorder layout are dropped here —
-# they were commit-organised, not linguistic, and any historical
-# mapping is recoverable from `git log --follow data/tgl/verbs.yaml`.
-
-# -- additional -um- / OV transitives --
 - citation: abot
   pos: VERB
   gloss: reach, hand to
@@ -87,19 +37,14 @@
   pos: VERB
   gloss: climb
   transitivity: TR
-  # R&B 5: -um- / -in. Ambitransitive — climbing is intransitive
-  # (umakyat) but "to climb something" is transitive (akyatin); we
-  # tag as TR to enable the OV/DV/IV cells.
   affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka]
 
 - citation: alis
   pos: VERB
   gloss: depart, leave
   transitivity: INTR
-  # R&B 11: -um-. Vowel-initial root: -um- prefixes ("umalis").
   affix_class: [um, maka]
 
-# -- additional mag- class --
 - citation: aral
   pos: VERB
   gloss: study, learn
@@ -140,7 +85,6 @@
   pos: VERB
   gloss: come back, return
   transitivity: INTR
-  # R&B 20: mag- / -um- / -an. Both -um- and mag- in AV.
   affix_class: [um, mag, an_oblig, maka]
 
 - citation: balot
@@ -159,19 +103,12 @@
   pos: VERB
   gloss: read
   transitivity: TR
-  # R&B 24: -um- / -in / -an.
-  # Phase 4 §7.7: pa_in (pinabasa "made-read") and magpa
-  # (nagpabasa "had-read", biclausal causative). Phase 5d
-  # Commit 2: pa_an (pinabasahan "read-at"; locative-pivot
-  # causative DV). Phase 7a.B Commit 2: magsi (magsibasa
-  # "read (pl.)", plural-actor AV).
   affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an, magsi]
 
 - citation: bati
   pos: VERB
   gloss: greet
   transitivity: TR
-  # -um- / -in.
   affix_class: [um, in_oblig, maka]
 
 - citation: bawas
@@ -184,8 +121,6 @@
   pos: VERB
   gloss: pay
   transitivity: TR
-  # mag- / -an. /d/ → /r/ intervocalic on suffix attachment:
-  # bayad + -an → bayaran (Phase 2C).
   affix_class: [mag, an_oblig, maka]
   sandhi_flags: [d_to_r]
 
@@ -205,51 +140,37 @@
   pos: VERB
   gloss: give
   transitivity: TR
-  # mag- AV + DV PFV (an_oblig). R&B 1986 ch.5 paradigm tables.
-  # DV PFV surface `binigayan` is the formal-register pivot-recipient
-  # form (S&O 1972 §10); the syncope variant `binigyan` is a separate
-  # per-form lex (not yet added). OV (`-in`) and IV (`i-`) remain
-  # deferred — `bigay` OV is rare (the give-event is canonically DV
-  # for recipient pivot or IV-CONVEY for the gift-as-pivot).
   affix_class: [mag, an_oblig, maka]
 
 - citation: bihis
   pos: VERB
   gloss: dress, change clothes
   transitivity: INTR
-  # R&B 34: mag- / i- / -an.
   affix_class: [mag, i_oblig, an_oblig, maka]
 
 - citation: bilang
   pos: VERB
   gloss: count
   transitivity: TR
-  # R&B 35: -um- / -in / -an.
   affix_class: [um, in_oblig, an_oblig, maka]
 
 - citation: bili
   pos: VERB
   gloss: buy
   transitivity: TR
-  # R&B 37: -um- / -in / -an / i- / ipang-. mang- distributive
-  # ("mamili" — to shop). +maka- abilitative. Phase 4 §7.7: ipag
-  # (ipinagbili "sold-for", benefactive applicative IV). Phase 5c
-  # §7.7 follow-on: ipang (ipinambili "instrument-bought",
-  # instrumental applicative IV).
-  # Phase 5e Commit 12: mag_an (nagbilihan "exchanged in trade",
-  # reciprocal / social). Phase 5e Commit 14: mang_retain
-  # (mambili — retain-pattern AV variant alongside mamili).
   affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipag, ipang, mag_an, mang_retain]
 
 - citation: bilis
   pos: VERB
   gloss: be quick
   transitivity: INTR
-  # Phase 5n.A Commit 1: slimmed from [um, mag, ma, maka] to [um].
-  # The ma- adjective surface (``mabilis``) is in adjectives.yaml;
-  # the verbal entry retains only the inchoative -um- reading
-  # (``bumilis`` "become quick / quicken").
   affix_class: [um]
+
+- citation: bintang
+  pos: VERB
+  gloss: accuse
+  transitivity: TR
+  affix_class: [mag, an_oblig, maka]
 
 - citation: bisita
   pos: VERB
@@ -273,7 +194,6 @@
   pos: VERB
   gloss: open
   transitivity: TR
-  # mag- / -an.
   affix_class: [mag, an_oblig, maka]
 
 - citation: bunot
@@ -310,14 +230,12 @@
   pos: VERB
   gloss: carry, bring
   transitivity: TR
-  # R&B 49: mag- / -in / -an / ipag-.
   affix_class: [mag, in_oblig, an_oblig, maka]
 
 - citation: dalaw
   pos: VERB
   gloss: visit
   transitivity: TR
-  # R&B 51: -um- / -in.
   affix_class: [um, in_oblig, maka]
 
 - citation: dali
@@ -330,8 +248,6 @@
   pos: VERB
   gloss: feel, sense
   transitivity: TR
-  # /d/ → /r/ intervocalic flagged; CV-redup of dama gives "dadama"
-  # which surfaces as "darama" under the rule.
   affix_class: [um, mag, in_oblig, maka]
   sandhi_flags: [d_to_r]
 
@@ -345,7 +261,6 @@
   pos: VERB
   gloss: pluck grass
   transitivity: INTR
-  # mang- distributive: "manamo" (mang- + damo, d→n).
   affix_class: [mang, maka]
 
 - citation: dapa
@@ -364,8 +279,6 @@
   pos: VERB
   gloss: arrive
   transitivity: INTR
-  # -um-. /d/ → /r/ intervocalic: dadating → darating, dumadating →
-  # dumarating. Phase 2C automatic post-processor.
   affix_class: [um, maka]
   sandhi_flags: [d_to_r]
 
@@ -375,13 +288,17 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
 
-# -- mang- distributive (additional) --
 - citation: dukot
   pos: VERB
   gloss: snatch, take by force
   transitivity: TR
-  # mang- with /d/ → /n/: mang-+dukot → manukot.
   affix_class: [um, mang, in_oblig, maka]
+
+- citation: dungaw
+  pos: VERB
+  gloss: look out (window)
+  transitivity: INTR
+  affix_class: [um, maka]
 
 - citation: dunong
   pos: VERB
@@ -399,25 +316,18 @@
   pos: VERB
   gloss: use
   transitivity: TR
-  # R&B 62: -um- / -in / -an.
   affix_class: [um, in_oblig, an_oblig, maka]
 
 - citation: ganda
   pos: VERB
   gloss: be beautiful
   transitivity: INTR
-  # Phase 5n.A Commit 1: slimmed from [um, mag, ma, maka] to [um].
-  # The ma- adjective surface (``maganda``) is in adjectives.yaml;
-  # the verbal entry retains only the inchoative -um- reading
-  # (``gumanda`` "become beautiful").
   affix_class: [um]
 
 - citation: gawa
   pos: VERB
   gloss: do, make
   transitivity: TR
-  # R&B 71: -um- / -in / -an. Phase 4 §7.7: ipag (ipinaggawa
-  # "made-for", benefactive applicative IV).
   affix_class: [um, in_oblig, an_oblig, maka, ipag]
 
 - citation: giling
@@ -426,7 +336,6 @@
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
 
-# -- ma- non-volitional / stative --
 - citation: gising
   pos: VERB
   gloss: wake up
@@ -437,14 +346,12 @@
   pos: VERB
   gloss: pick vegetables
   transitivity: INTR
-  # mang- distributive: "mangulay" (mang- + gulay, g→ng).
   affix_class: [mang, maka]
 
 - citation: gupit
   pos: VERB
   gloss: cut with scissors
   transitivity: TR
-  # R&B 77: -um- / -in / -an / i-.
   affix_class: [um, in_oblig, an_oblig, i_oblig, maka]
 
 - citation: hagis
@@ -475,7 +382,6 @@
   pos: VERB
   gloss: search for
   transitivity: TR
-  # -um- / -in / -an.
   affix_class: [um, in_oblig, an_oblig, maka]
 
 - citation: handa
@@ -488,7 +394,6 @@
   pos: VERB
   gloss: face
   transitivity: TR
-  # R&B 91: -um- / -in.
   affix_class: [um, in_oblig, maka]
 
 - citation: hatak
@@ -501,10 +406,8 @@
   pos: VERB
   gloss: bring, deliver
   transitivity: TR
-  # R&B 92: mag- / i- / ipag-.
   affix_class: [mag, i_oblig, maka]
 
-# -- additional -um- / OV transitives --
 - citation: hawak
   pos: VERB
   gloss: hold, grip
@@ -533,7 +436,6 @@
   pos: VERB
   gloss: pull
   transitivity: TR
-  # -um- / -in / -an.
   affix_class: [um, in_oblig, an_oblig, maka]
 
 - citation: hingi
@@ -546,15 +448,12 @@
   pos: VERB
   gloss: wait
   transitivity: TR
-  # R&B 101: mag- / -in.
   affix_class: [mag, in_oblig, maka]
 
 - citation: hiram
   pos: VERB
   gloss: borrow (an object)
   transitivity: TR
-  # Phase 7a.B Commit 2: magpa_an (magpahiraman "lend one another",
-  # reciprocal-distributive causative AV).
   affix_class: [um, mag, in_oblig, maka, magpa_an]
 
 - citation: hubad
@@ -567,15 +466,12 @@
   pos: VERB
   gloss: wash
   transitivity: TR
-  # R&B 109: mag- / -an / ipag- / ipang-.
   affix_class: [mag, an_oblig, maka]
 
 - citation: huli
   pos: VERB
   gloss: catch
   transitivity: TR
-  # R&B 111: -um- / -in / i- / ipang-.
-  # mang- distributive: "manghuli" → manghuli (h is sonorant; no nasal sub).
   affix_class: [um, in_oblig, i_oblig, mang, maka]
 
 - citation: ihaw
@@ -612,19 +508,12 @@
   pos: VERB
   gloss: drink
   transitivity: TR
-  # R&B 117: -um- / -in / -an.
-  # Phase 4 §7.7: pa_in (pininom "made-drink") and magpa
-  # (nagpainom "had-drink", biclausal causative). Phase 5d
-  # Commit 2: pa_an (pinainuman "drunk-at"; locative-pivot
-  # causative DV). Phase 7a.B Commit 2: magsi (magsiinom
-  # "drink (pl.)", plural-actor AV).
   affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an, magsi]
 
 - citation: ipon
   pos: VERB
   gloss: collect, save
   transitivity: TR
-  # R&B 120: mag- / -in.
   affix_class: [mag, in_oblig, maka]
 
 - citation: isip
@@ -643,14 +532,12 @@
   pos: VERB
   gloss: cry, weep
   transitivity: INTR
-  # R&B 124: -um- / -an.
   affix_class: [um, an_oblig, maka]
 
 - citation: kabit
   pos: VERB
   gloss: attach, hook
   transitivity: TR
-  # mang- with /k/ → /ng/: mang-+kabit → mangabit.
   affix_class: [mag, mang, in_oblig, an_oblig, maka]
 
 - citation: kagat
@@ -663,34 +550,14 @@
   pos: VERB
   gloss: eat
   transitivity: TR
-  # R&B 126: -um- / -in / -an. + maka- abilitative (productive).
-  # Phase 4 §7.7: pa_in (pinakain "fed", direct causative) and
-  # magpa (nagpakain "had-eat", biclausal causative). Phase 5c
-  # §7.7 follow-on: ika (ikinakain "[reason for which X] ate",
-  # reason applicative IV). Phase 5d Commit 2: pa_an
-  # (pinakainan "fed-at"; locative-pivot causative DV).
-  # Phase 5e Commit 12: mag_an (nagkainan "ate together",
-  # reciprocal / social).
-  # Phase 7a.B Commit 2: magsi (magsikain "eat (pl.)", plural-actor
-  # AV) + magpa_an (nagpakainan "feed one another",
-  # reciprocal-distributive causative AV).
   affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an, mag_an, magsi, magpa_an]
 
 - citation: kanta
   pos: VERB
   gloss: sing
   transitivity: INTR
-  # mag- / um- / i-. Phase 7a.B Commit 2: magsi (magsikanta
-  # "sing (pl.)", S&O §5.15 canonical example).
   affix_class: [um, mag, i_oblig, maka, magsi]
 
-# Phase 5e Commit 21: kape as denominal mag- verb. The mag-NOUN
-# pattern is productive for verbs of consumption / engagement
-# (`magkape` = drink coffee, `mag-tubig` = fetch water,
-# `magbahay` = build a house). The seed lexicon picks just `kape`
-# for the SOC hortative example `Magkape tayo` "Let's have
-# coffee"; other denominal mag-verbs lift trivially by adding the
-# same dual NOUN+VERB entry.
 - citation: kape
   pos: VERB
   gloss: have coffee
@@ -701,7 +568,6 @@
   pos: VERB
   gloss: move, do something
   transitivity: INTR
-  # -um-.
   affix_class: [um, maka]
 
 - citation: kita
@@ -714,14 +580,12 @@
   pos: VERB
   gloss: copy
   transitivity: TR
-  # R&B 134: -um- / -in / -an / i-.
   affix_class: [um, in_oblig, an_oblig, i_oblig, maka]
 
 - citation: kuha
   pos: VERB
   gloss: get, take
   transitivity: TR
-  # mang- distributive ("manguha"); maka- abilitative.
   affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka]
 
 - citation: kuskos
@@ -740,7 +604,6 @@
   pos: VERB
   gloss: launder, wash clothes
   transitivity: TR
-  # R&B 137: mag- / -an.
   affix_class: [mag, an_oblig, maka]
 
 - citation: labag
@@ -755,7 +618,6 @@
   transitivity: INTR
   affix_class: [um, mag, i_oblig, maka]
 
-# -- additional mag- transitives --
 - citation: lagay
   pos: VERB
   gloss: place, put
@@ -766,9 +628,6 @@
   pos: VERB
   gloss: walk
   transitivity: INTR
-  # R&B 144: -um- / -in / -an. Walks to/towards take -in/-an objects;
-  # bare walking is intransitive. /d/ → /r/ intervocalic ("lakarin"
-  # rather than "lakadin" under suffixation).
   affix_class: [um, in_oblig, an_oblig, maka]
   sandhi_flags: [d_to_r]
 
@@ -776,10 +635,6 @@
   pos: VERB
   gloss: be strong
   transitivity: INTR
-  # Phase 5n.A Commit 1: slimmed from [um, mag, ma, maka] to [um].
-  # The ma- adjective surface (``malakas``) is in adjectives.yaml;
-  # the verbal entry retains only the inchoative -um- reading
-  # (``lumakas`` "become strong / strengthen").
   affix_class: [um]
 
 - citation: lapit
@@ -804,24 +659,18 @@
   pos: VERB
   gloss: clean
   transitivity: TR
-  # R&B 162: mag- / -in / ipang-. The realis -in- on sonorant-initial
-  # roots surfaces as a ni- prefix (Phase 2C automatic rule), so OV
-  # PFV is "nilinis" (not "linilis") and OV IPFV is "nililinis".
   affix_class: [mag, in_oblig, an_oblig, maka]
 
 - citation: lipad
   pos: VERB
   gloss: fly, travel by airplane
   transitivity: INTR
-  # R&B 164: -um-.
   affix_class: [um, maka]
 
 - citation: lipat
   pos: VERB
   gloss: transfer, move
   transitivity: TR
-  # R&B 165, 166: -um- / -an for intransitive; mag- / i- for
-  # transitive.
   affix_class: [um, mag, an_oblig, i_oblig, maka]
 
 - citation: lungkot
@@ -846,7 +695,6 @@
   pos: VERB
   gloss: cook
   transitivity: TR
-  # R&B 167: mag- / i- / -in / ipag- / pag- -an.
   affix_class: [mag, i_oblig, in_oblig, maka]
 
 - citation: maneho
@@ -855,22 +703,18 @@
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
 
-# -- sonorant-initial (exercises -in- → ni-) --
 - citation: ngiti
   pos: VERB
   gloss: smile
   transitivity: INTR
-  # ng-initial: sonorant ni- variant fires for non-AV cells.
   affix_class: [um, mag, an_oblig, maka]
 
 - citation: nguya
   pos: VERB
   gloss: chew
   transitivity: TR
-  # ng-initial sonorant; ng treated as one consonant in CV-redup.
   affix_class: [um, in_oblig, maka]
 
-# -- ma- non-volitional / state predicates --
 - citation: pagod
   pos: VERB
   gloss: be tired
@@ -887,7 +731,6 @@
   pos: VERB
   gloss: change, exchange
   transitivity: TR
-  # R&B 177: mag- / -an.
   affix_class: [mag, an_oblig, maka]
 
 - citation: pasa
@@ -898,16 +741,14 @@
 
 - citation: pasok
   pos: VERB
-  gloss: enter
+  gloss: enter, put in
   transitivity: TR
-  # R&B 184: -um- / -in.
-  affix_class: [um, in_oblig, maka]
+  affix_class: [um, mag, in_oblig, i_oblig, an_oblig, maka]
 
 - citation: pasyal
   pos: VERB
   gloss: take a walk
   transitivity: INTR
-  # R&B 186: mag- / -an / i-.
   affix_class: [mag, an_oblig, i_oblig, maka]
 
 - citation: patong
@@ -922,6 +763,13 @@
   transitivity: INTR
   affix_class: [ma, mag, maka]
 
+- citation: payag
+  pos: VERB
+  gloss: agree
+  transitivity: INTR
+  affix_class: [um, maka]
+  feats: {CTRL_CLASS: INTRANS}
+
 - citation: paypay
   pos: VERB
   gloss: fan
@@ -933,6 +781,13 @@
   gloss: squeeze
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
+
+- citation: pilit
+  pos: VERB
+  gloss: force, compel
+  transitivity: TR
+  affix_class: [um, in_oblig, an_oblig, maka]
+  feats: {CTRL_CLASS: TRANS}
 
 - citation: pisil
   pos: VERB
@@ -956,22 +811,24 @@
   pos: VERB
   gloss: wipe
   transitivity: TR
-  # R&B 198: mag- / -an / ipang-.
   affix_class: [mag, an_oblig, maka]
 
-# -- intransitive motion --
 - citation: punta
   pos: VERB
   gloss: go to
   transitivity: INTR
   affix_class: [um, mag, maka]
 
+- citation: putak
+  pos: VERB
+  gloss: cluck, cackle
+  transitivity: INTR
+  affix_class: [um, maka]
+
 - citation: putol
   pos: VERB
   gloss: cut a piece from
   transitivity: TR
-  # R&B 204: -um- / -in / -an. mang- distributive ("namutol" /
-  # "mamumutol") also attested.
   affix_class: [um, in_oblig, an_oblig, mang, maka]
 
 - citation: sabi
@@ -999,7 +856,6 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
 
-# -- communication / state additions --
 - citation: salita
   pos: VERB
   gloss: speak, utter
@@ -1012,11 +868,16 @@
   transitivity: TR
   affix_class: [um, in_oblig, maka]
 
+- citation: sapit
+  pos: VERB
+  gloss: arrive, reach
+  transitivity: INTR
+  affix_class: [um, maka]
+
 - citation: sara
   pos: VERB
   gloss: close
   transitivity: TR
-  # R&B 223: mag- / i- / -an.
   affix_class: [mag, i_oblig, an_oblig, maka]
 
 - citation: saya
@@ -1029,7 +890,6 @@
   pos: VERB
   gloss: dance
   transitivity: INTR
-  # R&B 227: -um- / mag- / i- / -in / -an.
   affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka]
 
 - citation: sigaw
@@ -1054,7 +914,6 @@
   pos: VERB
   gloss: start, begin
   transitivity: TR
-  # mag- / um-.
   affix_class: [um, mag, maka]
 
 - citation: sipsip
@@ -1085,11 +944,6 @@
   pos: VERB
   gloss: write
   transitivity: TR
-  # R&B 237: -um- / -in / i- / -an. Both -um- and mag- in AV.
-  # Phase 4 §7.7: ipag (ipinagsulat "wrote-for", benefactive IV).
-  # Phase 5c §7.7 follow-on: ika (ikinasulat "[reason for which]
-  # X wrote", reason applicative IV). Phase 7a.B Commit 2:
-  # magsi (magsisulat "write (pl.)", plural-actor AV).
   affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, ipag, ika, magsi]
 
 - citation: sundo
@@ -1103,6 +957,12 @@
   gloss: raise, lift up
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: taba
+  pos: VERB
+  gloss: become fat
+  transitivity: INTR
+  affix_class: [um, maka]
 
 - citation: tabas
   pos: VERB
@@ -1126,8 +986,6 @@
   pos: VERB
   gloss: sew
   transitivity: TR
-  # mang- distributive ("nanahi"). Phase 5c §7.7 follow-on: ipang
-  # (ipinantahi "instrument-sewn", instrumental applicative IV).
   affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipang]
 
 - citation: taka
@@ -1140,14 +998,12 @@
   pos: VERB
   gloss: run
   transitivity: INTR
-  # R&B 249: -um- / -in. "tumakbo" (run); mag- gives intensive.
   affix_class: [um, mag, maka]
 
 - citation: takip
   pos: VERB
   gloss: cover
   transitivity: TR
-  # R&B 251: mag- / -an.
   affix_class: [mag, an_oblig, maka]
 
 - citation: takot
@@ -1162,13 +1018,16 @@
   transitivity: INTR
   affix_class: [um, ma, maka]
 
+- citation: tanim
+  pos: VERB
+  gloss: plant
+  transitivity: TR
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
 - citation: tanong
   pos: VERB
   gloss: ask
   transitivity: TR
-  # Phase 5n.C.2 Commit 2 (§18 L29): adds an_oblig for DV PFV
-  # `tinanungan` "asked (recipient)" — the canonical
-  # ask-recipient-as-pivot form per R&B 1986 ch.7 + S&O 1972 §10.
   affix_class: [um, mag, in_oblig, an_oblig, maka]
   feats: {ASK_CLASS: true}
 
@@ -1176,59 +1035,48 @@
   pos: VERB
   gloss: be born, become a person (figurative)
   transitivity: INTR
-  # mang- distributive context.
   affix_class: [um, mang, maka]
 
 - citation: tapon
   pos: VERB
   gloss: throw away
   transitivity: TR
-  # Phase 4 §7.1 anchor for IV (conveyed-theme pivot, "itinapon").
   affix_class: [mag, in_oblig, i_oblig, maka]
 
 - citation: tapos
   pos: VERB
   gloss: finish
   transitivity: TR
-  # mag- / -in.
   affix_class: [mag, in_oblig, maka]
 
 - citation: tawa
   pos: VERB
   gloss: laugh
   transitivity: INTR
-  # -um-.
   affix_class: [um, maka]
 
 - citation: tawag
   pos: VERB
   gloss: call
   transitivity: TR
-  # R&B 262: -um- / -in. Phase 7a.B Commit 2: magpa_an
-  # (nagpatawagan "called one another", reciprocal-distributive
-  # causative AV — GT-confirmed productive).
   affix_class: [um, in_oblig, maka, magpa_an]
 
 - citation: tawid
   pos: VERB
   gloss: cross (a street)
   transitivity: TR
-  # R&B 263, 264: -um- / -in for intransitive; mag- / i- for
-  # transitive (carry across).
   affix_class: [um, mag, in_oblig, i_oblig, maka]
 
 - citation: tayo
   pos: VERB
   gloss: build, erect, stand up
   transitivity: TR
-  # R&B 266: mag- / i- / -an.
   affix_class: [mag, i_oblig, an_oblig, maka]
 
 - citation: tigil
   pos: VERB
   gloss: stop
   transitivity: INTR
-  # mag- / i-.
   affix_class: [mag, i_oblig, maka]
 
 - citation: tiis
@@ -1271,7 +1119,6 @@
   pos: VERB
   gloss: look at
   transitivity: TR
-  # -um- / -an.
   affix_class: [um, an_oblig, maka]
 
 - citation: tira
@@ -1284,7 +1131,6 @@
   pos: VERB
   gloss: work
   transitivity: INTR
-  # R&B 272: mag-.
   affix_class: [mag, maka]
 
 - citation: tugon
@@ -1292,6 +1138,12 @@
   gloss: respond, answer
   transitivity: TR
   affix_class: [um, mag, an_oblig, maka]
+
+- citation: tuka
+  pos: VERB
+  gloss: peck
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
 
 - citation: tulak
   pos: VERB
@@ -1303,16 +1155,12 @@
   pos: VERB
   gloss: sleep
   transitivity: INTR
-  # R&B 275: ma- / -an. ma- non-volitional is the primary AV class
-  # ("natulog" / "natutulog" / "matutulog", MOOD=NVOL). The colloquial
-  # mag- and -um- alternations are also kept.
   affix_class: [um, mag, ma, maka]
 
 - citation: tulong
   pos: VERB
   gloss: help
   transitivity: TR
-  # -um- / -an.
   affix_class: [um, an_oblig, maka]
 
 - citation: tuloy
@@ -1349,9 +1197,6 @@
   pos: VERB
   gloss: sit
   transitivity: INTR
-  # Vowel-initial: -um- and -in- prefix rather than infix.
-  # Phase 7a.B Commit 2: magpa_an (magpaupuan "seat one another /
-  # share seating", reciprocal-distributive causative AV).
   affix_class: [um, ma, maka, magpa_an]
 
 - citation: urong
@@ -1369,14 +1214,6 @@
 - citation: usap
   pos: VERB
   gloss: talk, converse
-  # Phase 5n.C.2 Commit 2 (§18 L29): retag INTR → TR. The pre-existing
-  # `in_oblig` affix class signals OV intent (`inusap` "spoke to"), but
-  # the transitivity filter (paradigms.yaml DV PFV cell requires TR)
-  # was blocking both OV and DV forms. Retagging activates the
-  # OV cycle (`inusap` / `inuusap` / `uusapin`) and the DV cycle
-  # (`inusapan` "talked to (recipient)" — recipient-as-pivot per
-  # S&O 1972 §5.30 + R&B 1986 ch.7). The intransitive reciprocal AV
-  # `mag-usap` "converse with each other" surfaces are unaffected.
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka]
 
@@ -1386,26 +1223,27 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
 
+- citation: utos
+  pos: VERB
+  gloss: order, command
+  transitivity: TR
+  affix_class: [um, in_oblig, an_oblig, maka]
+  feats: {CTRL_CLASS: TRANS}
+
 - citation: uwi
   pos: VERB
   gloss: go home
   transitivity: INTR
-  # Vowel-initial: -um- prefix.
   affix_class: [um, mag, i_oblig, maka]
 
 - citation: yakap
   pos: VERB
   gloss: embrace
   transitivity: TR
-  # R&B 290: -um- / -in.
   affix_class: [um, in_oblig, maka]
 
 - citation: yaman
   pos: VERB
   gloss: be wealthy
   transitivity: INTR
-  # Phase 5n.A Commit 1: slimmed from [um, ma, maka] to [um].
-  # The ma- adjective surface (``mayaman``) is in adjectives.yaml;
-  # the verbal entry retains only the inchoative -um- reading
-  # (``yumaman`` "become wealthy").
   affix_class: [um]
