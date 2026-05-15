@@ -16382,3 +16382,98 @@ OOV blockers during sentence-level probing on the audit-cited
 sentences. Folded into the 8.C lex pass as a single-line
 addition each — both are common content nouns that should be
 in the seed lex regardless of 8.C.
+
+## Phase 8.D: comma-fronted topic NP
+
+Closes the rg81 ANG MANOK Wave 1 audit-surfaced sentence
+`Isang araw, nagbubunot siya ng damo.` ("One day, he was pulling
+weeds.") and the broader comma-fronted-topic construction
+class. Sibling to the Phase 5l Commit 13 ay-fronted SubordClause
+topic rule (`cfg/subordination.py`) and the Phase 4 §7.4
+ay-fronted NP rule.
+
+### The two new rules
+
+Both rules append to `cfg/clause.py` and share the same
+equation set — the only difference is the first daughter's
+category:
+
+```text
+S → NP   PUNCT[COMMA] S      # case-marked NP topic
+S → N    PUNCT[COMMA] S      # bare-N / cardinal-N topic
+
+  (↑)       = ↓3              # matrix = post-comma S
+  (↑ TOPIC) = ↓1              # fronted constituent is TOPIC
+  ↓1 ∈ (↑ ADJUNCT)            # also in adjunct set
+```
+
+### Why two rules
+
+The Phase 5f Commit 1 cardinal-NP rule requires a CASE marker
+daughter (`ang` / `ng` / `sa`) to build `NP[CASE=X]`. Bare
+cardinal-modified N (`Isang araw` "one day") thus surfaces as
+`N`, not `NP`. The audit target uses exactly this shape —
+temporal-frame topic-N without case marking.
+
+A single rule `S → N|NP PUNCT[COMMA] S` (disjunction in the
+daughter slot) isn't directly expressible in the CFG-rule
+declaration format, so the two variants are spelled out
+separately. Both carry identical equations; downstream
+consumers see uniform `TOPIC` + `ADJUNCT`-membership on the
+matrix f-structure regardless of which variant fired.
+
+### Disambiguation
+
+- **From Phase 5n.C Commit 6 / 7.6 universal-Q distributive**
+  (`Bawat bata, kumain.`): that family's right daughter is a
+  bare `V[VOICE=AV]` (with optional GEN/DAT-NP daughters),
+  whereas the 8.D rules' right daughter is a full `S` already
+  covering matrix structure. Distinct daughter shape → no
+  structural overlap. The distributive rules also carry
+  `(↓1 UNIV) =c true` and `(↑ DISTRIB) = true`, which the
+  general topic-fronting rules don't.
+- **From Phase 4 §7.4 ay-fronted NP**: ay-fronting uses an
+  overt `PART[LINK=AY]` particle between fronted NP and matrix;
+  comma-fronting uses `PUNCT[PUNCT_CLASS=COMMA]`. Different
+  surface tokens → no overlap.
+- **From Phase 5l Commit 13 ay-fronted SubordClause**:
+  sibling pattern, different fronted-category (SubordClause vs.
+  N/NP) and different separator (`ay` vs. `,`).
+
+### Out of 8.D scope (pinned)
+
+Three construction-class gaps surfaced during probing and are
+NOT part of the audit-task scope (which names only `Isang
+araw, ...`):
+
+- **ADV-fronted topic** (`Bukas, kumain siya.`): `bukas`
+  "tomorrow" is registered as ADV-only in `particles.yaml`,
+  so the N-variant doesn't catch it. `kahapon` "yesterday"
+  works because it has a dual NOUN+ADV registration.
+  Would need a sibling `S → ADV PUNCT[COMMA] S` rule.
+- **PP-fronted topic** (`Sa simula, kumain si Juan.`,
+  `Una sa lahat, ...`): preposition-headed topics need a
+  `S → PP PUNCT[COMMA] S` rule.
+- **Discourse-particle-fronted** (`Oo, ...`, `Eto, ...`,
+  `Wala, ...`): seen in R&G Conv exemplars; needs a
+  PART-variant.
+
+All three are pinned via `TestPhase8dOutOfScope`; future sub-PRs
+adding the sibling variants will flip them to passing.
+
+### Audit-derived sentences that now parse
+
+- `Isang araw, nagbubunot siya ng damo.` (rg81 ANG MANOK
+  sentence 11; the named audit target)
+- `Isang araw, kumain siya.` (simplified)
+- `Kahapon, kumain siya.` (dual NOUN+ADV `kahapon` →
+  N-variant fires)
+- `Si Juan, kumain siya.` (NP-variant on proper-name NP)
+
+11 new tests in
+`tests/tgllfg/test_phase8d_comma_fronted_topic.py` cover:
+sentence parses, TOPIC + ADJUNCT f-structure shape, existing
+ay-fronting non-regression, three pinned out-of-scope items.
+
+`hatch run test-both`: 7559 passed in 70.83s (was 7548; +11
+new tests).
