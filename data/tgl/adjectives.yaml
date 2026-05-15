@@ -259,6 +259,11 @@
   gloss: parched, dry
   affix_class: [ma_adj]
 
+- citation: tigas
+  pos: ADJ
+  gloss: hard, firm
+  affix_class: [ma_adj]
+
 - citation: tira
   pos: ADJ
   gloss: living, residing (in a place)

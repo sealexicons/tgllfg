@@ -248,6 +248,11 @@
   pos: NOUN
   gloss: youngest sibling
 
+- citation: buod
+  pos: NOUN
+  gloss: summary, gist, core (abstract), essence, crux; cf. verbal "summarizing" sense not registered in 8.C scope (would need separate VERB-base entry for magbuod / binuod)
+  affix_class: [pinaka_n]
+
 - citation: bus
   pos: NOUN
   gloss: bus
@@ -685,6 +690,10 @@
   pos: NOUN
   gloss: face (homophonous with the raising verb "seem"; Phase 5c §7.6 fixture)
 
+- citation: mundo
+  pos: NOUN
+  gloss: world
+
 - citation: nanay
   pos: NOUN
   gloss: mother
@@ -862,7 +871,8 @@
 
 - citation: puno
   pos: NOUN
-  gloss: tree
+  gloss: tree; head, principal, leader (n); the relational-N base also feeds pinaka_adj_from_n → pinakapuno (adj. "most important / principal")
+  affix_class: [pinaka_n, pinaka_adj_from_n]
 
 - citation: pusa
   pos: NOUN
@@ -901,6 +911,10 @@
 - citation: sandali
   pos: NOUN
   gloss: a moment
+
+- citation: sandata
+  pos: NOUN
+  gloss: weapon
 
 - citation: sanga
   pos: NOUN
@@ -1031,6 +1045,11 @@
 - citation: tuktok
   pos: NOUN
   gloss: top
+
+- citation: ubod
+  pos: NOUN
+  gloss: core, pith, innermost part, kernel
+  affix_class: [pinaka_n]
 
 - citation: ulan
   pos: NOUN
