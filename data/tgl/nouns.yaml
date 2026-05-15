@@ -444,6 +444,10 @@
   pos: NOUN
   gloss: yesterday
 
+- citation: kahoy
+  pos: NOUN
+  gloss: wood, tree
+
 - citation: kaibigan
   pos: NOUN
   gloss: friend
@@ -518,6 +522,11 @@
 - citation: kuko
   pos: NOUN
   gloss: nail (finger / toe)
+
+- citation: kumusta
+  pos: NOUN
+  gloss: regards, greetings (n; cf. ADV kumusta "how" in particles.yaml)
+  feats: {FRAGMENT_HOST: true}
 
 - citation: kuneho
   pos: NOUN
@@ -722,6 +731,10 @@
   pos: NOUN
   gloss: food (lit. "for-eating", from kain)
 
+- citation: palabas
+  pos: NOUN
+  gloss: show, performance
+
 - citation: palay
   pos: NOUN
   gloss: rice (unhusked)
@@ -801,6 +814,10 @@
   pos: NOUN
   gloss: duck
 
+- citation: patyo
+  pos: NOUN
+  gloss: yard, patio
+
 - citation: pebrero
   pos: NOUN
   gloss: February
@@ -809,6 +826,10 @@
 - citation: pedro
   pos: NOUN
   gloss: Pedro (proper name)
+
+- citation: pelikula
+  pos: NOUN
+  gloss: film, movie
 
 - citation: pen
   pos: NOUN
@@ -881,6 +902,10 @@
   pos: NOUN
   gloss: a moment
 
+- citation: sanga
+  pos: NOUN
+  gloss: branch (of tree)
+
 - citation: sapatos
   pos: NOUN
   gloss: shoes
@@ -931,6 +956,10 @@
 - citation: tatay
   pos: NOUN
   gloss: father
+
+- citation: tawad
+  pos: NOUN
+  gloss: forgiveness; discount, bargain
 
 - citation: tenga
   pos: NOUN
