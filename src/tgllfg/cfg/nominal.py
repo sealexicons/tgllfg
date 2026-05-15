@@ -213,6 +213,47 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 8.E: NP-internal ``mga`` plural marker + DEM head -----
+    #
+    # Closes ``ang mga ito`` "these (ones)" / ``ang mga iyan``
+    # "those (ones)" / ``ang mga iyon`` "those distal (ones)". The
+    # construction is the substantive-DEM (pronominal-DEM)
+    # pluralization. Audit-driven scoping: corpus shows 10 candidates
+    # across 5342 exemplars, all NOM-form (no GEN/DAT corpus
+    # pressure), so this commit lands the NOM variant only. GEN/DAT
+    # variants (``ng mga nito`` / ``sa mga doon``) can opt in later
+    # if corpus pressure surfaces.
+    #
+    # Sibling to Phase 7a.A ``mga`` + N rule (same shape with N head)
+    # and Phase 4 §7.8 standalone-DEM NP rule (DEM head without
+    # ``mga``). The third daughter is a DEM-marked DET; the matrix
+    # gets a synthesized ``PRED='PRO'`` like the standalone-DEM rule,
+    # with NUM=PL and DEIXIS lifted from the DEM.
+    #
+    # Rule shape:
+    #
+    #   NP[CASE=NOM] → DET[CASE=NOM] PART DET[CASE=NOM, DEM]
+    #     (↑)            = ↓1               share with case-marker
+    #     (↑ PRED)       = 'PRO'            synthesized DEM-PRED
+    #     (↑ NUM)        = 'PL'             mga marks plural
+    #     (↑ DEIXIS)     = ↓3 DEIXIS        lift DEM's deixis
+    #     (↓2 PLURAL_MARKER) =c true        gate ↓2 to ``mga``
+    #
+    # References: Schachter & Otanes 1972 §6 (mga plural marker);
+    # R&G 1981 §2 (demonstrative pronouns).
+    rules.append(Rule(
+        "NP[CASE=NOM]",
+        ["DET[CASE=NOM]", "PART", "DET[CASE=NOM, DEM]"],
+        [
+            "(↑) = ↓1",
+            "(↑ PRED) = 'PRO'",
+            "(↑ NUM) = 'PL'",
+            "(↑ DEIXIS) = ↓3 DEIXIS",
+            "(↓2 PLURAL_MARKER) =c true",
+        ],
+    ))
+
+
     # --- Phase 5i Commit 3: in-situ wh-PRON in case-marked NP ---
     #
     # ``Kumain ka ng ano?``    "You ate (some) what?" (echo / casual)
