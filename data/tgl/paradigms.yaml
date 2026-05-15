@@ -1066,6 +1066,63 @@
   feats: {SEM_CLASS: SEASON}
   notes: tag_season — araw → tagaraw, ulan → tagulan, init → taginit, lamig → taglamig, gutom → taggutom
 
+# --- Phase 8.C: pinaka_n NOUN superlative -------------------------------
+# Productive ``pinaka-`` superlative derivation on inherently
+# relational NOUN bases: ``ubod`` "core" → ``pinakaubod`` "the
+# core/innermost"; ``puno`` "head/principal" → ``pinakapuno``
+# "the head/chief". Audit-surfaced (rg81 ANG PAMILYA prose,
+# Wave 1).
+#
+# Parallel to the Phase 5h ADJ superlative cell in
+# ``adj_paradigms.yaml`` (``ma_adj`` + ``pinaka``) and the
+# Phase 5n.B Commit 4 closed-class Q-head + ADV-FREQUENCY
+# entries in ``particles.yaml`` — same prefix, same
+# ``COMP_DEGREE: SUPERLATIVE`` feat, NOUN-shaped surface so
+# standard NP rules consume it unchanged.
+#
+# Opt-in via per-root ``affix_class: [pinaka_n]``. The cell is
+# narrow because the semantics are restricted: only inherently
+# relational / scale-bearing nouns (head, core, leader, member,
+# etc.) admit the "the most-X" reading; the cell does NOT fire
+# on ordinary count nouns like ``aklat`` "book" or ``aso``
+# "dog" — even though ``*pinakaaklat`` would be morphologically
+# well-formed, it is semantically anomalous.
+# References: S&O 1972 §5 (pinaka- superlative); R&G 1981 §6.
+- base_pos: NOUN
+  affix_class: pinaka_n
+  operations:
+    - {op: prefix, value: "pinaka"}
+  feats: {COMP_DEGREE: SUPERLATIVE}
+  notes: "pinaka_n — NOUN superlative: ubod → pinakaubod, puno → pinakapuno"
+
+# --- Phase 8.C: pinaka_adj_from_n (POS-flipping superlative) ------------
+# Companion to ``pinaka_n`` that outputs an ADJ-shaped surface from
+# a NOUN base. The dual analysis is well-attested for ``puno`` —
+# the same ``pinakapuno`` surface admits both readings:
+#
+#   NOUN: "the head, the chief, the principal one" (relational
+#         nominal — used as NP head, e.g.
+#         "ang ama ang pinakapuno ng pamilya")
+#   ADJ:  "principal, most important" (predicate / modifier —
+#         GT lists "most important" as the primary translation)
+#
+# The POS flip uses the ``cell.pos`` override on
+# ``_index_paradigm_via_base_pos`` (Phase 8.C analyzer extension,
+# mirroring the existing ``kani_redup`` PRON → Q flip route).
+# Both cells fire on any NOUN root declaring the matching
+# affix_class; opt-in is intentionally narrow because the ADJ
+# reading is restricted to nouns with a comparable "principal-of"
+# semantics.
+#
+# References: S&O 1972 §5; R&G 1981 §6; GT lexicographic glosses.
+- base_pos: NOUN
+  pos: ADJ
+  affix_class: pinaka_adj_from_n
+  operations:
+    - {op: prefix, value: "pinaka"}
+  feats: {COMP_DEGREE: SUPERLATIVE, PREDICATIVE: true}
+  notes: "pinaka_adj_from_n — NOUN→ADJ superlative: puno (n. head) → pinakapuno (adj. principal/most important)"
+
 # --- Phase 5n.C.3 Commit 5: kani_redup (§18 L31) ------------------------
 # Distributive-possessive redup on 3rd-person DAT pronouns —
 # productive replacement for the Phase 5f Commit 21 hand-coded
