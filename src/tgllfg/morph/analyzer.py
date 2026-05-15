@@ -543,10 +543,18 @@ class Analyzer:
         ADJ-root ``redup_root`` intensives / ``kasing-`` redup).
 
         Routes generated surfaces to the POS-appropriate index
-        (``nouns`` / ``adjectives``). Per-root + per-cell feats are
-        merged with cell.feats winning over root.feats (mirrors the
-        VERB / ADJ-paradigm convention); LEMMA defaults to
-        ``root.citation`` if not explicitly set.
+        (``nouns`` / ``adjectives``). If the cell declares ``pos:``,
+        that overrides the base ``root.pos`` for both the
+        MorphAnalysis ``pos`` field and the destination index —
+        mirroring :meth:`_index_pronoun_paradigms`'s ``cell.pos``
+        routing (Phase 5n.C.3 Commit 5). Phase 8.C uses this to
+        route the new ``pinaka_adj_from_n`` cell (``base_pos: NOUN,
+        pos: ADJ``) so ``pinakapuno`` lands in the adjectives index
+        as well as the nouns one.
+
+        Per-root + per-cell feats are merged with cell.feats winning
+        over root.feats (mirrors the VERB / ADJ-paradigm convention);
+        LEMMA defaults to ``root.citation`` if not explicitly set.
         """
         for cell in self._data.paradigm_cells:
             if cell.base_pos != root.pos:
@@ -561,16 +569,17 @@ class Analyzer:
             canonical_lemma = feats.get("LEMMA", root.citation)
             if not isinstance(canonical_lemma, str):
                 canonical_lemma = root.citation
+            out_pos = cell.pos or root.pos
             analysis = MorphAnalysis(
                 lemma=canonical_lemma,
-                pos=root.pos,
+                pos=out_pos,
                 feats=feats,
             )
-            if root.pos == "NOUN":
+            if out_pos == "NOUN":
                 self._index.nouns.setdefault(surface, []).append(analysis)
-            elif root.pos == "ADJ":
+            elif out_pos == "ADJ":
                 self._index.adjectives.setdefault(surface, []).append(analysis)
-            elif root.pos == "NUM":
+            elif out_pos == "NUM":
                 # Phase 5n.C.3 Commit 3: derived NUM surfaces are
                 # indexed into the particles table — this is where
                 # ``analyze_one`` looks up NUM particles (cardinal
