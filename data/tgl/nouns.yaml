@@ -12,29 +12,88 @@
 # Citations: Ramos & Bautista 1986 (R&B), Schachter & Otanes 1972
 # (S&O). Page numbers in comments where the entry is documented.
 
-# === Common nouns ========================================================
-# General-purpose noun roots — household items, body parts, food,
-# people, places, abstract nouns, etc. Alphabetical by citation.
-# Merges the pre-reorder "Common nouns" / "Phase 4 §7.1 anchor
-# nouns" / "Phase 2C bulk noun scale-up (Commit 3b)" sub-sections
-# (commit-organised splits with no linguistic distinction). Per-
-# root linguistic notes (Phase 5c §7.7 ipang- test fixtures, Phase
-# 5c §7.6 raising fixtures, etc.) live as inline comments on the
-# specific entries.
+- citation: abril
+  pos: NOUN
+  gloss: April
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "4"}
+
+- citation: agosto
+  pos: NOUN
+  gloss: August
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "8"}
 
 - citation: aklat
   pos: NOUN
   gloss: book
-  # Native Tagalog form. Spanish-borrowed ``libro`` is an
-  # interchangeable synonym (Ramos 1971 dictionary entry: "aklát n.
-  # book. --syn. libró."). Both forms surface in modern usage; the
-  # native form is more frequent in literary register, the borrowed
-  # form in colloquial / technical register.
   synonyms: [libro]
+
+- citation: alasdies
+  pos: NOUN
+  gloss: ten o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "10"}
+
+- citation: alasdos
+  pos: NOUN
+  gloss: two o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "2"}
+
+- citation: alasdose
+  pos: NOUN
+  gloss: twelve o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "12"}
+
+- citation: alaskuwatro
+  pos: NOUN
+  gloss: four o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "4"}
+
+- citation: alasnuwebe
+  pos: NOUN
+  gloss: nine o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "9"}
+
+- citation: alasonse
+  pos: NOUN
+  gloss: eleven o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "11"}
+
+- citation: alasotso
+  pos: NOUN
+  gloss: eight o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "8"}
+
+- citation: alassais
+  pos: NOUN
+  gloss: six o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "6"}
+
+- citation: alassingko
+  pos: NOUN
+  gloss: five o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "5"}
+
+- citation: alassiyete
+  pos: NOUN
+  gloss: seven o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "7"}
+
+- citation: alastres
+  pos: NOUN
+  gloss: three o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "3"}
+
+- citation: alauna
+  pos: NOUN
+  gloss: one o'clock
+  feats: {SEM_CLASS: TIME, TIME_VALUE: "1"}
 
 - citation: ama
   pos: NOUN
   gloss: father (formal)
+
+- citation: ana
+  pos: NOUN
+  gloss: Ana (proper name)
 
 - citation: anak
   pos: NOUN
@@ -51,9 +110,6 @@
 - citation: araw
   pos: NOUN
   gloss: day, sun
-  # Phase 5n.C.3 Commit 4 (§18 L31): tag_season paradigm input —
-  # `araw` "sun" yields `tagaraw` "sunny period" via the
-  # productive cell in paradigms.yaml.
   affix_class: [tag_season]
 
 - citation: asawa
@@ -87,6 +143,11 @@
 - citation: bag
   pos: NOUN
   gloss: bag
+
+- citation: bahagi
+  pos: NOUN
+  gloss: part
+  feats: {SEM_CLASS: PART}
 
 - citation: bahay
   pos: NOUN
@@ -124,11 +185,16 @@
   pos: NOUN
   gloss: brother-in-law
 
+- citation: beses
+  pos: NOUN
+  gloss: times (occurrences)
+  synonyms: [ulit]
+  feats: {SEM_CLASS: FREQUENCY}
+
 - citation: bibig
   pos: NOUN
   gloss: mouth
 
-# -- Food --
 - citation: bigas
   pos: NOUN
   gloss: uncooked rice
@@ -153,6 +219,11 @@
   pos: NOUN
   gloss: parent-in-law
 
+- citation: biyernes
+  pos: NOUN
+  gloss: Friday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "5"}
+
 - citation: bubong
   pos: NOUN
   gloss: roof
@@ -160,6 +231,10 @@
 - citation: buhok
   pos: NOUN
   gloss: hair
+
+- citation: bukid
+  pos: NOUN
+  gloss: field / countryside
 
 - citation: bulaklak
   pos: NOUN
@@ -177,12 +252,16 @@
   pos: NOUN
   gloss: bus
 
-# -- Nature --
 - citation: buwan
   pos: NOUN
   gloss: moon, month
 
-# -- Animals --
+- citation: daan
+  pos: NOUN
+  gloss: hundred
+  affix_class: [card_redup]
+  feats: {COLL_VALUE: HUNDREDS}
+
 - citation: daga
   pos: NOUN
   gloss: rat, mouse
@@ -195,10 +274,13 @@
   pos: NOUN
   gloss: leaf
 
-# -- Clothing / transport --
 - citation: damit
   pos: NOUN
   gloss: clothing, dress
+
+- citation: damo
+  pos: NOUN
+  gloss: grass, weeds
 
 - citation: dibdib
   pos: NOUN
@@ -216,9 +298,24 @@
   pos: NOUN
   gloss: wall
 
+- citation: disyembre
+  pos: NOUN
+  gloss: December
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "12"}
+
+- citation: doble
+  pos: NOUN
+  gloss: double
+  feats: {SEM_CLASS: MULTIPLIER}
+
 - citation: doktor
   pos: NOUN
   gloss: doctor
+
+- citation: dosena
+  pos: NOUN
+  gloss: dozen
+  feats: {MEASURE: true}
 
 - citation: dugo
   pos: NOUN
@@ -227,6 +324,11 @@
 - citation: dyip
   pos: NOUN
   gloss: jeepney
+
+- citation: enero
+  pos: NOUN
+  gloss: January
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "1"}
 
 - citation: eroplano
   pos: NOUN
@@ -259,8 +361,6 @@
 - citation: gutom
   pos: NOUN
   gloss: hunger (Phase 5c §7.7 ika- test fixture)
-  # Phase 5n.C.3 Commit 4 (§18 L31): tag_season paradigm input —
-  # `gutom` "hunger" yields `taggutom` "hunger season".
   affix_class: [tag_season]
 
 - citation: hagdan
@@ -271,9 +371,29 @@
   pos: NOUN
   gloss: wind
 
+- citation: hapon
+  pos: NOUN
+  gloss: afternoon
+  feats: {SEM_CLASS: TIME}
+
 - citation: hipag
   pos: NOUN
   gloss: sister-in-law
+
+- citation: hulyo
+  pos: NOUN
+  gloss: July
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "7"}
+
+- citation: hunyo
+  pos: NOUN
+  gloss: June
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "6"}
+
+- citation: huwebes
+  pos: NOUN
+  gloss: Thursday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "4"}
 
 - citation: ibon
   pos: NOUN
@@ -287,7 +407,6 @@
   pos: NOUN
   gloss: nose
 
-# -- People / kinship / roles --
 - citation: ina
   pos: NOUN
   gloss: mother (formal)
@@ -295,6 +414,11 @@
 - citation: inay
   pos: NOUN
   gloss: mother (affective / informal)
+
+- citation: init
+  pos: NOUN
+  gloss: heat
+  affix_class: [tag_season]
 
 - citation: isda
   pos: NOUN
@@ -308,6 +432,10 @@
   pos: NOUN
   gloss: egg
 
+- citation: juan
+  pos: NOUN
+  gloss: Juan (proper name)
+
 - citation: kabayo
   pos: NOUN
   gloss: horse
@@ -320,11 +448,20 @@
   pos: NOUN
   gloss: friend
 
+- citation: kailangan
+  pos: NOUN
+  gloss: need / requirement
+
 - citation: kalabaw
   pos: NOUN
   gloss: water buffalo, carabao
 
-# -- Objects / places --
+- citation: kalahati
+  pos: NOUN
+  gloss: half
+  synonyms: [medya]
+  feats: {SEM_CLASS: FRACTION}
+
 - citation: kama
   pos: NOUN
   gloss: bed
@@ -344,6 +481,11 @@
 - citation: kanin
   pos: NOUN
   gloss: cooked rice
+
+- citation: kapat
+  pos: NOUN
+  gloss: quarter
+  feats: {SEM_CLASS: FRACTION}
 
 - citation: kapatid
   pos: NOUN
@@ -385,13 +527,27 @@
   pos: NOUN
   gloss: room
 
+- citation: kuwarto
+  pos: NOUN
+  gloss: quarter (of the hour, Spanish-borrowed; clock-time fraction)
+  feats: {SEM_CLASS: FRACTION}
+
 - citation: kuya
   pos: NOUN
   gloss: older brother, term of address for older male
 
+- citation: labas
+  pos: NOUN
+  gloss: outside
+
 - citation: lalaki
   pos: NOUN
   gloss: man
+
+- citation: lamig
+  pos: NOUN
+  gloss: cold
+  affix_class: [tag_season]
 
 - citation: langaw
   pos: NOUN
@@ -404,6 +560,12 @@
 - citation: lapis
   pos: NOUN
   gloss: pencil
+
+- citation: libo
+  pos: NOUN
+  gloss: thousand
+  affix_class: [card_redup]
+  feats: {COLL_VALUE: THOUSANDS}
 
 - citation: libro
   pos: NOUN
@@ -418,6 +580,11 @@
   pos: NOUN
   gloss: back
 
+- citation: linggo
+  pos: NOUN
+  gloss: week, Sunday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "7"}
+
 - citation: liwanag
   pos: NOUN
   gloss: light
@@ -430,23 +597,23 @@
   pos: NOUN
   gloss: grandfather
 
+- citation: lunes
+  pos: NOUN
+  gloss: Monday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "1"}
+
 - citation: lupa
   pos: NOUN
   gloss: earth, soil
+
+- citation: maaari
+  pos: NOUN
+  gloss: the possible / possibility
 
 - citation: magulang
   pos: NOUN
   gloss: parent
 
-# Phase 5n.A Commit 7 (§18 L62): closed-class noun "man / mister",
-# attested in S&O 1972 §3.1 and R&B 1986 as an informal address term
-# for an unrelated adult male. Required for R&G "Ang Manok" simple
-# #1 (``May isang mamang nakatira sa isang bahay sa bukid.`` "There
-# was an old man who lived in a house in the country"). Treated as
-# an animate human noun parallel to ``lalaki`` / ``babae``; the
-# ANIMATE classification for the OBL classifier (PLACE / ANIMATE
-# disambiguation) is configured in src/tgllfg/lmt/oblique_classifier.py
-# rather than declared as a per-NOUN feat.
 - citation: mama
   pos: NOUN
   gloss: man, mister
@@ -467,13 +634,43 @@
   pos: NOUN
   gloss: child-in-law
 
+- citation: maria
+  pos: NOUN
+  gloss: Maria (proper name)
+
+- citation: marso
+  pos: NOUN
+  gloss: March
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "3"}
+
+- citation: martes
+  pos: NOUN
+  gloss: Tuesday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "2"}
+
 - citation: mata
   pos: NOUN
   gloss: eye
 
+- citation: mayo
+  pos: NOUN
+  gloss: May
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "5"}
+
+- citation: medya
+  pos: NOUN
+  gloss: half (Spanish-borrowed; canonical in clock-time register)
+  synonyms: [kalahati]
+  feats: {SEM_CLASS: FRACTION}
+
 - citation: mesa
   pos: NOUN
   gloss: table
+
+- citation: miyerkules
+  pos: NOUN
+  gloss: Wednesday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "3"}
 
 - citation: mukha
   pos: NOUN
@@ -495,6 +692,16 @@
   pos: NOUN
   gloss: coconut
 
+- citation: nobyembre
+  pos: NOUN
+  gloss: November
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "11"}
+
+- citation: oktubre
+  pos: NOUN
+  gloss: October
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "10"}
+
 - citation: oras
   pos: NOUN
   gloss: hour, time
@@ -515,6 +722,10 @@
   pos: NOUN
   gloss: food (lit. "for-eating", from kain)
 
+- citation: palay
+  pos: NOUN
+  gloss: rice (unhusked)
+
 - citation: palengke
   pos: NOUN
   gloss: market
@@ -522,6 +733,16 @@
 - citation: pamangkin
   pos: NOUN
   gloss: niece, nephew
+
+- citation: pamasahe
+  pos: NOUN
+  gloss: transport fare
+  feats: {PANG_DERIVED: true}
+
+- citation: pambili
+  pos: NOUN
+  gloss: money for buying / shopping money
+  feats: {PANG_DERIVED: true}
 
 - citation: pamilya
   pos: NOUN
@@ -531,6 +752,26 @@
   pos: NOUN
   gloss: name
 
+- citation: pangharang
+  pos: NOUN
+  gloss: instrument for blocking / blockade
+  feats: {PANG_DERIVED: true}
+
+- citation: pangkain
+  pos: NOUN
+  gloss: food / something to eat
+  feats: {PANG_DERIVED: true}
+
+- citation: pangsuot
+  pos: NOUN
+  gloss: clothing / garment
+  feats: {PANG_DERIVED: true}
+
+- citation: pansulat
+  pos: NOUN
+  gloss: pen / writing instrument
+  feats: {PANG_DERIVED: true}
+
 - citation: panulat
   pos: NOUN
   gloss: pen, writing instrument
@@ -538,6 +779,11 @@
 - citation: papel
   pos: NOUN
   gloss: paper
+
+- citation: pares
+  pos: NOUN
+  gloss: pair
+  feats: {MEASURE: true}
 
 - citation: pari
   pos: NOUN
@@ -555,6 +801,15 @@
   pos: NOUN
   gloss: duck
 
+- citation: pebrero
+  pos: NOUN
+  gloss: February
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "2"}
+
+- citation: pedro
+  pos: NOUN
+  gloss: Pedro (proper name)
+
 - citation: pen
   pos: NOUN
   gloss: pen
@@ -570,6 +825,11 @@
 - citation: pinto
   pos: NOUN
   gloss: door
+
+- citation: porsiyento
+  pos: NOUN
+  gloss: percent
+  feats: {SEM_CLASS: PERCENTAGE}
 
 - citation: prutas
   pos: NOUN
@@ -591,6 +851,11 @@
   pos: NOUN
   gloss: heart
 
+- citation: sabado
+  pos: NOUN
+  gloss: Saturday
+  feats: {SEM_CLASS: DAY, DAY_VALUE: "6"}
+
 - citation: saging
   pos: NOUN
   gloss: banana
@@ -602,13 +867,6 @@
 - citation: salamat
   pos: NOUN
   gloss: thanks, gratitude
-  # Phase 5n.B Commit 16 (§18 L96): fragment-host noun. Surfaces
-  # as a one-word "sentence" (``Salamat.``) and carries the 2P-
-  # politeness clitic (``Salamat po.`` / ``Salamat ho.`` /
-  # ``Salamat opo.``) per the existing Phase 5m clitic-absorption
-  # rule. ``FRAGMENT_HOST=YES`` gates the new ``S_FRAG`` rule so
-  # only specific lex items (greetings / interjections) are
-  # admitted as one-word matrix-S — arbitrary nouns are not.
   feats: {FRAGMENT_HOST: true}
 
 - citation: salamin
@@ -627,6 +885,16 @@
   pos: NOUN
   gloss: shoes
 
+- citation: sarili
+  pos: NOUN
+  gloss: self
+  feats: {SEM_CLASS: REFLEXIVE}
+
+- citation: setyembre
+  pos: NOUN
+  gloss: September
+  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "9"}
+
 - citation: silya
   pos: NOUN
   gloss: chair
@@ -643,14 +911,22 @@
   pos: NOUN
   gloss: hat
 
+- citation: tanghali
+  pos: NOUN
+  gloss: noon / midday
+  feats: {SEM_CLASS: TIME}
+
 - citation: tao
   pos: NOUN
   gloss: person, human (homophonous with the verb above; nouns and verbs share surfaces)
 
-# -- Time --
 - citation: taon
   pos: NOUN
   gloss: year
+
+- citation: tasa
+  pos: NOUN
+  gloss: cup
 
 - citation: tatay
   pos: NOUN
@@ -680,13 +956,6 @@
   pos: NOUN
   gloss: teacher
 
-# Phase 5n.C.3 Commit 11 (post-C9 kinship sweep, lex-only): adds
-# the missing kinship inventory. ``tiya`` and ``tiyo`` are
-# orthographic variants of ``tita`` / ``tito`` (both colloquial
-# Spanish-borrowed forms with -y- vs -t- spelling); they route to
-# the canonical lemma via the Phase 5n.A Commit 4 ``LEMMA`` feat.
-# ``tiyahin`` / ``tiyuhin`` are the formal-register forms (distinct
-# from the colloquial Spanish-borrowed pair).
 - citation: tiya
   pos: NOUN
   gloss: aunt (orthographic variant of tita)
@@ -717,34 +986,46 @@
   pos: NOUN
   gloss: train
 
+- citation: triple
+  pos: NOUN
+  gloss: triple
+  feats: {SEM_CLASS: MULTIPLIER}
+
 - citation: tubig
   pos: NOUN
   gloss: water
 
-# Phase 5n.C.3 Commit 11: ``tuhod`` "knee" — the body-part noun
-# also occurs in the kinship-extension compound ``lolo / lola /
-# tiyahin / tiyuhin sa tuhod`` "great-grandparent / great-aunt /
-# great-uncle" (literally "at the knee", idiomatic). Lex-only;
-# the kinship-extension reading isn't given idiom-level handling.
 - citation: tuhod
   pos: NOUN
   gloss: knee
 
+- citation: tuktok
+  pos: NOUN
+  gloss: top
+
 - citation: ulan
   pos: NOUN
   gloss: rain
-  # Phase 5n.C.3 Commit 4 (§18 L31): tag_season paradigm input —
-  # `ulan` "rain" yields `tagulan` "rainy season".
   affix_class: [tag_season]
 
 - citation: ulap
   pos: NOUN
   gloss: cloud
 
-# -- Body parts --
+- citation: ulit
+  pos: NOUN
+  gloss: times (repetitions)
+  synonyms: [beses]
+  feats: {SEM_CLASS: FREQUENCY}
+
 - citation: ulo
   pos: NOUN
   gloss: head
+
+- citation: umaga
+  pos: NOUN
+  gloss: morning
+  feats: {SEM_CLASS: TIME}
 
 - citation: utak
   pos: NOUN
@@ -753,497 +1034,3 @@
 - citation: wika
   pos: NOUN
   gloss: language
-
-
-# === Frequency / multiplier nouns (Phase 5f Commit 5) ====================
-# `beses` / `ulit` (FREQUENCY): "times (occurrences/repetitions)".
-# `doble` / `triple` (MULTIPLIER): Spanish-borrowed multipliers
-# surfacing in technical / commercial register (``doble ang
-# singil`` "the charge is doubled"). Alphabetical by citation.
-
-- citation: beses
-  pos: NOUN
-  gloss: times (occurrences)
-  feats: {SEM_CLASS: FREQUENCY}
-  synonyms: [ulit]
-
-# Spanish-borrowed multipliers — surface in technical / commercial
-# register (``doble ang singil`` "the charge is doubled"). Lex-only
-# in this commit; treated as NOUN with SEM_CLASS=MULTIPLIER so the
-# existing NP machinery handles their distribution.
-- citation: doble
-  pos: NOUN
-  gloss: double
-  feats: {SEM_CLASS: MULTIPLIER}
-
-- citation: triple
-  pos: NOUN
-  gloss: triple
-  feats: {SEM_CLASS: MULTIPLIER}
-
-- citation: ulit
-  pos: NOUN
-  gloss: times (repetitions)
-  feats: {SEM_CLASS: FREQUENCY}
-  synonyms: [beses]
-
-
-# === Percentage NOUN (Phase 5f Commit 6) =================================
-# Used in percentage expressions (``dalawampung porsiyento`` "20%",
-# ``isang porsiyento`` "1%"). Spanish-borrowed.
-
-- citation: porsiyento
-  pos: NOUN
-  gloss: percent
-  feats: {SEM_CLASS: PERCENTAGE}
-
-
-# === Fraction NOUNs (Phase 5f Commit 8) ==================================
-# Numeric fractions (``kalahati`` "half", ``kapat`` "quarter",
-# ``medya`` "half-Spanish"; ``bahagi`` "part"). Alphabetical by
-# citation.
-
-- citation: bahagi
-  pos: NOUN
-  gloss: part
-  feats: {SEM_CLASS: PART}
-
-- citation: kalahati
-  pos: NOUN
-  gloss: half
-  feats: {SEM_CLASS: FRACTION}
-  synonyms: [medya]
-
-- citation: kapat
-  pos: NOUN
-  gloss: quarter
-  feats: {SEM_CLASS: FRACTION}
-
-# Polysemic second entry: ``kuwarto`` "quarter (of the hour)"
-# coexists with the "room" reading that lives in the Common
-# nouns section. Both reach the chart parser as separate
-# MorphAnalyses on the same surface, and the syntactic context
-# selects: the minute-composition rule's
-# ``(↓3 SEM_CLASS) =c 'FRACTION'`` constraint (Phase 5f Commit
-# 12 in cfg/nominal.py) fires this entry; NP-internal
-# modifier rules consume the "room" entry. (Phase 5f closing
-# deferral on multiple lex entries per ``(lemma, pos)``,
-# 2026-05-04.)
-- citation: kuwarto
-  pos: NOUN
-  gloss: quarter (of the hour, Spanish-borrowed; clock-time fraction)
-  feats: {SEM_CLASS: FRACTION}
-
-- citation: medya
-  pos: NOUN
-  gloss: half (Spanish-borrowed; canonical in clock-time register)
-  feats: {SEM_CLASS: FRACTION}
-  synonyms: [kalahati]
-
-
-# === Clock-time NOUNs (Phase 5f Commit 10) ===============================
-# Spanish-borrowed clock-time terms 1-12. Sorted by TIME_VALUE
-# (the hour they denote). Surfaces ``ala-`` (vowel-initial,
-# ``ala-una``) for hour 1 and ``alas-`` (consonant-initial,
-# ``alas-dos`` ... ``alas-dose``) for hours 2-12.
-
-- citation: alauna
-  pos: NOUN
-  gloss: one o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "1"}
-
-- citation: alasdos
-  pos: NOUN
-  gloss: two o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "2"}
-
-- citation: alastres
-  pos: NOUN
-  gloss: three o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "3"}
-
-- citation: alaskuwatro
-  pos: NOUN
-  gloss: four o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "4"}
-
-- citation: alassingko
-  pos: NOUN
-  gloss: five o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "5"}
-
-- citation: alassais
-  pos: NOUN
-  gloss: six o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "6"}
-
-- citation: alassiyete
-  pos: NOUN
-  gloss: seven o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "7"}
-
-- citation: alasotso
-  pos: NOUN
-  gloss: eight o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "8"}
-
-- citation: alasnuwebe
-  pos: NOUN
-  gloss: nine o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "9"}
-
-- citation: alasdies
-  pos: NOUN
-  gloss: ten o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "10"}
-
-- citation: alasonse
-  pos: NOUN
-  gloss: eleven o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "11"}
-
-- citation: alasdose
-  pos: NOUN
-  gloss: twelve o'clock
-  feats: {SEM_CLASS: TIME, TIME_VALUE: "12"}
-
-
-# === Time-of-day NOUNs (Phase 5f Commit 11) ==============================
-# `umaga` (morning), `tanghali` (noon / midday), `hapon`
-# (afternoon). `gabi` (night) and `araw` (day / sun) live in the
-# Common-nouns section without SEM_CLASS=TIME — composing time-of-
-# day prepositional phrases via existing rules. Alphabetical by
-# citation.
-
-- citation: hapon
-  pos: NOUN
-  gloss: afternoon
-  feats: {SEM_CLASS: TIME}
-
-- citation: tanghali
-  pos: NOUN
-  gloss: noon / midday
-  feats: {SEM_CLASS: TIME}
-
-- citation: umaga
-  pos: NOUN
-  gloss: morning
-  feats: {SEM_CLASS: TIME}
-
-
-# === Spanish month names (Phase 5f Commit 13) ============================
-# 12 Spanish-borrowed month names. SEM_CLASS=MONTH marks them for
-# the LMT classifier and feeds the Phase 5f Commit 13 date-of-week
-# PP rule (PP → PART[TIME_FRAME] N with (↓2 SEM_CLASS) =c
-# 'MONTH'). Sorted by MONTH_VALUE January..December.
-
-- citation: enero
-  pos: NOUN
-  gloss: January
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "1"}
-
-- citation: pebrero
-  pos: NOUN
-  gloss: February
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "2"}
-
-- citation: marso
-  pos: NOUN
-  gloss: March
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "3"}
-
-- citation: abril
-  pos: NOUN
-  gloss: April
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "4"}
-
-- citation: mayo
-  pos: NOUN
-  gloss: May
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "5"}
-
-- citation: hunyo
-  pos: NOUN
-  gloss: June
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "6"}
-
-- citation: hulyo
-  pos: NOUN
-  gloss: July
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "7"}
-
-- citation: agosto
-  pos: NOUN
-  gloss: August
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "8"}
-
-- citation: setyembre
-  pos: NOUN
-  gloss: September
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "9"}
-
-- citation: oktubre
-  pos: NOUN
-  gloss: October
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "10"}
-
-- citation: nobyembre
-  pos: NOUN
-  gloss: November
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "11"}
-
-- citation: disyembre
-  pos: NOUN
-  gloss: December
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "12"}
-
-
-# === Day-of-week names (Phase 5f Commit 13) ==============================
-# 7 day-of-week names — Spanish-borrowed (Lunes, Martes,
-# Miyerkules, Huwebes, Biyernes, Sabado) and native (Linggo).
-# SEM_CLASS=DAY marks them for the LMT classifier and feeds the
-# Phase 5f Commit 13 date-of-week PP rule. Also work as DAT-NP
-# via existing rules (``sa Lunes`` "on Monday"). Sorted by
-# DAY_VALUE Monday..Sunday.
-
-- citation: lunes
-  pos: NOUN
-  gloss: Monday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "1"}
-
-- citation: martes
-  pos: NOUN
-  gloss: Tuesday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "2"}
-
-- citation: miyerkules
-  pos: NOUN
-  gloss: Wednesday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "3"}
-
-- citation: huwebes
-  pos: NOUN
-  gloss: Thursday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "4"}
-
-- citation: biyernes
-  pos: NOUN
-  gloss: Friday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "5"}
-
-- citation: sabado
-  pos: NOUN
-  gloss: Saturday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "6"}
-
-- citation: linggo
-  pos: NOUN
-  gloss: week, Sunday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "7"}
-
-
-# === Seasons (Phase 5f Commit 14, migrated to productive paradigm
-# 2026-05-10 in Phase 5n.C.3 Commit 4) =====================================
-# The 5 hand-coded ``tag*`` season NOUN entries that previously
-# lived here have been replaced with productive derivation via the
-# ``tag_season`` paradigm cell (``data/tgl/paradigms.yaml`` —
-# ``base_pos: NOUN, prefix tag, feats: {SEM_CLASS: SEASON}``).
-# The base NOUN roots ``araw`` / ``gutom`` / ``ulan`` /
-# ``init`` / ``lamig`` carry ``affix_class: [tag_season]`` to
-# trigger the cell. ``init`` and ``lamig`` are added as NOUN
-# roots below — they previously existed only as ADJ roots
-# (producing ``mainit`` / ``malamig``). Their NOUN-pos
-# counterparts are conventional nominalizations ("heat" /
-# "cold") and don't conflict with the existing ADJ paradigm.
-#
-# Closes §18 L31 partial; addresses Phase 5f Commit 14's
-# productive-paradigm deferral.
-
-- citation: init
-  pos: NOUN
-  gloss: heat
-  affix_class: [tag_season]
-
-- citation: lamig
-  pos: NOUN
-  gloss: cold
-  affix_class: [tag_season]
-
-
-# === Collective numerals (Phase 5f Commit 18) ============================
-# Measure / collective NOUNs that take a complement N — pares "pair"
-# (×2), dosena "dozen" (×12), daandaan "hundreds" (×100s),
-# libulibo "thousands" (×1000s). Order preserved by ascending N.
-
-- citation: pares
-  pos: NOUN
-  gloss: pair
-  feats: {MEASURE: true}
-
-- citation: dosena
-  pos: NOUN
-  gloss: dozen
-  feats: {MEASURE: true}
-
-# Phase 5n.C.3 Commit 2 (§18 L31): replaced the hand-coded
-# ``daandaan`` / ``libulibo`` entries with productive ``card_redup``
-# paradigm cells. The base NOUN roots below carry COLL_VALUE
-# (per-root, not productive) + ``affix_class: [card_redup]`` so
-# the paradigms.yaml cell fires. ``libo`` and ``daan`` as
-# cardinal-base NOUNs are distinct from the verb ``daan`` "pass
-# through" (verbs.yaml line 290) — the polysemous-noun index
-# resolves the cardinal vs verb sense at parse time.
-- citation: daan
-  pos: NOUN
-  gloss: hundred
-  feats: {COLL_VALUE: HUNDREDS}
-  affix_class: [card_redup]
-
-- citation: libo
-  pos: NOUN
-  gloss: thousand
-  feats: {COLL_VALUE: THOUSANDS}
-  affix_class: [card_redup]
-
-
-# === Phase 5j Commit 1: locative / existential supporting nouns =========
-# Three NOUN entries that surface inside Phase 5j locative-existential
-# / locative-PP composition contexts. ``labas`` pairs with the existing
-# Phase 4 §7.7 sa-PP machinery to form the locative ground in ``May
-# tao sa labas`` / ``Nasa labas ang aso``. ``tuktok`` and ``bukid``
-# unblock R&G "Ang Manok" simples #5 and #7 (``Nasa tuktok ng bundok
-# ang bahay`` and the ``sa bukid`` adjunct).
-
-- citation: labas
-  pos: NOUN
-  gloss: outside
-
-- citation: tuktok
-  pos: NOUN
-  gloss: top
-
-- citation: bukid
-  pos: NOUN
-  gloss: field / countryside
-
-# Phase 5j Commit 6: ``kailangan`` polysemous noun reading.
-# The modal ("need / must") lives in particles.yaml as a VERB
-# entry; this is the noun reading ("need / requirement", as in
-# ``ang kailangan ko`` "what I need"). Two separate lex entries,
-# one surface, rule context disambiguates — same precedent as
-# Phase 5h ``pareho`` (predicative-ADJ vs Q-floated) and
-# Phase 5i ``alin`` / ``ilan`` (PRON / Q polysemy).
-
-- citation: kailangan
-  pos: NOUN
-  gloss: need / requirement
-
-# Phase 5n.A Commit 9 (§18 L65): ``maaari`` polysemous noun reading.
-# Parallel to ``kailangan`` above. The modal ("can / may / be
-# possible") lives in particles.yaml as a VERB[MODAL=YES] entry;
-# this is the noun reading ("the possible / possibility", as in
-# ``ang maaari ay X`` "the possible (course of action) is X").
-# Marginal in modern Tagalog — the modal reading dominates; the
-# nominal reading appears mainly in formal / written register
-# (R&G 1981 §10). Two separate lex entries, one surface; rule
-# context disambiguates.
-- citation: maaari
-  pos: NOUN
-  gloss: the possible / possibility
-
-
-# === Phase 5m Commit 1: reflexive-noun ``sarili`` ========================
-# ``sarili`` "self" patterns syntactically as a NOUN, not a PRON
-# — ``ang sarili niya`` "his self / himself" is a regular ``D + N
-# + GEN-PRON`` chain via the existing Phase 4 NP grammar. Anaphora
-# resolution (binding ``sarili niya`` to its antecedent SUBJ)
-# requires functional-uncertainty / inside-out designators
-# (Phase 6); Phase 5m only does the c-structure composition.
-# SEM_CLASS=REFLEXIVE is diagnostic only — no Phase 5m grammar
-# rule gates on it. Reference: R&G 1981 §7.3.
-
-- citation: sarili
-  pos: NOUN
-  gloss: self
-  feats: {SEM_CLASS: REFLEXIVE}
-
-
-# === Phase 5n.A Commit 25: pang- purpose nominals (§18 L27) ==============
-#
-# Hand-authored ``pang-`` (and ``pam-`` / ``pan-`` allomorphs)
-# instrumental / purpose nominals, lex'd as NOUN with a
-# ``PANG_DERIVED: true`` traceability feat. Each entry covers a
-# single attested form; the productive ``pang-`` derivation engine
-# is deferred to L31 (NOUN-root engine).
-#
-# Allomorphy: ``pang-`` selects ``pam-`` before /b, p/ and ``pan-``
-# before /t, d, s, l, n/, with ``pang-`` proper before vowels and
-# /k, g, h, ng, w, y/. The base nominal class denotes the
-# instrument or stuff used for an action (S&O 1972 §5.x; R&B 1986
-# ch.7 derived nominals).
-#
-# Risk note (per plan-of-record §3.5): the bare ``pambili`` /
-# ``pansulat`` etc. surfaces are currently ``_UNK`` in the morph
-# analyzer (the existing IV-INSTR ``ipang-`` paradigm only fires
-# for the inflected forms ``ipinambili`` / ``ipinapambili`` /
-# etc.). Adding NOUN entries for the bare forms doesn't conflict
-# with the IV-INSTR machinery because the analyses are POS-typed
-# differently — VERB[VOICE=IV, APPL=INSTR] vs NOUN. Verified by
-# the Commit 25 IV-INSTR regression test on ``Ipinambili niya
-# ang pera``.
-#
-# Sources: ``pambili`` and ``pamasahe`` are attested in the
-# intermediate-Tagalog corpus (``data/tgl/dictionaries/
-# intermediate-tagalog-...``); ``pansulat`` / ``pangkain`` /
-# ``pangsuot`` / ``pangharang`` are S&O 1972 §5.x derived-nominal
-# class examples.
-
-- citation: pambili
-  pos: NOUN
-  gloss: money for buying / shopping money
-  feats: {PANG_DERIVED: true}
-
-- citation: pamasahe
-  pos: NOUN
-  gloss: transport fare
-  feats: {PANG_DERIVED: true}
-
-- citation: pangharang
-  pos: NOUN
-  gloss: instrument for blocking / blockade
-  feats: {PANG_DERIVED: true}
-
-- citation: pangkain
-  pos: NOUN
-  gloss: food / something to eat
-  feats: {PANG_DERIVED: true}
-
-- citation: pangsuot
-  pos: NOUN
-  gloss: clothing / garment
-  feats: {PANG_DERIVED: true}
-
-- citation: pansulat
-  pos: NOUN
-  gloss: pen / writing instrument
-  feats: {PANG_DERIVED: true}
-
-
-# === Proper-name placeholders ============================================
-# Test-fixture proper names. Alphabetical by citation.
-
-- citation: ana
-  pos: NOUN
-  gloss: Ana (proper name)
-
-- citation: juan
-  pos: NOUN
-  gloss: Juan (proper name)
-
-- citation: maria
-  pos: NOUN
-  gloss: Maria (proper name)
-
-- citation: pedro
-  pos: NOUN
-  gloss: Pedro (proper name)
