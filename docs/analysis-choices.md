@@ -16642,3 +16642,83 @@ and OCR-cleanup work.
 
 `hatch run test-both`: 7573 passed in 74.14s (was 7562; +11
 new tests).
+
+## Phase 8.G: `bago` as ADJ "new" + `ani` NOUN
+
+Closes the audit-named `Bagong ani ang palay.` (rg81 ANG MANOK
+Wave 1) via two lex additions — NO grammar rule changes.
+
+### The audit-task description was misleading
+
+The plan-of-record §1 ledger entry described 8.G as:
+
+> Diagnostic shows a LEMMA gate on the linker that the
+> `bago + ng + N` form does not match. (small ~2 commits — likely
+> a 1-rule fix on the Phase 5g pre-N modifier rule)
+
+Diagnostic during 8.G probing found the actual cause is
+different:
+
+1. **`bago` was registered only as `PART`** (subordinator
+   "before", `COMP_TYPE: TEMP_BEFORE` in particles.yaml). The
+   ADJ "new" sense was missing entirely from adjectives.yaml —
+   the parser couldn't find any ADJ analysis for `bago`.
+2. **`ani` "harvest" was OOV** in nouns.yaml — the audit-
+   target sentence had two OOV-shaped blockers, not one.
+
+The misleading `(↓1 LEMMA) =c 'o'` diagnostic from the
+fragments was a downstream artifact (a coordination-rule
+attempt firing because `bagong ani` couldn't parse as
+modifier+N) — not a constraint on the pre-N modifier rule
+itself. Once `bago` is registered as ADJ + `ani` as NOUN, the
+canonical Phase 5g pre-N modifier rule + Phase 5n.B N-pivot
+predication rules consume the sentence unchanged.
+
+### Lex additions
+
+- `adjectives.yaml`: `bago` with `affix_class: []` (non-
+  productive — like `pareho`/`magkapareho`/`magkaiba`; bare
+  citation IS the adjectival surface). Gloss notes the
+  homophony with the subordinator PART entry.
+- `nouns.yaml`: `ani` "harvest, crop yield".
+
+### Direct corpus delta
+
+`/tmp/audit_bago.py` found 55 corpus candidates with
+`bago` / `bagong` surface, of which only the audit-target was
+in 8.G's named scope. After the lex additions:
+
+| Pre-8.G | Post-8.G | Δ |
+| ---: | ---: | ---: |
+| 0 / 55 | 1 / 55 | +1 |
+
+The other 54 corpus candidates use `bago` as the **subordinator**
+"before" (`Bago dumating ang pulis, ...`, `Nakatakbo na ang
+magnanakaw, bago dumating ang pulis.`) — those parse fine via
+the existing PART registration. The remaining "zero-parse"
+55-1=54 in the audit have orthogonal blockers (OOV verbs,
+hyphenated `bagong-taon`, complex coordination, etc.) — not
+8.G scope.
+
+### Anti-deferral discipline applied
+
+Per `feedback_audit_before_scheduling.md`, the corpus probe ran
+BEFORE the design phase. Result: 1 audit-target closure with
+trivial scope (two lex entries, no rule changes). The
+plan-of-record's effort estimate ("small ~2 commits — likely
+a 1-rule fix") was wrong on the diagnosis but right on the
+effort scale.
+
+### Test plan
+
+9 new tests in `tests/tgllfg/test_phase8g_bago_adj.py`:
+
+- 5 sentence parses (audit-target + variants of bago as ADJ
+  predicate / NP modifier)
+- 2 lex-known checks (bago is ADJ; ani is known surface)
+- 1 non-regression (subordinator-`bago` still parses)
+- 1 out-of-scope pin (`Ikaw ba ang bagong dating?` — `dating`
+  OOV; future lex pass)
+
+`hatch run test-both`: 7582 passed in 78.08s (was 7573; +9
+new tests).
