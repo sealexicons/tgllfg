@@ -2690,3 +2690,78 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 PUNCT_CLASS) =c 'COMMA'",
         ],
     ))
+
+
+    # === Phase 8.D: comma-fronted topic NP =============================
+    #
+    # ``S → NP PUNCT[COMMA] S``
+    #
+    # General topic-fronting of an NP by sentence-initial comma,
+    # parallel to the Phase 5l Commit 13 ay-fronted SubordClause topic
+    # (``cfg/subordination.py``) and the Phase 4 §7.4 ay-fronted NP
+    # rule. The fronted NP serves as both matrix TOPIC (discourse
+    # function) and a member of ADJUNCT (grammatical function for the
+    # temporal / setting / contrastive interpretation).
+    #
+    # Example (Wave 1 audit target — rg81 ANG MANOK ch.):
+    #
+    #   ``Isang araw, nagbubunot siya ng damo.``
+    #   "One day, he was pulling weeds."
+    #
+    # F-structure shape:
+    #
+    #   ↑          = ↓3                  matrix = the post-comma S
+    #   ↑ TOPIC    = ↓1                  fronted NP is discourse topic
+    #   ↓1 ∈ ↑ ADJUNCT                   also in adjunct set
+    #
+    # The fronted NP daughter is unconstrained for CASE — the
+    # construction admits bare NPs (``Isang araw``, ``Kahapon``,
+    # ``Bukas``), case-marked NPs in some registers, and DP-headed
+    # constituents (``Sa simula``). The interpretation is uniformly
+    # temporal-/setting-frame "TOPIC".
+    #
+    # Disambiguation from Phase 5n.C Commit 6 / 7.6 universal-Q
+    # distributive (``Bawat bata, kumain.``): that family's right
+    # daughter is a bare ``V[VOICE=AV]`` (with optional GEN/DAT-NP
+    # daughters), whereas this rule's right daughter is a full S
+    # already covering matrix structure. Distinct daughter shape →
+    # no structural overlap; both rules can coexist without
+    # ambiguity-induced spurious parses for the canonical inputs
+    # of each.
+    #
+    # Disambiguation from Phase 4 §7.4 ay-fronted NP: ay-fronting
+    # uses an overt ``PART[LINK=AY]`` particle between fronted NP
+    # and matrix; comma-fronting uses PUNCT[COMMA]. Different
+    # surface tokens → no overlap.
+    #
+    # References: Schachter & Otanes 1972 §13 (topicalization);
+    # Kroeger 1993 ch.2 (Tagalog topic-comment structure);
+    # Phase 5l Commit 13 sibling rule (subord-clause topicalization).
+    rules.append(Rule(
+        "S",
+        ["NP", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
+        [
+            "(↑) = ↓3",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+
+    # Companion variant for bare-N topics (no case marker). The
+    # Phase 5f Commit 1 cardinal-NP rule requires a CASE marker
+    # daughter to build NP[CASE=X]; bare cardinal-modified N
+    # (``Isang araw`` "one day") thus surfaces as ``N``, not ``NP``.
+    # The audit-target sentence ``Isang araw, nagbubunot siya ng
+    # damo.`` (rg81 ANG MANOK) uses exactly this shape — temporal-
+    # frame topic-N without case marking. This companion rule
+    # admits the N-shaped daughter; equations are identical to the
+    # NP-variant above.
+    rules.append(Rule(
+        "S",
+        ["N", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
+        [
+            "(↑) = ↓3",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJUNCT)",
+        ],
+    ))
