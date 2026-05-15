@@ -1,205 +1,39 @@
 # data/tgl/adjectives.yaml
 #
-# Adjective roots — Phase 5g §12.1 inventory. Each entry's citation
-# is the bare root; the productive ``ma-`` paradigm in
-# ``adj_paradigms.yaml`` derives the surface adjective form
-# (``ganda`` → ``maganda``, ``talino`` → ``matalino``).
+# Adjective roots. Each entry's citation is the bare root; the
+# productive ``ma-`` paradigm in ``adj_paradigms.yaml`` derives
+# the surface adjective form (``ganda`` → ``maganda``, ``talino``
+# → ``matalino``). The inventory covers size, quality, sensory,
+# and evaluative dimensions.
 #
-# Analytical commitment (roadmap §12.1): ``ma-`` adjectives are
-# ``POS=ADJ`` with ``[PREDICATIVE+]``, NOT stative VERBs. The
-# verbal-paradigm absence facts (``*pumagmaganda``,
-# ``*magagaganda``, ``*magpamaganda``) ground the commitment.
+# Analytical commitment: ``ma-`` adjectives are ``POS=ADJ`` with
+# ``[PREDICATIVE+]``, NOT stative VERBs. The verbal-paradigm
+# absence facts (``*pumagmaganda``, ``*magagaganda``,
+# ``*magpamaganda``) ground the commitment.
 #
 # Naming-collision warning: the grammar code uses ``ADJ`` as the
 # LFG f-attribute name for the adjunct set (``↓ ∈ (↑ ADJ)``). The
-# Phase 5g ``ADJ`` is a category / POS string. The two namespaces
-# don't intersect at the unifier level — category strings scan
-# against ``MorphAnalysis.pos``, attribute names live in equation
-# strings — but every code reader confuses them once.
+# ``ADJ`` used here is a category / POS string. The two
+# namespaces don't intersect at the unifier level — category
+# strings scan against ``MorphAnalysis.pos``, attribute names
+# live in equation strings — but every code reader confuses them
+# once.
 #
-# Phase 5g Commit 4 expands the seed inventory from 6 (Commit 1)
-# to 30, covering size / quality / sensory / evaluative dimensions.
-# Several roots also exist in ``verbs.yaml`` as INTR "be X" stative
-# verbs (``ganda``, ``bilis``, ``ingay``, ``init``, ``lakas``,
-# ``saya``, ``lungkot``, ``yaman``) or as TR/INTR verbs with a
-# distinct sense (``baba`` "go down", ``linis`` "clean (TR)"). The
-# additive policy leaves verbs.yaml untouched — the verbal entries
-# produce inchoative / stative-verb surfaces (``gumanda``,
-# ``naganda``, ``bumaba``, etc.) that don't collide with the
-# adjectival ``ma + root`` surface produced here.
+# Several roots also exist in ``verbs.yaml`` as INTR "be X"
+# stative verbs (``ganda``, ``bilis``, ``ingay``, ``init``,
+# ``lakas``, ``saya``, ``lungkot``, ``yaman``) or as TR/INTR
+# verbs with a distinct sense (``baba`` "go down", ``linis``
+# "clean (TR)"). The additive policy leaves verbs.yaml untouched
+# — the verbal entries produce inchoative / stative-verb surfaces
+# (``gumanda``, ``naganda``, ``bumaba``, etc.) that don't collide
+# with the adjectival ``ma + root`` surface produced here.
 #
 # Citations: R&B 1986, S&O 1972 §5, Ramos dictionary entries for
 # adjective roots.
 
-# === Size dimension =====================================================
-
-- citation: laki
-  pos: ADJ
-  gloss: big, large
-  affix_class: [ma_adj]
-
-- citation: liit
-  pos: ADJ
-  gloss: small
-  affix_class: [ma_adj]
-  # R&G 1981 §12.9 integration benchmark — produces ``maliit``
-  # for ``Maliit ang bahay.`` "The house is small".
-
-- citation: taas
-  pos: ADJ
-  gloss: high, tall
-  affix_class: [ma_adj]
-  # R&G 1981 §12.9 integration benchmark — produces ``mataas``
-  # for ``Mataas ang bundok.`` "The mountain is high". Note:
-  # ``taas`` also exists in verbs.yaml as TR "raise, lift up"
-  # (different sense); both citations coexist as separate roots
-  # in the analyzer's index.
-
 - citation: baba
   pos: ADJ
   gloss: low
-  affix_class: [ma_adj]
-  # ``mababa``. Also a verb root in verbs.yaml meaning "go down,
-  # descend" (``bumaba`` etc.) — distinct sense.
-
-- citation: haba
-  pos: ADJ
-  gloss: long
-  affix_class: [ma_adj]
-
-- citation: ikli
-  pos: ADJ
-  gloss: short (in length)
-  affix_class: [ma_adj]
-  # ``maikli``. Distinct from ``mababa`` "low" and from the
-  # stature-short ``mapandak``.
-
-- citation: lapad
-  pos: ADJ
-  gloss: wide, broad
-  affix_class: [ma_adj]
-
-- citation: kapal
-  pos: ADJ
-  gloss: thick
-  affix_class: [ma_adj]
-
-- citation: nipis
-  pos: ADJ
-  gloss: thin
-  affix_class: [ma_adj]
-
-
-# === Quality dimension ==================================================
-
-- citation: ganda
-  pos: ADJ
-  gloss: beautiful
-  affix_class: [ma_adj]
-  # Note: ``ganda`` is also a verb root in verbs.yaml (gloss
-  # "be beautiful" with affix_class [um, mag, ma, maka], producing
-  # ``gumanda`` "become beautiful" and other inchoative / spurious
-  # surfaces). The verbal entry is left untouched in Phase 5g —
-  # see plan §4 for the additive policy.
-
-- citation: talino
-  pos: ADJ
-  gloss: intelligent
-  affix_class: [ma_adj]
-
-- citation: tanda
-  pos: ADJ
-  gloss: old
-  affix_class: [ma_adj]
-  # R&G 1981 §12.9 integration benchmark — produces ``matanda``
-  # for ``Matanda siya.`` "She is old".
-
-- citation: bilis
-  pos: ADJ
-  gloss: quick, fast
-  affix_class: [ma_adj]
-  # ``mabilis`` "quick / fast"; combined with the linker also
-  # serves as the manner-adverb form (``mabilis na tumakbo``
-  # "ran quickly" — Phase 5g Commit 5).
-
-# Phase 5n.C.3 Commit 8 (§18 L38): added ``dali`` as an ADJ
-# root to enable the canonical S&O 1972 §5 archaic kasing-redup
-# example ``kasingdadali`` "just as easy". The verb ``dali``
-# (verbs.yaml) is the same root in a different POS — Tagalog
-# polysemy. ``madali`` (ma_adj) is a common modern adjective
-# meaning "easy / quick".
-- citation: dali
-  pos: ADJ
-  gloss: easy, quick
-  affix_class: [ma_adj]
-
-- citation: bait
-  pos: ADJ
-  gloss: kind, well-behaved
-  affix_class: [ma_adj]
-
-- citation: sipag
-  pos: ADJ
-  gloss: diligent, industrious
-  affix_class: [ma_adj]
-
-- citation: tamad
-  pos: ADJ
-  gloss: lazy
-  affix_class: [ma_adj]
-
-- citation: tapang
-  pos: ADJ
-  gloss: brave
-  affix_class: [ma_adj]
-
-- citation: lakas
-  pos: ADJ
-  gloss: strong
-  affix_class: [ma_adj]
-  # Also in verbs.yaml as INTR "be strong"; additive twin.
-
-- citation: hina
-  pos: ADJ
-  gloss: weak
-  affix_class: [ma_adj]
-
-- citation: linis
-  pos: ADJ
-  gloss: clean
-  affix_class: [ma_adj]
-  # ``linis`` is also in verbs.yaml as TR "clean" (the verbal
-  # action of cleaning) — distinct from the adjectival "clean
-  # (state)".
-
-
-# === Sensory dimension ==================================================
-
-- citation: init
-  pos: ADJ
-  gloss: hot
-  affix_class: [ma_adj]
-  # Also in verbs.yaml as INTR "be hot, be heated"; additive twin.
-
-- citation: lamig
-  pos: ADJ
-  gloss: cold
-  affix_class: [ma_adj]
-
-- citation: sarap
-  pos: ADJ
-  gloss: delicious, tasty
-  affix_class: [ma_adj]
-
-- citation: ingay
-  pos: ADJ
-  gloss: noisy
-  affix_class: [ma_adj]
-  # Also in verbs.yaml as INTR "be noisy"; additive twin.
-
-- citation: bango
-  pos: ADJ
-  gloss: fragrant
   affix_class: [ma_adj]
 
 - citation: baho
@@ -207,222 +41,235 @@
   gloss: smelly, foul
   affix_class: [ma_adj]
 
+- citation: bait
+  pos: ADJ
+  gloss: kind, well-behaved
+  affix_class: [ma_adj]
 
-# === Body / condition states ============================================
-#
-# Phase 5n.A Commit 1: nine roots migrated from verbs.yaml as part of
-# the Be-X-root verbal-paradigm pruning (§18 entry L35). Each is a
-# pure adjectival predicate ("be deaf" / "be blind" / "be hungry"
-# etc.) lexicalised in S&O 1972 §5 / R&B 1986 / Ramos 1971 with the
-# productive ``ma-`` adjectivisation; the prior verbal entries with
-# ``affix_class: [ma, maka]`` produced ungrammatical or marginal
-# stative-verb surfaces (``nabingi``, ``magagalit``, etc.) that
-# conflicted with the Phase 5g §12.1 commitment that ``ma-``
-# adjectives are POS=ADJ rather than stative VERB. The verbal
-# entries were removed; the ADJ surfaces (``mabingi`` / ``magalit``
-# / ``magutom`` / ``maginaw`` / etc.) now compose via the standard
-# ``ma_adj`` cell.
+- citation: bango
+  pos: ADJ
+  gloss: fragrant
+  affix_class: [ma_adj]
+
+- citation: bilis
+  pos: ADJ
+  gloss: quick, fast
+  affix_class: [ma_adj]
 
 - citation: bingi
   pos: ADJ
   gloss: deaf
   affix_class: [ma_adj]
-  # ``mabingi``. S&O 1972 §5; previously a VERB[INTR] root with
-  # ``affix_class: [ma, maka]``.
 
 - citation: bulag
   pos: ADJ
   gloss: blind
   affix_class: [ma_adj]
-  # ``mabulag``. S&O 1972 §5.
+
+- citation: dali
+  pos: ADJ
+  gloss: easy, quick
+  affix_class: [ma_adj]
 
 - citation: galit
   pos: ADJ
   gloss: angry
   affix_class: [ma_adj]
-  # ``magalit``. R&B 1986; emotion-state predicate.
+
+- citation: ganda
+  pos: ADJ
+  gloss: beautiful
+  affix_class: [ma_adj]
 
 - citation: ginaw
   pos: ADJ
   gloss: cold (feeling cold)
   affix_class: [ma_adj]
-  # ``maginaw``. Ramos 1971; body-sensation predicate (distinct from
-  # ``lamig`` which is the ambient-temperature reading).
 
 - citation: gulat
   pos: ADJ
   gloss: surprised, startled
   affix_class: [ma_adj]
-  # ``magulat``. R&B 1986; emotion-state predicate.
 
 - citation: gutom
   pos: ADJ
   gloss: hungry
   affix_class: [ma_adj]
-  # ``magutom``. R&B 1986; body-state predicate. Also in nouns.yaml
-  # as NOUN "hunger" (distinct sense; both citations coexist).
+
+- citation: haba
+  pos: ADJ
+  gloss: long
+  affix_class: [ma_adj]
+
+- citation: higa
+  pos: ADJ
+  gloss: lying down, recumbent
+  affix_class: [naka_resultative]
 
 - citation: hilo
   pos: ADJ
   gloss: dizzy
   affix_class: [ma_adj]
-  # ``mahilo``. Ramos 1971; body-sensation predicate.
 
-- citation: tibay
+- citation: hina
   pos: ADJ
-  gloss: durable, sturdy
+  gloss: weak
   affix_class: [ma_adj]
-  # ``matibay``. R&B 1986; quality predicate (object durability).
-
-- citation: tigang
-  pos: ADJ
-  gloss: parched, dry
-  affix_class: [ma_adj]
-  # ``matigang``. S&O 1972 §5; quality predicate.
-
-
-# === Evaluative dimension ===============================================
-
-- citation: saya
-  pos: ADJ
-  gloss: happy, joyful
-  affix_class: [ma_adj]
-  # Also in verbs.yaml as INTR "be happy"; additive twin.
-
-- citation: lungkot
-  pos: ADJ
-  gloss: sad
-  affix_class: [ma_adj]
-  # Also in verbs.yaml as INTR "be sad"; additive twin.
-
-- citation: yaman
-  pos: ADJ
-  gloss: wealthy, rich
-  affix_class: [ma_adj]
-  # Also in verbs.yaml as INTR "be wealthy"; additive twin.
 
 - citation: hirap
   pos: ADJ
   gloss: poor, difficult
   affix_class: [ma_adj]
-  # ``mahirap`` carries both readings (poor / difficult)
-  # disambiguated by context.
 
-
-# === Phase 5h Commit 2: equative-identity predicates ====================
-#
-# Three lexicalised, non-productive ADJ entries: the bare citation
-# IS the adjectival surface (no ``ma-`` / ``pinaka-`` / ``napaka-``
-# / ``kasing-`` / ``sing-`` derivation; e.g. ``*mapareho`` is
-# ungrammatical). They all declare ``affix_class: []`` so the
-# bare-citation cell in ``adj_paradigms.yaml`` fires on them
-# (legacy "both empty" affix-class match) and the productive
-# Phase 5g/5h cells skip them. Per-root ``feats`` (``EQUATIVE`` /
-# ``COMP_DEGREE``) ride into the generated MorphAnalysis.
-#
-# ``pareho`` is polysemous with the Phase 5f Commit 23
-# ``particles.yaml`` entry (``Q[QUANT=BOTH, DUAL=YES]`` —
-# floated-quantifier reading); the analyzer indexes both
-# analyses against the same surface and rule context
-# disambiguates. Established polysemy pattern (Phase 5f Commit 17
-# ``bababa`` / ``hihigit`` precedent: same surface, two POS
-# readings, rule context disambiguates).
-
-- citation: pareho
+- citation: ikli
   pos: ADJ
-  gloss: same, alike (equative-identity predicate)
-  affix_class: []
-  feats: {EQUATIVE: true, COMP_DEGREE: EQUATIVE}
-  # Polysemous with particles.yaml's Q[QUANT=BOTH, DUAL=YES]
-  # entry. The ADJ analysis fires the predicative-adj clause
-  # rule (Phase 5g Commit 3) for ``Pareho ang kanilang sapatos``
-  # "their shoes are the same"; the Q analysis fires the float
-  # rule (Phase 4 §7.8) for ``Kumain sila pareho`` "they both ate".
+  gloss: short (in length)
+  affix_class: [ma_adj]
 
-- citation: magkapareho
+- citation: ingay
   pos: ADJ
-  gloss: alike, equal (formal equative-identity predicate)
-  affix_class: []
-  feats: {EQUATIVE: true, COMP_DEGREE: EQUATIVE}
-  # Lexicalised; ``magka-`` is a productive prefix family but is
-  # not separately decomposed here. ``Magkapareho ang kanilang
-  # sapatos`` "their shoes are alike".
+  gloss: noisy
+  affix_class: [ma_adj]
+
+- citation: init
+  pos: ADJ
+  gloss: hot
+  affix_class: [ma_adj]
+
+- citation: kapal
+  pos: ADJ
+  gloss: thick
+  affix_class: [ma_adj]
+
+- citation: lakas
+  pos: ADJ
+  gloss: strong
+  affix_class: [ma_adj]
+
+- citation: laki
+  pos: ADJ
+  gloss: big, large
+  affix_class: [ma_adj]
+
+- citation: lamig
+  pos: ADJ
+  gloss: cold
+  affix_class: [ma_adj]
+
+- citation: lapad
+  pos: ADJ
+  gloss: wide, broad
+  affix_class: [ma_adj]
+
+- citation: liit
+  pos: ADJ
+  gloss: small
+  affix_class: [ma_adj]
+
+- citation: linis
+  pos: ADJ
+  gloss: clean
+  affix_class: [ma_adj]
+
+- citation: lungkot
+  pos: ADJ
+  gloss: sad
+  affix_class: [ma_adj]
 
 - citation: magkaiba
   pos: ADJ
   gloss: different (contrastive-identity predicate)
   affix_class: []
   feats: {EQUATIVE: true, COMP_DEGREE: CONTRASTIVE}
-  # Lexicalised contrastive equative ("different from each
-  # other"). ``Magkaiba ang kanilang sapatos`` "their shoes are
-  # different". The ``EQUATIVE: YES`` flag groups it with
-  # pareho / magkapareho structurally even though the semantic
-  # value is CONTRASTIVE rather than EQUATIVE — a single feature
-  # for the "identity-comparing predicate" family.
 
-
-# === Phase 5n.A Commit 6: Resultative stative-locatives (§18 L61) =========
-#
-# Five roots that take the ``naka-`` resultative ADJ reading per
-# S&O 1972 §6 (``tira`` "live", ``upo`` "sit", ``higa`` "lie",
-# ``tayo`` "stand", ``tabi`` "be beside"). Each is also a
-# VERB[INTR] root in verbs.yaml with ``maka`` in its affix_class
-# for the verbal abilitative naka- reading (``nakatira`` "was
-# able to live"); the new ADJ entries produce the parallel
-# resultative reading (``nakatira`` "be living"). The two analyses
-# coexist on the same surface — the predicative-ADJ vs predicative-V
-# rules disambiguate structurally.
-#
-# Affix-class opt-in is ``naka_resultative`` only — none of these
-# roots take ``ma_adj`` adjectivisation (``*matira`` / ``*maupo`` /
-# etc. are not adjectives). The bare-citation surface is also NOT
-# indexed as ADJ (consistent with the Phase 5g policy that bare
-# roots are nouns, and the paradigm-driven derivation produces the
-# adjectival surface).
-#
-# Required for R&G "Ang Manok" simples #1 / #3 (``nakatira``
-# resultative); Commit 7 lands the integration with the ``mama``
-# lex + simple composition.
-
-- citation: tira
+- citation: magkapareho
   pos: ADJ
-  gloss: living, residing (in a place)
-  affix_class: [naka_resultative]
-  # Also in verbs.yaml as INTR "live, dwell" with affix_class
-  # ``[um, mag, an_oblig, maka]``; the additive policy leaves the
-  # verbal entry untouched. ``nakatira`` surface fires both
-  # readings (ADJ resultative + VERB abilitative); rule context
-  # disambiguates.
+  gloss: alike, equal (formal equative-identity predicate)
+  affix_class: []
+  feats: {EQUATIVE: true, COMP_DEGREE: EQUATIVE}
 
-- citation: upo
+- citation: nipis
   pos: ADJ
-  gloss: sitting, seated
-  affix_class: [naka_resultative]
-  # Also in verbs.yaml as INTR "sit"; ``nakaupo`` is the
-  # resultative ADJ reading. ``Nakaupo siya sa silya.`` "He is
-  # sitting on the chair."
+  gloss: thin
+  affix_class: [ma_adj]
 
-- citation: higa
+- citation: pareho
   pos: ADJ
-  gloss: lying down, recumbent
-  affix_class: [naka_resultative]
-  # Also in verbs.yaml as INTR "lie down"; ``nakahiga`` is the
-  # resultative ADJ reading.
+  gloss: same, alike (equative-identity predicate)
+  affix_class: []
+  feats: {EQUATIVE: true, COMP_DEGREE: EQUATIVE}
 
-- citation: tayo
+- citation: sarap
   pos: ADJ
-  gloss: standing
-  affix_class: [naka_resultative]
-  # Polysemous with the verbs.yaml ``tayo`` (TR "build, erect,
-  # stand up", affix_class ``[mag, i_oblig, an_oblig, maka]``)
-  # AND with the pronouns.yaml ``tayo`` (1pl-INCL NOM PRON).
-  # The ADJ reading produces ``nakatayo`` "be standing"; the
-  # PRON / VERB readings are surface-distinct (``tayo`` bare or
-  # inflected, never ``nakatayo``-ADJ).
+  gloss: delicious, tasty
+  affix_class: [ma_adj]
+
+- citation: saya
+  pos: ADJ
+  gloss: happy, joyful
+  affix_class: [ma_adj]
+
+- citation: sipag
+  pos: ADJ
+  gloss: diligent, industrious
+  affix_class: [ma_adj]
+
+- citation: taas
+  pos: ADJ
+  gloss: high, tall
+  affix_class: [ma_adj]
 
 - citation: tabi
   pos: ADJ
   gloss: beside, adjacent
   affix_class: [naka_resultative]
-  # Also in verbs.yaml as INTR "move aside"; ``nakatabi`` is the
-  # stative-locative ADJ ("be beside").
+
+- citation: talino
+  pos: ADJ
+  gloss: intelligent
+  affix_class: [ma_adj]
+
+- citation: tamad
+  pos: ADJ
+  gloss: lazy
+  affix_class: [ma_adj]
+
+- citation: tanda
+  pos: ADJ
+  gloss: old
+  affix_class: [ma_adj]
+
+- citation: tapang
+  pos: ADJ
+  gloss: brave
+  affix_class: [ma_adj]
+
+- citation: tayo
+  pos: ADJ
+  gloss: standing
+  affix_class: [naka_resultative]
+
+- citation: tibay
+  pos: ADJ
+  gloss: durable, sturdy
+  affix_class: [ma_adj]
+
+- citation: tigang
+  pos: ADJ
+  gloss: parched, dry
+  affix_class: [ma_adj]
+
+- citation: tira
+  pos: ADJ
+  gloss: living, residing (in a place)
+  affix_class: [naka_resultative]
+
+- citation: upo
+  pos: ADJ
+  gloss: sitting, seated
+  affix_class: [naka_resultative]
+
+- citation: yaman
+  pos: ADJ
+  gloss: wealthy, rich
+  affix_class: [ma_adj]
