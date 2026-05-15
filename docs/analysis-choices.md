@@ -15873,3 +15873,165 @@ impact — the verbs added are Wave 1-specific.
   lex gaps but not in the 8.A target list — they belong to
   Phase 8.N (Wave-2 lex pass) and Phase 8.B (R&B 1986 wider
   pass).
+
+## Phase 8.N: Wave 2 lex pass
+
+Closes the audit-surfaced lex gaps from the Wave 2 (R&C 1990 +
+R&G Intermediate + Ramos 1971) §§9-11 samples and the Wave 3
+R&G Conv greeting-cluster from §16. Companion to Phase 8.A
+(Wave 1 lex pass).
+
+### Lex additions
+
+Seven new NOUN entries in `data/tgl/nouns.yaml`:
+
+| Citation | Gloss | Audit source |
+| --- | --- | --- |
+| `kumusta` | regards, greetings (noun sense) | R&G Conv §16 (10 instances) |
+| `palabas` | show, performance | R&G Int. §10 |
+| `patyo` | yard, patio | R&G Int. §10 |
+| `pelikula` | film, movie | R&G Int. §10 |
+| `sanga` | branch (of tree) | Ramos §10 |
+| `kahoy` | wood, tree | Ramos §10 |
+| `tawad` | forgiveness; discount, bargain | R&C 1990 §10 |
+
+One new wh-ADV entry in `data/tgl/particles.yaml`:
+
+| Surface | Feats | Audit source |
+| --- | --- | --- |
+| `kumusta` | `WH=true, ADV_TYPE=MANNER` | R&G Conv §16 (10 instances) |
+
+One VERB update in `data/tgl/verbs.yaml`:
+
+- `sabi` — `affix_class` extended to include `magpa`. This
+  enables `nagpasabi` / `nagpapasabi` / `magpapasabi` to
+  compose via the analyzer's existing mag-pa- causative
+  paradigm cell, producing a clean `VERB(lemma=sabi)` analysis
+  for these previously-`_UNK` surfaces.
+
+### Why `kumusta` is dual-registered (ADV + NOUN)
+
+GT (and the underlying lexicographic record) attests two distinct
+senses for `kumusta`:
+
+1. **ADV "how" (interrogative MANNER)** — `Kumusta ang pamilya
+   mo?` "How is your family?", `Kumusta ka?` "How are you?".
+   Predicational use; parallel to `paano` / `papaano` / `saan` /
+   `bakit` / `kailan`, all of which are registered as wh-ADVs in
+   `particles.yaml`.
+2. **NOUN "regards, greetings"** — `Bigyan mo ng kumusta si
+   nanay.` "Give regards to mom.", `Magandang kumusta!` "Best
+   regards!". The bare-noun fragment-host use, plus modifier-NP
+   composition.
+
+Initially registered as a single NOUN entry with `FRAGMENT_HOST:
+true` + `WH: true`. A diagnostic probe (prompted by the user
+flagging GT's POS analysis) found:
+
+- The ADV sense unlocks `Kumusta ang pamilya mo?` via the
+  *existing* wh-ADV + ang-NP construction infrastructure — no
+  new clause rule is required.
+- Stacking `WH: true` on a NOUN that has a non-wh noun-sense
+  conflates two functions in one POS bucket and doesn't
+  improve coverage of either sense.
+
+The dual registration is therefore the cleanest fit:
+
+- `kumusta` in `nouns.yaml` — POS=NOUN, `FRAGMENT_HOST: true`,
+  no `WH`. Handles the noun-sense parses + the bare exclamation
+  `Kumusta!`.
+- `kumusta` in `particles.yaml` — POS=ADV, `WH: true,
+  ADV_TYPE: MANNER`. Handles the interrogative-pred sense.
+
+The morph analyzer produces *both* analyses for the surface; the
+parser selects between them by context. Anti-deferral note: the
+original 8.N writeup had pinned `Kumusta ang pamilya mo?` as
+out-of-scope on the rationale "needs new interrogative-predicate
+clause rule". That rationale was wrong — the wh-ADV
+infrastructure already handles it. Per the Phase 8.Y/8.Z
+anti-deferral pattern, the carve-out was closed in 8.N itself
+(commit C5) rather than queued as a follow-on. The cue for the
+diagnostic probe was the user's pointer to GT's POS analysis
+(adverb "how" + noun "respect/regard").
+
+### Why `pasabi` is an affix-class extension on `sabi`, not a new root
+
+R&C 1990 §10 audit example: `Nagpasabi si Gina na kakain siua na
+hapunan dito.` ("Gina caused/asked someone to say that..."). The
+surface verb is `nagpasabi` (mag-pa- PFV) — a `pa-`-causative
+derivation of the root `sabi` "say, tell". Pre-8.N, `nagpasabi`
+analyzed as `_UNK` because `sabi`'s `affix_class` did not include
+`magpa`.
+
+Two registration options were considered:
+
+1. **New root `pasabi` (VERB)** with affix_class `[mag, maka]`.
+   This would surface `nagpasabi` with `lemma=pasabi`, but
+   creates a redundant lemma — semantically `pasabi` is just
+   "cause-to-say" = causative of `sabi`, not a distinct root.
+2. **Extend `sabi`.affix_class to include `magpa`** (the option
+   taken). The analyzer's mag-pa- cell composes the derivation
+   automatically; the lemma stays `sabi`; the causative semantics
+   is captured by the morph features rather than a separate root
+   entry.
+
+Option 2 mirrors how `kain` (eat) handles `nagpakain` (cause-to-
+eat) — `kain`'s affix_class already includes `magpa`, and the
+analyzer produces `VERB(lemma=kain)` for `nagpakain`. Aligning
+`sabi` with the same pattern keeps the lex consistent.
+
+### Infinitive + future-OF still `_UNK`
+
+Both `magpasabi` (mag-pa- infinitive) and `papasabihin`
+(papa- + -in future-OF) remain `_UNK` post-8.N. Probed against
+`kain` (which has the magpa cell), the same surfaces are also
+`_UNK`: `magpakain` and `papakainin` both fail. So this is a
+**general paradigm-cell gap**, not specific to `sabi` — the
+mag-pa- cell generates the PFV (`nagpa-V`) and IPFV
+(`nagpa-RED-V`) surfaces but not the infinitive or future-OF.
+Closing this is paradigm-engine work properly tracked under
+Phase 8.H (papaka- + -in causative-future paradigm) rather than
+under 8.N.
+
+### Phase 8 coverage impact
+
+Audit clean-parse sentences unblocked by 8.N (verified via
+probe):
+
+- `Humingi siya ng tawad.` — `hingi` (existing) + `tawad` (new).
+- `May palabas sa patyo.` — `palabas` (new) + `patyo` (new) in
+  existential `may` + N + locative.
+- `Pumutol ka ng sanga sa kahoy.` — `sanga` (new) + `kahoy`
+  (new) in AV transitive.
+- `Maganda ang pelikula.` / `Maganda ang kahoy.` /
+  `Mataas ang sanga.` / `Maganda ang palabas.` — bare ADJ-pivot
+  predications using new nouns.
+- `Nasa patyo ang bata.` — locative-pred with new `patyo`.
+- `Kumusta!` — bare interjection (NOUN sense, FRAGMENT_HOST).
+- `Kumusta ka?` / `Kumusta ang pamilya mo?` — interrogative-
+  pred (ADV sense; routes through the wh-ADV + ang-NP
+  infrastructure that already exists for `paano`/`bakit`/etc.).
+- `Magandang kumusta!` — NP head with modifier (NOUN sense).
+
+### Out of 8.N scope
+
+Each item below surfaces a *distinct* gap (construction-class or
+a-structure-class), properly closed by its named follow-on sub-PR
+rather than re-deferred from 8.N's lex pass:
+
+- **`Nagpasabi si Gina na uuwi siya.`** — finite-clause `na`
+  subordination + SAY-class causative a-structure. Phase 8.O
+  scope. Anti-deferral note: pre-8.N this sentence *fragment*-
+  parsed because `nagpasabi` was `_UNK`; post-8.N it correctly
+  zero-parses with a `completeness-failed` diagnostic on the
+  missing XCOMP. The "regression" is actually a strict gain in
+  correctness — the prior parse was a false positive.
+- **`Humingi ba ng tawad si Deo?`** — proper-noun lex gap on
+  `Deo`. Orthogonal to 8.N's noun + common-verb scope.
+- **`Tumingin siya sa pelikula.`** — `tingin` registered TR
+  (OBJ required); the AV form's OBL-via-`sa` complement-licensing
+  is a separate a-structure debate. Orthogonal to 8.N.
+
+Anti-deferral note: none of the above are re-deferrals of 8.N-
+closed gaps. Each is a distinct construction or a-structure
+question that lives in its own sub-PR scope.

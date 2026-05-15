@@ -835,7 +835,7 @@
   pos: VERB
   gloss: say, tell
   transitivity: TR
-  affix_class: [mag, in_oblig, an_oblig, maka]
+  affix_class: [mag, in_oblig, an_oblig, maka, magpa]
   feats: {SAY_CLASS: true}
 
 - citation: saing
