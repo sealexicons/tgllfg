@@ -16267,3 +16267,118 @@ benefit, not just R&G Conv.
 helpers: widened speaker regex, direction-prefix strip, title-
 abbreviation split protection, trailing-English-gloss strip,
 column-gutter split.
+
+## Phase 8.C: `pinaka-` superlative on N + ADJ heads
+
+Closes the audit-surfaced gap (Wave 1 ANG PAMILYA prose + Wave
+2 R&C 1990 §10) by adding two new paradigm cells and three new
+lex entries. Phase 5h L40 closed `pinaka-` on Q heads
+(`pinakamarami` "the most"); 8.C extends to NOUN heads and to
+NOUN-base → ADJ-output forms.
+
+### The two new paradigm cells
+
+**`pinaka_n`** (NOUN-base, NOUN-output) — drives the relational-N
+superlative reading. Surface: `pinaka-` + NOUN; feature:
+`COMP_DEGREE: SUPERLATIVE`.
+
+```text
+ubod → pinakaubod  "core/kernel"           (rg81 ANG PAMILYA)
+buod → pinakabuod  "essence/crux"          (variant of ubod)
+puno → pinakapuno  "the head, principal"   (rg81 ANG PAMILYA)
+```
+
+**`pinaka_adj_from_n`** (NOUN-base, ADJ-output) — POS-flipping
+companion cell. Uses the `cell.pos` override on
+`_index_paradigm_via_base_pos` (the analyzer was extended in
+8.C to honor this override on NOUN/ADJ-base cells, mirroring
+the existing `kani_redup` PRON → Q flip). Surface: `pinaka-` +
+NOUN, indexed as ADJ; features: `COMP_DEGREE: SUPERLATIVE,
+PREDICATIVE: true` so the Phase 5g predicative-adj clause rule
+fires unchanged.
+
+```text
+puno → pinakapuno  "principal / most important"  (GT primary
+                                                 translation;
+                                                 ADJ reading)
+```
+
+The two cells overlap on `puno`: the surface `pinakapuno` has
+both a NOUN analysis (the head/principal one, used as NP head
+in `Ang ama ang pinakapuno ng pamilya`) and an ADJ analysis
+(most important / principal, used as predicate / modifier). The
+dual analysis is well-attested — GT lists "most important" as
+the primary translation and "ruling" as the noun translation
+for the same surface.
+
+### ADJ-head case via the existing Phase 5h cell
+
+`pinakamatigas` "hardest" (R&C 1990 §10) needs no new cell —
+the Phase 5h `ma_adj` + `pinaka` cell at
+`data/tgl/adj_paradigms.yaml` already handles it. The fix is
+lex-side: a new `tigas` ADJ entry with
+`affix_class: [ma_adj]`. Same cell that already produces
+`pinakaganda` / `pinakamabilis` / `pinakamarami` now also
+produces `pinakamatigas`.
+
+`pinakamatibay` "strongest" was already wired pre-8.C (Phase
+5n.A Commit 1 added `tibay` to the ma_adj inventory); the 8.C
+test suite pins it as a regression sentinel.
+
+### Why opt-in (not "all NOUNs")
+
+The `pinaka_n` and `pinaka_adj_from_n` cells are gated by
+per-root `affix_class: [pinaka_n]` / `[pinaka_adj_from_n]`
+rather than firing on every NOUN. Morphologically `pinaka-`
+attaches productively to any noun stem, but semantically the
+"the very-X / most-important X" reading is restricted to nouns
+that lexicalize a scale or relational position
+(core, head, kernel, essence, leader, edge). `*pinakaaklat`
+"the most-book" is well-formed under a fully-productive rule
+but semantically anomalous. The seed inventory is `ubod` /
+`buod` / `puno`; future audit-surfaced nouns can opt in
+one-at-a-time without rule changes.
+
+### Audit-surfaced sentences now parse
+
+- `Ang ama ang pinakapuno ng pamilya.` (rg81 ANG PAMILYA) —
+  N-head reading; routes via `pinaka_n` + standard equational
+  clause.
+- `Pinakamatigas ang bato.` (R&C 1990 simplification) —
+  ADJ-head predicate reading; routes via Phase 5h's pinaka-ma
+  cell + Phase 5g predicative-adj clause rule.
+- `Ano ang pinakamatigas na bato.` (R&C 1990 simplification) —
+  wh-Q + ADJ modifier + N head; routes via the existing
+  wh-clause + linker rules.
+
+### Out of 8.C scope (deferred construction gaps)
+
+Two distinct construction gaps surfaced during 8.C probing and
+are NOT part of the pinaka- paradigm-cell scope. Each is pinned
+via a test in `TestPhase8cOutOfScope` (will flip to passing
+when the relevant construction sub-PR lands):
+
+- **ADJ-head NP nominalization**: `Ang matibay ay sandata.`
+  ("The strong one is a weapon.") The grammar does not yet
+  admit `ang ADJ` as the head of a topic NP — separate
+  construction-class work (nominalization rule for predicative
+  ADJ → NP head).
+- **sa-PP + wh-Q interaction**: `Ano ang pinakamatigas na bato
+  sa mundo?` ("What is the hardest rock in the world?") The
+  wh-question constraint and a sa-PP downstream constituent
+  surface as `neg-existential-failed: ¬ (↓1 WH)`. Simpler
+  forms (without the PP) parse cleanly; the gap is in the
+  wh-Q / locative-PP composition.
+
+Both have working short-form variants (the wh-Q variant
+without the PP, and the predicate-fronted variant
+`Pinakamatibay ang sandata.`) so the audit-task closure does
+not depend on the deferred gaps.
+
+### Incidental lex additions
+
+`mundo` (n. "world") and `sandata` (n. "weapon") surfaced as
+OOV blockers during sentence-level probing on the audit-cited
+sentences. Folded into the 8.C lex pass as a single-line
+addition each — both are common content nouns that should be
+in the seed lex regardless of 8.C.
