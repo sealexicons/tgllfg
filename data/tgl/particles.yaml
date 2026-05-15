@@ -1564,7 +1564,7 @@
 # subordinator is PART-typed with a ``COMP_TYPE`` feature that
 # names the semantic role of the subordinate clause it heads —
 # COND / CONC / TEMP_BEFORE / TEMP_AFTER / TEMP_WHILE /
-# TEMP_UNTIL / TEMP_SINCE / PURP / REAS. The Phase 5i entry
+# TEMP_UNTIL / TEMP_SINCE / TEMP_WHEN / PURP / REAS. The Phase 5i entry
 # ``kung[COMP_TYPE=INTERROG]`` (above) is preserved; this commit
 # adds a second ``kung`` entry with COMP_TYPE=COND. The chart
 # picks the right reading from the rule context (sentence-initial
@@ -1649,6 +1649,13 @@
 - surface: nang
   pos: PART
   feats: {COMP_TYPE: TEMP_SINCE, LEMMA: nang, SUBORD_VARIANT: SINCE}
+# Phase 8.M: ``nang`` as bare TEMP_WHEN subordinator ("when X happened").
+# Distinct lex entry from the TEMP_SINCE variant above which only fires
+# composed with ``mula`` (Phase 5l C7 ``mula nang`` rule). Bare ``Nang
+# VERB[PFV] ..., S`` is the audit-named target from R&C 1990 / S&O 1972.
+- surface: nang
+  pos: PART
+  feats: {COMP_TYPE: TEMP_WHEN, LEMMA: nang, SUBORD_VARIANT: WHEN}
 
 # (d) Purpose — ``para`` (S-taking; second entry) / ``upang``
 - surface: para
