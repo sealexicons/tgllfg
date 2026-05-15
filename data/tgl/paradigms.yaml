@@ -717,6 +717,58 @@
     - {op: suffix, value: in}
   notes: "pakakainin, pababasahin (CTPL — cv-redup + pa- prefix + -in suffix)"
 
+# --- pag-...-an LF circumfix for mag-class verbs (DV) -------------------
+#
+# Phase 8.B: closes the 8.A follow-on for ``pinagbintangan``-style
+# LF PFV forms. The ``pag-`` prefix replaces ``mag-`` in the LF voice
+# for mag-class verbs of accusation / experience / collective action;
+# the ``-an`` suffix marks DV pivot. The ``-in-`` infix marks PFV /
+# IPFV realis. Same shape as ``pa_an`` (causative-DV) but with
+# ``pag`` instead of ``pa`` and no CAUS feature.
+#
+#   INF   pagbintangan      ← pag- + X + -an
+#   PFV   pinagbintangan    ← pag- + X + -an + -in- infix
+#   IPFV  pinagbibintangan  ← cv_redup + pag- + X + -an + -in- infix
+#   CTPL  pagbibintangan    ← cv_redup + pag- + X + -an (no -in-)
+#
+# Reference grammars: R&B 1986 lists ``pag-...-an`` as the LF form
+# for many mag-class TR verbs (``bintang`` "accuse", ``sikap``
+# "strive (transitively)", ``laro`` "play with", ``pili`` "choose",
+# ``gasta`` "spend"). S&O 1972 §5 confirms.
+- voice: DV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  affix_class: pag_an
+  operations:
+    - {op: prefix, value: "pag"}
+    - {op: infix, value: in}
+    - {op: suffix, value: an}
+  notes: "pinagbintangan, pinaglaruan (PFV; accused/location/recipient pivot)"
+
+- voice: DV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  affix_class: pag_an
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pag"}
+    - {op: infix, value: in}
+    - {op: suffix, value: an}
+  notes: "pinagbibintangan, pinaglalaruan (IPFV)"
+
+- voice: DV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: pag_an
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pag"}
+    - {op: suffix, value: an}
+  notes: "pagbibintangan, paglalaruan (CTPL — cv-redup + pag- prefix + -an suffix; no -in- infix)"
+
 # --- pa-...-an monoclausal direct causative, locative pivot (CAUS=DIRECT, DV) ---
 #
 # Phase 5d Commit 2: parallel to pa-...-in (OV) but with the

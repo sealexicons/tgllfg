@@ -33,11 +33,29 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, an_oblig, maka]
 
+- citation: aksaya
+  pos: VERB
+  gloss: waste
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
 - citation: akyat
   pos: VERB
   gloss: climb
   transitivity: TR
   affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka]
+
+- citation: alaala
+  pos: VERB
+  gloss: remember; worry
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: alaga
+  pos: VERB
+  gloss: take care of
+  transitivity: TR
+  affix_class: [mag, an_oblig, maka]
 
 - citation: alis
   pos: VERB
@@ -51,11 +69,23 @@
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka]
 
+- citation: asa
+  pos: VERB
+  gloss: expect, rely on
+  transitivity: TR
+  affix_class: [um, an_oblig, maka]
+
 - citation: asikaso
   pos: VERB
   gloss: attend to, take care of
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
+
+- citation: away
+  pos: VERB
+  gloss: start a quarrel with; quarrel
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
 
 - citation: awit
   pos: VERB
@@ -86,6 +116,12 @@
   gloss: come back, return
   transitivity: INTR
   affix_class: [um, mag, an_oblig, maka]
+
+- citation: balita
+  pos: VERB
+  gloss: report; hear as rumor
+  transitivity: TR
+  affix_class: [mag, ma, i_oblig, an_oblig, maka]
 
 - citation: balot
   pos: VERB
@@ -170,7 +206,7 @@
   pos: VERB
   gloss: accuse
   transitivity: TR
-  affix_class: [mag, an_oblig, maka]
+  affix_class: [mag, an_oblig, pag_an, maka]
 
 - citation: bisita
   pos: VERB
@@ -183,6 +219,12 @@
   gloss: lift, carry
   transitivity: TR
   affix_class: [um, mag, in_oblig, i_oblig, maka]
+
+- citation: buhay
+  pos: VERB
+  gloss: have life, live
+  transitivity: INTR
+  affix_class: [ma, maka]
 
 - citation: buhos
   pos: VERB
@@ -282,6 +324,19 @@
   affix_class: [um, maka]
   sandhi_flags: [d_to_r]
 
+- citation: dilig
+  pos: VERB
+  gloss: water (plants)
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: dinig
+  pos: VERB
+  gloss: hear
+  transitivity: INTR
+  affix_class: [ma, maka]
+  sandhi_flags: [d_to_r]
+
 - citation: dukit
   pos: VERB
   gloss: hollow out, gouge
@@ -318,11 +373,29 @@
   transitivity: TR
   affix_class: [um, in_oblig, an_oblig, maka]
 
+- citation: gamot
+  pos: VERB
+  gloss: cure, heal
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, ipang, maka]
+
+- citation: ganap
+  pos: VERB
+  gloss: perform; occur, take place
+  transitivity: TR
+  affix_class: [um, in_oblig, an_oblig, maka]
+
 - citation: ganda
   pos: VERB
   gloss: be beautiful
   transitivity: INTR
   affix_class: [um]
+
+- citation: gasta
+  pos: VERB
+  gloss: spend
+  transitivity: TR
+  affix_class: [um, in_oblig, an_oblig, pag_an, ika, maka]
 
 - citation: gawa
   pos: VERB
@@ -347,6 +420,12 @@
   gloss: pick vegetables
   transitivity: INTR
   affix_class: [mang, maka]
+
+- citation: gulo
+  pos: VERB
+  gloss: be disorderly
+  transitivity: INTR
+  affix_class: [ika, maka]
 
 - citation: gupit
   pos: VERB
@@ -438,6 +517,12 @@
   transitivity: TR
   affix_class: [um, in_oblig, an_oblig, maka]
 
+- citation: hinga
+  pos: VERB
+  gloss: breathe
+  transitivity: INTR
+  affix_class: [um, maka]
+
 - citation: hingi
   pos: VERB
   gloss: ask for, request
@@ -449,6 +534,12 @@
   gloss: wait
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
+
+- citation: hinto
+  pos: VERB
+  gloss: stop
+  transitivity: TR
+  affix_class: [an_oblig, maka]
 
 - citation: hiram
   pos: VERB
@@ -473,6 +564,12 @@
   gloss: catch
   transitivity: TR
   affix_class: [um, in_oblig, i_oblig, mang, maka]
+
+- citation: ibig
+  pos: VERB
+  gloss: love; like
+  transitivity: TR
+  affix_class: [um, ma, in_oblig, an_oblig, maka]
 
 - citation: ihaw
   pos: VERB
@@ -564,6 +661,12 @@
   transitivity: INTR
   affix_class: [mag]
 
+- citation: kasal
+  pos: VERB
+  gloss: marry, wed
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
+
 - citation: kilos
   pos: VERB
   gloss: move, do something
@@ -612,6 +715,12 @@
   transitivity: INTR
   affix_class: [mag, in_oblig, maka]
 
+- citation: laban
+  pos: VERB
+  gloss: fight
+  transitivity: INTR
+  affix_class: [mag, maka]
+
 - citation: labas
   pos: VERB
   gloss: go out, exit
@@ -637,11 +746,29 @@
   transitivity: INTR
   affix_class: [um]
 
+- citation: lamig
+  pos: VERB
+  gloss: become cold
+  transitivity: INTR
+  affix_class: [um, ika, maka]
+
+- citation: langoy
+  pos: VERB
+  gloss: swim
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
+
 - citation: lapit
   pos: VERB
   gloss: approach, come near
   transitivity: INTR
   affix_class: [um, mag, in_oblig, maka]
+
+- citation: laro
+  pos: VERB
+  gloss: play with, trifle with
+  transitivity: TR
+  affix_class: [mag, an_oblig, pag_an, maka]
 
 - citation: layo
   pos: VERB
@@ -649,11 +776,29 @@
   transitivity: INTR
   affix_class: [um, mag, maka]
 
+- citation: ligo
+  pos: VERB
+  gloss: take a bath
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: ligpit
+  pos: VERB
+  gloss: put away
+  transitivity: TR
+  affix_class: [mag, i_oblig, in_oblig, maka]
+
 - citation: lihim
   pos: VERB
   gloss: hide, keep secret
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
+
+- citation: limot
+  pos: VERB
+  gloss: forget
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
 
 - citation: linis
   pos: VERB
@@ -703,6 +848,12 @@
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
 
+- citation: nakaw
+  pos: VERB
+  gloss: steal
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+
 - citation: ngiti
   pos: VERB
   gloss: smile
@@ -727,11 +878,23 @@
   transitivity: INTR
   affix_class: [mag, maka]
 
+- citation: pakilala
+  pos: VERB
+  gloss: introduce
+  transitivity: TR
+  affix_class: [mag, i_oblig, maka]
+
 - citation: palit
   pos: VERB
   gloss: change, exchange
   transitivity: TR
   affix_class: [mag, an_oblig, maka]
+
+- citation: pansin
+  pos: VERB
+  gloss: notice
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
 
 - citation: pasa
   pos: VERB
@@ -750,6 +913,12 @@
   gloss: take a walk
   transitivity: INTR
   affix_class: [mag, an_oblig, i_oblig, maka]
+
+- citation: patay
+  pos: VERB
+  gloss: kill, slaughter; die
+  transitivity: TR
+  affix_class: [um, mag, mang, in_oblig, ika, maka]
 
 - citation: patong
   pos: VERB
@@ -782,6 +951,18 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
 
+- citation: pigil
+  pos: VERB
+  gloss: restrain (self)
+  transitivity: INTR
+  affix_class: [mag, maka]
+
+- citation: pili
+  pos: VERB
+  gloss: choose
+  transitivity: TR
+  affix_class: [mang, in_oblig, pag_an, maka]
+
 - citation: pilit
   pos: VERB
   gloss: force, compel
@@ -789,11 +970,23 @@
   affix_class: [um, in_oblig, an_oblig, maka]
   feats: {CTRL_CLASS: TRANS}
 
+- citation: pinta
+  pos: VERB
+  gloss: paint
+  transitivity: TR
+  affix_class: [i_oblig, an_oblig, maka]
+
 - citation: pisil
   pos: VERB
   gloss: squeeze, press
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
+
+- citation: plantsa
+  pos: VERB
+  gloss: iron, press (clothes)
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
 
 - citation: pukol
   pos: VERB
@@ -813,6 +1006,12 @@
   transitivity: TR
   affix_class: [mag, an_oblig, maka]
 
+- citation: punit
+  pos: VERB
+  gloss: become torn
+  transitivity: INTR
+  affix_class: [ma, ika, maka]
+
 - citation: punta
   pos: VERB
   gloss: go to
@@ -831,6 +1030,12 @@
   transitivity: TR
   affix_class: [um, in_oblig, an_oblig, mang, maka]
 
+- citation: regalo
+  pos: VERB
+  gloss: give a gift
+  transitivity: TR
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
 - citation: sabi
   pos: VERB
   gloss: say, tell
@@ -838,11 +1043,29 @@
   affix_class: [mag, in_oblig, an_oblig, maka, magpa]
   feats: {SAY_CLASS: true}
 
+- citation: sagot
+  pos: VERB
+  gloss: answer
+  transitivity: TR
+  affix_class: [um, i_oblig, in_oblig, maka]
+
 - citation: saing
   pos: VERB
   gloss: steam (rice)
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
+
+- citation: sakay
+  pos: VERB
+  gloss: ride; cause to ride
+  transitivity: TR
+  affix_class: [um, mag, i_oblig, an_oblig, pa_an, maka]
+
+- citation: sakit
+  pos: VERB
+  gloss: ache, hurt
+  transitivity: TR
+  affix_class: [um, an_oblig, maka]
 
 - citation: saksak
   pos: VERB
@@ -856,6 +1079,12 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
 
+- citation: sali
+  pos: VERB
+  gloss: take part in, join
+  transitivity: TR
+  affix_class: [um, an_oblig, maka]
+
 - citation: salita
   pos: VERB
   gloss: speak, utter
@@ -867,6 +1096,18 @@
   gloss: scoop, ladle
   transitivity: TR
   affix_class: [um, in_oblig, maka]
+
+- citation: salubong
+  pos: VERB
+  gloss: meet, welcome
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
+- citation: sama
+  pos: VERB
+  gloss: accompany, go with; bring along
+  transitivity: TR
+  affix_class: [um, mag, i_oblig, an_oblig, maka]
 
 - citation: sapit
   pos: VERB
@@ -904,6 +1145,12 @@
   transitivity: INTR
   affix_class: [ma, maka]
 
+- citation: sikap
+  pos: VERB
+  gloss: strive; destroy, damage
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, pag_an, maka]
+
 - citation: silip
   pos: VERB
   gloss: peek
@@ -934,6 +1181,12 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, i_oblig, maka]
 
+- citation: sugal
+  pos: VERB
+  gloss: gamble
+  transitivity: TR
+  affix_class: [mag, i_oblig, ipang, maka]
+
 - citation: sukat
   pos: VERB
   gloss: measure, fit
@@ -951,6 +1204,24 @@
   gloss: fetch, pick up (a person)
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
+
+- citation: sunod
+  pos: VERB
+  gloss: follow, obey
+  transitivity: TR
+  affix_class: [um, in_oblig, an_oblig, maka]
+
+- citation: sunog
+  pos: VERB
+  gloss: become burned; be a fire victim
+  transitivity: INTR
+  affix_class: [ma, an_oblig, maka]
+
+- citation: suot
+  pos: VERB
+  gloss: wear; dress (someone)
+  transitivity: TR
+  affix_class: [mag, i_oblig, an_oblig, maka]
 
 - citation: taas
   pos: VERB
@@ -982,6 +1253,12 @@
   transitivity: INTR
   affix_class: [mag, maka]
 
+- citation: tago
+  pos: VERB
+  gloss: hide
+  transitivity: TR
+  affix_class: [mag, in_oblig, i_oblig, an_oblig, maka]
+
 - citation: tahi
   pos: VERB
   gloss: sew
@@ -1012,11 +1289,29 @@
   transitivity: INTR
   affix_class: [ma, maka]
 
+- citation: talo
+  pos: VERB
+  gloss: be defeated
+  transitivity: INTR
+  affix_class: [ma, maka]
+
+- citation: talon
+  pos: VERB
+  gloss: jump
+  transitivity: TR
+  affix_class: [um, an_oblig, maka]
+
 - citation: tamis
   pos: VERB
   gloss: be sweet
   transitivity: INTR
   affix_class: [um, ma, maka]
+
+- citation: tanggap
+  pos: VERB
+  gloss: receive, accept
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
 
 - citation: tanim
   pos: VERB
@@ -1139,6 +1434,12 @@
   transitivity: TR
   affix_class: [um, mag, an_oblig, maka]
 
+- citation: tugtog
+  pos: VERB
+  gloss: play (an instrument); be played
+  transitivity: TR
+  affix_class: [um, i_oblig, in_oblig, maka]
+
 - citation: tuka
   pos: VERB
   gloss: peck
@@ -1175,6 +1476,12 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
 
+- citation: turo
+  pos: VERB
+  gloss: teach
+  transitivity: TR
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
 - citation: tuto
   pos: VERB
   gloss: learn
@@ -1186,6 +1493,12 @@
   gloss: be thirsty
   transitivity: INTR
   affix_class: [ma, maka]
+
+- citation: umpisa
+  pos: VERB
+  gloss: start, begin
+  transitivity: TR
+  affix_class: [mag, an_oblig, maka]
 
 - citation: unawa
   pos: VERB
