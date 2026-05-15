@@ -1299,6 +1299,14 @@
 - surface: papaano
   pos: ADV
   feats: {WH: true, ADV_TYPE: MANNER, LEMMA: papaano}
+- surface: kumusta
+  pos: ADV
+  feats: {WH: true, ADV_TYPE: MANNER, LEMMA: kumusta}
+  # Phase 8.N: Spanish-loan interrogative predicate ("how is X?").
+  # Parallel registration to ``paano``/``papaano``; the bare NOUN
+  # sense "regards, greetings" (``Magandang kumusta!``) lives in
+  # ``nouns.yaml``. Both POS analyses are produced for the surface;
+  # the parser selects on context.
 
 # (b) Quantitative + selectional wh — Q heads
 # magkano: amount-wh, never takes a count complement (`magkano ang
