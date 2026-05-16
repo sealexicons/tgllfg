@@ -31,14 +31,14 @@
 # Citations: R&B 1986, S&O 1972 §5, Ramos dictionary entries for
 # adjective roots.
 
+- citation: aga
+  pos: ADJ
+  gloss: early
+  affix_class: [ma_adj]
+
 - citation: baba
   pos: ADJ
   gloss: low
-  affix_class: [ma_adj]
-
-- citation: baho
-  pos: ADJ
-  gloss: smelly, foul
   affix_class: [ma_adj]
 
 - citation: bago
@@ -51,6 +51,11 @@
   gloss: fierce, severe
   affix_class: [ma_adj]
 
+- citation: baho
+  pos: ADJ
+  gloss: smelly, foul
+  affix_class: [ma_adj]
+
 - citation: bait
   pos: ADJ
   gloss: kind, well-behaved
@@ -59,6 +64,11 @@
 - citation: bango
   pos: ADJ
   gloss: fragrant
+  affix_class: [ma_adj]
+
+- citation: bigat
+  pos: ADJ
+  gloss: heavy
   affix_class: [ma_adj]
 
 - citation: bilis
@@ -136,6 +146,11 @@
   gloss: poor, difficult
   affix_class: [ma_adj]
 
+- citation: husay
+  pos: ADJ
+  gloss: excellent, skilled
+  affix_class: [ma_adj]
+
 - citation: ikli
   pos: ADJ
   gloss: short (in length)
@@ -203,10 +218,20 @@
   affix_class: []
   feats: {EQUATIVE: true, COMP_DEGREE: EQUATIVE}
 
+- citation: mahal
+  pos: ADJ
+  gloss: expensive; dear, beloved
+  affix_class: []
+
 - citation: nipis
   pos: ADJ
   gloss: thin
   affix_class: [ma_adj]
+
+- citation: pagod
+  pos: ADJ
+  gloss: tired
+  affix_class: []
 
 - citation: pareho
   pos: ADJ
@@ -217,6 +242,11 @@
 - citation: payat
   pos: ADJ
   gloss: skinny, thin (body)
+  affix_class: [ma_adj]
+
+- citation: runong
+  pos: ADJ
+  gloss: wise, knowledgeable
   affix_class: [ma_adj]
 
 - citation: sarap
@@ -248,6 +278,11 @@
   pos: ADJ
   gloss: intelligent
   affix_class: [ma_adj]
+
+- citation: tama
+  pos: ADJ
+  gloss: correct, right
+  affix_class: []
 
 - citation: tamad
   pos: ADJ
