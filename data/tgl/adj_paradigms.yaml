@@ -106,6 +106,83 @@
     equative" — sociolinguistically more frequent in spoken
     register; both forms accepted in writing.
 
+# === Phase 8.L: magkasing- distributive equative ========================
+#
+# The ``magkasing-`` prefix derives a distributive-equative ADJ:
+# ``magkasing-X`` "be (jointly) equally X". Sociolinguistically it
+# is the plural-subject counterpart of ``kasing-`` — where
+# ``kasing-X si COMPAREE ng STANDARD`` compares two distinct NPs,
+# ``magkasing-X`` selects a single plural / coordinated subject
+# and asserts that its members are mutually equal in the X
+# dimension: ``Magkasingtaas sina Maria at Ana.`` "Maria and Ana
+# are (the) same height". Cited per S&O 1972 §5 (``magkasing-``
+# distributive equative), R&C 1990 ch. 5 (``Magkasingbagsik ang
+# mga aso natin.`` — Wave 2 audit closure).
+#
+# Productive opt-in is ``affix_class: ma_adj`` — every root that
+# unlocks ``kasing-`` also unlocks ``magkasing-``, mirroring the
+# Phase 5h Commit 2 derivation pattern. Operations: single prefix
+# ``magkasing``; surface is plain concatenation (``magkasing`` +
+# ``ganda`` → ``magkasingganda``, ``magkasing`` + ``taas`` →
+# ``magkasingtaas``, ``magkasing`` + ``bagsik`` → ``magkasingbagsik``).
+#
+# Feats: ``COMP_DEGREE=EQUATIVE`` (shared with the ``kasing-`` and
+# ``sing-`` cells) plus ``DISTRIB=true`` (the joint / multi-comparee
+# semantics — selectionally a downstream consumer can branch on
+# DISTRIB to enforce plural-subject licensing; this cell does not
+# encode the plural constraint at c-structure level). The CV-redup
+# intensive ``magkakasing-`` form (``magkakasingbuti`` — S&O 1972
+# §5) and the ``mag(ka)sing-`` alternant for some speakers (per
+# S&O 1972 §5 footnote) are pinned for a future §18 entry.
+- affix_class: ma_adj
+  operations:
+    - {op: prefix, value: "magkasing"}
+  feats: {COMP_DEGREE: EQUATIVE, DISTRIB: true}
+  notes: |
+    Productive magkasing- distributive equative. Plural-subject
+    counterpart of ``kasing-`` (Phase 5h Commit 2 cell). Same
+    ``ma_adj`` opt-in. ``COMP_DEGREE=EQUATIVE`` shared with the
+    bare ``kasing-`` cell; ``DISTRIB=true`` marks the joint /
+    multi-comparee semantics for downstream selectional code.
+
+# === Phase 8.L Commit 2: magkakasing- intensive distributive ============
+#
+# The ``magkakasing-`` prefix is the 3+-comparee intensive form
+# of ``magkasing-`` — S&O 1972 §5 calls out that "magkasing- is
+# duplicated, the vowel or the duplicating syllable being short:
+# e.g., nagkakasingtalino" (i.e., the ``ka`` of ``magkasing-``
+# CV-reduplicates, yielding ``magka`` + ``ka`` + ``sing-`` +
+# root). Semantically: where ``magkasing-X`` asserts equal-X-ness
+# of two coordinated comparees, ``magkakasing-X`` extends the
+# assertion to a set of three or more comparees.
+#
+# Wave 3 audit hit: S&O 1972 page 249 — "Binigyan ng premyo ang
+# lahat ng magkakasingbuti ng grado." "All those who had equally
+# good grades were given prizes" — the predicative ADJ
+# ``magkakasingbuti`` selects the set of comparees from the
+# ``lahat ng ...`` floor-quantifier matrix NP.
+#
+# The CV-redup is internal to the prefix (``ka`` → ``kaka``), not
+# to the root, so we encode the cell as a single complex-prefix
+# operation rather than as ``cv_redup`` + ``magkasing`` (the
+# Phase 5n.C.3 L38 ``cv_redup`` operation reduplicates the root,
+# not the prefix). Surface: ``magkakasing`` + bare ADJ root.
+#
+# Feats: ``COMP_DEGREE=EQUATIVE`` + ``DISTRIB=true`` (shared with
+# the bare ``magkasing-`` cell) plus ``INTENS=STRONG`` (parallel
+# to Phase 5n.C.3 ``redup_intens_adj``'s ``INTENS=MILD``; the
+# ADJ-clause INTENS-lift in ``cfg/clause.py`` carries the value
+# to the matrix).
+- affix_class: ma_adj
+  operations:
+    - {op: prefix, value: "magkakasing"}
+  feats: {COMP_DEGREE: EQUATIVE, DISTRIB: true, INTENS: STRONG}
+  notes: |
+    Productive magkakasing- intensive distributive equative.
+    3+-comparee form of ``magkasing-``. ``INTENS=STRONG`` lets
+    downstream consumers branch on the magkasing- vs
+    magkakasing- distinction; the lemma stays as the bare root.
+
 # === Phase 5n.A Commit 6: naka- resultative ADJ (§18 L61) ================
 #
 # The ``naka-`` resultative reading is the stative-locative ADJ
