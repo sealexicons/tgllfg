@@ -305,6 +305,12 @@
   subclass: [PERSON, MALE]
   source: R&C-1990
 
+- citation: bola
+  pos: NOUN
+  gloss: ball
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: boss
   pos: NOUN
   gloss: boss
@@ -375,6 +381,11 @@
   gloss: young woman, maiden
   source: audit-corpus
 
+- citation: daliri
+  pos: NOUN
+  gloss: finger
+  source: audit-corpus
+
 - citation: damian
   pos: NOUN
   gloss: Damian
@@ -394,6 +405,12 @@
   gloss: David
   subclass: [PERSON, MALE]
   source: R&C-1990
+
+- citation: dentista
+  pos: NOUN
+  gloss: dentist
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: derek
   pos: NOUN
@@ -581,6 +598,11 @@
   pos: NOUN
   gloss: bird
 
+- citation: ilalim
+  pos: NOUN
+  gloss: underside, bottom
+  source: audit-corpus
+
 - citation: ilog
   pos: NOUN
   gloss: river
@@ -598,6 +620,11 @@
   pos: NOUN
   gloss: mother
   feats: {REGISTER: AFFECTIVE}
+
+- citation: ingay
+  pos: NOUN
+  gloss: noise
+  source: audit-corpus
 
 - citation: ingles
   pos: NOUN
@@ -672,6 +699,11 @@
   pos: NOUN
   gloss: need / requirement
 
+- citation: kaklase
+  pos: NOUN
+  gloss: classmate
+  source: audit-corpus
+
 - citation: kalabaw
   pos: NOUN
   gloss: water buffalo, carabao
@@ -697,6 +729,12 @@
 - citation: kambing
   pos: NOUN
   gloss: goat
+
+- citation: kandidato
+  pos: NOUN
+  gloss: candidate
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: kanin
   pos: NOUN
@@ -733,9 +771,19 @@
   pos: NOUN
   gloss: meat
 
+- citation: kasama
+  pos: NOUN
+  gloss: companion
+  source: audit-corpus
+
 - citation: kasangkapan
   pos: NOUN
   gloss: tool, equipment, furniture
+  source: audit-corpus
+
+- citation: kayamanan
+  pos: NOUN
+  gloss: wealth, riches
   source: audit-corpus
 
 - citation: kendi
@@ -813,6 +861,16 @@
 - citation: lapis
   pos: NOUN
   gloss: pencil
+
+- citation: laro
+  pos: NOUN
+  gloss: game, play
+  source: audit-corpus
+
+- citation: laruan
+  pos: NOUN
+  gloss: toy
+  source: audit-corpus
 
 - citation: libo
   pos: NOUN
@@ -1065,6 +1123,12 @@
   pos: NOUN
   gloss: school
 
+- citation: pader
+  pos: NOUN
+  gloss: wall
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: pagkain
   pos: NOUN
   gloss: food
@@ -1072,6 +1136,11 @@
 - citation: palabas
   pos: NOUN
   gloss: show, performance
+
+- citation: palagay
+  pos: NOUN
+  gloss: opinion, view
+  source: audit-corpus
 
 - citation: palay
   pos: NOUN
@@ -1114,6 +1183,11 @@
   pos: NOUN
   gloss: name
 
+- citation: panganay
+  pos: NOUN
+  gloss: eldest child
+  source: audit-corpus
+
 - citation: pangharang
   pos: NOUN
   gloss: instrument for blocking / blockade
@@ -1141,6 +1215,12 @@
 - citation: papel
   pos: NOUN
   gloss: paper
+
+- citation: pare
+  pos: NOUN
+  gloss: priest; informal address for older male
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: pares
   pos: NOUN
@@ -1228,6 +1308,12 @@
   pos: NOUN
   gloss: door
 
+- citation: pisara
+  pos: NOUN
+  gloss: blackboard
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: porsiyento
   pos: NOUN
   gloss: percent
@@ -1241,6 +1327,11 @@
   pos: NOUN
   gloss: police officer
 
+- citation: pulong
+  pos: NOUN
+  gloss: meeting
+  source: audit-corpus
+
 - citation: puno
   pos: NOUN
   gloss: tree; head, principal, leader
@@ -1253,6 +1344,12 @@
 - citation: puso
   pos: NOUN
   gloss: heart
+
+- citation: regalo
+  pos: NOUN
+  gloss: gift
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: relos
   pos: NOUN
@@ -1278,6 +1375,11 @@
 - citation: sahig
   pos: NOUN
   gloss: floor
+
+- citation: sakit
+  pos: NOUN
+  gloss: illness, pain
+  source: audit-corpus
 
 - citation: salamat
   pos: NOUN
@@ -1324,6 +1426,11 @@
   gloss: September
   feats: {MONTH_VALUE: "9", SEM_CLASS: MONTH}
 
+- citation: silid
+  pos: NOUN
+  gloss: room
+  source: audit-corpus
+
 - citation: silya
   pos: NOUN
   gloss: chair
@@ -1355,6 +1462,11 @@
   pos: NOUN
   gloss: hat
 
+- citation: tabi
+  pos: NOUN
+  gloss: side, edge
+  source: audit-corpus
+
 - citation: tagalog
   pos: NOUN
   gloss: Tagalog
@@ -1365,6 +1477,11 @@
   pos: NOUN
   gloss: noon / midday
   feats: {SEM_CLASS: TIME}
+
+- citation: tanong
+  pos: NOUN
+  gloss: question
+  source: audit-corpus
 
 - citation: tao
   pos: NOUN
@@ -1386,6 +1503,12 @@
   pos: NOUN
   gloss: forgiveness; discount, bargain
 
+- citation: telepono
+  pos: NOUN
+  gloss: telephone
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: tenga
   pos: NOUN
   gloss: ear
@@ -1397,6 +1520,11 @@
 - citation: tindahan
   pos: NOUN
   gloss: store, shop
+
+- citation: tingin
+  pos: NOUN
+  gloss: look, gaze
+  source: audit-corpus
 
 - citation: tita
   pos: NOUN
