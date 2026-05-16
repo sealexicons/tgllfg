@@ -17527,3 +17527,95 @@ non-shadow test, 5 Phase 8.X / 5j C4 regression shapes.
 
 `hatch run test-both`: 7769 passed in 83.35s (was 7751; +18
 new tests).
+
+## Phase 8.I: naka- aptative PRED-registration — rule out + lex pass
+
+The Phase 8 plan-of-record hypothesized "the naka- aptative emits
+PRED `'KITA'` and matrix expects `KITA<SUBJ,OBJ>`; either the lex
+emits the wrong PRED stem or the paradigm cell needs a-structure
+update". Diagnostic probing (the named target was the
+`completeness-failed: PRED 'KITA' requires 'OBJ'` audit-corpus
+diag for `May nakita siya.` sent-12) showed the hypothesis was
+**already addressed by Phase 8.F** (PR #76). The existential +
+V-headed nominalized complement rule with selective V-feat
+capture (`V_VOICE` / `V_ASPECT` / `V_PRED` + `NOMINALIZED=true`,
+avoiding direct ↓V binding to matrix SUBJ) prevents the PRED
+template from propagating its arg slots to the matrix, closing
+the LMT completeness failure that the original audit reported.
+
+**8.I outcome**: rule out the original construction-class
+hypothesis (no rule changes needed; 8.F already covered it), and
+deliver a targeted lex pass for the remaining audit-corpus
+sentences in the `nakita` / `naalala` / `nakakitil` family that
+are OOV-blocked. Per the OOV-resolve-in-subPR directive.
+
+### Lex additions in `data/tgl/verbs.yaml`
+
+- **`alala`** — orthographic variant of canonical `alaala`
+  (contemporary 4-syllable spelling; LEMMA pointer keeps the
+  canonical form). R&C 1990 / R&G Intermediate audit corpus uses
+  `alala` / `naalala` / `nag-aalala`.
+- **`alaala`** (existing) — `affix_class` extended with `ma` so
+  the AV-NVOL paradigm now derives `naalala` / `nalalala` /
+  similar forms.
+- **`kitil`** — new VERB root ("snatch away, cut off"; S&O 1972
+  §22 attested). `affix_class: [in_oblig, um, maka]` — supports
+  `nakakitil` (AV ABIL PFV) and `kinitil` (OV PFV).
+- **`limot`** (existing) — `affix_class` extended with `ma` and
+  `an_oblig` so `nalimot` / `nalilimot` derive cleanly. (Note:
+  the `ma + LF` combination form `malimutan` requires a paradigm
+  cell that doesn't exist yet — pinned for a future paradigm
+  sub-PR analogous to Phase 8.B's `pag_an` cell add.)
+
+### Lex additions in `data/tgl/nouns.yaml`
+
+Proper-name OOVs blocking audit-hit closure (lowercase-citation
+`X (proper name; <source> audit corpus)` convention):
+
+- `betty`, `blas`, `flor`, `jonathan`, `minda`, `nancy`
+
+Plus one common-noun:
+
+- `miting` (Spanish-loan "meeting")
+
+### Direct audit closures (2 verbatim)
+
+- `Ano ang nakita ni Blas?` (R&C 1990 sent-884 canonical form;
+  the audit raw OCR has `Bias`, an OCR artifact — only the
+  canonical form registers, see out-of-scope pin)
+- `Naalala niya si Nancy.` (R&C 1990 sent-512 context — the
+  second clause of an audit sentence whose first clause is
+  OCR-bogus; this clean form parses verbatim)
+
+### Out-of-scope (pinned anti-deferral)
+
+- **N-appositive proper-name attachment** (e.g.
+  `kaibigan niyang si Flor`) — blocks
+  `Hindi nakita ni Betty ang kaibigan niyang si Flor.` (R&G
+  Intermediate sent-113). The new proper-name lex is in place;
+  flip when an NP-appositive sub-PR lands.
+- **`alala` intransitive polysemy** — `Nag-aalala si Minda.`
+  uses `alala` semantically intransitive ("worry") but the lex
+  marks it TR. Lex-design decision (polysemy split / OBJ-
+  optional) out of 8.I scope.
+- **`malimutan` LF-NVOL form** — `ma + limot + an` needs a
+  `ma_an` paradigm cell that doesn't exist. Analogous to Phase
+  8.B's `pag_an` cell add.
+- **`Bias` OCR variant** — known OCR artifact of `Blas`. Only
+  the canonical form registers; raw-OCR variants are not
+  registered as lex entries.
+
+### Tests
+
+`test_phase8i_naka_aptative_lex.py` (27 tests):
+
+- 3 Phase 8.F regressions (PRED-template still handled)
+- 3 `naalala` orthographic-variant parses + 1 lemma-canonicalize
+- 2 `kitil` derivation parses
+- 2 direct audit closures
+- 7 lex-loadable membership tests
+- 4 out-of-scope pins
+- 5 baseline regressions
+
+`hatch run test-both`: 7796 passed in 79.97s (was 7769; +27
+new tests).
