@@ -107,15 +107,22 @@ class TestOovProbeRealOov:
         assert "mahusay" in oov_lower
 
     def test_real_ng_ending_oov_still_reported(self) -> None:
-        # ``tanong`` (question) is a real lex gap that happens to
-        # end in -ng. Since its stem (``tano``) is not a known
-        # surface, ``split_linker_ng`` leaves it intact, and the
-        # morph analyzer reports it as _UNK.
-        # (Originally pinned on ``tulong``; closed-in-9.C
-        # nouns-batch and swapped for a still-OOV -ng target.)
-        oov = oov_probe("May tanong ako.")
+        # ``huling`` (final / last — bare ``huli`` is the ADJ root)
+        # is a real lex gap that happens to end in -ng. Since its
+        # stem ``huli`` is not a known surface either, the
+        # ``split_linker_ng`` splitter doesn't fire (the rule only
+        # decomposes -ng-glued forms when the stem is a known
+        # surface), and the morph analyzer reports the full
+        # ``huling`` form as _UNK.
+        # (Originally pinned on ``tulong``; closed-in-9.C and
+        # repinned on ``tanong``; ``tanong`` closed-in-9.D and
+        # repinned on ``huling``. Note: ``tabing`` would not work
+        # as a pin target post-9.D because ``tabi`` is now a known
+        # surface, so the splitter does decompose ``tabing`` →
+        # ``tabi`` + -ng.)
+        oov = oov_probe("Sa huling oras.")
         oov_lower = {tok.lower() for tok in oov}
-        assert "tanong" in oov_lower
+        assert "huling" in oov_lower
 
 
 class TestOovProbeEdgeCases:
