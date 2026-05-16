@@ -17360,3 +17360,88 @@ disjoint by the right-daughter shape (S vs. NP/PP).
 
 `hatch run test-both`: 7728 passed in 82.18s (was 7719; +9
 new tests).
+
+## Phase 8.V: `Ni X ay hindi Y` focus-negation
+
+Audit-named construction (S&O 1972 §7.20). A NEG-marked AV-V-headed
+clause admits a SUBJ-pivot fronted with a leading `Ni` "not even"
+focus particle:
+
+- `Ni si Juan ay hindi nakapunta doon.` — "Not even Juan went there."
+  (S&O 1972 page 640 / sent-1260)
+- `Ni si Maria ay hindi umalis.` — "Not even Maria left."
+- `Ni ito ay hindi kumain.` — DEM-PRON Ni-focus (standalone DEM as
+  NOM-NP via Phase 5n.B.6 standalone-DEM)
+
+### New construction rule
+
+`cfg/extraction.py` adjacent to the Phase 4 §7.4 SUBJ-ay-front rule:
+
+```text
+S → PART[FOCUS_NEG=true]  NP[CASE=NOM]  PART[LINK=AY]  S_GAP
+  (↑) = ↓4
+  (↑ TOPIC) = ↓2
+  (↑ FOCUS_NEG) = true
+  (↓4 REL-PRO) = ↓2
+  (↓4 REL-PRO) =c (↓4 SUBJ)
+  (↓4 POLARITY) =c 'NEG'
+  (↓1 FOCUS_NEG) =c true
+```
+
+### Anti-deferral expansion: V-DAT-NOM free-word-order
+
+The audit hit `Ni si Juan ay hindi nakapunta doon.` requires the
+inner S_GAP `nakapunta doon` to parse — a SUBJ-extracted AV
+clause with a locative DAT-adjunct daughter. Phase 5e Commit 3
+left non-fronted AdvP/PP placement deferred ("clause-final or as
+an unmarked sentential adjunct ... deferred to a separate
+commit"), and the matrix variant `V[AV] NP[DAT] NP[NOM]` was
+similarly missing.
+
+Both gaps closed in 8.V per the anti-deferral discipline (the
+deferral was not explicitly carried into the Phase 8 plan):
+
+- **Matrix** (`cfg/clause.py`): new rule `S → V[VOICE=AV]
+  NP[CASE=DAT] NP[CASE=NOM]` with `(↑ SUBJ) = ↓3, ↓2 ∈
+  (↑ ADJUNCT)`. CASE markers (NOM=ang/si vs DAT=sa) prevent
+  spurious ambiguity against the existing V-SUBJ-DAT rule.
+- **S_GAP** (`cfg/extraction.py`): new rule `S_GAP →
+  V[VOICE=AV] NP[CASE=DAT]` parallel to the existing
+  `S_GAP → V[VOICE=AV] NP[CASE=GEN] NP[CASE=DAT]` minus the
+  GEN-OBJ daughter. Required for AV-INTR clauses with locative
+  adjuncts only.
+
+### Lex addition
+
+`data/tgl/particles.yaml` — second `ni` entry as
+`PART[FOCUS_NEG=true]`, distinct from the existing GEN
+proper-name `ni` marker. The two readings disambiguate by the
+following daughter shape: GEN admits a bare proper-name NOUN;
+FOCUS_NEG admits a full NP + ay + S_GAP.
+
+### New binary feat
+
+`FOCUS_NEG` (BINARY_FEATS 54 → 55) — Ni-focus-negation
+construction marker. Lifted to matrix at the new rule.
+
+### Out-of-scope pins
+
+- **Non-SUBJ Ni-focus** (e.g. `Ni ito ay hindi kumain si Maria.`
+  where `ito` is non-SUBJ and `si Maria` is the in-clause SUBJ-
+  pivot) — needs S_GAP_OBJ-style extraction. Pin at
+  `TestPhase8vOutOfScope::test_non_subj_ni_focus`.
+- **Paired Ni X ni Y correlative** — Pin at
+  `TestPhase8vOutOfScope::test_paired_ni_correlative`.
+- **Ni hindi V (no ay)** — distinct intensifier-negation
+  construction. Pin at `TestPhase8vOutOfScope::test_ni_hindi_no_ay`.
+
+### Tests
+
+`test_phase8v_ni_focus_neg.py` (23 tests): 7 SUBJ-Ni positive
+shapes including the verbatim audit hit, 1 NEG-gate violation
+block, 1 GEN ni regression, 1 binary-feat membership, 5 V-DAT-
+NOM positive shapes, 3 V-NOM-DAT regression shapes, 3
+out-of-scope pins.
+
+`hatch run test-both`: 7751 passed in 83.31s (was 7728; +23
+new tests).
