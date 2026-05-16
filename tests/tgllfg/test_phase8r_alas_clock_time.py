@@ -198,17 +198,17 @@ class TestPhase8rOutOfScope:
             "na+ba absorption now works — flip if chart issue fixed"
         )
 
-    def test_oov_blocked_audit_target(self) -> None:
-        """`Nagluto si Gng. Santos ng alas sais.` — `Santos` and
-        `nagluto` are OOV; would close via a separate lex pass."""
+    def test_oov_blocked_audit_target_closed_in_9b(self) -> None:
+        """`Nagluto si Gng. Santos ng alas sais.` — `Santos` was
+        the OOV blocker (and `nagluto` was already productively
+        derived from `luto`). Phase 9.B adds `santos` as a proper
+        surname; this audit target now parses with the existing
+        8.R alas-time infrastructure. Anti-deferral pin flip."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Nagluto si Gng. Santos ng alas sais.", n_best=3
         )
-        assert len(parses) == 0, (
-            "OOV-blocked audit target unexpectedly parses — flip "
-            "if Santos/nagluto lex sub-PR added the missing entries."
-        )
+        assert len(parses) >= 1, "Phase 9.B Santos addition unblocked"
 
     def test_nang_alas_colloquial_time_marker(self) -> None:
         """`Nagsimba si Marfa nang alas otso.` — S&O 1972 uses
