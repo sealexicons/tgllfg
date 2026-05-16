@@ -1993,6 +1993,84 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # === Phase 8.R-class follow-on (8.F): V-headed existential =========
+    #
+    # ``May binalak siya.``               "He had a plan."
+    # ``May nakita siya.``                "He saw something."
+    # ``May naisip ang mama.``            "Mom thought of something."
+    # ``May gagawin ako sa Sabado.``      "I have something to do on Saturday."
+    # ``May ginagawa si Jose.``           "Jose has something he's doing."
+    #
+    # Tagalog `may` admits a V-headed nominalized complement in
+    # addition to the bare-N variant above. Semantics: the V denotes
+    # a thing (result of action, plan, thought, etc.) that the NOM-
+    # pivot possesses. The closest English gloss is "X has a Y"
+    # where Y is the V-as-nominalization. See R&C 1990 / R&G
+    # Conversational corpus; 8 of 11 corpus candidates close via
+    # this rule (Wave 2 + Wave 3 audit).
+    #
+    # Rule (a): possessive shape `may + V + NOM-pivot`
+    # The NOM-NP/NOM-PRON is the possessor of the V's nominalized
+    # form (the result / patient / action denoted by the V used as
+    # a deverbal noun). Avoid lifting the V's f-structure directly
+    # into matrix SUBJ — the V carries a transitive PRED template
+    # (e.g., `BALAK <SUBJ, OBJ>`) whose argument slots aren't
+    # realized in this construction (the V is functioning as a
+    # noun). Capture only the V's LEMMA and the voice/aspect
+    # signature, and mark SUBJ as NOMINALIZED.
+    for voice in ("AV", "OV", "RV", "LF", "DV", "IV", "BV"):
+        rules.append(Rule(
+            "S",
+            [
+                "PART[EXISTENTIAL, POLARITY=POS]",
+                f"V[VOICE={voice}]",
+                "NP[CASE=NOM]",
+            ],
+            [
+                "(↑ PRED) = 'EXIST <SUBJ>'",
+                "(↑ SUBJ NOMINALIZED) = true",
+                "(↑ SUBJ V_VOICE) = ↓2 VOICE",
+                "(↑ SUBJ V_ASPECT) = ↓2 ASPECT",
+                "(↑ SUBJ V_PRED) = ↓2 PRED",
+                "(↑ SUBJ POSSESSOR) = ↓3",
+                "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+                "(↑ POLARITY) = 'POS'",
+                "(↑ HAVE) = true",
+                "(↓1 EXISTENTIAL) =c true",
+                "(↓1 POLARITY) =c 'POS'",
+            ],
+        ))
+
+    # Rule (b): agentive shape `may + V[AV] + GEN-NP`
+    #
+    # ``May nagdala ng kape.``     "Someone brought coffee."
+    # ``May nagdala ng magagandang banig.``  (R&G Conv)
+    #
+    # The V is AV (the existence-asserted entity is the agent /
+    # actor); the GEN-NP is the V's OBJ. Headless-RC reading:
+    # "there is someone-who-brought coffee". The empty SUBJ slot of
+    # the V is the existence-asserted entity.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL, POLARITY=POS]",
+            "V[VOICE=AV]",
+            "NP[CASE=GEN]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ NOMINALIZED) = true",
+            "(↑ SUBJ V_VOICE) = ↓2 VOICE",
+            "(↑ SUBJ V_ASPECT) = ↓2 ASPECT",
+            "(↑ SUBJ V_PRED) = ↓2 PRED",
+            "(↑ SUBJ OBJ) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'POS'",
+        ],
+    ))
+
     # Linker variant: vowel-final ``mayroon`` carries bound ``-ng``
     # before its complement (``Mayroong tao``). After
     # ``split_linker_ng`` strips the bound linker, the structural
