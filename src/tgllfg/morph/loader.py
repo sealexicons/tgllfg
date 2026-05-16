@@ -35,6 +35,38 @@ _DEFAULT_DATA_DIR = (
     Path(__file__).resolve().parents[3] / "data" / "tgl"
 )
 
+# Phase 9.C.pre — closed enums validated at load time. Typos in
+# any of these fail-fast with a clear ``ValueError`` rather than
+# silently propagating into downstream tools.
+#
+# Subclass: named-entity axis + optional gender axis. Each entry's
+# ``subclass`` list may carry one named-entity tag and at most one
+# gender tag; combinations like ``[PERSON, MALE]`` or ``[NATIONAL,
+# FEMALE]`` are legal.
+_SUBCLASS_NAMED_ENTITY = frozenset({
+    "PERSON", "SURNAME", "PLACE", "LANGUAGE", "NATIONAL",
+})
+_SUBCLASS_GENDER = frozenset({"MALE", "FEMALE"})
+_SUBCLASS_ALLOWED = _SUBCLASS_NAMED_ENTITY | _SUBCLASS_GENDER
+
+# Source: short-code citations matching the reference grammars
+# loaded under ``data/tgl/references/`` plus a generic ``audit-
+# corpus`` bucket for items surfaced by the Phase 8/9 audit harvest
+# without a single canonical source.
+_SOURCE_ALLOWED = frozenset({
+    "S&O-1972",
+    "R&C-1990",
+    "R&G-Intermediate",
+    "R&G-Conversational",
+    "Ramos-1971",
+    "rg81-transcriptions",
+    "audit-corpus",
+    "ref-grammar",
+})
+
+# Loan-source language. Empty (default) = native Tagalog.
+_LOAN_ALLOWED = frozenset({"SPANISH", "ENGLISH"})
+
 
 def load_morph_data(data_dir: Path | None = None) -> MorphData:
     """Load the seed YAML lexicon. Missing files yield empty lists for
@@ -106,6 +138,47 @@ def _load_roots(path: Path) -> list[Root]:
         synonyms_raw = rec.get("synonyms", [])
         if not isinstance(synonyms_raw, list):
             raise ValueError(f"{where}: 'synonyms' must be a list")
+        # Phase 9.C.pre — subclass / source / loan / orth_variants
+        subclass_raw = rec.get("subclass", [])
+        if not isinstance(subclass_raw, list):
+            raise ValueError(f"{where}: 'subclass' must be a list")
+        for atom in subclass_raw:
+            if atom not in _SUBCLASS_ALLOWED:
+                raise ValueError(
+                    f"{where}: unknown subclass atom {atom!r}; "
+                    f"allowed: {sorted(_SUBCLASS_ALLOWED)}"
+                )
+        named_entity_tags = [
+            a for a in subclass_raw if a in _SUBCLASS_NAMED_ENTITY
+        ]
+        gender_tags = [
+            a for a in subclass_raw if a in _SUBCLASS_GENDER
+        ]
+        if len(named_entity_tags) > 1:
+            raise ValueError(
+                f"{where}: at most one named-entity tag in 'subclass'; "
+                f"got {named_entity_tags!r}"
+            )
+        if len(gender_tags) > 1:
+            raise ValueError(
+                f"{where}: at most one gender tag in 'subclass'; "
+                f"got {gender_tags!r}"
+            )
+        source_raw = rec.get("source", "")
+        if source_raw and source_raw not in _SOURCE_ALLOWED:
+            raise ValueError(
+                f"{where}: unknown source {source_raw!r}; "
+                f"allowed: {sorted(_SOURCE_ALLOWED)}"
+            )
+        loan_raw = rec.get("loan", "")
+        if loan_raw and loan_raw not in _LOAN_ALLOWED:
+            raise ValueError(
+                f"{where}: unknown loan {loan_raw!r}; "
+                f"allowed: {sorted(_LOAN_ALLOWED)}"
+            )
+        orth_variants_raw = rec.get("orth_variants", [])
+        if not isinstance(orth_variants_raw, list):
+            raise ValueError(f"{where}: 'orth_variants' must be a list")
         out.append(Root(
             citation=_require(rec, "citation", where),
             pos=_require(rec, "pos", where),
@@ -115,6 +188,10 @@ def _load_roots(path: Path) -> list[Root]:
             sandhi_flags=list(sandhi_flags_raw),
             feats=dict(feats_raw),
             synonyms=list(synonyms_raw),
+            subclass=list(subclass_raw),
+            source=source_raw,
+            loan=loan_raw,
+            orth_variants=list(orth_variants_raw),
         ))
     return out
 

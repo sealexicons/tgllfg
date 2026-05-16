@@ -52,6 +52,33 @@ class Root:
     # use this data; it's here for downstream tools (dictionary
     # export, cross-reference, future ranker semantic similarity).
     synonyms: list[str] = field(default_factory=list)
+    # Phase 9.C.pre — structured metadata extracted from gloss
+    # parentheticals.
+    #
+    # ``subclass`` is a list of orthogonal-axis tags drawn from a
+    # closed enum (validated at load time). Two axes are recognised:
+    #
+    # * Named-entity (one of): PERSON / SURNAME / PLACE / LANGUAGE
+    #   / NATIONAL — applies to proper / place / language /
+    #   nationality nouns.
+    # * Gender (optional): MALE / FEMALE — used when morphology
+    #   actually distinguishes (Spanish-loan ``-o``/``-a`` pairs).
+    #
+    # Pure metadata — not currently surfaced in f-structure feats.
+    # A future sub-PR can promote specific atoms to feats if a
+    # grammar rule needs to gate on them.
+    subclass: list[str] = field(default_factory=list)
+    # ``source`` is a short-code citation of the lex entry's
+    # provenance (strict enum). See ``_SOURCE_ALLOWED`` in
+    # ``morph/loader.py``.
+    source: str = ""
+    # ``loan`` records the source language for loanwords (closed
+    # enum: SPANISH / ENGLISH). Empty = native Tagalog.
+    loan: str = ""
+    # ``orth_variants`` lists known alternate surfaces / OCR
+    # variants of the citation form. Indexed by the analyzer as
+    # alternate surfaces pointing at the canonical lemma.
+    orth_variants: list[str] = field(default_factory=list)
 
 
 @dataclass
