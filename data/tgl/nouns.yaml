@@ -91,6 +91,18 @@
   pos: NOUN
   gloss: father (formal)
 
+- citation: amerika
+  pos: NOUN
+  gloss: America (place name; R&G Conversational audit corpus)
+
+- citation: amerikana
+  pos: NOUN
+  gloss: American jacket / suit; American woman (loanword; audit corpus)
+
+- citation: amerikano
+  pos: NOUN
+  gloss: American (national; audit corpus)
+
 - citation: ana
   pos: NOUN
   gloss: Ana (proper name)
@@ -240,6 +252,10 @@
   pos: NOUN
   gloss: Blas (proper name; R&C 1990 audit corpus, sometimes OCR'd as "Bias")
 
+- citation: bob
+  pos: NOUN
+  gloss: Bob (proper name; R&C 1990 audit corpus)
+
 - citation: boss
   pos: NOUN
   gloss: boss (English loan)
@@ -299,6 +315,10 @@
   pos: NOUN
   gloss: leaf
 
+- citation: damian
+  pos: NOUN
+  gloss: Damian (proper name; S&O 1972 audit corpus)
+
 - citation: damit
   pos: NOUN
   gloss: clothing, dress
@@ -306,6 +326,14 @@
 - citation: damo
   pos: NOUN
   gloss: grass, weeds
+
+- citation: david
+  pos: NOUN
+  gloss: David (proper name; R&C 1990 audit corpus)
+
+- citation: derek
+  pos: NOUN
+  gloss: Derek (proper name; R&C 1990 audit corpus)
 
 - citation: dibdib
   pos: NOUN
@@ -383,6 +411,10 @@
 - citation: frank
   pos: NOUN
   gloss: Frank (proper name; R&C 1990 audit corpus)
+
+- citation: fred
+  pos: NOUN
+  gloss: Fred (proper name; R&C 1990 audit corpus)
 
 - citation: gabi
   pos: NOUN
@@ -469,6 +501,10 @@
   pos: NOUN
   gloss: mother (affective / informal)
 
+- citation: ingles
+  pos: NOUN
+  gloss: English (language / national; audit corpus)
+
 - citation: init
   pos: NOUN
   gloss: heat
@@ -485,6 +521,14 @@
 - citation: itlog
   pos: NOUN
   gloss: egg
+
+- citation: jasmine
+  pos: NOUN
+  gloss: Jasmine (proper name; R&G Intermediate audit corpus)
+
+- citation: joe
+  pos: NOUN
+  gloss: Joe (proper name; R&G Conversational audit corpus)
 
 - citation: john
   pos: NOUN
@@ -664,6 +708,10 @@
   gloss: week, Sunday
   feats: {SEM_CLASS: DAY, DAY_VALUE: "7"}
 
+- citation: lisa
+  pos: NOUN
+  gloss: Lisa (proper name; R&G Intermediate audit corpus)
+
 - citation: liwanag
   pos: NOUN
   gloss: light
@@ -701,6 +749,10 @@
   pos: NOUN
   gloss: mango
 
+- citation: manny
+  pos: NOUN
+  gloss: Manny (proper name; Ramos 1971 / R&G audit corpus)
+
 - citation: manok
   pos: NOUN
   gloss: chicken
@@ -708,6 +760,10 @@
 - citation: mansanas
   pos: NOUN
   gloss: apple
+
+- citation: manuel
+  pos: NOUN
+  gloss: Manuel (proper name; R&C 1990 audit corpus)
 
 - citation: manugang
   pos: NOUN
@@ -727,6 +783,10 @@
   gloss: Tuesday
   feats: {SEM_CLASS: DAY, DAY_VALUE: "2"}
 
+- citation: marvin
+  pos: NOUN
+  gloss: Marvin (proper name; R&C 1990 audit corpus)
+
 - citation: mary
   pos: NOUN
   gloss: Mary (proper name; S&O 1972 audit corpus)
@@ -734,6 +794,10 @@
 - citation: mata
   pos: NOUN
   gloss: eye
+
+- citation: maynila
+  pos: NOUN
+  gloss: Manila (place name; audit corpus)
 
 - citation: mayo
   pos: NOUN
@@ -937,6 +1001,14 @@
   pos: NOUN
   gloss: money
 
+- citation: pilipinas
+  pos: NOUN
+  gloss: Philippines (place name; audit corpus)
+
+- citation: pilipino
+  pos: NOUN
+  gloss: Filipino (national; audit corpus)
+
 - citation: pinsan
   pos: NOUN
   gloss: cousin
@@ -974,6 +1046,10 @@
 - citation: relos
   pos: NOUN
   gloss: watch, clock (Spanish loan; S&O 1972 §4.2 audit corpus)
+
+- citation: rosa
+  pos: NOUN
+  gloss: Rosa (proper name; R&G Intermediate audit corpus)
 
 - citation: sabado
   pos: NOUN
@@ -1013,6 +1089,10 @@
   pos: NOUN
   gloss: branch (of tree)
 
+- citation: santos
+  pos: NOUN
+  gloss: Santos (proper surname; R&G Conversational audit corpus)
+
 - citation: sapatos
   pos: NOUN
   gloss: shoes
@@ -1046,6 +1126,10 @@
 - citation: sumbrero
   pos: NOUN
   gloss: hat
+
+- citation: tagalog
+  pos: NOUN
+  gloss: Tagalog (language / national; audit corpus)
 
 - citation: tanghali
   pos: NOUN
