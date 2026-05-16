@@ -98,6 +98,11 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: alok
+  pos: NOUN
+  gloss: offer, proposal
+  source: audit-corpus
+
 - citation: ama
   pos: NOUN
   gloss: father
@@ -375,6 +380,11 @@
 - citation: dahon
   pos: NOUN
   gloss: leaf
+
+- citation: dala
+  pos: NOUN
+  gloss: load, baggage; what is being carried
+  source: audit-corpus
 
 - citation: dalaga
   pos: NOUN
