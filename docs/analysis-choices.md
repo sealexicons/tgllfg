@@ -17067,3 +17067,103 @@ Remaining 22 are blocked by orthogonal issues:
 
 `hatch run test-both`: 7640 passed in 68.67s (was 7608;
 +32 new tests).
+
+## Phase 8.F: existential `may` + V-headed nominalized complement
+
+Closes the audit-named construction class where Tagalog `may`
+admits a V-headed nominalized complement in addition to the
+bare-N variant. The construction has two surface shapes:
+
+- Possessive: `May binalak siya.` "He had a plan." — the
+  NOM-pivot is the possessor of the V-as-nominalization.
+- Agentive (headless-RC): `May nagdala ng kape.` "Someone
+  brought coffee." — the V is AV with a GEN-NP OBJ; the empty
+  SUBJ slot is the existence-asserted entity.
+
+### CFG additions
+
+Two new rules in `cfg/clause.py` (both gated by
+`(↓1 EXISTENTIAL) =c true` and `(↓1 POLARITY) =c 'POS'`):
+
+Rule (a) — possessive shape (one rule per VOICE class to engage
+the chart's category-pattern matcher cleanly; AV / OV / RV / LF /
+DV / IV / BV):
+
+```text
+S → PART[EXISTENTIAL, POLARITY=POS] V[VOICE=X] NP[CASE=NOM]
+   (↑ PRED) = 'EXIST <SUBJ>'
+   (↑ SUBJ NOMINALIZED) = true
+   (↑ SUBJ V_VOICE) = ↓2 VOICE
+   (↑ SUBJ V_ASPECT) = ↓2 ASPECT
+   (↑ SUBJ V_PRED) = ↓2 PRED
+   (↑ SUBJ POSSESSOR) = ↓3
+   (↑ HAVE) = true
+```
+
+Rule (b) — agentive (headless-RC) shape:
+
+```text
+S → PART[EXISTENTIAL, POLARITY=POS] V[VOICE=AV] NP[CASE=GEN]
+   (↑ PRED) = 'EXIST <SUBJ>'
+   (↑ SUBJ NOMINALIZED) = true
+   (↑ SUBJ V_VOICE) = ↓2 VOICE
+   (↑ SUBJ V_ASPECT) = ↓2 ASPECT
+   (↑ SUBJ V_PRED) = ↓2 PRED
+   (↑ SUBJ OBJ) = ↓3
+```
+
+### V-as-nominal binding strategy
+
+The V is captured as a deverbal-noun-like SUBJ by lifting only
+selected feats (VOICE / ASPECT / PRED) under the `V_*` namespace
+plus a marker `NOMINALIZED=true`, rather than binding
+`(↑ SUBJ) = ↓2` directly. Direct binding leaks the V's
+transitive PRED template (e.g., `BALAK <SUBJ, OBJ>`) into the
+matrix SUBJ with unbound argument slots, which fails LMT
+validation and prunes the parse. The selective-feat approach
+preserves the V identity while sidestepping arg-binding for the
+nominalization context.
+
+### Audit closures
+
+12 corpus candidates surveyed (R&C 1990, R&G Conversational,
+R&G Intermediate). Direct closures: **4 of 12 (33%)**:
+
+- `May binalak siya.` (R&C 1990 / R&G Conv)
+- `May nakita siya.` (R&G Conv)
+- `May nagdala ng kape.` (R&G Conv)
+- `May ginagawa ka ba?` (R&G Conv)
+
+Remaining 8 blocked by orthogonal issues, all of which would
+close via a separate lex pass:
+
+- OOV verb forms (paradigm cells not yet productive):
+  `naisip` (RV PFV of `isip`) — affects `May naisip ang mama.`,
+  `May naisip siya.`.
+  `gagawin` (LF FUT of `gawa`) — affects `May gagawin ka ba?`,
+  `May gagawin ako sa Sabado.`.
+  `kakilala` (RECP-ka- of `kilala`) — affects
+  `May kakilala ba kayo dito?`.
+- OOV proper names: `Jose` — affects `May ginagawa si Jose.`.
+- OOV nouns / inflections: `magagandang`, `banig` — affects
+  `May nagdala ng magagandang banig.`.
+- Bound-`-ng` linker with extra arg: `May nakita siyang itlog.`
+  combines the possessive shape with an additional bound-linker
+  argument; needs a separate 4-daughter rule variant.
+
+### Test plan
+
+16 new tests in `tests/tgllfg/test_phase8f_may_v_headed.py`:
+
+- 3 possessive-shape closures (BALAK / KITA / MAKE V_PREDs)
+- 1 agentive (headless-RC) closure (DALA)
+- 1 SUBJ feat verification (V_VOICE / V_ASPECT / NOMINALIZED /
+  POSSESSOR)
+- 1 HAVE flag verification
+- 6 pre-8.F regressions (bare-N existentials, N-pivot possessive,
+  mayroon linker, wala negative)
+- 4 out-of-scope pins (naisip / gagawin / kakilala OOV verb
+  forms, Jose OOV proper name)
+
+`hatch run test-both`: 7656 passed in 76.57s (was 7640; +16
+new tests).
