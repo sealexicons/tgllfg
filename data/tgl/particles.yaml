@@ -782,6 +782,18 @@
 - surface: dies
   pos: NUM
   feats: {CARDINAL: true, CARDINAL_VALUE: "10", NUM: PL}
+# Phase 8.R additions: Spanish-borrowed numerals 11 / 12, used only
+# in clock-time expressions (``alas onse`` "11 o'clock", ``alas dose``
+# "12 o'clock"). The teen / dozen forms aren't otherwise used in
+# Tagalog — productive Tagalog numerals (``labing-isa``, ``labindalawa``)
+# take over for non-clock contexts. NUM=PL follows the Phase 5f
+# Commit 2 pattern for consonant-final Spanish borrowings.
+- surface: onse
+  pos: NUM
+  feats: {CARDINAL: true, CARDINAL_VALUE: "11", NUM: PL}
+- surface: dose
+  pos: NUM
+  feats: {CARDINAL: true, CARDINAL_VALUE: "12", NUM: PL}
 
 # === Phase 5f Commit 3: compound cardinals 11-1000 =======================
 # Hand-authored single-token lex for the high-frequency compound
@@ -1067,6 +1079,24 @@
 - surface: "-"
   pos: PART
   feats: {OP: MINUS}
+# Phase 8.R: ``-`` is Unicode HYPHEN-MINUS (U+002D), which the
+# Unicode Standard explicitly notes is "used generically for
+# hyphen, minus sign or en dash, all of which have dedicated
+# alternatives" (U+2010 HYPHEN, U+2212 MINUS SIGN, U+2013 EN DASH).
+# In the ASCII range we get only the polysemous form, so the lex
+# carries two readings:
+#   (1) ``PART[OP=MINUS]`` (above) — arithmetic minus operator,
+#       used in symbolic arithmetic (``5 - 3``).
+#   (2) ``PUNCT[PUNCT_CLASS=HYPHEN]`` (below) — orthographic
+#       compound-joining hyphen, parallel to ``PUNCT[PUNCT_CLASS=
+#       COMMA]`` for ``,``. Used in ``Alas-tres`` "3 o'clock" and
+#       similar R&C 1990 hyphenated compounds.
+# The chart picks the reading by rule context; the two readings
+# sit in different POS slots so there is no spurious-ambiguity
+# between arithmetic and compound-joining uses.
+- surface: "-"
+  pos: PUNCT
+  feats: {PUNCT_CLASS: HYPHEN}
 - surface: "*"
   pos: PART
   feats: {OP: TIMES}
@@ -1097,8 +1127,8 @@
 
 # === Phase 5f Commit 12: minute-composition operators (Group E item 4) ===
 # Spanish-borrowed minute operators for clock-time composition:
-# ``alasotso y medya`` "8:30", ``alasotso y singko`` "8:05",
-# ``alasotso menos singko`` "7:55". The ``y`` operator counts
+# ``alas otso y medya`` "8:30", ``alas otso y singko`` "8:05",
+# ``alas otso menos singko`` "7:55". The ``y`` operator counts
 # forward (adds minutes); ``menos`` counts backward (subtracts).
 # Both PARTs feed the Phase 5f Commit 12 minute-composition
 # grammar rules (src/tgllfg/cfg/nominal.py).
@@ -1108,6 +1138,19 @@
 - surface: menos
   pos: PART
   feats: {MINUTE_OP: "MENOS"}
+
+# === Phase 8.R: clock-time hour marker `alas` =============================
+# Spanish-loan clock-time marker fully grammaticalized in Tagalog
+# (< Sp. "a las" = "at the (hours)"). Combines with a Spanish
+# cardinal numeral via the Phase 8.R N-rule in cfg/nominal.py to
+# build N[SEM_CLASS=TIME, HOUR_VALUE=X] — feeds the existing
+# Phase 5f Commit 12 minute composition (``alas otso y medya``),
+# Phase 5f Commit 14 ``mga`` approximation (``mga alas otso``),
+# and all standard NP wrappers (``sa alas otso``, ``ng alas otso``,
+# bare-N predication).
+- surface: alas
+  pos: PART
+  feats: {CLOCK_MARKER: true, LEMMA: alas}
 
 # === Phase 5f Commit 13: temporal-frame markers (Group F item 5) =========
 # ``tuwing`` (every) and ``noong`` (last / past) introduce
