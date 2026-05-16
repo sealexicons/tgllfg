@@ -166,9 +166,16 @@ class TestRealEntryFields:
         assert r.source == "S&O-1972"
         assert "loan" not in r.gloss.lower()
 
-    def test_blas_orth_variant(self, roots_by_cit) -> None:
+    def test_blas_subclass_and_no_ocr_variant(self, roots_by_cit) -> None:
+        """``blas`` subclass / gloss check. The original
+        ``orth_variants: [bias]`` annotation from 9.C.pre was
+        dropped in Phase 9.H after user-verified PDF eyeball
+        (``data/tgl/references/scans/blas.png``) confirmed
+        ``Bias`` is an OCR artifact, not a real spelling
+        variant — the fix landed at-source in the R&C 1990
+        extracted text rather than in lex."""
         b = roots_by_cit["blas"][0]
-        assert b.orth_variants == ["bias"]
+        assert b.orth_variants == []
         assert b.subclass == ["PERSON", "MALE"]
         assert "OCR" not in b.gloss
 
@@ -279,9 +286,15 @@ class TestOrthVariants:
         r = roots_by_cit["tito"]
         assert "tiyo" in r.orth_variants
 
-    def test_blas_bias_ocr_variant(self, roots_by_cit) -> None:
+    def test_blas_no_bias_ocr_variant(self, roots_by_cit) -> None:
+        """``blas`` does NOT carry ``bias`` as an orth_variant.
+        9.C.pre originally added it on the assumption that
+        ``Bias`` was a spelling variant; 9.H confirmed via PDF
+        scan that it's an OCR artifact and dropped the
+        annotation. The audit-corpus source text was hand-
+        corrected instead."""
         r = roots_by_cit["blas"]
-        assert "bias" in r.orth_variants
+        assert "bias" not in r.orth_variants
 
 
 # ---- No-regression sanity sample ----------------------------------

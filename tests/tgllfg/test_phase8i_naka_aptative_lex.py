@@ -201,15 +201,23 @@ class TestPhase8iOutOfScope:
 
     def test_bias_ocr_variant_not_added(self) -> None:
         """``Ano ang nakita ni Bias?`` (R&C 1990 sent-884 raw
-        OCR) — ``Bias`` is a known OCR artifact of canonical
-        ``Blas`` (only the latter is registered). The canonical
-        form parses; the OCR variant is intentionally not
-        registered."""
+        OCR text) — ``Bias`` is a confirmed OCR artifact of the
+        canonical ``Blas``. User-verified against the page-160
+        scan (``data/tgl/references/scans/blas.png`` zoomed from
+        the R&C 1990 PDF): the printed glyph is unambiguously
+        ``Blas``. The OCR fix lands at-source — the user hand-
+        corrected ``data/tgl/references/901132785-Modern-Tagalog
+        .txt`` to replace ``Bias`` → ``Blas``. Lex stays clean:
+        no ``bias`` citation entry, no ``orth_variants: [bias]``
+        annotation on ``blas``. This pin asserts that the bare
+        OCR-noise string remains analyzability-blocked (defense
+        against accidentally re-introducing a non-word entry).
+        """
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("Ano ang nakita ni Bias?", n_best=2)
         assert len(parses) == 0, (
-            "OCR-variant Bias closed — pin would need to be "
-            "lifted if OCR-variant registration was added."
+            "OCR-variant Bias is non-Tagalog; should not parse. "
+            "Audit corpus fix landed at-source instead of in lex."
         )
 
 

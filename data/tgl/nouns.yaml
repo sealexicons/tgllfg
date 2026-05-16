@@ -172,6 +172,12 @@
   pos: NOUN
   gloss: older sister, term of address for older female
 
+- citation: avenida
+  pos: NOUN
+  gloss: avenue
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: babae
   pos: NOUN
   gloss: woman
@@ -202,6 +208,12 @@
   pos: NOUN
   gloss: cow
 
+- citation: bakasyon
+  pos: NOUN
+  gloss: vacation
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: balat
   pos: NOUN
   gloss: skin
@@ -219,6 +231,12 @@
   pos: NOUN
   gloss: fertilized duck egg
   source: audit-corpus
+
+- citation: bangko
+  pos: NOUN
+  gloss: bank
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: basura
   pos: NOUN
@@ -302,7 +320,6 @@
   gloss: Blas
   subclass: [PERSON, MALE]
   source: R&C-1990
-  orth_variants: [bias]
 
 - citation: bob
   pos: NOUN
@@ -320,6 +337,18 @@
   pos: NOUN
   gloss: boss
   loan: ENGLISH
+
+- citation: botika
+  pos: NOUN
+  gloss: pharmacy, drugstore
+  source: audit-corpus
+  loan: SPANISH
+
+- citation: braso
+  pos: NOUN
+  gloss: arm
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: bubong
   pos: NOUN
@@ -489,6 +518,12 @@
   subclass: [PERSON, MALE]
   source: R&C-1990
 
+- citation: empleyado
+  pos: NOUN
+  gloss: employee
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: enero
   pos: NOUN
   gloss: January
@@ -497,6 +532,11 @@
 - citation: eroplano
   pos: NOUN
   gloss: airplane
+
+- citation: eskuwela
+  pos: NOUN
+  gloss: school
+  feats: {LEMMA: eskwela}
 
 - citation: eskwela
   pos: NOUN
@@ -729,6 +769,12 @@
   feats: {SEM_CLASS: FRACTION}
   synonyms: [medya]
 
+- citation: kalye
+  pos: NOUN
+  gloss: street
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: kama
   pos: NOUN
   gloss: bed
@@ -809,6 +855,12 @@
 - citation: keso
   pos: NOUN
   gloss: cheese
+
+- citation: klase
+  pos: NOUN
+  gloss: class; classroom
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: kotse
   pos: NOUN
@@ -922,6 +974,12 @@
   gloss: Lisa
   subclass: [PERSON, FEMALE]
   source: R&G-Intermediate
+
+- citation: litson
+  pos: NOUN
+  gloss: roast pig, lechon
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: liwanag
   pos: NOUN
