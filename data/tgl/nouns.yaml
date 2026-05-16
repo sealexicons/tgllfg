@@ -15,12 +15,12 @@
 - citation: abril
   pos: NOUN
   gloss: April
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "4"}
+  feats: {MONTH_VALUE: "4", SEM_CLASS: MONTH}
 
 - citation: agosto
   pos: NOUN
   gloss: August
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "8"}
+  feats: {MONTH_VALUE: "8", SEM_CLASS: MONTH}
 
 - citation: aklat
   pos: NOUN
@@ -89,23 +89,31 @@
 
 - citation: ama
   pos: NOUN
-  gloss: father (formal)
+  gloss: father
+  feats: {REGISTER: FORMAL}
 
 - citation: amerika
   pos: NOUN
-  gloss: America (place name; R&G Conversational audit corpus)
+  gloss: America
+  subclass: [PLACE]
+  source: R&G-Conversational
 
 - citation: amerikana
   pos: NOUN
-  gloss: American jacket / suit; American woman (loanword; audit corpus)
+  gloss: coat, overcoat, two-piece suit
+  loan: SPANISH
+  source: audit-corpus
 
 - citation: amerikano
   pos: NOUN
-  gloss: American (national; audit corpus)
+  gloss: American
+  subclass: [NATIONAL]
+  source: audit-corpus
 
 - citation: ana
   pos: NOUN
-  gloss: Ana (proper name)
+  gloss: Ana
+  subclass: [PERSON, FEMALE]
 
 - citation: anak
   pos: NOUN
@@ -203,17 +211,21 @@
 
 - citation: ben
   pos: NOUN
-  gloss: Ben (proper name; S&O 1972 §7.20 audit corpus)
+  gloss: Ben
+  subclass: [PERSON, MALE]
+  source: S&O-1972
 
 - citation: beses
   pos: NOUN
   gloss: times (occurrences)
-  synonyms: [ulit]
   feats: {SEM_CLASS: FREQUENCY}
+  synonyms: [ulit]
 
 - citation: betty
   pos: NOUN
-  gloss: Betty (proper name; R&G Intermediate audit corpus)
+  gloss: Betty
+  subclass: [PERSON, FEMALE]
+  source: R&G-Intermediate
 
 - citation: bibig
   pos: NOUN
@@ -246,19 +258,25 @@
 - citation: biyernes
   pos: NOUN
   gloss: Friday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "5"}
+  feats: {DAY_VALUE: "5", SEM_CLASS: DAY}
 
 - citation: blas
   pos: NOUN
-  gloss: Blas (proper name; R&C 1990 audit corpus, sometimes OCR'd as "Bias")
+  gloss: Blas
+  subclass: [PERSON, MALE]
+  source: R&C-1990
+  orth_variants: [bias]
 
 - citation: bob
   pos: NOUN
-  gloss: Bob (proper name; R&C 1990 audit corpus)
+  gloss: Bob
+  subclass: [PERSON, MALE]
+  source: R&C-1990
 
 - citation: boss
   pos: NOUN
-  gloss: boss (English loan)
+  gloss: boss
+  loan: ENGLISH
 
 - citation: bubong
   pos: NOUN
@@ -286,7 +304,7 @@
 
 - citation: buod
   pos: NOUN
-  gloss: summary, gist, core (abstract), essence, crux; cf. verbal "summarizing" sense not registered in 8.C scope (would need separate VERB-base entry for magbuod / binuod)
+  gloss: summary, gist, core, essence
   affix_class: [pinaka_n]
 
 - citation: bus
@@ -317,7 +335,9 @@
 
 - citation: damian
   pos: NOUN
-  gloss: Damian (proper name; S&O 1972 audit corpus)
+  gloss: Damian
+  subclass: [PERSON, MALE]
+  source: S&O-1972
 
 - citation: damit
   pos: NOUN
@@ -329,11 +349,15 @@
 
 - citation: david
   pos: NOUN
-  gloss: David (proper name; R&C 1990 audit corpus)
+  gloss: David
+  subclass: [PERSON, MALE]
+  source: R&C-1990
 
 - citation: derek
   pos: NOUN
-  gloss: Derek (proper name; R&C 1990 audit corpus)
+  gloss: Derek
+  subclass: [PERSON, MALE]
+  source: R&C-1990
 
 - citation: dibdib
   pos: NOUN
@@ -354,7 +378,7 @@
 - citation: disyembre
   pos: NOUN
   gloss: December
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "12"}
+  feats: {MONTH_VALUE: "12", SEM_CLASS: MONTH}
 
 - citation: doble
   pos: NOUN
@@ -380,17 +404,20 @@
 
 - citation: edad
   pos: NOUN
-  gloss: age (Spanish loan)
+  gloss: age
   affix_class: [kasing_n_eq]
+  loan: SPANISH
 
 - citation: emmanuel
   pos: NOUN
-  gloss: Emmanuel (proper name; R&C 1990 audit corpus)
+  gloss: Emmanuel
+  subclass: [PERSON, MALE]
+  source: R&C-1990
 
 - citation: enero
   pos: NOUN
   gloss: January
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "1"}
+  feats: {MONTH_VALUE: "1", SEM_CLASS: MONTH}
 
 - citation: eroplano
   pos: NOUN
@@ -398,7 +425,9 @@
 
 - citation: eskwela
   pos: NOUN
-  gloss: school (colloquial; cf. paaralan)
+  gloss: school
+  feats: {REGISTER: COLLOQUIAL}
+  synonyms: [paaralan]
 
 - citation: estudyante
   pos: NOUN
@@ -406,15 +435,21 @@
 
 - citation: flor
   pos: NOUN
-  gloss: Flor (proper name; R&G Intermediate audit corpus)
+  gloss: Flor
+  subclass: [PERSON, FEMALE]
+  source: R&G-Intermediate
 
 - citation: frank
   pos: NOUN
-  gloss: Frank (proper name; R&C 1990 audit corpus)
+  gloss: Frank
+  subclass: [PERSON, MALE]
+  source: R&C-1990
 
 - citation: fred
   pos: NOUN
-  gloss: Fred (proper name; R&C 1990 audit corpus)
+  gloss: Fred
+  subclass: [PERSON, MALE]
+  source: R&C-1990
 
 - citation: gabi
   pos: NOUN
@@ -426,15 +461,18 @@
 
 - citation: gina
   pos: NOUN
-  gloss: Gina (proper name; R&C 1990 audit corpus)
+  gloss: Gina
+  subclass: [PERSON, FEMALE]
+  source: R&C-1990
 
 - citation: grado
   pos: NOUN
-  gloss: grade (academic; Spanish loan)
+  gloss: grade (academic)
+  loan: SPANISH
 
 - citation: gulay
   pos: NOUN
-  gloss: vegetable (homophonous with the verb)
+  gloss: vegetable
 
 - citation: guro
   pos: NOUN
@@ -442,7 +480,7 @@
 
 - citation: gutom
   pos: NOUN
-  gloss: hunger (Phase 5c §7.7 ika- test fixture)
+  gloss: hunger
   affix_class: [tag_season]
 
 - citation: hagdan
@@ -469,17 +507,17 @@
 - citation: hulyo
   pos: NOUN
   gloss: July
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "7"}
+  feats: {MONTH_VALUE: "7", SEM_CLASS: MONTH}
 
 - citation: hunyo
   pos: NOUN
   gloss: June
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "6"}
+  feats: {MONTH_VALUE: "6", SEM_CLASS: MONTH}
 
 - citation: huwebes
   pos: NOUN
   gloss: Thursday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "4"}
+  feats: {DAY_VALUE: "4", SEM_CLASS: DAY}
 
 - citation: ibon
   pos: NOUN
@@ -495,15 +533,19 @@
 
 - citation: ina
   pos: NOUN
-  gloss: mother (formal)
+  gloss: mother
+  feats: {REGISTER: FORMAL}
 
 - citation: inay
   pos: NOUN
-  gloss: mother (affective / informal)
+  gloss: mother
+  feats: {REGISTER: AFFECTIVE}
 
 - citation: ingles
   pos: NOUN
-  gloss: English (language / national; audit corpus)
+  gloss: English
+  subclass: [LANGUAGE]
+  source: audit-corpus
 
 - citation: init
   pos: NOUN
@@ -516,7 +558,8 @@
 
 - citation: itay
   pos: NOUN
-  gloss: father (affective / informal)
+  gloss: father
+  feats: {REGISTER: AFFECTIVE}
 
 - citation: itlog
   pos: NOUN
@@ -524,23 +567,32 @@
 
 - citation: jasmine
   pos: NOUN
-  gloss: Jasmine (proper name; R&G Intermediate audit corpus)
+  gloss: Jasmine
+  subclass: [PERSON, FEMALE]
+  source: R&G-Intermediate
 
 - citation: joe
   pos: NOUN
-  gloss: Joe (proper name; R&G Conversational audit corpus)
+  gloss: Joe
+  subclass: [PERSON, MALE]
+  source: R&G-Conversational
 
 - citation: john
   pos: NOUN
-  gloss: John (proper name; S&O 1972 audit corpus)
+  gloss: John
+  subclass: [PERSON, MALE]
+  source: S&O-1972
 
 - citation: jonathan
   pos: NOUN
-  gloss: Jonathan (proper name; R&C 1990 audit corpus)
+  gloss: Jonathan
+  subclass: [PERSON, MALE]
+  source: R&C-1990
 
 - citation: juan
   pos: NOUN
-  gloss: Juan (proper name)
+  gloss: Juan
+  subclass: [PERSON, MALE]
 
 - citation: kabayo
   pos: NOUN
@@ -569,8 +621,8 @@
 - citation: kalahati
   pos: NOUN
   gloss: half
-  synonyms: [medya]
   feats: {SEM_CLASS: FRACTION}
+  synonyms: [medya]
 
 - citation: kama
   pos: NOUN
@@ -611,11 +663,13 @@
 
 - citation: karayom
   pos: NOUN
-  gloss: needle (instrument; Phase 5c §7.7 ipang- test fixture)
+  gloss: needle (instrument)
 
 - citation: karla
   pos: NOUN
-  gloss: Karla (proper name; R&C 1990 audit corpus)
+  gloss: Karla
+  subclass: [PERSON, FEMALE]
+  source: R&C-1990
 
 - citation: karne
   pos: NOUN
@@ -623,7 +677,8 @@
 
 - citation: kendi
   pos: NOUN
-  gloss: candy (Spanish/English loan)
+  gloss: candy
+  loan: SPANISH
 
 - citation: keso
   pos: NOUN
@@ -639,7 +694,7 @@
 
 - citation: kumusta
   pos: NOUN
-  gloss: regards, greetings (n; cf. ADV kumusta "how" in particles.yaml)
+  gloss: regards, greetings
   feats: {FRAGMENT_HOST: true}
 
 - citation: kuneho
@@ -648,12 +703,14 @@
 
 - citation: kuwarto
   pos: NOUN
-  gloss: room
+  gloss: quarter (of the hour); clock-time fraction
+  loan: SPANISH
 
 - citation: kuwarto
   pos: NOUN
-  gloss: quarter (of the hour, Spanish-borrowed; clock-time fraction)
+  gloss: quarter (of the hour); clock-time fraction
   feats: {SEM_CLASS: FRACTION}
+  loan: SPANISH
 
 - citation: kuya
   pos: NOUN
@@ -706,11 +763,13 @@
 - citation: linggo
   pos: NOUN
   gloss: week, Sunday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "7"}
+  feats: {DAY_VALUE: "7", SEM_CLASS: DAY}
 
 - citation: lisa
   pos: NOUN
-  gloss: Lisa (proper name; R&G Intermediate audit corpus)
+  gloss: Lisa
+  subclass: [PERSON, FEMALE]
+  source: R&G-Intermediate
 
 - citation: liwanag
   pos: NOUN
@@ -727,7 +786,7 @@
 - citation: lunes
   pos: NOUN
   gloss: Monday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "1"}
+  feats: {DAY_VALUE: "1", SEM_CLASS: DAY}
 
 - citation: lupa
   pos: NOUN
@@ -751,7 +810,9 @@
 
 - citation: manny
   pos: NOUN
-  gloss: Manny (proper name; Ramos 1971 / R&G audit corpus)
+  gloss: Manny
+  subclass: [PERSON, MALE]
+  source: Ramos-1971
 
 - citation: manok
   pos: NOUN
@@ -763,7 +824,9 @@
 
 - citation: manuel
   pos: NOUN
-  gloss: Manuel (proper name; R&C 1990 audit corpus)
+  gloss: Manuel
+  subclass: [PERSON, MALE]
+  source: R&C-1990
 
 - citation: manugang
   pos: NOUN
@@ -771,25 +834,30 @@
 
 - citation: maria
   pos: NOUN
-  gloss: Maria (proper name)
+  gloss: Maria
+  subclass: [PERSON, FEMALE]
 
 - citation: marso
   pos: NOUN
   gloss: March
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "3"}
+  feats: {MONTH_VALUE: "3", SEM_CLASS: MONTH}
 
 - citation: martes
   pos: NOUN
   gloss: Tuesday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "2"}
+  feats: {DAY_VALUE: "2", SEM_CLASS: DAY}
 
 - citation: marvin
   pos: NOUN
-  gloss: Marvin (proper name; R&C 1990 audit corpus)
+  gloss: Marvin
+  subclass: [PERSON, MALE]
+  source: R&C-1990
 
 - citation: mary
   pos: NOUN
-  gloss: Mary (proper name; S&O 1972 audit corpus)
+  gloss: Mary
+  subclass: [PERSON, FEMALE]
+  source: S&O-1972
 
 - citation: mata
   pos: NOUN
@@ -797,18 +865,21 @@
 
 - citation: maynila
   pos: NOUN
-  gloss: Manila (place name; audit corpus)
+  gloss: Manila
+  subclass: [PLACE]
+  source: audit-corpus
 
 - citation: mayo
   pos: NOUN
   gloss: May
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "5"}
+  feats: {MONTH_VALUE: "5", SEM_CLASS: MONTH}
 
 - citation: medya
   pos: NOUN
-  gloss: half (Spanish-borrowed; canonical in clock-time register)
-  synonyms: [kalahati]
+  gloss: half
   feats: {SEM_CLASS: FRACTION}
+  loan: SPANISH
+  synonyms: [kalahati]
 
 - citation: mesa
   pos: NOUN
@@ -816,20 +887,23 @@
 
 - citation: minda
   pos: NOUN
-  gloss: Minda (proper name; R&C 1990 audit corpus)
+  gloss: Minda
+  subclass: [PERSON, FEMALE]
+  source: R&C-1990
 
 - citation: miting
   pos: NOUN
-  gloss: meeting (Spanish loan)
+  gloss: meeting
+  loan: SPANISH
 
 - citation: miyerkules
   pos: NOUN
   gloss: Wednesday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "3"}
+  feats: {DAY_VALUE: "3", SEM_CLASS: DAY}
 
 - citation: mukha
   pos: NOUN
-  gloss: face (homophonous with the raising verb "seem"; Phase 5c §7.6 fixture)
+  gloss: face
 
 - citation: mundo
   pos: NOUN
@@ -837,7 +911,9 @@
 
 - citation: nadette
   pos: NOUN
-  gloss: Nadette (proper name; R&G Intermediate audit corpus)
+  gloss: Nadette
+  subclass: [PERSON, FEMALE]
+  source: R&G-Intermediate
 
 - citation: nanay
   pos: NOUN
@@ -845,7 +921,9 @@
 
 - citation: nancy
   pos: NOUN
-  gloss: Nancy (proper name; R&C 1990 audit corpus)
+  gloss: Nancy
+  subclass: [PERSON, FEMALE]
+  source: R&C-1990
 
 - citation: ngayon
   pos: NOUN
@@ -862,12 +940,12 @@
 - citation: nobyembre
   pos: NOUN
   gloss: November
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "11"}
+  feats: {MONTH_VALUE: "11", SEM_CLASS: MONTH}
 
 - citation: oktubre
   pos: NOUN
   gloss: October
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "10"}
+  feats: {MONTH_VALUE: "10", SEM_CLASS: MONTH}
 
 - citation: oras
   pos: NOUN
@@ -887,7 +965,7 @@
 
 - citation: pagkain
   pos: NOUN
-  gloss: food (lit. "for-eating", from kain)
+  gloss: food
 
 - citation: palabas
   pos: NOUN
@@ -966,7 +1044,8 @@
 
 - citation: party
   pos: NOUN
-  gloss: party (English loan; social gathering)
+  gloss: party
+  loan: ENGLISH
 
 - citation: patatas
   pos: NOUN
@@ -983,11 +1062,12 @@
 - citation: pebrero
   pos: NOUN
   gloss: February
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "2"}
+  feats: {MONTH_VALUE: "2", SEM_CLASS: MONTH}
 
 - citation: pedro
   pos: NOUN
-  gloss: Pedro (proper name)
+  gloss: Pedro
+  subclass: [PERSON, MALE]
 
 - citation: pelikula
   pos: NOUN
@@ -1003,11 +1083,29 @@
 
 - citation: pilipinas
   pos: NOUN
-  gloss: Philippines (place name; audit corpus)
+  gloss: Philippines
+  subclass: [PLACE]
+  source: audit-corpus
 
 - citation: pilipino
   pos: NOUN
-  gloss: Filipino (national; audit corpus)
+  gloss: Filipino
+  subclass: [NATIONAL]
+  source: audit-corpus
+
+- citation: pinay
+  pos: NOUN
+  gloss: Filipino
+  feats: {REGISTER: COLLOQUIAL}
+  subclass: [NATIONAL, FEMALE]
+  source: ref-grammar
+
+- citation: pinoy
+  pos: NOUN
+  gloss: Filipino
+  feats: {REGISTER: COLLOQUIAL}
+  subclass: [NATIONAL]
+  source: ref-grammar
 
 - citation: pinsan
   pos: NOUN
@@ -1032,7 +1130,7 @@
 
 - citation: puno
   pos: NOUN
-  gloss: tree; head, principal, leader (n); the relational-N base also feeds pinaka_adj_from_n → pinakapuno (adj. "most important / principal")
+  gloss: tree; head, principal, leader
   affix_class: [pinaka_n, pinaka_adj_from_n]
 
 - citation: pusa
@@ -1045,16 +1143,20 @@
 
 - citation: relos
   pos: NOUN
-  gloss: watch, clock (Spanish loan; S&O 1972 §4.2 audit corpus)
+  gloss: watch, clock
+  loan: SPANISH
+  source: S&O-1972
 
 - citation: rosa
   pos: NOUN
-  gloss: Rosa (proper name; R&G Intermediate audit corpus)
+  gloss: Rosa
+  subclass: [PERSON, FEMALE]
+  source: R&G-Intermediate
 
 - citation: sabado
   pos: NOUN
   gloss: Saturday
-  feats: {SEM_CLASS: DAY, DAY_VALUE: "6"}
+  feats: {DAY_VALUE: "6", SEM_CLASS: DAY}
 
 - citation: saging
   pos: NOUN
@@ -1091,7 +1193,9 @@
 
 - citation: santos
   pos: NOUN
-  gloss: Santos (proper surname; R&G Conversational audit corpus)
+  gloss: Santos
+  subclass: [SURNAME]
+  source: R&G-Conversational
 
 - citation: sapatos
   pos: NOUN
@@ -1105,7 +1209,7 @@
 - citation: setyembre
   pos: NOUN
   gloss: September
-  feats: {SEM_CLASS: MONTH, MONTH_VALUE: "9"}
+  feats: {MONTH_VALUE: "9", SEM_CLASS: MONTH}
 
 - citation: silya
   pos: NOUN
@@ -1129,7 +1233,9 @@
 
 - citation: tagalog
   pos: NOUN
-  gloss: Tagalog (language / national; audit corpus)
+  gloss: Tagalog
+  subclass: [LANGUAGE]
+  source: audit-corpus
 
 - citation: tanghali
   pos: NOUN
@@ -1138,7 +1244,7 @@
 
 - citation: tao
   pos: NOUN
-  gloss: person, human (homophonous with the verb above; nouns and verbs share surfaces)
+  gloss: person, human
 
 - citation: taon
   pos: NOUN
@@ -1171,10 +1277,12 @@
 - citation: tita
   pos: NOUN
   gloss: aunt
+  orth_variants: [tiya]
 
 - citation: tito
   pos: NOUN
   gloss: uncle
+  orth_variants: [tiyo]
 
 - citation: titser
   pos: NOUN
@@ -1182,12 +1290,13 @@
 
 - citation: tiya
   pos: NOUN
-  gloss: aunt (orthographic variant of tita)
+  gloss: aunt
   feats: {LEMMA: tita}
 
 - citation: tiyahin
   pos: NOUN
-  gloss: aunt (formal)
+  gloss: aunt
+  feats: {REGISTER: FORMAL}
 
 - citation: tiyan
   pos: NOUN
@@ -1195,16 +1304,17 @@
 
 - citation: tiyo
   pos: NOUN
-  gloss: uncle (orthographic variant of tito)
+  gloss: uncle
   feats: {LEMMA: tito}
 
 - citation: tiyuhin
   pos: NOUN
-  gloss: uncle (formal)
+  gloss: uncle
+  feats: {REGISTER: FORMAL}
 
 - citation: trabaho
   pos: NOUN
-  gloss: work, job (homophonous with the verb)
+  gloss: work, job
 
 - citation: tren
   pos: NOUN
@@ -1244,8 +1354,8 @@
 - citation: ulit
   pos: NOUN
   gloss: times (repetitions)
-  synonyms: [beses]
   feats: {SEM_CLASS: FREQUENCY}
+  synonyms: [beses]
 
 - citation: ulo
   pos: NOUN
