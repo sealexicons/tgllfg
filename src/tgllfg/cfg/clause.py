@@ -1045,6 +1045,61 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 8.S: DAT-PRON possessive-pivot cleft ----------------
+    #
+    # ``Akin ang tinapay.``    "The bread is mine."
+    # ``Akin ang lapis.``      "The pencil is mine."
+    # ``Sa akin ang lapis.``   "The pencil is mine." (sa-PP variant)
+    # ``Iyo ang aklat.``       "The book is yours."
+    # ``Kanila ang bahay.``    "The house is theirs."
+    #
+    # The Phase 8.X docstring above (line 1005-1012) explicitly
+    # named this remaining 8.S residual: the DAT-PRON possessive-
+    # pivot variant. Audit corpus surfaces five hits from S&O 1972
+    # / R&G Intermediate (page 42 sent-3 ``Akin ang tinapay.``,
+    # page 145 sent-169 ``Akin ang lapis.``, page 284 sent-397
+    # ``Akin ang relos.``, page 220 sent-1535 ``Akin ang
+    # bulaklak.``, page 44 sent-310 ``Akin ang bahay.``).
+    #
+    # The construction: a bare DAT-PRON (``Akin``, ``Iyo``,
+    # ``Kanila``, ...) or sa+DAT-PRON (``Sa akin``, ``Sa iyo``,
+    # ...) serves as the possessive predicate; the ang-NP is the
+    # NOM-pivot SUBJ (the possessed item). Cited per S&O 1972
+    # §4.2 / R&G 1981 §10 (DAT-PRON possessive predication).
+    #
+    # **Single rule with feat-gating**: both ``Akin`` and ``Sa
+    # akin`` wrap as ``NP[CASE=DAT]`` (bare DAT-PRON via
+    # standalone-PRON-as-NP, sa-PP via ADP+PRON). The rule fires
+    # on ``NP[CASE=DAT]`` with two gates:
+    #
+    # * ``¬ (↓1 PRED)`` — excludes NOUN-headed DAT-NPs (NOUN
+    #   wraps carry ``PRED='NOUN(↑ FORM)'``; PRON wraps don't
+    #   define PRED at the NP[DAT] level). This keeps the
+    #   locative ``Sa bahay ang lapis.`` reading out — that
+    #   construction needs a separate locative-cleft rule.
+    # * ``¬ (↓1 WH)`` — excludes wh-DAT-PRON (``kanino``,
+    #   ``saan``) — those route through the Phase 5i wh-cleft
+    #   rules and would double-parse without this gate.
+    #
+    # F-structure shape:
+    #
+    #   PRED        = 'BE-DAT <SUBJ>'
+    #   SUBJ        = ↓2 (the ang-NP — the possessed item)
+    #   POSSESSOR   = ↓1 (the DAT-NP — bare PRON or sa-PP)
+    #   PREDICATIVE = true
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=DAT]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BE-DAT <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ POSSESSOR) = ↓1",
+            "(↑ PREDICATIVE) = true",
+            "¬ (↓1 PRED)",
+            "¬ (↓1 WH)",
+        ],
+    ))
+
 
     # --- Phase 8.Y Commit 1: ay-inverted N-pivot predication ----
     #

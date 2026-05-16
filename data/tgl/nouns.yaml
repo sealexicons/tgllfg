@@ -919,6 +919,10 @@
   pos: NOUN
   gloss: heart
 
+- citation: relos
+  pos: NOUN
+  gloss: watch, clock (Spanish loan; S&O 1972 §4.2 audit corpus)
+
 - citation: sabado
   pos: NOUN
   gloss: Saturday
