@@ -17824,3 +17824,209 @@ regressions.
 
 `hatch run test-both`: 7833 passed in 78.90s (was 7813; +20
 new tests).
+
+## Phase 8 cumulative summary
+
+Phase 8 closes the audit-harvest-driven construction-class gaps
+surfaced by the Wave 1 + Wave 2 + Wave 3 corpus passes
+(R&B 1986 + hand-transcriptions, Ramos 1971 + R&G Intermediate,
+S&O 1972 + R&G Conversational — 2220 sentences total). 26 sub-PRs
+landed across 3 implementation waves; the Phase moves the
+parser from a 7.4% naturalistic baseline to ~11% (depending on
+which corpus subset is measured), adds 17 new construction
+rules / paradigm cells, ships 30+ lex entries (proper names +
+common nouns + Spanish/English loans), and surfaces a clear
+inventory of construction-class gaps that should drive Phase 9
+scheduling.
+
+### Wave decomposition (implementation order)
+
+Per `[[feedback_phase8_wave_nomenclature]]`, **Wave A/B/C/...**
+denote implementation phases (alphabetic); **Wave 1/2/3** denote
+audit corpus passes (numeric). Phase 8 implementation waves:
+
+**Wave A — audit harvest + Wave 1+2+3 lex sweeps** (8 sub-PRs):
+
+- 8.J (PR #57) — bucketer walk-all-edges + morph-analyzer OOV probe
+- 8.P (PR #58) — Wave 2.5 extractor cleanup
+- Wave 3 audit (PR #59) — S&O 1972 + R&G Conv harvest
+- 8.W (PR #67) — R&G Conv extractor improvements (R&G Conv
+  parse-rate 14.2% → 21.8%; cumulative naturalistic 9.3% →
+  10.9%)
+- 8.A (PR #64) — Wave 1 lex pass (7 verbs + 3 nouns)
+- 8.B (PR #66) — R&B 1986 verb-base sweep (52 new VERB entries
+  plus `pag_an` paradigm cell)
+- 8.N (PR #65) — Wave 2 lex pass (7 nouns + 1 verb-affix update
+  plus 1 wh-ADV entry)
+- 8.Q (PR #63) — clitic-glue probe-artifact fix
+
+**Wave D — construction-class closures** (14 sub-PRs):
+
+- 8.X (PR #60) — DEM-pivot + non-wh PRON-pivot clause rules
+- 8.Y (PR #61) — ay-inverted N-pivot + Si-NP-pivot two-NP
+  equational
+- 8.Z (PR #62) — generalizes 8.Y to ang-pivot two-NP equational
+- 8.C (PR #68) — `pinaka-` superlative on N + ADJ-from-N
+- 8.D (PR #69) — comma-fronted topic NP
+- 8.D2 (PR #70) — anti-deferral closure of 8.D's three pinned
+  siblings (ADV / INTERJ / PP variants)
+- 8.E (PR #71) — `mga` + DEM-PRON head
+- 8.G (PR #72) — `bago` ADJ + `ani` NOUN (lex-only)
+- 8.U (PR #73) — comparative `parang` with NP standard
+- 8.M (PR #74) — `nang` temporal subordinator + Phase 5l
+  post-matrix-comma rule
+- 8.R (PR #75) — `alas` Spanish-loan clock-time
+- 8.F (PR #76) — existential `may` + V-headed nominalized
+  complement
+- 8.L (PR #77) — full Wave D `kasing-` family closure
+- 8.T (PR #78) — `kundi`-introduced phrasal correction
+- 8.V (PR #79) — `Ni X ay hindi Y` focus-negation + V-DAT-NOM
+  free word order
+
+**Wave E — diagnostic-required closures** (4 sub-PRs):
+
+- 8.S (PR #80) — DAT-PRON possessive-pivot cleft
+- 8.I (PR #81) — `naka-` aptative PRED-registration (diagnostic
+  outcome: rule out + targeted lex pass)
+- 8.H (PR #82) — AV-CAUS-INDIRECT flat 3-arg + `papakainin`
+  CTPL variant
+- 8.O (PR #83) — AV-CAUS-INDIRECT SAY-class reported clause
+
+### New binary feats (BINARY_FEATS 52 → 55)
+
+- `CLOCK_MARKER` (8.R) — PART is the clock-time hour marker `alas`
+- `KASING_N` (8.L) — ADJ surface derives from a NOUN via `kasing-`
+- `FOCUS_NEG` (8.V) — Ni-focus-negation construction marker
+
+### Lex additions (cumulative)
+
+**Proper names (Western + Filipino):** `ben`, `betty`, `blas`,
+`emmanuel`, `flor`, `frank`, `gina`, `john`, `jonathan`, `karla`,
+`mary`, `minda`, `nadette`, `nancy` — 14 new proper-name NOUNs
+following the lowercase-citation `X (proper name; <source>
+audit corpus)` convention.
+
+**Common nouns / Spanish-English loans:** `bagsik` ADJ, `buti`
+ADJ, `payat` ADJ, `boss`, `edad`, `grado`, `hapunan`, `kendi`,
+`miting`, `party`, `relos`. Plus `palay`, `damo`, `tasa` (8.A);
+`kumusta`, `palabas`, `patyo`, `pelikula`, `sanga`, `kahoy`,
+`tawad` (8.N); `simula` (8.D2); `mundo`, `sandata` (8.C);
+`tigas` (8.C).
+
+**Verb roots:** `tanim`, `tuka`, `sapit`, `dungaw`, `putak`,
+`bintang`, `taba` (8.A); 40 R&B 1986 verbs (8.B); `alala` orth
+variant, `kitil` (8.I); plus affix_class extensions on existing
+roots (`alaala` and `limot` extended with `ma`; `inom` and
+`pasok` extended with various).
+
+### Anti-deferral pin flips (cumulative)
+
+- **8.D2** closes 3 pins from 8.D (`Bukas, ...` ADV-fronted,
+  `Oo, ...` INTERJ-fronted, `Sa simula, ...` PP-fronted)
+- **8.L** closes Phase 5l's hyphen-merge left-flanker hazard
+  via `split_linker_ng` carve-out
+- **8.V** closes Phase 5e Commit 3's non-fronted AdvP/PP
+  placement deferral (matrix V-DAT-NOM rule + S_GAP V-DAT rule)
+- **8.O** closes Phase 8.N's `Nagpasabi si Gina na uuwi siya.`
+  pin (explicit named successor)
+- **8.H** closes the `papakainin` pin (refined per user
+  correction: tagalog.com + GT both attest as canonical CTPL)
+
+### Test trajectory
+
+| Milestone | `hatch run test-both` |
+| --- | --- |
+| Pre-Phase 8 (post-7a.K) | ~7058 passed |
+| Post-8.A | 7559 passed |
+| Post-8.U | 7590 passed |
+| Post-8.F | 7656 passed |
+| Post-8.L | 7719 passed |
+| Post-8.S | 7769 passed |
+| Post-8.I | 7796 passed |
+| Post-8.H | 7813 passed |
+| Post-8.O | 7833 passed |
+
+Net Phase 8: **+775 tests** across 26 sub-PRs.
+
+### Naturalistic parse-rate trajectory
+
+| Milestone | Cumulative naturalistic | R&G Conv subset |
+| --- | --- | --- |
+| Pre-Phase 8 (Wave 1+2+3 baseline) | 7.4% | 14.2% |
+| Post-8.X (DEM/PRON pivot) | 7.8% | — |
+| Post-8.Z (ang-pivot equational) | 8.0% | — |
+| Post-8.W (extractor improvements) | 10.9% | 21.8% |
+
+Subsequent sub-PRs (8.B onwards) didn't re-run the harvest at
+each ship; the cumulative parse-rate metric stabilizes around
+**~11% naturalistic** as of 8.O. Re-running the harvest after
+Phase 8 close is part of the Phase 9 scoping work.
+
+### Naturalistic-tier regression fixture (proposed for Phase 9)
+
+The audit corpus exemplars in `data/tgl/exemplars/*.jsonl` are
+gitignored (derived from licensed PDFs). A naturalistic-tier
+regression fixture should:
+
+1. **Sample a representative subset** (50-100 sentences) of
+   audit-closures across Waves 1+2+3 — the actual closures
+   from each Phase 8 sub-PR's test file are a natural starting
+   point (each sub-PR's test file already pins the closures it
+   delivered).
+2. **Commit the subset to the repo** as
+   `tests/tgllfg/data/audit_regression_fixture.yaml` — pulled
+   from the gitignored exemplars at fixture-generation time,
+   with each entry tagged by Wave + source + sub-PR.
+3. **Add a Phase 9 regression test** that asserts each fixture
+   sentence parses (positive cases) or stays zero-parse
+   (out-of-scope pins). Runs as part of `hatch run test-fast`.
+4. **Re-generate the fixture** when Wave 4+ audits land (or
+   when Kroeger 1991 harvest surfaces new exemplars).
+
+This avoids the per-sub-PR drift problem where individual test
+files are deleted/refactored over time but the audit-closure
+guarantee should persist. The cross-wave fixture acts as the
+canonical regression baseline.
+
+### Pending Phase 9+ work (named in Phase 8 sub-PRs)
+
+- **Kroeger 1991 harvest** (planned Wave C engineering parallel
+  — `[[project_phase8_kroeger91_harvest]]`)
+- **`ma_an` paradigm cell** (8.I pin for `malimutan` LF-NVOL)
+- **TR/INTR polysemy lex-design pass** (8.I `alala` + 8.O
+  `pasok` pins — same pattern recurs)
+- **N-appositive proper-name attachment** (8.I pin for
+  `kaibigan niyang si Flor`)
+- **Locative cleft `Sa bahay ang lapis.`** (8.S pin)
+- **PP-cleft variant `Hindi dito kundi sa bayan ang pulong.`**
+  (8.T pin)
+- **Non-SUBJ Ni-focus / paired Ni X ni Y / Ni hindi V** (8.V
+  pins — three distinct construction sub-PRs)
+- **2-arg AV-CAUS-INDIRECT** (8.H pin; flat profile requires
+  all three slots)
+- **`nang V-DUPLICATE` intensifier-aspectual idiom** (8.H pin)
+- **`Wala, ...` interjection sense** (8.D2 pin; needs `wala`
+  polysemy split)
+- **Free-relative wh-PRON cleft** (8.S non-shadow pin)
+
+### Process learnings (memory entries written during Phase 8)
+
+- `[[feedback_audit_before_scheduling]]` — sentences-closed
+  per-PR gates new sub-PR scheduling
+- `[[feedback_dont_pin_canonical_forms]]` — audit-absence ≠
+  legitimate-absence; check S&O/R&C/tagalog.com/GT first
+- `[[feedback_dont_downscale_directives]]` — read named refs
+  first; expand on firm commitments
+- `[[feedback_no_permission_for_expansion]]` — when the plan
+  sanctions a scope element, include it; don't pause for "do
+  you want X?"
+- `[[feedback_no_duplicate_file_staging]]` — list each file in
+  exactly one commit (the first one it appears in)
+
+Plus 30+ numbered diagnostics in `[[project_phase8_progress]]`
+(each sub-PR contributes 1-3 diagnostic notes for cross-sub-PR
+pattern recognition — e.g. PRED-template-coherence patterns,
+left-flanker hazards, TR/INTR polysemy recurrence).
+
+`hatch run test-both`: 7833 passed in 78.90s (final Phase 8
+state — no new tests added in 8.K closing docs).
