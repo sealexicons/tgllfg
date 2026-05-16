@@ -17445,3 +17445,85 @@ out-of-scope pins.
 
 `hatch run test-both`: 7751 passed in 83.31s (was 7728; +23
 new tests).
+
+## Phase 8.S: DAT-PRON possessive-pivot cleft
+
+Audit-named construction (S&O 1972 §4.2 / R&G 1981 §10). A bare
+DAT-PRON or sa+DAT-PRON serves as the possessive predicate; the
+ang-NP is the NOM-pivot SUBJ (the possessed item):
+
+- `Akin ang tinapay.` — "The bread is mine." (S&O 1972 page 42 sent-3)
+- `Sa akin ang lapis.` — "The pencil is mine." (sa-PP variant, S&O page 145 sent-168)
+- `Iyo ang aklat.` — "The book is yours." (2sg variant)
+- `Kanila ang bahay.` — "The house is theirs." (3pl variant)
+
+Phase 8.X (PR #60) closed the noun-pivot subset (`Ako ang
+guro.`) and explicitly named the DAT-PRON-pivot variant as the
+remaining 8.S residual. The V-headed nominalization variant
+(`Tayo ang lumakad.`) was incidentally closed by 8.X too — only
+the DAT-PRON-pivot remained pending.
+
+### New construction rule
+
+`cfg/clause.py` adjacent to the Phase 8.X non-wh PRON-pivot rule:
+
+```text
+S → NP[CASE=DAT]  NP[CASE=NOM]
+  (↑ PRED)        = 'BE-DAT <SUBJ>'
+  (↑ SUBJ)        = ↓2
+  (↑ POSSESSOR)   = ↓1
+  (↑ PREDICATIVE) = true
+  ¬ (↓1 PRED)                    (NOUN-headed DAT excluded)
+  ¬ (↓1 WH)                      (wh-DAT-PRON excluded)
+```
+
+### Single rule covers two surface forms
+
+Both bare `Akin` and `Sa akin` wrap as `NP[CASE=DAT]` (bare via
+standalone-PRON-as-NP, sa-PP via `ADP[CASE=DAT] + PRON[CASE=DAT]`),
+so one rule handles both surfaces.
+
+### Gating excludes adjacent constructions
+
+- `¬ (↓1 PRED)` — distinguishes PRON-headed DAT-NPs (no PRED at
+  the NP[DAT] level) from NOUN-headed DAT-NPs (carry
+  `PRED='NOUN(↑ FORM)'`). The locative cleft `Sa bahay ang
+  lapis.` stays blocked — it's a separate construction class
+  (out-of-scope for 8.S; needs a locative-cleft rule).
+- `¬ (↓1 WH)` — excludes wh-DAT-PRON (`kanino`, `saan`). Those
+  route through the Phase 5i wh-cleft rules and would
+  double-parse without this gate.
+
+### Lex addition
+
+`data/tgl/nouns.yaml` — `relos` (watch/clock; Spanish loan) per
+the OOV-resolve-in-subPR directive. Closes the S&O 1972 page 284
+sent-397 audit hit `Akin ang relos.`
+
+### Direct audit closures
+
+- `Akin ang tinapay.` (S&O sent-3) ✅
+- `Akin ang lapis.` (S&O sent-169) ✅
+- `Akin ang relos.` (S&O sent-397, with `relos` lex add) ✅
+- `Akin ang bulaklak.` (R&G Intermediate sent-1535) ✅
+- `Akin ang bahay.` (R&G Intermediate sent-310) ✅
+- `Sa akin ang lapis.` (S&O sent-168, sa-PP variant) ✅
+
+### Out-of-scope (pinned via `¬ (↓1 PRED)` gate behavior)
+
+- `Sa bahay ang lapis.` / `Sa mesa ang aklat.` — locative-cleft
+  (NOUN-headed DAT). Pinned at
+  `TestPhase8sLocativeBlocked::test_locative_cleft_blocked`.
+- `Sa kanino ang aklat?` — wh-DAT-PRON cleft (routes through
+  Phase 5i wh-cleft rules). Tested for non-double-parsing at
+  `TestPhase8sWhDatBlocked::test_wh_cleft_unaffected`.
+
+### Tests
+
+`test_phase8s_dat_pron_pivot.py` (18 tests): 10 DAT-PRON-pivot
+positive shapes including all 6 direct audit closures, 2
+locative-cleft blocks (NOUN-headed DAT excluded), 1 wh-DAT-PRON
+non-shadow test, 5 Phase 8.X / 5j C4 regression shapes.
+
+`hatch run test-both`: 7769 passed in 83.35s (was 7751; +18
+new tests).
