@@ -143,12 +143,33 @@ def split_linker_ng(tokens: list[Token]) -> list[Token]:
 
     analyzer = _get_default()
     out: list[Token] = []
-    for t in tokens:
+    n = len(tokens)
+    for i, t in enumerate(tokens):
         m = _VOWEL_NG_END.match(t.surface)
         if m is None:
             out.append(t)
             continue
         if analyzer.is_known_surface(t.norm):
+            out.append(t)
+            continue
+        # Phase 8.L Commit 4 left-flanker carve-out: when this
+        # token is immediately followed by ``-`` + alphabetic,
+        # it's the LEFT flanker of a hyphen compound (e.g.,
+        # ``Kasing-edad``). Defer to :func:`merge_hyphen_compounds`
+        # in that case rather than preemptively peeling ``-ng``
+        # off the left flanker — otherwise the canonical
+        # hyphen-joined form (``kasingedad``) is unreachable.
+        # The right-flanker case (``kani-kaniyang``) is
+        # unaffected because the right flanker doesn't see the
+        # next-`-` lookahead.
+        if (
+            i + 2 < n
+            and tokens[i + 1].surface == "-"
+            and tokens[i + 2].surface.isalpha()
+            and analyzer.is_known_surface(
+                (t.surface + tokens[i + 2].surface).lower()
+            )
+        ):
             out.append(t)
             continue
         stem = m.group(1)
