@@ -66,6 +66,22 @@ def register_rules(rules: list[Rule]) -> None:
         ["V[VOICE=AV]"],
         _eqs("(↑ SUBJ) = (↑ REL-PRO)"),
     ))
+    # Phase 8.V: SUBJ-gapped AV-INTR clause with a locative
+    # DAT-adjunct only. Parallels the matrix S → V[AV] NP[DAT]
+    # NP[NOM] rule with the SUBJ slot extracted via REL-PRO
+    # binding. Required for the audit hit ``Ni si Juan ay hindi
+    # nakapunta doon.`` (S&O 1972 page 640 / sent-1260): the
+    # inner S_GAP ``hindi nakapunta doon`` has a DAT-adjunct
+    # daughter (``doon``) with no GEN-OBJ — the prior S_GAP
+    # frames require either bare V or V + GEN-OBJ.
+    rules.append(Rule(
+        "S_GAP",
+        ["V[VOICE=AV]", "NP[CASE=DAT]"],
+        _eqs(
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+        ),
+    ))
     # S_GAP transitive frames mirror the matrix transitive frames'
     # OBJ-θ-in-grammar split: AV binds the ng-NP to bare OBJ
     # (PATIENT/THEME), non-AV binds to typed OBJ-θ.
@@ -769,6 +785,75 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ TOPIC) = ↓1",
             "(↓3 REL-PRO) = ↓1",
             "(↓3 REL-PRO) =c (↓3 SUBJ)",
+        ],
+    ))
+
+    # --- Phase 8.V: Ni-SUBJ focus negation (``Ni X ay hindi Y``) -------------
+    #
+    # ``Ni si Juan ay hindi nakapunta doon.``
+    #     "Not even Juan went there." (S&O 1972 §7.20 page 640 / sent-1260)
+    #
+    # Tagalog has a focus-negation construction in which the
+    # SUBJ-pivot of a negated AV clause is fronted with a leading
+    # ``Ni`` "not even" focus particle, then ``ay`` + the gapped
+    # remainder of the clause. Semantically: the focused NP is
+    # asserted to be the LEAST EXPECTED bearer of the negated
+    # predicate ("not even X, so certainly not anyone else").
+    #
+    # Structure (mirrors the Phase 4 §7.4 SUBJ-ay-front rule above
+    # with a leading PART[FOCUS_NEG] daughter and a POLARITY=NEG
+    # gate on the inner S_GAP):
+    #
+    #   S → PART[FOCUS_NEG=true]  NP[CASE=NOM]  PART[LINK=AY]  S_GAP
+    #     (↑) = ↓4
+    #     (↑ TOPIC) = ↓2
+    #     (↑ FOCUS_NEG) = true
+    #     (↓4 REL-PRO) = ↓2
+    #     (↓4 REL-PRO) =c (↓4 SUBJ)
+    #     (↓4 POLARITY) =c 'NEG'
+    #     (↓1 FOCUS_NEG) =c true
+    #
+    # The POLARITY=NEG gate means the inner clause must be
+    # hindi-negated — affirmative ``Ni si Juan ay nakapunta doon.``
+    # is structurally blocked (Ni without hindi is not attested in
+    # the corpus and S&O 1972 confirms the construction obligatorily
+    # pairs with NEG).
+    #
+    # The FOCUS_NEG=true matrix tag lets downstream consumers (LMT,
+    # ranker, classifier) branch on the "not even" reading without
+    # walking the c-structure for the Ni daughter. ``ni`` lex is in
+    # particles.yaml as a second entry (distinct from the existing
+    # GEN proper-name ``ni``) with ``FOCUS_NEG=true``; the two
+    # readings disambiguate by the following daughter shape (GEN
+    # admits a bare proper-name NOUN, FOCUS_NEG admits a full NP +
+    # ay + S_GAP).
+    #
+    # Out of 8.V scope (pinned for future construction sub-PRs):
+    #   * OBJ-focus / non-SUBJ-pivot Ni-X (needs S_GAP_OBJ-style
+    #     extraction): ``Ni damit ni sapatos ay hindi nakakabili
+    #     ang taong iyon.`` — S&O page 604 / sent-1156.
+    #   * OF-voice Ni-AGENT focus: ``Ni si Juan ni si Ben ay hindi
+    #     bibilhin iyan.`` — S&O page 604 / sent-1159.
+    #   * Paired Ni X ni Y correlative coordination of foci.
+    #   * ``Ni hindi V`` (no ``ay``) intensifier-negation — a
+    #     distinct construction from the focus-negation here:
+    #     ``Ni hindi ko napapansin.`` — R&G Intermediate sent-1828.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=NOM]",
+            "PART[LINK=AY]",
+            "S_GAP",
+        ],
+        [
+            "(↑) = ↓4",
+            "(↑ TOPIC) = ↓2",
+            "(↑ FOCUS_NEG) = true",
+            "(↓4 REL-PRO) = ↓2",
+            "(↓4 REL-PRO) =c (↓4 SUBJ)",
+            "(↓4 POLARITY) =c 'NEG'",
+            "(↓1 FOCUS_NEG) =c true",
         ],
     ))
 

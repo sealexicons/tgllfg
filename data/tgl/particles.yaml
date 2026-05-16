@@ -31,6 +31,15 @@
 - surface: ni
   pos: ADP
   feats: {CASE: GEN, MARKER: NI, HUMAN: true}
+# Phase 8.V: focus-negation ``ni`` "not even" (S&O 1972 §7.20 — "Ni X
+# ay hindi Y" focus-negation). Distinct morpheme from the GEN proper-
+# name marker ``ni`` above. The two readings disambiguate at clause
+# level: GEN proper-name ``ni`` admits a following bare proper-name
+# NOUN; focus-negation ``ni`` precedes a NOM-NP / DEM-PRON focus and
+# is followed by ``ay`` + a NEG-marked clause.
+- surface: ni
+  pos: PART
+  feats: {FOCUS_NEG: true, LEMMA: ni}
 - surface: kay
   pos: ADP
   feats: {CASE: DAT, MARKER: KAY, HUMAN: true}

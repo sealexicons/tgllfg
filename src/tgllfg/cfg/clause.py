@@ -56,6 +56,20 @@ def register_rules(rules: list[Rule]) -> None:
         ["V[VOICE=AV]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
         _eqs("(↑ SUBJ) = ↓2", "↓3 ∈ (↑ ADJUNCT)"),
     ))
+    # Phase 8.V free-word-order companion to the V-SUBJ-DAT rule
+    # above. Tagalog admits both V-SUBJ-DAT (``Pumunta si Juan sa
+    # bahay.``) and V-DAT-SUBJ (``Pumunta sa bahay si Juan.``)
+    # orderings; the latter was missing. CASE markers distinguish
+    # the two NPs (NOM=ang/si, DAT=sa) so no spurious ambiguity
+    # arises against the V-SUBJ-DAT rule. Required for closing the
+    # 8.V audit hit ``Ni si Juan ay hindi nakapunta doon.`` whose
+    # S_GAP residue (``nakapunta doon``) carries a locative
+    # DAT-adjunct after a SUBJ-extracted AV-INTR verb.
+    rules.append(Rule(
+        "S",
+        ["V[VOICE=AV]", "NP[CASE=DAT]", "NP[CASE=NOM]"],
+        _eqs("(↑ SUBJ) = ↓3", "↓2 ∈ (↑ ADJUNCT)"),
+    ))
 
 
     # --- Phase 5e Commit 26: comparative `parang` ---
