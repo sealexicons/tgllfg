@@ -1937,3 +1937,60 @@
 - surface: eto
   pos: PART
   feats: {INTERJ: true, DEICTIC: true, LEMMA: eto}
+
+# === Phase 9.G: discourse markers + temporal adverbs + locative variants ===
+#
+# 12 audit-attested entries closing the rank-3..25 discourse / particle /
+# locative gap in the post-9.F OOV TSV.
+#
+# Discourse interjections extend the Phase 8.D2 INTERJ family
+# (aba/ha/heto). Locative existentials (narito) parallel nasa.
+# DAT/DEM variants (rito/roon) are post-d→r-sandhi spellings
+# pointing at canonical dito/doon via LEMMA. Temporal adverbs
+# (noon/kagabi) extend the kahapon/ngayon/bukas/mamaya family.
+# Discourse markers (muna/sige/tuloy) cover high-frequency
+# audit-corpus particles.
+
+- surface: aba
+  pos: PART
+  feats: {INTERJ: true, LEMMA: aba}
+- surface: ha
+  pos: PART
+  feats: {INTERJ: true, LEMMA: ha}
+- surface: heto
+  pos: PART
+  feats: {INTERJ: true, DEICTIC: true, LEMMA: heto}
+
+- surface: narito
+  pos: PART
+  feats: {LOC_EXISTENTIAL: true, DEIXIS: PROX, LEMMA: narito}
+
+- surface: rito
+  pos: ADP
+  feats: {CASE: DAT, DEIXIS: PROX, DEM: true, LEMMA: dito}
+- surface: roon
+  pos: ADP
+  feats: {CASE: DAT, DEIXIS: DIST, DEM: true, LEMMA: doon}
+
+- surface: noon
+  pos: ADV
+  feats: {ADV_TYPE: TIME, DEIXIS_TIME: PAST, LEMMA: noon}
+- surface: kagabi
+  pos: ADV
+  feats: {ADV_TYPE: TIME, DEIXIS_TIME: PAST, LEMMA: kagabi}
+
+- surface: ganoon
+  pos: PART
+  feats: {LEMMA: ganon}
+
+- surface: muna
+  pos: PART
+  feats: {ADV: FIRST, LEMMA: muna}
+  is_clitic: true
+  clitic_class: 2P
+- surface: sige
+  pos: PART
+  feats: {DISCOURSE: GO_AHEAD, DISCOURSE_POS: SENTENCE_INITIAL, LEMMA: sige}
+- surface: tuloy
+  pos: PART
+  feats: {DISCOURSE: SO, LEMMA: tuloy}

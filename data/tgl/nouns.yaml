@@ -572,6 +572,11 @@
   gloss: plant
   source: audit-corpus
 
+- citation: halip
+  pos: NOUN
+  gloss: alternative; substitute (used in `sa halip na X` = `instead of X`)
+  source: audit-corpus
+
 - citation: hangin
   pos: NOUN
   gloss: wind
