@@ -10,22 +10,22 @@
 
 | Wave | Clean | Total | Rate |
 | --- | ---: | ---: | ---: |
-| Wave 1 — rg81 transcriptions | 31 | 118 | 26.3% |
-| Wave 2 — RC 1990 | 44 | 500 | 8.8% |
-| Wave 2 — Ramos 1971 | 15 | 222 | 6.8% |
-| Wave 2 — R&G Intermediate | 55 | 500 | 11.0% |
+| Wave 1 — rg81 transcriptions | 32 | 118 | 27.1% |
+| Wave 2 — RC 1990 | 45 | 500 | 9.0% |
+| Wave 2 — Ramos 1971 | 16 | 222 | 7.2% |
+| Wave 2 — R&G Intermediate | 56 | 500 | 11.2% |
 | Wave 3 — S&O 1972 | 66 | 500 | 13.2% |
-| Wave 3 — R&G Conversational | 148 | 500 | 29.6% |
-| **Cumulative** | **359** | **2340** | **15.34%** |
+| Wave 3 — R&G Conversational | 152 | 500 | 30.4% |
+| **Cumulative** | **367** | **2340** | **15.68%** |
 
 ## Cumulative bucket distribution
 
 | Bucket | Count | Share |
 | --- | ---: | ---: |
-| zero-parse-fragment | 1582 | 67.6% |
-| zero-parse-no-fragment | 398 | 17.0% |
-| parse-success-1 | 286 | 12.2% |
-| parse-success-N | 73 | 3.1% |
+| zero-parse-fragment | 1579 | 67.5% |
+| zero-parse-no-fragment | 393 | 16.8% |
+| parse-success-1 | 291 | 12.4% |
+| parse-success-N | 76 | 3.2% |
 | tokenizer-fail | 1 | 0.0% |
 
 ## OOV-multiplicity (failed rows by number of real OOVs)
@@ -36,20 +36,20 @@ Real OOV = surface OOV minus harvest-noise tokens
 
 | Real OOVs | Failed rows | Cumulative |
 | --- | ---: | ---: |
-| 0 | 270 | 270 |
-| 1 | 808 | 1078 |
-| 2 | 545 | 1623 |
-| 3 | 234 | 1857 |
-| 4 | 76 | 1933 |
-| 5 | 33 | 1966 |
-| 6 | 5 | 1971 |
-| 7 | 3 | 1974 |
-| 8 | 2 | 1976 |
-| 9 | 2 | 1978 |
-| 10 | 2 | 1980 |
-| 12 | 1 | 1981 |
+| 0 | 275 | 275 |
+| 1 | 799 | 1074 |
+| 2 | 548 | 1622 |
+| 3 | 230 | 1852 |
+| 4 | 73 | 1925 |
+| 5 | 33 | 1958 |
+| 6 | 5 | 1963 |
+| 7 | 3 | 1966 |
+| 8 | 2 | 1968 |
+| 9 | 2 | 1970 |
+| 10 | 2 | 1972 |
+| 12 | 1 | 1973 |
 
-- **No-real-OOV failures:** 270 rows (pure grammar/feat blockers)
+- **No-real-OOV failures:** 275 rows (pure grammar/feat blockers)
 - **Pure-noise OOV** (OOV is 100% harvest noise; extractor cleanup would unblock): 10 rows
 
 ## OOV-yield curve
@@ -58,15 +58,15 @@ If the top-N tokens were registered, how many failed rows become OOV-clear?
 
 | Top-N tokens | OOV-clear rows | % of all rows |
 | ---: | ---: | ---: |
-| 10 | 289 | 12.4% |
-| 30 | 311 | 13.3% |
-| 50 | 336 | 14.4% |
-| 75 | 349 | 14.9% |
-| 100 | 371 | 15.9% |
-| 150 | 423 | 18.1% |
+| 10 | 295 | 12.6% |
+| 30 | 317 | 13.5% |
+| 50 | 342 | 14.6% |
+| 75 | 355 | 15.2% |
+| 100 | 375 | 16.0% |
+| 150 | 431 | 18.4% |
 | 200 | 463 | 19.8% |
-| 300 | 520 | 22.2% |
-| 500 | 708 | 30.3% |
+| 300 | 524 | 22.4% |
+| 500 | 715 | 30.6% |
 
 > OOV-clear ≠ parses cleanly — conservative estimate is
 > ~60-75% of OOV-clear rows actually parse; the rest hit
@@ -77,8 +77,8 @@ If the top-N tokens were registered, how many failed rows become OOV-clear?
 | Length (words) | Passed | Failed | %-fail |
 | --- | ---: | ---: | ---: |
 | 1-3 | 56 | 110 | 66.3% |
-| 4-5 | 229 | 849 | 78.8% |
-| 6-8 | 70 | 772 | 91.7% |
+| 4-5 | 234 | 844 | 78.3% |
+| 6-8 | 73 | 769 | 91.3% |
 | 9-12 | 4 | 221 | 98.2% |
 | 13-20 | 0 | 25 | 100.0% |
 | 21+ | 0 | 4 | 100.0% |
@@ -90,14 +90,14 @@ Multi-attempt counts — each parse attempt that fails with a given kind adds 1.
 | Kind | Count |
 | --- | ---: |
 | constraint-failed | 5064 |
-| existential-failed | 1109 |
-| completeness-failed | 231 |
-| lmt-mismatch | 195 |
-| neg-existential-failed | 135 |
+| existential-failed | 1105 |
+| completeness-failed | 228 |
+| lmt-mismatch | 194 |
+| neg-existential-failed | 134 |
 | atom-mismatch | 78 |
 | coherence-failed | 38 |
 
-## No-OOV failure analysis (270 rows)
+## No-OOV failure analysis (275 rows)
 
 These are the highest-signal targets for construction-class sub-PRs — lex is sufficient but grammar/feat blocks the parse.
 
@@ -105,8 +105,8 @@ These are the highest-signal targets for construction-class sub-PRs — lex is s
 
 | Kind | Count |
 | --- | ---: |
-| constraint-failed | 121 |
-| completeness-failed | 26 |
+| constraint-failed | 123 |
+| completeness-failed | 28 |
 | neg-existential-failed | 20 |
 | existential-failed | 9 |
 | atom-mismatch | 7 |
@@ -119,7 +119,7 @@ These are the highest-signal targets for construction-class sub-PRs — lex is s
 | `(↓1 LEMMA) =c` | 28 |
 | `(↓1 SEM_CLASS) =c` | 19 |
 | `(↓1 APPROX) =c true` | 15 |
-| `(↓1 CLAUSE_TYPE) =c` | 13 |
+| `(↓1 CLAUSE_TYPE) =c` | 14 |
 | `¬ (↓1 WH)` | 10 |
 | `(↑ INTERJ) =c true` | 10 |
 | `(↓2 TIME_FRAME)` | 9 |
@@ -128,7 +128,7 @@ These are the highest-signal targets for construction-class sub-PRs — lex is s
 | `(↓2 SEM_CLASS) =c` | 5 |
 | `(↑ INDEF) =` | 5 |
 | `(↓1 INTERJ) =c true` | 5 |
-| `(↓1 PLURAL_MARKER) =c true` | 4 |
+| `(↓1 PLURAL_MARKER) =c true` | 5 |
 | `(↓2 ADV_TYPE) =c` | 4 |
 | `(↓1 MEASURE) =c true` | 3 |
 | `(↓1 INDEF) =c` | 2 |
