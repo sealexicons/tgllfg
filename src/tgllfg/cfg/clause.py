@@ -657,6 +657,52 @@ def register_rules(rules: list[Rule]) -> None:
         ),
     ))
 
+    # --- Phase 8.O: AV-CAUS-INDIRECT SAY-class reported clause -----
+    #
+    # ``Nagpasabi si Maria na kumain si Juan.``
+    #     "Maria sent word that Juan ate."
+    # ``Nagpasabi si Emmanuel na magdala ka ng mga CDs sa party.``
+    #     "Emmanuel sent word for you to bring CDs to the party."
+    #     (R&C 1990 sent-899 — verbatim with proper-name lex add)
+    # ``Nagpasabi ang boss ko na hindi siya papasok sa trabaho.``
+    #     "My boss sent word that he wouldn't come to work."
+    #     (R&C 1990 sent-909 — verbatim with proper-name lex add)
+    #
+    # Phase 5n.A Commit 26 closed the OV reported-clause variant
+    # (``Sinabi niya na pumunta si Maria.`` — OV-SAY rule above).
+    # The audit-named target for 8.O is the AV-CAUS-INDIRECT form
+    # ``nagpasabi`` — "sent word that / had told". The morph cell
+    # produces V[VOICE=AV, CAUS=INDIRECT, CTRL_CLASS=INTRANS,
+    # SAY_CLASS=true] with PRED template ``SABI <SUBJ, OBJ>`` (the
+    # TR-class [AGENT, THEME] mapping with THEME → OBJ in AV).
+    #
+    # The biclausal control wrap (Phase 4 §7.6
+    # ``V[CTRL_CLASS=INTRANS] NP[CASE=NOM] PART[LINK] S_XCOMP``)
+    # binds the reported clause to XCOMP, but the lex template
+    # expects OBJ — so LMT coherence-fails on the XCOMP / OBJ
+    # mismatch. This rule consumes the reported clause as a bare
+    # S (not S_XCOMP) and binds it to OBJ directly. Mirrors the
+    # Phase 5n.A C26 OV-SAY rule with daughter-index shift (NOM-
+    # NP at ↓2 here vs. GEN-PRON at ↓2 there) and an added
+    # CAUS=INDIRECT gate to keep the rule narrowly applied to the
+    # SAY-class indirect-causative subset.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=AV, CAUS=INDIRECT, SAY_CLASS]",
+            "NP[CASE=NOM]",
+            "PART[LINK=NA]",
+            "S",
+        ],
+        _eqs(
+            "(↑ SUBJ) = ↓2",
+            "(↑ OBJ) = ↓4",
+            "(↓1 SAY_CLASS) =c true",
+            "(↓1 CAUS) =c 'INDIRECT'",
+            "(↓3 LINK) =c 'NA'",
+        ),
+    ))
+
 
     # Phase 5c §8 follow-on (Commit 6): AV transitive frame
     # with two trailing sa-NPs — exercises the multi-OBL
