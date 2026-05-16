@@ -44,6 +44,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "EQUATIVE",
         "EXISTENTIAL",
         "EXTRACTED",
+        "FOCUS_NEG",
         "FRAGMENT_HOST",
         "FREE_REL",
         "GAPPING",
