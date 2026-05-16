@@ -1241,9 +1241,337 @@ def _verb_coverage_check(verbs: list[dict]) -> dict | None:
     }
 
 
+_XWAVE_SOURCES = [
+    ("Wave 1 — rg81 transcriptions", "wave1-parse-results.jsonl"),
+    ("Wave 2 — RC 1990", "wave2-rc1990-parse-results.jsonl"),
+    ("Wave 2 — Ramos 1971", "wave2-ramos1971-parse-results.jsonl"),
+    ("Wave 2 — R&G Intermediate", "wave2-rg-intermediate-parse-results.jsonl"),
+    ("Wave 3 — S&O 1972", "wave3-so1972-parse-results.jsonl"),
+    ("Wave 3 — R&G Conversational", "wave3-rg-conversational-parse-results.jsonl"),
+]
+
+# Harvest-noise OOV tokens (Phase 8/9 — not real OOV; surface from
+# affix-only emissions, glossing-abbreviation tags, and English
+# pedagogical prose).
+_HARVEST_NOISE_OOV = frozenset({
+    "nag", "mag", "of", "af", "the", "is", "or", "to", "i", "and",
+    "example", "question", "sentence", "tag", "ov", "lf", "rv", "iv",
+    "dv", "bv",
+})
+
+
+def _xwave_load_records() -> dict[str, list[dict]]:
+    out: dict[str, list[dict]] = {}
+    for label, fname in _XWAVE_SOURCES:
+        path = EXEMPLARS_DIR / fname
+        if not path.exists():
+            print(f"  (skip {fname}; not found — run 'parse' first)",
+                  file=sys.stderr)
+            out[label] = []
+            continue
+        out[label] = [
+            json.loads(ln) for ln in path.open(encoding="utf-8") if ln.strip()
+        ]
+    return out
+
+
+def _xwave_oov_yield_curve(
+    by_wave: dict[str, list[dict]],
+) -> list[tuple[int, int]]:
+    """Cumulative OOV-clear yield as more tokens are registered."""
+    failed_rows: list[list[str]] = []
+    for recs in by_wave.values():
+        for r in recs:
+            if r.get("bucket", "").startswith("parse-success"):
+                continue
+            toks = [
+                t.lower() for t in (r.get("oov_tokens") or [])
+                if t.lower() not in _HARVEST_NOISE_OOV
+            ]
+            failed_rows.append(toks)
+    freq: Counter[str] = Counter()
+    for toks in failed_rows:
+        for t in toks:
+            freq[t] += 1
+    ranked = [t for t, _c in freq.most_common(500)]
+
+    def yield_at(n: int) -> int:
+        closed = set(ranked[:n])
+        return sum(1 for toks in failed_rows if not toks or all(t in closed for t in toks))
+
+    return [(n, yield_at(n)) for n in (10, 30, 50, 75, 100, 150, 200, 300, 500)]
+
+
+def _xwave_oov_frequency_tsv(
+    by_wave: dict[str, list[dict]],
+    out_path: Path,
+    samples_per_token: int = 3,
+) -> int:
+    """Emit a TSV with: rank, token, count, sample-locator, sample-text."""
+    freq: Counter[str] = Counter()
+    samples: dict[str, list[tuple[str, str]]] = defaultdict(list)
+    for recs in by_wave.values():
+        for r in recs:
+            if r.get("bucket", "").startswith("parse-success"):
+                continue
+            for t in (r.get("oov_tokens") or []):
+                key = t.lower()
+                if key in _HARVEST_NOISE_OOV:
+                    continue
+                freq[key] += 1
+                if len(samples[key]) < samples_per_token:
+                    samples[key].append(
+                        (r.get("locator", ""), r.get("text", ""))
+                    )
+    lines = ["rank\ttoken\tcount\tsample_locator\tsample_text"]
+    for rank, (tok, count) in enumerate(freq.most_common(), 1):
+        sample_locator, sample_text = (samples[tok][0] if samples[tok]
+                                       else ("", ""))
+        sample_text = sample_text.replace("\t", " ").replace("\n", " ")
+        lines.append(
+            f"{rank}\t{tok}\t{count}\t{sample_locator}\t{sample_text}"
+        )
+    out_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return len(freq)
+
+
+def cmd_xwave_report() -> None:
+    """Emit cross-wave audit summary at docs/coverage-audit-2026-05-post-phase8.md."""
+    by_wave = _xwave_load_records()
+    total = sum(len(v) for v in by_wave.values())
+    if total == 0:
+        print("ERROR: no parse-results files found; run 'parse' first",
+              file=sys.stderr)
+        sys.exit(1)
+
+    # Per-wave parse stats
+    rows: list[tuple[str, int, int, float, Counter]] = []
+    cumulative_buckets: Counter[str] = Counter()
+    for label, recs in by_wave.items():
+        b: Counter[str] = Counter(r.get("bucket", "?") for r in recs)
+        n = len(recs)
+        clean = sum(v for k, v in b.items() if k.startswith("parse-success"))
+        rate = (100.0 * clean / n) if n else 0.0
+        rows.append((label, clean, n, rate, b))
+        cumulative_buckets.update(b)
+
+    total_clean = sum(c for _l, c, _n, _r, _b in rows)
+
+    # OOV-multiplicity distribution + yield curve
+    oov_hist: Counter[int] = Counter()
+    no_oov_failures = 0
+    pure_noise_oov = 0
+    for recs in by_wave.values():
+        for r in recs:
+            if r.get("bucket", "").startswith("parse-success"):
+                continue
+            toks = r.get("oov_tokens") or []
+            real = [t for t in toks if t.lower() not in _HARVEST_NOISE_OOV]
+            oov_hist[len(real)] += 1
+            if not real:
+                no_oov_failures += 1
+                if toks:
+                    pure_noise_oov += 1
+    yield_curve = _xwave_oov_yield_curve(by_wave)
+
+    # Sentence-length histogram
+    def _len_bucket(n: int) -> str:
+        if n <= 3:
+            return "1-3"
+        if n <= 5:
+            return "4-5"
+        if n <= 8:
+            return "6-8"
+        if n <= 12:
+            return "9-12"
+        if n <= 20:
+            return "13-20"
+        return "21+"
+
+    len_passed: Counter[str] = Counter()
+    len_failed: Counter[str] = Counter()
+    for recs in by_wave.values():
+        for r in recs:
+            n = len(str(r.get("text", "")).split())
+            b = _len_bucket(n)
+            if r.get("bucket", "").startswith("parse-success"):
+                len_passed[b] += 1
+            else:
+                len_failed[b] += 1
+
+    # No-OOV failure equation frequency
+    no_oov_eqn: Counter[str] = Counter()
+    no_oov_kind: Counter[str] = Counter()
+    for recs in by_wave.values():
+        for r in recs:
+            if r.get("bucket", "").startswith("parse-success"):
+                continue
+            toks = [t.lower() for t in (r.get("oov_tokens") or [])
+                    if t.lower() not in _HARVEST_NOISE_OOV]
+            if toks:
+                continue
+            ds = r.get("diag_summary", "") or ""
+            m = re.search(r"equation=['\"]([^'\"]+)['\"]", ds)
+            if m:
+                no_oov_eqn[m.group(1)] += 1
+            m = re.search(r"kind=['\"](\w[\w-]*)['\"]", ds)
+            if m:
+                no_oov_kind[m.group(1)] += 1
+
+    # Top OOV tokens (real-OOV only)
+    top_oov: Counter[str] = Counter()
+    diag_kinds_all: Counter[str] = Counter()
+    for recs in by_wave.values():
+        for r in recs:
+            if r.get("bucket", "").startswith("parse-success"):
+                continue
+            for t in r.get("oov_tokens") or []:
+                if t.lower() in _HARVEST_NOISE_OOV:
+                    continue
+                top_oov[t.lower()] += 1
+            for k, v in (r.get("diag_kinds") or {}).items():
+                diag_kinds_all[k] += v
+
+    # Emit TSV artifact
+    tsv_path = EXEMPLARS_DIR / "oov-frequency.tsv"
+    tsv_n = _xwave_oov_frequency_tsv(by_wave, tsv_path)
+    print(f"  → {tsv_path.relative_to(REPO_ROOT)} ({tsv_n} unique tokens)")
+
+    # Build the markdown doc
+    out: list[str] = []
+    out.append("# Coverage audit — cross-wave snapshot (post-Phase-8)")
+    out.append("")
+    out.append("> **Status:** Cross-wave audit snapshot generated by")
+    out.append("> `scripts/harvest_exemplars.py xwave-report`. Phase 9")
+    out.append("> baseline for the ≥80% target.")
+    out.append("")
+    out.append("## Per-wave parse rate")
+    out.append("")
+    out.append("| Wave | Clean | Total | Rate |")
+    out.append("| --- | ---: | ---: | ---: |")
+    for label, clean, n, rate, _b in rows:
+        out.append(f"| {label} | {clean} | {n} | {rate:.1f}% |")
+    out.append(f"| **Cumulative** | **{total_clean}** | **{total}** | "
+               f"**{100.0 * total_clean / total:.2f}%** |")
+    out.append("")
+    out.append("## Cumulative bucket distribution")
+    out.append("")
+    out.append("| Bucket | Count | Share |")
+    out.append("| --- | ---: | ---: |")
+    for b, c in sorted(cumulative_buckets.items(), key=lambda kv: -kv[1]):
+        out.append(f"| {b} | {c} | {100.0 * c / total:.1f}% |")
+    out.append("")
+    out.append("## OOV-multiplicity (failed rows by number of real OOVs)")
+    out.append("")
+    out.append("Real OOV = surface OOV minus harvest-noise tokens")
+    out.append(f"({len(_HARVEST_NOISE_OOV)} known noise tokens — `nag`,")
+    out.append("`mag`, `af`, `of`, English/glossing fragments, etc.).")
+    out.append("")
+    out.append("| Real OOVs | Failed rows | Cumulative |")
+    out.append("| --- | ---: | ---: |")
+    cumsum = 0
+    for k in sorted(oov_hist.keys()):
+        cumsum += oov_hist[k]
+        out.append(f"| {k} | {oov_hist[k]} | {cumsum} |")
+    out.append("")
+    out.append(f"- **No-real-OOV failures:** {no_oov_failures} rows "
+               f"(pure grammar/feat blockers)")
+    out.append(f"- **Pure-noise OOV** "
+               "(OOV is 100% harvest noise; extractor cleanup would "
+               f"unblock): {pure_noise_oov} rows")
+    out.append("")
+    out.append("## OOV-yield curve")
+    out.append("")
+    out.append("If the top-N tokens were registered, how many failed "
+               "rows become OOV-clear?")
+    out.append("")
+    out.append("| Top-N tokens | OOV-clear rows | % of all rows |")
+    out.append("| ---: | ---: | ---: |")
+    for n, y in yield_curve:
+        out.append(f"| {n} | {y} | {100.0 * y / total:.1f}% |")
+    out.append("")
+    out.append("> OOV-clear ≠ parses cleanly — conservative estimate is")
+    out.append("> ~60-75% of OOV-clear rows actually parse; the rest hit")
+    out.append("> grammar/feat gaps after lex resolves.")
+    out.append("")
+    out.append("## Sentence-length distribution")
+    out.append("")
+    out.append("| Length (words) | Passed | Failed | %-fail |")
+    out.append("| --- | ---: | ---: | ---: |")
+    for k in ("1-3", "4-5", "6-8", "9-12", "13-20", "21+"):
+        p = len_passed.get(k, 0)
+        f = len_failed.get(k, 0)
+        tot = p + f
+        fpct = (100.0 * f / tot) if tot else 0.0
+        out.append(f"| {k} | {p} | {f} | {fpct:.1f}% |")
+    out.append("")
+    out.append("## Diagnostic-kind distribution (zero-parse rows)")
+    out.append("")
+    out.append("Multi-attempt counts — each parse attempt that fails "
+               "with a given kind adds 1.")
+    out.append("")
+    out.append("| Kind | Count |")
+    out.append("| --- | ---: |")
+    for k, c in sorted(diag_kinds_all.items(), key=lambda kv: -kv[1]):
+        out.append(f"| {k} | {c} |")
+    out.append("")
+    out.append("## No-OOV failure analysis "
+               f"({no_oov_failures} rows)")
+    out.append("")
+    out.append("These are the highest-signal targets for "
+               "construction-class sub-PRs — lex is sufficient but "
+               "grammar/feat blocks the parse.")
+    out.append("")
+    out.append("### First-diag kind frequency")
+    out.append("")
+    out.append("| Kind | Count |")
+    out.append("| --- | ---: |")
+    for k, c in sorted(no_oov_kind.items(), key=lambda kv: -kv[1]):
+        out.append(f"| {k} | {c} |")
+    out.append("")
+    out.append("### Top failing equations (top 20)")
+    out.append("")
+    out.append("| Equation | Count |")
+    out.append("| --- | ---: |")
+    for eqn, c in no_oov_eqn.most_common(20):
+        safe = eqn.replace("|", "\\|").strip()
+        if not safe:
+            safe = "(empty)"
+        out.append(f"| `{safe}` | {c} |")
+    out.append("")
+    out.append("## Top OOV tokens (real-OOV, top 50)")
+    out.append("")
+    out.append("Full ranking in `data/tgl/exemplars/oov-frequency.tsv`. "
+               "Sample sentence locators included there for each token.")
+    out.append("")
+    out.append("| Rank | Token | Count |")
+    out.append("| ---: | --- | ---: |")
+    for rank, (tok, c) in enumerate(top_oov.most_common(50), 1):
+        out.append(f"| {rank} | `{tok}` | {c} |")
+    out.append("")
+    out.append("## References")
+    out.append("")
+    out.append("- Phase 9 plan-of-record: "
+               "`.claude/plans/tgllfg-phase-9.md` (Phase 9 strategy "
+               "and sub-PR ledger).")
+    out.append("- Phase 8 cumulative summary: "
+               "`docs/analysis-choices.md` § \"Phase 8 cumulative "
+               "summary\" (closing context).")
+    out.append("- Wave 1 audit snapshot (historical, 2026-05-14): "
+               "`docs/coverage-audit-2026-05.md`.")
+    out.append("")
+
+    out_path = REPO_ROOT / "docs" / "coverage-audit-2026-05-post-phase8.md"
+    out_path.write_text("\n".join(out), encoding="utf-8")
+    print(f"  → {out_path.relative_to(REPO_ROOT)}")
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("stage", choices=["extract", "parse", "report", "all"])
+    p.add_argument(
+        "stage",
+        choices=["extract", "parse", "report", "xwave-report", "all"],
+    )
     args = p.parse_args(argv)
 
     if args.stage in ("extract", "all"):
@@ -1255,6 +1583,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.stage in ("report", "all"):
         print("[report]")
         cmd_report()
+    if args.stage in ("xwave-report", "all"):
+        print("[xwave-report]")
+        cmd_xwave_report()
     return 0
 
 
