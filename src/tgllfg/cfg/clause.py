@@ -704,6 +704,21 @@ def register_rules(rules: list[Rule]) -> None:
             # daughter ADJs without INTENS leave the matrix INTENS
             # undefined (no-op via unification semantics).
             "(↑ INTENS) = ↓1 INTENS",
+            # Phase 8.L Commit 1: parallel lift of DISTRIB so the
+            # ``magkasing-`` distributive-equative reading is
+            # visible at clause level (consumers reading off
+            # DISTRIB can branch on plural-subject licensing).
+            # Daughter ADJs without DISTRIB leave matrix DISTRIB
+            # undefined (no-op via unification semantics).
+            "(↑ DISTRIB) = ↓1 DISTRIB",
+            # Phase 8.L Commit 3: parallel lift of KASING_N for
+            # the NOUN-derived ``kasing-`` equative cell
+            # (paradigms.yaml ``kasing_n_eq``). Marks the surface
+            # as originating from a NOUN base so downstream
+            # consumers can distinguish ADJ-derived vs NOUN-
+            # derived equatives. No-op when daughter lacks the
+            # feat.
+            "(↑ KASING_N) = ↓1 KASING_N",
         ],
     ))
 
@@ -1191,6 +1206,9 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PREDICATIVE) = true",
             "(↓1 PREDICATIVE) =c true",
             "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
+            "(↑ INTENS) = ↓1 INTENS",
+            "(↑ DISTRIB) = ↓1 DISTRIB",
+            "(↑ KASING_N) = ↓1 KASING_N",
             "↓3 ∈ (↑ ADJUNCT)",
             "(↓3 ROLE) = 'EQUATIVE_STANDARD'",
         ],
@@ -1212,6 +1230,9 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PREDICATIVE) = true",
             "(↓1 PREDICATIVE) =c true",
             "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
+            "(↑ INTENS) = ↓1 INTENS",
+            "(↑ DISTRIB) = ↓1 DISTRIB",
+            "(↑ KASING_N) = ↓1 KASING_N",
             "↓2 ∈ (↑ ADJUNCT)",
             "(↓2 ROLE) = 'EQUATIVE_STANDARD'",
         ],
@@ -1235,6 +1256,9 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PREDICATIVE) = true",
             "(↓1 PREDICATIVE) =c true",
             "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
+            "(↑ INTENS) = ↓1 INTENS",
+            "(↑ DISTRIB) = ↓1 DISTRIB",
+            "(↑ KASING_N) = ↓1 KASING_N",
             "↓3 ∈ (↑ ADJUNCT)",
             "(↓3 ROLE) = 'EQUATIVE_STANDARD'",
         ],
@@ -1275,6 +1299,53 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PREDICATIVE) = true",
             "(↓1 PREDICATIVE) =c true",
             "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
+            "(↑ INTENS) = ↓1 INTENS",
+            "(↑ DISTRIB) = ↓1 DISTRIB",
+            "(↑ KASING_N) = ↓1 KASING_N",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 ROLE) = 'EQUATIVE_STANDARD'",
+        ],
+    ))
+
+    # --- Phase 8.L Commit 4: subject-pro-drop equative + GEN-standard ----
+    #
+    # ``Kasing-edad pala ni Nadette.``
+    #     "(She's) the same age, no less, as Nadette."
+    #     (Wave 2/3 audit hit — R&G Intermediate page 238)
+    # ``Kasingganda ni Maria.``
+    #     "(Someone is) as beautiful as Maria."
+    #
+    # Tagalog routinely drops the NOM subject when contextually
+    # clear; the equative + GEN-standard frame admits this directly.
+    # The PRED still takes ``<SUBJ>`` (so LMT's PRED-arg accounting
+    # is satisfied) but SUBJ is realized as a synthesised ``PRED:
+    # 'PRO'`` matching the convention used by ``cfg/extraction.py``
+    # free-relative wrap (Phase 6.E) and ``cfg/nominal.py`` for
+    # standalone-DEM (Phase 5n.B.6).
+    #
+    # The rule mirrors the GEN-standard equative rule above with
+    # SUBJ pro-dropped. It carries the same ``INTENS / DISTRIB /
+    # KASING_N`` lifts so the NOUN-base ``kasing_n_eq`` cell (Phase
+    # 8.L Commit 3) surfaces the equative-attribute construction
+    # correctly. The audit-canonical surface is the hyphen-joined
+    # ``Kasing-edad`` (handled by the left-flanker carve-out in
+    # ``split_linker_ng`` — Phase 8.L Commit 4 multiword fix).
+    rules.append(Rule(
+        "S",
+        [
+            "ADJ[COMP_DEGREE=EQUATIVE]",
+            "NP[CASE=GEN]",
+        ],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+            "(↓1 COMP_DEGREE) =c 'EQUATIVE'",
+            "(↑ INTENS) = ↓1 INTENS",
+            "(↑ DISTRIB) = ↓1 DISTRIB",
+            "(↑ KASING_N) = ↓1 KASING_N",
             "↓2 ∈ (↑ ADJUNCT)",
             "(↓2 ROLE) = 'EQUATIVE_STANDARD'",
         ],
