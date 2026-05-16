@@ -16928,3 +16928,142 @@ because:
 
 `hatch run test-both`: 7608 passed in 74.33s (was 7590;
 +18 new tests).
+
+## Phase 8.R: `alas` clock-time construction
+
+Closes the audit-named Spanish-loan clock-time construction
+(`alas singko` "5 o'clock", `alas dose` "12 o'clock"). 30 corpus
+candidates surveyed; 8 close directly with the 8.R changes (27%
+closure rate).
+
+### Lex additions
+
+- `data/tgl/particles.yaml`: new PART `alas` with
+  `CLOCK_MARKER=true, LEMMA=alas`. New `CLOCK_MARKER` binary feat
+  added to `BINARY_FEATS` registry (52 → 53 entries) +
+  `docs/feats-binary-audit.md` updated.
+- `data/tgl/particles.yaml`: new NUM entries `onse` (11) and
+  `dose` (12). These Spanish-loan numerals are used ONLY in
+  clock-time expressions — productive Tagalog numerals
+  (`labing-isa` / `labindalawa`) cover non-clock contexts. The
+  other Spanish numerals 1-10 (`uno`/`dos`/`tres`/`kuwatro`/
+  `singko`/`sais`/`siyete`/`otso`/`nuwebe`/`dies`) were already
+  registered in Phase 5f Commit 2 (with `uno` carrying NUM=SG and
+  the rest NUM=PL).
+- `data/tgl/particles.yaml`: new PUNCT entry for `-` with
+  `PUNCT_CLASS=HYPHEN`. The `-` character is Unicode HYPHEN-MINUS
+  (U+002D), polysemous between arithmetic minus and orthographic
+  hyphen. The existing `PART[OP=MINUS]` reading (used in symbolic
+  arithmetic `5 - 3`) is retained; the new `PUNCT[PUNCT_CLASS=
+  HYPHEN]` reading (parallel to the existing `PUNCT[PUNCT_CLASS=
+  COMMA]` for `,`) handles the compound-joining hyphen in
+  `Alas-tres`. The chart picks the reading by rule context.
+
+### CFG additions
+
+Two new rules in `cfg/nominal.py`:
+
+```text
+N → PART[CLOCK_MARKER=true] NUM[CARDINAL]                     (space)
+N → PART[CLOCK_MARKER=true] PUNCT[PUNCT_CLASS=HYPHEN] NUM[CARDINAL]
+                                                              (hyphen)
+```
+
+Both emit `N[SEM_CLASS=TIME, TIME_VALUE=X, LEMMA=alas]`. The
+hyphen variant accommodates the R&C 1990 orthographic convention
+(`Alas-tres na pala.`). It consumes the new `PUNCT[PUNCT_CLASS=
+HYPHEN]` reading of `-` (added in the lex section above),
+distinct from the arithmetic `PART[OP=MINUS]` reading — no
+spurious-ambiguity with arithmetic because the two readings
+sit in different POS slots and the chart resolves by rule
+context.
+
+The output `N[SEM_CLASS=TIME]` feeds the existing infrastructure:
+
+- Phase 5f Commit 12 minute-composition: `alas siyete y medya`
+  / `alas otso menos singko`.
+- Phase 5f Commit 14 `mga`-approximation: `mga alas singko`.
+- Standard NP-wrapping: `sa alas singko` / `ng alas onse`.
+
+### Impersonal time predication rule
+
+One new rule in `cfg/clause.py`:
+
+```text
+S → N[SEM_CLASS=TIME]
+   (↑ PRED) = 'BE-TIME'
+   (↑ TIME_VALUE) = ↓1 TIME_VALUE
+   (↑ PREDICATIVE) = true
+   (↓1 SEM_CLASS) =c 'TIME'
+```
+
+Distinct from the Phase 5n.B Commit 2 N-pivot rule (`S → N
+NP[CASE=NOM]`) which requires a NOM-NP/NOM-PRON pivot. Clock-time
+predications are impersonal — `Alas singko.` "It's 5 o'clock"
+has no surface SUBJ. The `=c` gate on SEM_CLASS=TIME prevents
+spurious-ambiguity with other bare-N surfaces.
+
+### Phase 5f relationship: fused-form NOUN entries
+
+Phase 5f Commit 10 registered fused single-word NOUN entries
+`alauna` (1 o'clock — note the irregular ala+una, not alas-uno,
+following the standard Spanish-loan idiom) / `alasdos` /
+`alastres` / `alaskuwatro` / `alassingko` / `alassais` /
+`alassiyete` / `alasotso` / `alasnuwebe` / `alasdies` /
+`alasonse` / `alasdose` in `data/tgl/nouns.yaml` with
+`SEM_CLASS=TIME, TIME_VALUE=X`. 8.R adds the compositional split-
+form path because the audit corpus uses split spellings (`alas
+singko` / `alas-tres`) rather than fused forms. Both paths
+coexist — the chart selects whichever matches the tokenization.
+
+### Audit closures
+
+Direct corpus closures (8 of 30 = 27%):
+
+- `ng alas X` PP shape (3 sentences):
+  `Naglalaro ako ng alas singko.`,
+  `Natutulog ako ng alas onse.`,
+  `Gumigising ako ng alas sais.`.
+- `sa alas X` PP shape (4 sentences):
+  `Ano ang ginagawa nila sa alas sais ng umaga?`,
+  `Ano ang ginagawa nila sa alas siyete ng hapon?`,
+  `Ano ang ginagawa nila sa alas sais y medya?`,
+  `Ano ang ginagawa nila sa alas onse?`.
+- `pa lang` cluster (1 sentence):
+  `Oo nga, alas singko pa lang madilim na.`.
+
+Remaining 22 are blocked by orthogonal issues:
+
+- OOV verbs (`pasok`, `nagluto`, `naghahapunan`, `nagsimba`,
+  `nag-aalmusal`, `tipan`, etc.) — future 8.B-class lex pass.
+- OOV nouns (`Santos`, `eskuwela`, `kapeterya`, `regalo`,
+  `Marfa`) — future lex pass.
+- OCR junk (`rnga` instead of `mga`, `s1yete` instead of
+  `siyete`, `Marfa` instead of `Maria`).
+- `na`-2P-clitic chart issue: `Alas singko na ba?` × 7 fail
+  because the `na` ALREADY 2P clitic doesn't absorb on
+  impersonal-S. Pre-existing chart issue — also affects Q-pred
+  with DEM-pivot (`Marami ito na.`), so NOT 8.R-specific.
+- S&O 1972 colloquial `nang` as case-marker for time NPs
+  (`nang alas otso` × 4) — orthogonal to the Phase 5l/8.M
+  subordinator `nang` registration.
+
+### Test plan
+
+32 new tests in `tests/tgllfg/test_phase8r_alas_clock_time.py`:
+
+- 10 N composition tests (7 space variants across the Spanish
+  numerals 3 / 5 / 6 / 7 / 8 / 11 / 12; 3 hyphen variants across
+  3 / 5 / 12)
+- 5 impersonal-S with 2P clitics (`ba` / `pa` / `daw` /
+  `pa lang`)
+- 6 ng-PP / sa-PP shape closures (corpus direct)
+- 3 minute-composition (Phase 5f C12 integration — `y medya`,
+  `y singko`-equivalent, `menos singko`)
+- 1 mga-approximation (Phase 5f C14 integration)
+- 4 regressions on pre-8.R parses
+- 3 out-of-scope pins (na-clitic chart issue, OOV-blocked
+  audit target, nang-alas colloquial time marker)
+
+`hatch run test-both`: 7640 passed in 68.67s (was 7608;
++32 new tests).
