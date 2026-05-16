@@ -172,20 +172,22 @@ class TestPhase8nSentencesParseable:
         )
 
 
-class TestPhase8nOutOfScope:
-    """Pin the out-of-scope cases so a future construction-class
-    sub-PR flipping them to parsing is a visible signal."""
+class TestPhase8nClosedIn8o:
+    """The Phase 8.N out-of-scope pin
+    ``Nagpasabi si Gina na uuwi siya.`` (SAY-class
+    causative-of-saying + finite-clause subord) was closed by
+    Phase 8.O (PR #TBD) — both the `gina` proper-name lex add
+    (Phase 8.O) and the new AV-CAUS-INDIRECT SAY-class
+    reported-clause rule are now in place. Flipped from
+    assert-zero to positive-parse assertion per the
+    anti-deferral pin-flip discipline."""
 
     @pytest.mark.parametrize("sentence", [
         "Nagpasabi si Gina na uuwi siya.",
     ])
-    def test_construction_gap_still_zero(self, sentence: str) -> None:
+    def test_say_class_causative_now_parses(self, sentence: str) -> None:
         from tgllfg.core.pipeline import parse_text
-        parses = parse_text(sentence, n_best=1)
-        # When this flips (a future construction sub-PR adds the
-        # rule), update or delete this pin — the failure is a
-        # success signal.
-        assert len(parses) == 0, (
-            f"unexpectedly parsed {sentence!r} — likely a "
-            f"construction sub-PR has shipped; update this pin"
+        parses = parse_text(sentence, n_best=2)
+        assert len(parses) >= 1, (
+            f"{sentence!r} no longer parses — 8.O closure regressed"
         )
