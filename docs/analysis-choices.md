@@ -17167,3 +17167,126 @@ close via a separate lex pass:
 
 `hatch run test-both`: 7656 passed in 76.57s (was 7640; +16
 new tests).
+
+## Phase 8.L: the `kasing-` family — magkasing- / magkakasing- / kasing-NOUN + subject pro-drop
+
+Closes the Wave 2 + Wave 3 audit-named cluster of comparative-
+equative constructions that share the `kasing-` prefix family.
+Phase 5h Commit 2 wired the bare ADJ-base `kasing-` cell
+(`kasingganda`); Phase 5n.C.3 Commit 8 wired the L38 CV-redup
+archaic form (`kasinggaganda`). Phase 8.L closes the four
+remaining family members surfaced by the harvest:
+
+- **`magkasing-`** distributive equative
+  (`Magkasingtaas sina Maria at Ana.` — "Maria and Ana are
+  the same height"). Plural-subject counterpart of `kasing-`.
+- **`magkakasing-`** intensive distributive — 3+-comparee
+  form (S&O 1972 page 249: `magkakasingbuti`). Surface CV-
+  reduplication is internal to the prefix (`ka` → `kaka`),
+  not the root, so the cell carries a single complex prefix.
+- **`kasing-NOUN`** equative — `kasing-edad` "of the same
+  age". A NOUN→ADJ derivation that lets measurement-attribute
+  nouns enter the equative frame (audit-canonical
+  orthography is hyphen-joined).
+- **Subject-pro-drop equative + GEN-standard** — Tagalog
+  routinely drops the NOM comparee when contextually clear
+  (`Kasing-edad pala ni Nadette.` "(She's) the same age, no
+  less, as Nadette" — R&G Intermediate page 238).
+
+### Paradigm and feat additions
+
+| Cell | Where | Surface | Feats |
+| ---- | ----- | ------- | ----- |
+| `magkasing-` (ADJ→ADJ) | `adj_paradigms.yaml` | `magkasingX` | `COMP_DEGREE=EQUATIVE, DISTRIB=true` |
+| `magkakasing-` (ADJ→ADJ) | `adj_paradigms.yaml` | `magkakasingX` | `EQUATIVE, DISTRIB=true, INTENS=STRONG` |
+| `kasing_n_eq` (NOUN→ADJ) | `paradigms.yaml` | `kasingN` | `COMP_DEGREE=EQUATIVE, PREDICATIVE=true, KASING_N=true` |
+
+The new binary feat `KASING_N` (BINARY_FEATS 53→54) marks
+NOUN-derived equatives so downstream consumers can distinguish
+them from the ADJ-base variant. `INTENS=STRONG` extends the
+existing `INTENS` enum (previously only `MILD` from Phase
+5n.C.3 §18 L37 `redup_intens_adj`).
+
+### Predicative-ADJ rule extensions
+
+`cfg/clause.py` predicative-ADJ rule + the four equative two-NP
+rules (NOM+GEN, GEN+NOM, NOM+NOM, DAT+NOM) gain three additive
+lift equations:
+
+```text
+(↑ INTENS)    = ↓1 INTENS
+(↑ DISTRIB)   = ↓1 DISTRIB
+(↑ KASING_N)  = ↓1 KASING_N
+```
+
+These propagate the new cell's feats from the ADJ daughter up
+to the matrix S, paralleling the Phase 5n.C.3 Commit 7 INTENS
+lift (§18 L37). Daughter ADJs without the feat leave the matrix
+slot with an empty FStructure (standard unifier no-op for
+undefined feats) — the contract is "matrix.X is True iff the
+daughter explicitly carries X=true".
+
+### Subject-pro-drop equative + GEN-standard frame
+
+New rule in `cfg/clause.py`:
+
+```text
+S → ADJ[COMP_DEGREE=EQUATIVE]  NP[CASE=GEN]
+  (↑ PRED)       = 'ADJ <SUBJ>'
+  (↑ SUBJ PRED)  = 'PRO'           ← synthesised null SUBJ
+  (↑ ADJ_LEMMA)  = ↓1 LEMMA
+  (↑ INTENS/DISTRIB/KASING_N) = ↓1 ...
+  ↓2 ∈ (↑ ADJUNCT)
+  (↓2 ROLE)      = 'EQUATIVE_STANDARD'
+```
+
+`PRED='PRO'` for the synthesised null SUBJ matches the
+convention in `cfg/extraction.py` (Phase 6.E free-relative
+wrap) and `cfg/nominal.py` (Phase 5n.B.6 standalone-DEM).
+LMT's PRED-arg accounting is satisfied because SUBJ is bound
+by the PRO sentinel.
+
+### Multiword pre-pass left-flanker carve-out
+
+The Phase 4 §7.5 `-ng` linker splitter eagerly peels `-ng` off
+vowel+ng-final hosts. For `Kasing-edad si Maria.` that shaves
+`Kasing` into `Kasi` + `-ng`, blocking the canonical hyphen-
+merge into `kasingedad`. The Phase 8.L Commit 4 carve-out in
+`src/tgllfg/text/clitics.py:split_linker_ng` adds a lookahead:
+when a vowel+ng-final token is immediately followed by `-` +
+alphabetic AND the literal join is a known surface, defer to
+`merge_hyphen_compounds` rather than splitting. The right-
+flanker case (`kani-kaniyang`) is unaffected — the right
+flanker has no `-` after it to trigger the lookahead.
+
+### Lex additions (3 ADJ + 7 NOUN)
+
+- `data/tgl/adjectives.yaml` — `bagsik` (fierce), `buti`
+  (goodness — virtue), `payat` (skinny/thin) — all `ma_adj`-
+  classed. ma_adj inventory: 41 → 44.
+- `data/tgl/nouns.yaml` — `edad` (age; `affix_class:
+  [kasing_n_eq]`), `grado` (grade — academic; Spanish loan),
+  `mary` / `john` / `karla` / `frank` / `nadette` (Western
+  proper names; audit-corpus citations in the gloss).
+
+### Tests + audit closures
+
+Five new test modules (65 tests):
+
+- `test_phase8l_magkasing_distrib.py` (14) — `magkasing-` cell
+  with DISTRIB lift
+- `test_phase8l_magkakasing_intens.py` (11) — `magkakasing-`
+  cell with INTENS=STRONG
+- `test_phase8l_kasing_noun_eq.py` (8) — `kasing_n_eq` cell
+  and KASING_N feat
+- `test_phase8l_kasing_hyphen_n.py` (11) — hyphen-merge
+  carve-out and subject-pro-drop equative
+- `test_phase8l_audit_closures.py` (19) — direct audit-hit
+  parses, lex-add coverage, proper-name parametrize
+
+Direct audit closures: 3 verbatim hits, 1 OCR-normalised hit,
+and further lex-unblocks (5 sentences using the new ADJ/NOUN
+and proper-name lex).
+
+`hatch run test-both`: 7719 passed in 80.25s (was 7656; +63
+new tests).

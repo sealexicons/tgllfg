@@ -1123,6 +1123,38 @@
   feats: {COMP_DEGREE: SUPERLATIVE, PREDICATIVE: true}
   notes: "pinaka_adj_from_n — NOUN→ADJ superlative: puno (n. head) → pinakapuno (adj. principal/most important)"
 
+# --- Phase 8.L Commit 3: kasing_n_eq (NOUN→ADJ equative) ----------------
+# The ``kasing-`` prefix on a measurement-attribute NOUN produces
+# an ADJ-shaped surface asserting equal-N-ness between two
+# entities: ``kasing-edad`` "of the same age", ``kasing-bigat``
+# "of the same weight", ``kasing-tangkad`` "of the same height
+# (body)". The orthography is variable — solid (``kasingedad``),
+# hyphen-joined (``kasing-edad``), or even space-separated
+# (``kasing edad``) in less formal registers. Wave 2/3 audit hit
+# (R&G Intermediate page 238 — ``Kasing-edad pala ni Nadette.``
+# "She's the same age, no less, as Nadette") uses the hyphen
+# form; this cell handles the solid form, and Phase 8.L Commit 4
+# adds the hyphen-joined c-structure rule.
+#
+# Companion to the Phase 5h Commit 2 ADJ-base ``kasing-`` cell:
+# both produce ADJ surfaces with ``COMP_DEGREE: EQUATIVE`` and
+# ``PREDICATIVE: true``, so the existing predicative-ADJ clause
+# rule and the two-NP equative frame rules (also Phase 5h C2)
+# consume the surface unchanged.
+#
+# Feats: ``COMP_DEGREE: EQUATIVE`` (drives the existing equative
+# grammar) + ``PREDICATIVE: true`` (drives the predicative-ADJ
+# rule) + ``KASING_N: true`` (declarative marker — the surface
+# originates from a NOUN base, in case downstream consumers need
+# to distinguish ADJ-derived vs NOUN-derived equatives).
+- base_pos: NOUN
+  pos: ADJ
+  affix_class: kasing_n_eq
+  operations:
+    - {op: prefix, value: "kasing"}
+  feats: {COMP_DEGREE: EQUATIVE, PREDICATIVE: true, KASING_N: true}
+  notes: "kasing_n_eq — NOUN→ADJ equative: edad → kasingedad, bigat → kasingbigat"
+
 # --- Phase 5n.C.3 Commit 5: kani_redup (§18 L31) ------------------------
 # Distributive-possessive redup on 3rd-person DAT pronouns —
 # productive replacement for the Phase 5f Commit 21 hand-coded

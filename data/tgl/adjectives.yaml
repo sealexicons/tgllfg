@@ -46,6 +46,11 @@
   gloss: new (homophonous with the temporal subordinator "before" in particles.yaml; the ADJ sense is the audit-cited usage in "Bagong ani ang palay")
   affix_class: []
 
+- citation: bagsik
+  pos: ADJ
+  gloss: fierce, severe
+  affix_class: [ma_adj]
+
 - citation: bait
   pos: ADJ
   gloss: kind, well-behaved
@@ -69,6 +74,11 @@
 - citation: bulag
   pos: ADJ
   gloss: blind
+  affix_class: [ma_adj]
+
+- citation: buti
+  pos: ADJ
+  gloss: goodness, virtue (also NOUN-sense; the ADJ reading underlies the equative `magkakasingbuti` "equally good in grade")
   affix_class: [ma_adj]
 
 - citation: dali
@@ -203,6 +213,11 @@
   gloss: same, alike (equative-identity predicate)
   affix_class: []
   feats: {EQUATIVE: true, COMP_DEGREE: EQUATIVE}
+
+- citation: payat
+  pos: ADJ
+  gloss: skinny, thin (body)
+  affix_class: [ma_adj]
 
 - citation: sarap
   pos: ADJ
