@@ -27,7 +27,7 @@ inspection: comment text containing capitalized words followed by
 `# wh-Q polysemy ...` comment), and prefix-matching artifacts
 (`RESULT` matched a value `result` from prose) are dropped.
 
-## The 52 binary feats — migration targets
+## The 53 binary feats — migration targets
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
 Python `True`/`False`. Grammar rule patterns use the `[X]` shorthand
@@ -40,6 +40,7 @@ negative.
 | `ASK_CLASS` | verb is in the "ask"-class for indirect Q complementizer |
 | `CARDINAL` | NUM is a cardinal numeral |
 | `CF` | clause is counterfactual (subj of `sakali` / `kahit pa`) |
+| `CLOCK_MARKER` | PART is the clock-time hour marker (`alas`) |
 | `COMPARATIVE` | ADJ is comparative-marked (`mas`) |
 | `CORREL` | particle is correlative (`pa` / `pa-rin` paired use) |
 | `COUNTERFACTUAL` | post-pass conditional inference |

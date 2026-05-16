@@ -1468,6 +1468,68 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 8.R: clock-time hour construction (`alas` + Spanish-NUM)
+    #
+    # ``alas singko`` "5 o'clock", ``alas dose`` "12 o'clock". The
+    # Spanish-loan PART ``alas`` (lex'd in particles.yaml with
+    # ``CLOCK_MARKER=true``) combines with a Spanish cardinal numeral
+    # to form an N[SEM_CLASS=TIME] suitable as a temporal NP head.
+    #
+    # Two rule variants accommodate both attested spellings:
+    #   (a) space-separated: ``alas singko``
+    #   (b) hyphenated:      ``alas-singko`` / ``alas-tres``
+    #
+    # The hyphenated variant consumes the orthographic hyphen
+    # PUNCT[PUNCT_CLASS=HYPHEN] entry registered in particles.yaml
+    # (parallel to PUNCT[PUNCT_CLASS=COMMA] for the comma). The
+    # ``-`` token (Unicode HYPHEN-MINUS, U+002D) is polysemous —
+    # the lex has two readings: PART[OP=MINUS] for arithmetic and
+    # PUNCT[PUNCT_CLASS=HYPHEN] for compound-joining. The chart
+    # picks by rule context; arithmetic ``5 - 3`` consumes the PART
+    # reading via NUM-bracketed paths, and ``Alas-tres`` consumes
+    # the PUNCT reading via this rule.
+    #
+    # Output feeds the Phase 5f Commit 12 minute-composition rules
+    # (``alas otso y medya``), the Phase 5f Commit 14 ``mga``
+    # approximation rule (``mga alas otso``), the standard NP wrappers
+    # (``sa alas singko``, ``ng alas sais``), and bare-N predication
+    # (``Alas singko.``) via the Phase 8.R impersonal-S rule.
+    #
+    # F-structure shape:
+    #   SEM_CLASS  = 'TIME'
+    #   TIME_VALUE = the Spanish numeral's CARDINAL_VALUE
+    #   LEMMA      = 'alas' (carries through for downstream
+    #                identification; the canonical surface form is
+    #                the multi-token compound)
+    rules.append(Rule(
+        "N",
+        ["PART[CLOCK_MARKER=true]", "NUM[CARDINAL]"],
+        [
+            "(↑ SEM_CLASS) = 'TIME'",
+            "(↑ TIME_VALUE) = ↓2 CARDINAL_VALUE",
+            "(↑ LEMMA) = ↓1 LEMMA",
+            "(↓1 CLOCK_MARKER) =c true",
+            "(↓2 CARDINAL) =c true",
+        ],
+    ))
+    rules.append(Rule(
+        "N",
+        [
+            "PART[CLOCK_MARKER=true]",
+            "PUNCT[PUNCT_CLASS=HYPHEN]",
+            "NUM[CARDINAL]",
+        ],
+        [
+            "(↑ SEM_CLASS) = 'TIME'",
+            "(↑ TIME_VALUE) = ↓3 CARDINAL_VALUE",
+            "(↑ LEMMA) = ↓1 LEMMA",
+            "(↓1 CLOCK_MARKER) =c true",
+            "(↓2 PUNCT_CLASS) =c 'HYPHEN'",
+            "(↓3 CARDINAL) =c true",
+        ],
+    ))
+
+
     # --- Phase 5f Commit 12: minute composition (Group E item 4)
     #
     # ``alasotso y singko`` "8:05" (cardinal minutes added),

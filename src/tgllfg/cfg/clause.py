@@ -863,6 +863,51 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 8.R: impersonal clock-time predication --------------
+    #
+    # ``Alas singko ngayon.``           "It's 5 o'clock now."
+    # ``Alas tres pa lang.``            "It's only 3 o'clock."
+    # ``Alas singko ba?``               "Is it 5 o'clock?"
+    #
+    # Clock-time predications are impersonal — no SUBJ on the
+    # surface. Distinct from Phase 5n.B C2 (``Doktor ako.`` — N-pred
+    # + NOM-pivot) and Phase 8.X C1 (``Ito ang aklat.`` — DEM-pivot).
+    # The Phase 5n.B rule above REQUIRES a NOM-NP/NOM-PRON pivot;
+    # this rule fires when the predicate is a clock-time N
+    # (SEM_CLASS=TIME from the Phase 8.R alas+NUM rule in
+    # cfg/nominal.py) and there is no pivot daughter.
+    #
+    # Gating: ``(↓1 SEM_CLASS) =c 'TIME'`` constrains the rule to
+    # clock-time N heads, preventing spurious-ambiguity with other
+    # bare-N surfaces (where Phase 5n.B C2 with a NOM-pivot is the
+    # canonical analysis).
+    #
+    # 2P clitic absorption attaches afterward via the existing
+    # Phase 4 §7.3 rules — ``Alas singko ba?`` builds as this S
+    # plus ``ba`` (QUESTION) clitic. Sentence-final temporal/
+    # locative adjuncts (``ngayon``, ``sa LA``) attach via the
+    # existing post-matrix adjunct rules. The ``na`` ALREADY 2P
+    # clitic fails to absorb on impersonal-S — this is a
+    # pre-existing chart issue also affecting ``Marami ito na.``
+    # (Q-pred + DEM-pivot), documented in 8.R out-of-scope pins
+    # for a separate diagnostic.
+    #
+    # F-structure shape:
+    #   PRED        = 'BE-TIME'
+    #   TIME_VALUE  = the clock-time N's TIME_VALUE
+    #   PREDICATIVE = true
+    rules.append(Rule(
+        "S",
+        ["N"],
+        [
+            "(↑ PRED) = 'BE-TIME'",
+            "(↑ TIME_VALUE) = ↓1 TIME_VALUE",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 SEM_CLASS) =c 'TIME'",
+        ],
+    ))
+
+
     # --- Phase 8.X Commit 1: DEM-pivot clause ------------------
     #
     # ``Ito ang aklat.``       "This is the book."

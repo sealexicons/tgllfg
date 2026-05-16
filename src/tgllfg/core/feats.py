@@ -27,6 +27,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "ASK_CLASS",
         "CARDINAL",
         "CF",
+        "CLOCK_MARKER",
         "COMPARATIVE",
         "CORREL",
         "COUNTERFACTUAL",
