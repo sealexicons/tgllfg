@@ -717,6 +717,28 @@
     - {op: suffix, value: in}
   notes: "pakakainin, pababasahin (CTPL — cv-redup + pa- prefix + -in suffix)"
 
+# Phase 8.H: prefix-redup variant of the CTPL OV-CAUS-DIRECT
+# cell above. S&O 1972 §10.4 and tagalog.com both document the
+# alternate ordering — pa- prefix first, then cv-redup of the
+# resulting surface, then -in suffix — yielding ``papakainin``
+# (vs. ``pakakainin`` from the root-redup ordering). Modern
+# Tagalog admits both surfaces as semantically equivalent CTPL
+# OV-CAUS-DIRECT future-tense forms (GT translates both
+# ``papakainin`` and ``pakakainin`` as "to be fed"). The two
+# cells share the same lex profile so both surfaces map to the
+# same f-structure.
+- voice: OV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: pa_in
+  feats: {CAUS: DIRECT}
+  operations:
+    - {op: prefix, value: "pa"}
+    - {op: cv_redup}
+    - {op: suffix, value: in}
+  notes: "papakainin, papabasahin (CTPL prefix-redup variant — pa- prefix + cv-redup + -in suffix)"
+
 # --- pag-...-an LF circumfix for mag-class verbs (DV) -------------------
 #
 # Phase 8.B: closes the 8.A follow-on for ``pinagbintangan``-style
