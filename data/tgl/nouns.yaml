@@ -334,6 +334,11 @@
   pos: NOUN
   gloss: jeepney
 
+- citation: edad
+  pos: NOUN
+  gloss: age (Spanish loan)
+  affix_class: [kasing_n_eq]
+
 - citation: enero
   pos: NOUN
   gloss: January
@@ -351,6 +356,10 @@
   pos: NOUN
   gloss: student
 
+- citation: frank
+  pos: NOUN
+  gloss: Frank (proper name; R&C 1990 audit corpus)
+
 - citation: gabi
   pos: NOUN
   gloss: night
@@ -358,6 +367,10 @@
 - citation: gatas
   pos: NOUN
   gloss: milk
+
+- citation: grado
+  pos: NOUN
+  gloss: grade (academic; Spanish loan)
 
 - citation: gulay
   pos: NOUN
@@ -441,6 +454,10 @@
   pos: NOUN
   gloss: egg
 
+- citation: john
+  pos: NOUN
+  gloss: John (proper name; S&O 1972 audit corpus)
+
 - citation: juan
   pos: NOUN
   gloss: Juan (proper name)
@@ -515,6 +532,10 @@
 - citation: karayom
   pos: NOUN
   gloss: needle (instrument; Phase 5c §7.7 ipang- test fixture)
+
+- citation: karla
+  pos: NOUN
+  gloss: Karla (proper name; R&C 1990 audit corpus)
 
 - citation: karne
   pos: NOUN
@@ -666,6 +687,10 @@
   gloss: Tuesday
   feats: {SEM_CLASS: DAY, DAY_VALUE: "2"}
 
+- citation: mary
+  pos: NOUN
+  gloss: Mary (proper name; S&O 1972 audit corpus)
+
 - citation: mata
   pos: NOUN
   gloss: eye
@@ -697,6 +722,10 @@
 - citation: mundo
   pos: NOUN
   gloss: world
+
+- citation: nadette
+  pos: NOUN
+  gloss: Nadette (proper name; R&G Intermediate audit corpus)
 
 - citation: nanay
   pos: NOUN

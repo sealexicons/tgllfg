@@ -27,7 +27,7 @@ inspection: comment text containing capitalized words followed by
 `# wh-Q polysemy ...` comment), and prefix-matching artifacts
 (`RESULT` matched a value `result` from prose) are dropped.
 
-## The 53 binary feats — migration targets
+## The 54 binary feats — migration targets
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
 Python `True`/`False`. Grammar rule patterns use the `[X]` shorthand
@@ -64,6 +64,7 @@ negative.
 | `HUMAN` | NP/PRON is human-class |
 | `INTENSIFIER` | particle is an intensifier (`talagang`) |
 | `INTERJ` | element is an interjection |
+| `KASING_N` | ADJ surface derives from a NOUN via `kasing-` (Phase 8.L) |
 | `KITA` | special clitic pronoun `kita` |
 | `LOC_EXISTENTIAL` | locative existential reading |
 | `MAGISA` | "alone" emphatic predicate |
