@@ -97,14 +97,19 @@ class TestOovProbeRealOov:
     clitic-glued surfaces."""
 
     def test_real_oov_still_reported(self) -> None:
-        # ``mahusay`` (skillful) is a Wave-1+2 audit OOV — an
-        # ma-class ADJ root still missing from adjectives.yaml.
-        # Real lex gap, not a clitic-glue surface.
-        # (Originally pinned on ``pandanggo``; closed-in-9.C
-        # nouns-batch and swapped for a still-OOV target.)
-        oov = oov_probe("Mahusay ang mekaniko.")
+        # ``kilala`` (known, acquainted) bare-form is a real lex
+        # gap — V root exists in verbs.yaml (added in 9.E) but
+        # generates only inflected surfaces (kinilala, magkikilala,
+        # nakakilala); the audit-attested predicative use
+        # ("kilala ka ba si Dr Jones") needs the bare surface
+        # which V roots don't produce.
+        # (Originally pinned on ``pandanggo``; closed-in-9.C and
+        # repinned on ``mahusay``; ``mahusay`` closed-in-9.F and
+        # repinned on bare ``kilala``. Deferred to 9.O /
+        # predicative-V construction class.)
+        oov = oov_probe("Kilala ko si Maria.")
         oov_lower = {tok.lower() for tok in oov}
-        assert "mahusay" in oov_lower
+        assert "kilala" in oov_lower
 
     def test_real_ng_ending_oov_still_reported(self) -> None:
         # ``huling`` (final / last — bare ``huli`` is the ADJ root)

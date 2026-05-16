@@ -165,19 +165,20 @@ class TestInventoryTotals:
         Phase 5n.A Commit 1 added 9 (bingi / bulag / galit / ginaw /
         gulat / gutom / hilo / tibay / tigang) for 39; Phase 5n.C.3
         Commit 8 (§18 L38) added ``dali`` for 40; Phase 8.C adds
-        ``tigas`` for 41 (audit-surfaced ADJ-head superlative
-        ``pinakamatigas``).
+        ``tigas`` for 41; Phase 8.L adds 3 (bagsik / buti / payat)
+        for 44; Phase 9.F adds 4 (aga / bigat / husay / runong)
+        for 48 (audit-surfaced ma-ADJ predicates: maaga / mabigat
+        / mahusay / marunong).
         """
         data = load_morph_data()
         ma_adj_roots = [
             r for r in data.roots
             if r.pos == "ADJ" and "ma_adj" in r.affix_class
         ]
-        assert len(ma_adj_roots) == 44, (
-            f"expected 44 ma_adj-opting ADJ roots (30 Phase 5g "
+        assert len(ma_adj_roots) == 48, (
+            f"expected 48 ma_adj-opting ADJ roots (30 Phase 5g "
             f"+ 9 Phase 5n.A C1 + 1 Phase 5n.C.3 C8 + 1 Phase 8.C "
-            f"+ 3 Phase 8.L: bagsik / buti / payat); "
-            f"got {len(ma_adj_roots)}"
+            f"+ 3 Phase 8.L + 4 Phase 9.F); got {len(ma_adj_roots)}"
         )
 
     def test_phase5g_inventory_lemmas_present(self) -> None:
