@@ -49,7 +49,21 @@
   pos: VERB
   gloss: remember; worry
   transitivity: TR
-  affix_class: [um, mag, in_oblig, maka]
+  affix_class: [um, mag, ma, in_oblig, maka]
+
+# Phase 8.I: orthographic variant ``alala`` (4-syllable contemporary
+# spelling) of canonical ``alaala`` (5-syllable). R&C 1990 / R&G
+# Intermediate audit corpus uses ``alala`` (``naalala``,
+# ``nag-aalala``). Per the orthographic-variants convention, the
+# variant carries ``LEMMA: alaala`` so derived surfaces canonicalize
+# back to the 5-syllable citation. Both spellings share the same
+# paradigm-class set so the same ma/maka/mag derivations apply.
+- citation: alala
+  pos: VERB
+  gloss: remember; worry (contemporary 4-syllable spelling of `alaala`)
+  transitivity: TR
+  affix_class: [um, mag, ma, in_oblig, maka]
+  feats: {LEMMA: alaala}
 
 - citation: alaga
   pos: VERB
@@ -679,6 +693,12 @@
   transitivity: TR
   affix_class: [um, ma, in_oblig, maka]
 
+- citation: kitil
+  pos: VERB
+  gloss: snatch away, cut off
+  transitivity: TR
+  affix_class: [in_oblig, um, maka]
+
 - citation: kopya
   pos: VERB
   gloss: copy
@@ -798,7 +818,7 @@
   pos: VERB
   gloss: forget
   transitivity: TR
-  affix_class: [um, in_oblig, maka]
+  affix_class: [um, in_oblig, an_oblig, ma, maka]
 
 - citation: linis
   pos: VERB
