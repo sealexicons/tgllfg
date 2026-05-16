@@ -17619,3 +17619,109 @@ Plus one common-noun:
 
 `hatch run test-both`: 7796 passed in 79.97s (was 7769; +27
 new tests).
+
+## Phase 8.H: AV-CAUS-INDIRECT flat 3-arg + papakainin CTPL variant
+
+The Phase 8 plan hypothesized "`papaka- ... -in` causative-future
+paradigm-cell composition gap" with named target
+`papakainin niya ang manok.` Diagnostic outcome: TWO distinct
+gaps, both closed:
+
+1. **`papakainin` prefix-redup CTPL paradigm cell** — the plan's
+   named target. Per S&O 1972 §10.4 and tagalog.com, `papakainin`
+   and `pakakainin` are equivalent CTPL OV-CAUS-DIRECT variants
+   (GT renders both as "to be fed"). Phase 5n.C.4 C16's `pa_in`
+   cell produces only the root-redup form (`pakakainin`); the
+   prefix-redup variant (`papakainin`) needed a parallel cell with
+   the operations in reversed order.
+2. **AV-CAUS-INDIRECT flat 3-arg matrix wrap** — surfaced during
+   the diagnostic probe of the audit hit `Nagpapakain sila ng
+   kendi sa kanila.` (S&O 1972 page 410 sent-593). Blocked by a
+   missing matrix grammar rule + missing flat-3-arg lex profile
+   for the `magpa-`-headed AV causative.
+
+### Diagnosis
+
+- The named `papakainin` form is the **prefix-redup CTPL variant**
+  of the canonical `pakakainin`. Both forms are documented as
+  equivalent in S&O 1972 §10.4 and tagalog.com (GT renders both
+  as "to be fed"). The existing `pa_in` paradigm cell (Phase
+  5n.C.4 C16) only produces the root-redup form. A parallel cell
+  with operations reordered (prefix-then-cv-redup-then-suffix
+  instead of cv-redup-then-prefix-then-suffix) produces the
+  prefix-redup surface.
+- The biclausal AV-CAUS-INDIRECT profile already exists
+  (`intrinsic: AV_CAUS_INDIRECT` in `causative.yaml`) for
+  sentences with an overt embedded V (`Nagpakain ako kumain ng
+  kanin sa kanila.`).
+- The audit hit (S&O 1972 page 410 sent-593) uses the
+  **monoclausal flat form** `Nagpapakain sila ng kendi sa
+  kanila.` — embedded event's arguments surface as matrix NP
+  daughters, no S_XCOMP daughter. The biclausal profile's
+  `PRED='CAUSE-EAT <SUBJ, XCOMP>'` template fails LMT
+  completeness because no XCOMP is constructed.
+
+### What 8.H delivers
+
+- **New prefix-redup CTPL paradigm cell** in
+  `data/tgl/paradigms.yaml` parallel to the existing root-redup
+  CTPL cell (Phase 5n.C.4 C16). Same `affix_class: pa_in` + same
+  feats; only the operation order differs (prefix `pa` → cv-redup
+  → suffix `in` instead of cv-redup → prefix `pa` → suffix `in`).
+  Both surfaces (`papakainin` + `pakakainin`) map to the same lex
+  entry's f-structure (same PRED, same arg-binding).
+- **New `_AV_CAUS_INDIRECT_FLAT` intrinsic profile** in
+  `tgllfg.core.lexicon`: CAUSER → SUBJ via [+r=False, +o=False],
+  PATIENT → OBJ via [+r=False, +o=True], CAUSEE → OBL-CAUSEE
+  via [+r=True, +o=False]. PATIENT is unrestricted-objective
+  (standard OBJ); CAUSEE is restricted-unobjective (typed
+  oblique parallel to OBL-LOC / OBL-RECIP in DV ditransitives).
+- **New lex entry for `kain`** in `data/tgl/lexicon/causative.yaml`
+  with `intrinsic: AV_CAUS_INDIRECT_FLAT` and
+  `PRED='CAUSE-EAT <SUBJ, OBJ, OBL-CAUSEE>'`. Coexists with the
+  biclausal entry via the LMT most-specific-wins matcher.
+- **New clause rule** in `cfg/clause.py`:
+
+  ```text
+  S → V[VOICE=AV, CAUS=INDIRECT]  NP[CASE=NOM]  NP[CASE=GEN]  NP[CASE=DAT]
+    (↑ SUBJ)         = ↓2
+    (↑ OBJ)          = ↓3
+    (↑ OBL-CAUSEE)   = ↓4
+  ```
+
+  Adjacent to the existing OV-CAUS-DIRECT 3-arg rules in
+  `cfg/clause.py`. Audit-shape canonical order is NOM-GEN-DAT;
+  other orderings (GEN-NOM-DAT etc.) deferred until corpus
+  pressure surfaces them.
+- **`kendi` NOUN lex** (Spanish/English loan "candy"; OOV
+  resolved per the OOV-resolve-in-subPR directive).
+
+### Direct closures
+
+- Plan's named target — `Papakainin niya ang manok.` (closed via
+  the new prefix-redup CTPL paradigm cell)
+- Audit hit — `Nagpapakain sila ng kendi sa kanila.` (S&O 1972
+  page 410 sent-593, without the `nang nagpapakain` reduplication
+  idiom; closed via the new flat-3-arg profile + matrix rule)
+
+### Out-of-scope (pinned anti-deferral)
+
+- **`nang V-DUPLICATE` idiom** — `Nagpapakain sila nang
+  nagpapakain ng kendi sa kanila.` verbatim sent-593 surface.
+  The "X-ing while X-ing" intensifier-aspectual idiom is a
+  distinct construction.
+- **2-arg AV-CAUS-INDIRECT** — `Nagpakain siya ng kendi.`
+  (CAUSER + PATIENT, no overt CAUSEE). Flat 3-arg profile
+  requires all three slots filled; 2-arg shape needs a separate
+  lex profile + grammar rule (no audit pressure).
+
+### Tests
+
+`test_phase8h_causative_indirect_flat.py` (17 tests): 2 audit-
+flat-shape closures, 3 papakainin/pakakainin CTPL-equivalence
+checks, 1 f-structure arg-binding check, 2 lex-profile loadable
+checks, 1 `kendi` lex indexed check, 2 out-of-scope pins, 6
+baseline regressions.
+
+`hatch run test-both`: 7813 passed in 78.76s (was 7796; +17
+new tests).
