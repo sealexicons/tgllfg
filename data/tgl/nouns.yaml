@@ -199,6 +199,10 @@
   synonyms: [ulit]
   feats: {SEM_CLASS: FREQUENCY}
 
+- citation: betty
+  pos: NOUN
+  gloss: Betty (proper name; R&G Intermediate audit corpus)
+
 - citation: bibig
   pos: NOUN
   gloss: mouth
@@ -231,6 +235,10 @@
   pos: NOUN
   gloss: Friday
   feats: {SEM_CLASS: DAY, DAY_VALUE: "5"}
+
+- citation: blas
+  pos: NOUN
+  gloss: Blas (proper name; R&C 1990 audit corpus, sometimes OCR'd as "Bias")
 
 - citation: bubong
   pos: NOUN
@@ -360,6 +368,10 @@
   pos: NOUN
   gloss: student
 
+- citation: flor
+  pos: NOUN
+  gloss: Flor (proper name; R&G Intermediate audit corpus)
+
 - citation: frank
   pos: NOUN
   gloss: Frank (proper name; R&C 1990 audit corpus)
@@ -461,6 +473,10 @@
 - citation: john
   pos: NOUN
   gloss: John (proper name; S&O 1972 audit corpus)
+
+- citation: jonathan
+  pos: NOUN
+  gloss: Jonathan (proper name; R&C 1990 audit corpus)
 
 - citation: juan
   pos: NOUN
@@ -714,6 +730,14 @@
   pos: NOUN
   gloss: table
 
+- citation: minda
+  pos: NOUN
+  gloss: Minda (proper name; R&C 1990 audit corpus)
+
+- citation: miting
+  pos: NOUN
+  gloss: meeting (Spanish loan)
+
 - citation: miyerkules
   pos: NOUN
   gloss: Wednesday
@@ -734,6 +758,10 @@
 - citation: nanay
   pos: NOUN
   gloss: mother
+
+- citation: nancy
+  pos: NOUN
+  gloss: Nancy (proper name; R&C 1990 audit corpus)
 
 - citation: ngayon
   pos: NOUN
