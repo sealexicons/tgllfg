@@ -240,6 +240,10 @@
   pos: NOUN
   gloss: Blas (proper name; R&C 1990 audit corpus, sometimes OCR'd as "Bias")
 
+- citation: boss
+  pos: NOUN
+  gloss: boss (English loan)
+
 - citation: bubong
   pos: NOUN
   gloss: roof
@@ -351,6 +355,10 @@
   gloss: age (Spanish loan)
   affix_class: [kasing_n_eq]
 
+- citation: emmanuel
+  pos: NOUN
+  gloss: Emmanuel (proper name; R&C 1990 audit corpus)
+
 - citation: enero
   pos: NOUN
   gloss: January
@@ -384,6 +392,10 @@
   pos: NOUN
   gloss: milk
 
+- citation: gina
+  pos: NOUN
+  gloss: Gina (proper name; R&C 1990 audit corpus)
+
 - citation: grado
   pos: NOUN
   gloss: grade (academic; Spanish loan)
@@ -413,6 +425,10 @@
   pos: NOUN
   gloss: afternoon
   feats: {SEM_CLASS: TIME}
+
+- citation: hapunan
+  pos: NOUN
+  gloss: dinner, supper
 
 - citation: hipag
   pos: NOUN
@@ -883,6 +899,10 @@
 - citation: parke
   pos: NOUN
   gloss: park
+
+- citation: party
+  pos: NOUN
+  gloss: party (English loan; social gathering)
 
 - citation: patatas
   pos: NOUN
