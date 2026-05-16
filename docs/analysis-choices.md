@@ -17725,3 +17725,102 @@ baseline regressions.
 
 `hatch run test-both`: 7813 passed in 78.76s (was 7796; +17
 new tests).
+
+## Phase 8.O: AV-CAUS-INDIRECT SAY-class reported clause
+
+Audit-named construction (R&C 1990 Wave 2). The `magpa-` /
+`nagpa-` causative form of `sabi` "say" carries SAY_CLASS=true
+and admits a finite-clause complement introduced by `na`:
+
+- `Nagpasabi si Gina na kakain siya ng hapunan dito.` (R&C 1990
+  sent-892, OCR fix `siua`→`siya`)
+- `Nagpasabi si Emmanuel na magdala ka ng mga aklat sa party.`
+  (R&C 1990 sent-899, `CDs`→`aklat` acronym normalization)
+- `Nagpasabi si Maria na kumain si Juan.` (minimal shape)
+
+### Diagnosis
+
+The morph paradigm for `magpa-` SAY-class verbs is complete —
+`nagpasabi` / `nagpapasabi` / `magpapasabi` all derive cleanly
+with `V[VOICE=AV, CAUS=INDIRECT, CTRL_CLASS=INTRANS,
+SAY_CLASS=true, TR=TR]`. The lex template emits
+`PRED='SABI <SUBJ, OBJ>'` (the TR-class [AGENT, THEME] mapping
+puts THEME → OBJ in AV).
+
+The existing biclausal control wrap (Phase 4 §7.6
+`V[CTRL_CLASS=INTRANS] NP[CASE=NOM] PART[LINK] S_XCOMP`) binds
+the reported clause to XCOMP, but the lex template expects OBJ
+— so LMT coherence-fails on the XCOMP / OBJ mismatch. The gap
+is a missing matrix grammar rule that consumes the reported
+clause as a bare `S` and binds it directly to OBJ.
+
+### New rule
+
+`cfg/clause.py` adjacent to the Phase 5n.A C26 OV-SAY rule
+(which closes `Sinabi niya na pumunta si Maria.`):
+
+```text
+S → V[VOICE=AV, CAUS=INDIRECT, SAY_CLASS]
+    NP[CASE=NOM]
+    PART[LINK=NA]
+    S
+  (↑ SUBJ) = ↓2          (CAUSER / speaker)
+  (↑ OBJ)  = ↓4          (reported clause as THEME)
+  (↓1 SAY_CLASS) =c true
+  (↓1 CAUS)      =c 'INDIRECT'
+  (↓3 LINK)      =c 'NA'
+```
+
+Mirrors the OV-SAY rule with daughter-index shift (NOM-NP at
+↓2 here vs. GEN-PRON at ↓2 there) and an added CAUS=INDIRECT
+gate to keep the rule narrowly applied to the SAY-class
+indirect-causative subset.
+
+### Lex additions
+
+Proper-name + common-noun OOVs per the OOV-resolve-in-subPR
+directive:
+
+- `data/tgl/nouns.yaml` — `gina`, `emmanuel` (proper names;
+  R&C 1990 audit corpus), `hapunan` (dinner), `boss` (English
+  loan), `party` (English loan)
+
+### Anti-deferral pin flip
+
+`test_phase8n_wave2_lex.py::test_construction_gap_still_zero`
+pinned `Nagpasabi si Gina na uuwi siya.` as out-of-scope for
+Phase 8.N (the named successor was 8.O). With 8.O's new rule
+and the `gina` lex add, the pin flips to a positive-parse
+assertion in
+`TestPhase8nClosedIn8o::test_say_class_causative_now_parses`.
+
+### Direct audit closures (2 normalized + 1 minimal)
+
+- `Nagpasabi si Gina na kakain siya ng hapunan dito.` (sent-892
+  with OCR fix)
+- `Nagpasabi si Emmanuel na magdala ka ng mga aklat sa party.`
+  (sent-899 with acronym swap)
+- `Nagpasabi si Gina na uuwi siya.` (8.N pin flip)
+
+### Out-of-scope (pinned)
+
+- **`pasok` TR/INTR polysemy** — `Nagpasabi ang boss ko na
+  hindi siya papasok sa trabaho.` (R&C 1990 sent-909) parses
+  through 8.O's rule but the embedded clause fails: `papasok`
+  is morph-classed TR but used semantically intransitive
+  ("will go to work"). Same pattern as the Phase 8.I `alala`
+  TR/INTR polysemy pin; a unified lex-design sub-PR is the
+  natural successor.
+- **English-acronym registration** — `CDs` in sent-899
+  verbatim. Acronyms intentionally outside lex-design scope.
+
+### Tests
+
+`test_phase8o_say_class_causative.py` (20 tests): 5 base-shape
+parses (PFV/IPFV/CTPL + with/without embedded OBJ), 1
+f-structure arg-binding check, 2 audit-hit closures, 5
+lex-loadable membership tests, 2 out-of-scope pins, 5 baseline
+regressions.
+
+`hatch run test-both`: 7833 passed in 78.90s (was 7813; +20
+new tests).
