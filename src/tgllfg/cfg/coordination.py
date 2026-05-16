@@ -753,6 +753,86 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # === Phase 8.T: kundi-introduced phrasal correction ====================
+    #
+    # ``Hindi si Juan ang darating kundi si Pedro.``
+    #     "It's not Juan who's coming but (rather) Pedro."
+    # ``Walang tao doon kundi si Ben.``
+    #     "There's no one there but Ben."
+    # ``Wala siyang pera kundi sasampung sentimo.``
+    #     "She has no money but ten centavos."
+    #
+    # Cited per S&O 1972 §7.20 (``kundi`` "but, except"). Distinct
+    # from the Phase 5l Commit 14 correlative-clausal-coord
+    # ``hindi lang … kundi pati S`` (which coordinates two clauses);
+    # this is phrasal correction — ``kundi`` introduces an NP/PP
+    # corrective alternative to whatever was negated in the matrix.
+    #
+    # Audit-hit shape (S&O 1972 page 656 / sent-1290): NEG-cleft
+    # matrix with kundi-NP at the right edge.
+    #
+    # Analytical commitment: the corrective NP/PP rides on the
+    # matrix's ADJUNCT set with ``ROLE: CORRECTION`` — mirroring the
+    # Phase 5h Commit 6 ``EQUATIVE_STANDARD`` convention and the
+    # Phase 5h Commit 3 ``kaysa`` STANDARD adjunct. The matrix
+    # f-structure is inherited from the negated clause via
+    # ``(↑) = ↓1``; the kundi-NP is the corrective alternative to
+    # the negated focus, identifiable by walking the ADJUNCT set
+    # for ROLE=CORRECTION.
+    #
+    # Gate: ``(↓1 POLARITY) =c 'NEG'`` — only NEG-marked matrix
+    # clauses admit a kundi correction. Both ``hindi``-negated
+    # clefts and ``wala``-existentials carry POLARITY=NEG, so the
+    # same gate covers both audit-attested shapes. Affirmative
+    # matrix S + ``kundi NP`` is blocked (kundi requires a negated
+    # antecedent to correct).
+    #
+    # Two parallel rules — NP and PP correction:
+    #
+    #   S → S[POLARITY=NEG]  PART[COORD=BUT_NOT]  NP   (NP correction)
+    #   S → S[POLARITY=NEG]  PART[COORD=BUT_NOT]  PP   (PP correction)
+    #
+    # Sentence-medial PP-correction (audit hit sent-1289:
+    # ``Hindi dito kundi sa bayan ang pulong.``) needs a locative-
+    # cleft analysis that 8.T doesn't land — pinned for a future
+    # PP-cleft sub-PR. The right-edge PP-correction
+    # (``Wala siyang pera kundi sa bayan.``) is covered by the
+    # second rule below.
+
+    # Rule (a): kundi-NP correction
+    rules.append(Rule(
+        "S",
+        [
+            "S",
+            "PART[COORD=BUT_NOT]",
+            "NP",
+        ],
+        [
+            "(↑) = ↓1",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 COORD) =c 'BUT_NOT'",
+            "(↓3 ROLE) = 'CORRECTION'",
+            "↓3 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+
+    # Rule (b): kundi-PP correction
+    rules.append(Rule(
+        "S",
+        [
+            "S",
+            "PART[COORD=BUT_NOT]",
+            "PP",
+        ],
+        [
+            "(↑) = ↓1",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 COORD) =c 'BUT_NOT'",
+            "(↓3 ROLE) = 'CORRECTION'",
+            "↓3 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+
     # === Phase 5n.A Commit 16: multi-word coord particles (§18 L76 + L82) ====
     #
     # Three multi-word coord phrases combine two existing PARTs into a

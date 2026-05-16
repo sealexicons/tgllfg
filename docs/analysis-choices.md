@@ -17290,3 +17290,73 @@ and proper-name lex).
 
 `hatch run test-both`: 7719 passed in 80.25s (was 7656; +63
 new tests).
+
+## Phase 8.T: `kundi`-introduced phrasal correction
+
+Audit-named construction (S&O 1972 §7.20 page 656). A NEG-marked
+matrix clause (hindi-cleft or wala-existential) admits a corrective
+NP/PP introduced by `kundi` "but, except":
+
+- `Hindi si Juan ang darating kundi si Pedro.` — "It's not Juan who's
+  coming but Pedro." (audit hit sent-1290)
+- `Walang tao doon kundi si Ben.` — "There's no one there but Ben."
+
+Two new rules in `cfg/coordination.py` (adjacent to the Phase 5l C14
+correlative-clausal kundi rules):
+
+```text
+S → S[POLARITY=NEG]  PART[COORD=BUT_NOT]  NP   (NP correction)
+S → S[POLARITY=NEG]  PART[COORD=BUT_NOT]  PP   (PP correction)
+```
+
+The matrix f-structure is inherited from the negated clause via
+`(↑) = ↓1`; the corrective NP/PP rides on the matrix's ADJUNCT set
+with `ROLE: CORRECTION` (mirroring the Phase 5h `EQUATIVE_STANDARD`
+and Phase 5h C3 `kaysa` STANDARD conventions).
+
+### Gating
+
+`(↓1 POLARITY) =c 'NEG'` constrains the rules to fire only on NEG
+matrices. Both `hindi`-cleft and `wala`-existential clauses carry
+`POLARITY=NEG` at the matrix level (Phase 5e / 5j conventions), so
+the same gate covers both audit-attested shapes. Affirmative
+matrix + `kundi NP` is blocked — `kundi` requires a negated
+antecedent to correct.
+
+### Distinct from Phase 5l C14 correlative-clausal kundi
+
+The Phase 5l Commit 14 rules coordinate two CLAUSES via
+`hindi lang … kundi pati S` (matrix gains CONJUNCTS + CORREL=YES).
+Phase 8.T's phrasal-correction rules attach a NP/PP CORRECTION
+inside a single matrix (no CONJUNCTS). The two analyses are
+disjoint by the right-daughter shape (S vs. NP/PP).
+
+### Lex addition
+
+- `data/tgl/nouns.yaml` — `ben` proper-name NOUN (S&O 1972 §7.20
+  audit corpus, lowercase-citation convention).
+
+### Direct audit closures + out-of-scope pins
+
+- `Hindi si Juan ang darating kundi si Pedro.` ✅ (sent-1290)
+- `Walang tao doon kundi si Ben.` ✅ (with `ben` lex add)
+- `Hindi dito kundi sa bayan ang pulong.` ❌ (sent-1289) — needs
+  a locative-cleft analysis (PP-FOCUS sentence-medially before
+  the ang-pivot). Pinned in `TestPhase8tOutOfScope`; flip when a
+  PP-cleft sub-PR lands.
+- `Wala kang magagawa kundi umalis.` ❌ — `kundi VERB` "but to V"
+  (forcing course of action) is a distinct construction. Pinned;
+  flip when a `kundi`-V sub-PR lands.
+
+### Tests
+
+`test_phase8t_kundi_correction.py` (9 tests):
+
+- 2 direct audit-shape parses (NP correction)
+- 2 PP-correction parses
+- 1 affirmative-matrix block (NEG gate)
+- 2 Phase 5l C14 correlative-clausal regressions
+- 2 out-of-scope pins
+
+`hatch run test-both`: 7728 passed in 82.18s (was 7719; +9
+new tests).
