@@ -232,6 +232,24 @@ _AV_CAUS_INDIRECT: dict[str, tuple[bool | None, bool | None]] = {
     "CAUSER": (False, False),
     "EVENT": (None, None),
 }
+# Phase 8.H: flat 3-arg AV-CAUS-INDIRECT companion to the
+# biclausal profile above. S&O 1972 §10.4 documents both shapes
+# for ``magpa-``: the biclausal-control form ``Nagpakain ako
+# kumain ng kanin sa kanila.`` (with overt embedded V) and the
+# monoclausal flat form ``Nagpapakain sila ng kendi sa kanila.``
+# (audit hit S&O page 410 sent-593) where the embedded event's
+# arguments surface as matrix NP daughters. The flat profile
+# replaces the XCOMP-stipulated EVENT role with explicit PATIENT
+# and CAUSEE thematic roles. PATIENT maps to OBJ (no semantic
+# restriction; standard OBJ from the unrestricted-objective
+# [+r=False, +o=True] truth-table cell); CAUSEE maps to a typed
+# OBL-CAUSEE oblique (CAUSEE is restricted to this oblique slot;
+# parallel to OBL-LOC / OBL-RECIP in DV ditransitives).
+_AV_CAUS_INDIRECT_FLAT: dict[str, tuple[bool | None, bool | None]] = {
+    "CAUSER": (False, False),
+    "PATIENT": (False, True),
+    "CAUSEE": (True, False),
+}
 
 # Control profiles (Phase 4 §7.6). COMPLEMENT is XCOMP-stipulated.
 _PSYCH_CONTROL: dict[str, tuple[bool | None, bool | None]] = {

@@ -72,6 +72,28 @@
     CTRL_CLASS: INTRANS
   intrinsic: AV_CAUS_INDIRECT
 
+# Phase 8.H: flat 3-arg AV-CAUS-INDIRECT companion to the
+# biclausal-control entry above. S&O 1972 §10.4 documents both
+# shapes: (a) biclausal ``Nagpakain ako kumain ng kanin sa
+# kanila.`` with overt embedded V; (b) flat ``Nagpapakain sila
+# ng kendi sa kanila.`` (S&O page 410 sent-593) where the
+# embedded event's arguments surface directly as NP daughters
+# of the matrix. Three arg slots: CAUSER (matrix SUBJ),
+# PATIENT (what's caused-to-be-V'd; OBJ), CAUSEE (the one made
+# to V; OBL-CAUSEE). Distinguished from the biclausal entry by
+# the absence of XCOMP in the a-structure.
+- lemma: kain
+  voice: AV
+  pred: "CAUSE-EAT <SUBJ, OBJ, OBL-CAUSEE>"
+  a_structure: [CAUSER, PATIENT, CAUSEE]
+  gf_defaults:
+    CAUSER: SUBJ
+    PATIENT: OBJ
+    CAUSEE: OBL-CAUSEE
+  morph_constraints:
+    CAUS: INDIRECT
+  intrinsic: AV_CAUS_INDIRECT_FLAT
+
 # basa — read / cause-to-read.
 - lemma: basa
   voice: OV

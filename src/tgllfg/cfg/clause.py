@@ -461,6 +461,47 @@ def register_rules(rules: list[Rule]) -> None:
         ),
     ))
 
+    # --- Phase 8.H: AV-CAUS-INDIRECT flat 3-arg matrix wrap --------
+    #
+    # ``Nagpapakain sila ng kendi sa kanila.``
+    #     "They are feeding them candy."
+    #     (S&O 1972 page 410 / sent-593 — without the
+    #     ``nang nagpapakain`` reduplication idiom)
+    #
+    # Companion to the biclausal AV-CAUS-INDIRECT analysis
+    # (``cfg/control.py`` Phase 4 §7.6 intransitive control wrap
+    # — ``V[CTRL_CLASS=INTRANS] NP[CASE=NOM] PART[LINK] S_XCOMP``).
+    # S&O 1972 §10.4 documents both shapes for ``magpa-``: (a)
+    # biclausal with overt embedded V; (b) flat where the
+    # embedded event's arguments surface directly as NP daughters
+    # of the matrix. The flat form lacks an XCOMP daughter.
+    #
+    # Matched by a new lex entry in ``data/tgl/lexicon/causative.yaml``
+    # with PRED ``CAUSE-EAT <SUBJ, OBJ, OBL-CAUSEE>`` and
+    # ``intrinsic: AV_CAUS_INDIRECT_FLAT`` (parallel to the
+    # existing biclausal entry ``intrinsic: AV_CAUS_INDIRECT``).
+    # The LMT matcher disambiguates by visible
+    # ``morph_constraints`` overlap with most-specific-wins;
+    # 8.H's flat entry is selected when no S_XCOMP daughter is
+    # present.
+    #
+    # Three arg slots map to NP daughters: CAUSER (matrix SUBJ;
+    # NOM-marked), PATIENT (the caused-to-be-V'd thing; GEN-
+    # marked OBJ), CAUSEE (the one made to V; DAT-marked
+    # OBL-CAUSEE). Audit-shape canonical order is NOM-GEN-DAT;
+    # other orderings deferred to future sub-PRs if corpus
+    # pressure surfaces them.
+    v_av_caus_ind = "V[VOICE=AV, CAUS=INDIRECT]"
+    rules.append(Rule(
+        "S",
+        [v_av_caus_ind, "NP[CASE=NOM]", "NP[CASE=GEN]", "NP[CASE=DAT]"],
+        _eqs(
+            "(↑ SUBJ) = ↓2",
+            "(↑ OBJ) = ↓3",
+            "(↑ OBL-CAUSEE) = ↓4",
+        ),
+    ))
+
 
     # --- Phase 5e Commit 11: multi-GEN-NP plain DV (CAUS=NONE) ---
     #
