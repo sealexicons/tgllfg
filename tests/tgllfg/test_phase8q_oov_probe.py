@@ -97,21 +97,25 @@ class TestOovProbeRealOov:
     clitic-glued surfaces."""
 
     def test_real_oov_still_reported(self) -> None:
-        # ``pandanggo`` (folk dance) was a top-Wave-3 OOV per audit;
-        # it's a real lex gap, not a clitic-glue surface.
-        oov = oov_probe("Sasayaw sila ng pandanggo.")
+        # ``mahusay`` (skillful) is a Wave-1+2 audit OOV — an
+        # ma-class ADJ root still missing from adjectives.yaml.
+        # Real lex gap, not a clitic-glue surface.
+        # (Originally pinned on ``pandanggo``; closed-in-9.C
+        # nouns-batch and swapped for a still-OOV target.)
+        oov = oov_probe("Mahusay ang mekaniko.")
         oov_lower = {tok.lower() for tok in oov}
-        assert "pandanggo" in oov_lower
+        assert "mahusay" in oov_lower
 
     def test_real_ng_ending_oov_still_reported(self) -> None:
-        # ``tulong`` (help) and ``tanong`` (question) are real lex
-        # gaps that happen to end in -ng. Since their stems
-        # (``tulo``, ``tano``) are not known surfaces,
-        # ``split_linker_ng`` leaves them intact, and the morph
-        # analyzer reports them as _UNK.
-        oov = oov_probe("May tulong ako.")
+        # ``tanong`` (question) is a real lex gap that happens to
+        # end in -ng. Since its stem (``tano``) is not a known
+        # surface, ``split_linker_ng`` leaves it intact, and the
+        # morph analyzer reports it as _UNK.
+        # (Originally pinned on ``tulong``; closed-in-9.C
+        # nouns-batch and swapped for a still-OOV -ng target.)
+        oov = oov_probe("May tanong ako.")
         oov_lower = {tok.lower() for tok in oov}
-        assert "tulong" in oov_lower
+        assert "tanong" in oov_lower
 
 
 class TestOovProbeEdgeCases:
