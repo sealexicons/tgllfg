@@ -87,7 +87,7 @@ Multi-attempt counts — each parse attempt that fails with a given kind adds 1.
 
 | Kind | Count |
 | --- | ---: |
-| constraint-failed | 4814 |
+| constraint-failed | 4818 |
 | existential-failed | 1134 |
 | completeness-failed | 221 |
 | lmt-mismatch | 209 |

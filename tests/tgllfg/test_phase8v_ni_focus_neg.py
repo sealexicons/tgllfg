@@ -181,18 +181,24 @@ class TestPhase8vOutOfScope:
             "Non-SUBJ Ni-focus should parse post-9.R"
         )
 
-    def test_paired_ni_correlative(self) -> None:
-        """``Ni si Juan ni si Ben ay hindi bibilhin iyan.``
-        (S&O 1972 page 604 / sent-1159) — paired Ni X ni Y
-        correlative coordination of foci. Pin; flip when a
-        paired-Ni sub-PR lands."""
+    def test_paired_ni_correlative_closed_in_9s(self) -> None:
+        """``Ni si Juan ni si Ben ay hindi bibilhin iyan.`` (S&O
+        1972 page 604 / sent-1159) — paired Ni X ni Y correlative
+        coordination of foci.
+
+        Phase 9.S B3.E closes this via four new rules in
+        cfg/extraction.py paralleling 8.V SUBJ-focus + 9.R Non-
+        SUBJ-focus rules with a second
+        ``PART[FOCUS_NEG=true] NP[CASE=X]`` daughter inserted
+        before the ``ay`` particle. The second conjunct rides
+        on a NI_CONJUNCTS set on the matrix S; both ↓1 and ↓3
+        ``ni`` particles must carry FOCUS_NEG=true."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Ni si Juan ni si Maria ay hindi kumain.", n_best=2,
         )
-        assert len(parses) == 0, (
-            "Paired-Ni correlative closed — flip if a paired-Ni "
-            "sub-PR landed."
+        assert len(parses) >= 1, (
+            "Paired-Ni correlative should parse post-9.S"
         )
 
     def test_ni_hindi_no_ay(self) -> None:
