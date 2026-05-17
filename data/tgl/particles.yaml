@@ -1994,3 +1994,14 @@
 - surface: tuloy
   pos: PART
   feats: {DISCOURSE: SO, LEMMA: tuloy}
+
+# === Phase 9.J: colloquial DEM-DIST contraction ===========================
+#
+# ``yon`` is the colloquial / contracted form of ``iyon`` (the
+# DEM-NOM-DIST demonstrative). Audit ``Mabuti naman 'yon at may
+# kalaro siya, ano?`` (R&G Conv page-197/dialog/sent-1374). The
+# leading apostrophe is elision; the OOV TSV reports the
+# apostrophe-stripped surface ``yon``.
+- surface: yon
+  pos: DET
+  feats: {CASE: NOM, DEIXIS: DIST, DEM: true, LEMMA: iyon}
