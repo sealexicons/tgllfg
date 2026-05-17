@@ -205,7 +205,6 @@ class TestPhase9mEnglishParenLeading:
         "Pinuwersa ni Digna si Esper, para umamin ito (si Esper).",
     ])
     def test_preserves_tagalog_paren(self, inp: str) -> None:
-        result = he._clean_sentence_text(inp)
         # The line should not be rejected by _ENGLISH_PAREN_LEADING_RE
         # (other filters may or may not clean it; we only verify
         # the new filter doesn't fire).
