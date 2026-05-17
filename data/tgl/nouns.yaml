@@ -296,6 +296,16 @@
   pos: NOUN
   gloss: uncooked rice
 
+- citation: bigat
+  pos: NOUN
+  gloss: weight, heaviness
+  source: audit-corpus
+
+- citation: bilis
+  pos: NOUN
+  gloss: speed, quickness
+  source: audit-corpus
+
 - citation: bintana
   pos: NOUN
   gloss: window
@@ -378,6 +388,11 @@
 - citation: bukid
   pos: NOUN
   gloss: field / countryside
+
+- citation: bulag
+  pos: NOUN
+  gloss: blindness
+  source: audit-corpus
 
 - citation: bulaklak
   pos: NOUN
@@ -588,6 +603,11 @@
   gloss: night
   feats: {SEM_CLASS: TIME}
 
+- citation: galit
+  pos: NOUN
+  gloss: anger
+  source: audit-corpus
+
 - citation: gamot
   pos: NOUN
   gloss: medicine
@@ -608,6 +628,11 @@
   subclass: [PERSON, FEMALE]
   source: R&C-1990
 
+- citation: ginaw
+  pos: NOUN
+  gloss: cold (sensation, weather)
+  source: audit-corpus
+
 - citation: grado
   pos: NOUN
   gloss: grade (academic)
@@ -625,6 +650,11 @@
   pos: NOUN
   gloss: hunger
   affix_class: [tag_season]
+
+- citation: haba
+  pos: NOUN
+  gloss: length
+  source: audit-corpus
 
 - citation: hagdan
   pos: NOUN
@@ -953,6 +983,16 @@
   gloss: walk, errand
   source: audit-corpus
 
+- citation: lakas
+  pos: NOUN
+  gloss: strength
+  source: audit-corpus
+
+- citation: laki
+  pos: NOUN
+  gloss: size, largeness
+  source: audit-corpus
+
 - citation: lalaki
   pos: NOUN
   gloss: man
@@ -1047,6 +1087,11 @@
   pos: NOUN
   gloss: Monday
   feats: {DAY_VALUE: "1", SEM_CLASS: DAY}
+
+- citation: lungkot
+  pos: NOUN
+  gloss: sadness
+  source: audit-corpus
 
 - citation: lupa
   pos: NOUN
@@ -1388,6 +1433,11 @@
   pos: NOUN
   gloss: yard, patio
 
+- citation: payat
+  pos: NOUN
+  gloss: thinness
+  source: audit-corpus
+
 - citation: pebrero
   pos: NOUN
   gloss: February
@@ -1609,6 +1659,11 @@
   subclass: [LANGUAGE]
   source: audit-corpus
 
+- citation: tamad
+  pos: NOUN
+  gloss: laziness
+  source: audit-corpus
+
 - citation: tanghali
   pos: NOUN
   gloss: noon / midday
@@ -1654,6 +1709,11 @@
 - citation: tenga
   pos: NOUN
   gloss: ear
+
+- citation: tigang
+  pos: NOUN
+  gloss: dryness, dehydration
+  source: audit-corpus
 
 - citation: tinapay
   pos: NOUN
@@ -1777,3 +1837,8 @@
 - citation: wika
   pos: NOUN
   gloss: language
+
+- citation: yaman
+  pos: NOUN
+  gloss: wealth
+  source: audit-corpus
