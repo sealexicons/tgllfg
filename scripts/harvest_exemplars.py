@@ -171,10 +171,19 @@ _TGL_MARKERS = {
 }
 
 # English function words that suggest the line is English prose.
+# Phase 9.K: extended with imperative-prompt and instruction-line
+# tokens (``add``, ``where``, ``following``, ``linkers``) so exercise-
+# instruction lines like ``Add sa phrases or ang phrases or both where
+# appropriate.`` are recognised as English-shaped and rejected by
+# ``_looks_like_tagalog`` despite carrying 2 Tagalog markers (``sa``,
+# ``ang``) in citation context.
 _EN_MARKERS = {
     "the", "of", "and", "or", "to", "in", "is", "are", "was",
     "were", "this", "that", "these", "those", "with", "from",
     "for", "but", "not", "be", "have", "has", "had",
+    "add", "where", "appropriate", "necessary", "following",
+    "each", "using", "linkers", "phrases", "choose", "fill",
+    "complete", "translate", "identify", "select",
 }
 
 
@@ -237,6 +246,90 @@ _QUOTED_ENGLISH_RE = re.compile(r"'[a-zA-Z][a-zA-Z\s']{1,30}'")
 _TRAILING_PAREN_RE = re.compile(r"\s+\(([^)]+?)\)\s*$")
 
 
+# Phase 9.K cleanups for Wave 2 R&C 1990 extractor noise.
+#
+# Pedagogical grammar-tag prefix labels seen in R&C 1990 exercise
+# blocks: ``Q:``, ``Question:``, ``Example:``, ``Sentence:``,
+# ``Simple S:``, ``Conjunction:``, ``Negative:``, ``Counter-
+# assumption:``, ``Affirmative command:``, etc. Closed list — the
+# Tagalog idiom of using a noun-phrase + colon + clause (e.g.,
+# ``Biyemes ngayon: ngumili ka naman.``) is preserved.
+_GRAMMAR_TAG_PREFIX_RE = re.compile(
+    r"^(?:"
+    r"Affirmative\s+[Cc]ommand|Direct\s+[Cc]ommand|Indirect\s+[Cc]ommands?|"
+    r"Question|Answer|Q|A|"
+    r"Assertion|Assumption|Counter[-\s]?[Aa]ssumption|Counter[-\s]?[Ee]xpectation|"
+    r"Awkward|Better|"
+    r"Conjunction|Negatives?|"
+    r"Example|Sentence|Simple\s+S(?:entences?)?|"
+    r"In\s+Focus|Nominal(?:ized)?\s+[Cc]lause|"
+    r"Statement|Active|Passive|Imperative"
+    r")\s*:\s+",
+)
+
+# Leading paren-metadata that signals the predicate has been moved
+# into the metadata block and the body is a bare argument-string
+# (e.g., ``(verb tugtog. contemplated) si William ng gilara.``).
+# Reject the whole line.
+_LEADING_PAREN_REJECT_RE = re.compile(
+    r"^\(\s*(?:verb|noun|adj|root|kuha)\b[^)]{0,80}\)\s+",
+    re.IGNORECASE,
+)
+
+# Leading "(+ ...)" paren-metadata that prefixes a full sentence —
+# e.g., ``(+ base reduplication) Lumakad siya nang dahan-dahan.``.
+# Includes a malformed variant where the closing paren is missing
+# and the prefix runs up to the first capitalized word:
+# ``(+ pagka- and Umiyak siya nang pagkalakas-lakas.``. Strip the
+# prefix, keep the rest.
+_LEADING_PLUS_PAREN_RE = re.compile(
+    r"^\(\s*\+\s+[^A-ZÑ)]{1,80}\)\s+"      # (+ ... ) closed
+    r"|^\(\s*\+\s+[^A-ZÑ]{1,80}(?=[A-ZÑ])"  # (+ ... <Capital> open
+)
+
+# Mid-sentence parenthesized grammar-tag annotations:
+# ``Bumuhos ang ulan kaya (Effect) nabasa si Jane.``. Closed list.
+_MID_SENTENCE_TAG_RE = re.compile(
+    r"\s*\(\s*(?:Effect|Cause|Result|Contrast|Purpose|Reproach|"
+    r"Shift|Reason|Concession|Condition)\s*\)\s*",
+)
+
+# Trailing editor-annotation ``(?)`` marking the analyst's
+# uncertainty about a form: ``binuksan (?)``. Strip including any
+# adjacent terminal punctuation, restore a clean period below.
+_TRAILING_PAREN_Q_RE = re.compile(r"\s*\(\s*\?\s*\)\s*\.?\s*$")
+
+# Trailing exercise list-marker (``\.\s+a\.``, ``\s+f\.``, ``,\s+a\.``)
+# appended to a complete sentence by the typesetter. Normalize to a
+# single sentence-final period.
+_TRAILING_LIST_MARKER_RE = re.compile(r"[.,]?\s+[a-z]\.\s*$")
+
+# Slot-fill template patterns (paradigm tables): ``si / ang``,
+# ``/ / X / .``. Lines containing them are slot-fill scaffolding,
+# not real sentences.
+_SLOT_FILL_RE = re.compile(r"\s/\s")
+
+# Ungrammatical-marker mid-line: ``Nauntog ang mga *papandak.`` /
+# ``Na-gong ang mga pangit ... *papangtt.``. Mid-line ``*<lower>`` is
+# the analyst's "ungrammatical-as-shown" mark; the line is a
+# starred-form citation, not a target parse.
+_UNGRAM_MARKER_RE = re.compile(r"\*[a-z]")
+
+# OCR-confidence-low characters: the typesetter's currency-glyph
+# substitutions (``€``, ``£``) for ``e`` / ``n``, and backslashes
+# mid-word (``san\palok``).
+_OCR_NOISE_CHAR_RE = re.compile(r"[€£]|\w\\\w")
+
+# Truncation marker: line ends in ``...``. Trail-off indicates the
+# original sentence is unfinished and not a target parse:
+# ``Pinag-usapan nila ... kaya ...``.
+_TRUNCATION_RE = re.compile(r"\.\.\.\s*$")
+
+# Multi-space typesetter padding (paradigm-row alignment in OCR).
+# Collapse to single space after all upstream cleanups.
+_MULTI_SPACE_RE = re.compile(r"\s{2,}")
+
+
 def _is_english_gloss(content: str) -> bool:
     """Heuristic: parenthesized span is an English gloss if it starts
     with an uppercase letter, contains ≥ 2 alphabetic tokens, and has
@@ -268,24 +361,56 @@ def _strip_trailing_english_gloss(text: str) -> str:
 
 
 def _clean_sentence_text(text: str) -> str | None:
-    """Apply 8.P + 8.W cleanups: strip English-prefix labels; strip
-    trailing English glosses; reject lines with parenthesized English
-    prompts; reject lines with quoted English-only spans. Return
+    """Apply 8.P + 8.W + 9.K cleanups: strip English-prefix labels;
+    strip Tagalog-source grammar-tag prefix labels; strip leading
+    paren-metadata; strip mid-sentence and trailing tag annotations;
+    reject paradigm-table / starred-form / OCR-garble lines. Return
     cleaned text, or ``None`` if the line should be dropped entirely."""
     text = text.strip()
-    # Cleanup 1: strip English-prefix labels.
+    # 8.P Cleanup 1: strip English-prefix labels.
     text = _ENGLISH_PREFIX_RE.sub("", text)
-    # Cleanup 1.5 (8.W): strip trailing parenthesized English glosses
+    # 9.K Cleanup A: strip pedagogical grammar-tag prefixes
+    # (``Q:``/``Example:``/``Simple S:``/``Counter-assumption:``).
+    text = _GRAMMAR_TAG_PREFIX_RE.sub("", text)
+    # 9.K Cleanup B: reject leading paren-metadata that pulled the
+    # predicate out of the sentence body (``(verb tugtog. ...) ...``).
+    if _LEADING_PAREN_REJECT_RE.match(text):
+        return None
+    # 9.K Cleanup C: strip leading "(+ ...)" paren-metadata that
+    # prefixes a complete sentence (closed and malformed variants).
+    text = _LEADING_PLUS_PAREN_RE.sub("", text)
+    # 9.K Cleanup D: strip mid-sentence grammar-tag annotations
+    # (``kaya (Effect) nabasa``).
+    text = _MID_SENTENCE_TAG_RE.sub(" ", text)
+    # 9.K Cleanup E: strip trailing ``(?)`` editor-annotations and
+    # 9.K Cleanup F: normalize trailing list-markers to ``.``.
+    text = _TRAILING_PAREN_Q_RE.sub("", text)
+    text = _TRAILING_LIST_MARKER_RE.sub(".", text)
+    # 8.W: strip trailing parenthesized English glosses
     # (``(A friend of mine.)``) before the later paren-rejection check.
     text = _strip_trailing_english_gloss(text)
-    # Cleanup 2: reject parenthesized English prompts (these are
+    # 8.P Cleanup 2: reject parenthesized English prompts (these are
     # exercise slots, not natural Tagalog).
     if _ENGLISH_PAREN_RE.search(text):
         return None
-    # Cleanup 4: reject quoted English-only spans (foreign-word
+    # 8.P Cleanup 4: reject quoted English-only spans (foreign-word
     # citations the parser can't reasonably handle).
     if _QUOTED_ENGLISH_RE.search(text):
         return None
+    # 9.K Cleanup G: reject slot-fill template rows (``si / ang``).
+    if _SLOT_FILL_RE.search(text):
+        return None
+    # 9.K Cleanup H: reject lines with mid-line ungrammatical marker.
+    if _UNGRAM_MARKER_RE.search(text):
+        return None
+    # 9.K Cleanup I: reject lines with OCR-noise characters.
+    if _OCR_NOISE_CHAR_RE.search(text):
+        return None
+    # 9.K Cleanup J: reject lines ending in truncation ellipsis.
+    if _TRUNCATION_RE.search(text):
+        return None
+    # 9.K Cleanup K: collapse multi-space typesetter padding.
+    text = _MULTI_SPACE_RE.sub(" ", text)
     text = text.strip()
     if not text:
         return None
