@@ -249,6 +249,27 @@
     - {op: nasal_assim_prefix, value: "mang"}
   notes: mambibili (← mang+CV-redup of bili)
 
+# Phase 9.O B3 follow-on: bare CTPL without cv-redup — used in
+# subordinate, modal-XCOMP, and hortative contexts (parallel to the
+# Phase 5n.A bare OV cell and the Phase 9.O ma_an bare CTPL cell).
+# Produces ``mangyari`` (mang + yari → mangyari with nasal-retain on
+# sonorant onset) — the IMP/INF form of ``yari``-class roots. The
+# 9.E deferral note ("``mangyari`` (IMP/INF) form is still missing —
+# no IMP-aspect paradigm cell — deferred to 9.O / paradigm-cell-add
+# work") closes here.
+- voice: AV
+  aspect: CTPL
+  mood: IND
+  transitivity: ''
+  affix_class: mang_retain
+  operations:
+    - {op: nasal_assim_prefix, value: "mang"}
+  notes: |
+    mangyari (bare CTPL without cv-redup — used in subordinate /
+    modal-XCOMP / hortative contexts where the matrix carries
+    aspect/mood semantics; parallel to the bare OV `kainin` cell
+    from Phase 5n.A Commit 14 and the 9.O ma_an bare CTPL cell)
+
 # === AV — Actor Voice (maka- abilitative class) ==========================
 #
 # MOOD = ABIL distinguishes abilitative readings ("be able to ...").
@@ -790,6 +811,67 @@
     - {op: prefix, value: "pag"}
     - {op: suffix, value: an}
   notes: "pagbibintangan, paglalaruan (CTPL — cv-redup + pag- prefix + -an suffix; no -in- infix)"
+
+# --- ma-...-an LF-NVOL: non-volitional locative voice (Phase 9.O B3.B) ---
+#
+# 8.I pin closure: ``malimutan`` ("be-able-to-forget") and other
+# LF-NVOL forms of `limot`-class roots — ma + root + an. Surface
+# pattern parallels the existing AV-NVOL ma- cells (lines 460-488)
+# crossed with the DV-LF an_oblig cells (lines around 290-330).
+#
+# Realis forms use `na-` prefix; irrealis (CTPL) uses `ma-`. As
+# with other LF cells, vowel-raising on the suffix (`limot` →
+# `limut-an`) is sandhi-handled. The "bare CTPL without redup"
+# cell at the end emits the subordinate/modal-XCOMP form
+# ``malimutan`` used in `Bago ko malimutan ito.` — analogous to
+# Phase 5n.A's bare OV `kainin` cell (no redup, used in hortative
+# / non-finite contexts).
+- voice: DV
+  aspect: PFV
+  mood: NVOL
+  transitivity: TR
+  affix_class: ma_an
+  operations:
+    - {op: prefix, value: "na"}
+    - {op: suffix, value: an}
+  notes: nalimutan (NVOL realis PFV — "did happen to forget")
+
+- voice: DV
+  aspect: IPFV
+  mood: NVOL
+  transitivity: TR
+  affix_class: ma_an
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "na"}
+    - {op: suffix, value: an}
+  notes: nalilimutan (NVOL realis IPFV)
+
+- voice: DV
+  aspect: CTPL
+  mood: NVOL
+  transitivity: TR
+  affix_class: ma_an
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ma"}
+    - {op: suffix, value: an}
+  notes: malilimutan (NVOL irrealis CTPL — "will be-able-to-forget")
+
+- voice: DV
+  aspect: CTPL
+  mood: NVOL
+  transitivity: TR
+  affix_class: ma_an
+  operations:
+    - {op: prefix, value: "ma"}
+    - {op: suffix, value: an}
+  notes: |
+    malimutan (bare CTPL without cv-redup — used in subordinate
+    "bago"-clauses, modal-XCOMPs, hortative-LF contexts where the
+    matrix carries aspect/mood semantics; parallel to the bare OV
+    `kainin` cell from Phase 5n.A Commit 14)
+
 
 # --- pa-...-an monoclausal direct causative, locative pivot (CAUS=DIRECT, DV) ---
 #
