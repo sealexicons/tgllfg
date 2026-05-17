@@ -94,6 +94,22 @@
     CAUS: INDIRECT
   intrinsic: AV_CAUS_INDIRECT_FLAT
 
+# Phase 9.T.3: 2-arg AV-CAUS-INDIRECT companion. ``Nagpakain siya
+# ng kendi.`` (8.H ``test_two_arg_av_caus_indirect`` pin) —
+# CAUSER + PATIENT only, no overt CAUSEE. The CAUSEE is implicit
+# / recoverable from context but not syntactically realized. PRED
+# template drops the OBL-CAUSEE slot.
+- lemma: kain
+  voice: AV
+  pred: "CAUSE-EAT <SUBJ, OBJ>"
+  a_structure: [CAUSER, PATIENT]
+  gf_defaults:
+    CAUSER: SUBJ
+    PATIENT: OBJ
+  morph_constraints:
+    CAUS: INDIRECT
+  intrinsic: AV_CAUS_INDIRECT_2ARG
+
 # basa — read / cause-to-read.
 - lemma: basa
   voice: OV

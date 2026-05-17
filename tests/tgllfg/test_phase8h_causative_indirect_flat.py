@@ -190,33 +190,42 @@ class TestPhase8hOutOfScope:
     8.H scope. Pin each; flip when the named follow-on sub-PR
     closes it."""
 
-    def test_nang_v_duplicate_idiom(self) -> None:
+    def test_nang_v_duplicate_idiom_closed_in_9t(self) -> None:
         """``Nagpapakain sila nang nagpapakain ng kendi sa
         kanila.`` (S&O 1972 page 410 sent-593 verbatim) — the
-        ``nang V-DUPLICATE`` "X-ing while X-ing" idiom is a
-        distinct construction (intensifier-aspectual form).
-        Pin; flip when the relevant sub-PR lands."""
+        ``nang V-DUPLICATE`` "X-ing while X-ing" idiom.
+
+        Phase 9.T.4 closes this via two new S-rules in
+        cfg/clause.py: (1) a 1-arg AV-intransitive shape
+        (``V[VOICE=AV] PART V[VOICE=AV] NP[CASE=NOM]``) for
+        ``Tumawa nang tumawa si Juan.`` etc., and (2) a 3-arg
+        AV-CAUS-INDIRECT-FLAT shape matching this pin verbatim.
+        The duplicate-V matching is enforced via
+        ``(↓X LEMMA) = (↓1 LEMMA)`` and aspect-match equations."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Nagpapakain sila nang nagpapakain ng kendi sa kanila.",
             n_best=2,
         )
-        assert len(parses) == 0, (
-            "nang V-DUPLICATE idiom closed — flip if a sub-PR "
-            "added the relevant rule."
+        assert len(parses) >= 1, (
+            "nang V-DUPLICATE pin should parse post-9.T.4"
         )
 
 
-    def test_two_arg_av_caus_indirect(self) -> None:
+    def test_two_arg_av_caus_indirect_closed_in_9t(self) -> None:
         """``Nagpakain siya ng kendi.`` — 2-arg AV-CAUS-INDIRECT
-        (CAUSER + PATIENT, no overt CAUSEE). The flat 3-arg lex
-        profile this commit adds requires all three slots filled.
-        The 2-arg shape needs a separate lex profile + grammar
-        rule (no audit pressure to surface). Pin; flip when a
-        2-arg AV-CAUS-INDIRECT sub-PR lands."""
+        (CAUSER + PATIENT, no overt CAUSEE).
+
+        Phase 9.T.3 closes this via a new lex profile
+        ``_AV_CAUS_INDIRECT_2ARG`` in core/lexicon.py + a
+        matching ``kain`` lex entry in causative.yaml + a new
+        2-daughter S-rule in cfg/clause.py
+        (``V[VOICE=AV, CAUS=INDIRECT] NP[CASE=NOM] NP[CASE=GEN]``).
+        The CAUSEE is implicit/recoverable but not syntactically
+        realized; PRED template drops the OBL-CAUSEE slot."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("Nagpakain siya ng kendi.", n_best=2)
-        assert len(parses) == 0
+        assert len(parses) >= 1
 
 
 class TestPhase8hRegressions:
