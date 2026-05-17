@@ -2007,6 +2007,55 @@
   pos: PART
   feats: {DISCOURSE: SO, LEMMA: tuloy}
 
+# === Phase 9.X.pre-1.11: discourse + adverbial particles ==================
+#
+# 11 audit-attested entries extending the ADV/PART coverage.
+#
+# Temporal/manner adverbs (5): agad (immediately), bigla (suddenly),
+# kadalasan (often, parallel to madalas), lubha (severely), uli
+# (again).
+#
+# Discourse + comparison particles (6): gaya (like, simile),
+# gayunman (however — extending the Phase 5m discourse-connectives
+# family), lalo (more, intensifier — also "lalo na" "especially"),
+# naku (oh my, interjection — extending Phase 8.D2 INTERJ family),
+# samantala (meanwhile), siyempre (of course — parallel to siguro).
+
+- surface: agad
+  pos: ADV
+  feats: {ADV_TYPE: TIME, LEMMA: agad}
+- surface: bigla
+  pos: ADV
+  feats: {ADV_TYPE: MANNER, LEMMA: bigla}
+- surface: kadalasan
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: HIGH, LEMMA: kadalasan}
+- surface: lubha
+  pos: ADV
+  feats: {ADV_TYPE: MANNER, INTENSIFIER: true, LEMMA: lubha}
+- surface: uli
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, LEMMA: uli}
+
+- surface: gaya
+  pos: PART
+  feats: {LEMMA: gaya}
+- surface: gayunman
+  pos: PART
+  feats: {DISCOURSE: HOWEVER, DISCOURSE_POS: SENTENCE_INITIAL, LEMMA: gayunman}
+- surface: lalo
+  pos: PART
+  feats: {INTENSIFIER: true, LEMMA: lalo}
+- surface: naku
+  pos: PART
+  feats: {INTERJ: true, LEMMA: naku}
+- surface: samantala
+  pos: PART
+  feats: {LEMMA: samantala}
+- surface: siyempre
+  pos: PART
+  feats: {DISCOURSE_POS: SENTENCE_INITIAL, LEMMA: siyempre}
+
 # === Phase 9.J: colloquial DEM-DIST contraction ===========================
 #
 # ``yon`` is the colloquial / contracted form of ``iyon`` (the
