@@ -77,6 +77,12 @@
   transitivity: INTR
   affix_class: [um, maka]
 
+- citation: almusal
+  pos: VERB
+  gloss: eat breakfast
+  transitivity: INTR
+  affix_class: [mag, maka]
+
 - citation: alok
   pos: VERB
   gloss: offer; propose
@@ -124,6 +130,18 @@
   gloss: go down, descend
   transitivity: INTR
   affix_class: [um, mag, maka]
+
+- citation: bagsak
+  pos: VERB
+  gloss: fall, fail
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
+- citation: baha
+  pos: VERB
+  gloss: flood
+  transitivity: INTR
+  affix_class: [um, ma, maka]
 
 - citation: balak
   pos: VERB
@@ -233,6 +251,12 @@
   gloss: visit
   transitivity: TR
   affix_class: [mag, an_oblig, maka]
+
+- citation: bitay
+  pos: VERB
+  gloss: hang, execute (by hanging)
+  transitivity: TR
+  affix_class: [mag, in_oblig, i_oblig, maka]
 
 - citation: buhat
   pos: VERB
@@ -513,6 +537,12 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
 
+- citation: haya
+  pos: VERB
+  gloss: let go, allow, leave alone
+  transitivity: TR
+  affix_class: [mag, an_oblig, maka]
+
 - citation: higa
   pos: VERB
   gloss: lie down
@@ -591,6 +621,13 @@
   transitivity: TR
   affix_class: [um, in_oblig, i_oblig, mang, maka]
 
+- citation: hulog
+  pos: VERB
+  gloss: fall (INTR); drop, deposit (TR)
+  transitivity: TR
+  affix_class: [mag, ma, i_oblig, an_oblig, maka]
+  feats: {AV_ABSOL: true}
+
 - citation: ibig
   pos: VERB
   gloss: love; like
@@ -650,6 +687,12 @@
   gloss: chop with a bolo
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
+
+- citation: itlog
+  pos: VERB
+  gloss: lay an egg
+  transitivity: INTR
+  affix_class: [mang, maka]
 
 - citation: iyak
   pos: VERB
@@ -853,6 +896,12 @@
   transitivity: INTR
   affix_class: [um, maka]
 
+- citation: lipas
+  pos: VERB
+  gloss: pass, expire (of time)
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
 - citation: lipat
   pos: VERB
   gloss: transfer, move
@@ -884,6 +933,12 @@
   affix_class: [mag, i_oblig, in_oblig, maka]
   feats: {AV_ABSOL: true}
 
+- citation: mali
+  pos: VERB
+  gloss: be wrong, err
+  transitivity: INTR
+  affix_class: [mag, maka]
+
 - citation: maneho
   pos: VERB
   gloss: drive
@@ -907,6 +962,12 @@
   gloss: chew
   transitivity: TR
   affix_class: [um, in_oblig, maka]
+
+- citation: nood
+  pos: VERB
+  gloss: watch
+  transitivity: TR
+  affix_class: [mang, in_oblig, an_oblig, maka]
 
 - citation: pagod
   pos: VERB
