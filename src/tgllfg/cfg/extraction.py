@@ -974,6 +974,147 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.S: Paired Ni X ni Y correlative coordination (B3.E) ---
+    #
+    # ``Ni si Juan ni si Maria ay hindi kumain.``
+    #     "Neither Juan nor Maria ate."
+    # ``Ni si Juan ni si Ben ay hindi bibilhin iyan.``
+    #     (S&O 1972 p.604 / sent-1159 — 8.V pin)
+    #     "Neither Juan nor Ben will that be bought by."
+    # ``Ni damit ni sapatos ay hindi nakakabili ang taong iyon.``
+    #     (S&O 1972 p.604 / sent-1156)
+    #     "Neither clothes nor shoes can that person buy."
+    # ``Ni ngayon ni hulas ay hindi ako makakaalis.``
+    #     (R&G Conv)
+    #     "Neither today nor tomorrow can I leave."
+    #
+    # Closes the 8.V `test_paired_ni_correlative` pin. Per S&O 1972
+    # §7.20, ``Ni X ni Y`` correlatively coordinates two foci, both
+    # negated by the matrix's `hindi`. Structurally extends the
+    # Phase 8.V SUBJ-focus and Phase 9.R Non-SUBJ-focus rules with
+    # a second ``PART[FOCUS_NEG=true] NP[CASE=X]`` daughter inserted
+    # before the ``ay`` particle.
+    #
+    # Four rules — one per gap category (SUBJ + OBJ + OBJ-AGENT +
+    # OBL) — mirroring the 8.V + 9.R rule family. The fronted-NP
+    # case is NOM for SUBJ / OBJ / OBJ-AGENT (Ni absorbs the case
+    # marker), DAT for OBL (sa-PP morphology retained).
+    #
+    # F-structure shape:
+    #
+    #   TOPIC          = ↓2 (first conjunct — primary focus)
+    #   NI_CONJUNCTS   ⊇ {↓4} (second conjunct rides as set member)
+    #   FOCUS_NEG      = true
+    #   POLARITY       = 'NEG'
+    #   (gap)          binds to ↓2 via REL-PRO
+    #
+    # The gap binds to the first conjunct's f-structure; semantically
+    # the negation distributes over both conjuncts ("neither X nor Y
+    # did Z"), but the structural binding pin is the first conjunct
+    # to match the LFG convention for ay-fronted topic-gap relations.
+    # The second conjunct rides on a NI_CONJUNCTS set so downstream
+    # consumers can recover the paired structure.
+    #
+    # Same POLARITY=NEG and FOCUS_NEG=true gates as 8.V / 9.R; both
+    # ↓1 and ↓3 must be ``FOCUS_NEG=true`` particles (the two ``ni``
+    # tokens).
+
+    # 9.S Rule 1: Paired-Ni SUBJ-focus
+    rules.append(Rule(
+        "S",
+        [
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=NOM]",
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=NOM]",
+            "PART[LINK=AY]",
+            "S_GAP",
+        ],
+        [
+            "(↑) = ↓6",
+            "(↑ TOPIC) = ↓2",
+            "↓4 ∈ (↑ NI_CONJUNCTS)",
+            "(↑ FOCUS_NEG) = true",
+            "(↓6 REL-PRO) = ↓2",
+            "(↓6 REL-PRO) =c (↓6 SUBJ)",
+            "(↓6 POLARITY) =c 'NEG'",
+            "(↓1 FOCUS_NEG) =c true",
+            "(↓3 FOCUS_NEG) =c true",
+        ],
+    ))
+
+    # 9.S Rule 2: Paired-Ni OBJ-focus
+    rules.append(Rule(
+        "S",
+        [
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=NOM]",
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=NOM]",
+            "PART[LINK=AY]",
+            "S_GAP_OBJ",
+        ],
+        [
+            "(↑) = ↓6",
+            "(↑ TOPIC) = ↓2",
+            "↓4 ∈ (↑ NI_CONJUNCTS)",
+            "(↑ FOCUS_NEG) = true",
+            "(↓6 REL-PRO) = ↓2",
+            "(↓6 REL-PRO) =c (↓6 OBJ)",
+            "(↓6 POLARITY) =c 'NEG'",
+            "(↓1 FOCUS_NEG) =c true",
+            "(↓3 FOCUS_NEG) =c true",
+        ],
+    ))
+
+    # 9.S Rule 3: Paired-Ni OBJ-AGENT-focus
+    rules.append(Rule(
+        "S",
+        [
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=NOM]",
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=NOM]",
+            "PART[LINK=AY]",
+            "S_GAP_OBJ_AGENT",
+        ],
+        [
+            "(↑) = ↓6",
+            "(↑ TOPIC) = ↓2",
+            "↓4 ∈ (↑ NI_CONJUNCTS)",
+            "(↑ FOCUS_NEG) = true",
+            "(↓6 REL-PRO) = ↓2",
+            "(↓6 REL-PRO) =c (↓6 OBJ-AGENT)",
+            "(↓6 POLARITY) =c 'NEG'",
+            "(↓1 FOCUS_NEG) =c true",
+            "(↓3 FOCUS_NEG) =c true",
+        ],
+    ))
+
+    # 9.S Rule 4: Paired-Ni OBL-focus
+    rules.append(Rule(
+        "S",
+        [
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=DAT]",
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=DAT]",
+            "PART[LINK=AY]",
+            "S_GAP_OBL",
+        ],
+        [
+            "(↑) = ↓6",
+            "(↑ TOPIC) = ↓2",
+            "↓4 ∈ (↑ NI_CONJUNCTS)",
+            "(↑ FOCUS_NEG) = true",
+            "(↓6 REL-PRO) = ↓2",
+            "(↓6 POLARITY) =c 'NEG'",
+            "(↓1 FOCUS_NEG) =c true",
+            "(↓3 FOCUS_NEG) =c true",
+        ],
+    ))
+
+
     # --- Phase 7a.F: kahit-X SUBJ no-`ay` colloquial (§18.1.1 item 8) ---
     #
     # `Kahit sino kumain.` "Anyone could eat" — colloquial Tagalog
