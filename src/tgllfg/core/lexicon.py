@@ -416,13 +416,33 @@ def _synthesize_verb_entries(ma: MorphAnalysis) -> list[LexicalEntry]:
         return [tr_entry]
     pred_non_av = f"{pred_name} <SUBJ, OBJ-AGENT>"
     if voice == "DV":
-        return [LexicalEntry(
+        dv_tr_entry = LexicalEntry(
             lemma=ma.lemma, pred=pred_non_av,
             a_structure=["AGENT", "GOAL"],
             morph_constraints={},
             gf_defaults={"GOAL": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_SYNTH_DV_PROFILE,
-        )]
+        )
+        if av_absolutive:
+            # Phase 9.V.2: DV-NVOL absolutive synthesizes an INTR
+            # variant where the experiencer (AGENT) is the sole
+            # argument bound to SUBJ. Parallel to the 9.O AV path
+            # above. The ma+root+-an paradigm cell on AV_ABSOL-
+            # flagged roots (``malimutan`` / ``nalimutan`` for
+            # ``limot``) admits the bare-experiencer reading
+            # ``Malimutan ko.`` "I (will) forget (it)" with the
+            # patient implicit. Closes 9.U Cluster B sent-661 inner
+            # SubordClause body ``ko malimutan``.
+            dv_intr_entry = LexicalEntry(
+                lemma=ma.lemma,
+                pred=f"{pred_name} <SUBJ>",
+                a_structure=["AGENT"],
+                morph_constraints={},
+                gf_defaults={"AGENT": "SUBJ"},
+                intrinsic_classification=_AV_INTR_ACTOR,
+            )
+            return [dv_tr_entry, dv_intr_entry]
+        return [dv_tr_entry]
     if voice == "IV":
         return [LexicalEntry(
             lemma=ma.lemma, pred=pred_non_av,

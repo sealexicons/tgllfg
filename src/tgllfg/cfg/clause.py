@@ -71,6 +71,33 @@ def register_rules(rules: list[Rule]) -> None:
         _eqs("(↑ SUBJ) = ↓3", "↓2 ∈ (↑ ADJUNCT)"),
     ))
 
+    # --- Phase 9.V.1: SUBJ-trailing 4-element AV-TR (GEN-DAT-NOM) ------
+    #
+    # ``Kahapon ay sumulat ng liham kay Maria si Juan.``
+    #     "Yesterday Juan wrote a letter to Maria."
+    #     (S&O 1972 page 447 sent-689 matrix — 9.U Cluster B audit hit)
+    #
+    # Existing 4-element AV-TR rules cover NOM-GEN-DAT (canonical
+    # VSO + DAT-adjunct) and GEN-NOM-DAT (free-word-order alt). The
+    # SUBJ-trailing variant ``V GEN DAT NOM`` (V + OBJ + DAT-adj +
+    # SUBJ) was missing — and surfaces naturally when a fronted-
+    # ADV ay-pattern (``Kahapon ay ...``) deprioritizes the SUBJ to
+    # clause-final position.
+    #
+    # Same equation set as rule 442 (GEN-NOM-DAT) but with the SUBJ
+    # daughter index shifted to ↓4. CASE markers fully distinguish
+    # the three NPs (NOM=ang/si, GEN=ng/ni, DAT=sa/kay) so no
+    # spurious ambiguity arises against the canonical orderings.
+    rules.append(Rule(
+        "S",
+        ["V[VOICE=AV]", "NP[CASE=GEN]", "NP[CASE=DAT]", "NP[CASE=NOM]"],
+        _eqs(
+            "(↑ SUBJ) = ↓4",
+            "(↑ OBJ) = ↓2",
+            "↓3 ∈ (↑ ADJUNCT)",
+        ),
+    ))
+
     # --- Phase 9.O.5: mangyari polite-imperative wrap ------------------
     #
     # ``Mangyaring umalis kayo.``    "Kindly leave."
@@ -202,6 +229,31 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "S",
         ["V[VOICE=AV, MOOD=NVOL, AV_ABSOL=true]", "NP[CASE=GEN]"],
+        _eqs("(↑ SUBJ) = ↓2"),
+    ))
+
+    # --- Phase 9.V.2: DV-NVOL absolutive (limot family) ----------------
+    #
+    # ``Malimutan ko.``       "I (will) forget (it)."
+    # ``Nalimutan ko.``       "I forgot (it)."
+    # ``Bago ko malimutan, nakita mo ba si Jonathan sa miting?``
+    #     "Before I forget, did you see Jonathan at the meeting?"
+    #     (R&C 1990 Ch5 Transition Phrases sent-661 — 9.U Cluster B
+    #      audit hit; the SubordClause body ``ko malimutan`` is the
+    #      experiencer-clitic-fronted form of ``Malimutan ko.`` with
+    #      ``ko`` host-moved to the subordinator.)
+    #
+    # Parallel to the 9.O AV-NVOL absolutive rule above, but for
+    # DV-NVOL forms (``malimutan`` / ``nalimutan`` — the ma+-an
+    # paradigm cell on AV_ABSOL-flagged roots). Morph analyzer
+    # produces ``malimutan`` as V[VOICE=DV, ASPECT=CTPL, MOOD=NVOL,
+    # AV_ABSOL=true]; the AV-NVOL rule's VOICE=AV constraint
+    # excludes it, so this sibling rule admits the parallel
+    # DV-NVOL absolutive parse where the GEN-PRON experiencer
+    # surfaces as the matrix SUBJ.
+    rules.append(Rule(
+        "S",
+        ["V[VOICE=DV, MOOD=NVOL, AV_ABSOL=true]", "NP[CASE=GEN]"],
         _eqs("(↑ SUBJ) = ↓2"),
     ))
 
@@ -1573,6 +1625,43 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBJ) = ↓1",
             "(↑ TOPIC) = ↓1",
             "(↑ N_LEMMA) = ↓3 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "¬ (↓3 WH)",
+        ],
+    ))
+
+    # --- Phase 9.V.4: ay-fronted predicate-N with GEN-NP complement ----
+    #
+    # ``Si Juan ay bahagi ng pamilya.``  "Juan is part of the family."
+    # ``Ang isang Pilipino ay bahagi ng kanyang pamilya.``
+    #     "A Filipino is part of his family."
+    #     (R&C 1990 ANG PAMILYA sent-1 matrix — 9.U Cluster B audit
+    #      hit; the ay-fronted variant of the existing predicate-N
+    #      `Bahagi siya ng pamilya.` "He is part of the family." that
+    #      already parses.)
+    #
+    # Companion to the predicate-N rule above (bare ``N`` daughter);
+    # this rule admits a trailing GEN-NP that serves as the
+    # possessor / specifier of the predicate noun (``bahagi ng X``
+    # "part of X", ``doktor ng nayon`` "doctor of the village",
+    # etc.). The GEN-NP attaches inside the predicate's f-structure
+    # as ``PRED-NP-POSS`` (parallel to the standalone predicate-N's
+    # possessor binding in non-ay-fronted clauses).
+    #
+    # F-structure shape mirrors the bare predicate-N rule plus:
+    #
+    #   PRED-NP-POSS  = ↓4  (the GEN-NP possessor of the predicate
+    #                        noun, accessible to consumers that
+    #                        need the possessor's identity)
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=NOM]", "PART[LINK=AY]", "N", "NP[CASE=GEN]"],
+        [
+            "(↑ PRED) = 'BE-N <SUBJ>'",
+            "(↑ SUBJ) = ↓1",
+            "(↑ TOPIC) = ↓1",
+            "(↑ N_LEMMA) = ↓3 LEMMA",
+            "(↑ PRED-NP-POSS) = ↓4",
             "(↑ PREDICATIVE) = true",
             "¬ (↓3 WH)",
         ],
@@ -3515,6 +3604,79 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # The remaining two pins (ADV-fronted, PART-fronted) ARE
     # structural gaps and need new rules.
+
+    # --- Phase 9.V.3: sentence-initial FREQUENCY AdvP + clitic SUBJ ---
+    #
+    # ``Palagi akong nagdadala ng regalo.``
+    #     "I always bring a gift."
+    #     (R&C 1990 Ch5 sent-767 matrix — 9.U Cluster B audit hit)
+    # ``Palagi akong umaalis.``       "I always leave."
+    # ``Madalas akong kumain.``       "I often eat."
+    # ``Lagi akong nagdadala ...``    same shape as palagi.
+    #
+    # Mirrors the Phase 5j Commit 7 modal-control wrap shape:
+    #
+    #   S → V[CTRL_CLASS=MODAL] NP[CASE=NOM] PART[LINK=NG] S_XCOMP
+    #
+    # with FREQUENCY AdvP at the matrix head instead of a modal V.
+    # The clitic NOM-PRON SUBJ sits in Wackernagel 2P after the
+    # AdvP, with the ``-ng`` ligature from ``akong`` / ``kong``
+    # stripped to a standalone PART[LINK=NG] daughter (Phase 5k C1
+    # split_linker_ng pre-pass).
+    #
+    # The matrix S inherits PRED / VOICE / ASPECT / MOOD / LEX-
+    # ASTRUCT from the V daughter (↓4); the AdvP joins ADJUNCT;
+    # the SUBJ binds to the clitic NOM-PRON at ↓2. Unlike the
+    # modal-control wrap there is no XCOMP — the FREQ-ADV is a
+    # simple sentential adjunct.
+    #
+    # Two arities: V[AV] alone (intransitive) or V[AV] + NP[GEN]
+    # (transitive with GEN-OBJ). Both gated by ``(↓3 LINK) =c 'NG'``
+    # to match only the ligature variant and not random PART
+    # daughters. The FREQUENCY gate on ↓1 keeps the rule narrowly
+    # applied to the palagi / madalas / lagi family — other ADV
+    # types (TIME / MANNER / etc.) have separate placement rules.
+    rules.append(Rule(
+        "S",
+        [
+            "ADV[ADV_TYPE=FREQUENCY]",
+            "NP[CASE=NOM]",
+            "PART[LINK=NG]",
+            "V[VOICE=AV]",
+        ],
+        [
+            "(↑ PRED) = ↓4 PRED",
+            "(↑ VOICE) = ↓4 VOICE",
+            "(↑ ASPECT) = ↓4 ASPECT",
+            "(↑ MOOD) = ↓4 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓4 LEX-ASTRUCT",
+            "(↑ SUBJ) = ↓2",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↓3 LINK) =c 'NG'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        [
+            "ADV[ADV_TYPE=FREQUENCY]",
+            "NP[CASE=NOM]",
+            "PART[LINK=NG]",
+            "V[VOICE=AV]",
+            "NP[CASE=GEN]",
+        ],
+        [
+            "(↑ PRED) = ↓4 PRED",
+            "(↑ VOICE) = ↓4 VOICE",
+            "(↑ ASPECT) = ↓4 ASPECT",
+            "(↑ MOOD) = ↓4 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓4 LEX-ASTRUCT",
+            "(↑ SUBJ) = ↓2",
+            "(↑ OBJ) = ↓5",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↓3 LINK) =c 'NG'",
+        ],
+    ))
+
 
     # --- 8.D2 ADV-variant: ``S → AdvP PUNCT[COMMA] S`` ----------------
     #
