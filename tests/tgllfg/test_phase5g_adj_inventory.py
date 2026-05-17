@@ -168,17 +168,20 @@ class TestInventoryTotals:
         ``tigas`` for 41; Phase 8.L adds 3 (bagsik / buti / payat)
         for 44; Phase 9.F adds 4 (aga / bigat / husay / runong)
         for 48 (audit-surfaced ma-ADJ predicates: maaga / mabigat
-        / mahusay / marunong).
+        / mahusay / marunong); Phase 9.X.pre-1.8 adds 9 (hilig /
+        hiya / ilap / ingat / lalim / lumanay / sama / tamis / tapat)
+        for 57.
         """
         data = load_morph_data()
         ma_adj_roots = [
             r for r in data.roots
             if r.pos == "ADJ" and "ma_adj" in r.affix_class
         ]
-        assert len(ma_adj_roots) == 48, (
-            f"expected 48 ma_adj-opting ADJ roots (30 Phase 5g "
+        assert len(ma_adj_roots) == 57, (
+            f"expected 57 ma_adj-opting ADJ roots (30 Phase 5g "
             f"+ 9 Phase 5n.A C1 + 1 Phase 5n.C.3 C8 + 1 Phase 8.C "
-            f"+ 3 Phase 8.L + 4 Phase 9.F); got {len(ma_adj_roots)}"
+            f"+ 3 Phase 8.L + 4 Phase 9.F + 9 Phase 9.X.pre-1.8); "
+            f"got {len(ma_adj_roots)}"
         )
 
     def test_phase5g_inventory_lemmas_present(self) -> None:
