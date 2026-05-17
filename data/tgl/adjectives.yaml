@@ -232,6 +232,16 @@
   affix_class: []
   feats: {STATIVE_PRED: true}
 
+- citation: kakaiba
+  pos: ADJ
+  gloss: different, unique, unusual
+  affix_class: []
+
+- citation: kakatwa
+  pos: ADJ
+  gloss: strange, peculiar
+  affix_class: []
+
 - citation: kapal
   pos: ADJ
   gloss: thick
@@ -355,6 +365,11 @@
 - citation: panay
   pos: ADJ
   gloss: constant, continuous, all-the-time
+  affix_class: []
+
+- citation: pangunahin
+  pos: ADJ
+  gloss: basic, main, primary
   affix_class: []
 
 # Phase 9.W: ``puno`` is polysemous. nouns.yaml carries the N

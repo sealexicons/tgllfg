@@ -44,6 +44,11 @@
   source: audit-corpus
   loan: ENGLISH
 
+- citation: akay
+  pos: NOUN
+  gloss: offspring (of fowl); one led by the hand
+  source: audit-corpus
+
 - citation: aklat
   pos: NOUN
   gloss: book
@@ -593,6 +598,11 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: daeng
+  pos: NOUN
+  gloss: moan, lament
+  source: audit-corpus
+
 - citation: daga
   pos: NOUN
   gloss: rat, mouse
@@ -623,6 +633,11 @@
 - citation: daliri
   pos: NOUN
   gloss: finger
+  source: audit-corpus
+
+- citation: daloy
+  pos: NOUN
+  gloss: flow, current (of water, traffic, etc.)
   source: audit-corpus
 
 - citation: damian
@@ -842,6 +857,11 @@
   pos: NOUN
   gloss: milk
 
+- citation: gawi
+  pos: NOUN
+  gloss: custom, habit; direction, way
+  source: audit-corpus
+
 - citation: gina
   pos: NOUN
   gloss: Gina
@@ -876,6 +896,11 @@
   pos: NOUN
   gloss: grade (academic)
   loan: SPANISH
+
+- citation: gulang
+  pos: NOUN
+  gloss: age
+  source: audit-corpus
 
 - citation: gulay
   pos: NOUN
@@ -912,6 +937,11 @@
 - citation: halaman
   pos: NOUN
   gloss: plant
+  source: audit-corpus
+
+- citation: haligi
+  pos: NOUN
+  gloss: post, pillar, column
   source: audit-corpus
 
 - citation: halimbawa
@@ -1934,6 +1964,11 @@
   gloss: dripping, falling (of drops)
   source: audit-corpus
 
+- citation: pakinabang
+  pos: NOUN
+  gloss: benefit, profit
+  source: audit-corpus
+
 - citation: pakwan
   pos: NOUN
   gloss: watermelon
@@ -2635,6 +2670,11 @@
 - citation: tindahan
   pos: NOUN
   gloss: store, shop
+
+- citation: tindi
+  pos: NOUN
+  gloss: intensity, severity
+  source: audit-corpus
 
 - citation: tingin
   pos: NOUN
