@@ -76,25 +76,34 @@ class TestPhase8sDatPronPivot:
         assert str(possessor.feats.get("CASE")) == "DAT"
 
 
-class TestPhase8sLocativeBlocked:
-    """The ``¬ (↓1 PRED)`` gate keeps NOUN-headed DAT-NPs out.
-    ``Sa bahay ang lapis.`` (locative cleft) is a separate
-    construction class — should stay zero-parse until a
-    locative-cleft sub-PR lands."""
+class TestPhase8sLocativeNotViaDatPronCleft:
+    """The 8.S DAT-PRON-pivot rule's ``¬ (↓1 PRED)`` gate keeps
+    NOUN-headed DAT-NPs out — ``Sa bahay ang lapis.`` does NOT
+    fire 8.S's ``BE-DAT <SUBJ>`` analysis. Phase 9.Q B3.D adds
+    the locative-cleft rule (with PRED ``BE-LOC <SUBJ>``) for
+    NOUN-headed DAT-NPs; the 8.S gate remains correct — the
+    8.S and 9.Q rules partition the NP[CASE=DAT] daughter
+    space cleanly (8.S: ``¬ (↓1 PRED)`` admits PRON only;
+    9.Q: ``(↓1 PRED)`` admits NOUN/DEM only)."""
 
     @pytest.mark.parametrize("sentence", [
         "Sa bahay ang lapis.",
         "Sa mesa ang aklat.",
     ])
-    def test_locative_cleft_blocked(self, sentence: str) -> None:
+    def test_locative_cleft_via_9q_not_8s(self, sentence: str) -> None:
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(sentence, n_best=2)
-        # No parse via the new 8.S rule — locative-cleft is a
-        # separate construction.
+        # Locative-cleft now parses post-9.Q with BE-LOC PRED;
+        # the 8.S DAT-PRON rule must NOT fire on these (its
+        # BE-DAT PRED would mean a possessive cleft, semantically
+        # wrong here — that's the 8.S/9.Q partition).
+        assert len(parses) >= 1, (
+            f"locative cleft should parse post-9.Q: {sentence!r}"
+        )
         for _ct, f, _astr, _diags in parses:
             assert str(f.feats.get("PRED")) != "BE-DAT <SUBJ>", (
                 f"locative cleft {sentence!r} fired the DAT-PRON "
-                "rule — gating failed"
+                "rule — 8.S/9.Q gate-partition failed"
             )
 
 

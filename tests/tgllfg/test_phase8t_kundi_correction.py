@@ -152,19 +152,30 @@ class TestPhase8tOutOfScope:
     """Audit candidates that remain zero-parse after 8.T — pinned
     as separate construction classes beyond 8.T scope."""
 
-    def test_sentence_medial_pp_cleft(self) -> None:
+    def test_sentence_medial_pp_cleft_closed_in_9q(self) -> None:
         """``Hindi dito kundi sa bayan ang pulong.`` (S&O 1972
         page 656 / sent-1289) — PP-cleft + kundi-PP with the
-        correction sentence-medial (before ang-pivot). Needs a
-        locative-cleft rule that 8.T does not land. Flip when
-        a PP-cleft sub-PR lands."""
+        correction sentence-medial (before ang-pivot).
+
+        Phase 9.Q B3.D closes this via a dedicated 5-daughter
+        rule in cfg/clause.py:
+
+            S → PART[NEG] NP[CASE=DAT] PART[COORD=BUT_NOT]
+                  NP[CASE=DAT] NP[CASE=NOM]
+                ``(↑ PRED) = 'BE-LOC <SUBJ>'``
+                ``(↑ LOC) = ↓4``  (corrective PP — actual location)
+                ``↓2 ∈ (↑ ADJUNCT)`` with ROLE='NEG_CORRECTION'
+
+        Pre-9.Q this asserted ``len == 0`` (out-of-scope).
+        Post-9.Q the sentence parses with the corrected PP
+        (``sa bayan``) as the locative predicate and the negated
+        alternative (``dito``) as a NEG_CORRECTION adjunct."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Hindi dito kundi sa bayan ang pulong.", n_best=2,
         )
-        assert len(parses) == 0, (
-            "PP-cleft + kundi-PP closed — flip if a PP-cleft "
-            "sub-PR added the locative-cleft rule."
+        assert len(parses) >= 1, (
+            "PP-cleft + kundi-PP should parse post-9.Q"
         )
 
     def test_kundi_verb_forcing(self) -> None:
