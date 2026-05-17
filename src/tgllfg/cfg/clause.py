@@ -1289,6 +1289,142 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.Q: locative cleft (B3.D) -----------------------
+    #
+    # ``Sa bahay ang lapis.``       "The pencil is at home." (8.S pin)
+    # ``Sa kotse ang gulong.``      "The tire is in the car."
+    # ``Sa Nanay ang relos.``       "The watch is Mother's." (locative-as-possessive)
+    # ``Sa Sabado ang parada.``     "The parade is on Saturday." (temporal)
+    # ``Sa harap ng sine ang tindahan.``
+    #                               "The store is in front of the cinema."
+    # ``Dito ang dating ng tren.``   "The train arrives here."
+    #                                  (DEM-locative variant)
+    #
+    # S&O 1972 §4.2 / R&G 1981 §10.5 locative-existential cleft —
+    # a DAT-marked NP (the ground / location) serves as a copular
+    # locative predicate; the NOM-pivot is the figure being located.
+    # Structurally parallel to the Phase 8.S DAT-PRON possessive
+    # cleft above; differs in semantic role (LOC instead of
+    # POSSESSOR) and in admitting NOUN-headed / DEM-headed DAT-NPs.
+    #
+    # F-structure shape:
+    #
+    #   PRED         = 'BE-LOC <SUBJ>'
+    #   SUBJ         = ↓2 (the ang-NP — figure / theme being located)
+    #   LOC          = ↓1 (the DAT-NP — ground / location)
+    #   PREDICATIVE  = true
+    #   CLAUSE_TYPE  = 'LOCATIVE_CLEFT'
+    #
+    # **Complementary gate to 8.S** (above): 8.S uses ``¬ (↓1 PRED)``
+    # to admit only PRON-headed DAT-NPs (`Sa akin`/`Akin`); 9.Q uses
+    # ``(↓1 PRED)`` (existence check) to admit only NOUN-headed
+    # (``Sa bahay`` carries PRED='NOUN(↑ FORM)') or DEM-headed
+    # (``dito`` carries PRED='PRO'). The two rules partition the
+    # NP[CASE=DAT] daughter space cleanly — no double-firing.
+    #
+    # **No conflict with Phase 5i wh-cleft** (`Sa kanino ang aklat?`):
+    # ``¬ (↓1 WH)`` blocks wh-DAT-PRON, which routes via the wh-
+    # cleft rule with its dedicated wh-specific PRED.
+    #
+    # **Composition with NEG-wrap**: ``Hindi sa bahay ang lapis.``
+    # falls out of the existing ``S → PART[POLARITY=NEG] S`` rule
+    # in cfg/negation.py applying to the cleft S.
+    #
+    # **Distinction from Phase 5j C4 ``nasa`` locative-existential**
+    # (clause.py ~2566): ``nasa`` uses a dedicated ``LOC_EXISTENTIAL``
+    # particle + bare-N ground (no sa-ADP wrap) and asserts existence
+    # (CLAUSE_TYPE=EXISTENTIAL semantically); 9.Q uses ``sa`` ADP +
+    # NP and asserts location (CLAUSE_TYPE=LOCATIVE_CLEFT). The two
+    # surface forms are near-synonyms in usage (``Nasa bahay ang
+    # lapis.`` ↔ ``Sa bahay ang lapis.``) but structurally distinct.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=DAT]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BE-LOC <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ LOC) = ↓1",
+            "(↑ PREDICATIVE) = true",
+            "(↑ CLAUSE_TYPE) = 'LOCATIVE_CLEFT'",
+            "(↓1 PRED)",
+            "¬ (↓1 WH)",
+        ],
+    ))
+
+
+    # --- Phase 9.Q: NEG'd locative cleft + sentence-medial kundi-PP correction ---
+    #
+    # ``Hindi dito kundi sa bayan ang pulong.``  (8.T pin, S&O 1972
+    #     page 656 / sent-1289)
+    #     "The meeting is not here but in town."
+    #
+    # Structural shape:
+    #
+    #   S → PART[NEG]  NP[CASE=DAT]  PART[COORD=BUT_NOT]
+    #         NP[CASE=DAT]  NP[CASE=NOM]
+    #
+    # where:
+    #
+    #   - ↓1 ``Hindi``         clausal negation
+    #   - ↓2 the negated PP    (``dito`` / ``sa X``) — what's being corrected
+    #   - ↓3 ``kundi``         "but instead" — phrasal correction particle
+    #   - ↓4 the corrective PP (``sa bayan``) — the actual location
+    #   - ↓5 the NOM-pivot     (``ang pulong``) — the figure
+    #
+    # F-structure shape (locative cleft semantic + correction
+    # adjunct):
+    #
+    #   PRED         = 'BE-LOC <SUBJ>'
+    #   SUBJ         = ↓5
+    #   LOC          = ↓4                   (the corrective PP — actual location)
+    #   POLARITY     = 'NEG'
+    #   ADJUNCT      ⊇ {↓2}                 (negated alternative)
+    #     ↓2 ROLE    = 'NEG_CORRECTION'
+    #   CLAUSE_TYPE  = 'LOCATIVE_CLEFT'
+    #
+    # **Why a sentence-level 5-daughter rule rather than an NP-DAT
+    # wrap**: the kundi-correction is gated on a NEG matrix
+    # (per S&O 1972 §7.20 — ``kundi`` requires a negative
+    # antecedent). Gating an NP-level wrap on parent-S polarity
+    # isn't expressible in LFG-equation form, so an explicit rule
+    # at the S level keeps the gate local to ↓1's POLARITY=NEG.
+    # The Phase 8.T kundi-NP / kundi-PP correction rules in
+    # cfg/coordination.py handle sentence-FINAL corrections
+    # (``Walang tao kundi sa bayan.``); this rule handles
+    # sentence-MEDIAL corrections inside the locative-cleft scope
+    # (``Hindi dito kundi sa bayan ang pulong.``).
+    #
+    # Mirrors the 9.Q simple locative-cleft rule above for the
+    # semantic PRED / GF assignment; adds the NEG-correction
+    # adjunct slot following the Phase 8.T phrasal-correction
+    # convention (ROLE='NEG_CORRECTION' parallels the Phase 8.T
+    # ROLE='CORRECTION' on right-edge kundi).
+    rules.append(Rule(
+        "S",
+        [
+            "PART[POLARITY=NEG]",
+            "NP[CASE=DAT]",
+            "PART[COORD=BUT_NOT]",
+            "NP[CASE=DAT]",
+            "NP[CASE=NOM]",
+        ],
+        [
+            "(↑ PRED) = 'BE-LOC <SUBJ>'",
+            "(↑ SUBJ) = ↓5",
+            "(↑ LOC) = ↓4",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ PREDICATIVE) = true",
+            "(↑ CLAUSE_TYPE) = 'LOCATIVE_CLEFT'",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 ROLE) = 'NEG_CORRECTION'",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓3 COORD) =c 'BUT_NOT'",
+            "¬ (↓2 WH)",
+            "¬ (↓4 WH)",
+        ],
+    ))
+
+
     # --- Phase 8.Y Commit 1: ay-inverted N-pivot predication ----
     #
     # ``Ito ay aklat.``       "This is a book."
