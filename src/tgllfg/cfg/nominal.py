@@ -680,6 +680,58 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.P: NP-appositive proper-name attachment ---
+    #
+    # S&O 1972 §3.16(c) "Personal noun as second component;
+    # personal-noun marker": when the first element of an NP
+    # modification construction is a nominal, an appositive
+    # personal-name-marked NP serves as a modifier of the head:
+    #
+    #   ang kaibigan niyang si Flor   "his/her friend Flor" (8.I pin)
+    #   ang kapatid kong si Kathy     "my sister Kathy"
+    #   ang senador na si Mr. Cruz    "the senator (named) Mr. Cruz"
+    #
+    # Rule shape (NP-level — operates after NP-possessive at 658):
+    #
+    #   NP[CASE=X] → NP[CASE=X]  PART[LINK=N{A,G}]  NP[CASE=NOM]
+    #     (↑) = ↓1                  head supplies PRED, CASE, MARKER
+    #     ↓3 ∈ (↑ APP)              appositive sits in the head's APP set
+    #     (↓3 MARKER) =c 'SI'       gate to si-personal-name-marked NPs
+    #
+    # The outer case marker (ang/ng/sa) on the head NP determines
+    # the construction's role in the matrix clause, per S&O — the
+    # ``si`` before the personal noun does NOT mark the whole NP
+    # nominative; it just signals personal-name appositive.
+    #
+    # The optional possessor case (``kaibigan niyang si Flor``)
+    # falls out of the existing Phase 4 §7.8 NP-possessive rule
+    # (immediately above) applying first to produce
+    # ``[NP kaibigan niya]`` with POSS=niya, then this appositive
+    # rule applying to that NP.
+    #
+    # Empirical scope: 2 audit-corpus hits closed by this rule
+    # (8.I R&G Intermediate ``kaibigan niyang si Flor`` and the
+    # 8.O R&G Intermediate ``kapatid kong si Kathy``). Construction
+    # class extends naturally to N-head + linker + si-PROP with
+    # any common/relational N as head and any GEN possessor.
+    #
+    # **No conflict with existing rules**: the only other NP-level
+    # ``PART[LINK=N{A,G}]`` patterns in the grammar are the RC
+    # wraps in ``cfg/extraction.py`` (3rd daughter = S_GAP or
+    # S_XCOMP, not NP), so the category structure is disjoint.
+    for case in ("NOM", "GEN", "DAT"):
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                f"NP[CASE={case}]",
+                [f"NP[CASE={case}]", f"PART[LINK={link}]", "NP[CASE=NOM]"],
+                [
+                    "(↑) = ↓1",
+                    "↓3 ∈ (↑ APP)",
+                    "(↓3 MARKER) =c 'SI'",
+                ],
+            ))
+
+
     # --- Phase 5b §7.8 follow-on: pre-NP partitive (Q + NP[GEN]) ---
     #
     # ``ang lahat ng bata`` ("all of the children"). The

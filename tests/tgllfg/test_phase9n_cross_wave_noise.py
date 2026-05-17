@@ -181,6 +181,6 @@ class TestPhase9nEndToEndCorpusHygiene:
             assert not (
                 "occurrence" in t and "nga" in t
             ), f"pedagogical leaked: {ex.locator} {ex.text_raw!r}"
-            assert not (
-                "variant form of" in t
-            ), f"variant-form leaked: {ex.locator} {ex.text_raw!r}"
+            assert "variant form of" not in t, (
+                f"variant-form leaked: {ex.locator} {ex.text_raw!r}"
+            )
