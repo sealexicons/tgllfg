@@ -839,6 +839,7 @@
   gloss: forget
   transitivity: TR
   affix_class: [um, in_oblig, an_oblig, ma, ma_an, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: linis
   pos: VERB
