@@ -263,7 +263,12 @@ _GRAMMAR_TAG_PREFIX_RE = re.compile(
     r"Conjunction|Negatives?|"
     r"Example|Sentence|Simple\s+S(?:entences?)?|"
     r"In\s+Focus|Nominal(?:ized)?\s+[Cc]lause|"
-    r"Statement|Active|Passive|Imperative"
+    r"Statement|Active|Passive|Imperative|"
+    # 9.M: S&O 1972 two-letter focus/voice abbreviations
+    # (Actor/Object/Locative/Benefactive/Instrumental/Goal/
+    # Reason/Directional/Causative/Reciprocal/Reflexive Focus
+    # or Voice). 65 hits in wave3-so1972.jsonl.
+    r"AF|OF|LF|BF|IF|GF|RF|DF|CF|PF|AV|OV|IV|DV|RV|LV|BV|CV|PV"
     r")\s*:\s+",
 )
 
@@ -350,6 +355,40 @@ _TRUNCATION_RE = re.compile(r"\.\.\.\s*$")
 _MULTI_SPACE_RE = re.compile(r"\s{2,}")
 
 
+# 9.M (Wave 3 S&O 1972 extractor cleanup).
+#
+# Leading "(cf. ..." paren — pedagogical "compare with" marker
+# wrapping a partially-OCR'd example sentence. 8 hits in
+# wave3-so1972; the embedded Tagalog is uniformly heavily OCR-
+# garbled and not worth retaining. Accept either trailing
+# whitespace (``(cf. X``) or no whitespace (``(cf.JX`` — OCR-
+# joined leading capital).
+_CF_PAREN_LEADING_RE = re.compile(r"^\(\s*cf\.", re.IGNORECASE)
+
+# Leading "(English-word ..." paren — pedagogical commentary in
+# parens (``(Underlying sentence: ...)``, ``(Some speakers...``,
+# ``(The same meanings...``). The line is linguistics-aside, not
+# natural Tagalog. 7 hits in wave3-so1972 + 1 in wave3-rg-conv.
+_ENGLISH_PAREN_LEADING_RE = re.compile(
+    r"^\(\s*(?:Underlying|Some|Not|The|However|When|Where|While|"
+    r"Most|All|This|These|That|Those|If|Note|Notice|Compare|"
+    r"Observe|Hence|Therefore|There|See|For)\b",
+)
+
+# Section-reference character: linguistics text reaches the
+# corpus when it has a ``§`` inline reference. Always pedagogical
+# prose. 2 hits in wave3-so1972.
+_SECTION_REF_RE = re.compile(r"§")
+
+# Pedagogical-transformation arrows: ``A. ➔ B.`` / ``A. → B.``
+# (S&O 1972 uses these to show pre→post-rule transformations).
+# Both halves are typically valid Tagalog example sentences.
+# Normalize the arrow to ``. `` so ``_split_sentences`` emits
+# each half as a separate exemplar. 9 hits in wave3-so1972 +
+# 1 in wave2-rg-intermediate.
+_ARROW_RE = re.compile(r"\s*[→➔]\s*")
+
+
 def _is_english_gloss(content: str) -> bool:
     """Heuristic: parenthesized span is an English gloss if it starts
     with an uppercase letter, contains ≥ 2 alphabetic tokens, and has
@@ -395,6 +434,16 @@ def _clean_sentence_text(text: str) -> str | None:
     # 9.K Cleanup B: reject leading paren-metadata that pulled the
     # predicate out of the sentence body (``(verb tugtog. ...) ...``).
     if _LEADING_PAREN_REJECT_RE.match(text):
+        return None
+    # 9.M: reject S&O 1972 pedagogical paren-leading lines
+    # (``(cf. ...``; ``(Underlying sentence: ...)``; ``(Some
+    # speakers...``; ``(The same meanings...``); reject lines with
+    # ``§`` section references (linguistics prose).
+    if _CF_PAREN_LEADING_RE.match(text):
+        return None
+    if _ENGLISH_PAREN_LEADING_RE.match(text):
+        return None
+    if _SECTION_REF_RE.search(text):
         return None
     # 9.K Cleanup C: strip leading "(+ ...)" paren-metadata that
     # prefixes a complete sentence (closed and malformed variants).
@@ -456,7 +505,17 @@ def _split_sentences(text: str) -> list[str]:
     followed by uppercase-or-quote. The closing period of a Tagalog or
     English title abbreviation (``Gng.``, ``Bb.``, ``Mr.``, etc.) is
     NOT treated as sentence-final — see ``_TITLE_ABBREVS``. Returns a
-    list of one-sentence strings."""
+    list of one-sentence strings.
+
+    9.M: pre-normalize S&O 1972 pedagogical-transformation arrows
+    (``➔`` / ``→``) to a sentence boundary so each half (pre-arrow
+    + post-arrow) is emitted as a separate exemplar. Both halves
+    are typically valid Tagalog example sentences (S&O uses arrows
+    to show pre→post-rule transformations). When the pre-arrow
+    text already ends in terminal punctuation, replace the arrow
+    with whitespace (not ``. ``) so we don't accumulate ``..``."""
+    text = re.sub(r"([.!?])\s*[→➔]\s*", r"\1 ", text)
+    text = _ARROW_RE.sub(". ", text)
     parts = _SENTENCE_SPLIT_RE.split(text)
     return [p.strip() for p in parts if p.strip()]
 
