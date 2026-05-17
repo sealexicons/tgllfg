@@ -71,6 +71,62 @@ def register_rules(rules: list[Rule]) -> None:
         _eqs("(↑ SUBJ) = ↓3", "↓2 ∈ (↑ ADJUNCT)"),
     ))
 
+    # --- Phase 9.O.5: mangyari polite-imperative wrap ------------------
+    #
+    # ``Mangyaring umalis kayo.``    "Kindly leave."
+    # ``Mangyaring kumain kayo.``    "Please eat."
+    # ``Mangyaring magluto si Maria.``  "May Maria please cook."
+    #
+    # The discourse-particle / polite-marker ``mangyari`` (= "may
+    # it happen / please") wraps a complete S via the ``-ng``
+    # linker. The embedded S is fully formed (V + arguments); the
+    # wrap lifts it to the matrix level and tags it with
+    # ``POLITE_MARKER`` for downstream consumers.
+    #
+    # F-structure shape: the outer S IS the inner S (full lift via
+    # ``(↑) = ↓3``), with an added ``POLITE_MARKER`` feat. No new
+    # SUBJ binding, no XCOMP — ``mangyari`` is structurally a
+    # politeness-marker wrap, not a control verb.
+    #
+    # Restricted to the bare-CTPL ``mangyari`` form via
+    # ``POLITE_MARKER`` (set on the Phase 9.O ``mang_retain`` bare
+    # CTPL cell); the PFV ``nangyari`` ("happened") and other
+    # forms continue to function as regular ``yari`` verbs without
+    # the politeness reading.
+    rules.append(Rule(
+        "S",
+        ["V[POLITE_MARKER=true]", "PART[LINK=NG]", "S"],
+        [
+            "(↑) = ↓3",
+            "(↑ POLITE_MARKER) = true",
+        ],
+    ))
+
+    # --- Phase 9.O.4: AV-NVOL absolutive (Naalala ko) ------------------
+    #
+    # ``Naalala ko.``    "I (NVOL-)remembered."
+    # ``Naalala niya.``  "He/she (NVOL-)remembered."
+    #
+    # Colloquial NVOL-with-implicit-pivot construction. The
+    # ``ma-`` prefix produces VOICE=AV, MOOD=NVOL surfaces
+    # (``naalala``, ``natulog``, ``naupo``) that semantically
+    # invert agent/patient case (the GEN-clitic is the
+    # experiencer/actor, the NOM-NP is the stimulus/patient when
+    # present). The absolutive use drops the NOM patient pivot
+    # entirely — the GEN actor stands alone.
+    #
+    # Restricted to verbs flagged ``AV_ABSOL=true`` (Phase 9.O B3.A
+    # lex feat) and MOOD=NVOL so this rule doesn't loosen
+    # canonical AV case-marking. The synth path's AV-absolutive
+    # INTR entry (``<SUBJ>`` 1-arg, ACTOR→SUBJ) supplies the
+    # predicate; this rule binds the GEN-NP to SUBJ in absolutive
+    # context.
+    rules.append(Rule(
+        "S",
+        ["V[VOICE=AV, MOOD=NVOL, AV_ABSOL=true]", "NP[CASE=GEN]"],
+        _eqs("(↑ SUBJ) = ↓2"),
+    ))
+
 
     # --- Phase 5e Commit 26: comparative `parang` ---
     #
@@ -820,6 +876,51 @@ def register_rules(rules: list[Rule]) -> None:
             # derived equatives. No-op when daughter lacks the
             # feat.
             "(↑ KASING_N) = ↓1 KASING_N",
+        ],
+    ))
+
+    # --- Phase 9.O.3: stative-passive ADJ with GEN-actor ----------------
+    #
+    # ``Kilala ko si Maria.``  "Maria is known by me." / "I know Maria."
+    # ``Kilala mo ba si Steve?``  "Do you know Steve?"
+    # ``Kilala niya sila.``  "He/she knows them."
+    #
+    # Bare-form ADJs flagged with ``STATIVE_PRED: true`` (Phase 9.O
+    # follow-on, see ``data/tgl/adjectives.yaml`` entry for
+    # ``kilala``) license a GEN-actor argument alongside the NOM
+    # pivot. Structurally parallel to OV V-predicates: the ADJ
+    # acts as a stative-passive participle, the GEN-NP is the
+    # implicit AGENT, the NOM-NP is the patient pivot/SUBJ.
+    #
+    # F-structure shape:
+    #
+    #   PRED        = 'ADJ <SUBJ, OBJ-AGENT>'
+    #   ADJ_LEMMA   = the adjective's lemma
+    #   PREDICATIVE = true
+    #   STATIVE_PRED = true
+    #   SUBJ        = the NOM-NP pivot (the "known one")
+    #   OBJ-AGENT   = the GEN-NP (the "knower")
+    #
+    # Two ordering variants:
+    #   - GEN before NOM (canonical): ``Kilala ko si Maria.``
+    #   - NOM before GEN: ``Kilala si Maria ko.`` (rare; not pinned)
+    #
+    # 2P clitic absorption (``ba``/``ka``/``naman``) attaches at
+    # the S level via the existing ``S → S PART[CLITIC_CLASS=2P]``
+    # rule, so ``Kilala mo ba si Steve?`` parses by first building
+    # the bare 2-arg S and then absorbing ``ba``.
+    rules.append(Rule(
+        "S",
+        ["ADJ[STATIVE_PRED]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ, OBJ-AGENT>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ OBJ-AGENT) = ↓2",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↑ STATIVE_PRED) = true",
+            "(↓1 STATIVE_PRED) =c true",
+            "(↓1 PREDICATIVE) =c true",
         ],
     ))
 

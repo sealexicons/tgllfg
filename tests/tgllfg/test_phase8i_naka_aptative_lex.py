@@ -172,31 +172,43 @@ class TestPhase8iOutOfScope:
             "if the relevant sub-PR landed."
         )
 
-    def test_nag_aalala_intransitive_use(self) -> None:
-        """``Nag-aalala si Minda.`` (R&C 1990 sent-589 context)
-        — semantic-intransitive use of TR-classed ``alala``
-        ("worry"). Adding an INTR-polysemy variant or making OBJ
-        optional is a lex-design decision out of 8.I scope.
-        Flip when the ``alala`` polysemy split / OBJ-optional
-        sub-PR lands."""
+    def test_nag_aalala_intransitive_use_closed_in_9o(self) -> None:
+        """``Nag-aalala si Minda.`` (R&C 1990 sent-589 context) —
+        semantic-intransitive use of TR-classed ``alala`` ("worry").
+        Phase 9.O B3.A added the ``AV_ABSOL: true`` lex feat on
+        ``alala``; the synth path emits both the TR-AV
+        ``<SUBJ, OBJ>`` and the INTR ``<SUBJ>``-only entries, and
+        the parser picks the INTR variant when no OBJ is present.
+        Pre-9.O this asserted ``len == 0`` (out-of-scope deferral)."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("Nag-aalala si Minda.", n_best=2)
-        assert len(parses) == 0, (
-            "alala INTR polysemy closed — flip if the relevant "
-            "sub-PR landed."
+        assert len(parses) >= 1, (
+            "alala AV-absolutive should parse post-9.O"
         )
 
-    def test_malimutan_lf_nvol_form(self) -> None:
-        """``Bago ko malimutan, ...`` (R&C 1990 sent-698) —
-        ``malimutan`` is the LF-NVOL form (``ma + limot + an``)
-        requiring a ``ma_an`` paradigm cell that doesn't exist
-        yet. Analogous to Phase 8.B's ``pag_an`` cell add.
-        Flip when the paradigm-cell sub-PR lands."""
+    def test_malimutan_lf_nvol_form_closed_in_9o(self) -> None:
+        """``malimutan`` is the LF-NVOL form (``ma + limot + an``).
+        Phase 9.O B3.B added the ``ma_an`` paradigm with four cells:
+        PFV (``na+root+an`` → ``nalimutan``), IPFV (``na+redup+an``
+        → ``nalilimutan``), CTPL with redup (``ma+redup+an`` →
+        ``malilimutan``), and bare CTPL without redup (``ma+root+
+        an`` → ``malimutan``, used in subord/modal-XCOMP contexts).
+        ``limot``'s affix_class extended to include ``ma_an``.
+
+        Pre-9.O this asserted ``len == 0`` (out-of-scope). Post-9.O
+        the surface generates and parses in a complete clause."""
+        from tgllfg.morph.analyzer import _get_default
+        analyzer = _get_default()
+        for surface in ("malimutan", "nalimutan",
+                        "nalilimutan", "malilimutan"):
+            assert analyzer.is_known_surface(surface), (
+                f"{surface} should be analyzable post-9.O ma_an cell"
+            )
         from tgllfg.core.pipeline import parse_text
-        parses = parse_text("Bago ko malimutan ito.", n_best=2)
-        assert len(parses) == 0, (
-            "ma_an LF-NVOL cell closed — flip if the relevant "
-            "paradigm sub-PR landed."
+        parses = parse_text("Malimutan ko ito.", n_best=2)
+        assert len(parses) >= 1, (
+            "Malimutan ko ito. should parse with bare CTPL "
+            "ma+root+an cell"
         )
 
     def test_bias_ocr_variant_not_added(self) -> None:

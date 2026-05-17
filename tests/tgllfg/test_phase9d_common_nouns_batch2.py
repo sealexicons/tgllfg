@@ -169,14 +169,22 @@ class TestSimpleParses:
 
 class TestVRootNoRegression:
     """Adding the N reading must not break inflected V surfaces.
-    Only ``tabi`` V (INTR) generates a bare AV form that parses
-    cleanly under the current grammar (the other 9.D N–V pairs —
-    laro / regalo / sakit / tanong / tingin — are TR verbs whose
-    bare AV forms run into a pre-existing TR-without-OBJ coverage
-    gap unrelated to this sub-PR)."""
+
+    Phase 9.O update: the TR-without-OBJ AV-absolutive gap pinned
+    here for laro / regalo / sakit / tanong / tingin is now closed
+    by 9.O B3.A's ``AV_ABSOL: true`` lex feat (synth path emits
+    both the TR ``<SUBJ, OBJ>`` and the absolutive ``<SUBJ>``
+    variants; parser picks whichever leads to a complete parse).
+    All 6 N-V pair AV forms now parse in their absolutive use."""
 
     @pytest.mark.parametrize("sentence", [
-        "Tumabi siya.",          # um-AV-PFV of tabi (INTR)
+        "Tumabi siya.",          # um-AV-PFV of tabi (INTR — pre-9.O)
+        # Post-9.O AV-absolutive closures:
+        "Tumingin siya.",        # um-AV-PFV of tingin (TR+AV_ABSOL)
+        "Naglaro siya.",         # mag-AV-PFV of laro (TR+AV_ABSOL)
+        "Nagtanong siya.",       # mag-AV-PFV of tanong (TR+AV_ABSOL)
+        "Sumakit ang ulo.",      # um-AV-PFV of sakit (TR+AV_ABSOL)
+        "Nagregalo siya.",       # mag-AV-PFV of regalo (TR+AV_ABSOL)
     ])
     def test_v_form_still_parses(self, sentence: str) -> None:
         from tgllfg.core.pipeline import parse_text

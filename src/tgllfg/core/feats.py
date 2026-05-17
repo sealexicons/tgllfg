@@ -25,6 +25,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
     {
         "APPROX",
         "ASK_CLASS",
+        "AV_ABSOL",
         "CARDINAL",
         "CF",
         "CLOCK_MARKER",
@@ -64,6 +65,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "NEG_TAG",
         "ORDINAL",
         "ORTHOGRAPHIC_TERMINATOR",
+        "POLITE_MARKER",
         "PANG_DERIVED",
         "PLURAL_MARKER",
         "PREDICATIVE",
@@ -72,6 +74,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "RESULTATIVE",
         "SAY_CLASS",
         "SEQUENCE",
+        "STATIVE_PRED",
         "SYMBOLIC",
         "UNCERTAIN",
         "UNIV",

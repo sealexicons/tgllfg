@@ -58,11 +58,13 @@ def test_known_enum_feats_are_excluded(feat: str) -> None:
 
 
 def test_binary_feats_count_matches_audit() -> None:
-    """The audit doc says 55 binary feats. Drift means update both
-    the doc and this assertion together."""
-    assert len(BINARY_FEATS) == 55, (
+    """The audit doc said 55 binary feats. Phase 9.O.3 adds
+    ``STATIVE_PRED`` → 56. Phase 9.O.4 adds ``AV_ABSOL`` → 57.
+    Phase 9.O.5 adds ``POLITE_MARKER`` → 58. Drift means update
+    both the doc and this assertion together."""
+    assert len(BINARY_FEATS) == 58, (
         f"BINARY_FEATS has {len(BINARY_FEATS)} entries; "
-        f"docs/feats-binary-audit.md says 55. "
+        f"docs/feats-binary-audit.md says 58. "
         f"Update both together if the audit changes."
     )
 

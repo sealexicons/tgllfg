@@ -36,6 +36,24 @@
   gloss: early
   affix_class: [ma_adj]
 
+# Phase 9.O.3 follow-on: ``ayaw`` / ``gusto`` / ``kailangan`` as
+# bare stative-passive ADJ entries with a GEN-actor reading.
+# Audit-attested direct-NP-object construction
+# (``Kailangan ko ang kuwalta.`` "I need the money.", ``Gusto ko
+# ang aklat.`` "I want / like the book.", ``Ayaw ko ang aklat.``
+# "I don't want the book."). These surfaces are ALSO registered
+# as VERB[CTRL_CLASS=PSYCH/MODAL] in particles.yaml for the
+# linker-introduced XCOMP construction (``Gusto kong magluto`` /
+# ``batang gustong kumain``); the two analyses coexist. The
+# STATIVE_PRED ADJ-modifier-rule exclusion in cfg/nominal.py
+# prevents the new ADJ analysis from competing with the V/PSYCH
+# control-XCOMP path on linker-bound contexts (Phase 6 LDD).
+- citation: ayaw
+  pos: ADJ
+  gloss: disliked, unwanted (predicate "ayaw ko X" = "I don't want X")
+  affix_class: []
+  feats: {STATIVE_PRED: true}
+
 - citation: baba
   pos: ADJ
   gloss: low
@@ -116,6 +134,13 @@
   gloss: surprised, startled
   affix_class: [ma_adj]
 
+# Phase 9.O.3 follow-on: see ``ayaw`` block (above) for design.
+- citation: gusto
+  pos: ADJ
+  gloss: liked, wanted (predicate "gusto ko X" = "I want / like X")
+  affix_class: []
+  feats: {STATIVE_PRED: true}
+
 - citation: gutom
   pos: ADJ
   gloss: hungry
@@ -166,10 +191,35 @@
   gloss: hot
   affix_class: [ma_adj]
 
+- citation: kailangan
+  pos: ADJ
+  gloss: needed, required (predicate "kailangan ko X" = "I need X")
+  affix_class: []
+  feats: {STATIVE_PRED: true}
+
 - citation: kapal
   pos: ADJ
   gloss: thick
   affix_class: [ma_adj]
+
+# Phase 9.O follow-on: bare-form ADJ for the predicative use of
+# ``kilala`` ("known, acquainted") as in ``Kilala si Maria.``
+# ("Maria is known.") and ``Kilala ko si Maria.`` ("I know
+# Maria."). The V root in ``verbs.yaml`` generates inflected
+# OV/AV/maki- forms (``kinilala``, ``magkikilala``, ``nakakilala``)
+# but no bare predicative surface. Coexists with the V root —
+# inflected forms continue to route through the V entry.
+#
+# ``STATIVE_PRED: true`` flags this ADJ as a stative-passive
+# predicate that licenses a GEN-actor argument (the
+# "by-X-is-known" reading). Phase 9.O.3 grammar rule
+# ``S → ADJ[STATIVE_PRED] NP[CASE=GEN] NP[CASE=NOM]`` consumes
+# this flag to allow ``Kilala ko si Maria.`` and friends.
+- citation: kilala
+  pos: ADJ
+  gloss: known, acquainted
+  affix_class: []
+  feats: {STATIVE_PRED: true}
 
 - citation: lakas
   pos: ADJ
@@ -223,10 +273,19 @@
   affix_class: []
   feats: {EQUATIVE: true, COMP_DEGREE: EQUATIVE}
 
+# Phase 9.O.3: ``mahal`` has polysemous senses. The
+# "expensive" reading is a pure predicative ADJ (``Mahal ang
+# aklat.``) consumed by the 1-arg ADJ[PREDICATIVE] NP[CASE=NOM]
+# rule. The "dear/beloved" reading is a stative-passive
+# predicate licensing a GEN actor (``Mahal ko si Maria.`` "I
+# love Maria"), consumed by the new STATIVE_PRED + GEN + NOM
+# rule. Both rules fire on the same surface; the parser picks
+# whichever leads to a complete parse based on the NP frame.
 - citation: mahal
   pos: ADJ
   gloss: expensive; dear, beloved
   affix_class: []
+  feats: {STATIVE_PRED: true}
 
 - citation: nipis
   pos: ADJ

@@ -322,11 +322,11 @@ _SYNTH_DV_PROFILE: dict[str, tuple[bool | None, bool | None]] = {
 }
 
 
-def _synthesize_verb_entry(ma: MorphAnalysis) -> LexicalEntry:
+def _synthesize_verb_entries(ma: MorphAnalysis) -> list[LexicalEntry]:
     """Phase 4 fallback for verbs not in :data:`BASE`. Synthesizes a
-    voice-aware ``LexicalEntry`` from the morph analysis so any
-    verb the morph engine recognises produces a complete
-    f-structure (PRED, a-structure, GF defaults).
+    voice-aware ``LexicalEntry`` (or list thereof) from the morph
+    analysis so any verb the morph engine recognises produces a
+    complete f-structure (PRED, a-structure, GF defaults).
 
     The synthesized PRED is the lemma in upper case; argument
     structure follows the verb's transitivity (TR → 2-arg, INTR →
@@ -339,56 +339,102 @@ def _synthesize_verb_entry(ma: MorphAnalysis) -> LexicalEntry:
     profiles mirror the per-voice anchor patterns (AV pivot →
     AGENT/ACTOR ``[-r, -o]``; non-AV pivot → patient-like role
     ``[-r, -o]``; non-pivots ``[+r, +o]``).
+
+    Phase 9.O B3.A: when the root carries ``feats: {AV_ABSOL: true}``
+    AND the analysis is AV+TR, a *second* entry is synthesized with
+    the AV-INTR (``<SUBJ>``-only) shape. The two entries co-exist:
+    the parser tries both and picks whichever produces a complete
+    parse. Concretely:
+
+      - ``Tumingin siya kay Ben.`` parses via the TR entry (the AV
+        oblique ``kay Ben`` slot fills via the existing oblique-NP
+        rule; the OBJ slot is satisfied by the implicit pivot SUBJ
+        ``siya``... no wait, TR-AV still requires an overt OBJ; in
+        practice the TR entry would fail here too and the parse
+        comes via the INTR entry with ``kay Ben`` as a free OBL).
+      - ``Tumingin siya.`` parses via the INTR entry (1-arg,
+        AGENT→SUBJ only).
+      - ``Tinitingnan ko ang aklat.`` (OV-IPFV) — voice ≠ AV, so the
+        AV_ABSOL flag is irrelevant; only the OV-TR entry is
+        synthesized as before.
+
+    Single source of TR/INTR polysemy for AV-absolutive uses,
+    closing the 8.I + 8.O + 9.D-named six (``laro`` / ``regalo`` /
+    ``sakit`` / ``tanong`` / ``tingin`` — ``tabi`` is already
+    INTR-coded) verb roots' AV-absolutive carryover.
     """
     pred_name = ma.lemma.upper()
     voice = ma.feats.get("VOICE")
     is_tr = ma.feats.get("TR") == "TR"
+    av_absolutive = bool(ma.feats.get("AV_ABSOL"))
 
     if not is_tr:
-        return LexicalEntry(
+        return [LexicalEntry(
             lemma=ma.lemma,
             pred=f"{pred_name} <SUBJ>",
             a_structure=["ACTOR"],
             morph_constraints={},
             gf_defaults={"ACTOR": "SUBJ"},
             intrinsic_classification=_AV_INTR_ACTOR,
-        )
+        )]
 
     # AV keeps bare OBJ; non-AV uses typed OBJ-AGENT per the
     # Phase 5b OBJ-θ-in-grammar alignment.
     if voice == "AV":
-        return LexicalEntry(
+        tr_entry = LexicalEntry(
             lemma=ma.lemma, pred=f"{pred_name} <SUBJ, OBJ>",
             a_structure=["AGENT", "PATIENT"],
             morph_constraints={},
             gf_defaults={"AGENT": "SUBJ", "PATIENT": "OBJ"},
             intrinsic_classification=_AV_TR_AGENT_PATIENT,
         )
+        if av_absolutive:
+            # Phase 9.O B3.A: also synthesize the AV-absolutive
+            # (INTR-style) variant — same PRED-name but
+            # ``<SUBJ>``-only. Parser picks whichever variant
+            # leads to a complete parse.
+            intr_entry = LexicalEntry(
+                lemma=ma.lemma,
+                pred=f"{pred_name} <SUBJ>",
+                a_structure=["ACTOR"],
+                morph_constraints={},
+                gf_defaults={"ACTOR": "SUBJ"},
+                intrinsic_classification=_AV_INTR_ACTOR,
+            )
+            return [tr_entry, intr_entry]
+        return [tr_entry]
     pred_non_av = f"{pred_name} <SUBJ, OBJ-AGENT>"
     if voice == "DV":
-        return LexicalEntry(
+        return [LexicalEntry(
             lemma=ma.lemma, pred=pred_non_av,
             a_structure=["AGENT", "GOAL"],
             morph_constraints={},
             gf_defaults={"GOAL": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_SYNTH_DV_PROFILE,
-        )
+        )]
     if voice == "IV":
-        return LexicalEntry(
+        return [LexicalEntry(
             lemma=ma.lemma, pred=pred_non_av,
             a_structure=["AGENT", "CONVEYED"],
             morph_constraints={},
             gf_defaults={"CONVEYED": "SUBJ", "AGENT": "OBJ-AGENT"},
             intrinsic_classification=_IV_TR_AGENT_CONVEYED,
-        )
+        )]
     # OV or unknown voice: patient pivot (the OV-shaped fallback).
-    return LexicalEntry(
+    return [LexicalEntry(
         lemma=ma.lemma, pred=pred_non_av,
         a_structure=["AGENT", "PATIENT"],
         morph_constraints={},
         gf_defaults={"PATIENT": "SUBJ", "AGENT": "OBJ-AGENT"},
         intrinsic_classification=_OV_TR_AGENT_PATIENT,
-    )
+    )]
+
+
+def _synthesize_verb_entry(ma: MorphAnalysis) -> LexicalEntry:
+    """Legacy single-entry synthesis wrapper. Returns the first entry
+    from :func:`_synthesize_verb_entries`. Retained for tests /
+    external callers that pre-date the multi-entry refactor."""
+    return _synthesize_verb_entries(ma)[0]
 
 
 def lookup_lexicon(
@@ -427,8 +473,15 @@ def lookup_lexicon(
                 # produce no lex item and the parse would fail. The
                 # synthesizer gives them voice-aware default
                 # gf-mappings so unauthored voices still parse.
+                #
+                # Phase 9.O B3.A: ``_synthesize_verb_entries`` may
+                # return more than one entry (specifically for
+                # AV+TR+AV_ABSOL roots, where both the TR and
+                # absolutive-INTR shapes are emitted). The caller
+                # extends the pair list with every synthesized entry.
                 if not matched:
-                    pairs.append((ma, _synthesize_verb_entry(ma)))
+                    for le in _synthesize_verb_entries(ma):
+                        pairs.append((ma, le))
             else:
                 pairs.append((ma, None))
         out.append(pairs)
