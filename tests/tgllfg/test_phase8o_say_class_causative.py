@@ -148,24 +148,25 @@ class TestPhase8oOutOfScope:
     an orthogonal gap not in 8.O scope. Pin each; flip when the
     named follow-on sub-PR closes it."""
 
-    def test_sent_909_papasok_intr_polysemy(self) -> None:
+    def test_sent_909_closed_in_9w(self) -> None:
         """R&C 1990 sent-909 ``Nagpasabi ang boss ko na hindi
-        siya papasok sa trabaho.`` — verbatim parses through 8.O's
-        new rule but fails on the embedded clause: ``papasok`` is
-        morph-classed TR but used semantically intransitive
-        ("will enter / will come to work"). Same TR/INTR polysemy
-        pattern pinned in Phase 8.I for ``alala``. Lex
-        (boss, trabaho) is in place; flip when the
-        TR/INTR-polysemy lex-design sub-PR lands."""
+        siya papasok sa trabaho.`` — closed by Phase 9.W. The
+        original pin attributed the failure to ``papasok``
+        TR/INTR polysemy; the actual blocker turned out to be
+        the clitic-placement pass hoisting the inner-clause
+        2P-PRON ``siya`` out of the inner clause and the
+        ``na``-disambiguator's look-ahead missing the V (it
+        only skipped NEG, not the intervening clitic-PRON).
+        Phase 9.W fixes both: ``_next_content_is_verb`` now
+        skips clitic-PRONs too, and ``reorder_clitics`` does
+        per-anchor grouping so inner-clause clitic-PRONs
+        anchor to the inner V."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Nagpasabi ang boss ko na hindi siya papasok sa trabaho.",
             n_best=2,
         )
-        assert len(parses) == 0, (
-            "pasok INTR polysemy closed — flip if the relevant "
-            "lex-design sub-PR landed."
-        )
+        assert len(parses) >= 1
 
     def test_sent_899_verbatim_cds_acronym(self) -> None:
         """R&C 1990 sent-899 verbatim with ``CDs`` acronym —

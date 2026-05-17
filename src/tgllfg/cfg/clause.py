@@ -916,6 +916,38 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.W: plain AV SAY-class reported clause -----
+    #
+    # ``Nagsabi si Maria na kumain si Juan.``
+    #     "Maria said that Juan ate."
+    # ``Nagsabi siya na hindi siya papasok.``
+    #     "He said he wouldn't come in."
+    #
+    # The Phase 8.O AV-CAUS-INDIRECT-SAY rule above closes the
+    # ``nagpasabi`` "sent word that" sub-case. The audit pile also
+    # has bare ``nagsabi`` "said that" forms whose morph cell
+    # produces V[VOICE=AV, SAY_CLASS=true] with no CAUS feature
+    # (CAUS=NONE per the morph probe). The plain AV-SAY rule
+    # mirrors the 8.O shape minus the CAUS=INDIRECT constraint,
+    # binding the ``na``-introduced reported clause to OBJ.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=AV, SAY_CLASS]",
+            "NP[CASE=NOM]",
+            "PART[LINK=NA]",
+            "S",
+        ],
+        _eqs(
+            "(↑ SUBJ) = ↓2",
+            "(↑ OBJ) = ↓4",
+            "(↓1 SAY_CLASS) =c true",
+            "(↓1 CAUS) =c 'NONE'",
+            "(↓3 LINK) =c 'NA'",
+        ),
+    ))
+
+
     # Phase 5c §8 follow-on (Commit 6): AV transitive frame
     # with two trailing sa-NPs — exercises the multi-OBL
     # semantic-disambiguation classifier. Both NP[CASE=DAT]

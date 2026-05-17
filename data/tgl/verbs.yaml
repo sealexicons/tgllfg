@@ -1175,8 +1175,15 @@
 - citation: sayaw
   pos: VERB
   gloss: dance
-  transitivity: INTR
+  transitivity: TR
+  feats: {AV_ABSOL: true}
   affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka]
+  # Phase 9.W: switched from INTR to TR + AV_ABSOL. ``sumayaw ng
+  # pandanggo`` "dance the pandanggo" is a cognate-OBJ construction
+  # admitting GEN-NP as OBJ; the AV_ABSOL flag preserves the
+  # bare-INTR ``sumayaw`` "dance" use via 9.O's TR/INTR-polysemy
+  # synthesis path. Closes S&O 1972 p.441 sent-676 ``Sila rin ay
+  # sasayaw ng pandanggo bukas ng gabi.``.
 
 - citation: sigaw
   pos: VERB

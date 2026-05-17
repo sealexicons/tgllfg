@@ -340,22 +340,37 @@ def _is_pre_ay_pron(
     sentence-initial topic position so the existing ay-fronting
     grammar fires.
 
-    Detection: PRON-clitic at position ``i`` immediately followed
-    by a PART carrying ``LINK=AY``. The detection is
-    right-context-only and applies regardless of the PRON's
-    sentence position — so embedded ay-fronting (``Sinabi niya na
-    ako ay kumain``) is also handled, not just sentence-initial
-    topics.
+    Detection: PRON-clitic at position ``i`` followed (possibly
+    after intervening 2P clitics) by a PART carrying ``LINK=AY``.
+    The detection is right-context-only and applies regardless of
+    the PRON's sentence position — so embedded ay-fronting
+    (``Sinabi niya na ako ay kumain``) is also handled, not just
+    sentence-initial topics.
+
+    Phase 9.W: extended to look past intervening clitic-PARTs (e.g.
+    ``Sila rin ay sasayaw.`` "They too will dance" — ``rin`` is a
+    2P-clitic adverb between the topic ``sila`` and the ay-linker;
+    ``sila`` should still stay in topic position).
     """
     if not _is_pron_clitic(analyses[i]):
         return False
-    if i + 1 >= len(analyses):
+    look = i + 1
+    while look < len(analyses):
+        next_cands = analyses[look]
+        if any(
+            ma.pos == "PART" and ma.feats.get("LINK") == "AY"
+            for ma in next_cands
+        ):
+            return True
+        if any(
+            ma.feats.get("is_clitic") is True
+            and ma.feats.get("CLITIC_CLASS") == "2P"
+            for ma in next_cands
+        ):
+            look += 1
+            continue
         return False
-    next_cands = analyses[i + 1]
-    return any(
-        ma.pos == "PART" and ma.feats.get("LINK") == "AY"
-        for ma in next_cands
-    )
+    return False
 
 
 def _is_pre_ang_pred_pron(
@@ -438,6 +453,99 @@ def _is_post_embedded_v_pron(
     return (i - 1) != matrix_v_idx
 
 
+def _enclosing_anchor_for_clitic(
+    analyses: list[list[MorphAnalysis]],
+    i: int,
+    matrix_anchor: int,
+) -> int:
+    """Return the anchor index that ``analyses[i]`` (a clitic) belongs
+    to in a SAY-class indirect-speech construction.
+
+    Phase 9.W: when a ``na``-linker (``PART[LINK=NA]`` after
+    disambiguation, with no remaining clitic reading) occurs
+    between the matrix anchor and the candidate clitic, the clitic
+    is inside an inner clause. Its anchor should be the inner
+    clause's V (the next VERB after the ``na``-linker), not the
+    matrix anchor.
+
+    The "no remaining clitic reading" gate matters: if both readings
+    survive the disambiguator (the default-both-readings fallthrough
+    in :func:`disambiguate_homophone_clitics`), the placement pass
+    still wants to treat ``na`` as the aspectual ``ALREADY`` clitic
+    and move it to clause-final — counting it as a clause boundary
+    here would break verbless-anchor cases like ``Maganda na ka ba.``
+
+    Inner-clause anchoring only applies when the matrix anchor is a
+    VERB. Verbless N/ADJ-anchor matrices use the NOUN/ADJ token as
+    anchor, and any ``na``-linker after the anchor is an NP-internal
+    or NP-modifying linker (``Bata na ka.`` = N + linker + PRON), not
+    a clause boundary.
+
+    Returns the matrix anchor if no inner-clause boundary is crossed,
+    or the inner anchor if one is. If an inner-clause boundary is
+    crossed but no inner V exists (shouldn't happen with a proper
+    SAY-class na-S source), returns the matrix anchor as fallback.
+    """
+    if i <= matrix_anchor:
+        return matrix_anchor
+    if not _is_verb_token(analyses[matrix_anchor]):
+        return matrix_anchor
+    last_na_linker = -1
+    for j in range(matrix_anchor + 1, i):
+        cands = analyses[j]
+        is_confirmed_linker = (
+            any(
+                ma.pos == "PART"
+                and ma.feats.get("LINK") == "NA"
+                and ma.feats.get("is_clitic") is not True
+                for ma in cands
+            )
+            and not any(
+                ma.feats.get("is_clitic") is True for ma in cands
+            )
+        )
+        if is_confirmed_linker:
+            last_na_linker = j
+    if last_na_linker == -1:
+        return matrix_anchor
+    for j in range(last_na_linker + 1, i):
+        if _is_verb_token(analyses[j]):
+            return j
+    for j in range(i + 1, len(analyses)):
+        if _is_verb_token(analyses[j]):
+            return j
+    return matrix_anchor
+
+
+def _is_post_noun_na_at_clause_boundary(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is the ``na`` token immediately
+    preceded by a NOUN and immediately followed by a clause-boundary
+    marker (comma punct, or the orthographic-terminator period
+    surface).
+
+    Phase 9.W: distinguishes the ALREADY-aspectual reading
+    (``pag tanghali na,`` / ``Tanghali na.``) from the linker
+    reading (``aklat na binasa``, ``bata na malaki``). At a clause
+    boundary there's no follow-up linker target, so both readings
+    must remain available — the disambiguator's default-NOUN-branch
+    "always linker" rule was over-eager for this case.
+
+    The period ``.`` is tokenized as ``PART[ORTHOGRAPHIC_TERMINATOR=
+    true]`` (not POS=PUNCT) per the tokenizer's terminator
+    convention; comma ``,`` is POS=PUNCT[PUNCT_CLASS=COMMA].
+    """
+    if i == 0 or i + 1 >= len(analyses):
+        return False
+    next_cands = analyses[i + 1]
+    return any(
+        ma.pos == "PUNCT"
+        or ma.feats.get("ORTHOGRAPHIC_TERMINATOR") is True
+        for ma in next_cands
+    )
+
+
 def disambiguate_homophone_clitics(
     analyses: list[list[MorphAnalysis]],
 ) -> list[list[MorphAnalysis]]:
@@ -479,8 +587,28 @@ def disambiguate_homophone_clitics(
         prev_pos = (
             {ma.pos for ma in prev} if prev is not None else set()
         )
-        if "NOUN" in prev_pos or "N" in prev_pos:
-            out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+        if ("NOUN" in prev_pos or "N" in prev_pos) and "ADJ" not in prev_pos:
+            # Phase 9.W: when ``na`` after a NOUN is followed by a
+            # clause boundary (sentence-final punct or comma), the
+            # ALREADY-aspectual reading is the linguistically
+            # correct one — e.g. ``pag tanghali na,`` "when (it's)
+            # already noon" in a temporal subord-clause body, and
+            # bare ``Tanghali na.`` "(It's) noon already" verbless
+            # N-PRED. Keep both readings so the parser can pick the
+            # linker (if a later rule absorbs it) or the aspectual
+            # (if the SubordClause + ALREADY rule absorbs it).
+            #
+            # Phase 9.W: ``and "ADJ" not in prev_pos`` excludes the
+            # N/ADJ polysemous case (``puno`` = "tree, leader" N +
+            # "full" ADJ). For polysemous heads, fall through to the
+            # ADJ branch's right-context check instead — the NOUN
+            # branch was incorrectly stripping the ALREADY reading
+            # for ADJ-PRED + ALREADY clauses (``Puno na ang mga
+            # bus.``).
+            if _is_post_noun_na_at_clause_boundary(analyses, i):
+                out.append(cands)
+            else:
+                out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif prev is not None and any(
             ma.pos == "NUM" and (
                 ma.feats.get("CARDINAL") is True
@@ -702,12 +830,20 @@ def _next_content_is_verb(
 ) -> bool:
     """Look ahead from position ``i + 1``, skipping
     ``PART[POLARITY=NEG]`` tokens (negation typically precedes the V
-    it negates), and return True if the first non-NEG content token
-    is a VERB.
+    it negates) and clitic-PRONs in inner-clause 2P position
+    (between NEG and V), and return True if the first remaining
+    content token is a VERB.
 
     Used by :func:`disambiguate_homophone_clitics` to decide whether
     ``na`` after a post-noun PRON is the linker (introducing an RC
     / clausal complement) rather than the 2P aspectual clitic.
+
+    Phase 9.W: the clitic-PRON skip closes the inner-clause
+    Wackernagel surface ``... na hindi siya V ...`` (sent-866's
+    audit shape) — the 2P-PRON ``siya`` sits between ``hindi`` and
+    the V at the source surface, and the disambiguator must still
+    classify the preceding ``na`` as the linker so the matrix
+    SAY-class rule binds the inner S to OBJ.
     """
     look = i + 1
     while look < len(analyses):
@@ -717,9 +853,13 @@ def _next_content_is_verb(
             ma.pos == "PART" and ma.feats.get("POLARITY") == "NEG"
             for ma in cands
         )
+        is_clitic_pron = any(
+            ma.pos == "PRON" and ma.feats.get("is_clitic") is True
+            for ma in cands
+        )
         if "VERB" in poss:
             return True
-        if is_neg_part and "VERB" not in poss:
+        if (is_neg_part or is_clitic_pron) and "VERB" not in poss:
             look += 1
             continue
         return False
@@ -871,12 +1011,41 @@ def reorder_clitics(
     if order is None:
         order = _get_default_order()
 
-    pron_indices.sort(
-        key=lambda i: (order.priority_for(_surface_for_priority(analyses[i])), i)
-    )
-    adv_indices.sort(
-        key=lambda i: (order.priority_for(_surface_for_priority(analyses[i])), i)
-    )
+    # Phase 9.W: per-anchor grouping. Each clitic anchors to the
+    # innermost clause containing it. The matrix anchor handles
+    # clitics not crossed by any ``na``-linker; inner-clause anchors
+    # (V's following a ``na``-linker) handle clitics inside that
+    # inner clause. PRONs and ADVs follow the same anchor-selection
+    # logic.
+    pron_by_anchor: dict[int, list[int]] = {}
+    pron_leave_in_place: set[int] = set()
+    for i in pron_indices:
+        anc = _enclosing_anchor_for_clitic(analyses, i, anchor_idx)
+        if anc == -1:
+            pron_leave_in_place.add(i)
+        else:
+            pron_by_anchor.setdefault(anc, []).append(i)
+    adv_by_anchor: dict[int, list[int]] = {}
+    adv_leave_in_place: set[int] = set()
+    for i in adv_indices:
+        anc = _enclosing_anchor_for_clitic(analyses, i, anchor_idx)
+        if anc == -1:
+            adv_leave_in_place.add(i)
+        else:
+            adv_by_anchor.setdefault(anc, []).append(i)
+
+    for anc, ix in pron_by_anchor.items():
+        ix.sort(
+            key=lambda j: (
+                order.priority_for(_surface_for_priority(analyses[j])), j
+            )
+        )
+    for anc, ix in adv_by_anchor.items():
+        ix.sort(
+            key=lambda j: (
+                order.priority_for(_surface_for_priority(analyses[j])), j
+            )
+        )
 
     def _filter_pron(cands: list[MorphAnalysis]) -> list[MorphAnalysis]:
         # Tokens in the cluster keep only their clitic-flavored
@@ -889,17 +1058,35 @@ def reorder_clitics(
     def _filter_adv(cands: list[MorphAnalysis]) -> list[MorphAnalysis]:
         return [m for m in cands if m.feats.get("is_clitic") is True and m.pos == "PART"]
 
-    clitic_set = set(pron_indices) | set(adv_indices)
+    moved_set: set[int] = (
+        {j for ix in pron_by_anchor.values() for j in ix}
+        | {j for ix in adv_by_anchor.values() for j in ix}
+    )
+    inner_anchors_with_adv = {a for a in adv_by_anchor if a != anchor_idx}
     result: list[list[MorphAnalysis]] = []
+    pending_inner_adv: list[int] = []
     for i, cands in enumerate(analyses):
-        if i in clitic_set:
+        if i in moved_set:
             continue
+        # If a token follows an inner-clause boundary that has its
+        # own ADV-clitics pending, flush them at the next ``na``-
+        # linker or sentence-final punct.
+        if pending_inner_adv and _is_punct_token(cands):
+            for j in pending_inner_adv:
+                result.append(_filter_adv(analyses[j]))
+            pending_inner_adv = []
         result.append(cands)
-        if i == anchor_idx:
-            for j in pron_indices:
+        if i in pron_by_anchor:
+            for j in pron_by_anchor[i]:
                 result.append(_filter_pron(analyses[j]))
-    for j in adv_indices:
-        result.append(_filter_adv(analyses[j]))
+        if i in inner_anchors_with_adv:
+            pending_inner_adv = list(adv_by_anchor[i])
+    if pending_inner_adv:
+        for j in pending_inner_adv:
+            result.append(_filter_adv(analyses[j]))
+    if anchor_idx in adv_by_anchor:
+        for j in adv_by_anchor[anchor_idx]:
+            result.append(_filter_adv(analyses[j]))
     return result
 
 
