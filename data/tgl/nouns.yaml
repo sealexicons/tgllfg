@@ -17,6 +17,11 @@
   gloss: April
   feats: {MONTH_VALUE: "4", SEM_CLASS: MONTH}
 
+- citation: adobo
+  pos: NOUN
+  gloss: adobo (food dish)
+  source: audit-corpus
+
 - citation: agosto
   pos: NOUN
   gloss: August
@@ -26,6 +31,12 @@
   pos: NOUN
   gloss: book
   synonyms: [libro]
+
+- citation: akwaryum
+  pos: NOUN
+  gloss: aquarium
+  source: audit-corpus
+  loan: ENGLISH
 
 - citation: alak
   pos: NOUN
@@ -217,6 +228,11 @@
   gloss: part
   feats: {SEM_CLASS: PART}
 
+- citation: bahala
+  pos: NOUN
+  gloss: responsibility, care
+  source: audit-corpus
+
 - citation: bahay
   pos: NOUN
   gloss: house
@@ -260,6 +276,17 @@
   gloss: mat (woven sleeping mat)
   source: audit-corpus
 
+- citation: bantay
+  pos: NOUN
+  gloss: guard, watchman
+  source: audit-corpus
+
+- citation: bar
+  pos: NOUN
+  gloss: bar (drinking establishment)
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: basketbol
   pos: NOUN
   gloss: basketball
@@ -277,6 +304,11 @@
 - citation: bato
   pos: NOUN
   gloss: stone, rock
+
+- citation: bayabas
+  pos: NOUN
+  gloss: guava
+  source: audit-corpus
 
 - citation: bayan
   pos: NOUN
@@ -315,6 +347,11 @@
 - citation: bigat
   pos: NOUN
   gloss: weight, heaviness
+  source: audit-corpus
+
+- citation: bilanggo
+  pos: NOUN
+  gloss: prisoner
   source: audit-corpus
 
 - citation: bilis
@@ -370,6 +407,12 @@
   gloss: ball
   source: audit-corpus
   loan: SPANISH
+
+- citation: bolpen
+  pos: NOUN
+  gloss: ballpoint pen
+  source: audit-corpus
+  loan: ENGLISH
 
 - citation: boss
   pos: NOUN
@@ -659,6 +702,11 @@
   gloss: cold (sensation, weather)
   source: audit-corpus
 
+- citation: gitna
+  pos: NOUN
+  gloss: middle, center
+  source: audit-corpus
+
 - citation: giyera
   pos: NOUN
   gloss: war
@@ -674,9 +722,19 @@
   pos: NOUN
   gloss: vegetable
 
+- citation: gulo
+  pos: NOUN
+  gloss: trouble, disorder, commotion
+  source: audit-corpus
+
 - citation: guro
   pos: NOUN
   gloss: teacher
+
+- citation: gusali
+  pos: NOUN
+  gloss: building
+  source: audit-corpus
 
 - citation: gutom
   pos: NOUN
@@ -720,6 +778,12 @@
   pos: NOUN
   gloss: dinner, supper
 
+- citation: hatinggabi
+  pos: NOUN
+  gloss: midnight
+  feats: {SEM_CLASS: TIME}
+  source: audit-corpus
+
 - citation: hipag
   pos: NOUN
   gloss: sister-in-law
@@ -744,6 +808,11 @@
   gloss: Thursday
   feats: {DAY_VALUE: "4", SEM_CLASS: DAY}
 
+- citation: ibabaw
+  pos: NOUN
+  gloss: top, surface, upper part
+  source: audit-corpus
+
 - citation: ibig
   pos: NOUN
   gloss: wish, desire, meaning
@@ -756,6 +825,11 @@
 - citation: ilalim
   pos: NOUN
   gloss: underside, bottom
+  source: audit-corpus
+
+- citation: ilaw
+  pos: NOUN
+  gloss: light, lamp
   source: audit-corpus
 
 - citation: ilog
@@ -795,6 +869,12 @@
 - citation: isda
   pos: NOUN
   gloss: fish
+
+- citation: istudyante
+  pos: NOUN
+  gloss: student
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: itay
   pos: NOUN
@@ -839,6 +919,11 @@
   pos: NOUN
   gloss: Juan
   subclass: [PERSON, MALE]
+
+- citation: kaarawan
+  pos: NOUN
+  gloss: birthday
+  source: audit-corpus
 
 - citation: kabayo
   pos: NOUN
@@ -910,6 +995,11 @@
 - citation: kanal
   pos: NOUN
   gloss: canal, ditch
+  source: audit-corpus
+
+- citation: kanan
+  pos: NOUN
+  gloss: right (side, direction)
   source: audit-corpus
 
 - citation: kandidato
@@ -1004,6 +1094,12 @@
   pos: NOUN
   gloss: cheese
 
+- citation: kinabukasan
+  pos: NOUN
+  gloss: future, next day
+  feats: {SEM_CLASS: TIME}
+  source: audit-corpus
+
 - citation: klase
   pos: NOUN
   gloss: class; classroom
@@ -1026,6 +1122,11 @@
 - citation: kulog
   pos: NOUN
   gloss: thunder
+  source: audit-corpus
+
+- citation: kulungan
+  pos: NOUN
+  gloss: cage, pen, enclosure
   source: audit-corpus
 
 - citation: kumusta
@@ -1302,6 +1403,12 @@
   subclass: [PERSON, FEMALE]
   source: R&C-1990
 
+- citation: misa
+  pos: NOUN
+  gloss: Mass (Catholic religious service)
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: miting
   pos: NOUN
   gloss: meeting
@@ -1354,6 +1461,12 @@
   pos: NOUN
   gloss: coconut
 
+- citation: nobela
+  pos: NOUN
+  gloss: novel
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: nobyembre
   pos: NOUN
   gloss: November
@@ -1383,6 +1496,12 @@
 - citation: ospital
   pos: NOUN
   gloss: hospital
+
+- citation: otel
+  pos: NOUN
+  gloss: hotel
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: paa
   pos: NOUN
@@ -1532,6 +1651,11 @@
   pos: NOUN
   gloss: yard, patio
 
+- citation: pawis
+  pos: NOUN
+  gloss: sweat
+  source: audit-corpus
+
 - citation: payat
   pos: NOUN
   gloss: thinness
@@ -1558,6 +1682,12 @@
 - citation: pera
   pos: NOUN
   gloss: money
+
+- citation: petsa
+  pos: NOUN
+  gloss: date (calendar)
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: pilipinas
   pos: NOUN
@@ -1603,6 +1733,11 @@
   gloss: blackboard
   source: audit-corpus
   loan: SPANISH
+
+- citation: pista
+  pos: NOUN
+  gloss: feast, festival (native variant of piyesta)
+  source: audit-corpus
 
 - citation: piyesta
   pos: NOUN
@@ -1653,6 +1788,12 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: relo
+  pos: NOUN
+  gloss: clock, watch (shortened form of relos)
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: relos
   pos: NOUN
   gloss: watch, clock
@@ -1691,6 +1832,11 @@
 - citation: salamin
   pos: NOUN
   gloss: mirror, glasses
+
+- citation: salapi
+  pos: NOUN
+  gloss: money, currency
+  source: audit-corpus
 
 - citation: salita
   pos: NOUN
@@ -1767,6 +1913,18 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: siyesta
+  pos: NOUN
+  gloss: siesta, nap
+  source: audit-corpus
+  loan: SPANISH
+
+- citation: siyudad
+  pos: NOUN
+  gloss: city
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: suka
   pos: NOUN
   gloss: vinegar
@@ -1783,6 +1941,11 @@
 - citation: sundalo
   pos: NOUN
   gloss: soldier
+  source: audit-corpus
+
+- citation: sunog
+  pos: NOUN
+  gloss: fire (conflagration)
   source: audit-corpus
 
 - citation: suwerte
