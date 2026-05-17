@@ -155,21 +155,28 @@ class TestPhase8iOutOfScope:
     8.I scope. Pin each; flip when the named follow-on sub-PR
     closes it."""
 
-    def test_n_appositive_proper_name(self) -> None:
+    def test_n_appositive_proper_name_closed_in_9p(self) -> None:
         """``Hindi nakita ni Betty ang kaibigan niyang si Flor.``
-        (R&G Intermediate sent-113) — blocked by the NP-internal
-        appositive ``si Flor`` after ``kaibigan niya + -ng``.
-        That's an NP-appositive construction not currently
-        supported. Lex (Betty, Flor) is in place; flip when an
-        NP-appositive sub-PR lands."""
+        (R&G Intermediate sent-113) — Phase 9.P closes the NP-internal
+        appositive construction via a new NP-level rule in
+        ``cfg/nominal.py``:
+
+            NP[CASE=X] → NP[CASE=X] PART[LINK=N{A,G}] NP[CASE=NOM]
+                ``(↓3 MARKER) =c 'SI'``       gate to si-personal-name
+
+        S&O 1972 §3.16(c) "Personal noun as second component":
+        when the first element of an NP modification construction
+        is a nominal, an appositive personal-name-marked NP
+        serves as a modifier of the head.
+
+        Pre-9.P this asserted ``len == 0`` (out-of-scope deferral)."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Hindi nakita ni Betty ang kaibigan niyang si Flor.",
             n_best=2,
         )
-        assert len(parses) == 0, (
-            "N-appositive proper-name attachment closed — flip "
-            "if the relevant sub-PR landed."
+        assert len(parses) >= 1, (
+            "8.I N-appositive pin should parse post-9.P"
         )
 
     def test_nag_aalala_intransitive_use_closed_in_9o(self) -> None:
