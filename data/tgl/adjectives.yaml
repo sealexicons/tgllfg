@@ -297,6 +297,17 @@
   gloss: tired
   affix_class: []
 
+# Phase 9.W: ``puno`` is polysemous. nouns.yaml carries the N
+# entries (``tree``; ``head, principal, leader``). The bare ADJ
+# entry here covers the ``full`` sense (per S&O 1972 §3.10; common
+# in audit corpus — R&G Intermediate sent-53 ``Puno na ang mga
+# bus pag tanghali na.``).
+- citation: puno
+  pos: ADJ
+  gloss: full
+  affix_class: []
+  source: audit-corpus
+
 - citation: pareho
   pos: ADJ
   gloss: same, alike (equative-identity predicate)

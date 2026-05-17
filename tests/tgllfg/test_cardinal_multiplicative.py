@@ -255,15 +255,16 @@ class TestMakaWithNeg:
 
 class TestMakaNegative:
 
-    def test_time_adv_still_doesnt_compose_bare(self) -> None:
-        # ``*Tumakbo ako kahapon.`` — the new rule is restricted to
-        # ADV_TYPE=FREQUENCY by the constraining equation
-        # ``(↓2 ADV_TYPE) =c 'FREQUENCY'``. Time adverbs (kahapon —
-        # ADV_TYPE=TIME) still do NOT compose as bare clause-final
-        # adjuncts (the Phase 5e Commit 3 deferral on time / spatial /
-        # manner adverb placement remains in force).
+    def test_time_adv_composes_clause_final_closed_in_9w(self) -> None:
+        # ``Tumakbo ako kahapon.`` — Phase 9.W lifts the Phase 5e
+        # Commit 3 deferral on bare clause-final TIME-adverb
+        # placement. A sibling of the FREQUENCY rule (Phase 5f
+        # Commit 5) now admits ``ADV_TYPE=TIME`` clause-final AdvP
+        # attachment. The flipped assertion verifies kahapon
+        # attaches as ADJUNCT in the parse.
         rs = parse_text("Tumakbo ako kahapon.", n_best=5)
-        # Either no parse, or no parse with kahapon as ADJUNCT.
+        assert rs, "no parse for `Tumakbo ako kahapon.`"
+        found = False
         for _, f, _, _ in rs:
             adj = f.feats.get("ADJUNCT")
             if adj is None:
@@ -271,10 +272,9 @@ class TestMakaNegative:
             members = list(adj) if isinstance(adj, (set, frozenset, list)) else [adj]
             for m in members:
                 if isinstance(m, FStructure) and m.feats.get("LEMMA") == "kahapon":
-                    raise AssertionError(
-                        "kahapon (TIME adverb) attached as ADJUNCT — "
-                        "FREQUENCY-only restriction failed"
-                    )
+                    found = True
+                    break
+        assert found, "kahapon not attached as ADJUNCT"
 
     def test_two_freq_adverbs_compose(self) -> None:
         # The new rule is recursive (S → S AdvP), so two FREQUENCY

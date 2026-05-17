@@ -90,6 +90,63 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.W Cluster A/H: pag + bare-N[TIME] + ALREADY body -----
+    #
+    # ``SubordClause → PART[COMP_TYPE=COND, LEMMA=pag]
+    #                  N[SEM_CLASS=TIME] PART[ASPECT_PART=ALREADY]``
+    #
+    # Closes the temporal-conditional body shape in R&G Intermediate
+    # sent-53 ``... pag tanghali na.`` "... when it's already noon."
+    # The body is a bare-N temporal-predicate (``tanghali`` "noon")
+    # plus the ALREADY aspectual ``na`` — together they form the
+    # subordinate clause's "predicate," tense-anchored at ALREADY.
+    #
+    # The existing rule (a) above admits ``pag S`` where ``S`` is a
+    # full clause (or verbless N/ADJ-PRED via Phase 5e Commit 22's
+    # anchor). The audit shape doesn't form a full S because the
+    # standalone verbless ``Tanghali na.`` fails — the Phase 5e
+    # anchor handles bare N-PRED but not N-PRED + ALREADY-clitic
+    # cluster (no rule absorbs the trailing clitic when the anchor
+    # is a NOUN). Phase 9.W lifts the gap with a dedicated builder
+    # that pairs the COND particle directly with N[SEM_CLASS=TIME]
+    # + ALREADY, projecting the matrix temporal-pred PRED+ASPECT.
+    #
+    # Gating:
+    # * ``LEMMA = pag`` on ↓1 — narrows to the bare-N temporal
+    #   conditional (kung/kapag/sakali don't take this shape; only
+    #   ``pag`` admits the bare-N body per S&O 1972 §7.18.5).
+    # * ``SEM_CLASS = TIME`` on ↓2 — restricts to temporal-class
+    #   nouns (tanghali / umaga / hapon / gabi / etc.), avoiding
+    #   false matches against entity-class nouns.
+    # * ``ASPECT_PART = ALREADY`` on ↓3 — selects the aspectual
+    #   ``na``, not the linker (the disambiguator now keeps both
+    #   readings at clause boundaries — see
+    #   :func:`tgllfg.clitics.placement._is_post_noun_na_at_clause_boundary`).
+    #
+    # Projected matrix f-structure: PRED = 'TIME-OF-DAY <SUBJ>'
+    # synthesized from the N daughter; ASPECT = PFV (already-state
+    # has perfective force); SUBORD_TYPE = TEMP_WHEN (re-tagging
+    # for downstream attachment) but admits via the existing
+    # COND-attachment rules (since LEMMA=pag is COMP_TYPE=COND).
+    rules.append(Rule(
+        "SubordClause",
+        [
+            "PART[COMP_TYPE=COND]",
+            "N[SEM_CLASS=TIME]",
+            "PART[ASPECT_PART=ALREADY]",
+        ],
+        [
+            "(↑ SUBORD_TYPE) = 'TEMP_WHEN'",
+            "(↑ PRED) = 'TIME-OF-DAY <SUBJ>'",
+            "(↑ ASPECT) = 'PFV'",
+            "(↑ TIME-N) = ↓2",
+            "(↓1 COMP_TYPE) =c 'COND'",
+            "(↓1 LEMMA) =c 'pag'",
+            "(↓2 SEM_CLASS) =c 'TIME'",
+            "(↓3 ASPECT_PART) =c 'ALREADY'",
+        ],
+    ))
+
     # --- (b) Post-matrix attachment (no comma) ------------------------
     #
     # ``S → S SubordClause``

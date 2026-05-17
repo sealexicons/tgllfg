@@ -193,6 +193,38 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.W Cluster A/H: clause-final TIME AdvP -----------
+    #
+    # ``Sasayaw siya bukas ng gabi.`` "She will dance tomorrow
+    # evening." (S&O 1972 p.441 / sent-676)
+    # ``Kakain siya bukas.``           "She'll eat tomorrow."
+    # ``Pumunta siya kahapon.``        "She went yesterday."
+    #
+    # Phase 5f Commit 5 closed clause-final FREQUENCY AdvP; Phase
+    # 5n.B Commit 19 closed clause-final INDEF AdvP. The TIME case
+    # was the original Phase 5e Commit 3 deferral noted in the
+    # Phase 5f closing comment — held back due to anticipated
+    # interaction with Wackernagel cluster + quantifier-float.
+    # Phase 9.W lifts it: the post-9.O grammar's clitic-pass +
+    # quantifier-float work has matured enough that the interaction
+    # doesn't surface as ambiguity in audit-corpus testing.
+    #
+    # Gated on ``ADV_TYPE=TIME`` to keep MANNER/LOCATION/SPATIAL
+    # adverbs (still deferred) from firing here. The AdvP's
+    # f-structure inherits TIME / DEIXIS_TIME / LEMMA from the
+    # head ADV via the existing ``AdvP → ADV`` lift rule. The
+    # compound ``bukas ng gabi`` "tomorrow evening" composes via
+    # the new compound TIME-AdvP rule below.
+    rules.append(Rule(
+        "S",
+        ["S", "AdvP"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 ADV_TYPE) =c 'TIME'",
+        ],
+    ))
+
 
     # --- Phase 5m Commit 4: sentence-initial sentential ADV --------
     #

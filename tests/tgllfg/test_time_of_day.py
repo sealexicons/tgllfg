@@ -226,14 +226,16 @@ class TestTimeDeicticsAyFronting:
 
 class TestTimeOfDayNegative:
 
-    def test_bare_kanina_clause_final_doesnt_attach(self) -> None:
-        # ``Pumunta ako kanina.`` — bare TIME AdvP at clause-end.
-        # The Phase 5f Commit 5 sentential-AdvP rule is restricted
-        # to ADV_TYPE=FREQUENCY only; the TIME deferral from
-        # Phase 5e Commit 3 stays in force. So kanina should NOT
-        # attach as a clause-final ADJUNCT until the deferral
-        # lifts.
+    def test_bare_kanina_clause_final_attaches_closed_in_9w(self) -> None:
+        # ``Pumunta ako kanina.`` — Phase 9.W lifts the Phase 5e
+        # Commit 3 deferral on bare clause-final TIME-AdvP
+        # placement. The new rule mirrors Phase 5f Commit 5's
+        # FREQUENCY shape, gated on ``ADV_TYPE=TIME``. The flipped
+        # assertion verifies kanina now attaches as a clause-final
+        # ADJUNCT.
         rs = parse_text("Pumunta ako kanina.", n_best=10)
+        assert rs, "no parse for `Pumunta ako kanina.`"
+        found = False
         for _, f, _, _ in rs:
             adj = f.feats.get("ADJUNCT")
             if adj is None:
@@ -243,11 +245,9 @@ class TestTimeOfDayNegative:
             )
             for m in members:
                 if isinstance(m, FStructure) and m.feats.get("LEMMA") == "kanina":
-                    raise AssertionError(
-                        "kanina attached as clause-final ADJUNCT — "
-                        "TIME deferral from Phase 5e Commit 3 should "
-                        "still be in force"
-                    )
+                    found = True
+                    break
+        assert found, "kanina not attached as clause-final ADJUNCT"
 
 
 # === Regression ===========================================================
