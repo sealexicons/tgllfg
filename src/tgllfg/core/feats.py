@@ -25,6 +25,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
     {
         "APPROX",
         "ASK_CLASS",
+        "AV_ABSOL",
         "CARDINAL",
         "CF",
         "CLOCK_MARKER",

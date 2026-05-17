@@ -710,6 +710,7 @@
   gloss: see, meet
   transitivity: TR
   affix_class: [um, ma, in_oblig, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: kitil
   pos: VERB

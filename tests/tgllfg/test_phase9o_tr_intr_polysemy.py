@@ -314,6 +314,62 @@ class TestStativePredAdj:
         assert "SUBJ" in fs.feats
 
 
+# ---- 9.O.4: AV-NVOL absolutive ----------------------------------------
+
+
+class TestAvNvolAbsolutive:
+    """Phase 9.O.4: ``Naalala ko.`` (NVOL with implicit pivot).
+    The ``ma-`` prefix produces VOICE=AV, MOOD=NVOL surfaces that
+    semantically invert case (GEN actor / NOM patient). The
+    absolutive use drops the patient entirely; the new grammar
+    rule binds the GEN-NP to SUBJ in this context. Restricted to
+    AV_ABSOL=true verbs + MOOD=NVOL."""
+
+    @pytest.mark.parametrize("sentence", [
+        "Naalala ko.",          # alala AV-NVOL-PFV
+        "Naalala niya.",
+        "Naalala nila.",
+        "Nakita ko.",           # kita AV-NVOL-PFV
+        "Nakita niya.",
+        "Nakikita ko.",         # kita AV-NVOL-IPFV
+    ])
+    def test_av_nvol_absolutive_parses(self, sentence: str) -> None:
+        from tgllfg.core.pipeline import parse_text
+        parses = parse_text(sentence, n_best=2)
+        assert len(parses) >= 1, (
+            f"AV-NVOL absolutive failed: {sentence!r}"
+        )
+
+    @pytest.mark.parametrize("sentence", [
+        # Canonical 2-arg AV-NVOL (GEN actor + NOM patient) still works
+        "Naalala ko ito.",
+        "Nakita ko ang aklat.",
+        "Naalala niya ang aklat.",
+    ])
+    def test_two_arg_av_nvol_still_parses(self, sentence: str) -> None:
+        """The 2-arg canonical AV-NVOL form continues to parse
+        (the rule restriction to AV_ABSOL=true + NVOL only fires
+        the new 1-arg rule when no NOM patient is present)."""
+        from tgllfg.core.pipeline import parse_text
+        parses = parse_text(sentence, n_best=2)
+        assert len(parses) >= 1
+
+    @pytest.mark.parametrize("sentence", [
+        # Canonical AV (non-NVOL) with GEN actor should still
+        # fail — only NVOL admits the GEN-to-SUBJ mapping.
+        "Tumingin ko.",            # tingin AV-PFV (not NVOL)
+        "Tumakbo ko.",             # takbo AV-PFV (not NVOL)
+    ])
+    def test_canonical_av_with_gen_still_fails(
+        self, sentence: str
+    ) -> None:
+        from tgllfg.core.pipeline import parse_text
+        parses = parse_text(sentence, n_best=2)
+        assert len(parses) == 0, (
+            f"AV (non-NVOL) with GEN should not parse: {sentence!r}"
+        )
+
+
 # ---- Negative cases (still failing — documents the gap front) ----------
 
 
@@ -338,15 +394,20 @@ class TestStillFailing:
             "Kilala ko si Maria. should parse via STATIVE_PRED rule"
         )
 
-    def test_naalala_av_absolutive_still_fails(self) -> None:
-        """``Naalala ko.`` (no overt patient) — ``naalala`` is
-        OV-NVOL-PFV (not AV), so AV_ABSOL doesn't apply. The OV-
-        absolutive ("remembered [it]" with implicit patient) would
-        require a different design (OV-with-optional-patient).
-        Deferred — 0 audit-corpus hits for this pattern."""
+    def test_naalala_av_absolutive_closed_in_9o(self) -> None:
+        """``Naalala ko.`` (no overt patient) — phase 9.O.4 closes
+        via a new grammar rule ``S → V[VOICE=AV, MOOD=NVOL,
+        AV_ABSOL=true] NP[CASE=GEN]`` that binds the GEN-clitic
+        actor to SUBJ in absolutive context. ``naalala`` is the
+        AV-NVOL form of ``alala`` (carrying AV_ABSOL=true from 9.O
+        B3.A); the synth path's INTR variant supplies the 1-arg
+        predicate. Same closure for ``Nakita ko.`` once ``kita``
+        gets ``AV_ABSOL: true``."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("Naalala ko.", n_best=2)
-        assert len(parses) == 0
+        assert len(parses) >= 1, (
+            "Naalala ko. should parse via 9.O.4 AV-NVOL absolutive rule"
+        )
 
     def test_mangyaring_polite_imperative_still_fails(self) -> None:
         """``Mangyaring umalis kayo.`` ("Kindly leave.") — uses
@@ -354,7 +415,7 @@ class TestStillFailing:
         Polite-imperative with embedded clause is a separate
         construction class; the bare mangyari surface is generated
         (verified by TestMangyariBareCtpl) but the linker + embedded
-        clause doesn't compose."""
+        clause doesn't compose. Closed in 9.O.5 follow-on."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("Mangyaring umalis kayo.", n_best=2)
         assert len(parses) == 0
