@@ -102,6 +102,84 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+
+    # --- Phase 9.T.4: nang V-DUPLICATE intensifier (S-level) ---
+    #
+    # ``Tumawa nang tumawa si Juan.``      "Juan laughed and laughed."
+    # ``Lumalakad nang lumalakad ang kartero.``
+    #                                       "The mailman walked and walked."
+    # ``Kumain nang kumain si Pedro.``      "Pedro ate and ate."
+    #
+    # 8.H ``test_nang_v_duplicate_idiom`` pin (S&O 1972 p.410
+    # sent-593). The ``V nang V`` reduplication is an intensifier
+    # / continuative-aspectual idiom — the same V form appears
+    # before and after the ``nang`` particle, expressing repeated
+    # or continuous action ("X-ing and X-ing").
+    #
+    # Rule shape (S-level direct — a V-wrap would lose the head
+    # daughter's VOICE feature on the wrapped V, breaking the
+    # parent rule's ``V[VOICE=AV]`` expectation):
+    #
+    #   S → V[VOICE=AV]  PART  V[VOICE=AV]  NP[CASE=NOM]
+    #     (↑) = ↓1                       matrix f-structure shared
+    #                                    with first V (head)
+    #     (↓2 LEMMA) =c 'nang'           gate the middle particle
+    #     (↓3 LEMMA) = (↓1 LEMMA)        lemma-match
+    #     (↓3 ASPECT) = (↓1 ASPECT)      aspect-match
+    #     (↑ SUBJ) = ↓4                  SUBJ binds to the NOM-NP
+    #     (↑ INTENSIFIER) = true         intensifier marker on matrix
+    #
+    # AV-only scope: the audit hits are all AV-intransitive
+    # (`Tumawa`, `Lumalakad`, `Tumakbo`, `Kumain` — all AV). The
+    # bare-N V-DUP variant (`Lakad nang lakad ang kartero.`) and
+    # transitive variants (OV/DV/IV) defer to follow-ons if audit
+    # pressure surfaces them.
+    #
+    # Disambiguates against the existing TEMP_SINCE / TEMP_WHEN
+    # `nang` subordinator rules — those take an S complement, not
+    # a V duplicate; the daughter-3 V shape is mutually exclusive.
+    rules.append(Rule(
+        "S",
+        ["V[VOICE=AV]", "PART", "V[VOICE=AV]", "NP[CASE=NOM]"],
+        _eqs(
+            "(↑) = ↓1",
+            "(↓2 LEMMA) =c 'nang'",
+            "(↓3 LEMMA) = (↓1 LEMMA)",
+            "(↓3 ASPECT) = (↓1 ASPECT)",
+            "(↑ SUBJ) = ↓4",
+            "(↑ INTENSIFIER) = true",
+        ),
+    ))
+
+    # 9.T.4 companion: V-DUP with 3-arg AV-CAUS-INDIRECT-FLAT
+    # shape (8.H ``test_nang_v_duplicate_idiom`` pin verbatim
+    # — S&O 1972 p.410 sent-593):
+    #
+    #   ``Nagpapakain sila nang nagpapakain ng kendi sa kanila.``
+    #
+    # Order: V NOM nang V GEN DAT — the SUBJ surfaces between
+    # the two V tokens, with the GEN-OBJ (PATIENT) + DAT-OBL
+    # (CAUSEE) trailing the duplicated V.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=AV, CAUS=INDIRECT]", "NP[CASE=NOM]",
+            "PART", "V[VOICE=AV, CAUS=INDIRECT]",
+            "NP[CASE=GEN]", "NP[CASE=DAT]",
+        ],
+        _eqs(
+            "(↑) = ↓1",
+            "(↓3 LEMMA) =c 'nang'",
+            "(↓4 LEMMA) = (↓1 LEMMA)",
+            "(↓4 ASPECT) = (↓1 ASPECT)",
+            "(↑ SUBJ) = ↓2",
+            "(↑ OBJ) = ↓5",
+            "(↑ OBL-CAUSEE) = ↓6",
+            "(↑ INTENSIFIER) = true",
+        ),
+    ))
+
+
     # --- Phase 9.O.4: AV-NVOL absolutive (Naalala ko) ------------------
     #
     # ``Naalala ko.``    "I (NVOL-)remembered."
@@ -555,6 +633,32 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBJ) = ↓2",
             "(↑ OBJ) = ↓3",
             "(↑ OBL-CAUSEE) = ↓4",
+        ),
+    ))
+
+    # --- Phase 9.T.3: 2-arg AV-CAUS-INDIRECT --------------------
+    #
+    # ``Nagpakain siya ng kendi.`` (8.H ``test_two_arg_av_caus_indirect``
+    # pin) — CAUSER + PATIENT only, no overt CAUSEE. The CAUSEE is
+    # implicit/recoverable from context but not syntactically
+    # realized.
+    #
+    # Two-daughter rule (CAUSER NP[CASE=NOM] + PATIENT NP[CASE=GEN])
+    # paired with the new ``AV_CAUS_INDIRECT_2ARG`` lex profile
+    # (causative.yaml ``kain`` entry; intrinsic
+    # ``AV_CAUS_INDIRECT_2ARG``). The LMT matcher selects between
+    # this 2-arg entry, the 8.H flat 3-arg entry, and the
+    # biclausal AV_CAUS_INDIRECT entry by argument-count overlap
+    # with the surface NP daughters.
+    #
+    # No conflict with the 3-arg flat rule above (different
+    # daughter count, mutually exclusive on c-structure match).
+    rules.append(Rule(
+        "S",
+        [v_av_caus_ind, "NP[CASE=NOM]", "NP[CASE=GEN]"],
+        _eqs(
+            "(↑ SUBJ) = ↓2",
+            "(↑ OBJ) = ↓3",
         ),
     ))
 

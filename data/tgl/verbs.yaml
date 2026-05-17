@@ -881,6 +881,7 @@
   gloss: cook
   transitivity: TR
   affix_class: [mag, i_oblig, in_oblig, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: maneho
   pos: VERB

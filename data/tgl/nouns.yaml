@@ -870,6 +870,12 @@
   pos: NOUN
   gloss: meat
 
+- citation: kartero
+  pos: NOUN
+  gloss: mailman, postman
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: kasama
   pos: NOUN
   gloss: companion
@@ -1615,6 +1621,12 @@
 - citation: tao
   pos: NOUN
   gloss: person, human
+
+- citation: taongbahay
+  pos: NOUN
+  gloss: homebody, housewife
+  source: audit-corpus
+  orth_variants: ["taong-bahay"]
 
 - citation: taon
   pos: NOUN
