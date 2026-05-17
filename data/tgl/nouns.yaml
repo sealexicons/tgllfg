@@ -28,6 +28,11 @@
   gloss: adobo (food dish)
   source: audit-corpus
 
+- citation: afritada
+  pos: NOUN
+  gloss: afritada (Filipino tomato-based stew)
+  loan: SPANISH
+
 - citation: agosto
   pos: NOUN
   gloss: August
@@ -478,6 +483,10 @@
   source: audit-corpus
   loan: ENGLISH
 
+- citation: bopis
+  pos: NOUN
+  gloss: bopis (spicy stew of pig lung and heart)
+
 - citation: boss
   pos: NOUN
   gloss: boss
@@ -525,6 +534,10 @@
 - citation: bulaklak
   pos: NOUN
   gloss: flower
+
+- citation: bulalo
+  pos: NOUN
+  gloss: bulalo (beef bone-marrow soup)
 
 - citation: bumbero
   pos: NOUN
@@ -654,6 +667,10 @@
 - citation: dingding
   pos: NOUN
   gloss: wall
+
+- citation: dinuguan
+  pos: NOUN
+  gloss: dinuguan (pork blood stew)
 
 - citation: diploma
   pos: NOUN
@@ -821,10 +838,18 @@
   subclass: [PERSON, FEMALE]
   source: R&C-1990
 
+- citation: ginataan
+  pos: NOUN
+  gloss: ginataan (coconut-milk stew)
+
 - citation: ginaw
   pos: NOUN
   gloss: cold (sensation, weather)
   source: audit-corpus
+
+- citation: giniling
+  pos: NOUN
+  gloss: giniling (ground meat dish)
 
 - citation: gitna
   pos: NOUN
@@ -1122,6 +1147,11 @@
 - citation: kalan
   pos: NOUN
   gloss: stove, cooking hearth
+
+- citation: kaldereta
+  pos: NOUN
+  gloss: kaldereta (goat or beef stew)
+  loan: SPANISH
 
 - citation: kaliwa
   pos: NOUN
@@ -1667,6 +1697,11 @@
   gloss: melon
   source: audit-corpus
   loan: ENGLISH
+
+- citation: menudo
+  pos: NOUN
+  gloss: menudo (diced pork-and-liver stew)
+  loan: SPANISH
 
 - citation: mesa
   pos: NOUN
@@ -2467,6 +2502,10 @@
   subclass: [LANGUAGE]
   source: audit-corpus
 
+- citation: talong
+  pos: NOUN
+  gloss: eggplant
+
 - citation: tamad
   pos: NOUN
   gloss: laziness
@@ -2584,6 +2623,11 @@
   gloss: uncle
   feats: {REGISTER: FORMAL}
 
+- citation: torta
+  pos: NOUN
+  gloss: omelet (e.g. ``tortang talong`` = eggplant omelet)
+  loan: SPANISH
+
 - citation: trabaho
   pos: NOUN
   gloss: work, job
@@ -2624,6 +2668,10 @@
   pos: NOUN
   gloss: chocolate
   loan: SPANISH
+
+- citation: tuba
+  pos: NOUN
+  gloss: tuba (coconut wine)
 
 - citation: tubig
   pos: NOUN
