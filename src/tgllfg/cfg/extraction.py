@@ -857,6 +857,123 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+
+    # --- Phase 9.R: Non-SUBJ Ni-focus (B3.E) -------------------
+    #
+    # ``Ni ito ay hindi umiinom si Rosa.`` (S&O 1972 page 603 /
+    #     sent-1154 — 8.V `test_non_subj_ni_focus` pin)
+    #     "Not even this is Rosa drinking." / "Rosa isn't even
+    #     drinking this."
+    #
+    # Extends the Phase 8.V SUBJ-focus Ni-X rule above to non-SUBJ
+    # in-clause GFs: OBJ (AV verbs with extractable PATIENT),
+    # OBJ-AGENT (non-AV verbs with extractable GEN-actor), and OBL
+    # (locative/directional DAT-NPs).
+    #
+    # Per S&O 1972 §7.20: the ``Ni X`` focus-negation construction
+    # admits any in-clause GF as the fronted-and-negated element.
+    # 8.V closed the SUBJ-case via ``S_GAP``; this rule family
+    # closes the non-SUBJ cases by paralleling 8.V's structure for
+    # each existing non-pivot ay-fronting gap category (line 945:
+    # GEN+S_GAP_OBJ, line 958: GEN+S_GAP_OBJ_AGENT, line 973:
+    # DAT+S_GAP_OBL).
+    #
+    # **Case marking on the fronted Ni-NP**: in 8.V's SUBJ-focus
+    # the fronted NP carries CASE=NOM (matching the SUBJ pivot's
+    # native case). For non-SUBJ Ni-focus, audit-attested
+    # ``Ni ito ay hindi umiinom si Rosa.`` shows the fronted NP
+    # still carries NOM (``ito`` is a NOM-only DEM). Per S&O §7.20,
+    # the ``Ni`` particle absorbs the case marker, leaving the
+    # fronted NP's morphological case to be supplied by the
+    # default (NOM) for non-PP topics. OBL-position keeps DAT
+    # because the locative ground retains its ``sa``-PP morphology
+    # (``Ni sa bahay`` would still surface as ``sa bahay`` with
+    # CASE=DAT).
+    #
+    # **Disambiguation against 8.V**: the inner-clause non-terminal
+    # is what selects between rules:
+    # * 8.V fires only on ``S_GAP`` (SUBJ missing) — fails when the
+    #   inner has an explicit SUBJ like ``si Rosa``.
+    # * 9.R rules fire on ``S_GAP_OBJ`` / ``S_GAP_OBJ_AGENT`` /
+    #   ``S_GAP_OBL`` — these tolerate an in-clause SUBJ and have
+    #   the relevant non-SUBJ slot missing.
+    # The 8.V SUBJ-focus and 9.R non-SUBJ-focus rules are mutually
+    # exclusive on the inner-clause shape.
+    #
+    # All three 9.R rules carry the same FOCUS_NEG / POLARITY=NEG
+    # gates as 8.V; the only structural differences are the
+    # fronted NP's CASE and the inner gap category.
+
+    # 9.R Rule 1: Ni-OBJ-focus (AV verb with extractable OBJ)
+    # ``Ni ito ay hindi umiinom si Rosa.``
+    #     "Rosa isn't drinking even this."
+    rules.append(Rule(
+        "S",
+        [
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=NOM]",
+            "PART[LINK=AY]",
+            "S_GAP_OBJ",
+        ],
+        [
+            "(↑) = ↓4",
+            "(↑ TOPIC) = ↓2",
+            "(↑ FOCUS_NEG) = true",
+            "(↓4 REL-PRO) = ↓2",
+            "(↓4 REL-PRO) =c (↓4 OBJ)",
+            "(↓4 POLARITY) =c 'NEG'",
+            "(↓1 FOCUS_NEG) =c true",
+        ],
+    ))
+
+    # 9.R Rule 2: Ni-OBJ-AGENT-focus (non-AV verb, GEN-actor
+    # extracted with Ni absorbing case)
+    # ``Ni si Maria ay hindi kinain ang aklat.``
+    #     "Not even Maria has the book been eaten by."
+    rules.append(Rule(
+        "S",
+        [
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=NOM]",
+            "PART[LINK=AY]",
+            "S_GAP_OBJ_AGENT",
+        ],
+        [
+            "(↑) = ↓4",
+            "(↑ TOPIC) = ↓2",
+            "(↑ FOCUS_NEG) = true",
+            "(↓4 REL-PRO) = ↓2",
+            "(↓4 REL-PRO) =c (↓4 OBJ-AGENT)",
+            "(↓4 POLARITY) =c 'NEG'",
+            "(↓1 FOCUS_NEG) =c true",
+        ],
+    ))
+
+    # 9.R Rule 3: Ni-OBL-focus (any voice, locative DAT-NP
+    # extracted with Ni preserving the sa-PP morphology)
+    # ``Ni sa bahay ay hindi pumunta si Juan.``
+    #     "Juan didn't go even to the house."
+    # OBL binds to ADJUNCT set (no scalar REL-PRO equation —
+    # mirrors the existing non-pivot OBL ay-fronting rule).
+    rules.append(Rule(
+        "S",
+        [
+            "PART[FOCUS_NEG=true]",
+            "NP[CASE=DAT]",
+            "PART[LINK=AY]",
+            "S_GAP_OBL",
+        ],
+        [
+            "(↑) = ↓4",
+            "(↑ TOPIC) = ↓2",
+            "(↑ FOCUS_NEG) = true",
+            "(↓4 REL-PRO) = ↓2",
+            "(↓4 POLARITY) =c 'NEG'",
+            "(↓1 FOCUS_NEG) =c true",
+        ],
+    ))
+
+
     # --- Phase 7a.F: kahit-X SUBJ no-`ay` colloquial (§18.1.1 item 8) ---
     #
     # `Kahit sino kumain.` "Anyone could eat" — colloquial Tagalog

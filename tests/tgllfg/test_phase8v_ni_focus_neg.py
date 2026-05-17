@@ -159,21 +159,26 @@ class TestPhase8vOutOfScope:
     closed here. Each pin flips when the relevant follow-on
     sub-PR lands."""
 
-    def test_non_subj_ni_focus(self) -> None:
+    def test_non_subj_ni_focus_closed_in_9r(self) -> None:
         """``Ni ito ay hindi umiinom si Rosa.`` (S&O 1972 page
         603 / sent-1154) — DEM-PRON Ni-focus on a NON-SUBJ
-        position with an in-clause NOM-pivot ``si Rosa``. The
-        SUBJ-only Ni-focus rule of 8.V binds the fronted NP to
-        SUBJ via the S_GAP REL-PRO=SUBJ constraint, so a
-        separate in-clause SUBJ-pivot is incompatible. Flip
-        when a non-SUBJ Ni-focus sub-PR lands."""
+        position with an in-clause NOM-pivot ``si Rosa``.
+
+        Phase 9.R B3.E closes this via three new rules in
+        cfg/extraction.py parallel to the 8.V SUBJ-focus rule
+        but with non-SUBJ gap categories (S_GAP_OBJ /
+        S_GAP_OBJ_AGENT / S_GAP_OBL). The 8.V SUBJ-focus and
+        9.R non-SUBJ-focus rules are mutually exclusive on the
+        inner-clause shape: 8.V requires S_GAP (SUBJ missing,
+        no in-clause SUBJ); 9.R requires one of the non-SUBJ
+        gap categories (the relevant non-SUBJ slot missing,
+        in-clause SUBJ present)."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Ni ito ay hindi kumain si Maria.", n_best=2,
         )
-        assert len(parses) == 0, (
-            "Non-SUBJ Ni-focus closed — flip if a non-SUBJ Ni-"
-            "focus sub-PR landed."
+        assert len(parses) >= 1, (
+            "Non-SUBJ Ni-focus should parse post-9.R"
         )
 
     def test_paired_ni_correlative(self) -> None:
