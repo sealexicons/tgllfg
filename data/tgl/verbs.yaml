@@ -435,6 +435,12 @@
   transitivity: TR
   affix_class: [um, mang, in_oblig, maka]
 
+- citation: dulas
+  pos: VERB
+  gloss: slip, slide
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+
 - citation: dungaw
   pos: VERB
   gloss: look out (window)
@@ -501,6 +507,12 @@
   transitivity: INTR
   affix_class: [um, mag, ma, maka]
 
+- citation: guho
+  pos: VERB
+  gloss: collapse, crumble
+  transitivity: INTR
+  affix_class: [um, maka]
+
 - citation: gulay
   pos: VERB
   gloss: pick vegetables
@@ -561,11 +573,23 @@
   transitivity: TR
   affix_class: [um, in_oblig, maka]
 
+- citation: harang
+  pos: VERB
+  gloss: block, intercept
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
 - citation: harap
   pos: VERB
   gloss: face
   transitivity: TR
   affix_class: [um, in_oblig, maka]
+
+- citation: hasa
+  pos: VERB
+  gloss: sharpen, hone
+  transitivity: TR
+  affix_class: [mag, i_oblig, in_oblig, maka]
 
 - citation: hatak
   pos: VERB
@@ -638,6 +662,12 @@
   gloss: stop
   transitivity: TR
   affix_class: [an_oblig, maka]
+
+- citation: hipa
+  pos: VERB
+  gloss: blow on, kindle
+  transitivity: TR
+  affix_class: [um, in_oblig, maka]
 
 - citation: hiram
   pos: VERB
@@ -736,6 +766,12 @@
   transitivity: TR
   affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an, magsi]
 
+- citation: ipit
+  pos: VERB
+  gloss: squeeze, pinch; be caught in
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, ma, maka]
+
 - citation: ipon
   pos: VERB
   gloss: collect, save
@@ -790,6 +826,12 @@
   transitivity: TR
   affix_class: [um, in_oblig, an_oblig, maka]
 
+- citation: kaila
+  pos: VERB
+  gloss: deny, hide (the truth)
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, ipag, maka]
+
 - citation: kain
   pos: VERB
   gloss: eat
@@ -801,6 +843,12 @@
   gloss: rattle, shake
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
+
+- citation: kampi
+  pos: VERB
+  gloss: side with, ally with
+  transitivity: INTR
+  affix_class: [um, mag, an_oblig, maka]
 
 - citation: kanta
   pos: VERB
@@ -819,6 +867,12 @@
   gloss: marry, wed
   transitivity: TR
   affix_class: [um, in_oblig, maka]
+
+- citation: katok
+  pos: VERB
+  gloss: knock (on a door)
+  transitivity: INTR
+  affix_class: [um, mag, maka]
 
 - citation: kilala
   pos: VERB
@@ -924,6 +978,12 @@
   transitivity: TR
   affix_class: [um, in_oblig, maka]
 
+- citation: lapat
+  pos: VERB
+  gloss: fit, adjust to
+  transitivity: TR
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
 - citation: lapit
   pos: VERB
   gloss: approach, come near
@@ -937,9 +997,21 @@
   affix_class: [mag, an_oblig, pag_an, maka]
   feats: {AV_ABSOL: true}
 
+- citation: latag
+  pos: VERB
+  gloss: spread out, lay flat
+  transitivity: TR
+  affix_class: [mag, i_oblig, maka]
+
 - citation: layo
   pos: VERB
   gloss: move away
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+
+- citation: libot
+  pos: VERB
+  gloss: walk around, wander
   transitivity: INTR
   affix_class: [um, mag, maka]
 
@@ -955,11 +1027,23 @@
   transitivity: TR
   affix_class: [mag, i_oblig, in_oblig, maka]
 
+- citation: ligtas
+  pos: VERB
+  gloss: rescue, save
+  transitivity: TR
+  affix_class: [mag, i_oblig, an_oblig, maka]
+
 - citation: lihim
   pos: VERB
   gloss: hide, keep secret
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
+
+- citation: lihis
+  pos: VERB
+  gloss: deviate, swerve
+  transitivity: INTR
+  affix_class: [um, mag, maka]
 
 - citation: limot
   pos: VERB
@@ -998,6 +1082,19 @@
   transitivity: TR
   affix_class: [um, mag, an_oblig, i_oblig, maka]
 
+- citation: lubog
+  pos: VERB
+  gloss: submerge, sink
+  transitivity: INTR
+  affix_class: [um, mag, i_oblig, ma, maka]
+  feats: {AV_ABSOL: true}
+
+- citation: lulan
+  pos: VERB
+  gloss: load (onto), ride
+  transitivity: TR
+  affix_class: [um, mag, i_oblig, maka]
+
 - citation: lundag
   pos: VERB
   gloss: jump, leap
@@ -1029,6 +1126,12 @@
   affix_class: [mag, i_oblig, in_oblig, maka]
   feats: {AV_ABSOL: true}
 
+- citation: luwas
+  pos: VERB
+  gloss: go (to a town or city); travel up to
+  transitivity: INTR
+  affix_class: [um, maka]
+
 - citation: mali
   pos: VERB
   gloss: be wrong, err
@@ -1040,6 +1143,18 @@
   gloss: drive
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
+
+- citation: marka
+  pos: VERB
+  gloss: mark, score
+  transitivity: TR
+  affix_class: [mag, an_oblig, maka]
+
+- citation: masid
+  pos: VERB
+  gloss: observe, watch carefully
+  transitivity: TR
+  affix_class: [mag, an_oblig, maka]
 
 - citation: nakaw
   pos: VERB
@@ -1070,6 +1185,12 @@
   gloss: watch
   transitivity: TR
   affix_class: [mang, in_oblig, an_oblig, maka]
+
+- citation: padyak
+  pos: VERB
+  gloss: stomp the foot
+  transitivity: INTR
+  affix_class: [um, mag, maka]
 
 - citation: pagod
   pos: VERB
@@ -1365,6 +1486,12 @@
   transitivity: TR
   affix_class: [um, mag, i_oblig, an_oblig, maka]
 
+- citation: sanla
+  pos: VERB
+  gloss: pawn, pledge as security
+  transitivity: TR
+  affix_class: [mag, i_oblig, maka]
+
 - citation: sapit
   pos: VERB
   gloss: arrive, reach
@@ -1462,11 +1589,23 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
 
+- citation: suklay
+  pos: VERB
+  gloss: comb (hair)
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
 - citation: sulat
   pos: VERB
   gloss: write
   transitivity: TR
   affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, ipag, ika, magsi]
+
+- citation: sulsol
+  pos: VERB
+  gloss: incite, instigate
+  transitivity: TR
+  affix_class: [mang, in_oblig, maka]
 
 - citation: sundo
   pos: VERB
@@ -1522,6 +1661,12 @@
   transitivity: INTR
   affix_class: [um, mag, maka]
 
+- citation: tabon
+  pos: VERB
+  gloss: cover with earth, bury
+  transitivity: TR
+  affix_class: [mag, an_oblig, maka]
+
 - citation: tadtad
   pos: VERB
   gloss: chop fine, mince
@@ -1545,6 +1690,12 @@
   gloss: meet, encounter
   transitivity: INTR
   affix_class: [um, mag, an_oblig, maka]
+
+- citation: tahan
+  pos: VERB
+  gloss: calm down, stop crying
+  transitivity: INTR
+  affix_class: [um, mag, maka]
 
 - citation: tahi
   pos: VERB
