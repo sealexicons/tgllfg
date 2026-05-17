@@ -33,6 +33,12 @@
   gloss: August
   feats: {MONTH_VALUE: "8", SEM_CLASS: MONTH}
 
+- citation: airport
+  pos: NOUN
+  gloss: airport
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: aklat
   pos: NOUN
   gloss: book
@@ -282,6 +288,11 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: bangus
+  pos: NOUN
+  gloss: milkfish
+  source: audit-corpus
+
 - citation: banig
   pos: NOUN
   gloss: mat (woven sleeping mat)
@@ -321,6 +332,11 @@
 - citation: bata
   pos: NOUN
   gloss: child
+
+- citation: batis
+  pos: NOUN
+  gloss: stream, brook
+  source: audit-corpus
 
 - citation: bato
   pos: NOUN
@@ -388,6 +404,11 @@
 - citation: bintana
   pos: NOUN
   gloss: window
+
+- citation: bintang
+  pos: NOUN
+  gloss: accusation, suspicion
+  source: audit-corpus
 
 - citation: binti
   pos: NOUN
@@ -461,6 +482,11 @@
   pos: NOUN
   gloss: roof
 
+- citation: buhangin
+  pos: NOUN
+  gloss: sand
+  source: audit-corpus
+
 - citation: buhay
   pos: NOUN
   gloss: life
@@ -482,6 +508,12 @@
 - citation: bulaklak
   pos: NOUN
   gloss: flower
+
+- citation: bumbero
+  pos: NOUN
+  gloss: firefighter
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: bundok
   pos: NOUN
@@ -514,6 +546,12 @@
   gloss: hundred
   affix_class: [card_redup]
   feats: {COLL_VALUE: HUNDREDS}
+
+- citation: dado
+  pos: NOUN
+  gloss: dice
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: daga
   pos: NOUN
@@ -634,6 +672,11 @@
   pos: NOUN
   gloss: blood
 
+- citation: duwag
+  pos: NOUN
+  gloss: coward
+  source: audit-corpus
+
 - citation: dyip
   pos: NOUN
   gloss: jeepney
@@ -642,6 +685,12 @@
   pos: NOUN
   gloss: age
   affix_class: [kasing_n_eq]
+  loan: SPANISH
+
+- citation: ekspiriyensiya
+  pos: NOUN
+  gloss: experience
+  source: audit-corpus
   loan: SPANISH
 
 - citation: emmanuel
@@ -681,6 +730,12 @@
   gloss: school
   feats: {REGISTER: COLLOQUIAL}
   synonyms: [paaralan]
+
+- citation: espiya
+  pos: NOUN
+  gloss: spy
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: estudyante
   pos: NOUN
@@ -795,6 +850,11 @@
 - citation: halaman
   pos: NOUN
   gloss: plant
+  source: audit-corpus
+
+- citation: halimbawa
+  pos: NOUN
+  gloss: example, illustration
   source: audit-corpus
 
 - citation: halip
@@ -917,6 +977,11 @@
   gloss: student
   source: audit-corpus
   loan: SPANISH
+
+- citation: itak
+  pos: NOUN
+  gloss: machete, bolo
+  source: audit-corpus
 
 - citation: itay
   pos: NOUN
@@ -1133,6 +1198,11 @@
   gloss: member
   source: audit-corpus
 
+- citation: kasintahan
+  pos: NOUN
+  gloss: sweetheart
+  source: audit-corpus
+
 - citation: kastila
   pos: NOUN
   gloss: Spaniard; Spanish (language)
@@ -1228,6 +1298,11 @@
   gloss: quarter (of the hour); clock-time fraction
   feats: {SEM_CLASS: FRACTION}
   loan: SPANISH
+
+- citation: kuwento
+  pos: NOUN
+  gloss: story, tale
+  source: audit-corpus
 
 - citation: kuwintas
   pos: NOUN
@@ -1408,6 +1483,11 @@
   pos: NOUN
   gloss: mango
 
+- citation: manggagawa
+  pos: NOUN
+  gloss: worker, laborer
+  source: audit-corpus
+
 - citation: manny
   pos: NOUN
   gloss: Manny
@@ -1514,6 +1594,12 @@
   pos: NOUN
   gloss: table
 
+- citation: milyunaryo
+  pos: NOUN
+  gloss: millionaire
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: minda
   pos: NOUN
   gloss: Minda
@@ -1535,6 +1621,11 @@
   pos: NOUN
   gloss: Wednesday
   feats: {DAY_VALUE: "3", SEM_CLASS: DAY}
+
+- citation: monggo
+  pos: NOUN
+  gloss: mung bean
+  source: audit-corpus
 
 - citation: motorsiklo
   pos: NOUN
@@ -1634,9 +1725,55 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: pagaalaga
+  pos: NOUN
+  gloss: caretaking, nurturing (pag-aalaga with hyphen normalized)
+  source: audit-corpus
+
+- citation: pagiyak
+  pos: NOUN
+  gloss: crying (pag-iyak with hyphen normalized)
+  source: audit-corpus
+
+- citation: pagkaani
+  pos: NOUN
+  gloss: post-harvest period
+  source: audit-corpus
+
 - citation: pagkain
   pos: NOUN
   gloss: food
+
+- citation: pagkakaayos
+  pos: NOUN
+  gloss: arrangement, order, organization
+  source: audit-corpus
+
+- citation: pagkakakilala
+  pos: NOUN
+  gloss: acquaintance, familiarity
+  source: audit-corpus
+
+- citation: pagkapananghalian
+  pos: NOUN
+  gloss: midday period, lunchtime
+  feats: {SEM_CLASS: TIME}
+  source: audit-corpus
+
+- citation: paglipas
+  pos: NOUN
+  gloss: passing, lapse (of time)
+  source: audit-corpus
+
+- citation: pagmamadali
+  pos: NOUN
+  gloss: haste, rush
+  source: audit-corpus
+
+- citation: pagpatak
+  pos: NOUN
+  gloss: dripping, falling (of drops)
+  source: audit-corpus
 
 - citation: pakwan
   pos: NOUN
@@ -1727,6 +1864,11 @@
   pos: NOUN
   gloss: clothing / garment
   feats: {PANG_DERIVED: true}
+
+- citation: pansin
+  pos: NOUN
+  gloss: notice, observation
+  source: audit-corpus
 
 - citation: pansulat
   pos: NOUN
@@ -1820,6 +1962,12 @@
   pos: NOUN
   gloss: money
 
+- citation: perlas
+  pos: NOUN
+  gloss: pearl
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: petsa
   pos: NOUN
   gloss: date (calendar)
@@ -1831,6 +1979,11 @@
   gloss: piano
   source: audit-corpus
   loan: SPANISH
+
+- citation: pila
+  pos: NOUN
+  gloss: line, queue
+  source: audit-corpus
 
 - citation: pilipinas
   pos: NOUN
@@ -1887,6 +2040,12 @@
   gloss: festival, fiesta
   source: audit-corpus
   loan: SPANISH
+
+- citation: pizza
+  pos: NOUN
+  gloss: pizza
+  source: audit-corpus
+  loan: ENGLISH
 
 - citation: porsiyento
   pos: NOUN
@@ -2018,6 +2177,11 @@
   pos: NOUN
   gloss: word
 
+- citation: sampal
+  pos: NOUN
+  gloss: slap
+  source: audit-corpus
+
 - citation: sandali
   pos: NOUN
   gloss: a moment
@@ -2071,6 +2235,11 @@
   gloss: September
   feats: {MONTH_VALUE: "9", SEM_CLASS: MONTH}
 
+- citation: silangan
+  pos: NOUN
+  gloss: east
+  source: audit-corpus
+
 - citation: silid
   pos: NOUN
   gloss: room
@@ -2093,6 +2262,21 @@
   gloss: cinema, movie
   source: audit-corpus
   loan: SPANISH
+
+- citation: singsing
+  pos: NOUN
+  gloss: ring (jewelry)
+  source: audit-corpus
+
+- citation: sinigang
+  pos: NOUN
+  gloss: sinigang (sour soup)
+  source: audit-corpus
+
+- citation: sipon
+  pos: NOUN
+  gloss: cold (illness, runny nose)
+  source: audit-corpus
 
 - citation: siyentipiko
   pos: NOUN
@@ -2282,6 +2466,12 @@
   pos: NOUN
   gloss: work, job
 
+- citation: trak
+  pos: NOUN
+  gloss: truck
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: traktor
   pos: NOUN
   gloss: tractor
@@ -2315,6 +2505,11 @@
   pos: NOUN
   gloss: top
 
+- citation: tulay
+  pos: NOUN
+  gloss: bridge
+  source: audit-corpus
+
 - citation: tulong
   pos: NOUN
   gloss: help
@@ -2323,6 +2518,11 @@
 - citation: tungkulin
   pos: NOUN
   gloss: duty, responsibility
+  source: audit-corpus
+
+- citation: tungo
+  pos: NOUN
+  gloss: destination, direction, purpose
   source: audit-corpus
 
 - citation: turista
@@ -2370,6 +2570,11 @@
   gloss: morning
   feats: {SEM_CLASS: TIME}
 
+- citation: uri
+  pos: NOUN
+  gloss: kind, sort, type
+  source: audit-corpus
+
 - citation: utak
   pos: NOUN
   gloss: brain
@@ -2387,3 +2592,15 @@
   pos: NOUN
   gloss: wealth
   source: audit-corpus
+
+- citation: yelo
+  pos: NOUN
+  gloss: ice
+  source: audit-corpus
+  loan: SPANISH
+
+- citation: yogurt
+  pos: NOUN
+  gloss: yogurt
+  source: audit-corpus
+  loan: ENGLISH
