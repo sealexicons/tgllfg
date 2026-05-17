@@ -71,6 +71,37 @@ def register_rules(rules: list[Rule]) -> None:
         _eqs("(↑ SUBJ) = ↓3", "↓2 ∈ (↑ ADJUNCT)"),
     ))
 
+    # --- Phase 9.O.5: mangyari polite-imperative wrap ------------------
+    #
+    # ``Mangyaring umalis kayo.``    "Kindly leave."
+    # ``Mangyaring kumain kayo.``    "Please eat."
+    # ``Mangyaring magluto si Maria.``  "May Maria please cook."
+    #
+    # The discourse-particle / polite-marker ``mangyari`` (= "may
+    # it happen / please") wraps a complete S via the ``-ng``
+    # linker. The embedded S is fully formed (V + arguments); the
+    # wrap lifts it to the matrix level and tags it with
+    # ``POLITE_MARKER`` for downstream consumers.
+    #
+    # F-structure shape: the outer S IS the inner S (full lift via
+    # ``(↑) = ↓3``), with an added ``POLITE_MARKER`` feat. No new
+    # SUBJ binding, no XCOMP — ``mangyari`` is structurally a
+    # politeness-marker wrap, not a control verb.
+    #
+    # Restricted to the bare-CTPL ``mangyari`` form via
+    # ``POLITE_MARKER`` (set on the Phase 9.O ``mang_retain`` bare
+    # CTPL cell); the PFV ``nangyari`` ("happened") and other
+    # forms continue to function as regular ``yari`` verbs without
+    # the politeness reading.
+    rules.append(Rule(
+        "S",
+        ["V[POLITE_MARKER=true]", "PART[LINK=NG]", "S"],
+        [
+            "(↑) = ↓3",
+            "(↑ POLITE_MARKER) = true",
+        ],
+    ))
+
     # --- Phase 9.O.4: AV-NVOL absolutive (Naalala ko) ------------------
     #
     # ``Naalala ko.``    "I (NVOL-)remembered."

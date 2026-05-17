@@ -65,6 +65,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "NEG_TAG",
         "ORDINAL",
         "ORTHOGRAPHIC_TERMINATOR",
+        "POLITE_MARKER",
         "PANG_DERIVED",
         "PLURAL_MARKER",
         "PREDICATIVE",
