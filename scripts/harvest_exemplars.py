@@ -315,10 +315,30 @@ _SLOT_FILL_RE = re.compile(r"\s/\s")
 # starred-form citation, not a target parse.
 _UNGRAM_MARKER_RE = re.compile(r"\*[a-z]")
 
-# OCR-confidence-low characters: the typesetter's currency-glyph
-# substitutions (``€``, ``£``) for ``e`` / ``n``, and backslashes
-# mid-word (``san\palok``).
-_OCR_NOISE_CHAR_RE = re.compile(r"[€£]|\w\\\w")
+# OCR-confidence-low characters in word-context.
+#
+# 9.K-original (RC1990):
+# - ``€`` / ``£`` glyph substitutions for ``e`` / ``n``.
+# - mid-word backslash (``san\palok``).
+#
+# 9.L additions (Ramos 1971 + general extractor robustness):
+# - Mid-word ampersand (``Magb&on`` / ``Bil&ngin`` — ``&`` for ``a``).
+# - Mid-lowercase digit (``Iba6n`` / ``n1ya`` / ``s1yete`` — digit
+#   substituted for letter mid-word). Restricted to digits between
+#   two lowercase letters to avoid false positives on legitimate
+#   alphanumeric tokens (model numbers, addresses).
+# - Slash followed by single trailing letter at word boundary
+#   (``Iabant/e``). The single-trailing-letter constraint distinguishes
+#   OCR garbage from legitimate alternation tokens
+#   (``mister/misis`` / ``ako/kami`` / ``po/ho``) where both sides
+#   of the slash are multi-letter Tagalog words.
+_OCR_NOISE_CHAR_RE = re.compile(
+    r"[€£]"                  # currency glyph substitution
+    r"|\w\\\w"               # backslash mid-word
+    r"|\w&\w"                # ampersand mid-word
+    r"|[a-z][0-9][a-z]"      # digit between lowercase letters
+    r"|[a-z]/[a-z](?![a-z])"  # slash + single-letter (not alternation)
+)
 
 # Truncation marker: line ends in ``...``. Trail-off indicates the
 # original sentence is unfinished and not a target parse:
