@@ -114,6 +114,11 @@
   gloss: easy, quick
   affix_class: [ma_adj]
 
+- citation: dilaw
+  pos: ADJ
+  gloss: yellow
+  affix_class: []
+
 - citation: galit
   pos: ADJ
   gloss: angry
@@ -156,6 +161,16 @@
   gloss: lying down, recumbent
   affix_class: [naka_resultative]
 
+- citation: hilaw
+  pos: ADJ
+  gloss: raw, unripe
+  affix_class: []
+
+- citation: hilig
+  pos: ADJ
+  gloss: fond of, inclined toward
+  affix_class: [ma_adj]
+
 - citation: hilo
   pos: ADJ
   gloss: dizzy
@@ -171,14 +186,34 @@
   gloss: poor, difficult
   affix_class: [ma_adj]
 
+- citation: hiya
+  pos: ADJ
+  gloss: shy, ashamed
+  affix_class: [ma_adj]
+
 - citation: husay
   pos: ADJ
   gloss: excellent, skilled
   affix_class: [ma_adj]
 
+- citation: husto
+  pos: ADJ
+  gloss: proper, fitting, exact
+  affix_class: []
+
 - citation: ikli
   pos: ADJ
   gloss: short (in length)
+  affix_class: [ma_adj]
+
+- citation: ilap
+  pos: ADJ
+  gloss: elusive, shy (of animals or people)
+  affix_class: [ma_adj]
+
+- citation: ingat
+  pos: ADJ
+  gloss: careful, cautious
   affix_class: [ma_adj]
 
 - citation: ingay
@@ -201,6 +236,11 @@
   pos: ADJ
   gloss: thick
   affix_class: [ma_adj]
+
+- citation: karaniwan
+  pos: ADJ
+  gloss: ordinary, usual, common
+  affix_class: []
 
 # Phase 9.O follow-on: bare-form ADJ for the predicative use of
 # ``kilala`` ("known, acquainted") as in ``Kilala si Maria.``
@@ -231,6 +271,11 @@
   gloss: big, large
   affix_class: [ma_adj]
 
+- citation: lalim
+  pos: ADJ
+  gloss: deep
+  affix_class: [ma_adj]
+
 - citation: lamig
   pos: ADJ
   gloss: cold
@@ -240,6 +285,11 @@
   pos: ADJ
   gloss: wide, broad
   affix_class: [ma_adj]
+
+- citation: lihim
+  pos: ADJ
+  gloss: secret, hidden
+  affix_class: []
 
 - citation: liit
   pos: ADJ
@@ -255,6 +305,11 @@
   pos: ADJ
   gloss: old
   affix_class: []
+
+- citation: lumanay
+  pos: ADJ
+  gloss: gentle, soft-spoken
+  affix_class: [ma_adj]
 
 - citation: lungkot
   pos: ADJ
@@ -297,6 +352,11 @@
   gloss: tired
   affix_class: []
 
+- citation: panay
+  pos: ADJ
+  gloss: constant, continuous, all-the-time
+  affix_class: []
+
 # Phase 9.W: ``puno`` is polysemous. nouns.yaml carries the N
 # entries (``tree``; ``head, principal, leader``). The bare ADJ
 # entry here covers the ``full`` sense (per S&O 1972 §3.10; common
@@ -322,6 +382,11 @@
 - citation: runong
   pos: ADJ
   gloss: wise, knowledgeable
+  affix_class: [ma_adj]
+
+- citation: sama
+  pos: ADJ
+  gloss: bad
   affix_class: [ma_adj]
 
 - citation: sarap
@@ -364,6 +429,11 @@
   gloss: lazy
   affix_class: [ma_adj]
 
+- citation: tamis
+  pos: ADJ
+  gloss: sweet
+  affix_class: [ma_adj]
+
 - citation: tanda
   pos: ADJ
   gloss: old
@@ -372,6 +442,11 @@
 - citation: tapang
   pos: ADJ
   gloss: brave
+  affix_class: [ma_adj]
+
+- citation: tapat
+  pos: ADJ
+  gloss: loyal, faithful, honest
   affix_class: [ma_adj]
 
 - citation: tayo
@@ -398,6 +473,11 @@
   pos: ADJ
   gloss: living, residing (in a place)
   affix_class: [naka_resultative]
+
+- citation: tunay
+  pos: ADJ
+  gloss: real, true, genuine
+  affix_class: []
 
 - citation: upo
   pos: ADJ
