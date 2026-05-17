@@ -121,6 +121,11 @@
   gloss: one o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "1"}
 
+- citation: alay
+  pos: NOUN
+  gloss: offering, gift, dedication
+  source: audit-corpus
+
 - citation: alikabok
   pos: NOUN
   gloss: dust
@@ -329,6 +334,10 @@
   pos: NOUN
   gloss: garbage, trash
 
+- citation: basurahan
+  pos: NOUN
+  gloss: trash can, garbage receptacle
+
 - citation: bata
   pos: NOUN
   gloss: child
@@ -377,6 +386,10 @@
   pos: NOUN
   gloss: mouth
 
+- citation: bibingka
+  pos: NOUN
+  gloss: bibingka (rice cake baked over coals)
+
 - citation: bigas
   pos: NOUN
   gloss: uncooked rice
@@ -390,6 +403,10 @@
   pos: NOUN
   gloss: prisoner
   source: audit-corpus
+
+- citation: bilao
+  pos: NOUN
+  gloss: winnowing basket (round flat woven tray)
 
 - citation: bilis
   pos: NOUN
@@ -638,6 +655,11 @@
   pos: NOUN
   gloss: wall
 
+- citation: diploma
+  pos: NOUN
+  gloss: diploma
+  loan: SPANISH
+
 - citation: disyembre
   pos: NOUN
   gloss: December
@@ -709,6 +731,11 @@
   pos: NOUN
   gloss: January
   feats: {MONTH_VALUE: "1", SEM_CLASS: MONTH}
+
+- citation: ensaymada
+  pos: NOUN
+  gloss: ensaymada (sweet pastry topped with cheese)
+  loan: SPANISH
 
 - citation: eroplano
   pos: NOUN
@@ -895,6 +922,10 @@
   gloss: difficulty, hardship
   source: audit-corpus
 
+- citation: hopia
+  pos: NOUN
+  gloss: hopia (bean-filled pastry)
+
 - citation: hulyo
   pos: NOUN
   gloss: July
@@ -998,6 +1029,12 @@
   subclass: [PERSON, FEMALE]
   source: R&G-Intermediate
 
+- citation: jeepney
+  pos: NOUN
+  gloss: jeepney (Philippine public-transport vehicle)
+  loan: ENGLISH
+  synonyms: [dyip]
+
 - citation: joe
   pos: NOUN
   gloss: Joe
@@ -1057,6 +1094,11 @@
   pos: NOUN
   gloss: need / requirement
 
+- citation: kakao
+  pos: NOUN
+  gloss: cocoa, cacao
+  loan: SPANISH
+
 - citation: kaklase
   pos: NOUN
   gloss: classmate
@@ -1076,6 +1118,10 @@
   pos: NOUN
   gloss: coldness, coolness
   source: audit-corpus
+
+- citation: kalan
+  pos: NOUN
+  gloss: stove, cooking hearth
 
 - citation: kaliwa
   pos: NOUN
@@ -1149,6 +1195,11 @@
   pos: NOUN
   gloss: coffee
 
+- citation: kapilya
+  pos: NOUN
+  gloss: chapel
+  loan: SPANISH
+
 - citation: kapistahan
   pos: NOUN
   gloss: feast, festival (event)
@@ -1161,6 +1212,16 @@
 - citation: karayom
   pos: NOUN
   gloss: needle (instrument)
+
+- citation: karera
+  pos: NOUN
+  gloss: race; career
+  loan: SPANISH
+
+- citation: karinderya
+  pos: NOUN
+  gloss: small eatery, food stall
+  loan: SPANISH
 
 - citation: karla
   pos: NOUN
@@ -1218,6 +1279,10 @@
   gloss: post, office (position)
   source: audit-corpus
 
+- citation: kawali
+  pos: NOUN
+  gloss: frying pan, wok
+
 - citation: kayamanan
   pos: NOUN
   gloss: wealth, riches
@@ -1242,6 +1307,11 @@
   pos: NOUN
   gloss: class; classroom
   source: audit-corpus
+  loan: SPANISH
+
+- citation: klinika
+  pos: NOUN
+  gloss: clinic
   loan: SPANISH
 
 - citation: kotse
@@ -1437,6 +1507,14 @@
   pos: NOUN
   gloss: rope, cord
   source: audit-corpus
+
+- citation: lugaw
+  pos: NOUN
+  gloss: rice porridge, congee
+
+- citation: lumpia
+  pos: NOUN
+  gloss: spring roll, lumpia
 
 - citation: lunes
   pos: NOUN
@@ -1798,6 +1876,10 @@
   pos: NOUN
   gloss: rice (unhusked)
 
+- citation: palayok
+  pos: NOUN
+  gloss: clay cooking pot
+
 - citation: palengke
   pos: NOUN
   gloss: market
@@ -1841,6 +1923,11 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: pandesal
+  pos: NOUN
+  gloss: pandesal (bread roll, from Spanish "pan de sal")
+  loan: SPANISH
+
 - citation: pangalan
   pos: NOUN
   gloss: name
@@ -1869,6 +1956,10 @@
   pos: NOUN
   gloss: notice, observation
   source: audit-corpus
+
+- citation: pansit
+  pos: NOUN
+  gloss: pansit (noodle dish)
 
 - citation: pansulat
   pos: NOUN
@@ -2047,6 +2138,11 @@
   source: audit-corpus
   loan: ENGLISH
 
+- citation: plasa
+  pos: NOUN
+  gloss: plaza, town square
+  loan: SPANISH
+
 - citation: porsiyento
   pos: NOUN
   gloss: percent
@@ -2099,6 +2195,10 @@
   pos: NOUN
   gloss: mud
   source: audit-corpus
+
+- citation: puto
+  pos: NOUN
+  gloss: puto (steamed rice cake)
 
 - citation: regalo
   pos: NOUN
@@ -2230,6 +2330,11 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: sentro
+  pos: NOUN
+  gloss: center
+  loan: SPANISH
+
 - citation: setyembre
   pos: NOUN
   gloss: September
@@ -2257,6 +2362,10 @@
   pos: NOUN
   gloss: beginning, start
 
+- citation: sinangag
+  pos: NOUN
+  gloss: fried rice (Philippine)
+
 - citation: sine
   pos: NOUN
   gloss: cinema, movie
@@ -2273,10 +2382,18 @@
   gloss: sinigang (sour soup)
   source: audit-corpus
 
+- citation: siopao
+  pos: NOUN
+  gloss: siopao (steamed bun with filling)
+
 - citation: sipon
   pos: NOUN
   gloss: cold (illness, runny nose)
   source: audit-corpus
+
+- citation: sisig
+  pos: NOUN
+  gloss: sisig (sizzling chopped pork dish)
 
 - citation: siyentipiko
   pos: NOUN
@@ -2294,6 +2411,11 @@
   pos: NOUN
   gloss: city
   source: audit-corpus
+  loan: SPANISH
+
+- citation: sorbetes
+  pos: NOUN
+  gloss: ice cream
   loan: SPANISH
 
 - citation: suka
@@ -2478,6 +2600,11 @@
   source: audit-corpus
   loan: ENGLISH
 
+- citation: traysikel
+  pos: NOUN
+  gloss: tricycle (motorized 3-wheeled vehicle)
+  loan: ENGLISH
+
 - citation: tren
   pos: NOUN
   gloss: train
@@ -2491,6 +2618,11 @@
   pos: NOUN
   gloss: tropic, tropics
   source: audit-corpus
+  loan: SPANISH
+
+- citation: tsokolate
+  pos: NOUN
+  gloss: chocolate
   loan: SPANISH
 
 - citation: tubig
