@@ -1313,6 +1313,47 @@ def register_rules(rules: list[Rule]) -> None:
         _eqs("(↑) = ↓1"),
     ))
 
+    # --- Phase 9.W Cluster A/H: compound TIME AdvP -----------------
+    #
+    # ``bukas ng gabi``      "tomorrow evening"
+    # ``kahapon ng gabi``    "yesterday evening"
+    # ``ngayong gabi``       (split-linker; handled by tokenizer)
+    #
+    # Closes S&O 1972 p.441 sent-676 ``Sila rin ay sasayaw ng
+    # pandanggo bukas ng gabi.`` "They will also dance the pandango
+    # tomorrow evening." The compound combines a deictic-time ADV
+    # (``bukas`` / ``kahapon`` / ``ngayon``) with a time-of-day N
+    # via the ``ng`` genitive marker. The resulting AdvP refines
+    # the deixis at a specific time-of-day; semantically the
+    # time-of-day N rides as a TIME-N modifier on the matrix ADV's
+    # f-structure, with the head's ADV_TYPE and DEIXIS_TIME
+    # percolating.
+    #
+    # Note: ``ng`` between ADV and N is the GEN case marker
+    # (``ADP[CASE=GEN, MARKER=NG]``), not the bound linker ``-ng``
+    # (``PART[LINK=NG]``). The literal gloss is "tomorrow of the
+    # evening" — a possessive / part-of relation rather than a
+    # restrictive modifier.
+    #
+    # F-structure: matrix is the ADV head (``(↑) = ↓1``); the
+    # time-N attaches as ``TIME_N`` slot. ADV_TYPE=TIME on the head
+    # is the gate; SEM_CLASS=TIME on the N daughter narrows the
+    # rule to time-of-day nouns (gabi / umaga / hapon / tanghali).
+    rules.append(Rule(
+        "AdvP",
+        [
+            "ADV[ADV_TYPE=TIME]",
+            "NP[CASE=GEN]",
+        ],
+        _eqs(
+            "(↑) = ↓1",
+            "(↑ TIME_N) = ↓2",
+            "(↓1 ADV_TYPE) =c 'TIME'",
+            "(↓2 CASE) =c 'GEN'",
+            "(↓2 SEM_CLASS) =c 'TIME'",
+        ),
+    ))
+
     # PP: PREP + NP[CASE=DAT]. The compound prepositions in
     # particles.yaml all subcategorise for a sa-NP complement
     # (``para sa bata``, ``tungkol sa nanay``, ``mula sa

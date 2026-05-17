@@ -586,6 +586,7 @@
 - citation: gabi
   pos: NOUN
   gloss: night
+  feats: {SEM_CLASS: TIME}
 
 - citation: gamot
   pos: NOUN

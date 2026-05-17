@@ -11,21 +11,21 @@
 | Wave | Clean | Total | Rate |
 | --- | ---: | ---: | ---: |
 | Wave 1 — rg81 transcriptions | 34 | 118 | 28.8% |
-| Wave 2 — RC 1990 | 41 | 500 | 8.2% |
-| Wave 2 — Ramos 1971 | 16 | 209 | 7.7% |
-| Wave 2 — R&G Intermediate | 50 | 500 | 10.0% |
-| Wave 3 — S&O 1972 | 86 | 500 | 17.2% |
-| Wave 3 — R&G Conversational | 152 | 500 | 30.4% |
-| **Cumulative** | **379** | **2327** | **16.29%** |
+| Wave 2 — RC 1990 | 43 | 500 | 8.6% |
+| Wave 2 — Ramos 1971 | 17 | 209 | 8.1% |
+| Wave 2 — R&G Intermediate | 51 | 500 | 10.2% |
+| Wave 3 — S&O 1972 | 90 | 500 | 18.0% |
+| Wave 3 — R&G Conversational | 156 | 500 | 31.2% |
+| **Cumulative** | **391** | **2327** | **16.80%** |
 
 ## Cumulative bucket distribution
 
 | Bucket | Count | Share |
 | --- | ---: | ---: |
-| zero-parse-fragment | 1587 | 68.2% |
-| zero-parse-no-fragment | 361 | 15.5% |
-| parse-success-1 | 290 | 12.5% |
-| parse-success-N | 89 | 3.8% |
+| zero-parse-fragment | 1576 | 67.7% |
+| zero-parse-no-fragment | 360 | 15.5% |
+| parse-success-1 | 299 | 12.8% |
+| parse-success-N | 92 | 4.0% |
 
 ## OOV-multiplicity (failed rows by number of real OOVs)
 
@@ -35,19 +35,19 @@ Real OOV = surface OOV minus harvest-noise tokens
 
 | Real OOVs | Failed rows | Cumulative |
 | --- | ---: | ---: |
-| 0 | 235 | 235 |
-| 1 | 839 | 1074 |
-| 2 | 538 | 1612 |
-| 3 | 217 | 1829 |
-| 4 | 79 | 1908 |
-| 5 | 28 | 1936 |
-| 6 | 7 | 1943 |
-| 7 | 1 | 1944 |
-| 8 | 1 | 1945 |
-| 9 | 2 | 1947 |
-| 10 | 1 | 1948 |
+| 0 | 224 | 224 |
+| 1 | 838 | 1062 |
+| 2 | 538 | 1600 |
+| 3 | 217 | 1817 |
+| 4 | 79 | 1896 |
+| 5 | 28 | 1924 |
+| 6 | 7 | 1931 |
+| 7 | 1 | 1932 |
+| 8 | 1 | 1933 |
+| 9 | 2 | 1935 |
+| 10 | 1 | 1936 |
 
-- **No-real-OOV failures:** 235 rows (pure grammar/feat blockers)
+- **No-real-OOV failures:** 224 rows (pure grammar/feat blockers)
 - **Pure-noise OOV** (OOV is 100% harvest noise; extractor cleanup would unblock): 0 rows
 
 ## OOV-yield curve
@@ -56,15 +56,15 @@ If the top-N tokens were registered, how many failed rows become OOV-clear?
 
 | Top-N tokens | OOV-clear rows | % of all rows |
 | ---: | ---: | ---: |
-| 10 | 260 | 11.2% |
-| 30 | 292 | 12.5% |
-| 50 | 316 | 13.6% |
-| 75 | 354 | 15.2% |
-| 100 | 376 | 16.2% |
-| 150 | 431 | 18.5% |
-| 200 | 484 | 20.8% |
-| 300 | 555 | 23.9% |
-| 500 | 750 | 32.2% |
+| 10 | 249 | 10.7% |
+| 30 | 281 | 12.1% |
+| 50 | 305 | 13.1% |
+| 75 | 343 | 14.7% |
+| 100 | 365 | 15.7% |
+| 150 | 420 | 18.0% |
+| 200 | 472 | 20.3% |
+| 300 | 543 | 23.3% |
+| 500 | 738 | 31.7% |
 
 > OOV-clear ≠ parses cleanly — conservative estimate is
 > ~60-75% of OOV-clear rows actually parse; the rest hit
@@ -75,9 +75,9 @@ If the top-N tokens were registered, how many failed rows become OOV-clear?
 | Length (words) | Passed | Failed | %-fail |
 | --- | ---: | ---: | ---: |
 | 1-3 | 63 | 113 | 64.2% |
-| 4-5 | 235 | 863 | 78.6% |
-| 6-8 | 69 | 750 | 91.6% |
-| 9-12 | 12 | 198 | 94.3% |
+| 4-5 | 240 | 858 | 78.1% |
+| 6-8 | 72 | 747 | 91.2% |
+| 9-12 | 16 | 194 | 92.4% |
 | 13-20 | 0 | 20 | 100.0% |
 | 21+ | 0 | 4 | 100.0% |
 
@@ -87,15 +87,15 @@ Multi-attempt counts — each parse attempt that fails with a given kind adds 1.
 
 | Kind | Count |
 | --- | ---: |
-| constraint-failed | 4796 |
-| existential-failed | 1132 |
-| completeness-failed | 222 |
-| lmt-mismatch | 210 |
-| neg-existential-failed | 117 |
+| constraint-failed | 4778 |
+| existential-failed | 1130 |
+| completeness-failed | 218 |
+| lmt-mismatch | 197 |
+| neg-existential-failed | 115 |
 | atom-mismatch | 72 |
-| coherence-failed | 66 |
+| coherence-failed | 57 |
 
-## No-OOV failure analysis (235 rows)
+## No-OOV failure analysis (224 rows)
 
 These are the highest-signal targets for construction-class sub-PRs — lex is sufficient but grammar/feat blocks the parse.
 
@@ -103,31 +103,31 @@ These are the highest-signal targets for construction-class sub-PRs — lex is s
 
 | Kind | Count |
 | --- | ---: |
-| constraint-failed | 99 |
-| completeness-failed | 23 |
-| neg-existential-failed | 13 |
+| constraint-failed | 94 |
+| completeness-failed | 21 |
 | existential-failed | 12 |
-| coherence-failed | 8 |
+| neg-existential-failed | 11 |
 | atom-mismatch | 8 |
+| coherence-failed | 7 |
 
 ### Top failing equations (top 20)
 
 | Equation | Count |
 | --- | ---: |
-| `(↓1 SEM_CLASS) =c` | 24 |
+| `(↓1 SEM_CLASS) =c` | 22 |
 | `(↓1 LEMMA) =c` | 21 |
 | `(↑ INTERJ) =c true` | 13 |
 | `(↓2 TIME_FRAME)` | 11 |
 | `(↓1 APPROX) =c true` | 11 |
-| `¬ (↓1 WH)` | 10 |
+| `¬ (↓1 WH)` | 8 |
 | `(↓1 CLAUSE_TYPE) =c` | 7 |
 | `(↑ INDEF) =` | 6 |
-| `(↓2 ADV_TYPE) =c` | 5 |
 | `(↓2 SEM_CLASS) =c` | 4 |
 | `(↓1 MEASURE) =c true` | 2 |
 | `¬ (↓1 PRED)` | 2 |
 | `(↓1 PLURAL_MARKER) =c true` | 2 |
 | `(↑ LEMMA) =` | 2 |
+| `(↓2 ADV_TYPE) =c` | 2 |
 | `(↓2 ADV) =c` | 1 |
 | `(↓2 PLURAL_MARKER) =c true` | 1 |
 | `(↓1 TIME_FRAME)` | 1 |
