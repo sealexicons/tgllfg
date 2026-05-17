@@ -171,6 +171,17 @@
   gloss: thick
   affix_class: [ma_adj]
 
+# Phase 9.O follow-on: bare-form ADJ for the predicative use of
+# ``kilala`` ("known, acquainted") as in ``Kilala ko si Maria.``
+# ("I know Maria."). The V root in ``verbs.yaml`` generates inflected
+# OV/AV/maki- forms (``kinilala``, ``magkikilala``, ``nakakilala``)
+# but no bare predicative surface. Coexists with the V root —
+# inflected forms continue to route through the V entry.
+- citation: kilala
+  pos: ADJ
+  gloss: known, acquainted
+  affix_class: []
+
 - citation: lakas
   pos: ADJ
   gloss: strong

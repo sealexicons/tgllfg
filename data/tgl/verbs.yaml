@@ -69,7 +69,7 @@
   gloss: remember; worry (contemporary 4-syllable spelling of `alaala`)
   transitivity: TR
   affix_class: [um, mag, ma, in_oblig, maka]
-  feats: {LEMMA: alaala}
+  feats: {LEMMA: alaala, AV_ABSOL: true}
 
 - citation: alis
   pos: VERB
@@ -807,6 +807,7 @@
   gloss: play with, trifle with
   transitivity: TR
   affix_class: [mag, an_oblig, pag_an, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: layo
   pos: VERB
@@ -836,7 +837,7 @@
   pos: VERB
   gloss: forget
   transitivity: TR
-  affix_class: [um, in_oblig, an_oblig, ma, maka]
+  affix_class: [um, in_oblig, an_oblig, ma, ma_an, maka]
 
 - citation: linis
   pos: VERB
@@ -945,6 +946,7 @@
   gloss: enter, put in
   transitivity: TR
   affix_class: [um, mag, in_oblig, i_oblig, an_oblig, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: pasyal
   pos: VERB
@@ -1073,6 +1075,7 @@
   gloss: give a gift
   transitivity: TR
   affix_class: [mag, i_oblig, an_oblig, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: sabi
   pos: VERB
@@ -1104,6 +1107,7 @@
   gloss: ache, hurt
   transitivity: TR
   affix_class: [um, an_oblig, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: saksak
   pos: VERB
@@ -1368,7 +1372,7 @@
   gloss: ask
   transitivity: TR
   affix_class: [um, mag, in_oblig, an_oblig, maka]
-  feats: {ASK_CLASS: true}
+  feats: {ASK_CLASS: true, AV_ABSOL: true}
 
 - citation: tao
   pos: VERB
@@ -1459,6 +1463,7 @@
   gloss: look at
   transitivity: TR
   affix_class: [um, an_oblig, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: tira
   pos: VERB

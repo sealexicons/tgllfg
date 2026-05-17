@@ -97,19 +97,19 @@ class TestOovProbeRealOov:
     clitic-glued surfaces."""
 
     def test_real_oov_still_reported(self) -> None:
-        # ``kilala`` (known, acquainted) bare-form is a real lex
-        # gap — V root exists in verbs.yaml (added in 9.E) but
-        # generates only inflected surfaces (kinilala, magkikilala,
-        # nakakilala); the audit-attested predicative use
-        # ("kilala ka ba si Dr Jones") needs the bare surface
-        # which V roots don't produce.
-        # (Originally pinned on ``pandanggo``; closed-in-9.C and
-        # repinned on ``mahusay``; ``mahusay`` closed-in-9.F and
-        # repinned on bare ``kilala``. Deferred to 9.O /
-        # predicative-V construction class.)
-        oov = oov_probe("Kilala ko si Maria.")
+        # Anti-deferral pin chain — keeps the assertion on a real
+        # current-OOV token, repinned whenever the previous anchor
+        # is closed by a lex-add sub-PR:
+        # pandanggo (8.Q-orig) → closed-in-9.C → mahusay → closed-in-9.F
+        # → bare ``kilala`` → closed-in-9.O (added as bare ADJ in
+        # adjectives.yaml) → ``kumbidado`` (current). ``kumbidado``
+        # is a Spanish-loan past-passive participle ("invited") used
+        # predicatively (audit "iilan lang ang kumbidado ko") —
+        # bare-ADJ-with-GEN-actor construction class, deferred to
+        # the predicative-V/ADJ-with-actor sub-PR.
+        oov = oov_probe("Iilan lang ang kumbidado ko.")
         oov_lower = {tok.lower() for tok in oov}
-        assert "kilala" in oov_lower
+        assert "kumbidado" in oov_lower
 
     def test_real_ng_ending_oov_still_reported(self) -> None:
         # ``huling`` (final / last — bare ``huli`` is the ADJ root)
