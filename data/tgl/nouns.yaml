@@ -190,6 +190,11 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: awit
+  pos: NOUN
+  gloss: song
+  source: audit-corpus
+
 - citation: babae
   pos: NOUN
   gloss: woman
@@ -249,6 +254,17 @@
   gloss: bank
   source: audit-corpus
   loan: SPANISH
+
+- citation: banig
+  pos: NOUN
+  gloss: mat (woven sleeping mat)
+  source: audit-corpus
+
+- citation: basketbol
+  pos: NOUN
+  gloss: basketball
+  source: audit-corpus
+  loan: ENGLISH
 
 - citation: basura
   pos: NOUN
@@ -516,6 +532,11 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: diyos
+  pos: NOUN
+  gloss: god
+  source: audit-corpus
+
 - citation: doble
   pos: NOUN
   gloss: double
@@ -603,6 +624,11 @@
   gloss: night
   feats: {SEM_CLASS: TIME}
 
+- citation: galing
+  pos: NOUN
+  gloss: skill, origin
+  source: audit-corpus
+
 - citation: galit
   pos: NOUN
   gloss: anger
@@ -632,6 +658,12 @@
   pos: NOUN
   gloss: cold (sensation, weather)
   source: audit-corpus
+
+- citation: giyera
+  pos: NOUN
+  gloss: war
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: grado
   pos: NOUN
@@ -668,6 +700,11 @@
 - citation: halip
   pos: NOUN
   gloss: alternative; substitute (used in `sa halip na X` = `instead of X`)
+  source: audit-corpus
+
+- citation: handa
+  pos: NOUN
+  gloss: preparation, feast
   source: audit-corpus
 
 - citation: hangin
@@ -811,6 +848,11 @@
   pos: NOUN
   gloss: yesterday
 
+- citation: kahon
+  pos: NOUN
+  gloss: box
+  source: audit-corpus
+
 - citation: kahoy
   pos: NOUN
   gloss: wood, tree
@@ -838,6 +880,11 @@
   feats: {SEM_CLASS: FRACTION}
   synonyms: [medya]
 
+- citation: kaliwa
+  pos: NOUN
+  gloss: left (side, direction)
+  source: audit-corpus
+
 - citation: kalye
   pos: NOUN
   gloss: street
@@ -860,9 +907,20 @@
   pos: NOUN
   gloss: goat
 
+- citation: kanal
+  pos: NOUN
+  gloss: canal, ditch
+  source: audit-corpus
+
 - citation: kandidato
   pos: NOUN
   gloss: candidate
+  source: audit-corpus
+  loan: SPANISH
+
+- citation: kandila
+  pos: NOUN
+  gloss: candle
   source: audit-corpus
   loan: SPANISH
 
@@ -907,6 +965,11 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: kasalanan
+  pos: NOUN
+  gloss: sin, fault, transgression
+  source: audit-corpus
+
 - citation: kasama
   pos: NOUN
   gloss: companion
@@ -915,6 +978,16 @@
 - citation: kasangkapan
   pos: NOUN
   gloss: tool, equipment, furniture
+  source: audit-corpus
+
+- citation: kastila
+  pos: NOUN
+  gloss: Spaniard; Spanish (language)
+  source: audit-corpus
+
+- citation: katawan
+  pos: NOUN
+  gloss: body
   source: audit-corpus
 
 - citation: kayamanan
@@ -950,6 +1023,11 @@
   gloss: color
   source: audit-corpus
 
+- citation: kulog
+  pos: NOUN
+  gloss: thunder
+  source: audit-corpus
+
 - citation: kumusta
   pos: NOUN
   gloss: regards, greetings
@@ -969,6 +1047,11 @@
   gloss: quarter (of the hour); clock-time fraction
   feats: {SEM_CLASS: FRACTION}
   loan: SPANISH
+
+- citation: kuwintas
+  pos: NOUN
+  gloss: necklace
+  source: audit-corpus
 
 - citation: kuya
   pos: NOUN
@@ -1104,6 +1187,11 @@
 - citation: magulang
   pos: NOUN
   gloss: parent
+
+- citation: malas
+  pos: NOUN
+  gloss: bad luck, misfortune
+  source: audit-corpus
 
 - citation: mama
   pos: NOUN
@@ -1318,6 +1406,11 @@
   pos: NOUN
   gloss: show, performance
 
+- citation: palad
+  pos: NOUN
+  gloss: palm (of hand); luck, fate
+  source: audit-corpus
+
 - citation: palagay
   pos: NOUN
   gloss: opinion, view
@@ -1421,6 +1514,12 @@
   gloss: party
   loan: ENGLISH
 
+- citation: pasensiya
+  pos: NOUN
+  gloss: patience
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: patatas
   pos: NOUN
   gloss: potato
@@ -1479,6 +1578,11 @@
   subclass: [NATIONAL, FEMALE]
   source: ref-grammar
 
+- citation: pinggan
+  pos: NOUN
+  gloss: plate, dish
+  source: audit-corpus
+
 - citation: pinoy
   pos: NOUN
   gloss: Filipino
@@ -1500,10 +1604,22 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: piyesta
+  pos: NOUN
+  gloss: festival, fiesta
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: porsiyento
   pos: NOUN
   gloss: percent
   feats: {SEM_CLASS: PERCENTAGE}
+
+- citation: presidente
+  pos: NOUN
+  gloss: president
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: prutas
   pos: NOUN
@@ -1592,6 +1708,11 @@
   pos: NOUN
   gloss: branch (of tree)
 
+- citation: sanggol
+  pos: NOUN
+  gloss: baby, infant
+  source: audit-corpus
+
 - citation: santos
   pos: NOUN
   gloss: Santos
@@ -1606,6 +1727,17 @@
   pos: NOUN
   gloss: self
   feats: {SEM_CLASS: REFLEXIVE}
+
+- citation: sasakyan
+  pos: NOUN
+  gloss: vehicle
+  source: audit-corpus
+
+- citation: selyo
+  pos: NOUN
+  gloss: stamp (postage)
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: setyembre
   pos: NOUN
@@ -1647,6 +1779,21 @@
 - citation: sumbrero
   pos: NOUN
   gloss: hat
+
+- citation: sundalo
+  pos: NOUN
+  gloss: soldier
+  source: audit-corpus
+
+- citation: suwerte
+  pos: NOUN
+  gloss: luck, fortune
+  source: audit-corpus
+
+- citation: taba
+  pos: NOUN
+  gloss: fat, grease
+  source: audit-corpus
 
 - citation: tabi
   pos: NOUN
