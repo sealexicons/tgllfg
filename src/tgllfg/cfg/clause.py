@@ -71,6 +71,31 @@ def register_rules(rules: list[Rule]) -> None:
         _eqs("(↑ SUBJ) = ↓3", "↓2 ∈ (↑ ADJUNCT)"),
     ))
 
+    # --- Phase 9.O.4: AV-NVOL absolutive (Naalala ko) ------------------
+    #
+    # ``Naalala ko.``    "I (NVOL-)remembered."
+    # ``Naalala niya.``  "He/she (NVOL-)remembered."
+    #
+    # Colloquial NVOL-with-implicit-pivot construction. The
+    # ``ma-`` prefix produces VOICE=AV, MOOD=NVOL surfaces
+    # (``naalala``, ``natulog``, ``naupo``) that semantically
+    # invert agent/patient case (the GEN-clitic is the
+    # experiencer/actor, the NOM-NP is the stimulus/patient when
+    # present). The absolutive use drops the NOM patient pivot
+    # entirely — the GEN actor stands alone.
+    #
+    # Restricted to verbs flagged ``AV_ABSOL=true`` (Phase 9.O B3.A
+    # lex feat) and MOOD=NVOL so this rule doesn't loosen
+    # canonical AV case-marking. The synth path's AV-absolutive
+    # INTR entry (``<SUBJ>`` 1-arg, ACTOR→SUBJ) supplies the
+    # predicate; this rule binds the GEN-NP to SUBJ in absolutive
+    # context.
+    rules.append(Rule(
+        "S",
+        ["V[VOICE=AV, MOOD=NVOL, AV_ABSOL=true]", "NP[CASE=GEN]"],
+        _eqs("(↑ SUBJ) = ↓2"),
+    ))
+
 
     # --- Phase 5e Commit 26: comparative `parang` ---
     #

@@ -11,21 +11,21 @@
 | Wave | Clean | Total | Rate |
 | --- | ---: | ---: | ---: |
 | Wave 1 — rg81 transcriptions | 32 | 118 | 27.1% |
-| Wave 2 — RC 1990 | 37 | 500 | 7.4% |
+| Wave 2 — RC 1990 | 38 | 500 | 7.6% |
 | Wave 2 — Ramos 1971 | 16 | 209 | 7.7% |
 | Wave 2 — R&G Intermediate | 46 | 500 | 9.2% |
 | Wave 3 — S&O 1972 | 73 | 500 | 14.6% |
 | Wave 3 — R&G Conversational | 148 | 500 | 29.6% |
-| **Cumulative** | **352** | **2327** | **15.13%** |
+| **Cumulative** | **353** | **2327** | **15.17%** |
 
 ## Cumulative bucket distribution
 
 | Bucket | Count | Share |
 | --- | ---: | ---: |
-| zero-parse-fragment | 1603 | 68.9% |
-| zero-parse-no-fragment | 372 | 16.0% |
+| zero-parse-fragment | 1604 | 68.9% |
+| zero-parse-no-fragment | 370 | 15.9% |
 | parse-success-1 | 278 | 11.9% |
-| parse-success-N | 74 | 3.2% |
+| parse-success-N | 75 | 3.2% |
 
 ## OOV-multiplicity (failed rows by number of real OOVs)
 
@@ -35,19 +35,19 @@ Real OOV = surface OOV minus harvest-noise tokens
 
 | Real OOVs | Failed rows | Cumulative |
 | --- | ---: | ---: |
-| 0 | 254 | 254 |
-| 1 | 846 | 1100 |
-| 2 | 539 | 1639 |
-| 3 | 217 | 1856 |
-| 4 | 79 | 1935 |
-| 5 | 28 | 1963 |
-| 6 | 7 | 1970 |
-| 7 | 1 | 1971 |
-| 8 | 1 | 1972 |
-| 9 | 2 | 1974 |
-| 10 | 1 | 1975 |
+| 0 | 253 | 253 |
+| 1 | 846 | 1099 |
+| 2 | 539 | 1638 |
+| 3 | 217 | 1855 |
+| 4 | 79 | 1934 |
+| 5 | 28 | 1962 |
+| 6 | 7 | 1969 |
+| 7 | 1 | 1970 |
+| 8 | 1 | 1971 |
+| 9 | 2 | 1973 |
+| 10 | 1 | 1974 |
 
-- **No-real-OOV failures:** 254 rows (pure grammar/feat blockers)
+- **No-real-OOV failures:** 253 rows (pure grammar/feat blockers)
 - **Pure-noise OOV** (OOV is 100% harvest noise; extractor cleanup would unblock): 0 rows
 
 ## OOV-yield curve
@@ -56,15 +56,15 @@ If the top-N tokens were registered, how many failed rows become OOV-clear?
 
 | Top-N tokens | OOV-clear rows | % of all rows |
 | ---: | ---: | ---: |
-| 10 | 279 | 12.0% |
-| 30 | 309 | 13.3% |
-| 50 | 335 | 14.4% |
-| 75 | 376 | 16.2% |
-| 100 | 398 | 17.1% |
-| 150 | 456 | 19.6% |
-| 200 | 508 | 21.8% |
-| 300 | 579 | 24.9% |
-| 500 | 773 | 33.2% |
+| 10 | 278 | 11.9% |
+| 30 | 308 | 13.2% |
+| 50 | 334 | 14.4% |
+| 75 | 375 | 16.1% |
+| 100 | 397 | 17.1% |
+| 150 | 455 | 19.6% |
+| 200 | 507 | 21.8% |
+| 300 | 578 | 24.8% |
+| 500 | 772 | 33.2% |
 
 > OOV-clear ≠ parses cleanly — conservative estimate is
 > ~60-75% of OOV-clear rows actually parse; the rest hit
@@ -75,7 +75,7 @@ If the top-N tokens were registered, how many failed rows become OOV-clear?
 | Length (words) | Passed | Failed | %-fail |
 | --- | ---: | ---: | ---: |
 | 1-3 | 56 | 120 | 68.2% |
-| 4-5 | 224 | 874 | 79.6% |
+| 4-5 | 225 | 873 | 79.5% |
 | 6-8 | 65 | 754 | 92.1% |
 | 9-12 | 7 | 203 | 96.7% |
 | 13-20 | 0 | 20 | 100.0% |
@@ -87,15 +87,15 @@ Multi-attempt counts — each parse attempt that fails with a given kind adds 1.
 
 | Kind | Count |
 | --- | ---: |
-| constraint-failed | 4800 |
+| constraint-failed | 4812 |
 | existential-failed | 1141 |
-| completeness-failed | 216 |
-| lmt-mismatch | 204 |
-| neg-existential-failed | 134 |
+| completeness-failed | 221 |
+| lmt-mismatch | 209 |
+| neg-existential-failed | 137 |
 | atom-mismatch | 72 |
 | coherence-failed | 66 |
 
-## No-OOV failure analysis (254 rows)
+## No-OOV failure analysis (253 rows)
 
 These are the highest-signal targets for construction-class sub-PRs — lex is sufficient but grammar/feat blocks the parse.
 
