@@ -12,6 +12,12 @@
 # Citations: Ramos & Bautista 1986 (R&B), Schachter & Otanes 1972
 # (S&O). Page numbers in comments where the entry is documented.
 
+- citation: abokado
+  pos: NOUN
+  gloss: avocado
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: abril
   pos: NOUN
   gloss: April
@@ -108,6 +114,11 @@
   pos: NOUN
   gloss: one o'clock
   feats: {SEM_CLASS: TIME, TIME_VALUE: "1"}
+
+- citation: alikabok
+  pos: NOUN
+  gloss: dust
+  source: audit-corpus
 
 - citation: almusal
   pos: NOUN
@@ -281,11 +292,21 @@
   gloss: guard, watchman
   source: audit-corpus
 
+- citation: banyaga
+  pos: NOUN
+  gloss: foreigner
+  source: audit-corpus
+
 - citation: bar
   pos: NOUN
   gloss: bar (drinking establishment)
   source: audit-corpus
   loan: ENGLISH
+
+- citation: baril
+  pos: NOUN
+  gloss: gun, firearm
+  source: audit-corpus
 
 - citation: basketbol
   pos: NOUN
@@ -357,6 +378,11 @@
 - citation: bilis
   pos: NOUN
   gloss: speed, quickness
+  source: audit-corpus
+
+- citation: binhi
+  pos: NOUN
+  gloss: seed
   source: audit-corpus
 
 - citation: bintana
@@ -474,6 +500,11 @@
   pos: NOUN
   gloss: bus
 
+- citation: butas
+  pos: NOUN
+  gloss: hole
+  source: audit-corpus
+
 - citation: buwan
   pos: NOUN
   gloss: moon, month
@@ -495,6 +526,11 @@
 - citation: dahon
   pos: NOUN
   gloss: leaf
+
+- citation: dako
+  pos: NOUN
+  gloss: direction, region
+  source: audit-corpus
 
 - citation: dala
   pos: NOUN
@@ -628,6 +664,12 @@
 - citation: eroplano
   pos: NOUN
   gloss: airplane
+
+- citation: eskuelahan
+  pos: NOUN
+  gloss: school (building)
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: eskuwela
   pos: NOUN
@@ -965,6 +1007,11 @@
   feats: {SEM_CLASS: FRACTION}
   synonyms: [medya]
 
+- citation: kalamigan
+  pos: NOUN
+  gloss: coldness, coolness
+  source: audit-corpus
+
 - citation: kaliwa
   pos: NOUN
   gloss: left (side, direction)
@@ -991,6 +1038,12 @@
 - citation: kambing
   pos: NOUN
   gloss: goat
+
+- citation: kamiseta
+  pos: NOUN
+  gloss: undershirt, t-shirt
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: kanal
   pos: NOUN
@@ -1031,6 +1084,11 @@
   pos: NOUN
   gloss: coffee
 
+- citation: kapistahan
+  pos: NOUN
+  gloss: feast, festival (event)
+  source: audit-corpus
+
 - citation: kapitbahay
   pos: NOUN
   gloss: neighbor
@@ -1070,6 +1128,11 @@
   gloss: tool, equipment, furniture
   source: audit-corpus
 
+- citation: kasapi
+  pos: NOUN
+  gloss: member
+  source: audit-corpus
+
 - citation: kastila
   pos: NOUN
   gloss: Spaniard; Spanish (language)
@@ -1078,6 +1141,11 @@
 - citation: katawan
   pos: NOUN
   gloss: body
+  source: audit-corpus
+
+- citation: katungkulan
+  pos: NOUN
+  gloss: post, office (position)
   source: audit-corpus
 
 - citation: kayamanan
@@ -1110,6 +1178,12 @@
   pos: NOUN
   gloss: car
 
+- citation: kristiyano
+  pos: NOUN
+  gloss: Christian
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: kuko
   pos: NOUN
   gloss: nail (finger / toe)
@@ -1138,6 +1212,12 @@
   pos: NOUN
   gloss: rabbit
 
+- citation: kutsilyo
+  pos: NOUN
+  gloss: knife
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: kuwarto
   pos: NOUN
   gloss: quarter (of the hour); clock-time fraction
@@ -1157,6 +1237,11 @@
 - citation: kuya
   pos: NOUN
   gloss: older brother, term of address for older male
+
+- citation: laban
+  pos: NOUN
+  gloss: fight, opposition; (sense ``against'' as prep)
+  source: audit-corpus
 
 - citation: labas
   pos: NOUN
@@ -1207,6 +1292,12 @@
   pos: NOUN
   gloss: toy
   source: audit-corpus
+
+- citation: laybrari
+  pos: NOUN
+  gloss: library
+  source: audit-corpus
+  loan: ENGLISH
 
 - citation: libo
   pos: NOUN
@@ -1267,6 +1358,11 @@
   gloss: inside, interior
   source: audit-corpus
 
+- citation: lubid
+  pos: NOUN
+  gloss: rope, cord
+  source: audit-corpus
+
 - citation: lunes
   pos: NOUN
   gloss: Monday
@@ -1285,6 +1381,11 @@
   pos: NOUN
   gloss: the possible / possibility
 
+- citation: magasawa
+  pos: NOUN
+  gloss: married couple (mag-asawa with hyphen normalized)
+  source: audit-corpus
+
 - citation: magulang
   pos: NOUN
   gloss: parent
@@ -1297,6 +1398,11 @@
 - citation: mama
   pos: NOUN
   gloss: man, mister
+
+- citation: mamamayan
+  pos: NOUN
+  gloss: citizen
+  source: audit-corpus
 
 - citation: mangga
   pos: NOUN
@@ -1325,6 +1431,11 @@
 - citation: manugang
   pos: NOUN
   gloss: child-in-law
+
+- citation: manunulat
+  pos: NOUN
+  gloss: writer, author
+  source: audit-corpus
 
 - citation: marco
   pos: NOUN
@@ -1392,6 +1503,12 @@
   gloss: mechanic
   source: audit-corpus
   loan: SPANISH
+
+- citation: melon
+  pos: NOUN
+  gloss: melon
+  source: audit-corpus
+  loan: ENGLISH
 
 - citation: mesa
   pos: NOUN
@@ -1521,6 +1638,11 @@
   pos: NOUN
   gloss: food
 
+- citation: pakwan
+  pos: NOUN
+  gloss: watermelon
+  source: audit-corpus
+
 - citation: palabas
   pos: NOUN
   gloss: show, performance
@@ -1543,6 +1665,11 @@
   pos: NOUN
   gloss: market
 
+- citation: paligid
+  pos: NOUN
+  gloss: surroundings, vicinity
+  source: audit-corpus
+
 - citation: pamangkin
   pos: NOUN
   gloss: niece, nephew
@@ -1564,6 +1691,11 @@
 - citation: panahon
   pos: NOUN
   gloss: weather, time, season
+  source: audit-corpus
+
+- citation: pananim
+  pos: NOUN
+  gloss: crop, planting
   source: audit-corpus
 
 - citation: pandanggo
@@ -1647,6 +1779,11 @@
   pos: NOUN
   gloss: duck
 
+- citation: patubigan
+  pos: NOUN
+  gloss: irrigation system, irrigated field
+  source: audit-corpus
+
 - citation: patyo
   pos: NOUN
   gloss: yard, patio
@@ -1686,6 +1823,12 @@
 - citation: petsa
   pos: NOUN
   gloss: date (calendar)
+  source: audit-corpus
+  loan: SPANISH
+
+- citation: piano
+  pos: NOUN
+  gloss: piano
   source: audit-corpus
   loan: SPANISH
 
@@ -1756,6 +1899,12 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: probinsiya
+  pos: NOUN
+  gloss: province
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: prutas
   pos: NOUN
   gloss: fruit
@@ -1767,6 +1916,11 @@
 - citation: pulong
   pos: NOUN
   gloss: meeting
+  source: audit-corpus
+
+- citation: puna
+  pos: NOUN
+  gloss: observation, criticism, comment
   source: audit-corpus
 
 - citation: puno
@@ -1781,6 +1935,11 @@
 - citation: puso
   pos: NOUN
   gloss: heart
+
+- citation: putik
+  pos: NOUN
+  gloss: mud
+  source: audit-corpus
 
 - citation: regalo
   pos: NOUN
@@ -1800,6 +1959,12 @@
   loan: SPANISH
   source: S&O-1972
 
+- citation: responsibilidad
+  pos: NOUN
+  gloss: responsibility
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: rosa
   pos: NOUN
   gloss: Rosa
@@ -1810,6 +1975,17 @@
   pos: NOUN
   gloss: Saturday
   feats: {DAY_VALUE: "6", SEM_CLASS: DAY}
+
+- citation: sabon
+  pos: NOUN
+  gloss: soap
+  source: audit-corpus
+  loan: SPANISH
+
+- citation: sabungan
+  pos: NOUN
+  gloss: cockpit (cockfighting arena)
+  source: audit-corpus
 
 - citation: saging
   pos: NOUN
@@ -1857,6 +2033,11 @@
 - citation: sanggol
   pos: NOUN
   gloss: baby, infant
+  source: audit-corpus
+
+- citation: santol
+  pos: NOUN
+  gloss: santol (fruit)
   source: audit-corpus
 
 - citation: santos
@@ -1913,6 +2094,12 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: siyentipiko
+  pos: NOUN
+  gloss: scientist
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: siyesta
   pos: NOUN
   gloss: siesta, nap
@@ -1928,6 +2115,11 @@
 - citation: suka
   pos: NOUN
   gloss: vinegar
+
+- citation: sukdulan
+  pos: NOUN
+  gloss: extreme, peak, summit
+  source: audit-corpus
 
 - citation: sulat
   pos: NOUN
@@ -1978,6 +2170,11 @@
   pos: NOUN
   gloss: noon / midday
   feats: {SEM_CLASS: TIME}
+
+- citation: tanim
+  pos: NOUN
+  gloss: plant, crop
+  source: audit-corpus
 
 - citation: tanong
   pos: NOUN
@@ -2052,6 +2249,11 @@
   pos: NOUN
   gloss: teacher
 
+- citation: tiwala
+  pos: NOUN
+  gloss: trust, confidence
+  source: audit-corpus
+
 - citation: tiya
   pos: NOUN
   gloss: aunt
@@ -2080,6 +2282,12 @@
   pos: NOUN
   gloss: work, job
 
+- citation: traktor
+  pos: NOUN
+  gloss: tractor
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: tren
   pos: NOUN
   gloss: train
@@ -2088,6 +2296,12 @@
   pos: NOUN
   gloss: triple
   feats: {SEM_CLASS: MULTIPLIER}
+
+- citation: tropiko
+  pos: NOUN
+  gloss: tropic, tropics
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: tubig
   pos: NOUN
@@ -2106,10 +2320,26 @@
   gloss: help
   source: audit-corpus
 
+- citation: tungkulin
+  pos: NOUN
+  gloss: duty, responsibility
+  source: audit-corpus
+
+- citation: turista
+  pos: NOUN
+  gloss: tourist
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: ubod
   pos: NOUN
   gloss: core, pith, innermost part, kernel
   affix_class: [pinaka_n]
+
+- citation: ugali
+  pos: NOUN
+  gloss: habit, custom, behavior
+  source: audit-corpus
 
 - citation: ulam
   pos: NOUN
@@ -2143,6 +2373,11 @@
 - citation: utak
   pos: NOUN
   gloss: brain
+
+- citation: utang
+  pos: NOUN
+  gloss: debt, loan owed
+  source: audit-corpus
 
 - citation: wika
   pos: NOUN
