@@ -253,6 +253,67 @@ class TestKilalaBareAdj:
         assert len(parses) >= 1
 
 
+# ---- 9.O.3: STATIVE_PRED bare-ADJ + GEN-actor --------------------------
+
+
+class TestStativePredAdj:
+    """Phase 9.O.3: bare-ADJ entries flagged ``STATIVE_PRED: true``
+    license a GEN-actor argument via the new
+    ``S → ADJ[STATIVE_PRED] NP[CASE=GEN] NP[CASE=NOM]`` rule.
+    The ADJ acts as a stative-passive participle (GEN agent +
+    NOM patient pivot)."""
+
+    @pytest.mark.parametrize("sentence", [
+        # kilala (known by X)
+        "Kilala ko si Maria.",
+        "Kilala mo si Pedro.",
+        "Kilala niya ang dalaga.",
+        # mahal (loved by X) — polysemous with "expensive"
+        "Mahal ko si Maria.",
+        "Mahal niya ako.",
+        "Mahal mo ba si Maria?",
+    ])
+    def test_stative_pred_with_gen_actor_parses(
+        self, sentence: str
+    ) -> None:
+        from tgllfg.core.pipeline import parse_text
+        parses = parse_text(sentence, n_best=2)
+        assert len(parses) >= 1, (
+            f"STATIVE_PRED + GEN + NOM failed: {sentence!r}"
+        )
+
+    @pytest.mark.parametrize("sentence", [
+        # Pure predicative (1-arg) readings still parse for both ADJs.
+        "Mahal ang aklat.",         # expensive (no GEN)
+        "Kilala si Maria.",         # known (no GEN)
+    ])
+    def test_pure_predicative_still_parses(
+        self, sentence: str
+    ) -> None:
+        """The 1-arg ADJ[PREDICATIVE] + NP[CASE=NOM] rule still
+        fires on the same ADJ surfaces; STATIVE_PRED licenses the
+        2-arg reading additively, not exclusively."""
+        from tgllfg.core.pipeline import parse_text
+        parses = parse_text(sentence, n_best=2)
+        assert len(parses) >= 1
+
+    def test_pred_carries_obj_agent(self) -> None:
+        """The 2-arg parse's PRED is ``ADJ <SUBJ, OBJ-AGENT>``;
+        the GEN-NP is bound to OBJ-AGENT, the NOM-NP to SUBJ."""
+        from tgllfg.core.pipeline import parse_text_with_fragments
+        r = parse_text_with_fragments(
+            "Kilala ko si Maria.", n_best=1
+        )
+        assert r.parses
+        _, fs, _, _ = r.parses[0]
+        pred_str = str(fs.feats.get("PRED", ""))
+        assert "<SUBJ, OBJ-AGENT>" in pred_str, (
+            f"unexpected PRED: {pred_str}"
+        )
+        assert "OBJ-AGENT" in fs.feats
+        assert "SUBJ" in fs.feats
+
+
 # ---- Negative cases (still failing — documents the gap front) ----------
 
 
@@ -261,15 +322,21 @@ class TestStillFailing:
     close. Each is pinned with len==0 so future sub-PRs can flip
     when they land."""
 
-    def test_kilala_with_gen_actor_still_fails(self) -> None:
+    def test_kilala_with_gen_actor_closed_in_9o(self) -> None:
         """``Kilala ko si Maria.`` ("I know Maria.") — bare-ADJ-
-        with-GEN-actor is a separate "stative-predicative-with-
-        actor" construction class. The ADJ entry doesn't carry an
-        OBJ-AGENT slot; the GEN clitic has no host. Deferred to
-        a predicative-V/ADJ-with-actor sub-PR."""
+        with-GEN-actor construction. Pre-9.O.3 this was deferred
+        (pinned ``len == 0``). 9.O.3 closes via a new STATIVE_PRED
+        feat on the ``kilala`` ADJ entry + a new grammar rule
+        ``S → ADJ[STATIVE_PRED] NP[CASE=GEN] NP[CASE=NOM]``
+        emitting PRED ``ADJ <SUBJ, OBJ-AGENT>``. The ADJ acts as
+        a stative-passive participle, the GEN-NP is the implicit
+        AGENT, the NOM-NP is the patient pivot/SUBJ. Also extended
+        to ``mahal`` (love sense: ``Mahal ko si Maria.``)."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("Kilala ko si Maria.", n_best=2)
-        assert len(parses) == 0
+        assert len(parses) >= 1, (
+            "Kilala ko si Maria. should parse via STATIVE_PRED rule"
+        )
 
     def test_naalala_av_absolutive_still_fails(self) -> None:
         """``Naalala ko.`` (no overt patient) — ``naalala`` is

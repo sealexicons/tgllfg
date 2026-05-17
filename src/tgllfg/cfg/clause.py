@@ -823,6 +823,51 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.O.3: stative-passive ADJ with GEN-actor ----------------
+    #
+    # ``Kilala ko si Maria.``  "Maria is known by me." / "I know Maria."
+    # ``Kilala mo ba si Steve?``  "Do you know Steve?"
+    # ``Kilala niya sila.``  "He/she knows them."
+    #
+    # Bare-form ADJs flagged with ``STATIVE_PRED: true`` (Phase 9.O
+    # follow-on, see ``data/tgl/adjectives.yaml`` entry for
+    # ``kilala``) license a GEN-actor argument alongside the NOM
+    # pivot. Structurally parallel to OV V-predicates: the ADJ
+    # acts as a stative-passive participle, the GEN-NP is the
+    # implicit AGENT, the NOM-NP is the patient pivot/SUBJ.
+    #
+    # F-structure shape:
+    #
+    #   PRED        = 'ADJ <SUBJ, OBJ-AGENT>'
+    #   ADJ_LEMMA   = the adjective's lemma
+    #   PREDICATIVE = true
+    #   STATIVE_PRED = true
+    #   SUBJ        = the NOM-NP pivot (the "known one")
+    #   OBJ-AGENT   = the GEN-NP (the "knower")
+    #
+    # Two ordering variants:
+    #   - GEN before NOM (canonical): ``Kilala ko si Maria.``
+    #   - NOM before GEN: ``Kilala si Maria ko.`` (rare; not pinned)
+    #
+    # 2P clitic absorption (``ba``/``ka``/``naman``) attaches at
+    # the S level via the existing ``S → S PART[CLITIC_CLASS=2P]``
+    # rule, so ``Kilala mo ba si Steve?`` parses by first building
+    # the bare 2-arg S and then absorbing ``ba``.
+    rules.append(Rule(
+        "S",
+        ["ADJ[STATIVE_PRED]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ, OBJ-AGENT>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ OBJ-AGENT) = ↓2",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↑ STATIVE_PRED) = true",
+            "(↓1 STATIVE_PRED) =c true",
+            "(↓1 PREDICATIVE) =c true",
+        ],
+    ))
+
 
     # --- Phase 5n.B Commit 1: predicative-Q clause (§18 L42 + L52) ---
     #

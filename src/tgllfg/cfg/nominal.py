@@ -1668,12 +1668,25 @@ def register_rules(rules: list[Rule]) -> None:
     # that the cardinal NP-modifier (Phase 5f Commit 1) used.
     for link in ("NA", "NG"):
         # Pre-N: the adjective sits before the head N.
+        # Phase 9.O.3 ``¬ (↓1 STATIVE_PRED)`` constraint: stative-
+        # passive ADJs (``kilala`` / ``mahal``) carry STATIVE_PRED
+        # for the predicate-with-GEN-actor reading. They must NOT
+        # participate as prenominal modifiers — when a single
+        # surface has both V/PSYCH (``gustong`` linker form) and
+        # ADJ/STATIVE_PRED analyses, the ADJ-modifier path
+        # spuriously competes with the control-XCOMP path
+        # (Phase 6 LDD test ``test_psych_av_inner``); excluding
+        # STATIVE_PRED ADJs from the modifier role resolves the
+        # ambiguity without breaking the bare-predicate STATIVE_PRED
+        # rule. ``STATIVE_PRED-flagged`` ADJs only fire in
+        # predicate position (S-level), not modifier position.
         rules.append(Rule(
             "N",
             ["ADJ", f"PART[LINK={link}]", "N"],
             [
                 "(↑) = ↓3",
                 "↓1 ∈ (↑ ADJ-MOD)",
+                "¬ (↓1 STATIVE_PRED)",
             ],
         ))
         # Post-N: the head N comes first.
@@ -1683,6 +1696,7 @@ def register_rules(rules: list[Rule]) -> None:
             [
                 "(↑) = ↓1",
                 "↓3 ∈ (↑ ADJ-MOD)",
+                "¬ (↓3 STATIVE_PRED)",
             ],
         ))
 
