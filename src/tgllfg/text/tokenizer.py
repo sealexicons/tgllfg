@@ -1,14 +1,73 @@
 # tgllfg/text/tokenizer.py
 
+"""Word-level tokenizer for Tagalog text.
+
+The default rule is ``\\w+|\\S`` — match maximal word-character runs
+or single non-whitespace characters. A surgical exception handles
+the orthographic convention where Tagalog verbal / derivational
+prefixes attach to vowel-initial stems via a hyphen:
+
+  ``Nag-uusap``      ← mag- IPFV of usap, hyphen-glued because the
+                       stem ``uusap`` is vowel-initial (CV-redup of
+                       ``usap``).
+  ``pag-aaral``      ← deverbal nominalization of mag-aral.
+  ``mag-aral``       ← mag- AV-INF of aral.
+  ``pakikipag-usap`` ← reciprocal nominalization.
+
+Without the surgical case, these would split into three tokens
+(``Nag`` / ``-`` / ``uusap``), and the morphological analyzer
+would fail to find the inflected surface (which is indexed without
+the hyphen: ``naguusap`` etc.).
+
+Compound nouns and non-verbal hyphenated forms (``tabing-dagat``
+"seashore", ``kasing-bilis`` equative, ``well-known``) intentionally
+stay split — they're either handled by other mechanisms (the
+``tabing`` linker-decomposition path; the ``kasing`` equative
+paradigm cell) or aren't Tagalog at all (English compounds).
+
+The ``norm`` field of the rejoined token strips the internal
+hyphen so the analyzer's surface index (which keys on
+``naguusap`` / ``pagaaral`` / ``magaral`` without hyphens) finds it.
+"""
+
 import re
 
 from ..core.common import Token
 
-_WORD = re.compile(r"\w+|\S")
+# Tagalog verbal / derivational prefixes that conventionally attach
+# to vowel-initial stems with an orthographic hyphen. Listed longest-
+# first in the alternation so that ``pakikipag-`` is tried before
+# ``pag-`` and ``magpa-`` before ``mag-``.
+_TGL_HYPHEN_PREFIXES = (
+    "pakikipag", "makipag", "nakipag",
+    "magpa", "nagpa", "magsi", "nagsi",
+    "maka", "naka", "mapa", "napa", "paka", "paki",
+    "mang", "nang", "pang",
+    "mag", "nag", "pag",
+    "ma", "na", "pa", "ka",
+)
+_PFX_ALT = "(?:" + "|".join(_TGL_HYPHEN_PREFIXES) + ")"
+
+_WORD = re.compile(
+    _PFX_ALT + r"-[aeiou]\w*"   # Tagalog prefix + - + vowel-initial stem
+    r"|\w+"                       # ordinary word
+    r"|\S",                       # standalone non-word
+    re.IGNORECASE,
+)
+
 
 def tokenize(s: str) -> list[Token]:
     out: list[Token] = []
     for m in _WORD.finditer(s.strip()):
         t = m.group(0)
-        out.append(Token(surface=t, norm=t.lower(), start=m.start(), end=m.end()))
+        # Strip INTERNAL hyphens from the norm (so the analyzer's
+        # surface index, keyed on hyphen-free forms, finds tokens
+        # like ``Nag-uusap`` via norm ``naguusap``). Bare hyphens
+        # (length-1 ``-`` tokens) keep their norm as ``-`` so the
+        # punctuation / arithmetic-minus path still sees them.
+        if len(t) > 1 and "-" in t:
+            norm = t.lower().replace("-", "")
+        else:
+            norm = t.lower()
+        out.append(Token(surface=t, norm=norm, start=m.start(), end=m.end()))
     return out

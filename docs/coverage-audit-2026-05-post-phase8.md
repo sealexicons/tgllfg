@@ -22,8 +22,8 @@
 
 | Bucket | Count | Share |
 | --- | ---: | ---: |
-| zero-parse-fragment | 1579 | 67.5% |
-| zero-parse-no-fragment | 393 | 16.8% |
+| zero-parse-fragment | 1578 | 67.4% |
+| zero-parse-no-fragment | 394 | 16.8% |
 | parse-success-1 | 291 | 12.4% |
 | parse-success-N | 76 | 3.2% |
 | tokenizer-fail | 1 | 0.0% |
@@ -37,20 +37,20 @@ Real OOV = surface OOV minus harvest-noise tokens
 | Real OOVs | Failed rows | Cumulative |
 | --- | ---: | ---: |
 | 0 | 275 | 275 |
-| 1 | 799 | 1074 |
-| 2 | 548 | 1622 |
-| 3 | 230 | 1852 |
-| 4 | 73 | 1925 |
-| 5 | 33 | 1958 |
+| 1 | 797 | 1072 |
+| 2 | 551 | 1623 |
+| 3 | 230 | 1853 |
+| 4 | 73 | 1926 |
+| 5 | 32 | 1958 |
 | 6 | 5 | 1963 |
-| 7 | 3 | 1966 |
-| 8 | 2 | 1968 |
+| 7 | 2 | 1965 |
+| 8 | 3 | 1968 |
 | 9 | 2 | 1970 |
 | 10 | 2 | 1972 |
 | 12 | 1 | 1973 |
 
 - **No-real-OOV failures:** 275 rows (pure grammar/feat blockers)
-- **Pure-noise OOV** (OOV is 100% harvest noise; extractor cleanup would unblock): 10 rows
+- **Pure-noise OOV** (OOV is 100% harvest noise; extractor cleanup would unblock): 6 rows
 
 ## OOV-yield curve
 
@@ -58,15 +58,15 @@ If the top-N tokens were registered, how many failed rows become OOV-clear?
 
 | Top-N tokens | OOV-clear rows | % of all rows |
 | ---: | ---: | ---: |
-| 10 | 295 | 12.6% |
-| 30 | 317 | 13.5% |
-| 50 | 342 | 14.6% |
-| 75 | 355 | 15.2% |
-| 100 | 375 | 16.0% |
-| 150 | 431 | 18.4% |
-| 200 | 463 | 19.8% |
-| 300 | 524 | 22.4% |
-| 500 | 715 | 30.6% |
+| 10 | 296 | 12.6% |
+| 30 | 316 | 13.5% |
+| 50 | 340 | 14.5% |
+| 75 | 356 | 15.2% |
+| 100 | 374 | 16.0% |
+| 150 | 430 | 18.4% |
+| 200 | 462 | 19.7% |
+| 300 | 515 | 22.0% |
+| 500 | 711 | 30.4% |
 
 > OOV-clear ≠ parses cleanly — conservative estimate is
 > ~60-75% of OOV-clear rows actually parse; the rest hit
@@ -89,12 +89,12 @@ Multi-attempt counts — each parse attempt that fails with a given kind adds 1.
 
 | Kind | Count |
 | --- | ---: |
-| constraint-failed | 5064 |
-| existential-failed | 1105 |
-| completeness-failed | 228 |
-| lmt-mismatch | 194 |
+| constraint-failed | 4796 |
+| existential-failed | 1083 |
+| completeness-failed | 226 |
+| lmt-mismatch | 192 |
 | neg-existential-failed | 134 |
-| atom-mismatch | 78 |
+| atom-mismatch | 76 |
 | coherence-failed | 38 |
 
 ## No-OOV failure analysis (275 rows)
@@ -105,32 +105,32 @@ These are the highest-signal targets for construction-class sub-PRs — lex is s
 
 | Kind | Count |
 | --- | ---: |
-| constraint-failed | 123 |
-| completeness-failed | 28 |
-| neg-existential-failed | 20 |
-| existential-failed | 9 |
+| constraint-failed | 120 |
+| completeness-failed | 30 |
+| neg-existential-failed | 21 |
+| existential-failed | 8 |
 | atom-mismatch | 7 |
-| coherence-failed | 5 |
+| coherence-failed | 6 |
 
 ### Top failing equations (top 20)
 
 | Equation | Count |
 | --- | ---: |
-| `(↓1 LEMMA) =c` | 28 |
+| `(↓1 LEMMA) =c` | 26 |
 | `(↓1 SEM_CLASS) =c` | 19 |
 | `(↓1 APPROX) =c true` | 15 |
 | `(↓1 CLAUSE_TYPE) =c` | 14 |
-| `¬ (↓1 WH)` | 10 |
+| `¬ (↓1 WH)` | 11 |
 | `(↑ INTERJ) =c true` | 10 |
-| `(↓2 TIME_FRAME)` | 9 |
 | `¬ (↓1 PRED)` | 9 |
+| `(↓2 TIME_FRAME)` | 8 |
 | `(↓1 DISCOURSE_POS) =c` | 7 |
 | `(↓2 SEM_CLASS) =c` | 5 |
 | `(↑ INDEF) =` | 5 |
 | `(↓1 INTERJ) =c true` | 5 |
-| `(↓1 PLURAL_MARKER) =c true` | 5 |
-| `(↓2 ADV_TYPE) =c` | 4 |
+| `(↓2 ADV_TYPE) =c` | 5 |
 | `(↓1 MEASURE) =c true` | 3 |
+| `(↓1 PLURAL_MARKER) =c true` | 3 |
 | `(↓1 INDEF) =c` | 2 |
 | `(↑ LEMMA) =` | 2 |
 | `(↓2 LINK) =c` | 2 |
@@ -143,56 +143,56 @@ Full ranking in `data/tgl/exemplars/oov-frequency.tsv`. Sample sentence locators
 
 | Rank | Token | Count |
 | ---: | --- | ---: |
-| 1 | `ibig` | 8 |
-| 2 | `gagawin` | 8 |
+| 1 | `gagawin` | 8 |
+| 2 | `ibig` | 7 |
 | 3 | `kunin` | 7 |
-| 4 | `aaral` | 6 |
-| 5 | `hirap` | 6 |
-| 6 | `dating` | 6 |
-| 7 | `kilala` | 6 |
-| 8 | `taga` | 6 |
-| 9 | `mangyari` | 5 |
-| 10 | `siua` | 5 |
-| 11 | `itapon` | 5 |
-| 12 | `nanalo` | 5 |
-| 13 | `it` | 5 |
-| 14 | `ituro` | 5 |
-| 15 | `yon` | 5 |
-| 16 | `uusap` | 5 |
-| 17 | `ganda` | 5 |
-| 18 | `naisip` | 4 |
-| 19 | `marco` | 4 |
-| 20 | `pagka` | 4 |
-| 21 | `hiwain` | 4 |
-| 22 | `gawin` | 4 |
-| 23 | `simple` | 4 |
-| 24 | `max` | 4 |
-| 25 | `base` | 4 |
-| 26 | `reduplication` | 4 |
-| 27 | `makita` | 4 |
-| 28 | `lumang` | 4 |
-| 29 | `amado` | 4 |
-| 30 | `verb` | 4 |
-| 31 | `oscar` | 4 |
-| 32 | `ala` | 4 |
-| 33 | `mario` | 4 |
-| 34 | `an` | 4 |
-| 35 | `bilis` | 4 |
-| 36 | `payat` | 4 |
-| 37 | `galing` | 4 |
-| 38 | `kumbidado` | 4 |
-| 39 | `jose` | 4 |
-| 40 | `pakain` | 4 |
-| 41 | `by` | 4 |
-| 42 | `cf` | 4 |
-| 43 | `al` | 4 |
-| 44 | `nasaan` | 4 |
-| 45 | `dilaw` | 4 |
-| 46 | `kari` | 4 |
-| 47 | `malou` | 4 |
-| 48 | `kakanin` | 3 |
-| 49 | `naging` | 3 |
-| 50 | `nagalit` | 3 |
+| 4 | `hirap` | 6 |
+| 5 | `dating` | 6 |
+| 6 | `kilala` | 6 |
+| 7 | `taga` | 6 |
+| 8 | `mangyari` | 5 |
+| 9 | `siua` | 5 |
+| 10 | `itapon` | 5 |
+| 11 | `nanalo` | 5 |
+| 12 | `it` | 5 |
+| 13 | `ituro` | 5 |
+| 14 | `yon` | 5 |
+| 15 | `ganda` | 5 |
+| 16 | `naisip` | 4 |
+| 17 | `marco` | 4 |
+| 18 | `pagka` | 4 |
+| 19 | `hiwain` | 4 |
+| 20 | `gawin` | 4 |
+| 21 | `simple` | 4 |
+| 22 | `max` | 4 |
+| 23 | `base` | 4 |
+| 24 | `reduplication` | 4 |
+| 25 | `makita` | 4 |
+| 26 | `lumang` | 4 |
+| 27 | `amado` | 4 |
+| 28 | `verb` | 4 |
+| 29 | `oscar` | 4 |
+| 30 | `ala` | 4 |
+| 31 | `mario` | 4 |
+| 32 | `an` | 4 |
+| 33 | `bilis` | 4 |
+| 34 | `payat` | 4 |
+| 35 | `galing` | 4 |
+| 36 | `kumbidado` | 4 |
+| 37 | `jose` | 4 |
+| 38 | `pakain` | 4 |
+| 39 | `by` | 4 |
+| 40 | `cf` | 4 |
+| 41 | `al` | 4 |
+| 42 | `nasaan` | 4 |
+| 43 | `dilaw` | 4 |
+| 44 | `kari` | 4 |
+| 45 | `malou` | 4 |
+| 46 | `kakanin` | 3 |
+| 47 | `naging` | 3 |
+| 48 | `nagalit` | 3 |
+| 49 | `pag-aaral` | 3 |
+| 50 | `mahilig` | 3 |
 
 ## References
 
