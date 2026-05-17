@@ -257,6 +257,12 @@
 # 9.E deferral note ("``mangyari`` (IMP/INF) form is still missing —
 # no IMP-aspect paradigm cell — deferred to 9.O / paradigm-cell-add
 # work") closes here.
+#
+# Phase 9.O.5: ``feats: {POLITE_MARKER: true}`` flags this specific
+# cell (not other mang_retain forms) for the polite-imperative wrap
+# rule (``Mangyaring umalis kayo.`` "Kindly leave."). Only ``mangyari``
+# (yari + bare CTPL) carries the politeness reading; the PFV
+# ``nangyari`` and IPFV/CTPL-with-redup forms are just "happen"-tense.
 - voice: AV
   aspect: CTPL
   mood: IND
@@ -264,11 +270,14 @@
   affix_class: mang_retain
   operations:
     - {op: nasal_assim_prefix, value: "mang"}
+  feats: {POLITE_MARKER: true}
   notes: |
     mangyari (bare CTPL without cv-redup — used in subordinate /
     modal-XCOMP / hortative contexts where the matrix carries
     aspect/mood semantics; parallel to the bare OV `kainin` cell
-    from Phase 5n.A Commit 14 and the 9.O ma_an bare CTPL cell)
+    from Phase 5n.A Commit 14 and the 9.O ma_an bare CTPL cell).
+    The POLITE_MARKER flag licenses the 9.O.5 polite-imperative
+    wrap rule.
 
 # === AV — Actor Voice (maka- abilitative class) ==========================
 #

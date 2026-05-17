@@ -370,6 +370,53 @@ class TestAvNvolAbsolutive:
         )
 
 
+# ---- 9.O.5: mangyari polite-imperative wrap ----------------------------
+
+
+class TestMangyariPoliteWrap:
+    """Phase 9.O.5: ``mangyari`` polite-imperative wrap.
+    ``Mangyaring + S`` lifts the embedded S to matrix level with
+    a POLITE_MARKER flag. Only the bare-CTPL ``mangyari`` carries
+    POLITE_MARKER (set on the 9.O ``mang_retain`` bare CTPL cell);
+    other ``yari``-forms (``nangyari``, ``nangyayari``,
+    ``mangyayari``) function as regular ``yari`` verbs."""
+
+    @pytest.mark.parametrize("sentence", [
+        "Mangyaring umalis kayo.",
+        "Mangyaring kumain kayo.",
+        "Mangyaring tumakbo siya.",
+    ])
+    def test_polite_imperative_parses(self, sentence: str) -> None:
+        from tgllfg.core.pipeline import parse_text
+        parses = parse_text(sentence, n_best=2)
+        assert len(parses) >= 1, (
+            f"polite-imperative failed: {sentence!r}"
+        )
+
+    def test_polite_marker_lifted_to_matrix(self) -> None:
+        """The wrap rule lifts the embedded S to matrix and adds
+        POLITE_MARKER=true. PRED comes from the embedded clause."""
+        from tgllfg.core.pipeline import parse_text_with_fragments
+        r = parse_text_with_fragments(
+            "Mangyaring umalis kayo.", n_best=1
+        )
+        assert r.parses
+        _, fs, _, _ = r.parses[0]
+        assert fs.feats.get("POLITE_MARKER") is True
+        # PRED comes from the embedded V (umalis = alis-AV-PFV).
+        pred_str = str(fs.feats.get("PRED", ""))
+        assert "ALIS" in pred_str.upper()
+
+    def test_nangyari_unaffected_by_polite_marker(self) -> None:
+        """PFV ``nangyari`` (= "happened") is NOT polite-marked.
+        POLITE_MARKER is set only on the bare-CTPL cell."""
+        from tgllfg.core.pipeline import parse_text_with_fragments
+        r = parse_text_with_fragments("Nangyari ito.", n_best=1)
+        assert r.parses
+        _, fs, _, _ = r.parses[0]
+        assert not fs.feats.get("POLITE_MARKER")
+
+
 # ---- Negative cases (still failing — documents the gap front) ----------
 
 
@@ -409,13 +456,21 @@ class TestStillFailing:
             "Naalala ko. should parse via 9.O.4 AV-NVOL absolutive rule"
         )
 
-    def test_mangyaring_polite_imperative_still_fails(self) -> None:
-        """``Mangyaring umalis kayo.`` ("Kindly leave.") — uses
-        mangyari + linker -ng + embedded V (umalis) + SUBJ (kayo).
-        Polite-imperative with embedded clause is a separate
-        construction class; the bare mangyari surface is generated
-        (verified by TestMangyariBareCtpl) but the linker + embedded
-        clause doesn't compose. Closed in 9.O.5 follow-on."""
+    def test_mangyaring_polite_imperative_closed_in_9o(self) -> None:
+        """``Mangyaring umalis kayo.`` ("Kindly leave.") —
+        mangyari + linker -ng + embedded S construction. Phase
+        9.O.5 closes via:
+          - ``POLITE_MARKER: true`` feat on the bare-CTPL
+            ``mang_retain`` cell (paradigms.yaml).
+          - New CFG rule ``S → V[POLITE_MARKER=true] PART[LINK=NG]
+            S`` in cfg/clause.py with full-lift equation
+            ``(↑) = ↓3`` and ``(↑ POLITE_MARKER) = true``.
+        The wrap is structurally a politeness-marker lift, not a
+        control verb — ``mangyari`` doesn't have its own SUBJ;
+        the embedded S's SUBJ stays put."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("Mangyaring umalis kayo.", n_best=2)
-        assert len(parses) == 0
+        assert len(parses) >= 1, (
+            "Mangyaring umalis kayo. should parse via 9.O.5 "
+            "polite-imperative wrap rule"
+        )
