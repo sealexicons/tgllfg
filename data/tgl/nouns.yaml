@@ -32,6 +32,12 @@
   gloss: wine, liquor
   source: audit-corpus
 
+- citation: alan
+  pos: NOUN
+  gloss: Alan
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: alasdies
   pos: NOUN
   gloss: ten o'clock
@@ -107,6 +113,12 @@
   pos: NOUN
   gloss: father
   feats: {REGISTER: FORMAL}
+
+- citation: amado
+  pos: NOUN
+  gloss: Amado
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: amerika
   pos: NOUN
@@ -439,6 +451,11 @@
   pos: NOUN
   gloss: grass, weeds
 
+- citation: dating
+  pos: NOUN
+  gloss: arrival; newcomer
+  source: audit-corpus
+
 - citation: david
   pos: NOUN
   gloss: David
@@ -575,6 +592,11 @@
   gloss: medicine
   source: audit-corpus
 
+- citation: ganda
+  pos: NOUN
+  gloss: beauty
+  source: audit-corpus
+
 - citation: gatas
   pos: NOUN
   gloss: milk
@@ -634,6 +656,11 @@
   pos: NOUN
   gloss: sister-in-law
 
+- citation: hirap
+  pos: NOUN
+  gloss: difficulty, hardship
+  source: audit-corpus
+
 - citation: hulyo
   pos: NOUN
   gloss: July
@@ -648,6 +675,11 @@
   pos: NOUN
   gloss: Thursday
   feats: {DAY_VALUE: "4", SEM_CLASS: DAY}
+
+- citation: ibig
+  pos: NOUN
+  gloss: wish, desire, meaning
+  source: audit-corpus
 
 - citation: ibon
   pos: NOUN
@@ -728,6 +760,12 @@
   gloss: Jonathan
   subclass: [PERSON, MALE]
   source: R&C-1990
+
+- citation: jose
+  pos: NOUN
+  gloss: Jose
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: juan
   pos: NOUN
@@ -1047,10 +1085,22 @@
   pos: NOUN
   gloss: child-in-law
 
+- citation: marco
+  pos: NOUN
+  gloss: Marco
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: maria
   pos: NOUN
   gloss: Maria
   subclass: [PERSON, FEMALE]
+
+- citation: mario
+  pos: NOUN
+  gloss: Mario
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: marso
   pos: NOUN
@@ -1183,6 +1233,12 @@
 - citation: oras
   pos: NOUN
   gloss: hour, time
+
+- citation: oscar
+  pos: NOUN
+  gloss: Oscar
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: ospital
   pos: NOUN
