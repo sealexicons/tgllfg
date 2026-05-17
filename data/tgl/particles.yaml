@@ -1938,6 +1938,18 @@
   pos: PART
   feats: {INTERJ: true, DEICTIC: true, LEMMA: eto}
 
+# Phase 9.T.1: ``Wala`` as a "no" interjection — polysemy split
+# from the EXISTENTIAL=NEG ``wala`` above. Two readings disambiguate
+# by following daughter shape: existential ``Wala siyang pera.``
+# selects the existential-clause rules; interjection ``Wala, taong-
+# bahay siya.`` (R&G Conv) selects the Phase 8.D2 INTERJ-comma
+# topic-fronting rule (``S → PART[INTERJ=true] PUNCT[COMMA] S``).
+# LEMMA stays ``wala`` so downstream consumers can collapse the
+# two senses if desired.
+- surface: wala
+  pos: PART
+  feats: {INTERJ: true, NEGATIVE: true, LEMMA: wala}
+
 # === Phase 9.G: discourse markers + temporal adverbs + locative variants ===
 #
 # 12 audit-attested entries closing the rank-3..25 discourse / particle /

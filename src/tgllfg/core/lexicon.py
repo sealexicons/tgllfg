@@ -250,6 +250,17 @@ _AV_CAUS_INDIRECT_FLAT: dict[str, tuple[bool | None, bool | None]] = {
     "PATIENT": (False, True),
     "CAUSEE": (True, False),
 }
+# Phase 9.T.3: 2-arg AV-CAUS-INDIRECT companion to the flat 3-arg
+# profile. ``Nagpakain siya ng kendi.`` (8.H pin) — CAUSER + PATIENT
+# only, no overt CAUSEE. Structurally identical to a plain TR AV
+# (AGENT + PATIENT) at the f-structure level; the semantic
+# distinction (CAUSER vs AGENT) surfaces only in the PRED template
+# (``CAUSE-EAT`` vs ``EAT``). The CAUSEE is implicit/recoverable
+# from context but not syntactically realized.
+_AV_CAUS_INDIRECT_2ARG: dict[str, tuple[bool | None, bool | None]] = {
+    "CAUSER": (False, False),
+    "PATIENT": (False, True),
+}
 
 # Control profiles (Phase 4 §7.6). COMPLEMENT is XCOMP-stipulated.
 _PSYCH_CONTROL: dict[str, tuple[bool | None, bool | None]] = {

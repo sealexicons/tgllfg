@@ -125,6 +125,16 @@ class TestPseudoCleftOutOfScope:
     is unambiguous; flip to pass when the headless-RC gap is
     closed."""
 
-    def test_pseudo_cleft_still_fails(self) -> None:
+    def test_pseudo_cleft_closed_in_9t(self) -> None:
+        """Phase 9.T.2 closes this by lex addition:
+        ``AV_ABSOL: true`` on the ``luto`` verb root. The
+        underlying free-relative rule was already in place; the
+        blocker was just ``nagluto`` requiring an OBJ in the
+        TR-AV frame. Once ``luto`` admits the AV-absolutive
+        variant (``Nagluto siya.`` = "She/he cooked"), the
+        headless RC ``ang nagluto`` parses as NP[CASE=NOM] and
+        the pseudo-cleft ``Ang lalaki ang nagluto.`` follows
+        via the existing predicative-N rule (PRED='BE-NP <SUBJ>').
+        Pre-9.T this asserted ``len == 0``."""
         parses = parse_text("Ang lalaki ang nagluto.")
-        assert len(parses) == 0
+        assert len(parses) >= 1
