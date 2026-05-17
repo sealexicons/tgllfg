@@ -33,6 +33,18 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, an_oblig, maka]
 
+- citation: agaw
+  pos: VERB
+  gloss: snatch, grab
+  transitivity: TR
+  affix_class: [um, mang, in_oblig, an_oblig, maka]
+
+- citation: akay
+  pos: VERB
+  gloss: lead by the hand; hatch (of eggs)
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
 - citation: aksaya
   pos: VERB
   gloss: waste
@@ -154,6 +166,12 @@
   gloss: flood
   transitivity: INTR
   affix_class: [um, ma, maka]
+
+- citation: balaan
+  pos: VERB
+  gloss: warn
+  transitivity: TR
+  affix_class: [mag, an_oblig, maka]
 
 - citation: balak
   pos: VERB
@@ -282,6 +300,12 @@
   transitivity: TR
   affix_class: [mag, in_oblig, i_oblig, maka]
 
+- citation: bitin
+  pos: VERB
+  gloss: hang up, suspend
+  transitivity: TR
+  affix_class: [mag, in_oblig, i_oblig, maka]
+
 - citation: buhat
   pos: VERB
   gloss: lift, carry
@@ -311,6 +335,12 @@
   gloss: interject loudly, shout out
   transitivity: INTR
   affix_class: [um, maka]
+
+- citation: bulalas
+  pos: VERB
+  gloss: exclaim, burst out (with feeling)
+  transitivity: INTR
+  affix_class: [um, mag, in_oblig, maka]
 
 - citation: bulong
   pos: VERB
@@ -518,6 +548,12 @@
   gloss: grind, mill
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
+
+- citation: gisi
+  pos: VERB
+  gloss: tear, rip
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, ma, maka]
 
 - citation: gising
   pos: VERB
@@ -989,6 +1025,12 @@
   transitivity: INTR
   affix_class: [um, mag, i_oblig, maka]
 
+- citation: ladlad
+  pos: VERB
+  gloss: spread out, unfurl
+  transitivity: TR
+  affix_class: [mag, i_oblig, maka]
+
 - citation: lagay
   pos: VERB
   gloss: place, put
@@ -1270,6 +1312,12 @@
   transitivity: TR
   affix_class: [mag, an_oblig, maka]
 
+- citation: panata
+  pos: VERB
+  gloss: make a vow, vow
+  transitivity: INTR
+  affix_class: [mag, maka]
+
 - citation: panhik
   pos: VERB
   gloss: climb up, ascend (to a house)
@@ -1287,6 +1335,12 @@
   gloss: notice
   transitivity: TR
   affix_class: [um, in_oblig, maka]
+
+- citation: parada
+  pos: VERB
+  gloss: parade, march
+  transitivity: INTR
+  affix_class: [mag, maka]
 
 - citation: pasa
   pos: VERB
@@ -1467,6 +1521,12 @@
   affix_class: [mag, in_oblig, an_oblig, maka, magpa]
   feats: {SAY_CLASS: true}
 
+- citation: sabog
+  pos: VERB
+  gloss: scatter, explode
+  transitivity: INTR
+  affix_class: [um, mag, i_oblig, maka]
+
 - citation: sagot
   pos: VERB
   gloss: answer
@@ -1637,6 +1697,12 @@
   transitivity: TR
   affix_class: [ma, mag, in_oblig, maka]
 
+- citation: sisi
+  pos: VERB
+  gloss: regret, blame
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
 - citation: subo
   pos: VERB
   gloss: put in mouth, feed
@@ -1660,6 +1726,12 @@
   gloss: measure, fit
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
+
+- citation: sukbit
+  pos: VERB
+  gloss: carry on the shoulder
+  transitivity: TR
+  affix_class: [mag, i_oblig, maka]
 
 - citation: suklay
   pos: VERB
@@ -1822,6 +1894,12 @@
   gloss: jump
   transitivity: TR
   affix_class: [um, an_oblig, maka]
+
+- citation: talumpati
+  pos: VERB
+  gloss: give a speech, make a speech
+  transitivity: INTR
+  affix_class: [mag, maka]
 
 - citation: tamis
   pos: VERB
