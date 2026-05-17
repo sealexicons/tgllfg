@@ -307,6 +307,67 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.V.4a: "Una sa lahat" multi-word discourse marker -----
+    #
+    # ``Una sa lahat, ang isang Pilipino ay bahagi ng kanyang pamilya.``
+    #     "First of all, a Filipino is part of his family."
+    #     (R&C 1990 ANG PAMILYA sent-1 — 9.U Cluster B audit hit)
+    #
+    # Three-token phrasal discourse marker building a virtual PART
+    # node with DISCOURSE_POS=SENTENCE_INITIAL. The component parts
+    # are independently in the lex but don't compose to a
+    # discourse-initial reading on their own:
+    #
+    #   * ``una`` — NUM[ORDINAL=true, ORDINAL_VALUE='1']
+    #   * ``sa``  — ADP[CASE=DAT]
+    #   * ``lahat`` — Q[QUANT=ALL]
+    #
+    # The phrasal idiom means "first of all" / "above all" — a
+    # primary-ranking discourse connective parallel to 5m C10's
+    # ``samakatuwid`` ("therefore") and 5m C11's ``gayon din``
+    # ("likewise"). Once built, it feeds the comma-variant of the
+    # 5m C4 sentence-initial PART rule below.
+    rules.append(Rule(
+        "PART",
+        ["NUM[ORDINAL=true]", "ADP[CASE=DAT, MARKER=SA]", "Q[QUANT=ALL]"],
+        [
+            "(↑ DISCOURSE) = 'PRIMARY_RANKING'",
+            "(↑ DISCOURSE_POS) = 'SENTENCE_INITIAL'",
+            "(↑ LEMMA) = 'una_sa_lahat'",
+            "(↓1 ORDINAL_VALUE) =c '1'",
+            "(↓3 LEMMA) =c 'lahat'",
+        ],
+    ))
+
+    # --- Phase 9.V.4b: comma-variant of 5m C4 sentence-initial PART ---
+    #
+    # ``Una sa lahat, ang isang Pilipino ay bahagi ng kanyang pamilya.``
+    #     (closes the 9.V.4a phrasal-PART output as a comma-fronted
+    #      discourse topic.)
+    #
+    # Companion to the 5m C4 rule above (``S → PART S`` for
+    # sentence-initial discourse markers without comma). The
+    # comma variant admits the parallel pattern where the
+    # discourse marker is followed by a comma boundary (a natural
+    # intonation break in the audit corpus). Same equation set as
+    # 5m C4 but with PUNCT[COMMA] consumed between the PART and
+    # the matrix S.
+    #
+    # Generalization: this rule also lets single-word connectives
+    # like ``samakatuwid`` ("therefore"), ``siguro`` ("maybe"),
+    # ``bukod dito`` ("moreover") appear with a comma — natural in
+    # written register. Pre-9.V they had to appear without comma
+    # (the 8.D2 INTERJ-comma rule only matched INTERJ=true PARTs).
+    rules.append(Rule(
+        "S",
+        ["PART", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
+        [
+            "(↑) = ↓3",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↓1 DISCOURSE_POS) =c 'SENTENCE_INITIAL'",
+        ],
+    ))
+
 
     # --- Phase 5n.B Commit 24: narrative-opener idiom (§18 L30) -------
     #
