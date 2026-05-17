@@ -38,24 +38,33 @@ def _tok(s: str) -> Token:
 
 
 class TestTokenizerCollapse:
-    """The tokenizer splits on hyphen; the multiword pre-pass
-    collapses the three tokens into one ``magisa`` token."""
+    """As of Phase 9.I the raw tokenizer joins
+    ``Tagalog-prefix-vowelStem`` patterns (including ``mag-isa``)
+    into a single token directly — the multiword pre-pass is no
+    longer the load-bearing layer for this specific case. The
+    pre-pass remains in place for non-prefix-vowelStem compounds
+    (``tag-init``, ``daan-daan``, ``humigit-kumulang``, etc.)
+    which the raw tokenizer still splits.
+    """
 
-    def test_raw_tokenizer_splits_on_hyphen(self) -> None:
+    def test_raw_tokenizer_joins_mag_isa(self) -> None:
+        """Post-9.I: the raw tokenizer's Tagalog-prefix-vowelStem
+        pattern recognises ``mag-isa`` as a single token with
+        hyphen-free norm ``magisa``."""
         toks = tokenize("mag-isa")
-        surfaces = [t.surface for t in toks]
-        assert surfaces == ["mag", "-", "isa"], (
-            f"raw tokenizer should produce three tokens; got {surfaces!r}"
-        )
+        assert len(toks) == 1
+        assert toks[0].surface == "mag-isa"
+        assert toks[0].norm == "magisa"
 
-    def test_multiword_prepass_collapses(self) -> None:
+    def test_multiword_prepass_idempotent_on_mag_isa(self) -> None:
+        """The pre-pass receives the already-joined token from the
+        raw tokenizer and leaves it unchanged (no 3-token triple to
+        merge). The end-to-end behaviour — analyzer sees ``magisa``
+        — is preserved across the layer move."""
         toks = tokenize("mag-isa")
         merged = merge_hyphen_compounds(toks)
-        surfaces = [t.surface for t in merged]
-        assert surfaces == ["magisa"], (
-            f"merge_hyphen_compounds should collapse to one ``magisa`` "
-            f"token; got {surfaces!r}"
-        )
+        # Pre-pass is a no-op when no 3-token X-Y triple is present.
+        assert [t.norm for t in merged] == ["magisa"]
 
 
 # === Lex hit ==============================================================
