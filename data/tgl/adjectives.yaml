@@ -201,6 +201,11 @@
   gloss: clean
   affix_class: [ma_adj]
 
+- citation: luma
+  pos: ADJ
+  gloss: old
+  affix_class: []
+
 - citation: lungkot
   pos: ADJ
   gloss: sad

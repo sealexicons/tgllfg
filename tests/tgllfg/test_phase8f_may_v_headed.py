@@ -183,13 +183,14 @@ class TestPhase8fOutOfScope:
             "cell sub-PR added the missing entry."
         )
 
-    def test_oov_proper_name_jose(self) -> None:
-        """``May ginagawa si Jose.`` — `Jose` is an OOV proper
-        name. Would close via a lex-only pass adding common
-        Filipino given names."""
+    def test_proper_name_jose_closed_in_9j(self) -> None:
+        """``May ginagawa si Jose.`` — ``Jose`` proper name was
+        an 8.F deferral pin asserting OOV-blocked. Phase 9.J
+        catch-all OOV pass added ``jose`` as a NOUN entry with
+        ``subclass: [PERSON, MALE]``, ``source: audit-corpus``;
+        the audit sentence now parses."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("May ginagawa si Jose.", n_best=3)
-        assert len(parses) == 0, (
-            "Jose proper-name OOV resolved — flip if the lex "
-            "sub-PR added the missing entry."
+        assert len(parses) >= 1, (
+            "9.J added jose proper-name; sentence should now parse."
         )

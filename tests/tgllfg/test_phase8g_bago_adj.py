@@ -108,15 +108,17 @@ class TestPhase8gOutOfScope:
     Pin a representative non-closure as a marker; flipping it
     would be a future sub-PR's signal."""
 
-    def test_complex_bago_dating_still_fails(self) -> None:
+    def test_complex_bago_dating_closed_in_9j(self) -> None:
         """``Ikaw ba ang bagong dating?`` — bagong + dating + Q.
-        ``dating`` "arrival" (gerund of `dumating`) is currently
-        OOV; would close via a separate lex pass."""
+        ``dating`` "arrival" was an 8.G deferral pin asserting
+        OOV-blocked. Phase 9.J catch-all OOV pass added ``dating``
+        as a NOUN entry (zero-conversion coexisting with the V
+        root in verbs.yaml); ``bago`` + linker + ``dating`` now
+        composes as an NP and the audit sentence parses."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Ikaw ba ang bagong dating?", n_best=3
         )
-        assert len(parses) == 0, (
-            "Complex bagong+OOV unexpectedly parses — flip pin "
-            "if a sub-PR added the dating lex entry."
+        assert len(parses) >= 1, (
+            "9.J added dating N; complex bagong+dating should parse."
         )
