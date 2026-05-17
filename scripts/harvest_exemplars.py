@@ -177,6 +177,15 @@ _TGL_MARKERS = {
 # appropriate.`` are recognised as English-shaped and rejected by
 # ``_looks_like_tagalog`` despite carrying 2 Tagalog markers (``sa``,
 # ``ang``) in citation context.
+#
+# Phase 9.N: further extended with pedagogical-prose vocabulary
+# (``occurs``, ``occurrence``, ``variant``, ``preceded``, ``followed``,
+# ``consonant``, ``vowel``, ``alternant``, ``personal``, ``elsewhere``,
+# ``always``, ``usually``, etc.) so descriptive grammar-prose lines
+# like ``Note the occurrence of mo before nga and ninyo after nga.``
+# tip ``_looks_like_tagalog``'s ``en > tgl`` test. These lines have
+# 3 Tagalog markers cited (``mo``, ``nga``, ``ninyo``) but are English
+# linguistic commentary, not natural Tagalog sentences.
 _EN_MARKERS = {
     "the", "of", "and", "or", "to", "in", "is", "are", "was",
     "were", "this", "that", "these", "those", "with", "from",
@@ -184,6 +193,18 @@ _EN_MARKERS = {
     "add", "where", "appropriate", "necessary", "following",
     "each", "using", "linkers", "phrases", "choose", "fill",
     "complete", "translate", "identify", "select",
+    # 9.N pedagogical-prose additions
+    "as", "also", "free",
+    "note", "notice", "occur", "occurs", "occurrence", "occurred",
+    "preceded", "preceding", "followed", "consonant", "consonants",
+    "vowel", "vowels", "construction", "constructions",
+    "alternant", "alternants", "variant", "variants",
+    "phonemic", "phonetic", "context", "contexts",
+    "elsewhere", "initially", "finally", "medially",
+    "usually", "always", "often", "sometimes", "optional",
+    "personal", "speaker", "speakers", "form", "forms",
+    "describe", "describes", "compare", "compares", "observe",
+    "indicates", "indicate",
 }
 
 
@@ -270,6 +291,18 @@ _GRAMMAR_TAG_PREFIX_RE = re.compile(
     # or Voice). 65 hits in wave3-so1972.jsonl.
     r"AF|OF|LF|BF|IF|GF|RF|DF|CF|PF|AV|OV|IV|DV|RV|LV|BV|CV|PV"
     r")\s*:\s+",
+)
+
+# 9.N: same two-letter focus/voice abbreviations, but the no-colon
+# variant (S&O 1972 inconsistently uses ``AF Naghugas ng pinggan ang
+# bata.`` interleaved with the colon-form ``AF: Naghugas …``). 19 hits
+# in wave3-so1972. Also tolerates a hyphen-colon OCR-degenerate variant
+# (``Of-: Abutin mo …``). Requires the abbreviation to be followed by
+# at least one space + a capital letter, so we don't accidentally strip
+# a 2-letter Tagalog word that's part of a longer sentence.
+_FOCUS_VOICE_ABBREV_PREFIX_RE = re.compile(
+    r"^(?:AF|OF|LF|BF|IF|GF|RF|DF|CF|PF|AV|OV|IV|DV|RV|LV|BV|CV|PV)"
+    r"[-:]*\s+(?=[A-Z])"
 )
 
 # Leading paren-metadata that signals the predicate has been moved
@@ -431,6 +464,9 @@ def _clean_sentence_text(text: str) -> str | None:
     # 9.K Cleanup A: strip pedagogical grammar-tag prefixes
     # (``Q:``/``Example:``/``Simple S:``/``Counter-assumption:``).
     text = _GRAMMAR_TAG_PREFIX_RE.sub("", text)
+    # 9.N: strip no-colon variant of S&O 1972 two-letter focus/
+    # voice abbreviations (``AF Naghugas …`` / ``Of-: Abutin …``).
+    text = _FOCUS_VOICE_ABBREV_PREFIX_RE.sub("", text)
     # 9.K Cleanup B: reject leading paren-metadata that pulled the
     # predicate out of the sentence body (``(verb tugtog. ...) ...``).
     if _LEADING_PAREN_REJECT_RE.match(text):
