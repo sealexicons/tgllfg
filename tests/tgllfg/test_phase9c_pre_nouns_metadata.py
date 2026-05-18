@@ -105,12 +105,16 @@ class TestSchemaValidation:
                 "  loan: BOGUSIAN\n"
             )
 
-    def test_orth_variants_must_be_list(self) -> None:
-        with pytest.raises(ValueError, match="'orth_variants' must be a list"):
+    def test_orth_variants_field_removed(self) -> None:
+        """Phase 9.X.pre-1.21: ``orth_variants`` was removed.
+        Lingering YAML usage must raise so future contributors
+        notice and migrate to ``feats: {LEMMA: <canonical>}`` on a
+        separate variant root entry."""
+        with pytest.raises(ValueError, match="'orth_variants' field was removed"):
             self._load_from_yaml_text(
                 "- citation: foo\n"
                 "  pos: NOUN\n"
-                "  orth_variants: 'not-a-list'\n"
+                "  orth_variants: [foo-alt]\n"
             )
 
     def test_subclass_must_be_list(self) -> None:
@@ -131,7 +135,6 @@ class TestSchemaValidation:
         assert roots[0].subclass == []
         assert roots[0].source == ""
         assert roots[0].loan == ""
-        assert roots[0].orth_variants == []
 
 
 # ---- Real-entry plumbing tests ------------------------------------
@@ -173,9 +176,11 @@ class TestRealEntryFields:
         (``data/tgl/references/scans/blas.png``) confirmed
         ``Bias`` is an OCR artifact, not a real spelling
         variant — the fix landed at-source in the R&C 1990
-        extracted text rather than in lex."""
+        extracted text rather than in lex. Phase 9.X.pre-1.21
+        removed the ``orth_variants`` field entirely (was loader-
+        validated dead code; canonical mechanism is per-variant
+        root with ``feats: {LEMMA: <canonical>}``)."""
         b = roots_by_cit["blas"][0]
-        assert b.orth_variants == []
         assert b.subclass == ["PERSON", "MALE"]
         assert "OCR" not in b.gloss
 
@@ -270,7 +275,12 @@ class TestPinoyPinay:
 # ---- Orthographic-variant tests -----------------------------------
 
 class TestOrthVariants:
-    """tita/tito carry [tiya]/[tiyo]; blas carries [bias]."""
+    """Phase 9.X.pre-1.21: orthographic-variant pointers migrated
+    from the dead ``orth_variants`` metadata field to the
+    analyzer-honored ``feats: {LEMMA: <canonical>}`` mechanism on
+    a separate variant root entry. Each variant has citation =
+    variant surface and ``feats.LEMMA`` pointing at the canonical
+    citation."""
 
     @pytest.fixture
     def roots_by_cit(self):
@@ -279,22 +289,28 @@ class TestOrthVariants:
         return {r.citation: r for r in m.roots}
 
     def test_tita_tiya_pointer(self, roots_by_cit) -> None:
-        r = roots_by_cit["tita"]
-        assert "tiya" in r.orth_variants
+        # tita is canonical; tiya is a separate variant root that
+        # points at tita via feats.LEMMA.
+        assert "tita" in roots_by_cit
+        tiya = roots_by_cit["tiya"]
+        assert tiya.feats.get("LEMMA") == "tita"
 
     def test_tito_tiyo_pointer(self, roots_by_cit) -> None:
-        r = roots_by_cit["tito"]
-        assert "tiyo" in r.orth_variants
+        assert "tito" in roots_by_cit
+        tiyo = roots_by_cit["tiyo"]
+        assert tiyo.feats.get("LEMMA") == "tito"
 
     def test_blas_no_bias_ocr_variant(self, roots_by_cit) -> None:
-        """``blas`` does NOT carry ``bias`` as an orth_variant.
-        9.C.pre originally added it on the assumption that
-        ``Bias`` was a spelling variant; 9.H confirmed via PDF
-        scan that it's an OCR artifact and dropped the
-        annotation. The audit-corpus source text was hand-
-        corrected instead."""
-        r = roots_by_cit["blas"]
-        assert "bias" not in r.orth_variants
+        """``blas`` does NOT have a ``bias`` variant pointer.
+        9.C.pre originally added ``bias`` to ``blas.orth_variants``
+        on the assumption that ``Bias`` was a spelling variant;
+        9.H confirmed via PDF scan that it's an OCR artifact and
+        dropped the annotation. The audit-corpus source text was
+        hand-corrected instead. Post-9.X.pre-1.21 migration the
+        check is that no root with citation ``bias`` exists
+        pointing at ``blas`` via feats.LEMMA."""
+        bias = roots_by_cit.get("bias")
+        assert bias is None or bias.feats.get("LEMMA") != "blas"
 
 
 # ---- No-regression sanity sample ----------------------------------

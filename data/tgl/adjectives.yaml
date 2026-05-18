@@ -48,6 +48,19 @@
 # STATIVE_PRED ADJ-modifier-rule exclusion in cfg/nominal.py
 # prevents the new ADJ analysis from competing with the V/PSYCH
 # control-XCOMP path on linker-bound contexts (Phase 6 LDD).
+- citation: asim
+  pos: ADJ
+  gloss: sour, acidic
+  affix_class: [ma_adj]
+  source: audit-corpus
+
+- citation: asul
+  pos: ADJ
+  gloss: blue
+  affix_class: []
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: ayaw
   pos: ADJ
   gloss: disliked, unwanted (predicate "ayaw ko X" = "I don't want X")
@@ -58,6 +71,12 @@
   pos: ADJ
   gloss: low
   affix_class: [ma_adj]
+
+- citation: bagal
+  pos: ADJ
+  gloss: slow, sluggish
+  affix_class: [ma_adj]
+  source: audit-corpus
 
 - citation: bago
   pos: ADJ
@@ -99,6 +118,12 @@
   gloss: deaf
   affix_class: [ma_adj]
 
+- citation: bobo
+  pos: ADJ
+  gloss: stupid, dim-witted
+  affix_class: []
+  source: audit-corpus
+
 - citation: bulag
   pos: ADJ
   gloss: blind
@@ -113,6 +138,23 @@
   pos: ADJ
   gloss: easy, quick
   affix_class: [ma_adj]
+
+- citation: dilaw
+  pos: ADJ
+  gloss: yellow
+  affix_class: []
+
+- citation: dulas
+  pos: ADJ
+  gloss: slippery, smooth
+  affix_class: [ma_adj]
+  source: audit-corpus
+
+- citation: galing
+  pos: ADJ
+  gloss: skilled, good at; excellent
+  affix_class: [ma_adj]
+  source: audit-corpus
 
 - citation: galit
   pos: ADJ
@@ -146,6 +188,13 @@
   gloss: hungry
   affix_class: [ma_adj]
 
+- citation: guwapo
+  pos: ADJ
+  gloss: handsome, good-looking
+  affix_class: []
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: haba
   pos: ADJ
   gloss: long
@@ -155,6 +204,16 @@
   pos: ADJ
   gloss: lying down, recumbent
   affix_class: [naka_resultative]
+
+- citation: hilaw
+  pos: ADJ
+  gloss: raw, unripe
+  affix_class: []
+
+- citation: hilig
+  pos: ADJ
+  gloss: fond of, inclined toward
+  affix_class: [ma_adj]
 
 - citation: hilo
   pos: ADJ
@@ -166,9 +225,20 @@
   gloss: weak
   affix_class: [ma_adj]
 
+- citation: hinog
+  pos: ADJ
+  gloss: ripe (of fruit)
+  affix_class: [ma_adj]
+  source: audit-corpus
+
 - citation: hirap
   pos: ADJ
   gloss: poor, difficult
+  affix_class: [ma_adj]
+
+- citation: hiya
+  pos: ADJ
+  gloss: shy, ashamed
   affix_class: [ma_adj]
 
 - citation: husay
@@ -176,9 +246,24 @@
   gloss: excellent, skilled
   affix_class: [ma_adj]
 
+- citation: husto
+  pos: ADJ
+  gloss: proper, fitting, exact
+  affix_class: []
+
 - citation: ikli
   pos: ADJ
   gloss: short (in length)
+  affix_class: [ma_adj]
+
+- citation: ilap
+  pos: ADJ
+  gloss: elusive, shy (of animals or people)
+  affix_class: [ma_adj]
+
+- citation: ingat
+  pos: ADJ
+  gloss: careful, cautious
   affix_class: [ma_adj]
 
 - citation: ingay
@@ -197,10 +282,50 @@
   affix_class: []
   feats: {STATIVE_PRED: true}
 
+- citation: kakaiba
+  pos: ADJ
+  gloss: different, unique, unusual
+  affix_class: []
+
+- citation: kakatwa
+  pos: ADJ
+  gloss: strange, peculiar
+  affix_class: []
+
+- citation: kalma
+  pos: ADJ
+  gloss: calm, composed
+  affix_class: []
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: kapal
   pos: ADJ
   gloss: thick
   affix_class: [ma_adj]
+
+- citation: kapus
+  pos: ADJ
+  gloss: lacking, insufficient; in short supply
+  affix_class: []
+  source: audit-corpus
+
+- citation: karaniwan
+  pos: ADJ
+  gloss: ordinary, usual, common
+  affix_class: []
+
+- citation: katabi
+  pos: ADJ
+  gloss: adjacent, next to
+  affix_class: []
+  source: audit-corpus
+
+- citation: katulad
+  pos: ADJ
+  gloss: similar, alike (typically used with sa-OBL "similar to X")
+  affix_class: []
+  source: audit-corpus
 
 # Phase 9.O follow-on: bare-form ADJ for the predicative use of
 # ``kilala`` ("known, acquainted") as in ``Kilala si Maria.``
@@ -221,6 +346,12 @@
   affix_class: []
   feats: {STATIVE_PRED: true}
 
+- citation: kumbidado
+  pos: ADJ
+  gloss: invited (as a guest)
+  affix_class: []
+  loan: SPANISH
+
 - citation: lakas
   pos: ADJ
   gloss: strong
@@ -229,6 +360,11 @@
 - citation: laki
   pos: ADJ
   gloss: big, large
+  affix_class: [ma_adj]
+
+- citation: lalim
+  pos: ADJ
+  gloss: deep
   affix_class: [ma_adj]
 
 - citation: lamig
@@ -240,6 +376,17 @@
   pos: ADJ
   gloss: wide, broad
   affix_class: [ma_adj]
+
+- citation: layo
+  pos: ADJ
+  gloss: far, distant
+  affix_class: [ma_adj]
+  source: audit-corpus
+
+- citation: lihim
+  pos: ADJ
+  gloss: secret, hidden
+  affix_class: []
 
 - citation: liit
   pos: ADJ
@@ -255,6 +402,11 @@
   pos: ADJ
   gloss: old
   affix_class: []
+
+- citation: lumanay
+  pos: ADJ
+  gloss: gentle, soft-spoken
+  affix_class: [ma_adj]
 
 - citation: lungkot
   pos: ADJ
@@ -292,9 +444,31 @@
   gloss: thin
   affix_class: [ma_adj]
 
+- citation: paborito
+  pos: ADJ
+  gloss: favorite, preferred
+  affix_class: []
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: pagod
   pos: ADJ
   gloss: tired
+  affix_class: []
+
+- citation: panay
+  pos: ADJ
+  gloss: constant, continuous, all-the-time
+  affix_class: []
+
+- citation: pangunahin
+  pos: ADJ
+  gloss: basic, main, primary
+  affix_class: []
+
+- citation: pula
+  pos: ADJ
+  gloss: red
   affix_class: []
 
 # Phase 9.W: ``puno`` is polysemous. nouns.yaml carries the N
@@ -324,6 +498,22 @@
   gloss: wise, knowledgeable
   affix_class: [ma_adj]
 
+- citation: sagana
+  pos: ADJ
+  gloss: abundant, plentiful
+  affix_class: [ma_adj]
+
+- citation: sama
+  pos: ADJ
+  gloss: bad
+  affix_class: [ma_adj]
+
+- citation: sanay
+  pos: ADJ
+  gloss: skilled, trained, accustomed (to)
+  affix_class: []
+  source: audit-corpus
+
 - citation: sarap
   pos: ADJ
   gloss: delicious, tasty
@@ -349,6 +539,11 @@
   gloss: beside, adjacent
   affix_class: [naka_resultative]
 
+- citation: tahimik
+  pos: ADJ
+  gloss: quiet, silent, peaceful
+  affix_class: []
+
 - citation: talino
   pos: ADJ
   gloss: intelligent
@@ -364,6 +559,11 @@
   gloss: lazy
   affix_class: [ma_adj]
 
+- citation: tamis
+  pos: ADJ
+  gloss: sweet
+  affix_class: [ma_adj]
+
 - citation: tanda
   pos: ADJ
   gloss: old
@@ -372,6 +572,11 @@
 - citation: tapang
   pos: ADJ
   gloss: brave
+  affix_class: [ma_adj]
+
+- citation: tapat
+  pos: ADJ
+  gloss: loyal, faithful, honest
   affix_class: [ma_adj]
 
 - citation: tayo
@@ -398,6 +603,22 @@
   pos: ADJ
   gloss: living, residing (in a place)
   affix_class: [naka_resultative]
+
+- citation: totoo
+  pos: ADJ
+  gloss: true, real, genuine
+  affix_class: []
+  source: audit-corpus
+
+- citation: tunay
+  pos: ADJ
+  gloss: real, true, genuine
+  affix_class: []
+
+- citation: tuyo
+  pos: ADJ
+  gloss: dry
+  affix_class: []
 
 - citation: upo
   pos: ADJ
