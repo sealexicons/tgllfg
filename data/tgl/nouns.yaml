@@ -222,6 +222,12 @@
   pos: NOUN
   gloss: harvest, crop yield
 
+- citation: announcer
+  pos: NOUN
+  gloss: announcer
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: apo
   pos: NOUN
   gloss: grandchild
@@ -1382,6 +1388,12 @@
   gloss: heat
   affix_class: [tag_season]
 
+- citation: interview
+  pos: NOUN
+  gloss: interview
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: isda
   pos: NOUN
   gloss: fish
@@ -2377,6 +2389,12 @@
   gloss: motorcycle
   source: audit-corpus
   loan: SPANISH
+
+- citation: movies
+  pos: NOUN
+  gloss: movies (plural; English code-switch as-attested)
+  source: audit-corpus
+  loan: ENGLISH
 
 - citation: mr
   pos: NOUN
@@ -3640,6 +3658,12 @@
   pos: NOUN
   gloss: omelet (e.g. ``tortang talong`` = eggplant omelet)
   loan: SPANISH
+
+- citation: tour
+  pos: NOUN
+  gloss: tour
+  source: audit-corpus
+  loan: ENGLISH
 
 - citation: trabahador
   pos: NOUN
