@@ -60,6 +60,11 @@
   source: audit-corpus
   loan: ENGLISH
 
+- citation: alaala
+  pos: NOUN
+  gloss: memory, remembrance
+  source: audit-corpus
+
 - citation: alak
   pos: NOUN
   gloss: wine, liquor
@@ -1164,6 +1169,11 @@
   pos: NOUN
   gloss: need / requirement
 
+- citation: kaisipan
+  pos: NOUN
+  gloss: idea, thought
+  source: audit-corpus
+
 - citation: kakao
   pos: NOUN
   gloss: cocoa, cacao
@@ -1192,6 +1202,11 @@
 - citation: kalan
   pos: NOUN
   gloss: stove, cooking hearth
+
+- citation: kalayaan
+  pos: NOUN
+  gloss: freedom, independence
+  source: audit-corpus
 
 - citation: kaldereta
   pos: NOUN
@@ -1262,6 +1277,11 @@
   pos: NOUN
   gloss: cooked rice
 
+- citation: kapalaran
+  pos: NOUN
+  gloss: fate, fortune, destiny
+  source: audit-corpus
+
 - citation: kapat
   pos: NOUN
   gloss: quarter
@@ -1288,6 +1308,11 @@
 - citation: kapitbahay
   pos: NOUN
   gloss: neighbor
+
+- citation: karanasan
+  pos: NOUN
+  gloss: experience
+  source: audit-corpus
 
 - citation: karayom
   pos: NOUN
@@ -1319,9 +1344,19 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: karunungan
+  pos: NOUN
+  gloss: wisdom, knowledge
+  source: audit-corpus
+
 - citation: kasabay
   pos: NOUN
   gloss: companion, concurrent
+  source: audit-corpus
+
+- citation: kasagutan
+  pos: NOUN
+  gloss: answer, response
   source: audit-corpus
 
 - citation: kasalanan
@@ -1354,9 +1389,19 @@
   gloss: Spaniard; Spanish (language)
   source: audit-corpus
 
+- citation: katapatan
+  pos: NOUN
+  gloss: honesty, loyalty
+  source: audit-corpus
+
 - citation: katawan
   pos: NOUN
   gloss: body
+  source: audit-corpus
+
+- citation: katotohanan
+  pos: NOUN
+  gloss: truth, reality
   source: audit-corpus
 
 - citation: katungkulan
@@ -2026,6 +2071,11 @@
 - citation: panahon
   pos: NOUN
   gloss: weather, time, season
+  source: audit-corpus
+
+- citation: pananampalataya
+  pos: NOUN
+  gloss: faith, belief
   source: audit-corpus
 
 - citation: pananim
@@ -2878,6 +2928,11 @@
 - citation: utang
   pos: NOUN
   gloss: debt, loan owed
+  source: audit-corpus
+
+- citation: wakas
+  pos: NOUN
+  gloss: end, finish
   source: audit-corpus
 
 - citation: wika

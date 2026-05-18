@@ -372,6 +372,11 @@
   gloss: basic, main, primary
   affix_class: []
 
+- citation: pula
+  pos: ADJ
+  gloss: red
+  affix_class: []
+
 # Phase 9.W: ``puno`` is polysemous. nouns.yaml carries the N
 # entries (``tree``; ``head, principal, leader``). The bare ADJ
 # entry here covers the ``full`` sense (per S&O 1972 §3.10; common
@@ -397,6 +402,11 @@
 - citation: runong
   pos: ADJ
   gloss: wise, knowledgeable
+  affix_class: [ma_adj]
+
+- citation: sagana
+  pos: ADJ
+  gloss: abundant, plentiful
   affix_class: [ma_adj]
 
 - citation: sama
@@ -492,6 +502,11 @@
 - citation: tunay
   pos: ADJ
   gloss: real, true, genuine
+  affix_class: []
+
+- citation: tuyo
+  pos: ADJ
+  gloss: dry
   affix_class: []
 
 - citation: upo
