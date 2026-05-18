@@ -27,6 +27,13 @@
 # (S&O), Kroeger 1993 ch. 4. R&B page numbers in comments where the
 # verb's full paradigm is documented.
 
+- citation: abala
+  pos: VERB
+  gloss: bother, take the trouble (with), be busy
+  transitivity: TR
+  affix_class: [mag, maka]
+  source: audit-corpus
+
 - citation: abot
   pos: VERB
   gloss: reach, hand to
@@ -107,6 +114,14 @@
   transitivity: TR
   affix_class: [um, in_oblig, maka]
 
+- citation: andar
+  pos: VERB
+  gloss: run, function, start moving (of a machine, vehicle)
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: aral
   pos: VERB
   gloss: study, learn
@@ -130,6 +145,13 @@
   gloss: attend to, take care of
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
+
+- citation: awa
+  pos: VERB
+  gloss: take pity (on), feel compassion (for)
+  transitivity: INTR
+  affix_class: [ma, maka]
+  source: audit-corpus
 
 - citation: away
   pos: VERB
@@ -513,6 +535,14 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, i_oblig, maka]
 
+- citation: ensayo
+  pos: VERB
+  gloss: practice, rehearse
+  transitivity: INTR
+  affix_class: [mag, maka]
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: galing
   pos: VERB
   gloss: recover, come from
@@ -578,6 +608,13 @@
   gloss: collapse, crumble
   transitivity: INTR
   affix_class: [um, maka]
+
+- citation: gulat
+  pos: VERB
+  gloss: startle, surprise (causative)
+  transitivity: TR
+  affix_class: [um, in_oblig, i_oblig, maka]
+  source: audit-corpus
 
 - citation: gulay
   pos: VERB
@@ -746,6 +783,13 @@
   gloss: borrow (an object)
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka, magpa_an]
+
+- citation: hirap
+  pos: VERB
+  gloss: have difficulty (with), struggle, find arduous
+  transitivity: TR
+  affix_class: [ma, ma_an, maka]
+  source: audit-corpus
 
 - citation: hiwa
   pos: VERB
@@ -958,6 +1002,13 @@
   transitivity: INTR
   affix_class: [um, mag, maka]
 
+- citation: kausap
+  pos: VERB
+  gloss: converse with, talk with (as addressee)
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+  source: audit-corpus
+
 - citation: kibo
   pos: VERB
   gloss: move slightly, stir
@@ -975,6 +1026,13 @@
   gloss: move, do something
   transitivity: INTR
   affix_class: [um, maka]
+
+- citation: kinig
+  pos: VERB
+  gloss: listen, pay attention
+  transitivity: INTR
+  affix_class: [ma, maka]
+  source: audit-corpus
 
 - citation: kita
   pos: VERB
@@ -1276,6 +1334,13 @@
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
 
+- citation: mano
+  pos: VERB
+  gloss: perform mano (hand-kissing gesture of respect to elders)
+  transitivity: INTR
+  affix_class: [mag, maka]
+  source: audit-corpus
+
 - citation: marka
   pos: VERB
   gloss: mark, score
@@ -1353,6 +1418,13 @@
   gloss: introduce
   transitivity: TR
   affix_class: [mag, i_oblig, maka]
+
+- citation: palagay
+  pos: VERB
+  gloss: suppose, assume; place, put
+  transitivity: TR
+  affix_class: [mag, ipag, in_oblig, maka]
+  source: audit-corpus
 
 - citation: palit
   pos: VERB
@@ -1536,6 +1608,13 @@
   gloss: become torn
   transitivity: INTR
   affix_class: [ma, ika, maka]
+
+- citation: punla
+  pos: VERB
+  gloss: plant seedlings, sow
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, an_oblig, maka]
+  source: audit-corpus
 
 - citation: punta
   pos: VERB
@@ -1733,6 +1812,13 @@
   transitivity: INTR
   affix_class: [um, mag, maka]
 
+- citation: sipa
+  pos: VERB
+  gloss: kick
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, an_oblig, maka]
+  source: audit-corpus
+
 - citation: sipsip
   pos: VERB
   gloss: suck, sip
@@ -1906,6 +1992,13 @@
   gloss: sew
   transitivity: TR
   affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ipang]
+
+- citation: tahol
+  pos: VERB
+  gloss: bark (of a dog)
+  transitivity: INTR
+  affix_class: [um, maka]
+  source: audit-corpus
 
 - citation: taka
   pos: VERB
@@ -2202,6 +2295,13 @@
   gloss: be thirsty
   transitivity: INTR
   affix_class: [ma, maka]
+
+- citation: ulan
+  pos: VERB
+  gloss: rain (to rain; as weather verb)
+  transitivity: INTR
+  affix_class: [um, in_oblig, an_oblig, maka]
+  source: audit-corpus
 
 - citation: ulit
   pos: VERB
