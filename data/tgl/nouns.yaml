@@ -197,6 +197,12 @@
   subclass: [NATIONAL]
   source: audit-corpus
 
+- citation: amy
+  pos: NOUN
+  gloss: Amy
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: ana
   pos: NOUN
   gloss: Ana
@@ -205,6 +211,12 @@
 - citation: anak
   pos: NOUN
   gloss: child, offspring
+
+- citation: angela
+  pos: NOUN
+  gloss: Angela
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
 
 - citation: ani
   pos: NOUN
@@ -222,6 +234,18 @@
   pos: NOUN
   gloss: day, sun
   affix_class: [tag_season]
+
+- citation: armando
+  pos: NOUN
+  gloss: Armando
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
+- citation: arthur
+  pos: NOUN
+  gloss: Arthur
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: artista
   pos: NOUN
@@ -433,11 +457,29 @@
   subclass: [PERSON, MALE]
   source: S&O-1972
 
+- citation: bernie
+  pos: NOUN
+  gloss: Bernie
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
+- citation: bert
+  pos: NOUN
+  gloss: Bert
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: beses
   pos: NOUN
   gloss: times (occurrences)
   feats: {SEM_CLASS: FREQUENCY}
   synonyms: [ulit]
+
+- citation: beth
+  pos: NOUN
+  gloss: Beth
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
 
 - citation: betty
   pos: NOUN
@@ -474,6 +516,12 @@
 - citation: bilis
   pos: NOUN
   gloss: speed, quickness
+  source: audit-corpus
+
+- citation: bill
+  pos: NOUN
+  gloss: Bill
+  subclass: [PERSON, MALE]
   source: audit-corpus
 
 - citation: binhi
@@ -655,6 +703,18 @@
   pos: NOUN
   gloss: moon, month
 
+- citation: carmen
+  pos: NOUN
+  gloss: Carmen
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
+- citation: cruz
+  pos: NOUN
+  gloss: Cruz (surname)
+  subclass: [PERSON]
+  source: audit-corpus
+
 - citation: daan
   pos: NOUN
   gloss: hundred
@@ -723,6 +783,18 @@
   pos: NOUN
   gloss: grass, weeds
 
+- citation: dan
+  pos: NOUN
+  gloss: Dan
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
+- citation: dante
+  pos: NOUN
+  gloss: Dante
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: dating
   pos: NOUN
   gloss: arrival; newcomer
@@ -755,6 +827,12 @@
   pos: NOUN
   gloss: chest
 
+- citation: digna
+  pos: NOUN
+  gloss: Digna
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: dila
   pos: NOUN
   gloss: tongue
@@ -762,6 +840,12 @@
 - citation: dilim
   pos: NOUN
   gloss: darkness
+
+- citation: dindo
+  pos: NOUN
+  gloss: Dindo
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: dingding
   pos: NOUN
@@ -801,10 +885,22 @@
   pos: NOUN
   gloss: doctor
 
+- citation: don
+  pos: NOUN
+  gloss: Don
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: dosena
   pos: NOUN
   gloss: dozen
   feats: {MEASURE: true}
+
+- citation: doug
+  pos: NOUN
+  gloss: Doug
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: dugo
   pos: NOUN
@@ -819,11 +915,23 @@
   pos: NOUN
   gloss: jeepney
 
+- citation: ed
+  pos: NOUN
+  gloss: Ed
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: edad
   pos: NOUN
   gloss: age
   affix_class: [kasing_n_eq]
   loan: SPANISH
+
+- citation: edgar
+  pos: NOUN
+  gloss: Edgar
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: ekspiriyensiya
   pos: NOUN
@@ -853,9 +961,21 @@
   gloss: ensaymada (sweet pastry topped with cheese)
   loan: SPANISH
 
+- citation: ernesto
+  pos: NOUN
+  gloss: Ernesto
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: eroplano
   pos: NOUN
   gloss: airplane
+
+- citation: esang
+  pos: NOUN
+  gloss: Esang
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
 
 - citation: eskuelahan
   pos: NOUN
@@ -874,15 +994,33 @@
   feats: {REGISTER: COLLOQUIAL}
   synonyms: [paaralan]
 
+- citation: esper
+  pos: NOUN
+  gloss: Esper
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: espiya
   pos: NOUN
   gloss: spy
   source: audit-corpus
   loan: SPANISH
 
+- citation: ester
+  pos: NOUN
+  gloss: Ester
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: estudyante
   pos: NOUN
   gloss: student
+
+- citation: faye
+  pos: NOUN
+  gloss: Faye
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
 
 - citation: flor
   pos: NOUN
@@ -946,6 +1084,18 @@
 - citation: gawi
   pos: NOUN
   gloss: custom, habit; direction, way
+  source: audit-corpus
+
+- citation: george
+  pos: NOUN
+  gloss: George
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
+- citation: gilda
+  pos: NOUN
+  gloss: Gilda
+  subclass: [PERSON, FEMALE]
   source: audit-corpus
 
 - citation: gina
@@ -1094,6 +1244,12 @@
   gloss: animal, beast
   source: audit-corpus
 
+- citation: helen
+  pos: NOUN
+  gloss: Helen
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: hipag
   pos: NOUN
   gloss: sister-in-law
@@ -1151,6 +1307,12 @@
 - citation: ibon
   pos: NOUN
   gloss: bird
+
+- citation: igor
+  pos: NOUN
+  gloss: Igor
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: iksamen
   pos: NOUN
@@ -1226,6 +1388,12 @@
   pos: NOUN
   gloss: egg
 
+- citation: jaime
+  pos: NOUN
+  gloss: Jaime
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: jasmine
   pos: NOUN
   gloss: Jasmine
@@ -1237,6 +1405,12 @@
   gloss: jeepney (Philippine public-transport vehicle)
   loan: ENGLISH
   synonyms: [dyip]
+
+- citation: jimmy
+  pos: NOUN
+  gloss: Jimmy
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: joe
   pos: NOUN
@@ -1256,16 +1430,34 @@
   subclass: [PERSON, MALE]
   source: R&C-1990
 
+- citation: jorge
+  pos: NOUN
+  gloss: Jorge
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: jose
   pos: NOUN
   gloss: Jose
   subclass: [PERSON, MALE]
   source: audit-corpus
 
+- citation: josefa
+  pos: NOUN
+  gloss: Josefa
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: juan
   pos: NOUN
   gloss: Juan
   subclass: [PERSON, MALE]
+
+- citation: julia
+  pos: NOUN
+  gloss: Julia
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
 
 - citation: kaarawan
   pos: NOUN
@@ -1896,6 +2088,7 @@
 # (hyphens after ``mag-``/``pag-``/``nag-`` before vowel onsets are
 # stripped by the tokenizer pre-pass; same convention as
 # ``pagaalaga`` / ``pagiyak``).
+
 - citation: magasawa
   pos: NOUN
   gloss: married couple
@@ -1919,6 +2112,12 @@
 - citation: malas
   pos: NOUN
   gloss: bad luck, misfortune
+  source: audit-corpus
+
+- citation: malou
+  pos: NOUN
+  gloss: Malou
+  subclass: [PERSON, FEMALE]
   source: audit-corpus
 
 - citation: mama
@@ -1974,6 +2173,12 @@
   subclass: [PERSON, MALE]
   source: audit-corpus
 
+- citation: margie
+  pos: NOUN
+  gloss: Margie
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: maria
   pos: NOUN
   gloss: Maria
@@ -1985,6 +2190,12 @@
   subclass: [PERSON, MALE]
   source: audit-corpus
 
+- citation: marsha
+  pos: NOUN
+  gloss: Marsha
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: marso
   pos: NOUN
   gloss: March
@@ -1994,6 +2205,12 @@
   pos: NOUN
   gloss: Tuesday
   feats: {DAY_VALUE: "2", SEM_CLASS: DAY}
+
+- citation: martha
+  pos: NOUN
+  gloss: Martha
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
 
 - citation: marvin
   pos: NOUN
@@ -2010,6 +2227,12 @@
 - citation: mata
   pos: NOUN
   gloss: eye
+
+- citation: max
+  pos: NOUN
+  gloss: Max
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: maynila
   pos: NOUN
@@ -2055,6 +2278,24 @@
   gloss: metal
   source: audit-corpus
   loan: ENGLISH
+
+- citation: michael
+  pos: NOUN
+  gloss: Michael
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
+- citation: miguel
+  pos: NOUN
+  gloss: Miguel
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
+- citation: mike
+  pos: NOUN
+  gloss: Mike
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: milyunaryo
   pos: NOUN
@@ -2163,6 +2404,18 @@
   subclass: [PERSON, FEMALE]
   source: R&C-1990
 
+- citation: nene
+  pos: NOUN
+  gloss: Nene
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
+- citation: nettie
+  pos: NOUN
+  gloss: Nettie
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: ngayon
   pos: NOUN
   gloss: now, today
@@ -2170,6 +2423,18 @@
 - citation: ngipin
   pos: NOUN
   gloss: tooth
+
+- citation: nina
+  pos: NOUN
+  gloss: Nina
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
+- citation: ninoy
+  pos: NOUN
+  gloss: Ninoy
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: niyog
   pos: NOUN
@@ -2195,6 +2460,12 @@
 - citation: noo
   pos: NOUN
   gloss: forehead
+  source: audit-corpus
+
+- citation: nora
+  pos: NOUN
+  gloss: Nora
+  subclass: [PERSON, FEMALE]
   source: audit-corpus
 
 - citation: oktubre
@@ -2514,6 +2785,12 @@
   pos: NOUN
   gloss: yard, patio
 
+- citation: paul
+  pos: NOUN
+  gloss: Paul
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: pawis
   pos: NOUN
   gloss: sweat
@@ -2528,6 +2805,12 @@
   pos: NOUN
   gloss: February
   feats: {MONTH_VALUE: "2", SEM_CLASS: MONTH}
+
+- citation: peczon
+  pos: NOUN
+  gloss: Peczon (surname)
+  subclass: [PERSON]
+  source: audit-corpus
 
 - citation: pedro
   pos: NOUN
@@ -2546,6 +2829,12 @@
   pos: NOUN
   gloss: money
 
+- citation: perla
+  pos: NOUN
+  gloss: Perla
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: perlas
   pos: NOUN
   gloss: pearl
@@ -2558,11 +2847,23 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: phillip
+  pos: NOUN
+  gloss: Phillip
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: piano
   pos: NOUN
   gloss: piano
   source: audit-corpus
   loan: SPANISH
+
+- citation: pierre
+  pos: NOUN
+  gloss: Pierre
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: pila
   pos: NOUN
@@ -2744,11 +3045,23 @@
   source: audit-corpus
   loan: ENGLISH
 
+- citation: ramon
+  pos: NOUN
+  gloss: Ramon
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: rantso
   pos: NOUN
   gloss: ranch (rural property)
   source: audit-corpus
   loan: SPANISH
+
+- citation: ray
+  pos: NOUN
+  gloss: Ray
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: regalo
   pos: NOUN
@@ -2775,11 +3088,47 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: reyes
+  pos: NOUN
+  gloss: Reyes (surname)
+  subclass: [PERSON]
+  source: audit-corpus
+
+- citation: roberta
+  pos: NOUN
+  gloss: Roberta
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
+- citation: roberto
+  pos: NOUN
+  gloss: Roberto
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
+- citation: roger
+  pos: NOUN
+  gloss: Roger
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: rosa
   pos: NOUN
   gloss: Rosa
   subclass: [PERSON, FEMALE]
   source: R&G-Intermediate
+
+- citation: rosie
+  pos: NOUN
+  gloss: Rosie
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
+- citation: rudy
+  pos: NOUN
+  gloss: Rudy
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: sabado
   pos: NOUN
@@ -3011,10 +3360,22 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: sol
+  pos: NOUN
+  gloss: Sol
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: sorbetes
   pos: NOUN
   gloss: ice cream
   loan: SPANISH
+
+- citation: steve
+  pos: NOUN
+  gloss: Steve
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: suka
   pos: NOUN
@@ -3042,6 +3403,12 @@
 - citation: sunog
   pos: NOUN
   gloss: fire (conflagration)
+  source: audit-corpus
+
+- citation: susan
+  pos: NOUN
+  gloss: Susan
+  subclass: [PERSON, FEMALE]
   source: audit-corpus
 
 - citation: susi
@@ -3104,14 +3471,14 @@
   pos: NOUN
   gloss: person, human
 
+- citation: taon
+  pos: NOUN
+  gloss: year
+
 - citation: taongbahay
   pos: NOUN
   gloss: homebody, housewife
   source: audit-corpus
-
-- citation: taon
-  pos: NOUN
-  gloss: year
 
 - citation: tapat
   pos: NOUN
@@ -3136,6 +3503,12 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: teddy
+  pos: NOUN
+  gloss: Teddy
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
 - citation: tela
   pos: NOUN
   gloss: fabric, cloth
@@ -3151,6 +3524,18 @@
 - citation: tenga
   pos: NOUN
   gloss: ear
+
+- citation: terry
+  pos: NOUN
+  gloss: Terry
+  subclass: [PERSON, MALE]
+  source: audit-corpus
+
+- citation: tessie
+  pos: NOUN
+  gloss: Tessie
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
 
 - citation: tigang
   pos: NOUN
@@ -3220,6 +3605,12 @@
   pos: NOUN
   gloss: uncle
   feats: {REGISTER: FORMAL}
+
+- citation: tomas
+  pos: NOUN
+  gloss: Tomas
+  subclass: [PERSON, MALE]
+  source: audit-corpus
 
 - citation: torta
   pos: NOUN
@@ -3401,6 +3792,12 @@
 - citation: utang
   pos: NOUN
   gloss: debt, loan owed
+  source: audit-corpus
+
+- citation: viktor
+  pos: NOUN
+  gloss: Viktor
+  subclass: [PERSON, MALE]
   source: audit-corpus
 
 - citation: wakas
