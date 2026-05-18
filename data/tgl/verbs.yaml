@@ -1288,6 +1288,12 @@
   transitivity: TR
   affix_class: [mag, an_oblig, maka]
 
+- citation: nais
+  pos: VERB
+  gloss: desire, want
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+
 - citation: nakaw
   pos: VERB
   gloss: steal
