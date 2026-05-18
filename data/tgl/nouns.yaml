@@ -376,6 +376,11 @@
   gloss: gun, firearm
   source: audit-corpus
 
+- citation: basahan
+  pos: NOUN
+  gloss: rag, cleaning cloth
+  source: audit-corpus
+
 - citation: basketbol
   pos: NOUN
   gloss: basketball
@@ -928,6 +933,12 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: gastos
+  pos: NOUN
+  gloss: expense, cost; expenditure
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: gatas
   pos: NOUN
   gloss: milk
@@ -1058,6 +1069,11 @@
   pos: NOUN
   gloss: wind
 
+- citation: hapdi
+  pos: NOUN
+  gloss: sting, sharp pain; smarting sensation
+  source: audit-corpus
+
 - citation: hapon
   pos: NOUN
   gloss: afternoon
@@ -1090,6 +1106,12 @@
 - citation: hopia
   pos: NOUN
   gloss: hopia (bean-filled pastry)
+
+- citation: hotel
+  pos: NOUN
+  gloss: hotel
+  source: audit-corpus
+  loan: ENGLISH
 
 - citation: hudyat
   pos: NOUN
@@ -1298,6 +1320,11 @@
 - citation: kaklase
   pos: NOUN
   gloss: classmate
+  source: audit-corpus
+
+- citation: kalaban
+  pos: NOUN
+  gloss: opponent, enemy, rival
   source: audit-corpus
 
 - citation: kalabaw
@@ -1532,6 +1559,11 @@
   gloss: Spaniard; Spanish (language)
   source: audit-corpus
 
+- citation: kasuy
+  pos: NOUN
+  gloss: cashew (nut, fruit)
+  source: audit-corpus
+
 - citation: katapatan
   pos: NOUN
   gloss: honesty, loyalty
@@ -1584,6 +1616,11 @@
 - citation: keso
   pos: NOUN
   gloss: cheese
+
+- citation: kidlat
+  pos: NOUN
+  gloss: lightning, flash
+  source: audit-corpus
 
 - citation: kinabukasan
   pos: NOUN
@@ -1676,6 +1713,12 @@
 - citation: kuya
   pos: NOUN
   gloss: older brother, term of address for older male
+
+- citation: labada
+  pos: NOUN
+  gloss: laundry; washing
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: laban
   pos: NOUN
@@ -2254,9 +2297,20 @@
   gloss: dripping, falling (of drops)
   source: audit-corpus
 
+- citation: pahina
+  pos: NOUN
+  gloss: page (of a book, document)
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: pakinabang
   pos: NOUN
   gloss: benefit, profit
+  source: audit-corpus
+
+- citation: pakiusap
+  pos: NOUN
+  gloss: request, plea; (interj.) please
   source: audit-corpus
 
 - citation: pakwan
@@ -2276,6 +2330,11 @@
 - citation: palagay
   pos: NOUN
   gloss: opinion, view
+  source: audit-corpus
+
+- citation: palaro
+  pos: NOUN
+  gloss: games, sports event; contest
   source: audit-corpus
 
 - citation: palay
@@ -2659,7 +2718,7 @@
 
 - citation: purok
   pos: NOUN
-  gloss: district, neighborhood, zone; administrative subdivision within a barangay
+  gloss: district, neighborhood, zone; administrative subdivision within a barangay (in postal addressing, conventionally cited with a Spanish-derived numeral — ``Purok Una``, ``Purok Dos``, ``Purok Tres``, etc. — across Luzon and the Visayas)
   source: audit-corpus
 
 - citation: pusa
@@ -2684,6 +2743,12 @@
   gloss: radio
   source: audit-corpus
   loan: ENGLISH
+
+- citation: rantso
+  pos: NOUN
+  gloss: ranch (rural property)
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: regalo
   pos: NOUN
@@ -2788,6 +2853,11 @@
   gloss: slap
   source: audit-corpus
 
+- citation: sampalok
+  pos: NOUN
+  gloss: tamarind (fruit, tree)
+  source: audit-corpus
+
 - citation: sandali
   pos: NOUN
   gloss: a moment
@@ -2856,6 +2926,12 @@
   pos: NOUN
   gloss: September
   feats: {MONTH_VALUE: "9", SEM_CLASS: MONTH}
+
+- citation: sibuyas
+  pos: NOUN
+  gloss: onion
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: siko
   pos: NOUN
@@ -3081,6 +3157,11 @@
   gloss: dryness, dehydration
   source: audit-corpus
 
+- citation: timbang
+  pos: NOUN
+  gloss: weight; balance
+  source: audit-corpus
+
 - citation: tinapay
   pos: NOUN
   gloss: bread
@@ -3190,6 +3271,11 @@
 - citation: tsaa
   pos: NOUN
   gloss: tea
+  source: audit-corpus
+
+- citation: tsapsuy
+  pos: NOUN
+  gloss: chop suey (Filipino-Chinese mixed vegetable dish)
   source: audit-corpus
 
 - citation: tsokolate
