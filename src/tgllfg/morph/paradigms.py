@@ -75,10 +75,12 @@ class Root:
     # ``loan`` records the source language for loanwords (closed
     # enum: SPANISH / ENGLISH). Empty = native Tagalog.
     loan: str = ""
-    # ``orth_variants`` lists known alternate surfaces / OCR
-    # variants of the citation form. Indexed by the analyzer as
-    # alternate surfaces pointing at the canonical lemma.
-    orth_variants: list[str] = field(default_factory=list)
+    # NB: ``orth_variants`` was removed in Phase 9.X.pre-1.21 — it
+    # was loader-validated but never consulted by the analyzer.
+    # The canonical mechanism for orthographic variants is a
+    # separate root entry with the variant as ``citation`` and
+    # ``feats: {LEMMA: <canonical>}`` (e.g. ``tiya`` → ``tita``,
+    # ``mr`` → ``mister``). The analyzer honors LEMMA at match time.
 
 
 @dataclass

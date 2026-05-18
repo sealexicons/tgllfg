@@ -443,6 +443,11 @@
   gloss: seed
   source: audit-corpus
 
+- citation: binibini
+  pos: NOUN
+  gloss: Miss, address term for young unmarried female (formal)
+  source: audit-corpus
+
 - citation: bintana
   pos: NOUN
   gloss: window
@@ -873,6 +878,11 @@
   subclass: [PERSON, FEMALE]
   source: R&C-1990
 
+- citation: ginang
+  pos: NOUN
+  gloss: Mrs., Madam, address term for married or older female (formal)
+  source: audit-corpus
+
 - citation: ginataan
   pos: NOUN
   gloss: ginataan (coconut-milk stew)
@@ -885,6 +895,11 @@
 - citation: giniling
   pos: NOUN
   gloss: giniling (ground meat dish)
+
+- citation: ginoo
+  pos: NOUN
+  gloss: Sir, address term for adult male (formal)
+  source: audit-corpus
 
 - citation: gitna
   pos: NOUN
@@ -1685,9 +1700,13 @@
   pos: NOUN
   gloss: the possible / possibility
 
+# Tokenizer-normalized from canonical orthographic ``mag-asawa``
+# (hyphens after ``mag-``/``pag-``/``nag-`` before vowel onsets are
+# stripped by the tokenizer pre-pass; same convention as
+# ``pagaalaga`` / ``pagiyak``).
 - citation: magasawa
   pos: NOUN
-  gloss: married couple (mag-asawa with hyphen normalized)
+  gloss: married couple
   source: audit-corpus
 
 - citation: magulang
@@ -1846,6 +1865,18 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: misis
+  pos: NOUN
+  gloss: Mrs., address term (English-borrowed, Filipino-spelled)
+  source: audit-corpus
+  loan: ENGLISH
+
+- citation: mister
+  pos: NOUN
+  gloss: Mr., address term for adult male (English-borrowed)
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: miting
   pos: NOUN
   gloss: meeting
@@ -1866,6 +1897,20 @@
   gloss: motorcycle
   source: audit-corpus
   loan: SPANISH
+
+- citation: mr
+  pos: NOUN
+  gloss: Mr. (abbreviation)
+  feats: {LEMMA: mister}
+  source: audit-corpus
+  loan: ENGLISH
+
+- citation: mrs
+  pos: NOUN
+  gloss: Mrs. (abbreviation)
+  feats: {LEMMA: misis}
+  source: audit-corpus
+  loan: ENGLISH
 
 - citation: mukha
   pos: NOUN
@@ -1961,12 +2006,12 @@
 
 - citation: pagaalaga
   pos: NOUN
-  gloss: caretaking, nurturing (pag-aalaga with hyphen normalized)
+  gloss: caretaking, nurturing
   source: audit-corpus
 
 - citation: pagiyak
   pos: NOUN
-  gloss: crying (pag-iyak with hyphen normalized)
+  gloss: crying
   source: audit-corpus
 
 - citation: pagkaani
@@ -2294,7 +2339,8 @@
 
 - citation: pista
   pos: NOUN
-  gloss: feast, festival (native variant of piyesta)
+  gloss: feast, festival
+  feats: {LEMMA: piyesta}
   source: audit-corpus
 
 - citation: piyesta
@@ -2349,6 +2395,11 @@
   gloss: observation, criticism, comment
   source: audit-corpus
 
+- citation: punla
+  pos: NOUN
+  gloss: seedling, planted shoot
+  source: audit-corpus
+
 - citation: puno
   pos: NOUN
   gloss: tree; head, principal, leader
@@ -2379,7 +2430,8 @@
 
 - citation: relo
   pos: NOUN
-  gloss: clock, watch (shortened form of relos)
+  gloss: clock, watch
+  feats: {LEMMA: relos}
   source: audit-corpus
   loan: SPANISH
 
@@ -2405,6 +2457,11 @@
   pos: NOUN
   gloss: Saturday
   feats: {DAY_VALUE: "6", SEM_CLASS: DAY}
+
+- citation: sabi
+  pos: NOUN
+  gloss: saying, statement (parallel NOUN sense; sabi VERB "say" in verbs.yaml)
+  source: audit-corpus
 
 - citation: sabon
   pos: NOUN
@@ -2680,7 +2737,6 @@
   pos: NOUN
   gloss: homebody, housewife
   source: audit-corpus
-  orth_variants: ["taong-bahay"]
 
 - citation: taon
   pos: NOUN
@@ -2734,12 +2790,10 @@
 - citation: tita
   pos: NOUN
   gloss: aunt
-  orth_variants: [tiya]
 
 - citation: tito
   pos: NOUN
   gloss: uncle
-  orth_variants: [tiyo]
 
 - citation: titser
   pos: NOUN

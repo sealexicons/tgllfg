@@ -138,7 +138,9 @@ def _load_roots(path: Path) -> list[Root]:
         synonyms_raw = rec.get("synonyms", [])
         if not isinstance(synonyms_raw, list):
             raise ValueError(f"{where}: 'synonyms' must be a list")
-        # Phase 9.C.pre — subclass / source / loan / orth_variants
+        # Phase 9.C.pre — subclass / source / loan. (``orth_variants``
+        # was loader-validated until Phase 9.X.pre-1.21 — see
+        # ``Root`` for the migration to ``feats: {LEMMA: ...}``.)
         subclass_raw = rec.get("subclass", [])
         if not isinstance(subclass_raw, list):
             raise ValueError(f"{where}: 'subclass' must be a list")
@@ -176,9 +178,15 @@ def _load_roots(path: Path) -> list[Root]:
                 f"{where}: unknown loan {loan_raw!r}; "
                 f"allowed: {sorted(_LOAN_ALLOWED)}"
             )
-        orth_variants_raw = rec.get("orth_variants", [])
-        if not isinstance(orth_variants_raw, list):
-            raise ValueError(f"{where}: 'orth_variants' must be a list")
+        # 9.X.pre-1.21: reject lingering ``orth_variants`` YAML
+        # usage — the field was removed; variants must now declare
+        # a separate root entry with ``feats: {LEMMA: <canonical>}``.
+        if "orth_variants" in rec:
+            raise ValueError(
+                f"{where}: 'orth_variants' field was removed in "
+                f"Phase 9.X.pre-1.21; declare a separate root entry "
+                f"with feats: {{LEMMA: <canonical>}} instead"
+            )
         out.append(Root(
             citation=_require(rec, "citation", where),
             pos=_require(rec, "pos", where),
@@ -191,7 +199,6 @@ def _load_roots(path: Path) -> list[Root]:
             subclass=list(subclass_raw),
             source=source_raw,
             loan=loan_raw,
-            orth_variants=list(orth_variants_raw),
         ))
     return out
 
