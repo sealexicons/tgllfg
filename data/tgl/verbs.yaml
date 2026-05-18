@@ -122,6 +122,20 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: ani
+  pos: VERB
+  gloss: harvest (crops)
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+  source: audit-corpus
+
+- citation: apaw
+  pos: VERB
+  gloss: overflow, flood over the edge
+  transitivity: INTR
+  affix_class: [um, mag, maka]
+  source: audit-corpus
+
 - citation: aral
   pos: VERB
   gloss: study, learn
@@ -484,7 +498,7 @@
   pos: VERB
   gloss: water (plants)
   transitivity: TR
-  affix_class: [mag, in_oblig, an_oblig, maka]
+  affix_class: [um, mag, in_oblig, an_oblig, maka]
 
 - citation: dilim
   pos: VERB
@@ -706,6 +720,13 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
 
+- citation: hati
+  pos: VERB
+  gloss: divide, share, split
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka]
+  source: audit-corpus
+
 - citation: hatid
   pos: VERB
   gloss: bring, deliver
@@ -910,7 +931,7 @@
   pos: VERB
   gloss: think
   transitivity: TR
-  affix_class: [mag, in_oblig, maka]
+  affix_class: [mag, ma, in_oblig, maka]
 
 - citation: itak
   pos: VERB
@@ -1038,7 +1059,7 @@
   pos: VERB
   gloss: see, meet
   transitivity: TR
-  affix_class: [um, ma, in_oblig, maka]
+  affix_class: [um, mag, ma, in_oblig, maka]
   feats: {AV_ABSOL: true}
 
 - citation: kitil
@@ -1454,7 +1475,7 @@
   pos: VERB
   gloss: notice
   transitivity: TR
-  affix_class: [um, in_oblig, maka]
+  affix_class: [um, ma, in_oblig, maka]
 
 - citation: parada
   pos: VERB
@@ -1474,6 +1495,13 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, i_oblig, an_oblig, maka]
   feats: {AV_ABSOL: true}
+
+- citation: pasya
+  pos: VERB
+  gloss: decide, resolve
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka]
+  source: audit-corpus
 
 - citation: pasyal
   pos: VERB
@@ -1548,6 +1576,13 @@
   gloss: close, shut
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka]
+
+- citation: pinsala
+  pos: VERB
+  gloss: damage, harm, injure
+  transitivity: TR
+  affix_class: [ma, ma_an, maka]
+  source: audit-corpus
 
 - citation: pinta
   pos: VERB
@@ -2006,6 +2041,13 @@
   transitivity: INTR
   affix_class: [mag, ma, maka]
 
+- citation: takas
+  pos: VERB
+  gloss: escape, flee
+  transitivity: INTR
+  affix_class: [um, ma, maka]
+  source: audit-corpus
+
 - citation: takbo
   pos: VERB
   gloss: run
@@ -2026,9 +2068,9 @@
 
 - citation: talo
   pos: VERB
-  gloss: be defeated
+  gloss: be defeated; defeat (mang- AV)
   transitivity: INTR
-  affix_class: [ma, maka]
+  affix_class: [mang, ma, maka]
 
 - citation: talon
   pos: VERB
@@ -2070,7 +2112,7 @@
   pos: VERB
   gloss: receive, accept
   transitivity: TR
-  affix_class: [um, mag, in_oblig, maka]
+  affix_class: [um, mag, ma, in_oblig, maka]
 
 - citation: tanggi
   pos: VERB
@@ -2107,7 +2149,7 @@
   pos: VERB
   gloss: finish
   transitivity: TR
-  affix_class: [mag, in_oblig, maka]
+  affix_class: [mag, ma, in_oblig, maka]
 
 - citation: tawa
   pos: VERB
@@ -2119,7 +2161,7 @@
   pos: VERB
   gloss: call
   transitivity: TR
-  affix_class: [um, in_oblig, maka, magpa_an]
+  affix_class: [um, in_oblig, an_oblig, maka, magpa_an]
 
 - citation: tawid
   pos: VERB
