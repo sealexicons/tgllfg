@@ -645,15 +645,16 @@ class TestAffixClassFiltering:
     def test_um_only_root_does_not_generate_mag_forms(
         self, analyzer: Analyzer
     ) -> None:
-        # kain is in [um, in_oblig, an_oblig, i_oblig, maka] — no mag.
-        # The hypothetical mag-style form "nagkain" must NOT be a
-        # recognised verb.
-        out = analyzer.analyze_one(_tok("nagkain"))
+        # ``dating`` is in [um, maka] — no mag. The hypothetical
+        # mag-style form "nagdating" must NOT be a recognised verb.
+        # (kain was the original example, but kain gained mag in
+        # 9.X.pre-1.25 to close audit surfaces magkain / magkakain.)
+        out = analyzer.analyze_one(_tok("nagdating"))
         # It might match a particle/pronoun (it doesn't); the test
-        # is that no VERB analysis with kain-as-lemma comes back.
+        # is that no VERB analysis with dating-as-lemma comes back.
         verbs = [
             a for a in out
-            if a.pos == "VERB" and a.lemma == "kain"
+            if a.pos == "VERB" and a.lemma == "dating"
         ]
         assert verbs == []
 
