@@ -16,11 +16,35 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import signal
 import sys
+import time
 from collections import Counter, defaultdict
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Iterator
+
+# Phase 9.X.pre-1.19: per-item parse timeout (SIGALRM) and live
+# progress + latency logging. Without these, long sentences that
+# trigger combinatorial chart-parse explosion could hang the whole
+# audit (the original Phase 8/9 audits required > 1 hour wall on
+# wave1 alone before the SIGALRM cap). The 10s cap is well above
+# the observed p95 (~0.1s) so it only fires on pathological items.
+ITEM_TIMEOUT_S = 10
+AUDIT_MONITOR_LOG = Path("/tmp/audit_monitor.log")
+AUDIT_LAST_ITEM = Path("/tmp/audit_monitor.last_item")
+
+
+class ParseTimeout(Exception):
+    """Raised by the SIGALRM handler when a parse exceeds the
+    per-item timeout."""
+
+
+def _alarm_handler(signum, frame):  # pragma: no cover - signal callback
+    raise ParseTimeout()
+
+
+signal.signal(signal.SIGALRM, _alarm_handler)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 REFERENCES_DIR = REPO_ROOT / "data" / "tgl" / "references"
@@ -58,6 +82,10 @@ class ParseRecord:
     oov_tokens: list[str] = field(default_factory=list)
     diag_summary: str = ""
     diag_kinds: dict[str, int] = field(default_factory=dict)
+    # Phase 9.X.pre-1.19: per-item parse latency (seconds, rounded
+    # to 3 decimal places). Items that hit ITEM_TIMEOUT_S are tagged
+    # with bucket="parse-timeout" and ``latency_s == ITEM_TIMEOUT_S``.
+    latency_s: float = 0.0
 
 
 # === Orthography normalization ===========================================
@@ -1218,6 +1246,17 @@ def cmd_parse() -> None:
     import random
     rng = random.Random(42)
 
+    # Phase 9.X.pre-1.19: reset the monitor log + last-item file at
+    # the start of each audit run so external tail / monitor loops
+    # see fresh state.
+    AUDIT_MONITOR_LOG.unlink(missing_ok=True)
+    AUDIT_LAST_ITEM.unlink(missing_ok=True)
+    grand_start = time.time()
+    grand_latencies: list[float] = []
+    grand_parsed = 0
+    grand_total = 0
+    _audit_log("=== Audit start ===")
+
     for in_name, out_name, sample_cap in _PARSE_SOURCES:
         in_path = EXEMPLARS_DIR / in_name
         out_path = EXEMPLARS_DIR / out_name
@@ -1225,8 +1264,52 @@ def cmd_parse() -> None:
             print(f"  (skip {in_name}; not found)")
             continue
         print(f"\n[parse] {in_name}")
-        _parse_one(in_path, out_path, parse_text_with_fragments,
-                   sample_cap, rng, oov_probe)
+        wave_parsed, wave_total, wave_latencies = _parse_one(
+            in_path, out_path, parse_text_with_fragments,
+            sample_cap, rng, oov_probe,
+        )
+        grand_parsed += wave_parsed
+        grand_total += wave_total
+        grand_latencies.extend(wave_latencies)
+
+    grand_elapsed = time.time() - grand_start
+    pct = grand_parsed / grand_total * 100 if grand_total else 0
+    _audit_log(
+        f"=== AUDIT COMPLETE: {grand_parsed}/{grand_total} "
+        f"({pct:.2f}%)  wall={grand_elapsed:.0f}s ==="
+    )
+    if grand_latencies:
+        mn = min(grand_latencies)
+        mx = max(grand_latencies)
+        avg = sum(grand_latencies) / len(grand_latencies)
+        p95 = sorted(grand_latencies)[int(len(grand_latencies) * 0.95)]
+        _audit_log(
+            f"  GRAND latency: min={mn:.2f}s avg={avg:.2f}s "
+            f"p95={p95:.2f}s max={mx:.2f}s"
+        )
+    AUDIT_LAST_ITEM.unlink(missing_ok=True)
+
+
+def _audit_log(line: str) -> None:
+    """Append a timestamped line to the audit monitor log (Phase
+    9.X.pre-1.19) AND echo to stderr for live tail. Per-line flush
+    so external monitors see updates immediately."""
+    ts = time.strftime("%H:%M:%S")
+    msg = f"[{ts}] {line}"
+    with AUDIT_MONITOR_LOG.open("a", encoding="utf-8") as fh:
+        fh.write(msg + "\n")
+        fh.flush()
+    print(msg, file=sys.stderr, flush=True)
+
+
+def _write_last_item(payload: dict) -> None:
+    """Atomically rewrite /tmp/audit_monitor.last_item with the
+    sentence currently being parsed. External monitors can read
+    this file to detect hangs (start_ts vs now)."""
+    tmp = AUDIT_LAST_ITEM.with_suffix(".tmp")
+    tmp.write_text(json.dumps(payload), encoding="utf-8")
+    import os as _os
+    _os.replace(tmp, AUDIT_LAST_ITEM)
 
 
 def _parse_one(
@@ -1236,23 +1319,43 @@ def _parse_one(
     sample_cap: int | None,
     rng,
     oov_probe,
-) -> None:
-    """Inner parser-driver loop for a single JSONL input file."""
+) -> tuple[int, int, list[float]]:
+    """Inner parser-driver loop for a single JSONL input file.
+
+    Phase 9.X.pre-1.19: each parse is wrapped in a SIGALRM-based
+    per-item timeout (ITEM_TIMEOUT_S seconds). Items that exceed
+    the cap are recorded with ``bucket="parse-timeout"`` and the
+    loop continues. Per-item latency is captured in the record
+    (``latency_s``) and rolled up into periodic progress lines
+    (every 25 items + at wave end) written to
+    ``/tmp/audit_monitor.log``."""
 
     n = 0
     bucket_counts: Counter[str] = Counter()
+    latencies: list[float] = []
     with in_path.open(encoding="utf-8") as in_fh:
         records = [line for line in in_fh]
     if sample_cap is not None and len(records) > sample_cap:
         records = rng.sample(records, sample_cap)
-        print(f"  sampling {sample_cap} of {len(records)} records (seed=42)")
+        _audit_log(f"[{in_path.name}] sampling {sample_cap} of "
+                   f"{len(records)} records (seed=42)")
 
+    _audit_log(f"=== Wave: {in_path.name} ({len(records)} sents) ===")
+    wave_start = time.time()
     with out_path.open("w", encoding="utf-8") as out_fh:
-        for line in records:
+        for i, line in enumerate(records, 1):
             ex = json.loads(line)
             text = ex["text_normalized"]
+            t0 = time.time()
+            _write_last_item({
+                "wave": in_path.name, "i": i, "n": len(records),
+                "locator": ex["locator"], "text": text[:120],
+                "start_ts": t0,
+            })
+            signal.alarm(ITEM_TIMEOUT_S)
             try:
                 result = parse_fn(text, n_best=3)
+                signal.alarm(0)
                 n_parses = len(result.parses)
                 n_fragments = len(result.fragments)
                 if n_parses >= 2:
@@ -1284,13 +1387,23 @@ def _parse_one(
                     # 8.J: probe lex-OOV via morph analyzer for ALL
                     # zero-parse rows (including zero-parse-no-fragment).
                     oov = oov_probe(text)
+            except ParseTimeout:
+                bucket = "parse-timeout"
+                n_parses = 0
+                n_fragments = 0
+                diag_summary = f"timeout {ITEM_TIMEOUT_S}s"
+                diag_kinds = Counter()
+                oov = []
             except Exception as e:
+                signal.alarm(0)
                 bucket = "tokenizer-fail"
                 n_parses = 0
                 n_fragments = 0
                 diag_summary = f"EXCEPTION: {type(e).__name__}: {e}"[:200]
                 diag_kinds = Counter()
                 oov = []
+            latency = time.time() - t0
+            latencies.append(latency)
 
             rec = ParseRecord(
                 locator=ex["locator"],
@@ -1301,16 +1414,49 @@ def _parse_one(
                 oov_tokens=oov,
                 diag_summary=diag_summary,
                 diag_kinds=dict(diag_kinds),
+                latency_s=round(latency, 3),
             )
             out_fh.write(json.dumps(asdict(rec), ensure_ascii=False) + "\n")
+            out_fh.flush()
             bucket_counts[bucket] += 1
             n += 1
-            if n % 50 == 0:
-                print(f"  …parsed {n}", file=sys.stderr)
+            if latency > ITEM_TIMEOUT_S * 0.9:
+                # Surface SLOW (>90% of timeout) items individually so
+                # the monitor log shows which sentences need attention.
+                _audit_log(f"  SLOW [{i}/{len(records)}] {latency:.1f}s "
+                           f"{ex['locator']}: {text[:80]}")
+            if n % 25 == 0:
+                mn = min(latencies)
+                mx = max(latencies)
+                avg = sum(latencies) / len(latencies)
+                elapsed = time.time() - wave_start
+                rate = n / elapsed if elapsed else 0
+                eta = (len(records) - n) / rate if rate else 0
+                parsed = sum(
+                    bucket_counts.get(b, 0)
+                    for b in ("parse-success-N", "parse-success-1")
+                )
+                _audit_log(
+                    f"  {n:4d}/{len(records)}  parsed={parsed}  "
+                    f"min/avg/max latency = "
+                    f"{mn:.2f}/{avg:.2f}/{mx:.2f}s  rate={rate:.1f}/s "
+                    f" eta={eta:.0f}s"
+                )
 
+    wave_elapsed = time.time() - wave_start
+    parsed = sum(
+        bucket_counts.get(b, 0)
+        for b in ("parse-success-N", "parse-success-1")
+    )
+    pct = parsed / n * 100 if n else 0
+    _audit_log(
+        f"=== {in_path.name} DONE: {parsed}/{n} ({pct:.2f}%)  "
+        f"buckets={dict(bucket_counts)}  wall={wave_elapsed:.0f}s ==="
+    )
     print(f"  → {out_path.relative_to(REPO_ROOT)} ({n} records)")
     for b, c in bucket_counts.most_common():
         print(f"      {b:30s} {c:4d}  ({c / n:5.1%})")
+    return parsed, n, latencies
 
 
 def cmd_report() -> None:
