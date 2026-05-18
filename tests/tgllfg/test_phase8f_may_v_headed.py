@@ -153,13 +153,14 @@ class TestPhase8fOutOfScope:
 
     def test_oov_verb_form_naisip(self) -> None:
         """``May naisip ang mama.`` — `naisip` (RV PFV of `isip`)
-        is OOV. Would close via a future 8.B-class lex pass once
-        the `isip` paradigm cell expands. Flip when that lands."""
+        was OOV before 9.X.pre-1.24. The pre-1.24 affix-class extension
+        (added ``ma`` to ``isip``'s affix_class) closes the surface;
+        flipped to assert parse-success."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("May naisip ang mama.", n_best=3)
-        assert len(parses) == 0, (
-            "naisip OOV resolved — flip if 8.B-class lex sub-PR "
-            "added the missing paradigm cell."
+        assert len(parses) >= 1, (
+            "naisip should now parse via the may + V-headed clause-type "
+            "after the 9.X.pre-1.24 isip+ma affix-class extension."
         )
 
     def test_oov_verb_form_gagawin(self) -> None:
