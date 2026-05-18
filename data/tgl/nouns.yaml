@@ -301,6 +301,12 @@
   pos: NOUN
   gloss: bag
 
+- citation: baguio
+  pos: NOUN
+  gloss: Baguio (Philippine city in Northern Luzon)
+  subclass: [PLACE]
+  source: audit-corpus
+
 - citation: bagyo
   pos: NOUN
   gloss: storm, typhoon
@@ -1239,6 +1245,12 @@
   feats: {SEM_CLASS: TIME}
   source: audit-corpus
 
+- citation: hawaii
+  pos: NOUN
+  gloss: Hawaii
+  subclass: [PLACE]
+  source: audit-corpus
+
 - citation: hayop
   pos: NOUN
   gloss: animal, beast
@@ -1257,6 +1269,12 @@
 - citation: hirap
   pos: NOUN
   gloss: difficulty, hardship
+  source: audit-corpus
+
+- citation: honolulu
+  pos: NOUN
+  gloss: Honolulu
+  subclass: [PLACE]
   source: audit-corpus
 
 - citation: hopia
@@ -3092,6 +3110,12 @@
   pos: NOUN
   gloss: Reyes (surname)
   subclass: [PERSON]
+  source: audit-corpus
+
+- citation: rizal
+  pos: NOUN
+  gloss: Rizal (Philippine place name; province / avenue / surname)
+  subclass: [PLACE]
   source: audit-corpus
 
 - citation: roberta
