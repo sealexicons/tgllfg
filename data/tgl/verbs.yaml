@@ -249,7 +249,7 @@
   pos: VERB
   gloss: read
   transitivity: TR
-  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an, magsi]
+  affix_class: [um, mag, in_oblig, an_oblig, maka, pa_in, magpa, pa_an, magsi]
 
 - citation: basag
   pos: VERB
@@ -292,7 +292,7 @@
   pos: VERB
   gloss: give
   transitivity: TR
-  affix_class: [mag, an_oblig, maka]
+  affix_class: [mag, an_oblig, i_oblig, maka]
 
 - citation: bihis
   pos: VERB
@@ -334,7 +334,7 @@
   pos: VERB
   gloss: visit
   transitivity: TR
-  affix_class: [mag, an_oblig, maka]
+  affix_class: [mag, in_oblig, an_oblig, maka]
 
 - citation: bitay
   pos: VERB
@@ -658,7 +658,7 @@
   pos: VERB
   gloss: throw, hurl
   transitivity: TR
-  affix_class: [um, mag, in_oblig, maka]
+  affix_class: [um, mag, in_oblig, i_oblig, maka]
 
 - citation: halo
   pos: VERB
@@ -985,7 +985,7 @@
   pos: VERB
   gloss: eat
   transitivity: TR
-  affix_class: [um, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an, mag_an, magsi, magpa_an]
+  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an, mag_an, magsi, magpa_an]
 
 - citation: kalog
   pos: VERB
@@ -1120,7 +1120,7 @@
   pos: VERB
   gloss: go out, exit
   transitivity: INTR
-  affix_class: [um, mag, i_oblig, maka]
+  affix_class: [um, mag, i_oblig, maka, mag_an]
 
 - citation: ladlad
   pos: VERB
@@ -1342,6 +1342,13 @@
   gloss: go (to a town or city); travel up to
   transitivity: INTR
   affix_class: [um, maka]
+
+- citation: mahal
+  pos: VERB
+  gloss: love, hold dear; treasure
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, an_oblig, maka]
+  source: audit-corpus
 
 - citation: mali
   pos: VERB
@@ -1612,7 +1619,7 @@
   pos: VERB
   gloss: pluck (fruit, flowers)
   transitivity: TR
-  affix_class: [um, mag, in_oblig, maka]
+  affix_class: [um, mag, mang, in_oblig, maka]
 
 - citation: plantsa
   pos: VERB
@@ -2294,7 +2301,7 @@
   pos: VERB
   gloss: help
   transitivity: TR
-  affix_class: [um, an_oblig, maka]
+  affix_class: [um, mag, an_oblig, maka]
 
 - citation: tuloy
   pos: VERB
@@ -2357,6 +2364,13 @@
   transitivity: TR
   affix_class: [mag, an_oblig, maka]
 
+- citation: una
+  pos: VERB
+  gloss: go first, precede; lead the way
+  transitivity: INTR
+  affix_class: [ma, maka]
+  source: audit-corpus
+
 - citation: unawa
   pos: VERB
   gloss: understand
@@ -2416,7 +2430,7 @@
   pos: VERB
   gloss: go home
   transitivity: INTR
-  affix_class: [um, mag, i_oblig, maka]
+  affix_class: [um, mag, i_oblig, maka, magsi]
 
 - citation: walis
   pos: VERB
