@@ -48,6 +48,19 @@
 # STATIVE_PRED ADJ-modifier-rule exclusion in cfg/nominal.py
 # prevents the new ADJ analysis from competing with the V/PSYCH
 # control-XCOMP path on linker-bound contexts (Phase 6 LDD).
+- citation: asim
+  pos: ADJ
+  gloss: sour, acidic
+  affix_class: [ma_adj]
+  source: audit-corpus
+
+- citation: asul
+  pos: ADJ
+  gloss: blue
+  affix_class: []
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: ayaw
   pos: ADJ
   gloss: disliked, unwanted (predicate "ayaw ko X" = "I don't want X")
@@ -58,6 +71,12 @@
   pos: ADJ
   gloss: low
   affix_class: [ma_adj]
+
+- citation: bagal
+  pos: ADJ
+  gloss: slow, sluggish
+  affix_class: [ma_adj]
+  source: audit-corpus
 
 - citation: bago
   pos: ADJ
@@ -99,6 +118,12 @@
   gloss: deaf
   affix_class: [ma_adj]
 
+- citation: bobo
+  pos: ADJ
+  gloss: stupid, dim-witted
+  affix_class: []
+  source: audit-corpus
+
 - citation: bulag
   pos: ADJ
   gloss: blind
@@ -118,6 +143,18 @@
   pos: ADJ
   gloss: yellow
   affix_class: []
+
+- citation: dulas
+  pos: ADJ
+  gloss: slippery, smooth
+  affix_class: [ma_adj]
+  source: audit-corpus
+
+- citation: galing
+  pos: ADJ
+  gloss: skilled, good at; excellent
+  affix_class: [ma_adj]
+  source: audit-corpus
 
 - citation: galit
   pos: ADJ
@@ -151,6 +188,13 @@
   gloss: hungry
   affix_class: [ma_adj]
 
+- citation: guwapo
+  pos: ADJ
+  gloss: handsome, good-looking
+  affix_class: []
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: haba
   pos: ADJ
   gloss: long
@@ -180,6 +224,12 @@
   pos: ADJ
   gloss: weak
   affix_class: [ma_adj]
+
+- citation: hinog
+  pos: ADJ
+  gloss: ripe (of fruit)
+  affix_class: [ma_adj]
+  source: audit-corpus
 
 - citation: hirap
   pos: ADJ
@@ -242,15 +292,40 @@
   gloss: strange, peculiar
   affix_class: []
 
+- citation: kalma
+  pos: ADJ
+  gloss: calm, composed
+  affix_class: []
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: kapal
   pos: ADJ
   gloss: thick
   affix_class: [ma_adj]
 
+- citation: kapus
+  pos: ADJ
+  gloss: lacking, insufficient; in short supply
+  affix_class: []
+  source: audit-corpus
+
 - citation: karaniwan
   pos: ADJ
   gloss: ordinary, usual, common
   affix_class: []
+
+- citation: katabi
+  pos: ADJ
+  gloss: adjacent, next to
+  affix_class: []
+  source: audit-corpus
+
+- citation: katulad
+  pos: ADJ
+  gloss: similar, alike (typically used with sa-OBL "similar to X")
+  affix_class: []
+  source: audit-corpus
 
 # Phase 9.O follow-on: bare-form ADJ for the predicative use of
 # ``kilala`` ("known, acquainted") as in ``Kilala si Maria.``
@@ -301,6 +376,12 @@
   pos: ADJ
   gloss: wide, broad
   affix_class: [ma_adj]
+
+- citation: layo
+  pos: ADJ
+  gloss: far, distant
+  affix_class: [ma_adj]
+  source: audit-corpus
 
 - citation: lihim
   pos: ADJ
@@ -363,6 +444,13 @@
   gloss: thin
   affix_class: [ma_adj]
 
+- citation: paborito
+  pos: ADJ
+  gloss: favorite, preferred
+  affix_class: []
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: pagod
   pos: ADJ
   gloss: tired
@@ -419,6 +507,12 @@
   pos: ADJ
   gloss: bad
   affix_class: [ma_adj]
+
+- citation: sanay
+  pos: ADJ
+  gloss: skilled, trained, accustomed (to)
+  affix_class: []
+  source: audit-corpus
 
 - citation: sarap
   pos: ADJ
@@ -509,6 +603,12 @@
   pos: ADJ
   gloss: living, residing (in a place)
   affix_class: [naka_resultative]
+
+- citation: totoo
+  pos: ADJ
+  gloss: true, real, genuine
+  affix_class: []
+  source: audit-corpus
 
 - citation: tunay
   pos: ADJ
