@@ -2657,6 +2657,11 @@
   gloss: tree; head, principal, leader
   affix_class: [pinaka_n, pinaka_adj_from_n]
 
+- citation: purok
+  pos: NOUN
+  gloss: district, neighborhood, zone; administrative subdivision within a barangay
+  source: audit-corpus
+
 - citation: pusa
   pos: NOUN
   gloss: cat
