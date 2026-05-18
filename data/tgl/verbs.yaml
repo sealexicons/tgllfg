@@ -288,6 +288,12 @@
   transitivity: TR
   affix_class: [mag, an_oblig, pag_an, maka]
 
+- citation: biro
+  pos: VERB
+  gloss: joke, kid
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
 - citation: bisita
   pos: VERB
   gloss: visit
@@ -305,6 +311,12 @@
   gloss: hang up, suspend
   transitivity: TR
   affix_class: [mag, in_oblig, i_oblig, maka]
+
+- citation: biyahe
+  pos: VERB
+  gloss: travel, journey
+  transitivity: INTR
+  affix_class: [mag, maka]
 
 - citation: buhat
   pos: VERB
@@ -584,6 +596,12 @@
   gloss: cut with scissors
   transitivity: TR
   affix_class: [um, in_oblig, an_oblig, i_oblig, maka]
+
+- citation: habol
+  pos: VERB
+  gloss: chase, pursue
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
 
 - citation: hagis
   pos: VERB
@@ -1129,6 +1147,12 @@
   transitivity: INTR
   affix_class: [um, mag, maka]
 
+- citation: likha
+  pos: VERB
+  gloss: create, make
+  transitivity: TR
+  affix_class: [um, mag, in_oblig, maka]
+
 - citation: liko
   pos: VERB
   gloss: turn (a corner)
@@ -1154,6 +1178,12 @@
   transitivity: INTR
   affix_class: [ma, maka]
 
+- citation: lingkod
+  pos: VERB
+  gloss: serve
+  transitivity: INTR
+  affix_class: [mag, an_oblig, maka]
+
 - citation: linis
   pos: VERB
   gloss: clean
@@ -1177,6 +1207,12 @@
   gloss: transfer, move
   transitivity: TR
   affix_class: [um, mag, an_oblig, i_oblig, maka]
+
+- citation: lubay
+  pos: VERB
+  gloss: cease, stop (gradually)
+  transitivity: INTR
+  affix_class: [um, maka]
 
 - citation: lubog
   pos: VERB
@@ -1281,6 +1317,12 @@
   gloss: watch
   transitivity: TR
   affix_class: [mang, in_oblig, an_oblig, maka]
+
+- citation: paalam
+  pos: VERB
+  gloss: say goodbye, take leave
+  transitivity: INTR
+  affix_class: [mag, maka]
 
 - citation: padyak
   pos: VERB
@@ -2172,6 +2214,12 @@
   gloss: understand
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
+
+- citation: ungol
+  pos: VERB
+  gloss: groan, moan
+  transitivity: INTR
+  affix_class: [um, mag, maka]
 
 - citation: upo
   pos: VERB
