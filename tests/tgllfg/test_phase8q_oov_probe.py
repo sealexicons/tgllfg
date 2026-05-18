@@ -102,14 +102,18 @@ class TestOovProbeRealOov:
         # is closed by a lex-add sub-PR:
         # pandanggo (8.Q-orig) → closed-in-9.C → mahusay → closed-in-9.F
         # → bare ``kilala`` → closed-in-9.O (added as bare ADJ in
-        # adjectives.yaml) → ``kumbidado`` (current). ``kumbidado``
-        # is a Spanish-loan past-passive participle ("invited") used
-        # predicatively (audit "iilan lang ang kumbidado ko") —
-        # bare-ADJ-with-GEN-actor construction class, deferred to
-        # the predicative-V/ADJ-with-actor sub-PR.
-        oov = oov_probe("Iilan lang ang kumbidado ko.")
+        # adjectives.yaml) → ``kumbidado`` → closed in 9.X.pre-1.22
+        # (added as Spanish-loan bare ADJ in adjectives.yaml) →
+        # ``gawin`` (current). ``gawin`` is the OV-imperative
+        # paradigm form of root ``gawa`` (which IS in the lex).
+        # Its non-generation is a paradigm-engine gap (the
+        # ``in_oblig`` stem-changing imperative cell doesn't fire
+        # for ``gawa`` → ``gawin``), not a lex gap — re-pinning
+        # here keeps the OOV probe anchored on a paradigm-cell-
+        # blocked surface that the lex sweep can't close.
+        oov = oov_probe("Gawin mo ang trabaho.")
         oov_lower = {tok.lower() for tok in oov}
-        assert "kumbidado" in oov_lower
+        assert "gawin" in oov_lower
 
     def test_real_ng_ending_oov_still_reported(self) -> None:
         # ``huling`` (final / last — bare ``huli`` is the ADJ root)

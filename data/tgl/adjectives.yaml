@@ -271,6 +271,12 @@
   affix_class: []
   feats: {STATIVE_PRED: true}
 
+- citation: kumbidado
+  pos: ADJ
+  gloss: invited (as a guest)
+  affix_class: []
+  loan: SPANISH
+
 - citation: lakas
   pos: ADJ
   gloss: strong
@@ -438,6 +444,11 @@
   pos: ADJ
   gloss: beside, adjacent
   affix_class: [naka_resultative]
+
+- citation: tahimik
+  pos: ADJ
+  gloss: quiet, silent, peaceful
+  affix_class: []
 
 - citation: talino
   pos: ADJ

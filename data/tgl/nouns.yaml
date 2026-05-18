@@ -1709,6 +1709,12 @@
   gloss: married couple
   source: audit-corpus
 
+- citation: maghapon
+  pos: NOUN
+  gloss: the whole afternoon
+  feats: {SEM_CLASS: TIME}
+  source: audit-corpus
+
 - citation: magulang
   pos: NOUN
   gloss: parent
@@ -2741,6 +2747,11 @@
 - citation: taon
   pos: NOUN
   gloss: year
+
+- citation: tapat
+  pos: NOUN
+  gloss: front, opposite, area across from
+  source: audit-corpus
 
 - citation: tasa
   pos: NOUN
