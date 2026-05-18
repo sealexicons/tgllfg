@@ -146,6 +146,11 @@
   gloss: dust
   source: audit-corpus
 
+- citation: alipunga
+  pos: NOUN
+  gloss: athlete's foot (skin condition)
+  source: audit-corpus
+
 - citation: almusal
   pos: NOUN
   gloss: breakfast
@@ -211,6 +216,12 @@
   pos: NOUN
   gloss: day, sun
   affix_class: [tag_season]
+
+- citation: artista
+  pos: NOUN
+  gloss: artist, actor; performer
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: asawa
   pos: NOUN
@@ -289,6 +300,11 @@
   source: audit-corpus
   loan: SPANISH
 
+- citation: bakod
+  pos: NOUN
+  gloss: fence
+  source: audit-corpus
+
 - citation: balat
   pos: NOUN
   gloss: skin
@@ -354,6 +370,12 @@
   gloss: basketball
   source: audit-corpus
   loan: ENGLISH
+
+- citation: baso
+  pos: NOUN
+  gloss: drinking glass
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: basura
   pos: NOUN
@@ -675,6 +697,11 @@
   subclass: [PERSON, MALE]
   source: R&C-1990
 
+- citation: dayuhan
+  pos: NOUN
+  gloss: foreigner, stranger
+  source: audit-corpus
+
 - citation: dentista
   pos: NOUN
   gloss: dentist
@@ -863,6 +890,12 @@
   gloss: beauty
   source: audit-corpus
 
+- citation: garahe
+  pos: NOUN
+  gloss: garage
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: gatas
   pos: NOUN
   gloss: milk
@@ -954,6 +987,11 @@
   pos: NOUN
   gloss: stairs, ladder
 
+- citation: halaga
+  pos: NOUN
+  gloss: value, worth; price
+  source: audit-corpus
+
 - citation: halaman
   pos: NOUN
   gloss: plant
@@ -998,6 +1036,11 @@
   feats: {SEM_CLASS: TIME}
   source: audit-corpus
 
+- citation: hayop
+  pos: NOUN
+  gloss: animal, beast
+  source: audit-corpus
+
 - citation: hipag
   pos: NOUN
   gloss: sister-in-law
@@ -1014,6 +1057,11 @@
 - citation: hudyat
   pos: NOUN
   gloss: signal, sign
+  source: audit-corpus
+
+- citation: hugis
+  pos: NOUN
+  gloss: shape, form
   source: audit-corpus
 
 - citation: hulyo
@@ -1044,6 +1092,12 @@
 - citation: ibon
   pos: NOUN
   gloss: bird
+
+- citation: iksamen
+  pos: NOUN
+  gloss: examination, test
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: ilalim
   pos: NOUN
@@ -1292,6 +1346,12 @@
   pos: NOUN
   gloss: cooked rice
 
+- citation: kanto
+  pos: NOUN
+  gloss: street corner; intersection
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: kapalaran
   pos: NOUN
   gloss: fate, fortune, destiny
@@ -1323,6 +1383,12 @@
 - citation: kapitbahay
   pos: NOUN
   gloss: neighbor
+
+- citation: kapitera
+  pos: NOUN
+  gloss: coffeepot; coffeemaker
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: karanasan
   pos: NOUN
@@ -1510,6 +1576,12 @@
 - citation: kutsilyo
   pos: NOUN
   gloss: knife
+  source: audit-corpus
+  loan: SPANISH
+
+- citation: kuwalta
+  pos: NOUN
+  gloss: money (colloquial / dated)
   source: audit-corpus
   loan: SPANISH
 
@@ -1853,6 +1925,12 @@
   pos: NOUN
   gloss: table
 
+- citation: metal
+  pos: NOUN
+  gloss: metal
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: milyunaryo
   pos: NOUN
   gloss: millionaire
@@ -1886,6 +1964,12 @@
 - citation: miting
   pos: NOUN
   gloss: meeting
+  loan: SPANISH
+
+- citation: miyembro
+  pos: NOUN
+  gloss: member (of a group, club, organization)
+  source: audit-corpus
   loan: SPANISH
 
 - citation: miyerkules
@@ -1964,6 +2048,17 @@
   pos: NOUN
   gloss: November
   feats: {MONTH_VALUE: "11", SEM_CLASS: MONTH}
+
+- citation: nobyo
+  pos: NOUN
+  gloss: boyfriend, fiance
+  source: audit-corpus
+  loan: SPANISH
+
+- citation: noo
+  pos: NOUN
+  gloss: forehead
+  source: audit-corpus
 
 - citation: oktubre
   pos: NOUN
@@ -2119,6 +2214,12 @@
   pos: NOUN
   gloss: family
 
+- citation: panaderya
+  pos: NOUN
+  gloss: bakery
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: panahon
   pos: NOUN
   gloss: weather, time, season
@@ -2190,6 +2291,11 @@
 - citation: papel
   pos: NOUN
   gloss: paper
+
+- citation: papuri
+  pos: NOUN
+  gloss: praise, commendation
+  source: audit-corpus
 
 - citation: pare
   pos: NOUN
@@ -2349,6 +2455,12 @@
   feats: {LEMMA: piyesta}
   source: audit-corpus
 
+- citation: piyano
+  pos: NOUN
+  gloss: piano
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: piyesta
   pos: NOUN
   gloss: festival, fiesta
@@ -2371,9 +2483,21 @@
   gloss: percent
   feats: {SEM_CLASS: PERCENTAGE}
 
+- citation: premyo
+  pos: NOUN
+  gloss: prize, award
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: presidente
   pos: NOUN
   gloss: president
+  source: audit-corpus
+  loan: SPANISH
+
+- citation: prinsipal
+  pos: NOUN
+  gloss: principal (school administrator)
   source: audit-corpus
   loan: SPANISH
 
@@ -2428,6 +2552,12 @@
   pos: NOUN
   gloss: puto (steamed rice cake)
 
+- citation: radyo
+  pos: NOUN
+  gloss: radio
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: regalo
   pos: NOUN
   gloss: gift
@@ -2463,6 +2593,11 @@
   pos: NOUN
   gloss: Saturday
   feats: {DAY_VALUE: "6", SEM_CLASS: DAY}
+
+- citation: sabaw
+  pos: NOUN
+  gloss: soup, broth
+  source: audit-corpus
 
 - citation: sabi
   pos: NOUN
@@ -2690,6 +2825,17 @@
   gloss: fire (conflagration)
   source: audit-corpus
 
+- citation: susi
+  pos: NOUN
+  gloss: key
+  source: audit-corpus
+
+- citation: suweldo
+  pos: NOUN
+  gloss: salary, wages
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: suwerte
   pos: NOUN
   gloss: luck, fortune
@@ -2764,6 +2910,18 @@
 - citation: tawad
   pos: NOUN
   gloss: forgiveness; discount, bargain
+
+- citation: teatro
+  pos: NOUN
+  gloss: theatre, theater
+  source: audit-corpus
+  loan: SPANISH
+
+- citation: tela
+  pos: NOUN
+  gloss: fabric, cloth
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: telepono
   pos: NOUN
@@ -2844,6 +3002,12 @@
   gloss: omelet (e.g. ``tortang talong`` = eggplant omelet)
   loan: SPANISH
 
+- citation: trabahador
+  pos: NOUN
+  gloss: worker, laborer
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: trabaho
   pos: NOUN
   gloss: work, job
@@ -2879,6 +3043,11 @@
   gloss: tropic, tropics
   source: audit-corpus
   loan: SPANISH
+
+- citation: tsaa
+  pos: NOUN
+  gloss: tea
+  source: audit-corpus
 
 - citation: tsokolate
   pos: NOUN
