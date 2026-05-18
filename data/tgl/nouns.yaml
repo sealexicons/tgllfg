@@ -12,6 +12,12 @@
 # Citations: Ramos & Bautista 1986 (R&B), Schachter & Otanes 1972
 # (S&O). Page numbers in comments where the entry is documented.
 
+- citation: abogado
+  pos: NOUN
+  gloss: lawyer, attorney
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: abokado
   pos: NOUN
   gloss: avocado
@@ -360,6 +366,11 @@
   source: audit-corpus
   loan: ENGLISH
 
+- citation: barangay
+  pos: NOUN
+  gloss: barangay (smallest administrative unit; village, neighborhood)
+  source: audit-corpus
+
 - citation: baril
   pos: NOUN
   gloss: gun, firearm
@@ -483,6 +494,11 @@
   pos: NOUN
   gloss: leg
 
+- citation: bisig
+  pos: NOUN
+  gloss: arm (body part); strength (figurative)
+  source: audit-corpus
+
 - citation: bisikleta
   pos: NOUN
   gloss: bicycle
@@ -534,6 +550,12 @@
   pos: NOUN
   gloss: bopis (spicy stew of pig lung and heart)
 
+- citation: boses
+  pos: NOUN
+  gloss: voice
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: boss
   pos: NOUN
   gloss: boss
@@ -572,6 +594,11 @@
 - citation: bukid
   pos: NOUN
   gloss: field / countryside
+
+- citation: bukirin
+  pos: NOUN
+  gloss: rice field, field for cultivation
+  source: audit-corpus
 
 - citation: bulag
   pos: NOUN
@@ -612,6 +639,11 @@
 - citation: butas
   pos: NOUN
   gloss: hole
+  source: audit-corpus
+
+- citation: buto
+  pos: NOUN
+  gloss: bone; seed
   source: audit-corpus
 
 - citation: buwan
@@ -925,6 +957,11 @@
   gloss: cold (sensation, weather)
   source: audit-corpus
 
+- citation: ginhawa
+  pos: NOUN
+  gloss: comfort, ease; relief
+  source: audit-corpus
+
 - citation: giniling
   pos: NOUN
   gloss: giniling (ground meat dish)
@@ -1217,6 +1254,11 @@
   pos: NOUN
   gloss: horse
 
+- citation: kabute
+  pos: NOUN
+  gloss: mushroom
+  source: audit-corpus
+
 - citation: kahapon
   pos: NOUN
   gloss: yesterday
@@ -1237,6 +1279,11 @@
 - citation: kailangan
   pos: NOUN
   gloss: need / requirement
+
+- citation: kainan
+  pos: NOUN
+  gloss: eating place; mealtime; act of eating together
+  source: audit-corpus
 
 - citation: kaisipan
   pos: NOUN
@@ -1271,6 +1318,11 @@
 - citation: kalan
   pos: NOUN
   gloss: stove, cooking hearth
+
+- citation: kalapati
+  pos: NOUN
+  gloss: dove, pigeon
+  source: audit-corpus
 
 - citation: kalayaan
   pos: NOUN
@@ -1460,9 +1512,19 @@
   gloss: member
   source: audit-corpus
 
+- citation: kasaysayan
+  pos: NOUN
+  gloss: history; account, narrative
+  source: audit-corpus
+
 - citation: kasintahan
   pos: NOUN
   gloss: sweetheart
+  source: audit-corpus
+
+- citation: kasiyahan
+  pos: NOUN
+  gloss: happiness, joy; satisfaction
   source: audit-corpus
 
 - citation: kastila
@@ -1473,6 +1535,11 @@
 - citation: katapatan
   pos: NOUN
   gloss: honesty, loyalty
+  source: audit-corpus
+
+- citation: katapusan
+  pos: NOUN
+  gloss: end, ending; conclusion
   source: audit-corpus
 
 - citation: katawan
@@ -1624,6 +1691,11 @@
   gloss: walk, errand
   source: audit-corpus
 
+- citation: lakaran
+  pos: NOUN
+  gloss: journey, walk; trip on foot
+  source: audit-corpus
+
 - citation: lakas
   pos: NOUN
   gloss: strength
@@ -1670,6 +1742,11 @@
   gloss: library
   source: audit-corpus
   loan: ENGLISH
+
+- citation: libangan
+  pos: NOUN
+  gloss: hobby, diversion; pastime
+  source: audit-corpus
 
 - citation: libo
   pos: NOUN
@@ -1785,6 +1862,11 @@
   pos: NOUN
   gloss: the whole afternoon
   feats: {SEM_CLASS: TIME}
+  source: audit-corpus
+
+- citation: magkaibigan
+  pos: NOUN
+  gloss: mutual friends; pair or group of friends
   source: audit-corpus
 
 - citation: magulang
@@ -1943,6 +2025,12 @@
   subclass: [PERSON, FEMALE]
   source: R&C-1990
 
+- citation: minuto
+  pos: NOUN
+  gloss: minute (unit of time)
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: misa
   pos: NOUN
   gloss: Mass (Catholic religious service)
@@ -2009,6 +2097,12 @@
 - citation: mundo
   pos: NOUN
   gloss: world
+
+- citation: musika
+  pos: NOUN
+  gloss: music
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: nadette
   pos: NOUN
@@ -2138,6 +2232,11 @@
   pos: NOUN
   gloss: midday period, lunchtime
   feats: {SEM_CLASS: TIME}
+  source: audit-corpus
+
+- citation: paglalagyan
+  pos: NOUN
+  gloss: container; placing site; receptacle
   source: audit-corpus
 
 - citation: paglipas
@@ -2288,6 +2387,12 @@
   pos: NOUN
   gloss: pen, writing instrument
 
+- citation: papa
+  pos: NOUN
+  gloss: dad (informal address); papa
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: papel
   pos: NOUN
   gloss: paper
@@ -2320,6 +2425,12 @@
   pos: NOUN
   gloss: party
   loan: ENGLISH
+
+- citation: pasaporte
+  pos: NOUN
+  gloss: passport
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: pasensiya
   pos: NOUN
@@ -2478,6 +2589,11 @@
   gloss: plaza, town square
   loan: SPANISH
 
+- citation: pook
+  pos: NOUN
+  gloss: place, locality; spot
+  source: audit-corpus
+
 - citation: porsiyento
   pos: NOUN
   gloss: percent
@@ -2510,6 +2626,12 @@
 - citation: prutas
   pos: NOUN
   gloss: fruit
+
+- citation: pulgada
+  pos: NOUN
+  gloss: inch (unit of length)
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: pulis
   pos: NOUN
@@ -2703,6 +2825,17 @@
   gloss: vehicle
   source: audit-corpus
 
+- citation: sayawan
+  pos: NOUN
+  gloss: dance event; dance party
+  source: audit-corpus
+
+- citation: segundo
+  pos: NOUN
+  gloss: second (unit of time)
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: selyo
   pos: NOUN
   gloss: stamp (postage)
@@ -2718,6 +2851,11 @@
   pos: NOUN
   gloss: September
   feats: {MONTH_VALUE: "9", SEM_CLASS: MONTH}
+
+- citation: siko
+  pos: NOUN
+  gloss: elbow
+  source: audit-corpus
 
 - citation: silangan
   pos: NOUN
@@ -3070,6 +3208,11 @@
   pos: NOUN
   gloss: top
 
+- citation: tula
+  pos: NOUN
+  gloss: poem; poetry
+  source: audit-corpus
+
 - citation: tulay
   pos: NOUN
   gloss: bridge
@@ -3155,6 +3298,11 @@
   gloss: conversation, talk
   source: audit-corpus
 
+- citation: usapan
+  pos: NOUN
+  gloss: conversation; agreement, deal
+  source: audit-corpus
+
 - citation: utak
   pos: NOUN
   gloss: brain
@@ -3177,6 +3325,12 @@
   pos: NOUN
   gloss: wealth
   source: audit-corpus
+
+- citation: yarda
+  pos: NOUN
+  gloss: yard (unit of length, approx. 0.91 m)
+  source: audit-corpus
+  loan: ENGLISH
 
 - citation: yelo
   pos: NOUN
