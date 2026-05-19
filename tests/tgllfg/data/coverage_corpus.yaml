@@ -679,16 +679,16 @@
 - text: Ginagawa ng bata ang bata.
   construction: 'voice/aspect: OV-transitive'
   expected: parse
-- text: Gagawahin ng aso ang aso.
+- text: Gagawin ng aso ang aso.
   construction: 'voice/aspect: OV-transitive'
   expected: parse
-- text: Gagawahin ng bata ang aso.
+- text: Gagawin ng bata ang aso.
   construction: 'voice/aspect: OV-transitive'
   expected: parse
-- text: Gagawahin ng aso ang bata.
+- text: Gagawin ng aso ang bata.
   construction: 'voice/aspect: OV-transitive'
   expected: parse
-- text: Gagawahin ng bata ang bata.
+- text: Gagawin ng bata ang bata.
   construction: 'voice/aspect: OV-transitive'
   expected: parse
 - text: Tinapon ng aso ang aso.

@@ -145,7 +145,10 @@ def _apply(
         return infix_after_first_consonant(base, op.value)
     if op.op == "suffix":
         return attach_suffix(
-            base, op.value, high_vowel_deletion="high_vowel_deletion" in flags
+            base,
+            op.value,
+            high_vowel_deletion="high_vowel_deletion" in flags,
+            a_deletion="a_deletion" in flags,
         )
     if op.op == "prefix":
         return op.value + base
