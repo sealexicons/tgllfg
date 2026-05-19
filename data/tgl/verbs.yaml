@@ -1871,6 +1871,7 @@
   gloss: start, begin
   transitivity: TR
   affix_class: [um, mag, an_oblig, maka]
+  sandhi_flags: [a_deletion]
 
 - citation: sindi
   pos: VERB

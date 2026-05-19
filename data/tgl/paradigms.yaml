@@ -313,6 +313,24 @@
     - {op: prefix, value: "maka"}
   notes: makakakain, makakabili
 
+# Phase 9.X.c5: bare maka- AV ABIL SOC cell — maka- prefix on
+# bare root (no CV-redup). Parallel to the OV/DV/IV/ma_soc CTPL
+# SOC bare-form cells (Phase 5n.A C14 / Phase 9.X.pre-4.1 /
+# 9.X.pre-4.6). Surfaces: ``makatakas`` (maka + takas — "able to
+# escape"), ``makatapos`` (maka + tapos — "able to finish"),
+# ``makakain`` (maka + kain — "able to eat"). Used in modal-XCOMP
+# contexts and infinitive complements where the matrix carries
+# aspect/mood semantics (``para makatakas sa init...``).
+- voice: AV
+  aspect: CTPL
+  mood: SOC
+  transitivity: ''
+  affix_class: maka
+  feats: {MOOD: SOC}
+  operations:
+    - {op: prefix, value: "maka"}
+  notes: makatakas, makatapos, makakain (bare maka- ABIL infinitive)
+
 # === OV — Objective (Patient) Voice ======================================
 
 - voice: OV

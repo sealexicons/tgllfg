@@ -4604,8 +4604,8 @@
 - text: Binilihan ni Maria si Juan.
   construction: 'phase5n.C.2: L29 DV PFV with bili (binilihan)'
   expected: parse
-- text: Ginawahan ni Maria si Juan.
-  construction: 'phase5n.C.2: L29 DV PFV with gawa (ginawahan)'
+- text: Ginawan ni Maria si Juan.
+  construction: 'phase5n.C.2: L29 DV PFV with gawa (ginawan via a_deletion)'
   expected: parse
 - text: Tinulungan ni Maria si Juan.
   construction: 'phase5n.C.2: L29 DV PFV with tulong (tinulungan)'
