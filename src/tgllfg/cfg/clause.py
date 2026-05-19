@@ -1067,6 +1067,48 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.c7: predicative-ADV clause ------------------------
+    #
+    # ``Bigla ang pagdating ng tag-ulan.`` "The arrival of the rainy
+    #     season is sudden." (PANAHON sent-19)
+    # ``Bihira ang bagyo sa mga buwang ito.`` "Typhoons are rare in
+    #     these months." (PANAHON sent-37)
+    # ``Manakanaka lamang ang ulan.`` "The rain is only occasional."
+    #     (PANAHON sent-4 — after merge_hyphen_compounds rejoins
+    #     ``manaka-naka`` → ``manakanaka``)
+    # ``Taun-taon ang bagyo.`` "Typhoons (come) every year."
+    #     (similar to PANAHON sent-21)
+    #
+    # ADV-as-predicate: many Tagalog ADVs predicate a NOM-NP subject
+    # with the same shape as the Phase 5g ADJ-predicate rule.
+    # FREQUENCY ADVs (``bihira`` / ``kadalasan`` / ``manakanaka`` /
+    # ``tauntaon``), MANNER ADVs (``bigla`` / ``agad``), TIME ADVs
+    # (``kahapon`` / ``ngayon``) can all serve as predicates.
+    #
+    # F-structure shape parallels ADJ-predicate:
+    #
+    #   PRED         = 'ADV <SUBJ>'
+    #   ADV_LEMMA    = the adverb's lemma
+    #   ADV_TYPE     = lifted from the ADV daughter (FREQUENCY /
+    #                  MANNER / TIME / LOCATION / etc.)
+    #   PREDICATIVE  = true
+    #   SUBJ         = the NOM-NP pivot
+    #
+    # No VOICE / ASPECT / MOOD: an adverbial predicate is verbless
+    # and stative-like, parallel to the ADJ-predicate analytical
+    # commitment.
+    rules.append(Rule(
+        "S",
+        ["ADV", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'ADV <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ ADV_LEMMA) = ↓1 LEMMA",
+            "(↑ ADV_TYPE) = ↓1 ADV_TYPE",
+            "(↑ PREDICATIVE) = true",
+        ],
+    ))
+
     # --- Phase 9.O.3: stative-passive ADJ with GEN-actor ----------------
     #
     # ``Kilala ko si Maria.``  "Maria is known by me." / "I know Maria."
