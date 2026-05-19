@@ -571,6 +571,33 @@
     - {op: prefix, value: "ma"}
   notes: matutulog, mauupo (ma- non-volitional irrealis)
 
+# Phase 9.X.pre-4.6: bare ma- AV SOC cell. Productive opt-in via
+# ``affix_class: [ma_soc]`` — distinct from the ``ma`` affix_class
+# (which produces na-/ma-+CV-redup NVOL forms). The per-root
+# explicit opt-in avoids cross-POS ambiguity with the Phase 5g
+# ``ma_adj`` paradigm — bare ``ma + root`` is the ADJ predicative
+# reading for ma_adj-class ADJ roots (``mainit`` / ``masaya`` /
+# ``maingay``), so VERB-only ma-class roots opt in to ``ma_soc``
+# while ADJ-coexisting roots (``init`` / ``saya`` / ``ingay``)
+# don't. The pre-4.5 attempt used a productive ``ma`` filter
+# instead and broke 4 ADJ-predicative tests; this opt-in shape
+# is the clean alternative.
+#
+# Surfaces (per opted-in root): ``ma + una → mauna`` ("go first"),
+# parallel to the OV/DV/IV CTPL SOC bare-hortative cells from
+# Phase 5n.A C14 and Phase 9.X.pre-4.1. Distribution: hortative
+# ("Mauna ka!" "Go first!"), modal-XCOMP context ("Maaari kang
+# mauna sa amin..."), and dependent / non-finite ma- positions.
+- voice: AV
+  aspect: CTPL
+  mood: SOC
+  transitivity: ''
+  affix_class: ma_soc
+  feats: {MOOD: SOC}
+  operations:
+    - {op: prefix, value: "ma"}
+  notes: mauna (bare ma- for hortative/imperative/modal-XCOMP; opt-in)
+
 # === Phase 4 §7.7: applicatives + causatives ============================
 #
 # Applicative IV variants beyond the bare ``i-`` (CONVEY) reading:
