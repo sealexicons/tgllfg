@@ -41,6 +41,7 @@ from ..parse import parse_with_annotations
 from ..text import (
     merge_hyphen_compounds,
     split_apostrophe_t,
+    split_apostrophe_y,
     split_enclitics,
     split_linker_ng,
     tokenize,
@@ -118,6 +119,15 @@ def parse_text_with_fragments(
     # surface; ``at`` doesn't end in vowel + ``-ng`` so there is
     # no interaction with :func:`split_linker_ng`.
     toks = split_apostrophe_t(toks)
+    # Phase 9.X.c4: bound clitic ``'y`` (post-vowel contracted ``ay``
+    # topic-comment particle) gets the same triple-collapse: any
+    # ``[X, ', y]`` where X is vowel-final becomes ``[X, ay]`` with a
+    # synthetic ``ay`` token. ``rito'y siyesta`` → ``rito`` / ``ay``
+    # / ``siyesta``. Runs after ``split_apostrophe_t`` (orderings
+    # don't interact — no host produces both ``'t`` and ``'y``
+    # simultaneously) and before linker-ng / hyphen-compound merges
+    # so downstream consumers see the canonical ``ay``.
+    toks = split_apostrophe_y(toks)
     # Phase 4 §7.5: detach the bound linker ``-ng`` from vowel-final
     # hosts (``batang`` → ``bata`` + ``-ng``) so the relativization
     # rules see a uniform ``PART[LINK=NA|NG]`` between the head NP

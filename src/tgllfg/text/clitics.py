@@ -114,6 +114,60 @@ def split_apostrophe_t(tokens: list[Token]) -> list[Token]:
     return out
 
 
+def split_apostrophe_y(tokens: list[Token]) -> list[Token]:
+    """Merge the post-vowel bound clitic ``'y`` into a synthetic
+    ``ay`` token.
+
+    The bound clitic ``'y`` is the post-vowel contraction of the
+    topic-comment particle ``ay`` (Phase 4 §7.13 ay-fronted topic
+    construction). It surfaces wherever ``ay`` would: between a
+    fronted topic and the comment clause when the topic ends in a
+    vowel. Examples:
+
+    * ``Ang tawag nila rito'y siyesta.`` (= ``rito ay siyesta``).
+    * ``Mangyari'y mahirap...`` (= ``Mangyari ay mahirap...``).
+    * ``Ang malalakas na hangin nito'y nakapipinsala...``
+      (= ``nito ay nakapipinsala...``).
+
+    The tokenizer's ``\\w+|\\S`` regex splits ``rito'y`` (or the
+    space-separated ``rito 'y``) into three tokens:
+    ``[rito, ', y]``. This pre-pass collapses any
+    ``[X, ', y]`` triple where ``X`` ends in a vowel into
+    ``[X, ay]`` (a synthetic ``ay`` token spanning the original
+    ``'`` and ``y`` positions). The synthetic token's surface is
+    ``ay`` so it routes to the existing ``ay`` PART[LINK=AY]
+    lex entry.
+
+    Mirrors :func:`split_apostrophe_t` (Phase 5k Commit 2) in
+    shape — both merge a ``[X, ', <C>]`` triple into a synthetic
+    function-word token when X is vowel-final.
+    """
+    out: list[Token] = []
+    i = 0
+    n = len(tokens)
+    while i < n:
+        host = tokens[i]
+        if (
+            i + 2 < n
+            and tokens[i + 1].surface == "'"
+            and tokens[i + 2].norm == "y"
+            and host.surface
+            and host.surface[-1] in _VOWELS
+        ):
+            out.append(host)
+            ap_start = tokens[i + 1].start
+            y_end = tokens[i + 2].end
+            out.append(Token(
+                surface="ay", norm="ay",
+                start=ap_start, end=y_end,
+            ))
+            i += 3
+        else:
+            out.append(host)
+            i += 1
+    return out
+
+
 def split_linker_ng(tokens: list[Token]) -> list[Token]:
     """Split the bound linker ``-ng`` from vowel-final hosts.
 
