@@ -93,23 +93,36 @@ def first_cv(s: str) -> str:
 def infix_after_first_consonant(base: str, infix: str) -> str:
     """Insert ``infix`` after the first consonant of ``base``.
 
-    Three structural exceptions:
+    Four structural exceptions:
 
     * Vowel-initial bases prepend ``infix`` (the standard Tagalog rule
       for ``-um-`` / ``-in-`` on vowel-initial roots).
     * The orthographic digraph ``ng`` is treated as a single consonant
       /ŋ/, so ``ngiti + -um- → ngumiti`` (not the erroneous
       ``*numgiti``).
-    * Sonorant-initial bases take the realis ``-in-`` as a ``ni-``
-      *prefix* rather than an infix. This is automatic for the ``in``
-      infix value; ``-um-`` is unaffected. ``linis + -in- → nilinis``;
-      ``mahal + -in- → nimahal``.
+    * Sonorant-initial bases — **excluding /m/** — take the realis
+      ``-in-`` as a ``ni-`` *prefix* rather than an infix. This is
+      automatic for the ``in`` infix value; ``-um-`` is unaffected.
+      ``linis + -in- → nilinis``; ``nakaw + -in- → ninakaw``.
+    * Per Phase 9.X.pre-4.3: /m/-initial bases behave like regular
+      consonant-initial bases for ``-in-`` infixation: ``mahal +
+      -in- → minahal``, ``maneho + -in- → minaneho``,
+      ``marka + -in-an → minarkahan``, ``masid + -in-an →
+      minasdan``. While /m/ is phonetically a sonorant, in
+      Tagalog -in- morphology it patterns with the obstruents —
+      attested across the four m-initial in_oblig/an_oblig VERB
+      roots in the lex. /l/, /n/, /r/, /w/, /y/ still take the
+      ni- prefix variant.
     """
     if not base:
         return infix
     if is_vowel(base[0]):
         return infix + base
-    if infix == "in" and is_sonorant_initial(base):
+    if (
+        infix == "in"
+        and is_sonorant_initial(base)
+        and base[0].lower() != "m"
+    ):
         return "ni" + base
     if base[:2].lower() == "ng":
         return base[:2] + infix + base[2:]

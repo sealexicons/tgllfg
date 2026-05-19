@@ -133,7 +133,12 @@ class TestSonorantNiPrefix:
         assert infix_after_first_consonant("linis", "in") == "nilinis"
 
     def test_m_initial(self) -> None:
-        assert infix_after_first_consonant("mahal", "in") == "nimahal"
+        # Phase 9.X.pre-4.3: /m/-initial roots are excluded from the
+        # sonorant ni-prefix variant — they pattern with regular
+        # obstruent-initial bases for -in- infixation. ``mahal +
+        # -in- → minahal``, not ``*nimahal``. All other sonorants
+        # (l, n, r, w, y) still take the ni- prefix.
+        assert infix_after_first_consonant("mahal", "in") == "minahal"
 
     def test_n_initial(self) -> None:
         assert infix_after_first_consonant("nakaw", "in") == "ninakaw"
