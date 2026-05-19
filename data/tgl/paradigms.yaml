@@ -397,6 +397,22 @@
     - {op: suffix, value: an}
   notes: kakainan, bibilihan
 
+# Phase 9.X.pre-4.1: bare DV cell — root + -an suffix (no CV-redup,
+# no realis infix). DV counterpart to the OV-in_oblig SOC bare-
+# hortative cell at line 357. Surfaces: hugasan (hugas + an),
+# basahan (basa + h-epenthesis + an), tulungan (tulong + o→u + an).
+# Same distribution as the OV-in bare cell (imperative, modal-XCOMP,
+# dependent / non-finite DV positions).
+- voice: DV
+  aspect: CTPL
+  mood: SOC
+  transitivity: TR
+  affix_class: an_oblig
+  feats: {MOOD: SOC}
+  operations:
+    - {op: suffix, value: an}
+  notes: hugasan, basahan, tulungan (bare DV + -an for hortative/imperative/modal-XCOMP)
+
 # === IV — Instrumental / Benefactive Voice ===============================
 
 # Bare IV `i-` carries APPL=CONVEY — the conveyed-pivot reading
@@ -436,6 +452,22 @@
     - {op: cv_redup}
     - {op: prefix, value: "i"}
   notes: ikakain, ibibili
+
+# Phase 9.X.pre-4.1: bare IV cell — i- prefix on bare root (no
+# CV-redup, no realis infix). IV counterpart to the OV-in_oblig
+# and DV-an_oblig SOC bare-hortative cells. Surfaces: itapon
+# (i + tapon), ituro (i + turo), ibigay (i + bigay). Same
+# distribution as the OV/DV bare cells (imperative, modal-XCOMP,
+# dependent / non-finite IV positions).
+- voice: IV
+  aspect: CTPL
+  mood: SOC
+  transitivity: TR
+  affix_class: i_oblig
+  feats: {APPL: CONVEY, MOOD: SOC}
+  operations:
+    - {op: prefix, value: "i"}
+  notes: itapon, ituro, ibigay (bare IV i- for hortative/imperative/modal-XCOMP)
 
 # === AV — RECPFV ("just-completed") =====================================
 #
