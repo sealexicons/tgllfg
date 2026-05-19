@@ -241,6 +241,12 @@
   gloss: shy, ashamed
   affix_class: [ma_adj]
 
+- citation: huli
+  pos: ADJ
+  gloss: late, last
+  affix_class: []
+  source: audit-corpus
+
 - citation: husay
   pos: ADJ
   gloss: excellent, skilled
