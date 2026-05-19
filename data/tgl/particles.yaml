@@ -2128,3 +2128,19 @@
 - surface: bihira
   pos: ADV
   feats: {ADV_TYPE: FREQUENCY, LEMMA: bihira}
+
+# X-Y reduplication fixed forms — these are hyphenated in canonical
+# Tagalog orthography (``manaka-naka`` / ``taun-taon``); the
+# tokenizer's ``merge_hyphen_compounds`` pass collapses
+# ``X``-``Y`` triples into a single token when the joined form is
+# a known surface. Adding the joined surface here is what closes
+# the audit OOV. Productive content-word reduplication paradigm
+# (auto-handles the /o/→/u/ raising on first copy) is parked.
+
+- surface: manakanaka
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, LEMMA: manaka-naka}
+
+- surface: tauntaon
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, LEMMA: taun-taon}
