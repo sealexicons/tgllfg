@@ -102,7 +102,7 @@ def _apply(
     op: Operation, base: str, flags: set[str], root_citation: str = ""
 ) -> str:
     if op.op == "cv_redup":
-        return cv_reduplicate(base)
+        return cv_reduplicate(base, cluster_redup="cluster_redup" in flags)
     if op.op == "full_redup":
         # Phase 5n.C.3 Commit 2 (§18 L31): whole-root reduplication
         # for compound cardinals (``libo`` → ``libulibo``). Distinct
@@ -149,6 +149,8 @@ def _apply(
             op.value,
             high_vowel_deletion="high_vowel_deletion" in flags,
             a_deletion="a_deletion" in flags,
+            no_o_raise="no_o_raise" in flags,
+            no_h_epenthesis="no_h_epenthesis" in flags,
         )
     if op.op == "prefix":
         return op.value + base

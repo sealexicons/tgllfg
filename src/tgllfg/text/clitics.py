@@ -88,6 +88,14 @@ def split_apostrophe_t(tokens: list[Token]) -> list[Token]:
     is in place before bound-``-ng`` detection (no interaction in
     practice — ``at`` doesn't end in ``-ng``).
     """
+    # Phase 9.X.c6: prefer the lexically-joined ``Xt`` form when it
+    # is itself a known surface — ``sapagka't`` (= ``sapagkat``
+    # "because", written with internal apostrophe) collapses to a
+    # single ``sapagkat`` token rather than ``sapagka`` + ``at``.
+    # The ``sapagka + at`` reading would be semantically nonsense
+    # ("because and"); the joined form is the canonical lex entry.
+    from ..morph.analyzer import _get_default
+    analyzer = _get_default()
     out: list[Token] = []
     i = 0
     n = len(tokens)
@@ -100,6 +108,19 @@ def split_apostrophe_t(tokens: list[Token]) -> list[Token]:
             and host.surface
             and host.surface[-1] in _VOWELS
         ):
+            joined = host.surface + "t"
+            if analyzer.is_known_surface(joined.lower()):
+                # Joined ``Xt`` is a known lex entry (e.g. ``sapagkat``).
+                # Emit single token with surface = joined form, spanning
+                # the original X + ' + t positions.
+                out.append(Token(
+                    surface=joined,
+                    norm=joined.lower(),
+                    start=host.start,
+                    end=tokens[i + 2].end,
+                ))
+                i += 3
+                continue
             out.append(host)
             ap_start = tokens[i + 1].start
             t_end = tokens[i + 2].end

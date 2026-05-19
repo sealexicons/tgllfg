@@ -2144,3 +2144,14 @@
 - surface: tauntaon
   pos: ADV
   feats: {ADV_TYPE: FREQUENCY, LEMMA: taun-taon}
+
+# Reciprocal/intensive X-Y redup of mag-IPFV verb forms. The audit
+# attests ``nagtutulung-tulong`` ("helping each other repeatedly")
+# at PANAHON sent-27. The full productive paradigm (any mag-VERB
+# can take this reciprocal redup with /o/→/u/ raising on the first
+# copy) is parked; for now the joined form is registered as a
+# fixed ADV-like analysis. LEMMA points to the underlying root.
+
+- surface: nagtutulungtulong
+  pos: ADV
+  feats: {ADV_TYPE: MANNER, RECP: true, LEMMA: tulong}

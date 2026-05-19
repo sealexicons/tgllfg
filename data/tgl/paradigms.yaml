@@ -509,6 +509,65 @@
     - {op: prefix, value: "i"}
   notes: itapon, ituro, ibigay (bare IV i- for hortative/imperative/modal-XCOMP)
 
+# Phase 9.X.c6: ``i_oblig_ini`` variant for IV PFV/IPFV cells.
+# Some roots produce the "ini-" prefix variant (in- before the
+# i- prefix) rather than the standard "iCin-" infix shape that
+# i_oblig produces. Both forms are attested in standard Tagalog:
+#
+#   handa → ihinahanda (i_oblig)  vs  inihahanda (i_oblig_ini)
+#   hudyat → ihinuhudyat (i_oblig) vs  inihuhudyat (i_oblig_ini)
+#
+# The ini- variant attaches -in- as a prefix on the already-
+# i-prefixed stem (treating "i-" as a vowel-initial host).
+# Productive opt-in via ``affix_class: [i_oblig_ini]`` — kept
+# separate from i_oblig because the same root family doesn't
+# generally take both surface variants in actual usage; the
+# distinction is per-root lex choice.
+
+- voice: IV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  affix_class: i_oblig_ini
+  feats: {APPL: CONVEY}
+  operations:
+    - {op: prefix, value: "i"}
+    - {op: infix, value: in}
+  notes: inihanda, inihudyat (PFV ini- variant)
+
+- voice: IV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  affix_class: i_oblig_ini
+  feats: {APPL: CONVEY}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "i"}
+    - {op: infix, value: in}
+  notes: inihahanda, inihuhudyat (IPFV ini- variant)
+
+- voice: IV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: i_oblig_ini
+  feats: {APPL: CONVEY}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "i"}
+  notes: ihahanda, ihuhudyat (CTPL — same as i_oblig CTPL, kept for completeness)
+
+- voice: IV
+  aspect: CTPL
+  mood: SOC
+  transitivity: TR
+  affix_class: i_oblig_ini
+  feats: {APPL: CONVEY, MOOD: SOC}
+  operations:
+    - {op: prefix, value: "i"}
+  notes: ihanda, ihudyat (bare IV — same as i_oblig SOC)
+
 # === AV — RECPFV ("just-completed") =====================================
 #
 # Phase 4 §7.2: the recent-perfective aspect uses the ka- prefix +
@@ -1299,6 +1358,21 @@
     - {op: prefix, value: "tig"}
   feats: {DISTRIB: true, CARDINAL: true, NUM: PL}
   notes: tig_distrib — isa → tigisa, dalawa → tigdalawa, ...
+
+# Phase 9.X.c6: approximate-redup CV-reduplication of NUM stems.
+# Productive opt-in via ``affix_class: [approx_redup]`` on numerals.
+# Surfaces: ``dalawa`` → ``dadalawa`` "about/approximately two"
+# (PANAHON sent-2: ``Dadalawa lamang ang masasabing tunay na
+# panahon dito``); ``tatlo`` → ``tatatlo``; ``apat`` → ``aapat``.
+# Distinct from the Phase 5n.C.3 ``tig_distrib`` distributive
+# (``tigdalawa`` "two each"), the approximative carries
+# ``APPROX: true``.
+- base_pos: NUM
+  affix_class: approx_redup
+  operations:
+    - {op: cv_redup}
+  feats: {APPROX: true, CARDINAL: true}
+  notes: approx_redup — dalawa → dadalawa, tatlo → tatatlo
 
 # --- Phase 5n.C.3 Commit 4: tag_season (§18 L31) ------------------------
 # Productive season noun derivation: ``tag-`` prefix + NOUN root
