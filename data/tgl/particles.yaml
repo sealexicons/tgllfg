@@ -2104,3 +2104,27 @@
 - surface: yon
   pos: DET
   feats: {CASE: NOM, DEIXIS: DIST, DEM: true, LEMMA: iyon}
+
+# === Phase 9.X PANAHON closure — new locatives/demonstratives/discourse ==
+# Added 2026-05-19 to close PANAHON-text OOVs (rg81 transcription
+# Wave 1). Parallel structure to existing entries:
+#   * naroon : narito (LOC_EXISTENTIAL prox/dist pair)
+#   * ganito : ganon (manner DEM prox/dist pair)
+#   * sapagkat : kasi / dahil (CAUSE subordinator family)
+#   * bihira : kadalasan (FREQUENCY ADV — opposite end)
+
+- surface: naroon
+  pos: PART
+  feats: {LOC_EXISTENTIAL: true, DEIXIS: DIST, LEMMA: naroon}
+
+- surface: ganito
+  pos: PART
+  feats: {LEMMA: ganito}
+
+- surface: sapagkat
+  pos: PART
+  feats: {SUBORDINATOR: true, COMP_TYPE: CAUSE, LEMMA: sapagkat}
+
+- surface: bihira
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, LEMMA: bihira}

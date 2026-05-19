@@ -2384,6 +2384,12 @@
   gloss: mung bean
   source: audit-corpus
 
+- citation: monsoon
+  pos: NOUN
+  gloss: monsoon
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: motorsiklo
   pos: NOUN
   gloss: motorcycle
@@ -3535,6 +3541,11 @@
   pos: NOUN
   gloss: father
 
+- citation: tawag
+  pos: NOUN
+  gloss: call, name (what something is called)
+  source: audit-corpus
+
 - citation: tawad
   pos: NOUN
   gloss: forgiveness; discount, bargain
@@ -3751,6 +3762,11 @@
 - citation: tulin
   pos: NOUN
   gloss: swiftness, speed
+  source: audit-corpus
+
+- citation: tulo
+  pos: NOUN
+  gloss: drop, drip
   source: audit-corpus
 
 - citation: tulong
