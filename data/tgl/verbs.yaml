@@ -38,7 +38,7 @@
   pos: VERB
   gloss: reach, hand to
   transitivity: TR
-  affix_class: [um, mag, in_oblig, an_oblig, maka]
+  affix_class: [um, mag, in_oblig, an_oblig, maka, paki]
 
 - citation: agaw
   pos: VERB
@@ -407,6 +407,13 @@
   gloss: pull out, draw
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
+
+- citation: bura
+  pos: VERB
+  gloss: erase, wipe out
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka, paki]
+  source: audit-corpus
 
 - citation: butas
   pos: VERB
@@ -1681,7 +1688,7 @@
   pos: VERB
   gloss: cut a piece from
   transitivity: TR
-  affix_class: [um, in_oblig, an_oblig, mang, maka]
+  affix_class: [um, in_oblig, an_oblig, mang, maka, paki]
 
 - citation: regalo
   pos: VERB
@@ -1792,7 +1799,7 @@
   pos: VERB
   gloss: close
   transitivity: TR
-  affix_class: [mag, i_oblig, an_oblig, maka]
+  affix_class: [mag, i_oblig, an_oblig, maka, paki]
 
 - citation: saya
   pos: VERB
