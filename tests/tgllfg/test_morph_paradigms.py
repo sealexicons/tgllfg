@@ -156,8 +156,12 @@ MAG_PARADIGM_FORMS = [
     ("ipon", "AV", "CTPL", "magiipon"),
     # trabaho — work
     ("trabaho", "AV", "PFV",  "nagtrabaho"),
-    ("trabaho", "AV", "IPFV", "nagtatrabaho"),
-    ("trabaho", "AV", "CTPL", "magtatrabaho"),
+    # Phase 9.X.c6: trabaho gets sandhi_flags: [cluster_redup] to
+    # preserve the Cr- onset in CV-redup (audit-attested
+    # ``nagtratrabaho`` over the cluster-stripped ``nagtatrabaho``;
+    # both are real Tagalog, the cluster variant matches the audit).
+    ("trabaho", "AV", "IPFV", "nagtratrabaho"),
+    ("trabaho", "AV", "CTPL", "magtratrabaho"),
     # hintay — wait
     ("hintay", "AV", "PFV",  "naghintay"),
     ("hintay", "AV", "IPFV", "naghihintay"),

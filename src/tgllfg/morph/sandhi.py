@@ -58,7 +58,7 @@ def is_sonorant_initial(base: str) -> bool:
     return base[0] in SONORANTS
 
 
-def first_cv(s: str) -> str:
+def first_cv(s: str, *, cluster_redup: bool = False) -> str:
     """Return the first CV (or just V) of ``s``: the chunk used as the
     target of CV-reduplication.
 
@@ -72,6 +72,15 @@ def first_cv(s: str) -> str:
     /ŋ/, so a base like ``nguha`` (the post-nasal-substitution form
     of ``kuha``) reduplicates to ``ngunguha`` rather than the
     erroneous ``nunguha``.
+
+    Per Phase 9.X.c6 ``cluster_redup`` opt-in: stems with a Cr/Cl
+    obstruent-liquid onset cluster (typically Spanish loans like
+    ``trabaho`` / ``plantsa`` / ``prutas`` / ``problema``) preserve
+    the cluster in redup: ``trabaho`` → ``tra`` (not ``ta``),
+    yielding ``nagtratrabaho`` rather than the standard
+    ``nagtatrabaho``. Both forms are attested in modern Tagalog;
+    the cluster variant is common in colloquial usage. Per-root
+    opt-in via ``sandhi_flags: [cluster_redup]``.
     """
     if not s:
         return ""
@@ -79,6 +88,18 @@ def first_cv(s: str) -> str:
         return s[0]
     # Digraph ng (one consonant /ŋ/).
     if s[:2].lower() == "ng":
+        for i in range(2, len(s)):
+            if is_vowel(s[i]):
+                return s[:2] + s[i]
+        return s[:2]
+    # Cluster onset (Cr / Cl) — preserve the whole cluster + first
+    # vowel when ``cluster_redup`` is set.
+    if (
+        cluster_redup
+        and len(s) >= 3
+        and not is_vowel(s[1])
+        and s[1].lower() in "rl"
+    ):
         for i in range(2, len(s)):
             if is_vowel(s[i]):
                 return s[:2] + s[i]
@@ -155,6 +176,8 @@ def attach_suffix(
     *,
     high_vowel_deletion: bool = False,
     a_deletion: bool = False,
+    no_o_raise: bool = False,
+    no_h_epenthesis: bool = False,
 ) -> str:
     """Append ``suffix`` to ``base`` with vowel-hiatus repair plus
     Phase 2C / 9.X.pre-4 extensions.
@@ -197,20 +220,28 @@ def attach_suffix(
     """
     if not suffix:
         return base
-    base = _raise_final_o(base)
+    if not no_o_raise:
+        base = _raise_final_o(base)
     if base and is_vowel(base[-1]) and is_vowel(suffix[0]):
         if high_vowel_deletion and base[-1].lower() in "iu":
             return base[:-1] + "h" + suffix
         if a_deletion and base[-1].lower() == "a":
             return base[:-1] + suffix
+        if no_h_epenthesis:
+            return base + suffix
         return base + "h" + suffix
     return base + suffix
 
 
-def cv_reduplicate(base: str) -> str:
+def cv_reduplicate(base: str, *, cluster_redup: bool = False) -> str:
     """Prepend the first CV of ``base`` to itself. ``kain`` →
-    ``kakain``; ``alis`` → ``aalis``."""
-    return first_cv(base) + base
+    ``kakain``; ``alis`` → ``aalis``.
+
+    Per ``cluster_redup`` (Phase 9.X.c6): Cr/Cl onset clusters
+    are preserved (``trabaho`` → ``tratrabaho`` instead of
+    ``tatrabaho``). See :func:`first_cv` for details.
+    """
+    return first_cv(base, cluster_redup=cluster_redup) + base
 
 
 def full_reduplicate(base: str) -> str:
