@@ -93,23 +93,36 @@ def first_cv(s: str) -> str:
 def infix_after_first_consonant(base: str, infix: str) -> str:
     """Insert ``infix`` after the first consonant of ``base``.
 
-    Three structural exceptions:
+    Four structural exceptions:
 
     * Vowel-initial bases prepend ``infix`` (the standard Tagalog rule
       for ``-um-`` / ``-in-`` on vowel-initial roots).
     * The orthographic digraph ``ng`` is treated as a single consonant
       /ŋ/, so ``ngiti + -um- → ngumiti`` (not the erroneous
       ``*numgiti``).
-    * Sonorant-initial bases take the realis ``-in-`` as a ``ni-``
-      *prefix* rather than an infix. This is automatic for the ``in``
-      infix value; ``-um-`` is unaffected. ``linis + -in- → nilinis``;
-      ``mahal + -in- → nimahal``.
+    * Sonorant-initial bases — **excluding /m/** — take the realis
+      ``-in-`` as a ``ni-`` *prefix* rather than an infix. This is
+      automatic for the ``in`` infix value; ``-um-`` is unaffected.
+      ``linis + -in- → nilinis``; ``nakaw + -in- → ninakaw``.
+    * Per Phase 9.X.pre-4.3: /m/-initial bases behave like regular
+      consonant-initial bases for ``-in-`` infixation: ``mahal +
+      -in- → minahal``, ``maneho + -in- → minaneho``,
+      ``marka + -in-an → minarkahan``, ``masid + -in-an →
+      minasdan``. While /m/ is phonetically a sonorant, in
+      Tagalog -in- morphology it patterns with the obstruents —
+      attested across the four m-initial in_oblig/an_oblig VERB
+      roots in the lex. /l/, /n/, /r/, /w/, /y/ still take the
+      ni- prefix variant.
     """
     if not base:
         return infix
     if is_vowel(base[0]):
         return infix + base
-    if infix == "in" and is_sonorant_initial(base):
+    if (
+        infix == "in"
+        and is_sonorant_initial(base)
+        and base[0].lower() != "m"
+    ):
         return "ni" + base
     if base[:2].lower() == "ng":
         return base[:2] + infix + base[2:]
@@ -136,9 +149,15 @@ def _raise_final_o(stem: str) -> str:
     return stem
 
 
-def attach_suffix(base: str, suffix: str, *, high_vowel_deletion: bool = False) -> str:
+def attach_suffix(
+    base: str,
+    suffix: str,
+    *,
+    high_vowel_deletion: bool = False,
+    a_deletion: bool = False,
+) -> str:
     """Append ``suffix`` to ``base`` with vowel-hiatus repair plus
-    Phase 2C extensions.
+    Phase 2C / 9.X.pre-4 extensions.
 
     Always:
 
@@ -155,8 +174,21 @@ def attach_suffix(base: str, suffix: str, *, high_vowel_deletion: bool = False) 
     ``buksu + -in → bukshin``. Other vowel-final stems still take
     the standard h-epenthesis. C-final stems concatenate directly.
 
+    Per-root opt-in via ``a_deletion=True`` (Phase 9.X.pre-4): stems
+    ending in the *low* vowel /a/ delete the stem-final /a/ and the
+    ``h`` does *not* survive — but **only when the suffix is**
+    ``-in``. ``gawa + -in → gawin`` (a-deletion); ``gawa + -an →
+    gawahin`` keeps the h-epenthesis default. The suffix-specific
+    gate matches the audit-attested asymmetry — Tagalog's
+    low-vowel-deletion process targets the OV/CTPL ``-in`` suffix
+    rather than ``-an`` (DV) or other vowel-initial suffixes.
+
+    The two deletion flags are mutually independent — set one or
+    neither, not both. ``high_vowel_deletion`` and ``a_deletion``
+    apply to disjoint stem classes (i/u-final vs a-final).
+
     Schachter & Otanes 1972 §4.21 documents both the formal
-    h-epenthesis pattern and the colloquial deletion variant; the
+    h-epenthesis pattern and the colloquial deletion variants; the
     flag picks the variant per root.
     """
     if not suffix:
@@ -165,6 +197,8 @@ def attach_suffix(base: str, suffix: str, *, high_vowel_deletion: bool = False) 
     if base and is_vowel(base[-1]) and is_vowel(suffix[0]):
         if high_vowel_deletion and base[-1].lower() in "iu":
             return base[:-1] + "h" + suffix
+        if a_deletion and base[-1].lower() == "a" and suffix == "in":
+            return base[:-1] + suffix
         return base + "h" + suffix
     return base + suffix
 

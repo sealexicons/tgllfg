@@ -28,7 +28,7 @@ Generated surfaces span the existing OV roots:
 * ``kain`` (consonant-final) → ``kainin``
 * ``bili`` (vowel-final i + h-epenthesis) → ``bilihin``
 * ``inom`` (consonant-final + o→u raising) → ``inumin``
-* ``gawa`` (vowel-final a + h-epenthesis) → ``gawahin``
+* ``gawa`` (vowel-final a + a_deletion per 9.X.pre-4.2) → ``gawin``
 
 Distribution: imperatives (``Kainin mo!`` "Eat it!"), modal-XCOMP
 contexts (``Maaari mong kainin ang isda.``), and other dependent
@@ -60,7 +60,7 @@ BARE_OV_FORMS = [
     ("kain",  "kainin"),
     ("bili",  "bilihin"),
     ("inom",  "inumin"),
-    ("gawa",  "gawahin"),
+    ("gawa",  "gawin"),
 ]
 
 
@@ -119,7 +119,7 @@ class TestModalWithBareOv:
         # Across OV roots:
         "Maaari mong bilihin ang isda.",
         "Maaari mong inumin ang gatas.",
-        "Maaari mong gawahin ang trabaho.",
+        "Maaari mong gawin ang trabaho.",
     ])
     def test_modal_with_bare_ov(self, sentence: str) -> None:
         parses = parse_text(sentence)

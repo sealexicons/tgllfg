@@ -364,6 +364,28 @@
     - {op: suffix, value: in}
   notes: kainin, bilihin (bare OV + -in for hortative/imperative/modal-XCOMP)
 
+# Phase 9.X.pre-4.5: paki- polite-request cell. Productive across
+# TR VERB roots declaring ``affix_class: [paki]``. Surfaces:
+# ``paki + abot → pakiabot`` ("please reach/pass"),
+# ``paki + sara → pakisara`` ("please close"),
+# ``paki + putol → pakiputol`` ("please cut"),
+# ``paki + bura → pakibura`` ("please erase").
+# Voice OV / aspect CTPL / mood SOC follows the same shape as
+# the in_oblig / an_oblig / i_oblig SOC bare-form cells —
+# paki- requests pattern with OV-transitive bare-stem imperatives
+# rather than aspect-marked indicative forms. The ``POLITE_MARKER``
+# feat distinguishes the polite-request reading from plain
+# imperative for downstream consumers.
+- voice: OV
+  aspect: CTPL
+  mood: SOC
+  transitivity: TR
+  affix_class: paki
+  feats: {MOOD: SOC, POLITE_MARKER: true}
+  operations:
+    - {op: prefix, value: paki}
+  notes: pakiabot, pakisara, pakiputol, pakibura (paki- polite request)
+
 # === DV — Dative / Locative Voice ========================================
 
 - voice: DV
@@ -396,6 +418,22 @@
     - {op: cv_redup}
     - {op: suffix, value: an}
   notes: kakainan, bibilihan
+
+# Phase 9.X.pre-4.1: bare DV cell — root + -an suffix (no CV-redup,
+# no realis infix). DV counterpart to the OV-in_oblig SOC bare-
+# hortative cell at line 357. Surfaces: hugasan (hugas + an),
+# basahan (basa + h-epenthesis + an), tulungan (tulong + o→u + an).
+# Same distribution as the OV-in bare cell (imperative, modal-XCOMP,
+# dependent / non-finite DV positions).
+- voice: DV
+  aspect: CTPL
+  mood: SOC
+  transitivity: TR
+  affix_class: an_oblig
+  feats: {MOOD: SOC}
+  operations:
+    - {op: suffix, value: an}
+  notes: hugasan, basahan, tulungan (bare DV + -an for hortative/imperative/modal-XCOMP)
 
 # === IV — Instrumental / Benefactive Voice ===============================
 
@@ -436,6 +474,22 @@
     - {op: cv_redup}
     - {op: prefix, value: "i"}
   notes: ikakain, ibibili
+
+# Phase 9.X.pre-4.1: bare IV cell — i- prefix on bare root (no
+# CV-redup, no realis infix). IV counterpart to the OV-in_oblig
+# and DV-an_oblig SOC bare-hortative cells. Surfaces: itapon
+# (i + tapon), ituro (i + turo), ibigay (i + bigay). Same
+# distribution as the OV/DV bare cells (imperative, modal-XCOMP,
+# dependent / non-finite IV positions).
+- voice: IV
+  aspect: CTPL
+  mood: SOC
+  transitivity: TR
+  affix_class: i_oblig
+  feats: {APPL: CONVEY, MOOD: SOC}
+  operations:
+    - {op: prefix, value: "i"}
+  notes: itapon, ituro, ibigay (bare IV i- for hortative/imperative/modal-XCOMP)
 
 # === AV — RECPFV ("just-completed") =====================================
 #
@@ -516,6 +570,78 @@
     - {op: cv_redup}
     - {op: prefix, value: "ma"}
   notes: matutulog, mauupo (ma- non-volitional irrealis)
+
+# Phase 9.X.pre-4.7: pag- gerund nominalization. Two cells per
+# opted-in VERB root, both with ``base_pos: VERB`` and
+# ``pos: NOUN`` (POS-flip output to the nouns index via
+# `_index_paradigm_via_base_pos`). The two cells generate the
+# two productive surface variants:
+#
+# * No-redup: ``pag + ROOT`` = ``pagdating`` (C-initial main
+#   "the arrival"), ``pagtulong`` ("the helping"), ``pagaral``
+#   (V-initial no-redup variant; less common than ``pagaaral``
+#   but attested).
+# * CV-redup: ``pag + cv_redup(ROOT)`` = ``pagaaral`` (V-initial
+#   main "the studying" — cv_redup on V-initial gives VV-redup
+#   like ``aaral``), ``pagtatanim`` (C-initial intensive/IPFV
+#   gerund), ``pagsasabi`` (C-initial intensive).
+#
+# Both forms ride on ``affix_class: pag_gerund`` opt-in. Per-root
+# opt-in (rather than productive on every VERB) keeps scope
+# audit-attestation-gated and avoids spurious NOUN analyses on
+# roots that aren't actually nominalized in usage.
+# POS-flip cells: voice / aspect are not meaningful for the
+# nominalized output, but the loader's _require validator demands
+# both keys be present even when base_pos==VERB. Empty strings
+# satisfy the schema and pass through unchanged in the resulting
+# MorphAnalysis (NOMINALIZED feat distinguishes the gerund reading).
+- base_pos: VERB
+  pos: NOUN
+  voice: ''
+  aspect: ''
+  affix_class: pag_gerund
+  feats: {NOMINALIZED: true}
+  operations:
+    - {op: prefix, value: "pag"}
+  notes: pagdating (C-initial main), pagtulong, pagkatok (pag- PFV gerund)
+
+- base_pos: VERB
+  pos: NOUN
+  voice: ''
+  aspect: ''
+  affix_class: pag_gerund
+  feats: {NOMINALIZED: true}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pag"}
+  notes: pagaaral (V-initial main), pagtatanim, pagsasabi (pag- IPFV gerund / C-initial intensive)
+
+# Phase 9.X.pre-4.6: bare ma- AV SOC cell. Productive opt-in via
+# ``affix_class: [ma_soc]`` — distinct from the ``ma`` affix_class
+# (which produces na-/ma-+CV-redup NVOL forms). The per-root
+# explicit opt-in avoids cross-POS ambiguity with the Phase 5g
+# ``ma_adj`` paradigm — bare ``ma + root`` is the ADJ predicative
+# reading for ma_adj-class ADJ roots (``mainit`` / ``masaya`` /
+# ``maingay``), so VERB-only ma-class roots opt in to ``ma_soc``
+# while ADJ-coexisting roots (``init`` / ``saya`` / ``ingay``)
+# don't. The pre-4.5 attempt used a productive ``ma`` filter
+# instead and broke 4 ADJ-predicative tests; this opt-in shape
+# is the clean alternative.
+#
+# Surfaces (per opted-in root): ``ma + una → mauna`` ("go first"),
+# parallel to the OV/DV/IV CTPL SOC bare-hortative cells from
+# Phase 5n.A C14 and Phase 9.X.pre-4.1. Distribution: hortative
+# ("Mauna ka!" "Go first!"), modal-XCOMP context ("Maaari kang
+# mauna sa amin..."), and dependent / non-finite ma- positions.
+- voice: AV
+  aspect: CTPL
+  mood: SOC
+  transitivity: ''
+  affix_class: ma_soc
+  feats: {MOOD: SOC}
+  operations:
+    - {op: prefix, value: "ma"}
+  notes: mauna (bare ma- for hortative/imperative/modal-XCOMP; opt-in)
 
 # === Phase 4 §7.7: applicatives + causatives ============================
 #

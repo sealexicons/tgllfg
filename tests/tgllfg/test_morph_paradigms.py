@@ -83,7 +83,10 @@ UM_PARADIGM_FORMS = [
     ("gawa", "AV", "CTPL", "gagawa"),
     ("gawa", "OV", "PFV",  "ginawa"),
     ("gawa", "OV", "IPFV", "ginagawa"),
-    ("gawa", "OV", "CTPL", "gagawahin"),
+    # Phase 9.X.pre-4.2: gawa OV/CTPL/IND surface flipped from
+    # `gagawahin` (h-epenthesis default) to `gagawin` after the
+    # `a_deletion` sandhi flag was added to the gawa root.
+    ("gawa", "OV", "CTPL", "gagawin"),
     # gamit — use
     ("gamit", "AV", "PFV",  "gumamit"),
     ("gamit", "AV", "IPFV", "gumagamit"),

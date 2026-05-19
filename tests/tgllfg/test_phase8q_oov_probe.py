@@ -99,21 +99,22 @@ class TestOovProbeRealOov:
     def test_real_oov_still_reported(self) -> None:
         # Anti-deferral pin chain — keeps the assertion on a real
         # current-OOV token, repinned whenever the previous anchor
-        # is closed by a lex-add sub-PR:
+        # is closed by a lex-add or paradigm sub-PR:
         # pandanggo (8.Q-orig) → closed-in-9.C → mahusay → closed-in-9.F
         # → bare ``kilala`` → closed-in-9.O (added as bare ADJ in
         # adjectives.yaml) → ``kumbidado`` → closed in 9.X.pre-1.22
         # (added as Spanish-loan bare ADJ in adjectives.yaml) →
-        # ``gawin`` (current). ``gawin`` is the OV-imperative
-        # paradigm form of root ``gawa`` (which IS in the lex).
-        # Its non-generation is a paradigm-engine gap (the
-        # ``in_oblig`` stem-changing imperative cell doesn't fire
-        # for ``gawa`` → ``gawin``), not a lex gap — re-pinning
-        # here keeps the OOV probe anchored on a paradigm-cell-
-        # blocked surface that the lex sweep can't close.
-        oov = oov_probe("Gawin mo ang trabaho.")
+        # ``gawin`` → closed in 9.X.pre-4.2 (new ``a_deletion``
+        # sandhi flag on ``gawa`` root) → ``kunin`` (current).
+        # ``kunin`` is the OV-imperative paradigm form of root
+        # ``kuha`` (which IS in the lex). Its non-generation
+        # involves an irregular stem alternation (kuha → kun- via
+        # /h/ → /n/ substitution + /a/-deletion) that the current
+        # ``in_oblig`` paradigm engine doesn't handle — a
+        # paradigm-cell gap the lex sweep can't close.
+        oov = oov_probe("Kunin mo ang aklat.")
         oov_lower = {tok.lower() for tok in oov}
-        assert "gawin" in oov_lower
+        assert "kunin" in oov_lower
 
     def test_real_ng_ending_oov_still_reported(self) -> None:
         # ``huling`` (final / last — bare ``huli`` is the ADJ root)

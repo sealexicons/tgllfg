@@ -41,6 +41,26 @@
     ``na-`` for realis (``naganda``). The bare ``ma + root``
     surface is reserved for the adjectival reading.
 
+# Phase 9.X.pre-4.4: plural ma- adjective via CV-redup. Operations:
+# cv_redup on bare root first, then prefix ma. ``liit`` → ``liliit``
+# → ``maliliit`` "small (plural)"; ``tanda`` → ``tatanda`` →
+# ``matatanda`` "old (plural)"; ``bilis`` → ``bibilis`` →
+# ``mabibilis`` "fast (plural)". S&O 1972 §3.18 documents the
+# CV-redup-on-root variant alongside the singular ``ma-root``
+# form for ADJ-pluralization on collective / plural subjects.
+- affix_class: ma_adj
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ma"}
+  feats: {NUM: PL}
+  notes: |
+    Productive plural CV-redup ma- adjective. Same opt-in as the
+    bare-``ma`` cell (``affix_class: [ma_adj]``). Surfaces on
+    plural / collective subjects: ``maliliit`` ("small ones"),
+    ``matatanda`` ("old ones"), ``mabibilis`` ("fast ones").
+    ``NUM=PL`` feat distinguishes from singular ``maliit`` /
+    ``matanda`` / ``mabilis``.
+
 # === Phase 5h: degree-marking productive prefixes =======================
 #
 # The two cells below mirror the Phase 5g ``ma_adj`` cell's
