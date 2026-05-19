@@ -598,6 +598,13 @@
   gloss: do, make
   transitivity: TR
   affix_class: [um, in_oblig, an_oblig, maka, ipag]
+  sandhi_flags: [a_deletion]
+  # Phase 9.X.pre-4.2: a_deletion sandhi flag triggers low-vowel
+  # deletion at suffix attachment per S&O 1972 §4.21. Closes
+  # `gawin` (gawa + in via /a/-deletion) and the CV-redup variant
+  # `gagawin` (gagawa + in). Other a-final stems keep the standard
+  # h-epenthesis default — opt in case-by-case as the audit corpus
+  # surfaces them.
 
 - citation: giling
   pos: VERB

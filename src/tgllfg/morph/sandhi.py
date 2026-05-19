@@ -136,9 +136,15 @@ def _raise_final_o(stem: str) -> str:
     return stem
 
 
-def attach_suffix(base: str, suffix: str, *, high_vowel_deletion: bool = False) -> str:
+def attach_suffix(
+    base: str,
+    suffix: str,
+    *,
+    high_vowel_deletion: bool = False,
+    a_deletion: bool = False,
+) -> str:
     """Append ``suffix`` to ``base`` with vowel-hiatus repair plus
-    Phase 2C extensions.
+    Phase 2C / 9.X.pre-4 extensions.
 
     Always:
 
@@ -155,8 +161,21 @@ def attach_suffix(base: str, suffix: str, *, high_vowel_deletion: bool = False) 
     ``buksu + -in → bukshin``. Other vowel-final stems still take
     the standard h-epenthesis. C-final stems concatenate directly.
 
+    Per-root opt-in via ``a_deletion=True`` (Phase 9.X.pre-4): stems
+    ending in the *low* vowel /a/ delete the stem-final /a/ and the
+    ``h`` does *not* survive — but **only when the suffix is**
+    ``-in``. ``gawa + -in → gawin`` (a-deletion); ``gawa + -an →
+    gawahin`` keeps the h-epenthesis default. The suffix-specific
+    gate matches the audit-attested asymmetry — Tagalog's
+    low-vowel-deletion process targets the OV/CTPL ``-in`` suffix
+    rather than ``-an`` (DV) or other vowel-initial suffixes.
+
+    The two deletion flags are mutually independent — set one or
+    neither, not both. ``high_vowel_deletion`` and ``a_deletion``
+    apply to disjoint stem classes (i/u-final vs a-final).
+
     Schachter & Otanes 1972 §4.21 documents both the formal
-    h-epenthesis pattern and the colloquial deletion variant; the
+    h-epenthesis pattern and the colloquial deletion variants; the
     flag picks the variant per root.
     """
     if not suffix:
@@ -165,6 +184,8 @@ def attach_suffix(base: str, suffix: str, *, high_vowel_deletion: bool = False) 
     if base and is_vowel(base[-1]) and is_vowel(suffix[0]):
         if high_vowel_deletion and base[-1].lower() in "iu":
             return base[:-1] + "h" + suffix
+        if a_deletion and base[-1].lower() == "a" and suffix == "in":
+            return base[:-1] + suffix
         return base + "h" + suffix
     return base + suffix
 

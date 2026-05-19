@@ -164,13 +164,16 @@ class TestPhase8fOutOfScope:
         )
 
     def test_oov_verb_form_gagawin(self) -> None:
-        """``May gagawin ka ba?`` — `gagawin` (LF FUT of `gawa`)
-        is OOV. Future 8.B-class lex pass."""
+        """``May gagawin ka ba?`` — `gagawin` (OV CTPL IND of `gawa`)
+        was OOV before 9.X.pre-4.2. The pre-4.2 ``a_deletion`` sandhi
+        flag on ``gawa`` closes both the bare-form (``gawin``) and
+        the CV-redup CTPL (``gagawin``) surfaces; flipped to assert
+        parse-success."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text("May gagawin ka ba?", n_best=3)
-        assert len(parses) == 0, (
-            "gagawin OOV resolved — flip if 8.B-class lex sub-PR "
-            "added the missing paradigm cell."
+        assert len(parses) >= 1, (
+            "gagawin should now parse via the may + V-headed clause-"
+            "type after the 9.X.pre-4.2 a_deletion sandhi addition."
         )
 
     def test_oov_recp_form_kakilala(self) -> None:
