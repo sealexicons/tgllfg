@@ -1212,12 +1212,31 @@ def oov_probe(text: str) -> list[str]:
     testing.
     """
     from tgllfg.text.tokenizer import tokenize
-    from tgllfg.text.clitics import split_linker_ng
+    from tgllfg.text.clitics import (
+        split_apostrophe_t,
+        split_apostrophe_y,
+        split_linker_ng,
+    )
+    from tgllfg.text.multiword import merge_hyphen_compounds
     from tgllfg.morph.analyzer import analyze_tokens
 
     try:
         toks = tokenize(text)
+        # Phase 9.X.c5: full pre-parse pipeline applied so the OOV
+        # report reflects the parser's actual view of the token
+        # stream. Pre-9.X.c5 only ``split_linker_ng`` was applied,
+        # which caused hyphen-rejoined compounds (``tag-init`` →
+        # ``taginit``), X-Y reduplications (``manaka-naka`` →
+        # ``manakanaka``), apostrophe-clitic contractions
+        # (``rito'y`` → ``rito`` + ``ay``; ``Maria't`` →
+        # ``Maria`` + ``at``) to be misreported as OOV on their
+        # split halves even when the parser correctly handles the
+        # joined / synthesised form. The full pipeline mirrors
+        # ``src/tgllfg/core/pipeline.py``.
+        toks = split_apostrophe_t(toks)
+        toks = split_apostrophe_y(toks)
         toks = split_linker_ng(toks)
+        toks = merge_hyphen_compounds(toks)
         analyses = analyze_tokens(toks)
         unk: list[str] = []
         for t, a_list in zip(toks, analyses):

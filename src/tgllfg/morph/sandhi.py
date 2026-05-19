@@ -174,14 +174,18 @@ def attach_suffix(
     ``buksu + -in → bukshin``. Other vowel-final stems still take
     the standard h-epenthesis. C-final stems concatenate directly.
 
-    Per-root opt-in via ``a_deletion=True`` (Phase 9.X.pre-4): stems
-    ending in the *low* vowel /a/ delete the stem-final /a/ and the
-    ``h`` does *not* survive — but **only when the suffix is**
-    ``-in``. ``gawa + -in → gawin`` (a-deletion); ``gawa + -an →
-    gawahin`` keeps the h-epenthesis default. The suffix-specific
-    gate matches the audit-attested asymmetry — Tagalog's
-    low-vowel-deletion process targets the OV/CTPL ``-in`` suffix
-    rather than ``-an`` (DV) or other vowel-initial suffixes.
+    Per-root opt-in via ``a_deletion=True`` (Phase 9.X.pre-4 /
+    Phase 9.X.c5): stems ending in the *low* vowel /a/ delete the
+    stem-final /a/ and the ``h`` does *not* survive. Applies to
+    any vowel-initial suffix when the flag is set. ``gawa + -in →
+    gawin``; ``gawa + -an → gawan``; ``simula + -an → simulan``
+    (PFV-IPFV-CTPL forms ``sinimulan`` / ``sinisimulan`` /
+    ``sisimulan``). Per S&O 1972 §4.21, low-vowel deletion is a
+    per-root lex choice — Spanish-loan stems and some native
+    a-final stems use deletion; other native a-final stems retain
+    the h-epenthesis default. Pre-9.X.c5 the flag was gated to
+    ``-in`` suffix only; the gate was lifted to support audit-
+    attested DV forms.
 
     The two deletion flags are mutually independent — set one or
     neither, not both. ``high_vowel_deletion`` and ``a_deletion``
@@ -197,7 +201,7 @@ def attach_suffix(
     if base and is_vowel(base[-1]) and is_vowel(suffix[0]):
         if high_vowel_deletion and base[-1].lower() in "iu":
             return base[:-1] + "h" + suffix
-        if a_deletion and base[-1].lower() == "a" and suffix == "in":
+        if a_deletion and base[-1].lower() == "a":
             return base[:-1] + suffix
         return base + "h" + suffix
     return base + suffix

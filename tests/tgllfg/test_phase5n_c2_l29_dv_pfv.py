@@ -33,7 +33,7 @@ from tgllfg.core.pipeline import parse_text
     ("Inaralan ni Maria si Juan.",  "aral",   "ARAL <SUBJ, OBJ-AGENT>"),
     ("Binasahan ni Maria si Juan.", "basa",   "BASA <SUBJ, OBJ-AGENT>"),
     ("Binilihan ni Maria si Juan.", "bili",   "BILI <SUBJ, OBJ-AGENT>"),
-    ("Ginawahan ni Maria si Juan.", "gawa",   "GAWA <SUBJ, OBJ-AGENT>"),
+    ("Ginawan ni Maria si Juan.",   "gawa",   "GAWA <SUBJ, OBJ-AGENT>"),
     ("Tinulungan ni Maria si Juan.", "tulong", "TULONG <SUBJ, OBJ-AGENT>"),
     # Three previously deferred (verbs.yaml updated in Commit 2;
     # `bigay` also has a 2-arg + 3-arg DV LexicalEntry added in
