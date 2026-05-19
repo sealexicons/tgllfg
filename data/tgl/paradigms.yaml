@@ -364,6 +364,28 @@
     - {op: suffix, value: in}
   notes: kainin, bilihin (bare OV + -in for hortative/imperative/modal-XCOMP)
 
+# Phase 9.X.pre-4.5: paki- polite-request cell. Productive across
+# TR VERB roots declaring ``affix_class: [paki]``. Surfaces:
+# ``paki + abot → pakiabot`` ("please reach/pass"),
+# ``paki + sara → pakisara`` ("please close"),
+# ``paki + putol → pakiputol`` ("please cut"),
+# ``paki + bura → pakibura`` ("please erase").
+# Voice OV / aspect CTPL / mood SOC follows the same shape as
+# the in_oblig / an_oblig / i_oblig SOC bare-form cells —
+# paki- requests pattern with OV-transitive bare-stem imperatives
+# rather than aspect-marked indicative forms. The ``POLITE_MARKER``
+# feat distinguishes the polite-request reading from plain
+# imperative for downstream consumers.
+- voice: OV
+  aspect: CTPL
+  mood: SOC
+  transitivity: TR
+  affix_class: paki
+  feats: {MOOD: SOC, POLITE_MARKER: true}
+  operations:
+    - {op: prefix, value: paki}
+  notes: pakiabot, pakisara, pakiputol, pakibura (paki- polite request)
+
 # === DV — Dative / Locative Voice ========================================
 
 - voice: DV
