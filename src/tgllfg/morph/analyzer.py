@@ -352,6 +352,14 @@ class Analyzer:
         for r in self._data.roots:
             if r.pos == "VERB":
                 self._index_verb_paradigms(r)
+                # Phase 9.X.pre-4.7: VERB→NOUN/ADJ POS-flip cells
+                # (pag- gerund, ka- nominalization, pang- instrument,
+                # etc.) fire here. The guard in
+                # _index_paradigm_via_base_pos skips same-POS cells
+                # (cell.pos == "") so this doesn't double-index the
+                # standard verb-paradigm output already handled by
+                # _index_verb_paradigms above.
+                self._index_paradigm_via_base_pos(r)
             elif r.pos == "NOUN":
                 # Phase 5c §8 follow-on (Commit 6): expose the noun
                 # lemma + per-root feats on the MorphAnalysis. The
@@ -561,6 +569,15 @@ class Analyzer:
         """
         for cell in self._data.paradigm_cells:
             if cell.base_pos != root.pos:
+                continue
+            # Phase 9.X.pre-4.7: when called from the VERB-root
+            # branch, skip same-POS (cell.pos == "") cells — those
+            # are the standard verbal-paradigm cells already
+            # processed by :meth:`_index_verb_paradigms`. Only
+            # POS-flip cells (e.g., pag-gerund's `pos: NOUN`) fire
+            # here. NOUN/ADJ/NUM root paths don't have a parallel
+            # indexer, so this guard only triggers for VERB roots.
+            if cell.base_pos == "VERB" and not cell.pos:
                 continue
             if not _affix_class_match(cell.affix_class, root.affix_class):
                 continue

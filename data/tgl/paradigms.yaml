@@ -571,6 +571,51 @@
     - {op: prefix, value: "ma"}
   notes: matutulog, mauupo (ma- non-volitional irrealis)
 
+# Phase 9.X.pre-4.7: pag- gerund nominalization. Two cells per
+# opted-in VERB root, both with ``base_pos: VERB`` and
+# ``pos: NOUN`` (POS-flip output to the nouns index via
+# `_index_paradigm_via_base_pos`). The two cells generate the
+# two productive surface variants:
+#
+# * No-redup: ``pag + ROOT`` = ``pagdating`` (C-initial main
+#   "the arrival"), ``pagtulong`` ("the helping"), ``pagaral``
+#   (V-initial no-redup variant; less common than ``pagaaral``
+#   but attested).
+# * CV-redup: ``pag + cv_redup(ROOT)`` = ``pagaaral`` (V-initial
+#   main "the studying" — cv_redup on V-initial gives VV-redup
+#   like ``aaral``), ``pagtatanim`` (C-initial intensive/IPFV
+#   gerund), ``pagsasabi`` (C-initial intensive).
+#
+# Both forms ride on ``affix_class: pag_gerund`` opt-in. Per-root
+# opt-in (rather than productive on every VERB) keeps scope
+# audit-attestation-gated and avoids spurious NOUN analyses on
+# roots that aren't actually nominalized in usage.
+# POS-flip cells: voice / aspect are not meaningful for the
+# nominalized output, but the loader's _require validator demands
+# both keys be present even when base_pos==VERB. Empty strings
+# satisfy the schema and pass through unchanged in the resulting
+# MorphAnalysis (NOMINALIZED feat distinguishes the gerund reading).
+- base_pos: VERB
+  pos: NOUN
+  voice: ''
+  aspect: ''
+  affix_class: pag_gerund
+  feats: {NOMINALIZED: true}
+  operations:
+    - {op: prefix, value: "pag"}
+  notes: pagdating (C-initial main), pagtulong, pagkatok (pag- PFV gerund)
+
+- base_pos: VERB
+  pos: NOUN
+  voice: ''
+  aspect: ''
+  affix_class: pag_gerund
+  feats: {NOMINALIZED: true}
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pag"}
+  notes: pagaaral (V-initial main), pagtatanim, pagsasabi (pag- IPFV gerund / C-initial intensive)
+
 # Phase 9.X.pre-4.6: bare ma- AV SOC cell. Productive opt-in via
 # ``affix_class: [ma_soc]`` — distinct from the ``ma`` affix_class
 # (which produces na-/ma-+CV-redup NVOL forms). The per-root

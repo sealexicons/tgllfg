@@ -140,7 +140,7 @@
   pos: VERB
   gloss: study, learn
   transitivity: TR
-  affix_class: [mag, in_oblig, an_oblig, maka]
+  affix_class: [mag, in_oblig, an_oblig, maka, pag_gerund]
 
 - citation: asa
   pos: VERB
@@ -498,7 +498,7 @@
   pos: VERB
   gloss: arrive
   transitivity: INTR
-  affix_class: [um, maka]
+  affix_class: [um, maka, pag_gerund]
   sandhi_flags: [d_to_r]
 
 - citation: dilig
@@ -1017,7 +1017,7 @@
   pos: VERB
   gloss: sing
   transitivity: INTR
-  affix_class: [um, mag, i_oblig, maka, magsi]
+  affix_class: [um, mag, i_oblig, maka, magsi, pag_gerund]
 
 - citation: kape
   pos: VERB
@@ -1035,7 +1035,7 @@
   pos: VERB
   gloss: knock (on a door)
   transitivity: INTR
-  affix_class: [um, mag, maka]
+  affix_class: [um, mag, maka, pag_gerund]
 
 - citation: kausap
   pos: VERB
@@ -1676,7 +1676,7 @@
   pos: VERB
   gloss: go to
   transitivity: INTR
-  affix_class: [um, mag, maka]
+  affix_class: [um, mag, maka, pag_gerund]
 
 - citation: putak
   pos: VERB
@@ -1701,7 +1701,7 @@
   pos: VERB
   gloss: say, tell
   transitivity: TR
-  affix_class: [mag, in_oblig, an_oblig, maka, magpa]
+  affix_class: [mag, in_oblig, an_oblig, maka, magpa, pag_gerund]
   feats: {SAY_CLASS: true}
 
 - citation: sabog
@@ -2145,7 +2145,7 @@
   pos: VERB
   gloss: plant
   transitivity: TR
-  affix_class: [mag, i_oblig, an_oblig, maka]
+  affix_class: [mag, i_oblig, an_oblig, maka, pag_gerund]
 
 - citation: tanong
   pos: VERB
@@ -2176,7 +2176,7 @@
   pos: VERB
   gloss: laugh
   transitivity: INTR
-  affix_class: [um, maka]
+  affix_class: [um, maka, pag_gerund]
 
 - citation: tawag
   pos: VERB
@@ -2248,7 +2248,7 @@
   pos: VERB
   gloss: look at
   transitivity: TR
-  affix_class: [um, an_oblig, maka]
+  affix_class: [um, an_oblig, maka, pag_gerund]
   feats: {AV_ABSOL: true}
 
 - citation: tipid
@@ -2315,7 +2315,7 @@
   pos: VERB
   gloss: help
   transitivity: TR
-  affix_class: [um, mag, an_oblig, maka]
+  affix_class: [um, mag, an_oblig, maka, pag_gerund]
 
 - citation: tuloy
   pos: VERB
