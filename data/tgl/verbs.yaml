@@ -201,7 +201,7 @@
   pos: VERB
   gloss: flood
   transitivity: INTR
-  affix_class: [um, ma, maka]
+  affix_class: [um, ma, maka, magpa]
 
 - citation: balaan
   pos: VERB
@@ -481,6 +481,7 @@
   gloss: hold (an event), conduct
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka]
+  sandhi_flags: [d_to_r]
 
 - citation: dapa
   pos: VERB
@@ -702,7 +703,7 @@
   pos: VERB
   gloss: prepare
   transitivity: TR
-  affix_class: [mag, in_oblig, an_oblig, maka]
+  affix_class: [mag, in_oblig, an_oblig, i_oblig, maka]
 
 - citation: hango
   pos: VERB
@@ -843,6 +844,13 @@
   gloss: undress, take off (clothes)
   transitivity: TR
   affix_class: [mag, in_oblig, maka]
+
+- citation: hudyat
+  pos: VERB
+  gloss: signal
+  transitivity: TR
+  affix_class: [mag, i_oblig, an_oblig, maka]
+  source: audit-corpus
 
 - citation: hugas
   pos: VERB
@@ -1092,7 +1100,7 @@
   pos: VERB
   gloss: get, take
   transitivity: TR
-  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka]
+  affix_class: [um, in_oblig, an_oblig, i_oblig, mang, maka, ma]
 
 - citation: kumpisal
   pos: VERB
@@ -1701,7 +1709,7 @@
   pos: VERB
   gloss: say, tell
   transitivity: TR
-  affix_class: [mag, in_oblig, an_oblig, maka, magpa, pag_gerund]
+  affix_class: [mag, in_oblig, an_oblig, maka, magpa, pag_gerund, ma]
   feats: {SAY_CLASS: true}
 
 - citation: sabog
@@ -1752,6 +1760,20 @@
   gloss: witness
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
+
+- citation: saklolo
+  pos: VERB
+  gloss: rescue, save, help in emergency
+  transitivity: TR
+  affix_class: [ma_an, maka]
+  source: audit-corpus
+
+- citation: salanta
+  pos: VERB
+  gloss: be devastated, be destroyed
+  transitivity: INTR
+  affix_class: [ma, maka]
+  source: audit-corpus
 
 - citation: sali
   pos: VERB
@@ -1848,7 +1870,7 @@
   pos: VERB
   gloss: start, begin
   transitivity: TR
-  affix_class: [um, mag, maka]
+  affix_class: [um, mag, an_oblig, maka]
 
 - citation: sindi
   pos: VERB
@@ -2160,6 +2182,13 @@
   transitivity: INTR
   affix_class: [um, mang, maka]
 
+- citation: tapat
+  pos: VERB
+  gloss: match, be equal to, correspond to
+  transitivity: TR
+  affix_class: [ma_an, maka]
+  source: audit-corpus
+
 - citation: tapon
   pos: VERB
   gloss: throw away
@@ -2259,9 +2288,9 @@
 
 - citation: tira
   pos: VERB
-  gloss: live, dwell
+  gloss: live, dwell; remain, be left over
   transitivity: INTR
-  affix_class: [um, mag, an_oblig, maka]
+  affix_class: [um, mag, an_oblig, maka, ma]
 
 - citation: trabaho
   pos: VERB
@@ -2352,6 +2381,13 @@
   gloss: learn
   transitivity: INTR
   affix_class: [ma, mag, maka]
+
+- citation: tuyo
+  pos: VERB
+  gloss: dry up, become dry
+  transitivity: INTR
+  affix_class: [ma, maka]
+  source: audit-corpus
 
 - citation: uhaw
   pos: VERB
@@ -2445,6 +2481,13 @@
   gloss: go home
   transitivity: INTR
   affix_class: [um, mag, i_oblig, maka, magsi]
+
+- citation: wala
+  pos: VERB
+  gloss: be lost, disappear, become absent
+  transitivity: INTR
+  affix_class: [ma, maka]
+  source: audit-corpus
 
 - citation: walis
   pos: VERB
