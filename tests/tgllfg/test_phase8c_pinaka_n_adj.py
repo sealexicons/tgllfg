@@ -238,18 +238,17 @@ class TestPhase8cOutOfScope:
             "flip this pin if a construction sub-PR closed it."
         )
 
-    def test_sa_pp_plus_wh_q_still_fails(self) -> None:
+    def test_sa_pp_plus_wh_q_now_parses(self) -> None:
         """``Ano ang pinakamatigas na bato sa mundo?`` (wh-Q +
-        ADJ-modifier + N-head + locative-PP). The grammar's
-        wh-Q constraint and a sa-PP downstream constituent are
-        interacting in a way that surfaces as
-        ``neg-existential-failed: ¬ (↓1 WH)`` — separate from
-        the pinaka- paradigm-cell scope."""
+        ADJ-modifier + N-head + locative-PP). Closed by 9.X.c8
+        (NP-internal sa-PP modifier rule) — ``bato sa mundo`` is
+        now admitted as NP[NOM] with sa-PP attached as ADJUNCT
+        on the head N, so the wh-Q construction's downstream NP
+        composition succeeds.
+
+        Pin flipped from ``== 0`` (pre-9.X.c8) to ``== 1``."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Ano ang pinakamatigas na bato sa mundo?", n_best=3
         )
-        assert len(parses) == 0, (
-            "sa-PP + wh-Q unexpectedly parses — flip this pin "
-            "if a construction sub-PR closed it."
-        )
+        assert len(parses) == 1

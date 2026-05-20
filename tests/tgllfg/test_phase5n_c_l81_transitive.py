@@ -183,16 +183,19 @@ class TestNonUniversalTopicStillRejected:
 
 
 class TestNoAmbiguityBlowup:
-    """Each transitive variant produces exactly one parse for the
-    canonical surface; no ambiguity blowup with the Commit 7
-    intransitive rule or with existing V-S transitive rules."""
+    """Each transitive variant produces a bounded number of parses
+    for the canonical surface; no ambiguity blowup with the
+    Commit 7 intransitive rule or with existing V-S transitive
+    rules. The 5-daughter shape with sa-PP admits two readings
+    after the 9.X.c8 NP-internal sa-PP modifier rule (clausal
+    ADJUNCT vs OBJ-internal modifier on ``kanin``)."""
 
-    @pytest.mark.parametrize("sentence", [
-        "Bawat bata, kumain ng kanin.",
-        "Bawat bata, tumakbo sa parke.",
-        "Bawat bata, kumain ng kanin sa parke.",
-        "Bawat isa, kumain ng kanin.",
+    @pytest.mark.parametrize("sentence,expected", [
+        ("Bawat bata, kumain ng kanin.", 1),
+        ("Bawat bata, tumakbo sa parke.", 1),
+        ("Bawat bata, kumain ng kanin sa parke.", 2),
+        ("Bawat isa, kumain ng kanin.", 1),
     ])
-    def test_unique_parse(self, sentence: str) -> None:
+    def test_unique_parse(self, sentence: str, expected: int) -> None:
         parses = parse_text(sentence)
-        assert len(parses) == 1
+        assert len(parses) == expected

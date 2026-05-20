@@ -610,6 +610,13 @@
   gloss: living, residing (in a place)
   affix_class: [naka_resultative]
 
+- citation: tropiko
+  pos: ADJ
+  gloss: tropical
+  source: audit-corpus
+  loan: SPANISH
+  affix_class: []
+
 - citation: totoo
   pos: ADJ
   gloss: true, real, genuine
