@@ -2135,6 +2135,25 @@
   gloss: mutual friends; pair or group of friends
   source: audit-corpus
 
+# 9.X.c18: agent-N derivations. ``magsasaka`` and ``mag-aaral`` are
+# productive mag-CV-redup-N "doer of X" nominals (parallel to
+# magulang "parent"). The morph analyzer also produces V[VOICE=AV,
+# ASPECT=IPFV] readings of these surfaces (from mag-paradigm of
+# saka/aral). The N readings are added explicitly here as POS-flip
+# coexistence so ``ang mga magsasaka`` / ``ang mga mag-aaral`` form
+# as NPs in PANAHON sentences (sent-8/23/31/38). The two readings
+# stay disjoint at parse time by category (N → NP via simple-NP
+# rule; V → S via V-headed clause rules).
+- citation: magsasaka
+  pos: NOUN
+  gloss: farmer
+  source: audit-corpus
+
+- citation: mag-aaral
+  pos: NOUN
+  gloss: student, pupil
+  source: audit-corpus
+
 - citation: magulang
   pos: NOUN
   gloss: parent
