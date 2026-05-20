@@ -1734,6 +1734,7 @@
 - citation: kasabay
   pos: NOUN
   gloss: companion, concurrent
+  feats: {KA_PRED: true}
   source: audit-corpus
 
 - citation: kasagutan
@@ -1749,6 +1750,7 @@
 - citation: kasama
   pos: NOUN
   gloss: companion
+  feats: {KA_PRED: true}
   source: audit-corpus
 
 - citation: kasangkapan

@@ -53,6 +53,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "HUMAN",
         "INTENSIFIER",
         "INTERJ",
+        "KA_PRED",
         "KASING_N",
         "KITA",
         "LOC_EXISTENTIAL",
