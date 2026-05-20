@@ -782,6 +782,57 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- 9.X.c20: ``lalo na`` GEN-NP emphatic appositive -----------
+    #
+    # ``simula ng pagtatanim lalo na ng palay`` "the start of
+    # planting, especially of rice" (R&G 1981 PANAHON sent-30 — the
+    # ``ng palay`` GEN-NP is an emphasized appositive on the
+    # preceding ``ng pagtatanim`` head-NP).
+    #
+    # ``lalo na`` is a fixed-phrase emphatic discourse marker
+    # ("especially / particularly"). The grammar pairs it with a
+    # companion change in ``clitics/placement.py``
+    # (``disambiguate_homophone_clitics``): when ``na`` follows
+    # ``lalo``, it's the linker (LINK=NA) regardless of right
+    # context — without that, the reorder pass moves ``na`` to
+    # clause-final position and the LINK=NA reading is lost (which
+    # is why pre-9.X.c20 the rule wouldn't fire even with the
+    # c-tree shape correctly defined).
+    #
+    # Rule:
+    #
+    #   NP[CASE=GEN] → NP[CASE=GEN] PART[INTENSIFIER] PART[LINK=NA]
+    #                  NP[CASE=GEN]
+    #     (↑) = ↓1                       matrix is the head GEN-NP
+    #     ↓4 ∈ (↑ APP)                  emphasized GEN-NP joins APP set
+    #     (↓2 LEMMA) =c 'lalo'           gate to lalo only
+    #     (↓2 INTENSIFIER) =c true
+    #     (↓3 LINK) =c 'NA'
+    #
+    # The ``APP`` attachment parallels the existing Phase 9.P
+    # si-personal-name appositive rule (``cfg/nominal.py``): the
+    # appositive sits in the head's APP set rather than ADJUNCT —
+    # it's a referential narrowing, not a modifier.
+    #
+    # Reference: S&O 1972 §6 (emphatic apposition with ``lalo na``);
+    # R&G 1981 PANAHON essay (sent-30).
+    rules.append(Rule(
+        "NP[CASE=GEN]",
+        [
+            "NP[CASE=GEN]",
+            "PART[INTENSIFIER]",
+            "PART[LINK=NA]",
+            "NP[CASE=GEN]",
+        ],
+        [
+            "(↑) = ↓1",
+            "↓4 ∈ (↑ APP)",
+            "(↓2 LEMMA) =c 'lalo'",
+            "(↓2 INTENSIFIER) =c true",
+            "(↓3 LINK) =c 'NA'",
+        ],
+    ))
+
     # --- Phase 6.C C3c: predicative-ADJ coordination ---------------
     #
     # ``Matanda at maganda si Maria.`` "Maria is old and beautiful"

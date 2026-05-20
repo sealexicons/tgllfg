@@ -689,6 +689,26 @@ def disambiguate_homophone_clitics(
         elif (
             prev is not None
             and any(
+                ma.pos == "PART" and ma.feats.get("LEMMA") == "lalo"
+                for ma in prev
+            )
+        ):
+            # 9.X.c20: ``lalo na X`` is a fixed-phrase emphatic
+            # discourse marker ("especially X") where ``na`` is the
+            # linker regardless of right context — X can be NOUN /
+            # ADJ / VERB or even a case-marker-headed NP (e.g.,
+            # ``lalo na ng palay`` "especially of rice" in PANAHON
+            # sent-30). The right-context check used by the broader
+            # PART[INTENSIFIER] + na branch (next elif) wouldn't
+            # admit the ng-NP context, so we factor out the lalo-
+            # specific case as its own branch with no right-context
+            # constraint. Drops the ALREADY clitic reading so
+            # ``na`` stays in place between ``lalo`` and the
+            # emphasized constituent.
+            out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
+        elif (
+            prev is not None
+            and any(
                 ma.pos == "PART" and ma.feats.get("INTENSIFIER") is True
                 for ma in prev
             )
