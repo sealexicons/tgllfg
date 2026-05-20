@@ -395,6 +395,42 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- 9.X.c15: compound ``dahil sa + clause`` subordinator ---------
+    #
+    # ``Dahil sa tuyo ang lupa ay makapal ang alikabok.``
+    #     "Because the ground is dry, the dust is thick"
+    #     (R&G 1981 PANAHON sent-11).
+    #
+    # Tagalog admits two variants of the reason-subordinator:
+    #
+    #   ``dahil [S]``          — bare PART + S (Phase 5l C9 rule above)
+    #   ``dahil sa [S]``       — PART + ``sa`` marker + S (this commit)
+    #
+    # The ``sa`` is treated as a structural marker introducing the
+    # cause clause; it is structurally consumed (no equation refers
+    # to ↓2). Compositionally this parallels the PREP-form ``dahil
+    # sa NP`` (PREP+NP[DAT]) but the daughter is a clausal S
+    # instead of an NP, taking the SubordClause path.
+    #
+    # Disambiguation against the PREP path is automatic: the PREP
+    # rule (``PP → PREP NP[CASE=DAT]``) requires an NP daughter,
+    # while this SubordClause rule requires an S daughter. The
+    # chart picks per immediate constituent.
+    #
+    # Reference: R&G 1981 §6.6 (compound subordinators); R&G 1981
+    # PANAHON essay (sent-11).
+    rules.append(Rule(
+        "SubordClause",
+        ["PART[COMP_TYPE=REAS]", "ADP[CASE=DAT]", "S"],
+        [
+            "(↑) = ↓3",
+            "(↑ SUBORD_TYPE) = 'REAS'",
+            "(↓1 COMP_TYPE) =c 'REAS'",
+            "(↓1 LEMMA) =c 'dahil'",
+            "(↓2 MARKER) =c 'SA'",
+        ],
+    ))
+
     # === Phase 5l Commit 13: ay-fronted SubordClause topic ============
     #
     # ``S → SubordClause PART[LINK=AY] S``
