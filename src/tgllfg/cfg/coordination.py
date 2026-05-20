@@ -620,6 +620,168 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # --- 9.X.c11: N-level mga marker for coord contexts ----------------
+    #
+    # ``ng bahay, gusali at mga tanim`` "of houses, buildings and
+    # plants" (R&G 1981 PANAHON sent-22) — three Ns sharing one
+    # ``ng`` case marker, where the LAST conjunct carries ``mga``.
+    # The existing NP-level mga rule
+    # (``NP[CASE=X] → CASE-MARKER PART[PLURAL_MARKER] N``) only
+    # admits ``mga`` immediately after the case marker on the WHOLE
+    # NP — it cannot mark individual conjuncts inside an N-level
+    # coord.
+    #
+    # This rule lifts ``mga`` to the N level so it can appear on
+    # any conjunct of an N-level coord:
+    #
+    #   N → PART[PLURAL_MARKER] N
+    #     (↑) = ↓2                  inherit head N's features
+    #     (↑ NUM) = 'PL'            plural-mark the N
+    #     (↑ MGA_INTERNAL) = true   tag (see below)
+    #     (↓1 PLURAL_MARKER) =c true
+    #
+    # **MGA_INTERNAL tag** prevents the simple NP rule
+    # (``NP[CASE=X] → CASE-MARKER N``) from consuming an N-mga'd
+    # output — that would duplicate the canonical NP-level
+    # mga path (``NP[CASE=X] → CASE-MARKER PART[PLURAL] N``). The
+    # tag is rejected by the simple NP rule via ``¬ (↓2
+    # MGA_INTERNAL)``, leaving the N-mga path scoped to coord
+    # contexts where the NP-level mga rule doesn't reach
+    # (non-leading conjuncts).
+    #
+    # Reference: R&G 1981 PANAHON essay (sent-22).
+    rules.append(Rule(
+        "N",
+        ["PART", "N"],
+        [
+            "(↑) = ↓2",
+            "(↑ NUM) = 'PL'",
+            "(↑ MGA_INTERNAL) = true",
+            "(↓1 PLURAL_MARKER) =c true",
+        ],
+    ))
+
+    # --- 9.X.c11: N-level 3+-conjunct flat coord via N_LONG_LIST ------
+    #
+    # ``ng bahay, gusali at mga tanim`` "of houses, buildings and
+    # plants" (R&G 1981 PANAHON sent-22) — three Ns with one
+    # comma + ``at`` (non-Oxford), sharing a single ``ng`` case
+    # marker. The existing N-level binary rule above (Phase 5k
+    # Commit 9) handles 2-conjunct N coord; this block adds the
+    # 3+-conjunct N-level form via a left-recursive ``N_LONG_LIST``
+    # non-terminal that accumulates Ns separated by commas, plus
+    # wrap rules that close the list with ``at + N``. Mirrors the
+    # NP-level ``NP_LONG_LIST_<case>`` infrastructure (line 260
+    # above) but at the case-less N level for shared-marker
+    # contexts.
+    #
+    # Architecture:
+    #
+    #   N_LONG_LIST → N COMMA N                       (base: 2 Ns)
+    #   N_LONG_LIST → N_LONG_LIST COMMA N             (recursive: +1)
+    #
+    #   N[COORD=AND] → N_LONG_LIST PART[COORD=AND] N         (non-Oxford)
+    #   N[COORD=AND] → N_LONG_LIST COMMA PART[COORD=AND] N   (Oxford)
+    #
+    # The base requires exactly 2 Ns + 1 comma, encoding ≥1
+    # iteration of ``(COMMA N)`` after the first N — the ``+``
+    # quantifier in EBNF terms. The wrap rules close with
+    # ``[COMMA?] AT N``, so the matrix N[COORD=AND] covers all
+    # **3+ conjuncts** uniformly (3-conjunct case: base + wrap;
+    # 4+ conjunct case: base + recursive iterations + wrap).
+    # No separate per-arity rules are needed.
+    #
+    # **Design note vs. NP_LONG_LIST.** The NP_LONG_LIST base
+    # requires exactly 3 NPs, with separate explicit rules for
+    # the 3-conjunct case (lines 172-215). N_LONG_LIST starts at
+    # 2 because (a) the construction is structurally simpler at
+    # the case-less N level — no per-CASE rule explosion to
+    # justify the split — and (b) starting at 2 lets one rule
+    # family (LONG_LIST + wrap) cover all 3+ conjuncts uniformly,
+    # which is closer to the ``(COMMA N)+`` quantifier semantics
+    # the construction expresses.
+    #
+    # **AND-only scope.** Mirrors NP_LONG_LIST. Multi-conjunct OR
+    # at the N level is rare in attested usage and the NUM
+    # percolation (``↓1 NUM`` for OR) doesn't carry cleanly
+    # through the recursive accumulator; can be added if needed.
+    #
+    # As with the binary N-coord rule, no CASE on the matrix N —
+    # bare N is case-less by design. The construction's primary
+    # consumer is the case-marker → NP projection (``ng bahay,
+    # gusali at tanim`` where ``ng`` distributes over all three Ns
+    # via the single-case-marker NP rule).
+    #
+    # PUNCT[COMMA] daughters are syncategorematic. Targeted
+    # ``CONJUNCTS`` sharing via ``(↑ CONJUNCTS) = (↓1 CONJUNCTS)``
+    # in the recursive and wrap rules unifies the accumulator's
+    # set with the matrix's, avoiding full-f-struct sharing that
+    # would conflict with matrix COORD/NUM equations.
+    #
+    # Reference: S&O 1972 §6.7 (multi-conjunct enumeration); R&G
+    # 1981 PANAHON essay (sent-22).
+
+    # N_LONG_LIST base: exactly 2 Ns separated by 1 comma.
+    rules.append(Rule(
+        "N_LONG_LIST",
+        [
+            "N",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "N",
+        ],
+        [
+            "↓1 ∈ (↑ CONJUNCTS)",
+            "↓3 ∈ (↑ CONJUNCTS)",
+        ],
+    ))
+    # N_LONG_LIST recursive: list + comma + N, accumulating via
+    # targeted CONJUNCTS sharing.
+    rules.append(Rule(
+        "N_LONG_LIST",
+        [
+            "N_LONG_LIST",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "N",
+        ],
+        [
+            "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
+            "↓3 ∈ (↑ CONJUNCTS)",
+        ],
+    ))
+    # 3+-conjunct wrap (non-Oxford form): list + at + N.
+    rules.append(Rule(
+        "N[COORD=AND]",
+        [
+            "N_LONG_LIST",
+            "PART[COORD=AND]",
+            "N",
+        ],
+        [
+            "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
+            "↓3 ∈ (↑ CONJUNCTS)",
+            "(↑ COORD) = 'AND'",
+            "(↑ NUM) = 'PL'",
+            "(↓2 COORD) =c 'AND'",
+        ],
+    ))
+    # 3+-conjunct wrap (Oxford form): list + comma + at + N.
+    rules.append(Rule(
+        "N[COORD=AND]",
+        [
+            "N_LONG_LIST",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "PART[COORD=AND]",
+            "N",
+        ],
+        [
+            "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
+            "↓4 ∈ (↑ CONJUNCTS)",
+            "(↑ COORD) = 'AND'",
+            "(↑ NUM) = 'PL'",
+            "(↓3 COORD) =c 'AND'",
+        ],
+    ))
+
     # --- Phase 6.C C3c: predicative-ADJ coordination ---------------
     #
     # ``Matanda at maganda si Maria.`` "Maria is old and beautiful"
