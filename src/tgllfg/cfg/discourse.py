@@ -132,6 +132,42 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- 9.X.c12: clause-final BENEFICIARY + TOPIC PPs ---------------
+    #
+    # ``Inihahanda nila ang lupa para sa binhi.`` "They prepare the
+    # land for the seed" (R&G 1981 PANAHON sent-32).
+    # ``Iba ang kamalayang Pilipino tungkol sa oras.`` "The Filipino
+    # awareness about time is different" (PANAHON sent-39 tail).
+    #
+    # Lifts the Phase 5n.A Commit 18 deferral note for BENEFICIARY
+    # (``para sa``) and TOPIC (``tungkol sa``) PPs — admits them
+    # clause-finally, parallel to TIME_FRAME and EXCEPTIVE rules
+    # directly above. Both PREP_TYPEs scope semantically over the
+    # matrix proposition (benefactive: "for X" / topical: "about
+    # X"), so clause-final attachment matches the prior reasoning
+    # used for EXCEPTIVE.
+    #
+    # The SOURCE (``mula sa``) and REASON (``dahil sa``) PREP_TYPEs
+    # are NOT lifted here. SOURCE has Wackernagel interaction risk
+    # (mula-sa-NP can also appear in range expressions like ``mula
+    # X hanggang Y``); REASON (``dahil sa``) admits both PP and
+    # subordinate-clause complements and the disambiguation is
+    # construction-class work. Both remain restricted to ay-
+    # fronting position pending audit-driven justification.
+    #
+    # Reference: R&G 1981 §7.6 (clause-final adjunct PPs); R&G 1981
+    # PANAHON essay (sent-32 + sent-39 tail).
+    for prep_type in ("BENEFICIARY", "TOPIC"):
+        rules.append(Rule(
+            "S",
+            ["S", "PP"],
+            [
+                "(↑) = ↓1",
+                "↓2 ∈ (↑ ADJUNCT)",
+                f"(↓2 PREP_TYPE) =c '{prep_type}'",
+            ],
+        ))
+
 
     # --- Phase 5f Commit 5: clause-final FREQUENCY AdvP ---------
     #
