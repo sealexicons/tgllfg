@@ -2388,6 +2388,47 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # === 9.X.c21: post-NP topic-marker ``naman`` attachment ============
+    #
+    # ``Ang ulan naman na kasama nito ay nagpapabaha.`` (R&G 1981
+    # PANAHON sent-23). ``naman`` after a NOUN-headed NP functions
+    # as a topic-contrast discourse marker ("the rain, however / on
+    # the other hand"). Pre-9.X.c21 this surface was blocked
+    # because the homophone disambiguator (correctly) selects the
+    # non-clitic ``naman`` after a NOUN host, but no NP-internal
+    # attachment rule existed to consume it — so it stayed in
+    # place between the topic NP and the subsequent linker / ay.
+    #
+    # Rule shape mirrors the Phase 5m C7 ``mismo`` post-NP rule
+    # directly above — set-valued ADJUNCT membership rather than a
+    # scalar slot, since topic-contrast is a sentential-discourse
+    # marker that scopes over the matrix proposition via its
+    # attachment to the topic NP.
+    #
+    #   NP[CASE=X] → NP[CASE=X] PART[LEMMA=naman]
+    #     (↑) = ↓1                head NP supplies CASE / PRED / etc.
+    #     ↓2 ∈ (↑ ADJUNCT)       naman joins ADJUNCT set
+    #     (↓2 LEMMA) =c 'naman'   lemma gate (excludes other PARTs)
+    #
+    # Disambiguation: the existing CLITIC_CLASS=2P ``naman`` entry
+    # (post-V Wackernagel reading) is morphologically distinct —
+    # the disambiguator (``clitics/placement.py``) selects the
+    # non-clitic entry when ``naman`` follows a NOUN, and that's
+    # the entry this rule consumes.
+    #
+    # Reference: R&G 1981 §7.3 (topic-contrast naman); R&G 1981
+    # PANAHON essay (sent-23).
+    for case in ("NOM", "GEN", "DAT"):
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [f"NP[CASE={case}]", "PART"],
+            [
+                "(↑) = ↓1",
+                "↓2 ∈ (↑ ADJUNCT)",
+                "(↓2 LEMMA) =c 'naman'",
+            ],
+        ))
+
     # === Phase 5n.A Commit 7: depictive ``mag-isa`` post-PRON via linker (§18 L62+L63) =====
     #
     # ``Nakatira siyang mag-isa sa bahay.`` "He lives by himself in the

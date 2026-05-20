@@ -708,9 +708,15 @@ def disambiguate_homophone_clitics(
             out.append([ma for ma in cands if ma.feats.get("is_clitic") is not True])
         elif (
             prev is not None
-            and any(
-                ma.pos == "PART" and ma.feats.get("INTENSIFIER") is True
-                for ma in prev
+            and (
+                any(
+                    ma.pos == "PART" and ma.feats.get("INTENSIFIER") is True
+                    for ma in prev
+                )
+                or any(
+                    ma.pos == "PART" and ma.feats.get("LEMMA") == "naman"
+                    for ma in prev
+                )
             )
             and _na_right_context_is_linker_target(analyses, i)
         ):
@@ -719,6 +725,13 @@ def disambiguate_homophone_clitics(
             # ``INTENSIFIER: YES``) followed by ``na`` followed by an
             # ADJ is the linker for the intensifier-ADJ wrapper rule
             # in cfg/nominal.py (``Lubos na maganda ang bata``).
+            # 9.X.c21: extended to PART[LEMMA=naman] so the topic-NP
+            # + naman + RC pattern (``Ang ulan naman na kasama nito
+            # ay nagpapabaha`` — PANAHON sent-23) also routes ``na``
+            # to the linker reading. Without this, the
+            # both-readings default lets ``reorder_clitics`` move
+            # the entire ``na`` token to clause-final, stripping
+            # the LINK=NA reading and breaking the NP-RC wrap rule.
             # Without this branch, the default-both-readings
             # fallthrough lets reorder_clitics treat ``na`` as the
             # ALREADY clitic and move it to clause-final position,
