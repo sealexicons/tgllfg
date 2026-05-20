@@ -1309,6 +1309,56 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- 9.X.c19: ka-N companion S_GAP for RC bodies --------------
+    #
+    # ``Ang ulan na kasama nito ay nagpapabaha.`` "The rain that
+    # accompanies this causes flooding" (R&G 1981 PANAHON sent-23
+    # — closes when the topic-NP ``naman`` attachment is separately
+    # addressed).
+    #
+    # Parallel to the c17 matrix S form (``S → N NP[GEN]
+    # NP[CASE=NOM]``) but as an ``S_GAP`` for relative-clause
+    # bodies. The SUBJ is the gap (``REL-PRO``) bound by the
+    # enclosing NP-RC wrap; the GEN-NP names the companion.
+    #
+    #   S_GAP → N NP[CASE=GEN]
+    #     (↑ PRED) = 'BE-N <SUBJ>'
+    #     (↑ SUBJ) = (↑ REL-PRO)
+    #     (↑ N_LEMMA) = ↓1 LEMMA
+    #     (↑ POSS) = ↓2
+    #     (↑ PREDICATIVE) = true
+    #     (↓1 KA_PRED) =c true     ← scope gate
+    #     ¬ (↓1 WH)
+    #
+    # The ``KA_PRED=c true`` constraint scopes the rule to ka-
+    # prefixed companion nominals lex'd with ``KA_PRED=true``
+    # (Phase 9.X.c19 lex updates to ``kasama`` / ``kasabay``).
+    # Without this gate the rule competed with ordinary POSS-NPs
+    # inside DAT contexts (``kaysa sa kapatid niya`` admits a
+    # competing S_GAP parse where ``kapatid niya`` is misread as
+    # an N-pred); the gate keeps the rule scoped to true companion
+    # nominals only.
+    #
+    # ``KA_PRED`` is a new binary feat (BINARY_FEATS 59 → 60);
+    # declared in ``core/feats.py`` and documented in
+    # ``docs/feats-binary-audit.md``.
+    #
+    # Reference: R&G 1981 §7.1 (nominal predication, RC variant);
+    # R&G 1981 PANAHON essay (sent-23).
+    rules.append(Rule(
+        "S_GAP",
+        ["N", "NP[CASE=GEN]"],
+        [
+            "(↑ PRED) = 'BE-N <SUBJ>'",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ N_LEMMA) = ↓1 LEMMA",
+            "(↑ POSS) = ↓2",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 KA_PRED) =c true",
+            "¬ (↓1 WH)",
+        ],
+    ))
+
     # --- 9.X.c17: N-predicate + GEN-NP + ang-NP SUBJ ---------------
     #
     # ``Kasabay ng bagyo ang pagpatak ng monsoon.`` "Together with
