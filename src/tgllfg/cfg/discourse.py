@@ -132,6 +132,48 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- 9.X.c13: sentence-initial REASON PP fronted with comma -----
+    #
+    # ``Dahil sa init ng araw, panay ang tulo ng pawis ng tao.``
+    #     "Because of the heat of the sun, the flow of human sweat
+    #     is continuous." (R&G 1981 PANAHON sent-12).
+    # ``Dahil sa ganitong pagkakaayos ng panahon, iba ang kamalayang
+    #     Pilipino tungkol sa oras.`` (PANAHON sent-39 fronted part).
+    #
+    # Adds a fronted-PP-with-comma S rule for REASON PPs (``dahil
+    # sa X``). Parallels the existing ay-fronted-PP rule
+    # (extraction.py: ``S → PP PART[LINK=AY] S``) and the
+    # SubordClause-with-comma rule
+    # (subordination.py: ``S → SubordClause PUNCT[COMMA] S``).
+    #
+    # Rule shape:
+    #
+    #   S → PP PUNCT[PUNCT_CLASS=COMMA] S
+    #     (↑) = ↓3                       matrix is the post-comma S
+    #     (↑ TOPIC) = ↓1                 fronted PP is TOPIC
+    #     ↓1 ∈ (↑ ADJ)                  also sits in matrix ADJ set
+    #     (↓1 PREP_TYPE) =c 'REASON'    restrict to dahil-PP
+    #
+    # The REASON gate matches the SOURCE / BENEFICIARY / TOPIC /
+    # EXCEPTIVE deferral pattern — we add construction support one
+    # PREP_TYPE at a time as corpus pressure surfaces it. REASON-
+    # fronted-with-comma is a frequent R&G construction; SOURCE
+    # has Wackernagel interaction with range expressions and stays
+    # deferred.
+    #
+    # Reference: R&G 1981 §7.7 (sentence-fronted adjunct PP); R&G
+    # 1981 PANAHON essay (sent-12 + sent-39).
+    rules.append(Rule(
+        "S",
+        ["PP", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
+        [
+            "(↑) = ↓3",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJ)",
+            "(↓1 PREP_TYPE) =c 'REASON'",
+        ],
+    ))
+
     # --- 9.X.c12: clause-final BENEFICIARY + TOPIC PPs ---------------
     #
     # ``Inihahanda nila ang lupa para sa binhi.`` "They prepare the
