@@ -508,6 +508,19 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, an_oblig, maka]
 
+# 9.X.c16: dilig INTR coexistence. The TR entry above produces the
+# transitive surfaces (``Dinilig ko ang halaman``, ``Diniligan ko
+# ang hardin``); this INTR entry produces the locative-AV reading
+# ``dumidilig sa X`` "is irrigating at X" where the OBJ-themed
+# entity is implicit / contextual and the sa-PP encodes the
+# location. Parallels the ``lakad`` / ``tira`` TR+INTR pattern.
+# Closes PANAHON sent-29 (``Ito ang dumidilig sa mga bukirin``).
+- citation: dilig
+  pos: VERB
+  gloss: water/irrigate (at a place — intransitive locative)
+  transitivity: INTR
+  affix_class: [um]
+
 - citation: dilim
   pos: VERB
   gloss: become dark, get dark
