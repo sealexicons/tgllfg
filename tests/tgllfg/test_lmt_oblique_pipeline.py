@@ -64,9 +64,12 @@ class TestLakadLocative:
 
     def test_lumakad_with_sa_np_yields_obl_loc_parse(self) -> None:
         results = _parses("Lumakad ang bata sa palengke.")
-        # Two parses survive: the bare intransitive (kept ADJUNCT)
-        # and the locative (OBL-LOC).
-        assert len(results) == 2
+        # Three parses survive: (a) bare intransitive with sa-NP as
+        # clausal ADJUNCT, (b) locative entry with sa-NP reclassified
+        # into OBL-LOC, (c) bare intransitive with sa-NP attached as
+        # NP-internal ADJUNCT of "ang bata" (9.X.c8 NP-internal sa-PP
+        # modifier rule — "[the child at the market] walked").
+        assert len(results) == 3
         obl_parse = _find_obl_loc_parse(results)
         assert obl_parse is not None, (
             f"no parse with OBL-LOC; results: "

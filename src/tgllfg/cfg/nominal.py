@@ -662,6 +662,61 @@ def register_rules(rules: list[Rule]) -> None:
             ["(↑) = ↓1", "(↑ POSS) = ↓2", "¬ (↑ POSS-EXTRACTED)"],
         ))
 
+    # --- 9.X.c8: NP-internal sa-PP locative/oblique modifier ---
+    #
+    # ``Ang panahon sa isang bansang tropiko ay kakatwa.`` "The
+    # weather in a tropical country is strange" (R&G 1981 PANAHON
+    # sent-1). ``ang bahay sa bukid`` "the house on the farm" (R&G
+    # ``ang manok``). ``Bihira ang bagyo sa mga buwang ito.``
+    # "Typhoons are rare in these months" (PANAHON sent-37). A
+    # DAT-NP attaches at the right edge of the head NP as an
+    # ADJUNCT member, projecting locative or oblique modification
+    # onto the head N.
+    #
+    # Parallel to the §7.8 NP-internal possessive rule directly
+    # above (``NP[CASE=X] → NP[CASE=X] NP[CASE=GEN]``) — same
+    # right-edge attachment shape, but the inner NP is DAT-marked
+    # and rides into ADJUNCT (set-valued) rather than POSS.
+    #
+    # No linker between head N and the sa-PP: Tagalog sa-PPs do
+    # not take pre-PP linkers (cf. ``ang panahon **sa** isang
+    # bansang tropiko`` — no ``na`` / ``-ng`` between ``panahon``
+    # and ``sa``). This contrasts with N + ADJ modification which
+    # does require a linker (``ang **magandang** panahon``).
+    #
+    # **PRED existential gates** on both daughters (``(↓1 PRED)`` /
+    # ``(↓2 PRED)``) restrict the rule to N-projected NPs on both
+    # head and modifier. PRON-projected NPs (``siya`` / ``ka`` /
+    # bare DAT wh-PRON ``kanino``) carry no ``PRED`` on the lex
+    # entry — their NP-projection f-structure is featureless for
+    # ``PRED``. The gates block the over-generation
+    # ``[PRON + bare-DAT-PRON]`` (e.g., ``*ka kanino`` as NP) that
+    # would otherwise spawn from rule application onto pronominal
+    # daughters where the construction is ungrammatical.
+    #
+    # Ambiguity note: this rule introduces PP-attachment
+    # ambiguity with existing clause-level DAT-NP attachments
+    # (e.g., ``Pumunta ang bata sa kalye`` admits both readings:
+    # "The child went to the street" with sa-DAT as goal, and
+    # "The child in the street went" with sa-DAT as N-modifier).
+    # Both readings are linguistically grammatical; the grammar
+    # produces parses for both. The audit-coverage gate verifies
+    # no full-sentence loss from the added ambiguity.
+    #
+    # Reference: R&G 1981 §6.6 (NP modification with prepositional
+    # phrases); R&G 1981 PANAHON essay.
+    for case in ("NOM", "GEN", "DAT"):
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [f"NP[CASE={case}]", "NP[CASE=DAT]"],
+            [
+                "(↑) = ↓1",
+                "↓2 ∈ (↑ ADJUNCT)",
+                "(↓1 PRED)",
+                "(↓2 PRED)",
+            ],
+        ))
+
     # Pronominal NPs: case carried on PRON itself.
     rules.append(Rule(
         "NP[CASE=NOM]",
