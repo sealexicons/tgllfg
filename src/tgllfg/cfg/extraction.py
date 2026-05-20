@@ -1453,6 +1453,49 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- 9.X.c10: ay-fronting a bare DAT-NP as topic adjunct ----
+    #
+    # ``Sa tag-init ay manaka-naka lamang ang ulan.`` "In summer,
+    # the rain is only occasional" (R&G 1981 PANAHON sent-4).
+    # ``Sa bahay ay umuwi siya.`` "At home, he went home."
+    #
+    # Parallel to the AdvP-ay-S and PP-ay-S rules above, but with
+    # a bare DAT-NP daughter (``Sa N``, ``Sa NP``) admitting the
+    # topic-adjunct reading of sentence-initial sa-PPs. The bare
+    # DAT-NP path differs from the PP path: PP is built by the
+    # discourse-module rules (``tuwing Lunes``, ``noong Pebrero``
+    # — TIME_FRAME PARTs); the canonical ``sa NP`` locative /
+    # temporal is built as ``NP[CASE=DAT]`` via ADP+N.
+    #
+    # The fronted DAT-NP joins ADJ via set-membership and is
+    # marked as the matrix's TOPIC. The inner clause is a bare
+    # S (no gap) — the DAT-NP is a sentential adjunct, not an
+    # extracted OBL argument. The existing OBL-fronting rule
+    # (line 1284, ``S → NP[CASE=DAT] PART[LINK=AY] S_GAP_OBL``)
+    # handles the case where the DAT-NP IS the inner clause's
+    # OBL-θ argument; this rule handles the non-governed
+    # adjunct case where the DAT-NP scopes over the clause
+    # without filling any subcategorized slot.
+    #
+    # For sentences where the inner S admits both readings (e.g.,
+    # ``Sa parke ay pumunta si Maria.`` — pumunta has OBL-LOC slot),
+    # both rules fire and produce distinct parses (governed-OBL vs
+    # topic-adjunct). This is the standard PP-attachment ambiguity
+    # (parallel to 9.X.c8 NP-internal sa-PP modifier ambiguity);
+    # both readings are linguistically valid.
+    #
+    # Reference: R&G 1981 §7.4 (ay-fronting topic adjuncts); R&G
+    # 1981 PANAHON essay (sent-4).
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=DAT]", "PART[LINK=AY]", "S"],
+        [
+            "(↑) = ↓3",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJ)",
+        ],
+    ))
+
 
     # --- Phase 5e Commit 5: headless / free relatives ---
     #

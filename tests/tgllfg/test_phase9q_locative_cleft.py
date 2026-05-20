@@ -291,19 +291,27 @@ class TestPhase9qOutOfScope:
     """Construction-class variants NOT closed by 9.Q. Pin each;
     flip when the relevant follow-on sub-PR closes it."""
 
-    def test_sa_fronted_ay_cleft(self) -> None:
+    def test_sa_fronted_ay_cleft_now_parses(self) -> None:
         """``Sa tag-init ay manaka-naka lamang ang ulan.`` —
-        Sa-fronted temporal adverbial + ay-cleft. Different
-        construction (ay-inverted, not locative-predicate);
-        belongs to Phase 5d ay-fronting family. Defer until a
-        sub-PR adds the Sa-fronted-PP-ay form (and the relevant
-        lex like ``manaka-naka``)."""
+        Sa-fronted temporal adverbial + ay-fronted ADV-pred.
+        Closed by 9.X.c10 (``S → NP[CASE=DAT] PART[LINK=AY] S``)
+        composed with the 9.X.c7 ADV-predicate rule and the
+        9.X.c3 X-Y reduplication tokenizer rejoin
+        (``manaka-naka`` → ``manakanaka``).
+
+        Pin flipped from ``== 0`` to ``== 2``: the two parses
+        correspond to PP-attachment ambiguity introduced by
+        9.X.c8 (NP-internal sa-PP modifier creates one extra
+        reading where ``sa tag-init`` attaches as ADJUNCT on
+        the head N of the post-ay clause's SUBJ, alongside the
+        canonical topic-adjunct reading)."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
-            "Sa tag-init ay manaka-naka lamang ang ulan.", n_best=2,
+            "Sa tag-init ay manaka-naka lamang ang ulan.", n_best=5,
         )
-        assert len(parses) == 0, (
-            "Sa-fronted ay-cleft may have closed; review and flip."
+        assert len(parses) == 2, (
+            f"expected 2 parses (topic-adjunct + NP-internal "
+            f"sa-PP modifier ambiguity); got {len(parses)}"
         )
 
     def test_sa_wh_cleft(self) -> None:
