@@ -2046,6 +2046,44 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # --- 9.X.c17: N-level intensifier wrap (parallel to ADJ form) ----
+    #
+    # ``masyadong pansin`` "(too much) attention" (R&G 1981 PANAHON
+    # sent-40 — ``Hindi niya masyadong pansin ang paglipas nito``).
+    # ``lubhang ginhawa`` "(extreme) comfort" — generic parallel.
+    #
+    # Mirrors the Phase 5h Commit 3 ADJ-intensifier-wrap directly
+    # above (``ADJ → PART[INTENSIFIER] PART[LINK] ADJ``) but at the
+    # N level for intensified nominal heads. Used in nominal-
+    # predicate constructions where the intensifier scopes over
+    # the N (``Hindi niya masyadong pansin ang X`` "She doesn't
+    # give too much attention to X").
+    #
+    # The matrix N is tagged ``INTENSIFIER=true`` and inherits
+    # ``INTENSITY`` from the wrapping PART. The inner-N's
+    # f-structure shares with the matrix via ``(↑) = ↓3`` so the
+    # downstream nominal-pred rules (``S → N NP[CASE=NOM]`` /
+    # ``S → N NP[CASE=GEN] NP[CASE=NOM]``) admit the wrapped N.
+    #
+    # Reference: S&O 1972 §3.13 (intensifier modification on
+    # nouns); R&G 1981 PANAHON essay (sent-40).
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "N",
+            [
+                "PART[INTENSIFIER]",
+                f"PART[LINK={link}]",
+                "N",
+            ],
+            [
+                "(↑) = ↓3",
+                "(↑ INTENSIFIER) = true",
+                "(↑ INTENSITY) = ↓1 INTENSITY",
+                "(↓1 INTENSIFIER) =c true",
+                f"(↓2 LINK) =c '{link}'",
+            ],
+        ))
+
 
     # --- Phase 5h Commit 5: ``medyo`` zero-linker variant ---------
     #

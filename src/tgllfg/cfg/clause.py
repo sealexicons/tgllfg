@@ -1309,6 +1309,60 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- 9.X.c17: N-predicate + GEN-NP + ang-NP SUBJ ---------------
+    #
+    # ``Kasabay ng bagyo ang pagpatak ng monsoon.`` "Together with
+    # the storm is the falling of the monsoon" (R&G 1981 PANAHON
+    # sent-28 — closes when the SUBJ NP nominalization gap is
+    # separately addressed).
+    # ``Kasama ng aso ang pusa.`` "The cat is together with the dog."
+    # ``Pansin niya ang aklat.`` "She notices the book."
+    #
+    # Extends the bare N-predicate clause (rule directly above,
+    # ``S → N NP[CASE=NOM]``) to admit a GEN-NP between the
+    # predicate-N and the ang-NP SUBJ. Two construction families
+    # use this shape:
+    #
+    # 1. ka-N companion nominals (``kasabay`` / ``kasama`` /
+    #    ``katabi``): the GEN-NP names the companion party.
+    # 2. Nominal-headed transitive-like predicates (``pansin`` /
+    #    ``tiwala``): the GEN-NP names the actor of the verbal-noun
+    #    predicate.
+    #
+    # Both families bind the GEN-NP as ``POSS`` on the matrix
+    # f-structure — semantically loose (POSS covers both companion
+    # and actor roles in Tagalog nominal predication) but
+    # structurally uniform.
+    #
+    # No special gating beyond ``¬ (↓1 WH)`` (mirrors the bare
+    # N-pred rule). The construction is structurally disjoint from
+    # V-headed clauses (V ≠ N), so cross-firing with the various
+    # V-frame rules is excluded by the daughter category.
+    #
+    # **S_GAP variant deferred.** A parallel ``S_GAP → N
+    # NP[CASE=GEN]`` rule would let the construction appear inside
+    # a relative clause (``ang ulan na kasama nito`` PANAHON
+    # sent-23), but it's ambiguous with ordinary POSS-NPs inside
+    # DAT contexts (``kaysa sa kapatid niya`` admits a competing
+    # S_GAP parse where ``kapatid niya`` is an N-pred). Future
+    # commit can revisit with a lemma gate (``KA_PRED`` feat or
+    # explicit lemma whitelist) to scope the S_GAP variant.
+    #
+    # Reference: R&G 1981 §7.1 (nominal predication with GEN
+    # complement); R&G 1981 PANAHON essay.
+    rules.append(Rule(
+        "S",
+        ["N", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BE-N <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ N_LEMMA) = ↓1 LEMMA",
+            "(↑ POSS) = ↓2",
+            "(↑ PREDICATIVE) = true",
+            "¬ (↓1 WH)",
+        ],
+    ))
+
 
     # --- Phase 8.R: impersonal clock-time predication --------------
     #
