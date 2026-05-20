@@ -106,6 +106,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑) = ↓2",
             "¬ (↓2 N_RC)",
             "¬ (↓2 CARDINAL_VALUE)",
+            "¬ (↓2 MGA_INTERNAL)",
         ],
     ))
     rules.append(Rule(
@@ -116,6 +117,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑) = ↓2",
             "¬ (↓2 N_RC)",
             "¬ (↓2 CARDINAL_VALUE)",
+            "¬ (↓2 MGA_INTERNAL)",
         ],
     ))
     rules.append(Rule(
@@ -126,6 +128,7 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑) = ↓2",
             "¬ (↓2 N_RC)",
             "¬ (↓2 CARDINAL_VALUE)",
+            "¬ (↓2 MGA_INTERNAL)",
         ],
     ))
 

@@ -58,6 +58,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "LOC_EXISTENTIAL",
         "MAGISA",
         "MEASURE",
+        "MGA_INTERNAL",
         "MIRATIVE",
         "MODAL",
         "MODAL_STANDALONE",

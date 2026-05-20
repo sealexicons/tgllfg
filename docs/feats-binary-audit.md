@@ -29,6 +29,10 @@ inspection: comment text containing capitalized words followed by
 
 ## The 55 binary feats — migration targets
 
+Subsequent phases extended the inventory: 9.O.3 (+1), 9.O.4 (+1),
+9.O.5 (+1), 9.X.c11 (+1) → 59 total. Each extension is documented
+inline below.
+
 Every entry below is migrated from string-sentinel `YES`/`NO` to
 Python `True`/`False`. Grammar rule patterns use the `[X]` shorthand
 for `[X=true]` (LFG-canonical) and explicit `[X=false]` for the
@@ -70,6 +74,7 @@ negative.
 | `LOC_EXISTENTIAL` | locative existential reading |
 | `MAGISA` | "alone" emphatic predicate |
 | `MEASURE` | NP is a measure phrase |
+| `MGA_INTERNAL` | N is marked by `mga` via the N-level rule (9.X.c11; simple-NP-rule disambiguation tag) |
 | `MIRATIVE` | particle is mirative |
 | `MODAL` | clause carries a modal head |
 | `MODAL_STANDALONE` | modal is non-complement-taking standalone |
