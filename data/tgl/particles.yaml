@@ -1302,6 +1302,17 @@
 - surface: masyado
   pos: PART
   feats: {INTENSIFIER: true, INTENSITY: EXCESSIVE}
+# 9.X.c14: lubha PART INTENSIFIER coexistence. The existing
+# ``lubha`` ADV entry (line ~2033) is preserved for the manner-
+# adverb usage; the new PART entry feeds the Phase 5h intensifier
+# wrapper rule
+# (``ADJ → PART[INTENSIFIER] PART[LINK={NA,NG}] ADJ`` —
+# cfg/nominal.py line 2031), parallel to the masyado / talaga /
+# lubos entries above. Closes PANAHON sent-6 (``lubhang mahaba ang
+# araw`` "the day is extremely long").
+- surface: lubha
+  pos: PART
+  feats: {INTENSIFIER: true, INTENSITY: EMPHATIC, LEMMA: lubha}
 
 # === Phase 5i Commit 1: wh-words (adverbial + Q + comp + tag) ============
 #
