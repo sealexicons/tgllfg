@@ -164,6 +164,59 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # === 9.X.c9: pre-N V-attributive RC wrap ============================
+    #
+    # ``ang natitirang buwan`` "the remaining months" (PANAHON sent-34).
+    # ``ang kumakaing bata`` "the eating child".
+    #
+    # Parallel to the post-N RC wrap directly above
+    # (``N → N PART[LINK={NA,NG}] S_GAP``), but with the daughter
+    # order reversed: the gapped relative clause precedes the head
+    # N, with the linker attaching to the modifier rather than the
+    # head. Tagalog admits both orders for N+RC modification
+    # (R&G 1981 §6.6); the post-N form was already in the grammar
+    # (Phase 5n.A Commit 8 for the existential N-level path, Phase
+    # 4 §7.5 for the canonical NP-level path), the pre-N form is
+    # added here at the N-level.
+    #
+    # Rule shape:
+    #
+    #   N → S_GAP PART[LINK={NA,NG}] N
+    #     (↑) = ↓3                       head N supplies PRED, FORM
+    #     ↓1 ∈ (↑ ADJ)                  RC joins head N's ADJ set
+    #     (↓1 REL-PRO PRED) = (↓3 PRED) REL-PRO points to head
+    #     (↓1 REL-PRO) =c (↓1 SUBJ)     gap is SUBJ position
+    #
+    # **No N_RC tag.** The Phase 6.G C2 ``N_RC=true`` tag on the
+    # post-N N-level RC rule (line 154 above) blocks feedback into
+    # the simple-NP rule, preventing duplication of the canonical
+    # NP-level RC wrap path (extraction.py: ``NP[CASE=X] →
+    # NP[CASE=X] PART[LINK] S_GAP``). The pre-N construction has
+    # no canonical NP-level parallel — there is no NP-level
+    # ``NP[CASE=X] → S_GAP PART[LINK] NP[CASE=X]`` rule because
+    # DET attaches to the head, not to the pre-modifier. The
+    # N-level pre-N rule is the unique route, so no
+    # disambiguation tag is needed; the simple-NP rule consumes
+    # the pre-N N normally.
+    #
+    # Closes PANAHON sent-34 (``May kalamigan ang mga natitirang
+    # buwan``) when composed with the existing mga-marked NP rules
+    # and the Phase 8 May + N + NP[CASE=NOM] HAVE-construction.
+    #
+    # Reference: R&G 1981 §6.6 (NP modification: both pre-N and
+    # post-N orders); R&G 1981 PANAHON essay.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "N",
+            ["S_GAP", f"PART[LINK={link}]", "N"],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ)",
+                "(↓1 REL-PRO PRED) = (↓3 PRED)",
+                "(↓1 REL-PRO) =c (↓1 SUBJ)",
+            ],
+        ))
+
 
     # === Phase 5n.A Commit 8: nasa-headed gapped clause for RC bodies (§18 L64) =====
     #

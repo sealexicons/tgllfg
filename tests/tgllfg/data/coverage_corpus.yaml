@@ -3568,8 +3568,16 @@
     — grammatically composable bare-NP predication.
 - text: Kumain ng.
   construction: 'robustness: incomplete GEN-NP'
-  expected: fail
-  notes: ng without N produces no completed NP states
+  expected: fragment
+  notes: |
+    ng without N produces no completed NP states. Pre-9.X.c9 the
+    bare V "Kumain" left no S_GAP fragment trace because no rule
+    predicted S_GAP at left-edge; 9.X.c9 added a pre-N RC rule
+    (N → S_GAP PART[LINK] N) which predicts S_GAP at left-edge,
+    so the bare V completes to S_GAP(0,1) and surfaces as a
+    fragment. The outcome is still a non-parse (no full sentence
+    parses) — fragment vs fail is a chart-tracking detail, not a
+    construction-correctness change.
 - text: Kumain ang aso ng isda.
   construction: 'classic: AV transitive (Kroeger)'
   expected: parse
