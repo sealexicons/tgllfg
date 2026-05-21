@@ -199,7 +199,13 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Reference: R&G 1981 §7.6 (clause-final adjunct PPs); R&G 1981
     # PANAHON essay (sent-32 + sent-39 tail).
-    for prep_type in ("BENEFICIARY", "TOPIC"):
+    #
+    # Phase 9.X.c29 extends the loop to include GOAL (``tungo sa X``
+    # "toward X") for PANAHON sent-31 ``... tungo sa bukid`` —
+    # semantically parallel to BENEFICIARY / TOPIC (a thematic
+    # role scoping the matrix proposition), structurally identical
+    # via the same ``S → S PP`` rule.
+    for prep_type in ("BENEFICIARY", "TOPIC", "GOAL"):
         rules.append(Rule(
             "S",
             ["S", "PP"],

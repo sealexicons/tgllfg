@@ -36,6 +36,21 @@
   gloss: early
   affix_class: [ma_adj]
 
+# Phase 9.X.c29: ``akay`` is polysemous. nouns.yaml carries the
+# NOUN entries ("offspring of fowl; one led by the hand") and
+# verbs.yaml carries the VERB entry (TR "lead by the hand").
+# This bare ADJ entry covers the resultative-stative sense
+# ("being led / led by the hand"; PANAHON sent-31 ``akay na
+# ang kanilang mga kalabaw`` = "their carabaos are being led").
+# Parallel to other bare-root stative-passive ADJs like
+# ``tulog`` / ``sira``. Disambiguates by slot: ``ang akay`` (NOUN)
+# vs. ``akay ang X`` (ADJ-pred).
+- citation: akay
+  pos: ADJ
+  gloss: led, being led (resultative-stative)
+  affix_class: []
+  source: audit-corpus
+
 # Phase 9.O.3 follow-on: ``ayaw`` / ``gusto`` / ``kailangan`` as
 # bare stative-passive ADJ entries with a GEN-actor reading.
 # Audit-attested direct-NP-object construction
