@@ -1106,6 +1106,17 @@
 - surface: "-"
   pos: PUNCT
   feats: {PUNCT_CLASS: HYPHEN}
+# === Phase 9.X.c25: em-dash surrogate `--` ============================
+# Double-hyphen ``--`` (and longer runs ``---``, etc.) tokenize as a
+# single token via the Phase 9.X.c25 ``-{2,}`` regex addition in
+# ``text/tokenizer.py`` and surface here as ``PUNCT[PUNCT_CLASS=
+# DASH]`` — analogous to the COMMA PUNCT entry below. The DASH class
+# is consumed by clause-final NP-appositive and S-continuation rules
+# in ``cfg/discourse.py`` (parallel to the existing comma-fronted /
+# comma-appositive rules).
+- surface: "--"
+  pos: PUNCT
+  feats: {PUNCT_CLASS: DASH, LEMMA: "--"}
 - surface: "*"
   pos: PART
   feats: {OP: TIMES}

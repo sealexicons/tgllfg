@@ -572,3 +572,53 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 ADV_TYPE) =c 'FREQUENCY'",
         ],
     ))
+
+
+    # --- Phase 9.X.c25: em-dash clause-final appositive ``S -- XP`` -
+    #
+    # ``Ang tawag nila rito'y siyesta -- isang kaugaliang nakuha
+    #  nila sa Kastila.``
+    #     "What they call it is siesta — a custom they took from
+    #      the Castilians."  (PANAHON sent-15)
+    #
+    # User suggestion 2026-05-20: treat ``--`` like an em-dash —
+    # semantically a comma-equivalent that introduces a parenthetical
+    # or appositive. The Phase 9.X.c25 tokenizer pre-pass
+    # (``text/tokenizer.py``) merges consecutive ``-`` characters
+    # into a single ``--`` token; the Phase 9.X.c25 lex entry in
+    # particles.yaml surfaces it as ``PUNCT[PUNCT_CLASS=DASH]``.
+    #
+    # Two rules cover the audit-corpus em-dash uses (sent-15,
+    # sent-41):
+    #
+    #   (a) NP appositive  ``S -- N``   — clause-final bare N or
+    #       cardinal-N (no case marker; Tagalog indefinite NP
+    #       surfaces). The cardinal-modified-N rule builds N (not
+    #       NP[CASE=NOM] which requires a marker), so this rule
+    #       consumes N to admit both bare and cardinal-modified
+    #       appositives.
+    #   (b) Clause appositive  ``S -- S``  — a continuation clause
+    #       that elaborates on the matrix (used in sent-41 for
+    #       ``na ang ibig sabihin ay laging huli``).
+    #
+    # F-structure: matrix S inherits the pre-dash clause's
+    # f-structure via ``(↑) = ↓1``; the post-dash XP rides as ``APP``
+    # set-membership (parallel to the Phase 9.X.c20 ``lalo na``-
+    # mediated GEN-NP appositive). No CLAUSE_TYPE shift — the
+    # pre-dash clause's clause-type continues to govern.
+    rules.append(Rule(
+        "S",
+        ["S", "PUNCT[PUNCT_CLASS=DASH]", "N"],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ APP)",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["S", "PUNCT[PUNCT_CLASS=DASH]", "S"],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ APP)",
+        ],
+    ))

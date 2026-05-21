@@ -51,6 +51,7 @@ _PFX_ALT = "(?:" + "|".join(_TGL_HYPHEN_PREFIXES) + ")"
 _WORD = re.compile(
     _PFX_ALT + r"-[aeiou]\w*"   # Tagalog prefix + - + vowel-initial stem
     r"|\w+"                       # ordinary word
+    r"|-{2,}"                     # double-hyphen / em-dash surrogate
     r"|\S",                       # standalone non-word
     re.IGNORECASE,
 )
@@ -65,7 +66,10 @@ def tokenize(s: str) -> list[Token]:
         # like ``Nag-uusap`` via norm ``naguusap``). Bare hyphens
         # (length-1 ``-`` tokens) keep their norm as ``-`` so the
         # punctuation / arithmetic-minus path still sees them.
-        if len(t) > 1 and "-" in t:
+        # All-hyphen runs (``--`` / ``---``; the em-dash surrogate
+        # added 9.X.c25) preserve their literal norm so the PUNCT
+        # lex entry for ``--`` can match.
+        if len(t) > 1 and "-" in t and t != "-" * len(t):
             norm = t.lower().replace("-", "")
         else:
             norm = t.lower()
