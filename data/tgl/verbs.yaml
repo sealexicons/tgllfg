@@ -693,6 +693,11 @@
   gloss: mix
   transitivity: TR
   affix_class: [um, mag, in_oblig, maka]
+  # Phase 9.X.c30: AV_ABSOL admits AV without overt OBJ — reciprocal
+  # "mix together" reading (``Naghalo ang dalawa.`` "The two
+  # mixed together"; PANAHON sent-13). Same precedent as
+  # ``kita`` (see / meet — reciprocal AV).
+  feats: {AV_ABSOL: true}
 
 - citation: hamon
   pos: VERB

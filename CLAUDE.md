@@ -31,7 +31,8 @@ excluded from `test-fast` / `test-slow` / `test-both` and only runs via
 the standard gates are enough.
 
 Bash timeouts: 180000ms is enough for `test-fast` / `test-slow` /
-`test-both` / `test-postgres` / `check`; bump to 600000ms for
+`test-postgres` / `check`; use 240000ms for `test-both` (fast wall
+observed at ~195s in Phase 9.X.c30); bump to 600000ms for
 `test-xslow`. Don't pad to the ceiling for the standard gates.
 
 Capture-first idiom for failing runs:
