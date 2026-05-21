@@ -2248,6 +2248,43 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 9.X.c39: FREQUENCY-ADV pre-V modifier --------------
+    #
+    # ``Ang silangang Pilipinas ay laging dinadalaw ng mga bagyo.``
+    #     "The eastern Philippines is often visited by storms."
+    #                                              (PANAHON sent-35)
+    #
+    # Parallel to the Phase 5g manner-ADJ rule above, but with a
+    # FREQUENCY-class ADV (``lagi`` / ``palagi`` / ``madalas`` etc.)
+    # in modifier position. The clause-final FREQUENCY AdvP rule
+    # (Phase 5f Commit 5) covers post-V placement; this rule covers
+    # pre-V (clause-medial-with-linker) placement.
+    #
+    # ``ADV`` is the analyzer's category for FREQUENCY-class roots
+    # like ``lagi`` and ``madalas`` (despite their YAML ``pos: PART``,
+    # the analyzer reclassifies them as ADV via the ADV_TYPE feat;
+    # see ``morph/analyzer.py``). The corresponding ADJ-headed
+    # adverbial use (``karaniwang masarap ...``) already composes
+    # via the line-2240 ADJ + linker + S rule because ``karaniwan``
+    # is lexed as ADJ.
+    #
+    # The ADV joins the matrix S's ADJ set; the matrix inherits the
+    # inner S's f-structure (PRED, SUBJ, ASPECT, etc.) via
+    # ``(↑) = ↓3``. ``(↓1 ADV_TYPE) =c 'FREQUENCY'`` keeps non-
+    # frequency ADVs (TIME, MANNER, LOCATION — handled by other
+    # clause-final rules) out of this slot.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            ["ADV", f"PART[LINK={link}]", "S"],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ)",
+                "(↓1 ADV_TYPE) =c 'FREQUENCY'",
+            ],
+        ))
+
+
     # --- Phase 5h Commit 4: kaysa comparison-complement -------
     #
     # ``Mas matalino siya kaysa kay Maria.``

@@ -513,6 +513,23 @@
   affix_class: []
   source: audit-corpus
 
+# Phase 9.X.c39: ``silangan`` is polysemous. nouns.yaml carries
+# the NOUN entry ("east"). This bare ADJ entry covers the
+# attributive-"eastern" sense (PANAHON sent-35 ``Ang silangang
+# Pilipinas ...`` = "The eastern Philippines ...") parallel to
+# the c28 ``pilipino`` ADJ pattern (and the Phase 5g pattern for
+# nationality / location-class nouns that surface as N-N compound
+# modifiers in Tagalog). The ADJ reading composes via the
+# existing ADJ + linker + N pre-N modifier rule
+# (cfg/nominal.py:1901). NOUN vs ADJ disambiguates by slot —
+# ``ang silangan`` (DET+N) triggers NOUN; ``X na silangan`` /
+# ``silangang X`` triggers ADJ modifier.
+- citation: silangan
+  pos: ADJ
+  gloss: eastern (attributive)
+  affix_class: []
+  source: audit-corpus
+
 # Phase 9.X.c31: ``pinid`` ADJ-resultative entry. Generates
 # ``nakapinid`` "closed, shut" via the naka_resultative paradigm
 # (parallel to ``nakaupo`` / ``nakatira``). The existing
