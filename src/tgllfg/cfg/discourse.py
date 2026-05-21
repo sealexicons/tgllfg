@@ -622,3 +622,75 @@ def register_rules(rules: list[Rule]) -> None:
             "↓3 ∈ (↑ APP)",
         ],
     ))
+
+
+    # --- Phase 9.X.c26: clause-final colon appositive ``S : XP`` ----
+    #
+    # User note 2026-05-20: mid-sentence ``:`` introduces a
+    # consequence, result, or enumeration — semantically parallel
+    # to em-dash and comma as a soft clause-final boundary
+    # admitting an appositive or continuation.
+    #
+    # Three rules per punct class (DASH and COLON), covering the
+    # three observed appositive shapes:
+    #
+    #   (N)        — bare-N or cardinal-N enumeration head
+    #                (``May tatlong prutas -- mangga, papaya at
+    #                 pakwan.``)
+    #   (NP[NOM])  — ang-marked NP enumeration head
+    #                (PANAHON sent-2 / sent-9 post-colon shape:
+    #                ``ang panahon ng tag-init mula Abril ...``;
+    #                ``ang mangga, bayabas, ..., at pakwan``)
+    #   (S)        — consequence / result / continuation clause
+    #                (``Maganda ang ulan: malakas ito.``)
+    #
+    # The (NP[NOM]) variants were retro-extended to DASH in c26
+    # for symmetry — the c25 DASH-only rules had N + S, this
+    # commit completes the appositive-daughter class to N +
+    # NP[NOM] + S for both punct classes. (The c25 commit message
+    # noted the N daughter as the audit-corpus shape; c26's review
+    # showed audit-corpus colons take ang-marked NP[NOM], and
+    # parallel dash uses are plausible enough to warrant the
+    # symmetric rule even without a current PANAHON match.)
+    #
+    # Audit-corpus uses include sent-2 (NP-internal range
+    # modifiers over months) and sent-9 (headless OV-RC + ADV-
+    # initial); both need additional construction-class closures
+    # beyond the colon boundary itself, so c26 is foundational
+    # rather than PANAHON-closing on its own.
+    #
+    # F-structure: matrix S inherits the pre-colon clause via
+    # ``(↑) = ↓1``; the post-colon XP rides as ``APP``
+    # set-membership (parallel to the DASH appositive rules above).
+    rules.append(Rule(
+        "S",
+        ["S", "PUNCT[PUNCT_CLASS=DASH]", "NP[CASE=NOM]"],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ APP)",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["S", "PUNCT[PUNCT_CLASS=COLON]", "N"],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ APP)",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["S", "PUNCT[PUNCT_CLASS=COLON]", "NP[CASE=NOM]"],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ APP)",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["S", "PUNCT[PUNCT_CLASS=COLON]", "S"],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ APP)",
+        ],
+    ))
