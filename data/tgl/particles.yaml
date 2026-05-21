@@ -1580,6 +1580,18 @@
 - surface: at
   pos: PART
   feats: {COORD: AND, LEMMA: at}
+# Phase 9.X.c33: ``at`` polysemy extended. The existing PART[COORD=AND]
+# above is the clausal-coord additive ("and", binary coord). The new
+# PART[DISCOURSE_POS=SENTENCE_INITIAL] reading is the discourse-initial
+# additive marker ("and / also" as a clause-initial connective).
+# Feeds the Phase 5m C4 sentence-initial PART rule. Same precedent
+# as Phase 9.X.c29 ``kaya`` discourse-initial coexistence. The
+# 5k test ``test_at_is_and_only`` asserts only COORD readings of
+# ``at`` are COORD=AND; the new reading has DISCOURSE feat, not
+# COORD, so the test continues to pass.
+- surface: at
+  pos: PART
+  feats: {DISCOURSE: ADDITIVE, DISCOURSE_POS: SENTENCE_INITIAL, LEMMA: at}
 - surface: o
   pos: PART
   feats: {COORD: OR, LEMMA: o}
