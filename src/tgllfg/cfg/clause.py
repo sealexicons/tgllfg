@@ -1808,6 +1808,39 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.c30: SubordClause-topic + ay + N predicate -------
+    #
+    # ``Kapag naghalo ang dalawa ay malaking hirap.``  "When the
+    # two mix together (it) is a big difficulty."
+    #                                                  (PANAHON sent-13)
+    #
+    # Parallel to the Phase 5n.B ``S → NP[CASE=NOM] PART[LINK=AY] N``
+    # rule above (ay-fronted predicate-N with NOM-NP topic), but
+    # with a SubordClause topic instead of an NP. The SubordClause
+    # is the discourse subject of an impersonal N-pred — "when X
+    # happens, (it) is N" — and binds to the matrix's SUBJ slot.
+    #
+    # Mirrors the Phase 4 §7.4 ``S → SubordClause PART[LINK=AY] S``
+    # rule (V-headed body) for the N-headed body case. Same logic
+    # as the Phase 9.X.c9 SubordClause + ay + main-S composition
+    # but with N as the post-ay body daughter.
+    #
+    # F-structure shape mirrors the NP-topic predicate-N rule
+    # above: PRED='BE-N <SUBJ>', SUBJ and TOPIC both bound to the
+    # SubordClause topic, N_LEMMA from the predicate noun,
+    # PREDICATIVE=true. No WH gate (SubordClauses don't carry WH).
+    rules.append(Rule(
+        "S",
+        ["SubordClause", "PART[LINK=AY]", "N"],
+        [
+            "(↑ PRED) = 'BE-N <SUBJ>'",
+            "(↑ SUBJ) = ↓1",
+            "(↑ TOPIC) = ↓1",
+            "(↑ N_LEMMA) = ↓3 LEMMA",
+            "(↑ PREDICATIVE) = true",
+        ],
+    ))
+
     # --- Phase 9.V.4: ay-fronted predicate-N with GEN-NP complement ----
     #
     # ``Si Juan ay bahagi ng pamilya.``  "Juan is part of the family."

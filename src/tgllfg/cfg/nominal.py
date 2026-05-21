@@ -569,6 +569,44 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.X.c30: bare cardinal as NP head ----------------------
+    #
+    # ``ang dalawa`` "the two", ``ang isa`` "the one (of them)",
+    # ``ng tatlo`` "of three" — a cardinal directly heads the NP
+    # without an N daughter, denoting the cardinal-quantified set.
+    # PANAHON sent-13 (``Kapag naghalo ang dalawa ...``) — the
+    # ``ang dalawa`` refers to "the two (typhoons)" from the prior
+    # context.
+    #
+    # Three rules (one per case), parallel to the Phase 5f Commit 1
+    # cardinal-NP-modifier rules above but with no LINK+N tail. The
+    # matrix NP lifts the cardinal's f-structure entirely
+    # (``(↑) = ↓2``) so CARDINAL_VALUE / NUM / APPROX / DISTRIB
+    # ride to the matrix; the case marker contributes CASE/MARKER.
+    # No PRED — the cardinal-as-NP-head has no head-noun referent
+    # (downstream consumers treat the NP as a pronominal-like
+    # reference to a contextually-given count of entities).
+    for case, marker in _cardinal_case_marker.items():
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [
+                marker,
+                "NUM[CARDINAL]",
+            ],
+            [
+                "(↑) = ↓1",
+                "(↑ NUM) = ↓2 NUM",
+                "(↑ CARDINAL_VALUE) = ↓2 CARDINAL_VALUE",
+                "(↓2 CARDINAL) =c true",
+                # Exclude DISTRIB cardinals (``tig-`` prefix) — those
+                # must compose with a head N via the cardinal-N
+                # modifier rule below (``*Bumili ako ng tigisa.``;
+                # asserted in test_distributive.py).
+                "¬ (↓2 DISTRIB)",
+            ],
+        ))
+
+
     # --- Phase 5f Commit 1: cardinal NP-internal modifier --------
     #
     # ``ang isang bata`` ("the one child"), ``ng tatlong libro``
