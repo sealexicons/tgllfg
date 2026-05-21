@@ -485,6 +485,44 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 9.X.c28: manner-DEM pre-N modifier ``ganitong N`` -----
+    #
+    # ``ganitong pagkakaayos``  "this kind of arrangement"
+    #                            (PANAHON sent-39)
+    # ``ganitong panahon``       "this kind of weather"
+    # ``ganong tao``             "that kind of person" (MED)
+    # ``gayong gawain``          "that kind of work" (DIST)
+    #
+    # The manner-DEM family (``ganito`` PROX / ``ganon`` MED /
+    # ``gayon`` DIST) marks "this/that kind of X". Structurally it
+    # pre-modifies the head N via the linker. Unlike the Phase 5e
+    # Commit 16 pre-mod DEM rule (which expects DET[CASE=X, DEM]),
+    # the manner-DEMs are PART with LEMMA-only feats (particles.yaml).
+    #
+    # Three LEMMA-gated rules per linker (NA / NG), six total. The
+    # matrix N inherits PRED + LEMMA from the head N (↓3); the
+    # manner-DEM rides as a DEM-modifier in ADJUNCT.
+    #
+    # Closes the sent-39 missing piece (``ganitong pagkakaayos``
+    # inside a dahil-PP); the c28 ``iba`` / ``Pilipino`` ADJ POS-flips
+    # close the matrix predicate.
+    for lemma in ("ganito", "ganon", "gayon"):
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "N",
+                [
+                    "PART",
+                    f"PART[LINK={link}]",
+                    "N",
+                ],
+                [
+                    "(↑) = ↓3",
+                    "↓1 ∈ (↑ ADJUNCT)",
+                    f"(↓1 LEMMA) =c '{lemma}'",
+                ],
+            ))
+
+
     # --- Phase 9.X.c24: NUM range expression ``Mula X hanggang Y`` ---
     #
     # ``Mula sampu hanggang dalawampung bagyo``  "from ten to
