@@ -33,10 +33,18 @@ class TestPhase9wAh1PagTanghaliNa:
     N[SEM_CLASS=TIME] PART[ASPECT_PART=ALREADY]`` — the
     ``pag tanghali na`` body. Closes R&G Intermediate sent-53."""
 
+    # Phase 9.X.c38: sent-53's valid parse lives deep in the forest
+    # (~11K tree iterations to reach), past the new pipeline default
+    # of ``max_tree_iterations=5000``. Override the cap for this
+    # specific test and mark as slow so the T2 bucket carries the
+    # ~13s cost; the T1 (fast) bucket stays under its wall budget.
+    @pytest.mark.slow
     def test_audit_pin_sent_53(self) -> None:
-        assert _has_parse(
-            "Kasi ho puno na ang mga bus pag tanghali na."
-        ) >= 1
+        assert len(parse_text(
+            "Kasi ho puno na ang mga bus pag tanghali na.",
+            n_best=3,
+            max_tree_iterations=None,
+        )) >= 1
 
     def test_audit_pin_minus_discourse(self) -> None:
         assert _has_parse(

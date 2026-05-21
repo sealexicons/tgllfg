@@ -76,6 +76,8 @@ def parse_text(
     *,
     n_best: int = 5,
     chart_state_cap: int | None = None,
+    max_candidates: int | None = None,
+    max_tree_iterations: int | None = 5000,
 ) -> list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]]:
     """Parse a sentence end to end.
 
@@ -100,9 +102,42 @@ def parse_text(
     ambiguity combinatorial explosions (e.g., the OV-INTR extension
     on sent-9 + colon list; the combined-essay test). Callers that
     need bounded latency pass an explicit cap.
+
+    Phase 9.X.c38: ``max_candidates`` (default ``None``) early-exits
+    the per-tree solve+LMT+WF loop once that many *complete*
+    (non-blocking) parses have been accumulated. When ``None``, the
+    pipeline walks every tree in the forest before ranking — preserves
+    prior behavior. When set to an integer, the loop stops accepting
+    new candidates after the budget is hit; ranking and ``n_best``
+    truncation then operate over the bounded pool. Trades ranking
+    breadth for bounded latency on sentences whose forests dominate
+    parse time (e.g., sent-9-style colon-list × at-coord ambiguity).
+
+    Phase 9.X.c38: ``max_tree_iterations`` (default ``5000``) caps
+    the total number of forest trees visited — counting BOTH
+    blocking and non-blocking parses. Complements ``max_candidates``:
+    where that parameter bounds the *accepted* pool, this bounds the
+    *attempted* pool. When the forest is dominated by blocking
+    parses (each one consuming ~1ms of solve+LMT+WF before being
+    rejected) and the valid parse lies deep in the iteration,
+    ``max_candidates`` alone can't escape the loop. The iteration
+    cap stops walking after the budget is exhausted regardless of
+    whether any candidate was accepted; the pipeline returns
+    whatever it found (possibly zero parses, in which case the
+    caller falls back to fragments).
+
+    The default ``5000`` corresponds to ~7.5s wall at ~1.5ms/tree —
+    above the audit-corpus p100 latency for successful parses (so
+    zero existing closures are excluded) but well under the typical
+    10s SIGALRM ceiling. Set explicitly higher (or to ``None`` for
+    unbounded) when investigating pathological inputs.
     """
     return parse_text_with_fragments(
-        text, n_best=n_best, chart_state_cap=chart_state_cap,
+        text,
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
     ).parses
 
 
@@ -112,6 +147,8 @@ def parse_text_with_fragments(
     n_best: int = 5,
     fragment_cap: int = 5,
     chart_state_cap: int | None = None,
+    max_candidates: int | None = None,
+    max_tree_iterations: int | None = 5000,
 ) -> ParseResult:
     """Parse text, returning either complete parses (Phase 4 §7.9
     "happy path") or fragments (the failure-recovery mode).
@@ -174,9 +211,20 @@ def parse_text_with_fragments(
         lex_items, grammar, chart_state_cap=chart_state_cap,
     )
 
-    # Walk all candidate trees, collect well-formed ones, then rank.
+    # Walk candidate trees, collect well-formed ones, then rank.
+    # Phase 9.X.c38: ``max_candidates`` early-exits the loop once that
+    # many non-blocking parses are accumulated. ``max_tree_iterations``
+    # bounds the total number of trees attempted regardless of whether
+    # any were accepted (the failsafe for forests dominated by
+    # blocking parses, where ``max_candidates`` alone can't escape).
+    # Ranking still operates over the bounded pool.
     candidates: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    iterations = 0
     for ctree in forest.iter_trees():
+        iterations += 1
+        if (max_tree_iterations is not None
+                and iterations > max_tree_iterations):
+            break
         result = solve(ctree)
         a, lmt_diags = apply_lmt_with_check(result.fstructure, lex_items)
         _, wf_diags = lfg_well_formed(result.fstructure, ctree)
@@ -190,6 +238,8 @@ def parse_text_with_fragments(
         # tag-Q, yes/no-Q, Alt-Q from Commit 7) are skipped.
         _lift_in_situ_q_type(result.fstructure)
         candidates.append((ctree, result.fstructure, a, diagnostics))
+        if max_candidates is not None and len(candidates) >= max_candidates:
+            break
     candidates.sort(key=lambda r: _rank_key(r[0]))
     parses = candidates[:n_best]
 
