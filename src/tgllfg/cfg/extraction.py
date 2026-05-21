@@ -892,6 +892,7 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
     # --- Phase 9.X.c34: ay-fronted topic-NP + complete inner S -----
+    # --- Phase 9.X.c37: narrowed via S_AY_COMMENT alias ------------
     #
     # ``Kaya ang mga magsasaka ay akay na ang kanilang mga kalabaw
     # tungo sa bukid.``  ("So the farmers (TOP), their carabaos are
@@ -901,8 +902,8 @@ def register_rules(rules: list[Rule]) -> None:
     # Parallel to the Phase 4 §7.4 SUBJ-ay-fronting rule above
     # (which requires an S_GAP body with a SUBJ-gap bound to the
     # fronted NP), but admits the topic-comment construction
-    # where the inner S is complete (has its own overt SUBJ) and
-    # the fronted NP is a discourse topic — no structural binding.
+    # where the inner clause has its own overt SUBJ and the
+    # fronted NP is a discourse topic — no structural binding.
     #
     # Common in Tagalog narrative: a topic NP scopes over a clause
     # whose own SUBJ is distinct. Semantic role-binding (the topic
@@ -910,20 +911,56 @@ def register_rules(rules: list[Rule]) -> None:
     # predicate) is resolved discourse-pragmatically rather than
     # by the LFG c-structure.
     #
-    # Gate: ``(↓3 SUBJ)`` existential constraint requires the
-    # inner S to have an overt SUBJ. Prevents this rule from
-    # firing on canonical ay-fronting (which feeds the S_GAP
-    # path) — the inner clause there has no overt SUBJ until
-    # the ay-binding completes, so the S form (vs S_GAP) doesn't
-    # carry SUBJ.
+    # **Phase 9.X.c37 narrowing.** Original c34 used bare ``S`` as
+    # the third daughter, which admitted many spurious projections
+    # (e.g. ``ang prutas ay mga prutas at gulay`` would generate
+    # ~6× the forest paths through this rule even though none
+    # passed unification). Each spurious tree went through
+    # ``solve`` + LMT + well-formedness — costing ~1ms each — so
+    # the rule alone added 32+ seconds of wall time on sent-9-
+    # style inputs. The narrowed version routes the third daughter
+    # through ``S_AY_COMMENT``, a dedicated non-terminal whose
+    # productions enumerate just the clause shapes that can
+    # legitimately serve as the comment of an ay-fronted topic.
+    # The chart-level filtering (``matches`` checks category +
+    # feats) means spurious forms never enter the forest, not just
+    # that they fail unification later.
     rules.append(Rule(
         "S",
-        ["NP[CASE=NOM]", "PART[LINK=AY]", "S"],
+        ["NP[CASE=NOM]", "PART[LINK=AY]", "S_AY_COMMENT"],
         [
             "(↑) = ↓3",
             "(↑ TOPIC) = ↓1",
             "↓1 ∈ (↑ ADJUNCT)",
-            "(↓3 SUBJ)",
+        ],
+    ))
+
+    # --- Phase 9.X.c37: S_AY_COMMENT alias productions ----------
+    #
+    # ``S_AY_COMMENT`` is the third daughter of c34's ay-fronted
+    # topic-NP rule. Productions enumerate the clause shapes that
+    # can legitimately serve as the comment of an ay-fronted
+    # topic. Each production mirrors a corresponding ``S`` rule
+    # so the f-structure is identical to the matching ``S``
+    # production — the alias purely narrows the category pattern.
+    #
+    # Variant 1 (sent-31): ``ADJ[PREDICATIVE] NP[CASE=NOM]`` —
+    # predicative-ADJ with overt NOM pivot (matches sent-31's
+    # ``akay ang kanilang mga kalabaw``). Mirrors the Phase 5g
+    # predicative-ADJ rule in ``cfg/clause.py`` (line ~1035);
+    # equations duplicated to keep this self-contained.
+    rules.append(Rule(
+        "S_AY_COMMENT",
+        ["ADJ[PREDICATIVE]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+            "(↑ INTENS) = ↓1 INTENS",
+            "(↑ DISTRIB) = ↓1 DISTRIB",
+            "(↑ KASING_N) = ↓1 KASING_N",
         ],
     ))
 
