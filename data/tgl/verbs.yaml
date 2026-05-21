@@ -127,6 +127,11 @@
   gloss: harvest (crops)
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka]
+  # Phase 9.X.c36: AV_ABSOL admits the OV-absolutive headless-RC
+  # use — ``ang inaani`` "the (thing) being harvested"
+  # (PANAHON sent-9). The synth path's OV-INTR variant supplies
+  # the 1-arg ``<SUBJ>`` PRED for the bare S_GAP frame.
+  feats: {AV_ABSOL: true}
   source: audit-corpus
 
 - citation: apaw
