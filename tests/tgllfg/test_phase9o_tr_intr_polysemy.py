@@ -149,19 +149,26 @@ class TestSynthEntries:
             "TINGIN <SUBJ>",
         ]
 
-    def test_single_entry_for_ov_tr_with_absol(self) -> None:
-        """AV_ABSOL only triggers for AV voice; OV/DV/IV/LF emit
-        the canonical TR entry."""
+    def test_two_entries_for_ov_tr_with_absol(self) -> None:
+        """Phase 9.X.c36: OV+TR+AV_ABSOL also synthesizes an INTR
+        variant (PATIENT → SUBJ) for the headless-RC ``ang
+        inaani`` "the (thing) being harvested" construction.
+        Parallel to the AV path (9.O B3.A) and DV path (9.V.2)."""
         from tgllfg.core.common import MorphAnalysis
         from tgllfg.core.lexicon import _synthesize_verb_entries
         ma = MorphAnalysis(
-            lemma="tingin", pos="VERB",
+            lemma="ani", pos="VERB",
             feats={"VOICE": "OV", "ASPECT": "PFV",
                    "MOOD": "IND", "TR": "TR", "AV_ABSOL": True},
         )
         entries = _synthesize_verb_entries(ma)
-        assert len(entries) == 1
-        assert "<SUBJ, OBJ-AGENT>" in entries[0].pred
+        assert len(entries) == 2
+        preds = sorted(e.pred for e in entries)
+        # TR entry: <SUBJ, OBJ-AGENT>; INTR entry: <SUBJ>
+        assert preds == [
+            "ANI <SUBJ, OBJ-AGENT>",
+            "ANI <SUBJ>",
+        ]
 
 
 # ---- B3.B: ma_an paradigm cell -----------------------------------------

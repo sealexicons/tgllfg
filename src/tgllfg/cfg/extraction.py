@@ -82,6 +82,25 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ SUBJ) = (↑ REL-PRO)",
         ),
     ))
+    # === 9.X.c36: OV-absolutive bare S_GAP =========================
+    #
+    # ``ang inaani`` "the (thing) being harvested" (PANAHON sent-9).
+    # The OV verb form participates in a headless-RC construction
+    # where the head NP fills the SUBJ slot (the patient pivot) and
+    # the agent is discourse-suppressed. The existing free-relative
+    # wrap (``NP[CASE=X] → DET[CASE=X] S_GAP``, line 1587 below) then
+    # consumes the bare-V S_GAP to form the surface NP.
+    #
+    # Gated on ``AV_ABSOL=true`` to restrict to verbs lexically
+    # flagged for the absolutive reading. The OV-INTR variant
+    # (synthesized in ``core/lexicon.py`` when ``AV_ABSOL=true``)
+    # supplies the 1-arg ``<SUBJ>`` PRED so completeness holds with
+    # just the REL-PRO-bound SUBJ.
+    rules.append(Rule(
+        "S_GAP",
+        ["V[VOICE=OV, AV_ABSOL=true]"],
+        _eqs("(↑ SUBJ) = (↑ REL-PRO)"),
+    ))
     # S_GAP transitive frames mirror the matrix transitive frames'
     # OBJ-θ-in-grammar split: AV binds the ng-NP to bare OBJ
     # (PATIENT/THEME), non-AV binds to typed OBJ-θ.

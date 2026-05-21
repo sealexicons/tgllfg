@@ -130,6 +130,13 @@ _AV_INTR_ACTOR: dict[str, tuple[bool | None, bool | None]] = {
 _AV_INTR_AGENT: dict[str, tuple[bool | None, bool | None]] = {
     "AGENT": (False, False),
 }
+# Phase 9.X.c36: OV-impersonal absolutive — patient is the sole
+# argument and takes SUBJ; the agent is discourse-suppressed.
+# Surfaces in headless-RC constructions like ``ang inaani`` "the
+# (thing) being harvested" where the AGENT is unexpressed.
+_OV_INTR_PATIENT: dict[str, tuple[bool | None, bool | None]] = {
+    "PATIENT": (False, False),
+}
 
 # Applicative / causative profiles (Phase 4 §7.7). The pivot rotates
 # to BENEFICIARY / CAUSEE / CAUSER per voice; AGENT or non-pivot
@@ -452,13 +459,32 @@ def _synthesize_verb_entries(ma: MorphAnalysis) -> list[LexicalEntry]:
             intrinsic_classification=_IV_TR_AGENT_CONVEYED,
         )]
     # OV or unknown voice: patient pivot (the OV-shaped fallback).
-    return [LexicalEntry(
+    ov_tr_entry = LexicalEntry(
         lemma=ma.lemma, pred=pred_non_av,
         a_structure=["AGENT", "PATIENT"],
         morph_constraints={},
         gf_defaults={"PATIENT": "SUBJ", "AGENT": "OBJ-AGENT"},
         intrinsic_classification=_OV_TR_AGENT_PATIENT,
-    )]
+    )
+    if voice == "OV" and av_absolutive:
+        # Phase 9.X.c36: OV-impersonal absolutive synthesizes an
+        # INTR variant where the patient (SUBJ pivot) is the sole
+        # argument and the agent is discourse-suppressed. Parallel
+        # to the 9.O AV path and the 9.V DV path above. Surfaces
+        # in headless-RC constructions like ``ang inaani`` "the
+        # (thing) being harvested" (PANAHON sent-9), where the
+        # implicit head fills the patient slot and the agent is
+        # unexpressed.
+        ov_intr_entry = LexicalEntry(
+            lemma=ma.lemma,
+            pred=f"{pred_name} <SUBJ>",
+            a_structure=["PATIENT"],
+            morph_constraints={},
+            gf_defaults={"PATIENT": "SUBJ"},
+            intrinsic_classification=_OV_INTR_PATIENT,
+        )
+        return [ov_tr_entry, ov_intr_entry]
+    return [ov_tr_entry]
 
 
 def _synthesize_verb_entry(ma: MorphAnalysis) -> LexicalEntry:
