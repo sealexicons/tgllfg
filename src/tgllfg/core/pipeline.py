@@ -75,6 +75,7 @@ def parse_text(
     text: str,
     *,
     n_best: int = 5,
+    chart_state_cap: int | None = None,
 ) -> list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]]:
     """Parse a sentence end to end.
 
@@ -89,8 +90,20 @@ def parse_text(
     (:func:`_rank_key`) before truncating to ``n_best``. The ranker
     prefers shorter c-trees, AV-voice readings, and more-specific
     lex entries.
+
+    Phase 9.X.c35: ``chart_state_cap`` (default ``None``) caps Earley
+    chart-state construction. When ``None``, chart construction is
+    uncapped — preserves prior behavior. When set to an integer,
+    ``run()`` stops processing the agenda once that many distinct
+    chart states have been added, returning whatever roots have been
+    built so far. The cap protects against pathological multi-rule ×
+    ambiguity combinatorial explosions (e.g., the OV-INTR extension
+    on sent-9 + colon list; the combined-essay test). Callers that
+    need bounded latency pass an explicit cap.
     """
-    return parse_text_with_fragments(text, n_best=n_best).parses
+    return parse_text_with_fragments(
+        text, n_best=n_best, chart_state_cap=chart_state_cap,
+    ).parses
 
 
 def parse_text_with_fragments(
@@ -98,6 +111,7 @@ def parse_text_with_fragments(
     *,
     n_best: int = 5,
     fragment_cap: int = 5,
+    chart_state_cap: int | None = None,
 ) -> ParseResult:
     """Parse text, returning either complete parses (Phase 4 §7.9
     "happy path") or fragments (the failure-recovery mode).
@@ -156,7 +170,9 @@ def parse_text_with_fragments(
     mlist = reorder_clitics(mlist)
     lex_items = lookup_lexicon(mlist)
     grammar = Grammar.load_default()
-    forest = parse_with_annotations(lex_items, grammar)
+    forest = parse_with_annotations(
+        lex_items, grammar, chart_state_cap=chart_state_cap,
+    )
 
     # Walk all candidate trees, collect well-formed ones, then rank.
     candidates: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []

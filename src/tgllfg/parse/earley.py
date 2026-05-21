@@ -190,12 +190,25 @@ def parse_with_annotations(
     grammar: Grammar | CompiledGrammar,
     *,
     forest_size_cap: int | None = None,
+    chart_state_cap: int | None = None,
 ) -> PackedForest:
     """Parse the input lexical lattice against the grammar, returning a
-    packed forest of c-tree derivations."""
+    packed forest of c-tree derivations.
+
+    ``forest_size_cap`` caps tree enumeration in
+    :meth:`PackedForest.iter_trees`. ``chart_state_cap`` (Phase 9.X.c35)
+    caps Earley chart-state construction — stops processing the agenda
+    once that many distinct states have been added. The two caps are
+    independent: tree iteration may be bounded without a chart cap
+    (legacy behavior) or vice versa.
+    """
     cg = grammar if isinstance(grammar, CompiledGrammar) else compile_grammar(grammar)
     content = _strip_non_content(sentence_lex)
-    return _Earley(content, cg, forest_size_cap=forest_size_cap).run()
+    return _Earley(
+        content, cg,
+        forest_size_cap=forest_size_cap,
+        chart_state_cap=chart_state_cap,
+    ).run()
 
 
 # === Internal: Earley state machine =======================================
@@ -207,10 +220,22 @@ class _Earley:
         grammar: CompiledGrammar,
         *,
         forest_size_cap: int | None,
+        chart_state_cap: int | None = None,
     ) -> None:
         self.tokens = tokens
         self.grammar = grammar
         self.cap = forest_size_cap
+        # Phase 9.X.c35: separate chart-construction cap (distinct
+        # from the existing ``forest_size_cap`` which restricts tree
+        # enumeration in ``PackedForest.iter_trees``). When set,
+        # ``run()`` stops processing the agenda once ``chart_state_cap``
+        # distinct chart states have been added. Protects against
+        # pathological multi-rule × ambiguity combinatorial chart
+        # explosions (e.g., the OV-INTR extension on sent-9 + colon
+        # list, or the combined-essay test).
+        self.chart_cap = chart_state_cap
+        self._state_count: int = 0
+        self._capped: bool = False
         n = len(tokens)
         self._chart: list[dict[tuple[int, int, int], StateInfo]] = [
             {} for _ in range(n + 1)
@@ -224,6 +249,17 @@ class _Earley:
         for r in self.grammar.rules_for(self.grammar.start):
             self._add(0, StateInfo(rule=r, dot=0, start=0, end=0, advances=[]))
         while self._agenda:
+            # Phase 9.X.c35: bail out of chart construction when the
+            # chart-state cap is exhausted. Whatever roots have been
+            # built so far remain; further predict / complete cycles
+            # are skipped. For most input the cap is never reached
+            # (well-formed parses fit in ~1K-10K states); the cap
+            # protects against pathological multi-rule × ambiguity
+            # interactions. Distinct from ``forest_size_cap`` which
+            # caps tree enumeration.
+            if self.chart_cap is not None and self._state_count >= self.chart_cap:
+                self._capped = True
+                break
             col, state = self._agenda.popleft()
             self._step(col, state)
         n = len(self.tokens)
@@ -333,6 +369,7 @@ class _Earley:
         if key in chart_col:
             return chart_col[key]
         chart_col[key] = state
+        self._state_count += 1
         self._agenda.append((col, state))
         return state
 
