@@ -258,6 +258,37 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.c27: deictic LOC_EXISTENTIAL S_GAP --------------
+    #
+    # ``Ang aklat ay narito.``   "The book is here." (ay-fronted)
+    # ``Si Maria ay nariyan.``   "Maria is there." (ay-fronted)
+    #
+    # Parallel to the Phase 5n.A nasa-LOC S_GAP rules above
+    # (``S_GAP → PART[LOC_EXISTENTIAL] N``), but for the deictic
+    # forms ``narito`` / ``naroon`` / ``nariyan`` that don't take
+    # an N daughter — the deixis itself encodes the location. The
+    # DEIXIS existential constraint narrows the rule to the
+    # deictic forms; the canonical ``nasa`` (LOC_EXISTENTIAL but
+    # no DEIXIS) is excluded.
+    #
+    # The matrix S frame for deictic LOC was added to cfg/clause.py
+    # in the same c27 commit; this S_GAP variant lets ay-fronting
+    # of a SUBJ-gapped deictic-LOC clause work via the existing
+    # Phase 5d ay-fronting wrap (``S → NP[CASE=NOM] PART[LINK=AY]
+    # S_GAP``).
+    rules.append(Rule(
+        "S_GAP",
+        ["PART[LOC_EXISTENTIAL]"],
+        [
+            "(↑ PRED) = 'LOC <SUBJ>'",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ LOCATION) = ↓1",
+            "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
+            "(↓1 LOC_EXISTENTIAL) =c true",
+            "(↓1 DEIXIS)",
+        ],
+    ))
+
 
     # === Phase 5n.B Commit 3: predicative-ADJ gapped clause for ay-fronting (§18 L39) =====
     #

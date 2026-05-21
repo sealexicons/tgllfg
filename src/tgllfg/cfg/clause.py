@@ -3134,6 +3134,41 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.c27: deictic LOC_EXISTENTIAL (no N daughter) -----
+    #
+    # ``Narito ang bata.``   "The child is here."
+    # ``Naroon ang aklat.``  "The book is there (away from us)."
+    # ``Nariyan si Maria.``  "Maria is there (near you)."
+    #
+    # The Phase 5j Commit 4 rules above require an N daughter for
+    # the locative ground (``nasa labas``, ``nasa tuktok ng
+    # bundok``). The deictic locative-existentials
+    # ``narito`` / ``naroon`` / ``nariyan`` are inherently
+    # complete — the deixis (PROX / DIST / MED) embeds the
+    # location semantically, so no N daughter is needed. The lex
+    # entries (particles.yaml) carry ``DEIXIS=PROX|DIST|MED``
+    # alongside ``LOC_EXISTENTIAL=true``; the DEIXIS existential
+    # constraint on ↓1 narrows this rule to the deictic forms,
+    # preventing it from accidentally firing on ``nasa`` (which
+    # has LOC_EXISTENTIAL but no DEIXIS).
+    #
+    # F-structure: same shape as the canonical nasa-rules above
+    # but with the LOC_EXISTENTIAL PART itself acting as the
+    # LOCATION (no separate N ground). The DEIXIS feat rides on
+    # the matrix LOCATION for downstream semantic consumption.
+    rules.append(Rule(
+        "S",
+        ["PART[LOC_EXISTENTIAL]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'LOC <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ LOCATION) = ↓1",
+            "(↑ CLAUSE_TYPE) = 'LOC_EXISTENTIAL'",
+            "(↓1 LOC_EXISTENTIAL) =c true",
+            "(↓1 DEIXIS)",
+        ],
+    ))
+
     # --- Phase 5j Commit 5: HAVE construction --------------------
     #
     # Tagalog has no separate HAVE verb. The HAVE reading is the
