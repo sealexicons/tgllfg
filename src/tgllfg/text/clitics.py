@@ -248,23 +248,38 @@ def split_linker_ng(tokens: list[Token]) -> list[Token]:
             out.append(t)
             continue
         stem = m.group(1)
-        if analyzer.is_known_surface(stem.lower()):
+        n_restored = stem + "n"
+        stem_known = analyzer.is_known_surface(stem.lower())
+        n_restored_known = analyzer.is_known_surface(n_restored.lower())
+        # Phase 9.X.c33: when both stem and n-restored stem are known,
+        # prefer the n-restored split only when n-restored is a 2P
+        # clitic. The audit's only ambiguous case is ``ding``:
+        # stem ``di`` (PART[NEG_TAG], non-clitic) and n-restored
+        # ``din`` (PART[ADV=ALSO], is_clitic 2P) are both known.
+        # The natural reading of ``X ding Y`` is ``X din-LINK Y``
+        # (additive 2P clitic with bound linker).
+        # Counter-case ``iyong``: stem ``iyo`` (PRON[2sg DAT]) is
+        # the right split — n-restored ``iyon`` (DET[DEM-DIST])
+        # is not a clitic, so the rule sticks with stem.
+        prefer_n_restored = False
+        if n_restored_known and stem_known:
+            nr_lower = n_restored.lower()
+            nr_analyses = analyzer._index.particles.get(nr_lower, [])
+            prefer_n_restored = any(
+                m.feats.get("is_clitic") is True for m in nr_analyses
+            )
+        if n_restored_known and (prefer_n_restored or not stem_known):
             stem_end = t.start + len(stem)
             out.append(Token(
-                surface=stem, norm=stem.lower(),
+                surface=n_restored, norm=n_restored.lower(),
                 start=t.start, end=stem_end,
             ))
             out.append(Token(surface="-ng", norm="-ng", start=stem_end, end=t.end))
             continue
-        # n-deletion sandhi fallback: ``aking`` → ``akin`` + ``-ng``
-        # (only fires for the irregular 1sg / 1pl.excl / 1pl.incl
-        # DAT pronouns where the linker form drops the stem-final
-        # ``n`` rather than being purely additive).
-        n_restored = stem + "n"
-        if analyzer.is_known_surface(n_restored.lower()):
+        if stem_known:
             stem_end = t.start + len(stem)
             out.append(Token(
-                surface=n_restored, norm=n_restored.lower(),
+                surface=stem, norm=stem.lower(),
                 start=t.start, end=stem_end,
             ))
             out.append(Token(surface="-ng", norm="-ng", start=stem_end, end=t.end))
