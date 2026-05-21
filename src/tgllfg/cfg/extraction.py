@@ -872,6 +872,42 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.c34: ay-fronted topic-NP + complete inner S -----
+    #
+    # ``Kaya ang mga magsasaka ay akay na ang kanilang mga kalabaw
+    # tungo sa bukid.``  ("So the farmers (TOP), their carabaos are
+    # led to the field." / "So the farmers had their carabaos led
+    # to the field.")  (PANAHON sent-31)
+    #
+    # Parallel to the Phase 4 §7.4 SUBJ-ay-fronting rule above
+    # (which requires an S_GAP body with a SUBJ-gap bound to the
+    # fronted NP), but admits the topic-comment construction
+    # where the inner S is complete (has its own overt SUBJ) and
+    # the fronted NP is a discourse topic — no structural binding.
+    #
+    # Common in Tagalog narrative: a topic NP scopes over a clause
+    # whose own SUBJ is distinct. Semantic role-binding (the topic
+    # is often the implicit agent of an OV / DV / participial
+    # predicate) is resolved discourse-pragmatically rather than
+    # by the LFG c-structure.
+    #
+    # Gate: ``(↓3 SUBJ)`` existential constraint requires the
+    # inner S to have an overt SUBJ. Prevents this rule from
+    # firing on canonical ay-fronting (which feeds the S_GAP
+    # path) — the inner clause there has no overt SUBJ until
+    # the ay-binding completes, so the S form (vs S_GAP) doesn't
+    # carry SUBJ.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=NOM]", "PART[LINK=AY]", "S"],
+        [
+            "(↑) = ↓3",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↓3 SUBJ)",
+        ],
+    ))
+
     # --- Phase 8.V: Ni-SUBJ focus negation (``Ni X ay hindi Y``) -------------
     #
     # ``Ni si Juan ay hindi nakapunta doon.``
