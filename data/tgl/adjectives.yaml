@@ -257,6 +257,18 @@
   gloss: proper, fitting, exact
   affix_class: []
 
+# Phase 9.X.c28: ``iba`` is polysemous. particles.yaml carries the
+# Q[QUANT=OTHER] entry ("other"; ``iba pa`` = "others"). This bare
+# ADJ entry covers the predicative-"different" sense (PANAHON
+# sent-39 ``iba ang kamalayan...`` = "the consciousness is
+# different"). The Q and ADJ readings disambiguate by syntactic
+# slot — ``iba pa`` triggers Q; ``iba ang X`` triggers ADJ-pred.
+- citation: iba
+  pos: ADJ
+  gloss: different, distinct
+  affix_class: []
+  source: audit-corpus
+
 - citation: ikli
   pos: ADJ
   gloss: short (in length)
@@ -471,6 +483,20 @@
   pos: ADJ
   gloss: basic, main, primary
   affix_class: []
+
+# Phase 9.X.c28: ``pilipino`` is polysemous. nouns.yaml carries the
+# NOUN entry (Filipino national; Phase 9.B audit lex add). This bare
+# ADJ entry covers the attributive-"Filipino" sense (PANAHON
+# sent-39 ``ang kamalayang Pilipino`` = "the Filipino consciousness")
+# parallel to the existing nationality-ADJs (e.g., ``tropiko``). The
+# N and ADJ readings disambiguate by syntactic slot — ``si Pilipino``
+# triggers NOUN; ``X na Pilipino`` / ``Pilipinong X`` triggers ADJ
+# modifier.
+- citation: pilipino
+  pos: ADJ
+  gloss: Filipino (attributive)
+  affix_class: []
+  source: audit-corpus
 
 - citation: pula
   pos: ADJ
