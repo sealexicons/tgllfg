@@ -485,6 +485,52 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 9.X.c24: NUM range expression ``Mula X hanggang Y`` ---
+    #
+    # ``Mula sampu hanggang dalawampung bagyo``  "from ten to
+    # twenty storms"  (PANAHON sent-21)
+    # ``Mula isa hanggang lima``                 "from one to five"
+    #
+    # Closes the explicitly-noted Phase 5e Commit 3 deferral
+    # (cfg/discourse.py: "mula-sa-NP can also appear in range
+    # expressions like ``mula X hanggang Y``") — a four-token
+    # fixed-frame construction composing
+    # ``PREP[mula] + NUM[CARDINAL] + PART[hanggang] +
+    # NUM[CARDINAL]`` into a virtual range-NUM that feeds the
+    # Phase 5f Commit 1 cardinal-NP-modifier rules below.
+    #
+    # F-structure: matrix NUM lifts the HI bound's f-structure
+    # (CARDINAL_VALUE, NUM, PRED, LEMMA) so downstream consumers
+    # see a normal CARDINAL. The LO bound rides at ``RANGE_LO``
+    # as a sub-attr; downstream semantics can read both endpoints
+    # via ``RANGE_LO`` and the matrix.
+    #
+    # Gates: ↓1 LEMMA="mula" + PREP_TYPE="SOURCE" narrow to the
+    # SOURCE preposition; the alternative-LEMMA ``mula`` is
+    # excluded by category (only PREP at this rule's slot 1).
+    # ↓3 LEMMA="hanggang" locks the bracket — the alternative
+    # ``hanggang`` (COMP_TYPE=TEMP_UNTIL) continues to head its
+    # own clause-level until-subordinator rules. CARDINAL gates
+    # on ↓2 / ↓4 ensure both endpoints are bona fide cardinals,
+    # not ordinals or other NUM-typed forms.
+    rules.append(Rule(
+        "NUM[CARDINAL]",
+        [
+            "PREP",
+            "NUM[CARDINAL]",
+            "PART",
+            "NUM[CARDINAL]",
+        ],
+        [
+            "(↑) = ↓4",
+            "(↑ RANGE_LO) = ↓2",
+            "(↓1 LEMMA) =c 'mula'",
+            "(↓1 PREP_TYPE) =c 'SOURCE'",
+            "(↓3 LEMMA) =c 'hanggang'",
+        ],
+    ))
+
+
     # --- Phase 5f Commit 1: cardinal NP-internal modifier --------
     #
     # ``ang isang bata`` ("the one child"), ``ng tatlong libro``
