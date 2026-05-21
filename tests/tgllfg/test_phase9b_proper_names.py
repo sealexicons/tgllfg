@@ -118,8 +118,14 @@ class TestPhase9bAuditClosures:
         "Ito ang nanay ni Fred.",
         # page-27/prose/sent-70 (R&G Intermediate)
         "Hindi ba Pilipino si Fred?",
-        # page-28/prose/sent-74 (R&G Intermediate)
-        "Question: Amerikano ba si Fred?",
+        # page-28/prose/sent-74 (R&G Intermediate).
+        # The source PDF prints this under a "Question:" pedagogical
+        # label retained verbatim in the test pre-9.X.c26. With c26's
+        # ``:`` PUNCT classification, the label no longer parses as a
+        # silent prefix (the colon was _UNK before and got stripped);
+        # drop it — the sentence proper is the yes-no Q after the
+        # colon.
+        "Amerikano ba si Fred?",
         # page-124/sent-135 (R&G Conversational)
         "Pinili niya ako at si Joe.",
         # page-91/sent-94 (R&G Conversational; verbatim 'SI' caps)

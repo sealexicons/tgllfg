@@ -1117,6 +1117,15 @@
 - surface: "--"
   pos: PUNCT
   feats: {PUNCT_CLASS: DASH, LEMMA: "--"}
+# === Phase 9.X.c26: COLON `:` =========================================
+# Mid-sentence ``:`` introduces a consequence, result, or enumeration
+# (per user note 2026-05-20). Semantically parallel to em-dash and
+# comma — a soft boundary admitting an appositive or continuation
+# clause. Consumed by the same shape of clause-final XP-appositive
+# rules added for DASH in cfg/discourse.py.
+- surface: ":"
+  pos: PUNCT
+  feats: {PUNCT_CLASS: COLON, LEMMA: ":"}
 - surface: "*"
   pos: PART
   feats: {OP: TIMES}
