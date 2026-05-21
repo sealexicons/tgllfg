@@ -649,6 +649,20 @@
   gloss: durable, sturdy
   affix_class: [ma_adj]
 
+# Phase 9.X.c32: ``tiwala`` is polysemous. nouns.yaml carries the
+# NOUN entry ("trust, confidence"). This bare ADJ entry covers
+# the predicative "confident, trusting" psych-state reading
+# (``Tiwala ang mga magsasaka na ...`` "The farmers trust that
+# ..."; PANAHON sent-38). Parallel to other bare-root
+# psychological-state ADJs (``galit`` "angry", ``tuwa`` "glad").
+# The construction takes an ang-NP experiencer + linker + CP
+# complement, licensed by the c32 grammar rule in cfg/clause.py.
+- citation: tiwala
+  pos: ADJ
+  gloss: confident, trusting (psych-state)
+  affix_class: []
+  source: audit-corpus
+
 - citation: tigang
   pos: ADJ
   gloss: parched, dry

@@ -1841,6 +1841,54 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.c32: psych-pred ADJ + experiencer + CP complement ----
+    #
+    # ``Tiwala ang mga magsasaka na hindi masasalanta ang kanilang
+    # palay.``  "The farmers trust that their rice won't be
+    # destroyed."  (PANAHON sent-38)
+    #
+    # Tagalog bare-root psychological-state ADJs (``tiwala``
+    # "confident", and parallel forms ``galit`` "angry", ``tuwa``
+    # "glad", ``takot`` "afraid") can take an experiencer NP[NOM]
+    # plus a complement clause introduced by the linker
+    # (``-ng`` after vowel-final hosts; ``na`` after consonant-
+    # final hosts). Same structural shape as the Phase 5i C8 /
+    # 5n.B C11 ``V[CTRL_CLASS=KNOW] + GEN-NP + LINK + S_DECL_COMP``
+    # rule (cfg/control.py) but with an ADJ-pred head and an
+    # NP[NOM] experiencer instead of a GEN-NP experiencer.
+    #
+    # Gated on the matrix ADJ's LEMMA (``tiwala`` to start; broaden
+    # to a per-feat ``PSYCH_PRED`` gate when audit shows more
+    # psych-ADJs joining this construction). The narrow lemma gate
+    # prevents the rule from accidentally firing on attributive
+    # ADJ-modifiers — ``maganda ang aklat na pula`` continues to
+    # parse via the existing N+linker+ADJ modifier path, not via
+    # this new ADJ + NP + linker + CP rule.
+    #
+    # F-structure shape mirrors the V[KNOW] rule: matrix's SUBJ
+    # bound to the experiencer NP, matrix's COMP bound to the CP.
+    # PRED is the ADJ's standard one-place template
+    # ``'ADJ <SUBJ>'`` (Phase 5g convention) with the COMP riding
+    # as an auxiliary attribute.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            [
+                "ADJ[PREDICATIVE]",
+                "NP[CASE=NOM]",
+                f"PART[LINK={link}]",
+                "S_DECL_COMP",
+            ],
+            [
+                "(↑) = ↓1",
+                "(↑ SUBJ) = ↓2",
+                "(↑ COMP) = ↓4",
+                "(↓1 LEMMA) =c 'tiwala'",
+                f"(↓3 LINK) =c '{link}'",
+                "(↓4 COMP_TYPE) =c 'DECLARATIVE'",
+            ],
+        ))
+
     # --- Phase 9.V.4: ay-fronted predicate-N with GEN-NP complement ----
     #
     # ``Si Juan ay bahagi ng pamilya.``  "Juan is part of the family."
