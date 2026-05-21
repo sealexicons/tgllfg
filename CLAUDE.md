@@ -15,16 +15,24 @@ aliases pass `-n auto` for xdist parallelism; raw pytest is single-threaded and
 
 | Need                                | Command                   | Notes                                       |
 | ----------------------------------- | ------------------------- | ------------------------------------------- |
-| Pre-commit gate (Python changes)    | `hatch run test-both`     | T1 + T2 in parallel; ~118s wall             |
-| Iteration loop (most tests)         | `hatch run test-fast`     | excludes `slow` and `postgres`; ~60s        |
-| Iteration loop (T2 / slow only)     | `hatch run test-slow`     | `slow` marker; ~71s                         |
+| Pre-commit gate (Python changes)    | `hatch run test-both`     | T1 + T2 in parallel; ~130s wall             |
+| Iteration loop (most tests)         | `hatch run test-fast`     | excludes `slow`, `xslow`, `postgres`; ~125s |
+| Iteration loop (T2 / slow only)     | `hatch run test-slow`     | `slow` marker only; ~10s                    |
+| Combinatorial regression check      | `hatch run test-xslow`    | on-demand only; ~300s for one test          |
 | Postgres-backed only                | `hatch run test-postgres` | needs Docker                                |
 | Lint + type check                   | `hatch run check`         | ruff + mypy over `src/tgllfg tests`         |
 | Markdown lint (docs / `README.md`)  | `markdownlint <files>`    | `/opt/homebrew/bin/markdownlint`, not npx   |
 
+The `xslow` bucket is reserved for tests whose single-test call duration
+exceeds 60s (currently one: the R&G combined-essay parse, which scales
+roughly cubically with rule count due to attachment ambiguity). It's
+excluded from `test-fast` / `test-slow` / `test-both` and only runs via
+`test-xslow`. Run it before cutting a phase PR; for per-commit iteration
+the standard gates are enough.
+
 Bash timeouts: 180000ms is enough for `test-fast` / `test-slow` /
-`test-postgres` / `check`; bump to 240000ms for `test-both`. Don't pad to the
-600000ms ceiling.
+`test-both` / `test-postgres` / `check`; bump to 600000ms for
+`test-xslow`. Don't pad to the ceiling for the standard gates.
 
 Capture-first idiom for failing runs:
 `hatch run test-fast 2>&1 | tee /tmp/pytest.log | tail -200`. Tee then tail —

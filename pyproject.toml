@@ -53,11 +53,12 @@ dependencies = [
 check = "ruff check . && mypy --install-types --non-interactive {args:src/tgllfg tests}"
 demo = "python -m tgllfg.examples.demo"
 lint = "ruff check ."
-test = "(pytest -m postgres {args:} || [ $? = 5 ]) && pytest -m 'not postgres' -n auto {args:}"
+test = "(pytest -m postgres {args:} || [ $? = 5 ]) && pytest -m 'not postgres and not xslow' -n auto {args:}"
 test-postgres = "pytest -m postgres {args:}"
-test-fast = "pytest -m 'not postgres and not slow' -n auto {args:}"
-test-slow = "pytest -m 'slow' -n auto {args:}"
-test-both = "pytest -m 'not postgres and not slow' -n auto {args:} & p1=$!; pytest -m 'slow' -n auto {args:} & p2=$!; wait $p1; r1=$?; wait $p2; r2=$?; [ $r1 -eq 0 ] && [ $r2 -eq 0 ]"
+test-fast = "pytest -m 'not postgres and not slow and not xslow' -n auto {args:}"
+test-slow = "pytest -m 'slow and not xslow' -n auto {args:}"
+test-both = "pytest -m 'not postgres and not slow and not xslow' -n auto {args:} & p1=$!; pytest -m 'slow and not xslow' -n auto {args:} & p2=$!; wait $p1; r1=$?; wait $p2; r2=$?; [ $r1 -eq 0 ] && [ $r2 -eq 0 ]"
+test-xslow = "pytest -m 'xslow' -n auto {args:}"
 types = "mypy --install-types --non-interactive {args:src/tgllfg tests}"
 
 [tool.coverage.run]
@@ -84,6 +85,7 @@ asyncio_mode = "auto"
 markers = [
   "postgres: tests that require a running Docker daemon (Postgres 17 testcontainer)",
   "slow: tests with single-test call duration >= 5s (T2 bucket; excluded from test-fast)",
+  "xslow: tests with single-test call duration > 60s (excluded from test-fast/test-slow/test-both; run on demand via test-xslow)",
 ]
 
 [build-system]
