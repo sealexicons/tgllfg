@@ -513,6 +513,19 @@
   affix_class: []
   source: audit-corpus
 
+# Phase 9.X.c31: ``pinid`` ADJ-resultative entry. Generates
+# ``nakapinid`` "closed, shut" via the naka_resultative paradigm
+# (parallel to ``nakaupo`` / ``nakatira``). The existing
+# verbs.yaml entry (TR; affix_class [mag, in_oblig, an_oblig,
+# maka]) gives the VERB readings; this ADJ entry adds the
+# resultative-stative reading needed for ``Nakapinid ang mga
+# paaralan ...`` (PANAHON sent-8).
+- citation: pinid
+  pos: ADJ
+  gloss: closed, shut
+  affix_class: [naka_resultative]
+  source: audit-corpus
+
 - citation: pula
   pos: ADJ
   gloss: red

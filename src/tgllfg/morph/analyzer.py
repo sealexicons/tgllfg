@@ -383,13 +383,25 @@ class Analyzer:
                 canonical_lemma = noun_feats.get("LEMMA", r.citation)
                 if not isinstance(canonical_lemma, str):
                     canonical_lemma = r.citation
-                self._index.nouns.setdefault(r.citation.lower(), []).append(
-                    MorphAnalysis(
-                        lemma=canonical_lemma,
-                        pos="NOUN",
-                        feats=noun_feats,
-                    ),
+                noun_analysis = MorphAnalysis(
+                    lemma=canonical_lemma,
+                    pos="NOUN",
+                    feats=noun_feats,
                 )
+                self._index.nouns.setdefault(r.citation.lower(), []).append(
+                    noun_analysis,
+                )
+                # Phase 9.X.c31: also index under the hyphen-stripped
+                # form. The tokenizer's ``-`` → empty normalization
+                # (see text/tokenizer.py) means a citation like
+                # ``mag-aaral`` is looked up as ``magaaral``; without
+                # this dual-indexing the NOUN reading is unreachable
+                # for hyphenated citations.
+                citation_no_hyphen = r.citation.lower().replace("-", "")
+                if citation_no_hyphen != r.citation.lower():
+                    self._index.nouns.setdefault(
+                        citation_no_hyphen, []
+                    ).append(noun_analysis)
                 # Phase 5n.C.3 Commit 1: NOUN-base paradigm cells
                 # (``card_redup``, ``tig_distrib``, ``tag_season``,
                 # ``kani-``) fire here. Cells live in
