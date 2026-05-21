@@ -50,9 +50,33 @@ COMBINED_ESSAY = (
 
 
 class TestCombinedEssayParses:
-    """The R&G p. 482 combined essay-paragraph parses as one S."""
+    """The R&G p. 482 combined essay-paragraph parses as one S.
 
-    @pytest.mark.slow
+    NOTE (Phase 9.X.c23 demotion): this test was originally marked
+    ``slow`` (Phase 5n.B Commit 11.5 T2-bucket addition). As of
+    Phase 9.X.c22 it accounts for ~295s of the ~300s ``test-slow``
+    wall — chart parsing on this single 17-word sentence has 4 ``na``
+    linkers (each an RC/modifier attachment ambiguity), 3 ``sa`` PPs
+    (NP-internal vs. clausal-adjunct), and stacked depictives, so the
+    forest size scales roughly cubically with rule count. Phase 9.X
+    construction-class commits (c8 NP-sa-PP, c9 pre-N V-RC, c11
+    N-level mga, c17 N-intensifier) each added attachment paths that
+    interact combinatorially on this sentence.
+
+    Demoted to ``xslow`` so ``test-both`` / ``test-slow`` stay under
+    a reasonable wall-time budget. ``test-xslow`` (run on demand)
+    keeps the regression-detection intent.
+
+    **Pin (TODO)**: replace the full-enumeration parse with a
+    forest-size-capped parse — assert ``>= 1`` parse found within
+    a capped chart, which captures the regression intent without
+    paying for full enumeration. ``parse_text`` already accepts a
+    ``forest_size_cap`` via the Earley parser interface; the cap
+    needs plumbing through the pipeline. Once that lands, this
+    test can drop back to ``slow`` (or even ``not slow``).
+    """
+
+    @pytest.mark.xslow
     def test_combined_essay_parses(self) -> None:
         parses = parse_text(COMBINED_ESSAY)
         assert len(parses) >= 1, (
