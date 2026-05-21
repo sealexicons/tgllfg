@@ -30,8 +30,8 @@ inspection: comment text containing capitalized words followed by
 ## The 55 binary feats — migration targets
 
 Subsequent phases extended the inventory: 9.O.3 (+1), 9.O.4 (+1),
-9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1) → 60 total. Each extension
-is documented inline below.
+9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1) → 61 total.
+Each extension is documented inline below.
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
 Python `True`/`False`. Grammar rule patterns use the `[X]` shorthand
@@ -57,6 +57,7 @@ negative.
 | `DISTRIB` | NUM/Q is distributive (`tig-`) |
 | `DISTRIB_POSS` | distributive possessive (`kanya-kanya`) |
 | `DUAL` | dual marker (`pareho`, `dalawa`) |
+| `ELLIPSIS` | clause has elided / contextually-recoverable subject (`Wala pa.`; 9.X.c22 bare wala) |
 | `EMPHATIC` | clause carries emphasis |
 | `EQUATIVE` | ADJ is equative (`kasingganda`) |
 | `EXISTENTIAL` | clause is existential (`may`, `mayroon`) |

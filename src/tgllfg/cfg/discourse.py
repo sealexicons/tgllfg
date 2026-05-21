@@ -525,3 +525,50 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓5 PUNCT_CLASS) =c 'COMMA'",
         ],
     ))
+
+
+    # --- Phase 9.X.c22: "Kung minsan" idiomatic time adverb ----------
+    #
+    # ``Kung minsan ay wala pa.``  "Sometimes there's still none."
+    #                              (PANAHON sent-5)
+    #
+    # Two-token fixed idiom composing the conditional-conjunction
+    # ``kung`` with the FREQUENCY ADV ``minsan`` ("sometimes / once")
+    # to yield a virtual ADV with ADV_TYPE=TIME (frame-setting time
+    # adverbial). Once built, the existing Phase 5e ``AdvP → ADV``
+    # lift in cfg/extraction.py promotes it to AdvP, which then feeds:
+    #
+    #   * The Phase 5e ay-fronted AdvP rule
+    #     (cfg/extraction.py: ``S → AdvP PART[LINK=AY] S``) — for the
+    #     ``Kung minsan ay X`` surface.
+    #   * The Phase 8.D2 comma-fronted AdvP rule
+    #     (cfg/clause.py: ``S → AdvP PUNCT[COMMA] S``) — for the
+    #     ``Kung minsan, X`` surface.
+    #
+    # ``kung`` is independently the COND-conjunction (PART[COMP_TYPE=
+    # COND]); the COMP_TYPE gate on ↓1 narrows this rule to the
+    # conditional ``kung``, leaving the INTERROG ``kung`` (indirect-Q
+    # complementizer) free to fire its own rules. ``minsan`` is the
+    # FREQUENCY ADV (ADV_TYPE=FREQUENCY, FREQ_VALUE=SOMETIMES) — the
+    # ADV_TYPE gate on ↓2 keeps the rule from accidentally firing on
+    # other ADVs that share LEMMA="minsan".
+    #
+    # The matrix ADV adopts ADV_TYPE=TIME (rather than FREQUENCY)
+    # because the idiom semantically frames a time-of-occasion ("at
+    # times") rather than a frequency-of-occurrence; this lets it
+    # feed the clause-initial frame-setting rules above that gate on
+    # ADV_TYPE=TIME. FREQ_VALUE=SOMETIMES is preserved as a sub-feat
+    # for downstream consumers.
+    rules.append(Rule(
+        "ADV",
+        ["PART", "ADV"],
+        [
+            "(↑ ADV_TYPE) = 'TIME'",
+            "(↑ FREQ_VALUE) = 'SOMETIMES'",
+            "(↑ LEMMA) = 'kung_minsan'",
+            "(↓1 LEMMA) =c 'kung'",
+            "(↓1 COMP_TYPE) =c 'COND'",
+            "(↓2 LEMMA) =c 'minsan'",
+            "(↓2 ADV_TYPE) =c 'FREQUENCY'",
+        ],
+    ))

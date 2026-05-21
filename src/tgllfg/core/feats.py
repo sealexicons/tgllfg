@@ -41,6 +41,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "DISTRIB",
         "DISTRIB_POSS",
         "DUAL",
+        "ELLIPSIS",
         "EMPHATIC",
         "EQUATIVE",
         "EXISTENTIAL",
