@@ -142,6 +142,30 @@ def register_rules(rules: list[Rule]) -> None:
         ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
     ))
 
+    # --- Phase 9.X.c39: FREQUENCY-ADV pre-V modifier in S_GAP -----
+    #
+    # ``Ang silangang Pilipinas ay laging dinadalaw ng mga bagyo.``
+    #     (PANAHON sent-35)
+    #
+    # S_GAP-internal variant of the cfg/clause.py ``S → ADV
+    # PART[LINK] S`` rule. When a FREQUENCY-ADV pre-V modifier
+    # appears inside an ay-fronted topic-comment structure, the
+    # inner clause is SUBJ-gapped (S_GAP) and the ADV-wrap must
+    # match at the S_GAP level. The recursion mirrors the regular
+    # S-headed rule with ``S_GAP`` substituted; the matrix S_GAP
+    # inherits the inner S_GAP's f-structure (preserving REL-PRO
+    # binding) and the ADV joins ADJ.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S_GAP",
+            ["ADV", f"PART[LINK={link}]", "S_GAP"],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ)",
+                "(↓1 ADV_TYPE) =c 'FREQUENCY'",
+            ],
+        ))
+
     # === Phase 5n.A Commit 8: N-level RC wrap for existential N modifier (§18 L64) =====
     #
     # ``May bahay na nasa bundok.`` "There is a house in the mountain"
