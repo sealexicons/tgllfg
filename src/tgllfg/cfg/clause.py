@@ -2991,6 +2991,42 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.c22: bare elliptical wala (no SUBJ) ----------
+    #
+    # ``Wala.``                "There is none. / Not."
+    # ``Wala pa.``             "Not yet. / Still none."
+    #                          (PANAHON sent-5 inner clause)
+    # ``Kung minsan ay wala pa.``  "Sometimes there's still none."
+    #
+    # The Phase 5j Commit 3 wala rules above require an N or PRON
+    # daughter to fill SUBJ; an "edge case" exception was promised
+    # in the C3 docstring but never implemented. This rule closes
+    # that gap: a bare ``wala`` (optionally followed by a 2P
+    # clitic via the existing Phase 4 clitic absorption) is itself
+    # a complete clause with elliptical / contextually-recoverable
+    # subject. The 2P-clitic absorption rule
+    # (cfg/clitic.py: ``S → S PART[CLITIC_CLASS=2P]``) supplies
+    # the ``pa`` ASPECT_TYPE=NOT_YET adjunct.
+    #
+    # F-structure: zero-arity PRED (``EXIST <>``) since there is
+    # no overt SUBJ in this surface. CLAUSE_TYPE='EXISTENTIAL'
+    # and POLARITY='NEG' carry through to satisfy any downstream
+    # consumers that gate on existential / negative-existential
+    # clause type. The ELLIPSIS feat is diagnostic-only and marks
+    # the elliptical nature for downstream consumers.
+    rules.append(Rule(
+        "S",
+        ["PART[EXISTENTIAL, POLARITY=NEG]"],
+        [
+            "(↑ PRED) = 'EXIST <>'",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ ELLIPSIS) = true",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'NEG'",
+        ],
+    ))
+
     # Phase 5m Commit 9: negative-indefinite-PRON variant —
     # ``Walang sinuman.`` "There is no one." Mirrors the linker-
     # variant N rule above with PRON[INDEF=NEG_INDEF] in the
