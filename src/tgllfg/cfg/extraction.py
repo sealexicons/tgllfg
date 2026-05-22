@@ -405,6 +405,42 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # === Phase 9.X.c52: V-OV/DV/IV bare pre-N participial modifier =====
+    #
+    # ``tinatawag na monsoon`` "(what is) called monsoon" (PANAHON
+    # sent-28).
+    # ``sinasabing oras Pilipino`` "(what is) called Filipino time"
+    # (PANAHON sent-41).
+    #
+    # Tagalog admits a non-AV verb (OV / DV / IV) in pre-N modifier
+    # position with the head N as the implicit SUBJ (= the PATIENT
+    # of the V's voice). The construction is the "named/called X"
+    # idiom — surface order V + linker + N, with the agent absorbed
+    # to a generic PRO. Distinct from the existing S_GAP-headed
+    # pre-N rule above (which requires the V to form an S_GAP, gated
+    # on AV_ABSOL or MOOD=NVOL or VOICE=IV).
+    #
+    # The matrix f-structure shares with the head N's via ``(↑) =
+    # ↓3``; the modifier V's f-structure rides into ↑ ADJ as a
+    # nested participial; the V's SUBJ slot is unified with the
+    # head N's PRED.
+    #
+    # Reference: Schachter & Otanes 1972 §6.6 (non-AV pre-N
+    # participial modifiers); R&G 1981 PANAHON sent-28 / sent-41.
+    for voice in ("OV", "DV", "IV"):
+        rules.append(Rule(
+            "N",
+            [f"V[VOICE={voice}]", "PART", "N"],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ)",
+                "(↓1 SUBJ PRED) = (↓3 PRED)",
+                "(↓1 OBJ-AGENT PRED) = 'PRO'",
+                "(↓2 LINK)",
+            ],
+        ))
+
+
     # === Phase 5n.A Commit 8: nasa-headed gapped clause for RC bodies (§18 L64) =====
     #
     # ``May bahay na nasa bundok.`` "There is a house in the mountain"
