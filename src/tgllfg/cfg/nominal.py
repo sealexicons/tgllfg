@@ -707,6 +707,58 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 9.X.c40: ADJ + cardinal-N stacked NP-level rule ----
+    #
+    # ``Ang natitirang limang buwan ay naroong maghati sa init at ulan.``
+    #     "The remaining five months share between heat and rain."
+    #                                              (PANAHON sent-3)
+    #
+    # The Phase 5f Commit 1 cardinal-NP rule (line 651) admits
+    # ``DET + NUM[CARDINAL] + linker + N`` but does not extend
+    # to a leading attributive ADJ + linker (``natitirang limang
+    # buwan`` "remaining five months"). The N-level cardinal-N +
+    # ADJ-modifier rules produce an N carrying BOTH ``CARDINAL_VALUE``
+    # and ``ADJ-MOD``, but the simple NP-from-N rule (lines 101–133)
+    # explicitly excludes ``CARDINAL_VALUE`` Ns to keep parses
+    # unique with the bare cardinal-NP rule.
+    #
+    # This rule covers the gap: a 6-daughter direct rule that admits
+    # ``CASE-MARKER + ADJ + linker + NUM[CARDINAL] + linker + N``,
+    # mirroring the cardinal-NP rule with a leading ADJ-modifier
+    # slot. Direct rule shape (not existence-constraints) so the
+    # chart filters spurious matches at compile time, not at
+    # tree-solving time.
+    #
+    # 12 rules: 3 cases × 2 outer linkers × 2 inner linkers.
+    for case, marker in _cardinal_case_marker.items():
+        for adj_link in ("NA", "NG"):
+            for num_link in ("NA", "NG"):
+                rules.append(Rule(
+                    f"NP[CASE={case}]",
+                    [
+                        marker,
+                        "ADJ",
+                        f"PART[LINK={adj_link}]",
+                        "NUM[CARDINAL]",
+                        f"PART[LINK={num_link}]",
+                        "N",
+                    ],
+                    [
+                        "(↑) = ↓1",
+                        "(↑ PRED) = ↓6 PRED",
+                        "(↑ LEMMA) = ↓6 LEMMA",
+                        "(↑ NUM) = ↓4 NUM",
+                        "(↑ CARDINAL_VALUE) = ↓4 CARDINAL_VALUE",
+                        "(↑ APPROX) = ↓4 APPROX",
+                        "(↑ DISTRIB) = ↓4 DISTRIB",
+                        "↓2 ∈ (↑ ADJ-MOD)",
+                        "¬ (↓6 CARDINAL_VALUE)",
+                        "¬ (↓2 STATIVE_PRED)",
+                        "(↓4 CARDINAL) =c true",
+                    ],
+                ))
+
+
     # --- Phase 5f Commit 7: ordinal NP-internal modifier ---------
     #
     # ``ang unang anak`` ("the first child"), ``ng ikalawang

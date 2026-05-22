@@ -80,6 +80,13 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 
+[tool.mypy]
+# Check the bodies of functions even when they lack a return annotation,
+# silencing the noisy ``[annotation-unchecked]`` notes from untyped pytest
+# fixtures / test helpers. Type errors that surface in those bodies are
+# expected to be addressed at the call site or via narrow inline annotations.
+check_untyped_defs = true
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 markers = [

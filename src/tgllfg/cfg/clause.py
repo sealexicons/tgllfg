@@ -2248,6 +2248,36 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 9.X.c40: deictic LOC_EXISTENTIAL pre-V modifier ----
+    #
+    # ``Ang natitirang limang buwan ay naroong maghati sa init at ulan.``
+    #     "The remaining five months share between heat and rain."
+    #                                              (PANAHON sent-3)
+    #
+    # The deictic locative-existentials (``narito`` / ``naroon`` /
+    # ``nariyan``) can compose with a following linker + V to add
+    # locative-existential meaning to the matrix verb — the same
+    # "be-there V-ing" pattern that English uses with
+    # "there + V-ing".
+    #
+    # Parallel to the c39 FREQ-ADV pre-V rule: matrix S inherits
+    # the inner clause's f-structure (PRED, SUBJ, ASPECT) via
+    # ``(↑) = ↓3``, and the LOC_EXISTENTIAL PART joins ADJ as a
+    # locative modifier. The DEIXIS check narrows this to the
+    # deictic forms (not ``nasa``).
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            ["PART[LOC_EXISTENTIAL]", f"PART[LINK={link}]", "S"],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ)",
+                "(↓1 LOC_EXISTENTIAL) =c true",
+                "(↓1 DEIXIS)",
+            ],
+        ))
+
+
     # --- Phase 9.X.c39: FREQUENCY-ADV pre-V modifier --------------
     #
     # ``Ang silangang Pilipinas ay laging dinadalaw ng mga bagyo.``

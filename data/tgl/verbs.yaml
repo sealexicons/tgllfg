@@ -763,6 +763,11 @@
   gloss: divide, share, split
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka]
+  # Phase 9.X.c40: AV_ABSOL admits AV without overt OBJ — reciprocal
+  # "divide oneself / share" reading (``Maghati sa init at ulan.``
+  # "Share [time] between heat and rain"; PANAHON sent-3). Same
+  # precedent as ``halo`` (c30) and ``sayaw``.
+  feats: {AV_ABSOL: true}
   source: audit-corpus
 
 - citation: hatid
