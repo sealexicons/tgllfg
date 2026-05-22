@@ -4076,6 +4076,45 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- 9.X.c46: fronted SEM_CLASS=TIME N + GEN modifier + COMMA + S ---
+    #
+    # ``Pagkaani ng palay, sisimulan ang ikalawang pagtatanim.``
+    #     "After harvesting the rice, the second planting begins."
+    #     (PANAHON sent-36 second clause body)
+    # ``Pagkapananghalian ng tao, natutulog ako.``
+    #     "After people's lunch-time, I sleep."
+    #
+    # Extension of the line-4068 N + COMMA + S rule: when the
+    # fronted N is a SEM_CLASS=TIME deverbal nominalization (e.g.,
+    # ``pagkaani`` "post-harvest", ``pagkapananghalian`` "midday"),
+    # it can take a GEN-NP modifier expressing the OBJ of the
+    # nominalized event. SEM_CLASS=TIME on the N daughter keeps the
+    # rule from firing on arbitrary N + GEN-NP fronted phrases —
+    # those have separate (e.g., NP-POSS) analyses that would
+    # double-count.
+    #
+    # Mirrors the bare-N variant above but with an inserted
+    # NP[CASE=GEN] daughter. The GEN-NP attaches to the topic-N as
+    # POSS (the canonical mapping for deverbal-N OBJ in Tagalog,
+    # cf. cfg/nominal.py:838 NP-POSS pattern).
+    rules.append(Rule(
+        "S",
+        [
+            "N",
+            "NP[CASE=GEN]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "S",
+        ],
+        [
+            "(↑) = ↓4",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJUNCT)",
+            "(↑ TOPIC POSS) = ↓2",
+            "(↓1 SEM_CLASS) =c 'TIME'",
+        ],
+    ))
+
+
     # === Phase 8.D2: comma-fronted topic siblings ======================
     #
     # In-Phase-8 anti-deferral follow-on to 8.D. The 8.D

@@ -139,6 +139,57 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # === 9.X.c46: impersonal IV bare S_GAP (any MOOD) ==============
+    #
+    # ``ang palay na itinanim noong Hunyo`` (inner RC of PANAHON
+    #     sent-36). The Phase 5g N-level RC wrap consumes a SUBJ-
+    #     gapped S_GAP; with an IV-PFV-IND verb like ``itinanim``
+    #     "(was) planted" and no overt GEN agent, the c43-narrow
+    #     NVOL gate doesn't fire and the c43-broadened "any MOOD"
+    #     variant was reverted at S_GAP level because of OV-RC
+    #     PRON-actor ambiguity (see c43 note above).
+    #
+    # IV (instrument-voice) impersonal at S_GAP is safe: no
+    # documented test admits a PRON-GEN actor in an IV-RC context,
+    # so the OV-RC ambiguity case doesn't recur. We therefore
+    # selectively broaden c43 for IV (any MOOD) only, leaving
+    # OV / DV narrow at MOOD=NVOL.
+    #
+    # F-structure shape mirrors the c43 OV/DV-NVOL S_GAP rule
+    # exactly: REL-PRO binds the SUBJ slot (= the PATIENT /
+    # CONVEYED mapped to SUBJ by IV voice), OBJ-AGENT is filled
+    # with a generic PRO placeholder.
+    rules.append(Rule(
+        "S_GAP",
+        ["V[VOICE=IV]"],
+        _eqs(
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ OBJ-AGENT PRED) = 'PRO'",
+        ),
+    ))
+
+
+    # === 9.X.c46: clause-final TIME_FRAME PP at S_GAP level ========
+    #
+    # ``ang palay na itinanim noong Hunyo`` — once the bare IV
+    # S_GAP is licensed (above), the ``noong Hunyo`` PP needs to
+    # attach. The Phase 5n.A C18 S-level TIME_FRAME-PP attachment
+    # rule (cfg/discourse.py:101) covers the matrix case; this
+    # parallel rule covers the S_GAP (RC body) case so the same
+    # construction works in relative-clause position.
+    #
+    # Mirrors the S-level rule equation-for-equation.
+    rules.append(Rule(
+        "S_GAP",
+        ["S_GAP", "PP"],
+        _eqs(
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 TIME_FRAME)",
+        ),
+    ))
+
+
     # === 9.X.c43: headless RC with mga plural marker ===============
     #
     # ``ang mga napinsalaan`` (PANAHON sent-27) — the existing
