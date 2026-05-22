@@ -142,6 +142,28 @@ def register_rules(rules: list[Rule]) -> None:
         ["(↑) = ↓2", "(↑ POLARITY) = 'NEG'"],
     ))
 
+    # --- Phase 9.X.c40: deictic LOC_EXISTENTIAL pre-V mod in S_GAP -
+    #
+    # ``Ang natitirang limang buwan ay naroong maghati sa init at ulan.``
+    #     (PANAHON sent-3)
+    #
+    # S_GAP-internal variant of the cfg/clause.py ``S → PART[LOC_EXISTENTIAL]
+    # PART[LINK] S`` rule. When an ay-fronted topic-NP has a deictic-
+    # existential pre-V modifier inside its inner comment clause,
+    # that inner clause is SUBJ-gapped (S_GAP) and the modifier
+    # wrap must match at the S_GAP level. Mirrors c39's S_GAP variant.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S_GAP",
+            ["PART[LOC_EXISTENTIAL]", f"PART[LINK={link}]", "S_GAP"],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ)",
+                "(↓1 LOC_EXISTENTIAL) =c true",
+                "(↓1 DEIXIS)",
+            ],
+        ))
+
     # --- Phase 9.X.c39: FREQUENCY-ADV pre-V modifier in S_GAP -----
     #
     # ``Ang silangang Pilipinas ay laging dinadalaw ng mga bagyo.``

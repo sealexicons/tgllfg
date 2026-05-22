@@ -84,6 +84,7 @@ def test_extra_whitespace():
 def test_hyphenated_feature_name():
     # OBL-AG, LEX-ASTRUCT — current grammar uses these.
     eq = parse_equation("(↑ OBL-AG) = ↓2")
+    assert isinstance(eq, DefiningEquation)
     assert eq.lhs.path == (Feature("OBL-AG"),)
 
 

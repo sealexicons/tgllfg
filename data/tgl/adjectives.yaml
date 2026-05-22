@@ -513,6 +513,23 @@
   affix_class: []
   source: audit-corpus
 
+# Phase 9.X.c40: ``natitira`` ADJ-participial entry. The bare
+# verb-paradigm form ``natitira`` (AV-IPFV-NVOL of ``tira``
+# "be left over / remain") is also used attributively as the
+# adjective "remaining" (PANAHON sent-3 ``Ang natitirang limang
+# buwan ...`` = "The remaining five months ..."). The analyzer
+# also produces a VERB analysis (na-ti-tira morphology); this
+# direct ADJ entry adds the attributive reading needed for
+# pre-N modifier slots (V → ADJ POS-flip; precedent: ``silangan``
+# c39, ``pinid`` c31, ``pilipino`` / ``iba`` c28). Composes via
+# the existing ADJ + linker + N pre-N modifier rule
+# (cfg/nominal.py:1901). VERB vs ADJ disambiguates by slot.
+- citation: natitira
+  pos: ADJ
+  gloss: remaining, leftover (attributive)
+  affix_class: []
+  source: audit-corpus
+
 # Phase 9.X.c39: ``silangan`` is polysemous. nouns.yaml carries
 # the NOUN entry ("east"). This bare ADJ entry covers the
 # attributive-"eastern" sense (PANAHON sent-35 ``Ang silangang
