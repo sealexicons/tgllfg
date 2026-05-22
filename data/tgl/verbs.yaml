@@ -2432,6 +2432,12 @@
   gloss: rain (to rain; as weather verb)
   transitivity: INTR
   affix_class: [um, in_oblig, an_oblig, maka]
+  # Phase 9.X.c49: IMPERSONAL admits bare-S parse with synthesized
+  # PRO SUBJ — ``Umuulan.`` "It's raining."; ``Kung umulan man``
+  # (R&G 1981 PANAHON sent-35). Weather verbs are intrinsically
+  # impersonal in Tagalog: the weather situation itself is the
+  # subject, surfacing as discourse-bound PRO.
+  feats: {IMPERSONAL: true}
   source: audit-corpus
 
 - citation: ulit

@@ -52,6 +52,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "GAPPING",
         "HAVE",
         "HUMAN",
+        "IMPERSONAL",
         "INTENSIFIER",
         "INTERJ",
         "KA_PRED",

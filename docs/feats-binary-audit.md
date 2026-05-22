@@ -30,7 +30,8 @@ inspection: comment text containing capitalized words followed by
 ## The 55 binary feats — migration targets
 
 Subsequent phases extended the inventory: 9.O.3 (+1), 9.O.4 (+1),
-9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1) → 61 total.
+9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1), 9.X.c49 (+1)
+→ 62 total.
 Each extension is documented inline below.
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
@@ -68,6 +69,7 @@ negative.
 | `GAPPING` | matrix carries a gapping conjunction |
 | `HAVE` | possessive predicate marker |
 | `HUMAN` | NP/PRON is human-class |
+| `IMPERSONAL` | predicate licenses bare-S parse with synthesized PRO SUBJ (weather verbs `umulan` / atmospheric ADJs `mainit`; 9.X.c49) |
 | `INTENSIFIER` | particle is an intensifier (`talagang`) |
 | `INTERJ` | element is an interjection |
 | `KA_PRED` | N is a ka-N companion-predicate (`kasama` / `kasabay`; 9.X.c19; gates ka-N S_GAP rule) |
