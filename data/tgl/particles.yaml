@@ -1439,6 +1439,16 @@
 - surface: di
   pos: PART
   feats: {NEG_TAG: true, LEMMA: di}
+# Phase 9.X.c47: ``di`` as colloquial POLARITY=NEG (allophone of
+# ``hindi``). PANAHON sent-25 ``Kapag di gaanong malakas ang bagyo
+# ay ...`` "When the storm isn't so strong, ...". The existing
+# NEG_TAG entry above feeds the Phase 5i Commit 7 ``di ba?`` tag-Q
+# rule; the new POLARITY=NEG entry feeds the canonical Phase 4 §7.2
+# hindi-negation wrap rules. Both readings coexist; chart context
+# (tag-Q vs clausal negation) disambiguates.
+- surface: di
+  pos: PART
+  feats: {POLARITY: NEG, LEMMA: di}
 
 # === Phase 5j Commit 1: existential clause-typers =========================
 #
