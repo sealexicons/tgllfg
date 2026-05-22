@@ -101,6 +101,67 @@ def register_rules(rules: list[Rule]) -> None:
         ["V[VOICE=OV, AV_ABSOL=true]"],
         _eqs("(↑ SUBJ) = (↑ REL-PRO)"),
     ))
+
+
+    # === 9.X.c43: impersonal OV/DV-NVOL bare S_GAP =================
+    #
+    # ``ang mga napinsalaan`` "the damaged ones" (PANAHON sent-27).
+    # ``ang nakita ng aso`` "the (thing) seen by the dog" — with
+    # explicit agent — already covered by the head-initial RC path.
+    # This pair of rules covers the agent-absorbed case: a bare
+    # ma+root+-an (DV-PFV-NVOL) or na+root (OV-PFV-NVOL) verb as
+    # S_GAP, with the PATIENT/GOAL SUBJ slot bound to REL-PRO and
+    # the implicit AGENT filled by a generic PRO placeholder.
+    #
+    # Parallel to the c42 matrix-S impersonal rules (cfg/clause.py),
+    # but at S_GAP level so the bare verb can feed the headless-RC
+    # NP wrap. Gated on MOOD=NVOL so volitional OV/DV (``sinulat``
+    # / ``tinulungan``) continue to require explicit agent via the
+    # Phase 5b / 5n.A C26 paths.
+    for voice in ("OV", "DV"):
+        rules.append(Rule(
+            "S_GAP",
+            [f"V[VOICE={voice}, MOOD=NVOL]"],
+            _eqs(
+                "(↑ SUBJ) = (↑ REL-PRO)",
+                "(↑ OBJ-AGENT PRED) = 'PRO'",
+            ),
+        ))
+
+
+    # === 9.X.c43: headless RC with mga plural marker ===============
+    #
+    # ``ang mga napinsalaan`` (PANAHON sent-27) — the existing
+    # headless RC rule (``NP[CASE=X] → DET[CASE=X] S_GAP``,
+    # line 1697 below) doesn't admit a PART[mga] daughter between
+    # the case marker and the S_GAP. This new rule fills that gap,
+    # mirroring the simple-NP ``mga`` rule (cfg/nominal.py:136)
+    # but with S_GAP instead of N.
+    #
+    # Sets ``NUM=PL`` on the matrix NP to mark the plurality (same
+    # as the simple-NP ``mga`` rule). Mirrors the canonical headless
+    # RC's equations otherwise.
+    for case in ("NOM", "GEN", "DAT"):
+        head_cat = (
+            f"DET[CASE={case}, DEM=false]"
+            if case == "NOM"
+            else f"ADP[CASE={case}, DEM=false]"
+        )
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [head_cat, "PART", "S_GAP"],
+            [
+                "(↑ PRED) = 'PRO'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ MARKER) = ↓1 MARKER",
+                "(↑ NUM) = 'PL'",
+                "(↓2 PLURAL_MARKER) =c true",
+                "↓3 ∈ (↑ ADJ)",
+                "(↓3 REL-PRO PRED) = 'PRO'",
+                f"(↓3 REL-PRO CASE) = '{case}'",
+                "(↓3 REL-PRO) =c (↓3 SUBJ)",
+            ],
+        ))
     # S_GAP transitive frames mirror the matrix transitive frames'
     # OBJ-θ-in-grammar split: AV binds the ng-NP to bare OBJ
     # (PATIENT/THEME), non-AV binds to typed OBJ-θ.
