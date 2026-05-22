@@ -2015,6 +2015,28 @@ def register_rules(rules: list[Rule]) -> None:
                 "¬ (↓1 STATIVE_PRED)",
             ],
         ))
+        # Phase 9.X.c56: LEMMA-gated relaxation of the STATIVE_PRED
+        # block above — admits the ``Mahal na Araw`` "Holy Week"
+        # name-compound (PANAHON sent-10) and similar fixed
+        # STATIVE_PRED+N idioms. Gated by an explicit LEMMA list so
+        # the Phase 9.O.3 ambiguity-control gate continues to
+        # exclude other STATIVE_PRED ADJs (notably ``kilala``,
+        # ``gusto`` — the latter has a V/PSYCH analysis the gate
+        # was designed to disambiguate). The bare ``mahal`` ADJ has
+        # only an ADJ analysis (no V/PSYCH); the V analyses of the
+        # ``mahal`` root (``mahalin``, ``minahal``, ``nagmahal``)
+        # all carry their own inflectional morphology that
+        # disambiguates them from the bare-modifier surface.
+        rules.append(Rule(
+            "N",
+            ["ADJ", f"PART[LINK={link}]", "N"],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ-MOD)",
+                "(↓1 STATIVE_PRED) =c true",
+                "(↓1 LEMMA) =c 'mahal'",
+            ],
+        ))
         # Post-N: the head N comes first.
         rules.append(Rule(
             "N",
