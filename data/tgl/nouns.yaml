@@ -2589,6 +2589,7 @@
 - citation: pagkaani
   pos: NOUN
   gloss: post-harvest period
+  feats: {SEM_CLASS: TIME}
   source: audit-corpus
 
 - citation: pagkain
