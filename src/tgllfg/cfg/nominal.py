@@ -2369,6 +2369,58 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.X.c50: intensive ADJ reduplication ----------------
+    #
+    # ``maagang-maaga`` "very early" (R&G 1981 PANAHON sent-16);
+    # ``mabuting-mabuti`` "very good"; ``malaki't-malaki`` (with
+    # apostrophe variant). The intensive ADJ-reduplication
+    # construction surfaces as:
+    #
+    #   [ADJ + bound-linker ``-ng`` (or free ``na``) + hyphen + ADJ]
+    #
+    # Both ADJ daughters carry the same LEMMA (same root). The
+    # matrix is ADJ[PREDICATIVE=true, COMP_DEGREE=INTENSIVE]
+    # mirroring the Phase 5h Commit 3 PART-intensifier wrapper's
+    # output shape so the same Phase 5g predicative-ADJ-S rule
+    # (and other ADJ-pred consumers) admit the wrapped form.
+    #
+    # The constraining equation ``(↓1 LEMMA) =c (↓4 LEMMA)`` is
+    # not directly expressible (path-equals-path constraining over
+    # two non-matrix daughters); instead, we use two existential
+    # gates ``(↓1 LEMMA)`` and ``(↓4 LEMMA)`` plus a structural
+    # share ``(↑) = ↓1`` so the matrix inherits LEMMA from the
+    # first ADJ. The chart's lexical disambiguation prefers same-
+    # root readings since alternative parses fail at the
+    # downstream consumer level.
+    #
+    # The hyphen tokenizes to PUNCT[PUNCT_CLASS=HYPHEN] (the same
+    # entry consumed by the ``alas-tres`` time-N rule above).
+    #
+    # Reference: S&O 1972 §3.13 (intensive reduplication on
+    # adjectives); R&G 1981 PANAHON sent-16.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "ADJ[PREDICATIVE=true, INTENSIFIER=true, COMP_DEGREE=INTENSIVE]",
+            [
+                "ADJ",
+                f"PART[LINK={link}]",
+                "PUNCT[PUNCT_CLASS=HYPHEN]",
+                "ADJ",
+            ],
+            [
+                "(↑) = ↓1",
+                "(↑ INTENSIFIER) = true",
+                "(↑ COMP_DEGREE) = 'INTENSIVE'",
+                "(↑ PREDICATIVE) = true",
+                "(↓1 PREDICATIVE) =c true",
+                f"(↓2 LINK) =c '{link}'",
+                "(↓3 PUNCT_CLASS) =c 'HYPHEN'",
+                "(↓4 PREDICATIVE) =c true",
+                "(↓4 LEMMA) = ↓1 LEMMA",
+            ],
+        ))
+
+
     # --- Phase 5h Commit 7: comparative Q-wrapper ---------------
     #
     # ``mas maraming aklat`` "more books" — comparative quantification
