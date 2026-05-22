@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """LemmaSense child table for per-sense feats (Phase 5n.C.4 L34).
 
 Revision ID: 0004
@@ -24,8 +27,6 @@ Backfill: one synthetic sense per existing lemma at
 ``sense_index = 0`` with ``feats = '{}'::jsonb``; existing lex_entry
 rows point at that sense.
 """
-
-from __future__ import annotations
 
 from collections.abc import Sequence
 

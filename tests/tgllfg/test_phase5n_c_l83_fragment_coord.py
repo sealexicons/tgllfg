@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C Commit 5 — L83 standalone NP-coord fragment.
 
 Closes §18 L83 (standalone NP-coord without verbal head). The new
@@ -17,8 +20,6 @@ and continue to 0-parse as sentences.
 Design appendix: ``docs/analysis-choices.md`` Phase 5n.C Commit 4.
 Reference: Schachter & Otanes 1972 §10.
 """
-
-from __future__ import annotations
 
 import pytest
 

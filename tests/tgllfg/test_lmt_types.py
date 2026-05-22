@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5 §8.1 — LMT data types.
 
 Covers :class:`tgllfg.lmt.Role`, :class:`tgllfg.lmt.IntrinsicFeatures`,
@@ -5,8 +8,6 @@ Covers :class:`tgllfg.lmt.Role`, :class:`tgllfg.lmt.IntrinsicFeatures`,
 :class:`tgllfg.lmt.MappingResult`, and the typed-GF helpers
 :func:`tgllfg.lmt.obj_theta` / :func:`tgllfg.lmt.obl_theta`.
 """
-
-from __future__ import annotations
 
 import pytest
 from hypothesis import given

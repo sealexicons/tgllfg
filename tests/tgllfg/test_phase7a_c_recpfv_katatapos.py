@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 7a.C: `katatapos + V_inf` raising-from-XCOMP (§18.1.1 item 3).
 
 Two coordinated sub-closures:
@@ -32,8 +35,6 @@ Scope limitations (not bugs, just out of v1 scope):
   clitic between the matrix and embedded V, a different syntactic
   shape from the RAISING_BARE rule.
 """
-
-from __future__ import annotations
 
 import pytest
 

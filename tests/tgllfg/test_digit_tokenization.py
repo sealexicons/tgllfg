@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f closing deferral: digit tokenization.
 
 A bare digit string (``5``, ``1990``, ``42``) analyses as a NUM
@@ -53,8 +56,6 @@ this PR):
 * No-space digit decimals (``5.3``) — needs ``.`` particle as
   DECIMAL_SEP.
 """
-
-from __future__ import annotations
 
 import pytest
 

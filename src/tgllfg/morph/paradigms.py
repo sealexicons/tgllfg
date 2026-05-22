@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/morph/paradigms.py
 
 """Data classes for the morphological lexicon.
@@ -11,8 +14,6 @@ cell. Operations are interpreted by the analyzer in a fixed order
 (reduplication → infixation → suffixation → prefixation); see
 :func:`tgllfg.morph.analyzer.generate_form` for the full schedule.
 """
-
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 

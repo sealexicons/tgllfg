@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 2: Spanish-borrowed cardinals 1-10.
 
 Lex-only addition. The Phase 5f Commit 1 cardinal-NP-modifier
@@ -37,8 +40,6 @@ Tests cover:
   with the consonant-final cardinal ``dos`` followed
   immediately by N (no linker) should fail.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

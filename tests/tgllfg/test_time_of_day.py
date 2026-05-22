@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 11: time-of-day NOUNs + native time deictics
 (Group E items 2 + 5).
 
@@ -47,8 +50,6 @@ Tests cover:
 * Regression: cardinals, ordinals, fractions, arithmetic,
   clock-times all unchanged.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

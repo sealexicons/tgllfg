@@ -1,7 +1,8 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """End-to-end tests for ``tgllfg lex import`` and the data-version
 compatibility check."""
-
-from __future__ import annotations
 
 import asyncio
 from collections.abc import AsyncIterator

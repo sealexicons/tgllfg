@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5c §8 follow-on (Commit 6): multi-OBL semantic
 disambiguation.
 
@@ -29,8 +32,6 @@ These tests cover:
 * Multi-OBL with same-class sa-NPs — positional fallback.
 * Helper functions ``_semantic_class`` and ``_gf_prefers_class``.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.lmt.oblique_classifier import (

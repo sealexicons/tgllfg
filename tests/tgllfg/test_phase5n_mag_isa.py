@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 5 — mag-isa "alone" ADV tokenizer hyphen-split (§18 L60).
 
 The default tokenizer splits on internal hyphens, so ``mag-isa``
@@ -21,8 +24,6 @@ Same lex pattern as Phase 5m Commit 5's ``paminsanminsan`` /
 
 The full sentence integration (R&G #3) requires Commits 6 and 7 too.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import Token
 from tgllfg.morph import Analyzer

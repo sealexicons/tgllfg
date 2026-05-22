@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5i Commit 1: wh-word lex inventory.
 
 Roadmap §12.1 / plan-of-record §4.1-4.4. Eleven new lex entries
@@ -37,8 +40,6 @@ confirmed: zero baseline corpus entries contain any wh-word, so
 no baseline flips. Commit 4's adverbial-wh fronting rule will
 restore the parse path.
 """
-
-from __future__ import annotations
 
 import pytest
 

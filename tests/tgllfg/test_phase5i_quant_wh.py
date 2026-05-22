@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5i Commit 9: kanino / magkano / ilan-WH integration.
 
 Roadmap §12.1 / plan-of-record §6 Commit 9. Three new clause-
@@ -55,8 +58,6 @@ Lex inventory (from Commit 1, no change here):
 * Non-wh predicative-Q (``Marami ang aklat.``
   "Many are the books") — Phase 5f deferral, separate work.
 """
-
-from __future__ import annotations
 
 import pytest
 

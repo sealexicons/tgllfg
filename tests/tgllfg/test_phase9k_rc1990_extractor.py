@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.K: R&C 1990 harvest-extractor cleanup.
 
 Closes the audit-surfaced noise classes in
@@ -70,8 +73,6 @@ Cumulative-corpus impact (sum across all 6 production waves): 664/5342
 (12.43%) → 669/5268 (12.70%) — +5 absolute, +0.27pp; 74 noise lines
 removed across waves (50 RC1990 + 15 R&G Int + 7 S&O 72 + 2 Ramos 71).
 """
-
-from __future__ import annotations
 
 import sys
 from pathlib import Path

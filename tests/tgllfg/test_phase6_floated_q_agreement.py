@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 6.H Commit 2: floated-Q number agreement (§18 L33).
 
 The Phase 4 §7.8 base float rule (``cfg/clitic.py:48-79``) and
@@ -27,8 +30,6 @@ Non-DUAL Q's (``lahat`` / ``marami`` / ``konti`` etc.) compose
 with SG and PL antecedents unchanged — the bare-Q rule has no
 NUM constraint.
 """
-
-from __future__ import annotations
 
 import pytest
 

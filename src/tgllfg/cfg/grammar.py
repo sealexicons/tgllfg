@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/cfg/grammar.py
 
 """Default Tagalog grammar — entry point and composer.
@@ -40,8 +43,6 @@ calls them in order. Per-area linguistic context (negation
 overlays, the ``S_GAP`` / ``S_XCOMP`` gap-category designs, etc.)
 lives in the respective module's docstring.
 """
-
-from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass

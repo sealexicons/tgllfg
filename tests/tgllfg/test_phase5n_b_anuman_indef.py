@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 22: wh-as-indefinites + Walang ano man
 (§18 L46 + L102).
 
@@ -48,8 +51,6 @@ Test cleanup:
 * ``tests/tgllfg/test_phase5m_negative_indefinite.py``: drop
   the ``test_walang_ano_man_zero_parse`` pin — closed by C22.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 7: temporal subordination — habang / hanggang / mula nang.
 
 Roadmap §12.1 / plan-of-record §5.3, §6 Commit 7. Three new
@@ -25,8 +28,6 @@ End-to-end target sentences:
     Mula nang kumain si Maria, pumunta si Juan.
         # "Since Maria ate, Juan went."          (TEMP_SINCE)
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

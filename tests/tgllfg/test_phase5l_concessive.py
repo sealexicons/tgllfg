@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 4: concessive subordination — kahit / bagaman.
 
 Roadmap §12.1 / plan-of-record §5.2, §6 Commit 4. One new rule
@@ -26,8 +29,6 @@ prefer simple intransitive AV-PFV verbs with explicit subjects
 (``kumain si Maria``, ``pumunta si Juan``) — which we know
 parse cleanly post-Phase-5j.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

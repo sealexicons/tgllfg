@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/lmt/check.py
 
 """Phase 5 §8 — pipeline-facing LMT check.
@@ -34,8 +37,6 @@ The legacy heuristic remains available via
 :func:`tgllfg.lmt.legacy.apply_lmt` for the synthesizer-fallback
 path (verbs whose lex entry can't be located post-solve).
 """
-
-from __future__ import annotations
 
 from collections.abc import Iterator, Sequence
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Smoke tests for the Phase 3 Postgres test harness.
 
 These verify only that the testcontainer can be started, that an async
@@ -6,8 +9,6 @@ extensions the §6.2 schema requires (``pg_trgm`` for fuzzy lemma lookup,
 ``pgcrypto`` for ``gen_random_uuid()``) are loadable in this image.
 Schema creation lives in the Alembic baseline migration.
 """
-
-from __future__ import annotations
 
 import pytest
 from sqlalchemy import text

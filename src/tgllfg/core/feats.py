@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Catalogue of f-structure feats by value-shape.
 
 ``BINARY_FEATS`` is the set of feat names that carry strictly
@@ -18,8 +21,6 @@ Enum-valued feats (e.g., ``PRED``, ``INDEF``, ``Q_TYPE``, ``CASE``,
 as one of their enum values. See ``docs/feats-binary-audit.md`` for
 the full audit and the migration plan.
 """
-
-from __future__ import annotations
 
 BINARY_FEATS: frozenset[str] = frozenset(
     {

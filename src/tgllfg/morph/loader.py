@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/morph/loader.py
 
 """Load the seed YAML lexicon under ``data/tgl/`` into a
@@ -10,8 +13,6 @@ brand-new project may not yet have, say, ``sandhi.yaml``) but
 strict about per-record shape: a malformed entry raises
 ``ValueError`` with the file path and record index in the message.
 """
-
-from __future__ import annotations
 
 from pathlib import Path
 from typing import Any

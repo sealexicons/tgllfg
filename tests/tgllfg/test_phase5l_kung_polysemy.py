@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 3: kung polysemy resolution (COND vs INTERROG).
 
 Roadmap §12.1 / plan-of-record §2 (analytical commitment) /
@@ -26,8 +29,6 @@ cross-fire path (e.g., relaxing ``S_INTERROG_COMP``'s
 Q_TYPE=WH constraint, or adding a non-finite SubordClause that
 overlaps with the indirect-Q shape), these tests flag it.
 """
-
-from __future__ import annotations
 
 import pytest
 

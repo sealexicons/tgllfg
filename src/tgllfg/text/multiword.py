@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/text/multiword.py
 
 """Pre-parse multiword recognition.
@@ -24,8 +27,6 @@ single-pass merge — no productive paradigm-engine work needed at
 this layer (productive ``tag-`` / ``tig-`` / ``card_redup`` /
 ``kani-`` paradigms are a separate deferral).
 """
-
-from __future__ import annotations
 
 from ..core.common import Token
 

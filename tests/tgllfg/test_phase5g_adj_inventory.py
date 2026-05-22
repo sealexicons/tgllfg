@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5g Commit 4: lex inventory expansion (~30 adjectives).
 
 Roadmap §12.1 calls for a ~30–50 high-frequency adjective inventory
@@ -27,8 +30,6 @@ down, descend", ``linis`` "clean (TR)"). The Phase 5g additive
 policy leaves verbs.yaml untouched; the ADJ entries produce the
 ``ma + root`` surface that the verbal paradigm doesn't generate.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 4 §7.8: demonstratives, possessives, quantifier float.
 
 Three constructions added in this commit:
@@ -31,8 +34,6 @@ These tests cover:
 * Negative case: bare ``ang`` (no DEIXIS, no DEM=YES) does not
   trigger the standalone-demonstrative rule.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

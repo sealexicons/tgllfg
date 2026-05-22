@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 2: multi-GEN-NP ay-fronting.
 
 Phase 5b multi-GEN-NP frames bind two GEN-NPs as typed ``OBJ-θ``
@@ -24,8 +27,6 @@ surface in the n-best output. The tests use a topic-PRED filter to
 locate the natural reading without forcing a particular ranker
 choice.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

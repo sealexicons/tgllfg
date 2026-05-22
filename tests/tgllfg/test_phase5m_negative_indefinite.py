@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5m Commit 9: negative-indefinite ``walang sinuman``.
 
 Roadmap §12.1 / plan-of-record §1. Wires the Commit 1 PRON entry
@@ -39,8 +42,6 @@ Deferrals pinned:
 
 Reference: R&G 1981 §6.6.
 """
-
-from __future__ import annotations
 
 import pytest
 

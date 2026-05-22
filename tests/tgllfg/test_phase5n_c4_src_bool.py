@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.4 Commit 4 — src/ analyzer/placement/earley/pipeline migrated to bool.
 
 After this commit:
@@ -17,8 +20,6 @@ After this commit:
   bool → ``"YES"`` / ``"NO"`` so the compiler-side string sentinels
   in C3 still match. The bridge dies in Commit 8.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import MorphAnalysis, Token
 from tgllfg.morph.analyzer import Analyzer

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5k Commit 7: consequence coordination + kaya polysemy.
 
 Roadmap §12.1 / plan-of-record §5.6, §6 Commit 7. Two new
@@ -34,8 +37,6 @@ S clauses on either side.
 ``kaya naman`` is a discourse-emphatic variant lifted to the
 matrix as DISCOURSE_EMPH=YES.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.3 Commit 1 — paradigm-engine ``base_pos`` generalization.
 
 Adds ``base_pos`` to :class:`tgllfg.morph.paradigms.ParadigmCell`
@@ -22,8 +25,6 @@ Tests cover:
 * A synthetic ADJ-base cell, when injected, fires on an ADJ root
   and the surface lands in ``self._index.adjectives``.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import Token
 from tgllfg.morph.analyzer import Analyzer

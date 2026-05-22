@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 19 — N-conjunct flat NP coord (§18 L85, L85+).
 
 The Phase 5k Commit 4 3-conjunct rules produce flat CONJUNCTS sets
@@ -19,8 +22,6 @@ Phase 6.C graph-constraint matcher, which is what unlocked the
   strict matcher prunes those at predict time, leaving the wrap
   free to compose.
 """
-
-from __future__ import annotations
 
 import pytest
 

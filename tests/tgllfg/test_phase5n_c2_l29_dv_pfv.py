@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.2 Commit 2 — L29 DV PFV high-frequency verbs.
 
 Closes the §18.1 L29 DV PFV paradigm-coverage gap surfaced during
@@ -18,8 +21,6 @@ in ``TestPinnedDVPFVMissingAnOblig`` is flipped here to positive
 coverage; the original 0-parse test was removed once Commit 2's
 verbs.yaml changes landed.
 """
-
-from __future__ import annotations
 
 import pytest
 

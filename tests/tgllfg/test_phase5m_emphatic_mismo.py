@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5m Commit 7: emphatic ``mismo`` post-N attachment.
 
 Roadmap §12.1 / plan-of-record §5.3. Adds a single rule in
@@ -27,8 +30,6 @@ Distribution coverage:
 
 Reference: R&G 1981 §7.3.
 """
-
-from __future__ import annotations
 
 import pytest
 

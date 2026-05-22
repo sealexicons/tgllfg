@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/unify.py
 
 """F-structure construction by two-pass equation solving.
@@ -47,8 +50,6 @@ diagnostic at :func:`_path_features` today; full evaluation lands
 in Phase 6.B per :file:`.claude/plans/tgllfg-phase-6.md` §5.2
 (``_resolve_regex_for_read``, K&Z 1989 §3 path enumeration).
 """
-
-from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
 

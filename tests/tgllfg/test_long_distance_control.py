@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5c §7.6 follow-on (Commit 3): long-distance control.
 
 Phase 4 §7.6 deferred nested-XCOMP control chains, citing
@@ -29,8 +32,6 @@ These tests cover:
 * Disambiguator unit test for the new ``na``-after-control-verb
   rule.
 """
-
-from __future__ import annotations
 
 from tgllfg.clitics.placement import disambiguate_homophone_clitics
 from tgllfg.core.common import FStructure, MorphAnalysis

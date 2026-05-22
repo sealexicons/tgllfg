@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5 §8 — sa-NP → typed OBL-θ end-to-end through the parser.
 
 Pipeline-level tests for the oblique classifier. The `lakad` motion
@@ -6,8 +9,6 @@ and locative (sa-NP destination as ``OBL-LOC``) — so ``Lumakad ang
 bata sa palengke`` exercises the full chain: parse → solve →
 ``classify_oblique_slots`` → ``lfg_well_formed``.
 """
-
-from __future__ import annotations
 
 from typing import Any
 

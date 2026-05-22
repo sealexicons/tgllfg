@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 7a.F: kahit-X SUBJ pre-V no-`ay` colloquial (§18.1.1 item 8).
 
 New rule in ``cfg/extraction.py`` (parallel to the Phase 4 §7.4
@@ -18,8 +21,6 @@ Phase 5m C8 IndefPRON rule on kahit-X constructions); REGISTER=
 COLLOQUIAL distinguishes Phase 7a.F parses from the formal
 ay-fronted variant.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,11 +1,12 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.4 Commit 2 — BINARY_FEATS audit sanity tests.
 
 Guards the ``BINARY_FEATS`` allowlist against accidental drift: known
 binary feats stay in, known enum feats stay out. The full audit lives
 at ``docs/feats-binary-audit.md``.
 """
-
-from __future__ import annotations
 
 import pytest
 

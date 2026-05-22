@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Drop lex_entry.lemma_id; enforce NOT NULL on lemma_sense_id.
 
 Revision ID: 0005
@@ -16,8 +19,6 @@ Pre-condition: every existing ``lex_entry`` row already has its
 ``lemma_sense_id`` populated (the 0004 backfill set every existing
 row to its lemma's sense_index=0 row).
 """
-
-from __future__ import annotations
 
 from collections.abc import Sequence
 

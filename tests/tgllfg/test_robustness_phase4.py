@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 4 §7.9: robustness — fragment extraction, ranking, strict mode.
 
 Three deliverables:
@@ -13,8 +16,6 @@ Three deliverables:
 * **CLI ``--strict`` flag**: suppresses fragment output on
   full-parse failure.
 """
-
-from __future__ import annotations
 
 import io
 from contextlib import redirect_stderr, redirect_stdout

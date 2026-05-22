@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.V: Cluster B closures — sentence-initial fronted topic +
 COMMA/ay + main S construction class (per Phase 9.U Cluster B
 recommendation).
@@ -31,8 +34,6 @@ Four NO-OOV audit hits in the 9-12 word bucket close here:
   ``S → PART PUNCT[COMMA] S`` gated by
   ``DISCOURSE_POS=SENTENCE_INITIAL``.
 """
-
-from __future__ import annotations
 
 import pytest
 

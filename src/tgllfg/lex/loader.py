@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Backend resolution for the parser's morphological lexicon.
 
 ``resolve_morph_data()`` is the single entry point the analyzer
@@ -15,8 +18,6 @@ The async DB path is wrapped in ``asyncio.run`` so callers stay
 synchronous; ``aload_morph_data_from_url`` is also exported for
 contexts that already have an event loop.
 """
-
-from __future__ import annotations
 
 import asyncio
 import os

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Guard the zero-ranker-diff invariant for the grammar.py refactor.
 
 This is the gate the post-Phase-5f ``feature/refactor-grammar-package``
@@ -36,8 +39,6 @@ differs from the baseline. The aligned-by-corpus-index layout is
 deliberate: three sentences appear twice in ``coverage_corpus.yaml``,
 so a dict keyed by text would silently drop duplicates.
 """
-
-from __future__ import annotations
 
 import argparse
 import pickle

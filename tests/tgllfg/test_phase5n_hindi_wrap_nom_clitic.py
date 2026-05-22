@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 2 — hindi-wrap × non-``ka`` NOM-clitic (§18 L69).
 
 Pre-Commit-2 state: the Phase 4 §7.2 hindi-wrap rule absorbed the
@@ -19,8 +22,6 @@ immediately followed by ``PART[LINK=AY]`` — the topic stays
 sentence-initial so the Phase 4 §7.4 ay-fronting grammar's
 ``[NP, ay, S]`` shape continues to fire.
 """
-
-from __future__ import annotations
 
 import pytest
 

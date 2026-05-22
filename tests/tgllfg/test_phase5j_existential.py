@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5j Commit 2: positive existential clause.
 
 Roadmap §12.1 / plan-of-record §5.1, §6 Commit 2. Three new clause
@@ -36,8 +39,6 @@ End-to-end target sentences:
     Mayroong tao sa labas.    "There's someone outside."
     May isang aklat.          "There is one book."
 """
-
-from __future__ import annotations
 
 import pytest
 

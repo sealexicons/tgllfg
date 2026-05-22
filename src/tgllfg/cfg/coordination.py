@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/cfg/coordination.py
 
 """Coordination rules: NP-level + clausal binary coordination.
@@ -30,8 +33,6 @@ The composer in :mod:`tgllfg.cfg.grammar` calls this registrar
 after control and before discourse — see the plan's "Migration
 strategy" §H.
 """
-
-from __future__ import annotations
 
 from .grammar import Rule
 

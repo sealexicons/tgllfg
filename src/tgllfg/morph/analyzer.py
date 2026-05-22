@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/morph/analyzer.py
 
 """Rule-cascade morphological analyzer.
@@ -38,8 +41,6 @@ fires for roots whose ``affix_class`` list contains that string.
 This prevents a ``-um-`` only root like ``kain`` from generating
 ``mag-`` or ``mang-`` forms that don't exist in the language.
 """
-
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field

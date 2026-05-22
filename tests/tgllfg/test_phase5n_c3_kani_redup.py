@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.3 Commit 5 — productive ``kani_redup`` paradigm.
 
 Migrates the Phase 5f Commit 21 hand-coded distributive-possessive
@@ -35,8 +38,6 @@ productive paradigm fires for **3pl** ``kanila`` → ``kanikanila``
 (attested in R&G 1981 corpus excerpts but not hand-coded by
 Phase 5f Commit 21). Closes the third piece of §18 L31.
 """
-
-from __future__ import annotations
 
 import pytest
 

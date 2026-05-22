@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.4 Commit 12 — unit tests for the LexicalEntry YAML loader.
 
 Exercises :func:`tgllfg.core.lexicon_loader.load_lex_entries` against
@@ -12,8 +15,6 @@ synthetic YAML fixtures written to a tmp directory. Covers:
   token alphabet.
 * Per-record validation errors surface with file path + index.
 """
-
-from __future__ import annotations
 
 from pathlib import Path
 

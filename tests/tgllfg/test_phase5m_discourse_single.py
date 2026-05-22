@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5m Commit 10: single-word discourse connectives.
 
 Roadmap §12.1 / plan-of-record §5.1 (rule already landed in
@@ -25,8 +28,6 @@ EPISTEMIC on Commit 4 — both are inherently adjunct-scoped).
 
 Reference: R&B 1986 §15.7.
 """
-
-from __future__ import annotations
 
 import pytest
 

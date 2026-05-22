@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 4 §7.10: generate the coverage corpus.
 
 Produces ``tests/tgllfg/data/coverage_corpus.yaml`` — ~500 Tagalog
@@ -19,8 +22,6 @@ Run with::
 
 Re-running is idempotent — the YAML file is fully regenerated.
 """
-
-from __future__ import annotations
 
 import sys
 from pathlib import Path
@@ -1627,11 +1628,19 @@ def _all_corpus() -> list[dict[str, Any]]:
     return out
 
 
+_HEADER = (
+    "# Copyright (c) 2025-2026 G & R Associates LLC\n"
+    "# SPDX-License-Identifier: MIT OR Apache-2.0\n"
+    "\n"
+)
+
+
 def main() -> None:
     corpus = _all_corpus()
     print(f"Generated {len(corpus)} sentences", file=sys.stderr)
     _OUT.parent.mkdir(parents=True, exist_ok=True)
     with _OUT.open("w", encoding="utf-8") as fh:
+        fh.write(_HEADER)
         yaml.safe_dump(
             corpus, fh,
             default_flow_style=False, allow_unicode=True, sort_keys=False,

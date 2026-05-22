@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.Q: locative cleft + NEG'd cleft + sentence-medial kundi-PP
 correction (B3.D).
 
@@ -49,8 +52,6 @@ NP[CASE=DAT] daughter space cleanly:
 * 8.S admits ``Sa akin``/``Akin`` (PRON-headed; no NP-level PRED)
 * 9.Q admits ``Sa bahay``/``dito`` (NOUN- or DEM-headed; has PRED)
 """
-
-from __future__ import annotations
 
 import pytest
 

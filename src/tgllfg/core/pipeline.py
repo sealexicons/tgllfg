@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/pipeline.py
 
 """End-to-end parse pipeline: text → c-/f-/a-structure with diagnostics.
@@ -24,8 +27,6 @@ Phase 4 §7.9 robustness:
   more-specific lex entries (more morph_constraints keys) preferred
   over the generic synthesized fallback.
 """
-
-from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass

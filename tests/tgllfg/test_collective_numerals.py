@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 18: collective numerals (Group H2 item 4).
 
 Adds 4 ``NOUN[MEASURE=YES]`` lex entries (``pares``, ``dosena``,
@@ -75,8 +78,6 @@ Out of scope (deferred follow-on commits):
   walk down to verify CARDINAL_VALUE + LEMMA composition
   succeeded.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

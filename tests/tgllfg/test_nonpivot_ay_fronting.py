@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5d Commit 5: non-pivot ay-fronting (§7.4 deferral lifted).
 
 Phase 4 §7.4 admitted only SUBJ-pivot ay-fronting via the wrap rule
@@ -39,8 +42,6 @@ These tests cover:
   ``S_GAP``, not the new gap-categories).
 * LMT diagnostics: no blocking diagnostics on any new construction.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

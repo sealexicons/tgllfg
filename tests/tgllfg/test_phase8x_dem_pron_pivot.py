@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.X: DEM-pivot and PRON-pivot predicational clauses.
 
 Closes the Phase 8.X audit gap surfaced in the R&G Conversational
@@ -43,8 +46,6 @@ Out of 8.X scope (reserved for Phase 8.S follow-on):
 * DAT-PRON possessive-pivot (``Akin ang tinapay.``)
 * DEM-pivot with ``ay`` inversion (``Ito ay aklat.``)
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f closing deferral: clause-initial Q-with-clitic predicates.
 
 Two surface patterns, both clause-initial, both expressing what the
@@ -35,8 +38,6 @@ Tests cover:
   ``ng tigisang aklat`` parses still produce identical
   f-structures.
 """
-
-from __future__ import annotations
 
 import pytest
 

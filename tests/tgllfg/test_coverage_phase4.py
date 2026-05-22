@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 4 §7.10: coverage benchmark harness.
 
 Drives the corpus under
@@ -15,8 +18,6 @@ The aggregate stats (per-construction full-parse rate) are
 captured by :func:`test_coverage_summary` and rendered into
 ``docs/coverage.md`` by the user when re-running the benchmark.
 """
-
-from __future__ import annotations
 
 import json
 from collections import Counter, defaultdict

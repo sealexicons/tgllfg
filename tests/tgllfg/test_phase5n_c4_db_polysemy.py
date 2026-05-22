@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.4 Commit 10 — DB-backed polysemy regression.
 
 Asserts that the DB backend round-trips the long-standing
@@ -18,8 +21,6 @@ Verification path:
    to verify the ROOM and FRACTION Roots reach the analyzer-facing
    :class:`MorphData` shape.
 """
-
-from __future__ import annotations
 
 import asyncio
 from collections.abc import AsyncIterator

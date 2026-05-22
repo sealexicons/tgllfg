@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/cfg/extraction.py
 
 """Extraction rules: ay-inversion, S_GAP family, relativization, fronting.
@@ -39,8 +42,6 @@ The composer in :mod:`tgllfg.cfg.grammar` calls this registrar
 fifth, after np / clause / clitic / negation, and before control /
 discourse — see the plan's "Migration strategy" §H.
 """
-
-from __future__ import annotations
 
 from ._helpers import _eqs
 from .grammar import Rule

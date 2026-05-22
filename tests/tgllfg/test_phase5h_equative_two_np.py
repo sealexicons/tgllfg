@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5h Commit 6: equative two-NP standard-of-comparison frames.
 
 Roadmap §12.1 / plan-of-record §5.6, §6 Commit 6.
@@ -29,8 +32,6 @@ STANDARD`` is colloquial. The DAT-standard variant
 Tagalog and is deferred — if corpus pressure surfaces, a fourth
 rule lands as a Phase 5h follow-on.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 1: subordinator + sana lex inventory.
 
 Roadmap §12.1 / plan-of-record §4.1. Fifteen new lex entries:
@@ -28,8 +31,6 @@ The Phase 5l grammar rules (Commits 2-13) constrain on
 ``COMP_TYPE=INTERROG`` reading; ``para`` and ``dahil`` had only
 their PREP readings; ``sana`` was ``_UNK``.
 """
-
-from __future__ import annotations
 
 import pytest
 

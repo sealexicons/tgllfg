@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2025-2026 G & R Associates LLC
+SPDX-License-Identifier: MIT OR Apache-2.0
+-->
+
 # Refactor plan: per-area cfg/ modules + roots.yaml split
 
 **Status:** part 1 (cfg/ split) done 2026-05-04 across Commits 2-9

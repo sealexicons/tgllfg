@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5g Commit 1: ADJ analyzer dispatch and productive ``ma-`` derivation.
 
 Roadmap §12.1 analytical commitment: ``ma-`` adjectives are
@@ -13,8 +16,6 @@ policy, intrinsic ``PREDICATIVE: YES``, multiple analyses across
 POS classes). NP-internal modifier composition lands in Commit 2;
 the predicative-adj clause rule lands in Commit 3.
 """
-
-from __future__ import annotations
 
 import pytest
 

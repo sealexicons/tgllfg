@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 14: seasons (Group G).
 
 Adds 5 SEM_CLASS=SEASON NOUNs (the canonical two-season system
@@ -55,8 +58,6 @@ Out of scope (deferred follow-on commits):
   DAY_VALUE on NPs) — same NP-from-N projection limitation as
   the cardinal-modifier features.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

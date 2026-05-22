@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5h Commit 5: particle intensifiers + intensifier-ADJ wrapper.
 
 Roadmap §12.1 / plan-of-record §4.1, §5.3-5.4, §6 Commit 5.
@@ -49,8 +52,6 @@ Three pieces:
    the disambiguator branch matters mainly for consonant-final
    ``lubos``.
 """
-
-from __future__ import annotations
 
 import pytest
 

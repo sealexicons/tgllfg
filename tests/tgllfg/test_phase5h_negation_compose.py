@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5h Commit 8: negation × Phase 5h composition.
 
 Roadmap §12.1 / plan-of-record §6 Commit 8. Tests-only commit; no
@@ -27,8 +30,6 @@ Per-Commit test files already cover:
 * Commit 6 (test_phase5h_equative_two_np.py) —
   ``Hindi kasingganda si Maria si Ana``.
 """
-
-from __future__ import annotations
 
 import pytest
 

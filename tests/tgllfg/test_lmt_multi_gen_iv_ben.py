@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5b Commit 1 — multi-GEN-NP IV-BEN applicative frames.
 
 Three-argument applicatives like ``Ipinaggawa niya ng silya ang
@@ -10,8 +13,6 @@ grammar rules and lex entries that emit such f-structures.
 Word-order convention: first ng-NP after V is AGENT, second is
 PATIENT (S&O 1972 §6.5; Kroeger 1993 §3.3 on post-V positioning).
 """
-
-from __future__ import annotations
 
 from typing import Any
 

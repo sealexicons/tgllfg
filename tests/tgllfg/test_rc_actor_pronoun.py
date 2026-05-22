@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5d Commit 10: pronominal RC-actor (in-place Wackernagel).
 
 Phase 4 §7.5 admits standard relativization
@@ -50,8 +53,6 @@ Tests:
   stays; matrix-cluster PRON unaffected.
 * LMT diagnostics clean.
 """
-
-from __future__ import annotations
 
 from tgllfg.clitics import reorder_clitics
 from tgllfg.core.common import FStructure

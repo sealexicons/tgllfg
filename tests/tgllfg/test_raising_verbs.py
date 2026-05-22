@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5c §7.6 follow-on (Commit 5): raising verbs.
 
 Phase 4 §7.6 deferred raising verbs (``mukha`` "seem", ``baka``
@@ -30,8 +33,6 @@ These tests cover:
 * Completeness / coherence: raising verbs satisfy
   ``lfg_well_formed`` despite SUBJ not coming from a thematic role.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.fstruct.checks import (

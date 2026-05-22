@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5j Commit 1: existential lex inventory + supporting NOUN lex.
 
 Roadmap §12.1 / plan-of-record §4.1, §4.3. Seven new lex entries
@@ -28,8 +31,6 @@ existential / locative sentences parse today (they all return
 ``Hindi ka dapat kumain.`` which lands in Commit 7. So this
 commit is purely additive.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.O B3.A + B3.B + newly-possible follow-ons.
 
 **B3.A — TR/INTR polysemy lex-design pass.** Verb roots with both TR
@@ -52,8 +55,6 @@ Audit-corpus impact: full-corpus 666/5186 (12.84%) → 679/5186
 RG-Int +10 is mostly AV-absolutive uses of the named verbs
 (tingin / laro / tanong / etc.) in dialog.
 """
-
-from __future__ import annotations
 
 import pytest
 

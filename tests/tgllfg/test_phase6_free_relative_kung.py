@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 6.E Commit 2: Free relative kung-S as DP (§18.1 L93).
 
 A ``kung``-headed wh-clause functions as a non-COMP NP argument
@@ -39,8 +42,6 @@ These tests cover:
 * **Regressions** — the Phase 5e Commit 5 headless RC continues
   to parse; the Phase 5i C2 wh-cleft Q continues to parse.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

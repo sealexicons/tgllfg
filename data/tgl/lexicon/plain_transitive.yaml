@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # Plain-transitive AV / OV lex entries — Phase 5n.C.4 Commit 14.
 #
 # Each record migrates one ``LexicalEntry`` authored via ``_entry()``

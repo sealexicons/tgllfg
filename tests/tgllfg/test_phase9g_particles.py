@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.G: particles + discourse-markers lex pass.
 
 12 audit-attested entries in ``particles.yaml`` + 1 NOUN
@@ -30,8 +33,6 @@ Discourse markers:
 NOUN addition:
   halip  — "alternative, substitute" (used in `sa halip na X`)
 """
-
-from __future__ import annotations
 
 import pytest
 

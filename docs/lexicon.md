@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2025-2026 G & R Associates LLC
+SPDX-License-Identifier: MIT OR Apache-2.0
+-->
+
 # Lexicon (Phase 3)
 
 The Phase 3 lexicon is a Postgres 17 database authored from two

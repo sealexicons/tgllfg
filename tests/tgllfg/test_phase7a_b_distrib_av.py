@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 7a.B: magsi + magpa-an distributive AV affixes (§18.1.1 #2).
 
 Two new affix classes in `data/tgl/paradigms.yaml`:
@@ -24,8 +27,6 @@ Tests pin:
 * Regression: the existing `mag`, `mag_an`, and `magpa` paradigms
   still produce their canonical surfaces (no double-firing).
 """
-
-from __future__ import annotations
 
 import pytest
 

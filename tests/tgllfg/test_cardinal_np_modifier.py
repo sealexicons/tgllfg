@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 1: native cardinal NP-internal modifier (1-10).
 
 Adds cardinals 1-10 as NP-internal modifiers via the linker
@@ -38,8 +41,6 @@ Tests cover:
 * Regression: bare-N and dem-modified-N parses unaffected.
 * LMT diagnostics clean.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

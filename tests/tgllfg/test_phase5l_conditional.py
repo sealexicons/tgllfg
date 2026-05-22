@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 2: conditional subordination — kung / kapag / pag / sakali.
 
 Roadmap §12.1 / plan-of-record §5.1, §6 Commit 2. Three new rules
@@ -22,8 +25,6 @@ End-to-end target sentences:
     Alam ko kung pumunta si Maria.            # Phase 5i indirect-Q
                                                 preserved (kung[INTERROG])
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.V: ``Ni X ay hindi Y`` focus-negation.
 
 Audit-named construction (S&O 1972 §7.20). A NEG-marked
@@ -28,8 +31,6 @@ following daughter shape.
 
 New binary feat ``FOCUS_NEG`` (BINARY_FEATS 54 → 55).
 """
-
-from __future__ import annotations
 
 import pytest
 

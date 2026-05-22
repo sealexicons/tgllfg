@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 20 — disjunctive 3-conjunct flat NP coord (§18 L86).
 
 The Phase 5k Commit 4 3-conjunct rules covered AND only; this commit
@@ -15,8 +18,6 @@ NUM percolation mirrors the binary OR rule — ``(↑ NUM) = ↓1 NUM``
 (one underspecified referent) — distinct from AND's
 ``(↑ NUM) = 'PL'`` (n referents).
 """
-
-from __future__ import annotations
 
 import pytest
 

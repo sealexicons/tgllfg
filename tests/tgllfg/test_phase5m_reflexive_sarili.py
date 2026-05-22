@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5m Commit 6: reflexive ``sarili`` NP composition.
 
 Roadmap §12.1 / plan-of-record §1, §2 (analytical commitment 4).
@@ -24,8 +27,6 @@ Anaphora resolution (binding ``sarili niya`` to its antecedent
 SUBJ via inside-out designators) is Phase 6 — verified-deferred
 in TestAnaphoraDeferred.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 6: temporal subordination — bago / pagkatapos.
 
 Roadmap §12.1 / plan-of-record §5.3, §6 Commit 6. Two new rules
@@ -22,8 +25,6 @@ End-to-end target sentences:
     Pumunta si Juan pagkatapos kumain si Maria.
         # "Juan went after Maria ate."
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

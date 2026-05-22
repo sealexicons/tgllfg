@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 22 — free-standing naman 2P enclitic (§18 L88).
 
 Closes the §18 L88 deferral. The Phase 5k Commit 7 ``naman`` lex
@@ -27,8 +30,6 @@ clitic entry's reorder pass moves it next to a verbal host
 non-clitic entry has no CLITIC_CLASS so the absorption rule's =c
 constraint rejects it.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.3 Commit 8 — L38 CV-redup ``kasing-`` equative.
 
 Adds the productive ``kasing_redup_adj`` paradigm cell to
@@ -37,8 +40,6 @@ Tests cover:
 * The new ``dali`` ADJ root produces ``madali`` (existing
   ma_adj cell) and ``kasingdadali`` (new kasing_redup_adj cell).
 """
-
-from __future__ import annotations
 
 import pytest
 

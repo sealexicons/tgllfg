@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/lexicon.py
 
 """In-process lexicon — per-voice entries for the Phase 4 anchor verbs.
@@ -26,8 +29,6 @@ its R&B 1986 affix-class membership), an entry is supplied with:
   "ng-non-pivot in transitive non-AV → OBJ"), the *ng*-marked
   argument is OBJ in OV / DV / IV, regardless of its thematic role.
 """
-
-from __future__ import annotations
 
 from .common import LexicalEntry, MorphAnalysis
 from .lexicon_loader import load_lex_entries

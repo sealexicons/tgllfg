@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 16: approximators (Group H1 item 2).
 
 Adds 2 ``PART[APPROX=YES]`` lex entries (``halos``,
@@ -68,8 +71,6 @@ Out of scope (deferred follow-on commits):
   (Commit 1) and SEASON percolation (Commit 14). Tests
   walk down to the daughter NUM to read APPROX.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

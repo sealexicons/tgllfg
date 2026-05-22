@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.Q: regression test for the harvest script's OOV probe.
 
 The OOV probe in ``scripts/harvest_exemplars.py`` underpins
@@ -16,8 +19,6 @@ or the probe wiring is caught.
 The probe is also re-promoted to module-level so it can be imported
 for this test.
 """
-
-from __future__ import annotations
 
 import sys
 from pathlib import Path

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.3 Commit 2 — ``card_redup`` productive paradigm.
 
 Replaces the Phase 5f Commit 18 hand-coded ``daandaan`` /
@@ -22,8 +25,6 @@ surfaces.
 Closes the first piece of §18 L31 (productive paradigm classes
 for compound cardinals).
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import Token
 from tgllfg.morph.analyzer import Analyzer

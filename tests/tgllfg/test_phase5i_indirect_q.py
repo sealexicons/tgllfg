@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5i Commit 8: indirect question embedding via ``kung``.
 
 Roadmap §12.1 / plan-of-record §5.7, §6 Commit 8. Three pieces:
@@ -57,8 +60,6 @@ docs/analysis-choices.md "Phase 5i §5.7".
 * Declarative-COMP factive embedding (``Alam kong kumain ang
   aso``) — Phase 5+ scope.
 """
-
-from __future__ import annotations
 
 import pytest
 

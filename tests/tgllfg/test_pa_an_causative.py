@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5d Commit 2: pa-...-an DV causative.
 
 Phase 4 §7.7 deferred ``pa-...-an`` and other less-common
@@ -21,8 +24,6 @@ These tests cover:
   OBJ-CAUSER under its existing rule path.
 * LMT diagnostics clean.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2025-2026 G & R Associates LLC
+SPDX-License-Identifier: MIT OR Apache-2.0
+-->
+
 # Analytical decisions
 
 This file records non-trivial linguistic decisions baked into the

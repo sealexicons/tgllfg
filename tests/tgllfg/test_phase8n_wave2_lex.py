@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.N: Wave 2 lex pass.
 
 Closes the audit-surfaced lex gaps from Wave 2 (R&C 1990 +
@@ -66,8 +69,6 @@ queued as a follow-on. The user's pointer to GT's POS analysis
 (ADV "how" + NOUN "respect/regard") was the prompt for the
 diagnostic probe.
 """
-
-from __future__ import annotations
 
 import pytest
 

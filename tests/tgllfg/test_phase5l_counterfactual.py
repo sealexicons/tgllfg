@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 5: counterfactual ``sana`` enclitic.
 
 Roadmap §12.1 / plan-of-record §5.6, §6 Commit 5. ``sana`` is a
@@ -37,8 +40,6 @@ and POLARITY=NEG on the matrix). Tests accept ``len(parses) >= 1``
 and verify the FEATURES, not the count, since the alternative
 parses are functionally equivalent.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

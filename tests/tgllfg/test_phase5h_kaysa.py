@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5h Commit 4: ``kaysa`` PART + comparison-complement rule.
 
 Roadmap §12.1 / plan-of-record §4.1, §5.5, §6 Commit 4. Two pieces:
@@ -27,8 +30,6 @@ Roadmap §12.1 / plan-of-record §4.1, §5.5, §6 Commit 4. Two pieces:
    matrix S by the Phase 5g predicative-adj clause rule (which
    currently keeps it on the ADJ daughter); deferred.
 """
-
-from __future__ import annotations
 
 import pytest
 

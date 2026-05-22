@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 10 — Existential as RC head (§18 L66).
 
 The §18.1 L66 entry asked: can ``Mayroon akong aklat na binili ko.``
@@ -19,8 +22,6 @@ This commit closes L66 by adding the regression net + dedicated
 documentation. No new source rules — the integration was effectively
 delivered by Commit 8.
 """
-
-from __future__ import annotations
 
 import pytest
 

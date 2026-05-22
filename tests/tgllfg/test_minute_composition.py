@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 12: minute composition (Group E item 4).
 
 Spanish-borrowed minute operators for clock-time composition:
@@ -55,8 +58,6 @@ Tests cover:
 * Regression: clock-time alone, time-of-day modifier,
   cardinals, ordinals, fractions all unchanged.
 """
-
-from __future__ import annotations
 
 from tgllfg.morph import analyze_tokens
 from tgllfg.core.pipeline import parse_text

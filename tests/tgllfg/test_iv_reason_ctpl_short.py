@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 24: IV-REASON CTPL short-form paradigm gap.
 
 Lifts the Phase 5d Commit 9 paradigm-gap deferral. Before this
@@ -40,8 +43,6 @@ These tests cover:
 * Regression: PFV / IPFV IV-REASON paradigm cells are
   unaffected.
 """
-
-from __future__ import annotations
 
 from tgllfg.morph import analyze_tokens
 from tgllfg.core.pipeline import parse_text

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/lmt/legacy.py
 
 """Phase 4 voice-aware role-to-GF heuristic — defensive fallback.
@@ -24,8 +27,6 @@ voice-determined defaults:
 
 Intransitive (no OBJ) — ``[ACTOR]``: ACTOR → SUBJ.
 """
-
-from __future__ import annotations
 
 from ..core.common import AStructure, FStructure
 

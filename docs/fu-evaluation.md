@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2025-2026 G & R Associates LLC
+SPDX-License-Identifier: MIT OR Apache-2.0
+-->
+
 # Functional-uncertainty evaluation
 
 Phase 6.B design appendix per `.claude/plans/tgllfg-phase-6.md`

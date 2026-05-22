@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5i Commit 5: yes/no Q_TYPE lift for ``ba``.
 
 Roadmap §12.1 / plan-of-record §5.4, §6 Commit 5.
@@ -37,8 +40,6 @@ Baseline recaptured for ~5 ba-bearing baseline entries that
 acquired the new Q_TYPE matrix feature (additive: same parse,
 plus the Q_TYPE flag).
 """
-
-from __future__ import annotations
 
 import pytest
 

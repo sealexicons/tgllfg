@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 12 — hindi puwede standalone (§18 L68).
 
 Pre-Commit-12 the modal predicates only parsed when accompanied by
@@ -28,8 +31,6 @@ Composes with the Phase 4 §7.2 hindi-wrap (``S → PART[POLARITY=NEG]
 S``) to yield ``Hindi puwede.`` etc. without explicit changes to
 the negation rule.
 """
-
-from __future__ import annotations
 
 import pytest
 

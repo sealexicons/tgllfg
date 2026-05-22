@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5m Commit 8: indefinite ``kahit`` + wh productive.
 
 Roadmap §12.1 / plan-of-record §5.4. Adds two parallel productive
@@ -42,8 +45,6 @@ Plan §5.4 deferral surfaces:
 
 Reference: R&G 1981 §6.6.
 """
-
-from __future__ import annotations
 
 import pytest
 

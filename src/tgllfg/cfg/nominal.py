@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/cfg/nominal.py
 
 """NP rules: determiners, possessives, demonstratives, quantifiers.
@@ -34,8 +37,6 @@ vague-Q Commit 15, universal Commit 20, distrib-poss Commit 21,
 whole Commit 22). Promoted from a local in the original cardinal
 section to a module-level constant per the plan's risk note.
 """
-
-from __future__ import annotations
 
 from ._helpers import _eqs
 from .grammar import Rule

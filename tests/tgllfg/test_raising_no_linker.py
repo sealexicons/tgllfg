@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5d Commit 1: additional evidential raising verbs.
 
 Phase 5c Commit 5 seeded ``mukha`` and ``baka`` as
@@ -38,8 +41,6 @@ Wackernagel 2P clitic (``EPISTEMIC=PRESUMABLY``) under the §7.3
 clitic-placement pass and behaves syntactically as an enclitic,
 not a clause-initial verb.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

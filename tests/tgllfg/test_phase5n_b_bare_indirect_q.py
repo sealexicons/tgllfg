@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 10: bare-form colloquial indirect-Q (§18 L53).
 
 Closes §18.1 deferral L53. The colloquial Tagalog indirect-Q
@@ -26,8 +29,6 @@ Composes with the Phase 5i Commit 8 indirect-Q matrix wrap
 S_INTERROG_COMP rule's constraint, so embedded bare-form
 composes seamlessly.
 """
-
-from __future__ import annotations
 
 import pytest
 

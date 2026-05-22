@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.T: Wala-interjection + free-relative wh-cleft + 2-arg
 AV-CAUS-INDIRECT + nang V-DUPLICATE (B3.F bundle).
 
@@ -41,8 +44,6 @@ loan; closes ``Lumalakad nang lumalakad ang kartero.``).
 ``luto`` gets ``feats: {AV_ABSOL: true}`` added (closes the
 pseudo-cleft pin + many headless-RC parses).
 """
-
-from __future__ import annotations
 
 import pytest
 

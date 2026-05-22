@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5k Commit 9: coordination × interaction tests.
 
 Roadmap §12.1 / plan-of-record §6 Commit 9. Verifies that the
@@ -14,8 +17,6 @@ daughter; without N-level coord, ``May aklat at lapis si Maria.``
 N. Two new rules (parallel to the Commit 3 NP-level binary
 coord) restore the composition.
 """
-
-from __future__ import annotations
 
 import pytest
 

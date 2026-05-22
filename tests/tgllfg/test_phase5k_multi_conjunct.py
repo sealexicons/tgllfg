@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5k Commit 4: multi-conjunct NP coordination (3-flat).
 
 Roadmap §12.1 / plan-of-record §5.3, §6 Commit 4. Six new rules
@@ -28,8 +31,6 @@ End-to-end target sentences:
     Kumain ng aklat, ng lapis, at ng papel si Maria.  GEN-coord OBJ
     Pumunta si Maria sa palengke, sa bahay, at sa simbahan.  DAT-coord ADJUNCT
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

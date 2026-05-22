@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 11 — Modal stacking (§18 L67).
 
 Pre-Commit-11 the Phase 5j Commit 7 modal control wrap admitted
@@ -24,8 +27,6 @@ gives a single f-node shared across SUBJ slots at every level.
 Modal stacking falls out: outer-modal SUBJ = inner-modal SUBJ =
 innermost-action SUBJ.
 """
-
-from __future__ import annotations
 
 import pytest
 

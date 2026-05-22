@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 21: distributive-possessive ``kani-kaniya`` /
 ``kanya-kanya`` (Group H3 item 7).
 
@@ -70,8 +73,6 @@ Out of scope (deferred follow-on commits):
   NP gets DISTRIB_POSS via the rule's explicit equation;
   inner attribute walking unnecessary.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 4: pinaka- on Q heads (§18 L40).
 
 Closes §18.1 deferral L40 (``pinakamadalas``, ``pinakamarami``)
@@ -30,8 +33,6 @@ vague-Q NP-modifier rule fires on the linker-fused forms
 lex closes L40 without requiring a Q-paradigm-engine
 infrastructure extension.
 """
-
-from __future__ import annotations
 
 import pytest
 

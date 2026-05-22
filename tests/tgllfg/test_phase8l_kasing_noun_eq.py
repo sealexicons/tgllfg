@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.L Commit 3: kasing-NOUN equative cell.
 
 Adds the ``kasing_n_eq`` paradigm cell (paradigms.yaml) — a
@@ -29,8 +32,6 @@ audit's canonical surface — R&G Intermediate page 238) lands in
 Phase 8.L Commit 4 as a c-structure rule, parallel to the 8.R
 ``alas-`` + NUM hyphen-joined N rule.
 """
-
-from __future__ import annotations
 
 import pytest
 

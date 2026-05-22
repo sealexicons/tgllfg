@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 1 — Be-X-root verbal-paradigm pruning (§18 L35).
 
 Audits the post-pruning state of nine pure-adjectival roots (``bingi``
@@ -17,8 +20,6 @@ are slimmed in ``verbs.yaml`` to ``affix_class: [um]`` so the only
 verbal reading is the inchoative; the prior ``ma-NVOL`` cells
 (``naganda``, ``mayaman``, ``nalakas``, etc.) no longer fire as VERB.
 """
-
-from __future__ import annotations
 
 import pytest
 

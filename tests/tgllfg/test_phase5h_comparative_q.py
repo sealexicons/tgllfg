@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5h Commit 7: comparative-Q wrapper rule.
 
 Roadmap §12.1 / plan-of-record §5.2, §6 Commit 7.
@@ -32,8 +35,6 @@ predicative-Q clause rule analogous to the Phase 5f Commit 4
 predicative-cardinal rule. Adding one is a separate (deferred)
 analytical decision; corpus-pressure dependent.
 """
-
-from __future__ import annotations
 
 import pytest
 

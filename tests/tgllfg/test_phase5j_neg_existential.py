@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5j Commit 3: negative existential clause.
 
 Roadmap §12.1 / plan-of-record §5.2, §6 Commit 3. Two new clause
@@ -25,8 +28,6 @@ End-to-end target sentences:
     Walang tao sa labas.     "There's no one outside."
     Walang aso sa bahay.     "There's no dog in the house."
 """
-
-from __future__ import annotations
 
 import pytest
 

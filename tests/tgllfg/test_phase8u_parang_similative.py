@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.U: ``parang`` similative comparative with NP standard.
 
 Closes the audit-named `Parang kayo ako.` ("I'm like you") via one
@@ -28,8 +31,6 @@ remaining 15 fail due to orthogonal OOV blockers (`gulong`,
 construction issues (`parang + S` evidential clausal complement
 with negation, wh-Q, etc.) — none are 8.U-scope closures.
 """
-
-from __future__ import annotations
 
 import pytest
 

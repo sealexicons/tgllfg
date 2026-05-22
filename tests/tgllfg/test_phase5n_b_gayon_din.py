@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 23: Gayon din / Ganon din pre-clitic-reorder
 phrase pass (§18 L103).
 
@@ -32,8 +35,6 @@ suggested a pre-clitic-reorder phrase merge in
 functionally equivalent (it gates the reorder rather than
 pre-merging tokens) and consistent with the C18/C22 fixes.
 """
-
-from __future__ import annotations
 
 import pytest
 

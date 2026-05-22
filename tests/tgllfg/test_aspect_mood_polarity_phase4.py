@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 4 §7.2: aspect, mood, polarity.
 
 Three deliverables:
@@ -12,8 +15,6 @@ Three deliverables:
   exercised here via huwag; SOC requires §7.3 clitics and is left as
   a pure inventory entry until then.
 """
-
-from __future__ import annotations
 
 from typing import Any
 

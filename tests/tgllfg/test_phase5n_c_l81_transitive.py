@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C Commit 7.6 — L81 distributive-Q topic transitive variants.
 
 Closes the L81 transitive deferral surfaced in user review of
@@ -18,8 +21,6 @@ Surfaces (sample): ``Bawat bata, tumakbo sa parke.``,
 Reference: Schachter & Otanes 1972 §10; Phase 4 §7.1 AV clause
 shapes (``cfg/clause.py:48-58``).
 """
-
-from __future__ import annotations
 
 import pytest
 

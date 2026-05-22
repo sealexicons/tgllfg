@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 10: indirect speech — SAY_CLASS lex tagging.
 
 Roadmap §12.1 / plan-of-record §5.7, §6 Commit 10.
@@ -31,8 +34,6 @@ This commit therefore delivers what's safely deliverable:
 This makes the SAY_CLASS infrastructure available for the
 follow-on without committing to a half-built parsing path.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import Token
 from tgllfg.morph import Analyzer

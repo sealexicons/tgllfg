@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5g Commit 6: demonstrative × adj-modified N composition.
 
 Phase 5e Commit 16 added the pre-modifier demonstrative rules
@@ -28,8 +31,6 @@ fall through and let the placement pass treat ``na`` as the
 ALREADY 2P clitic (predicative-adj clauses ``Maganda na ka.`` /
 ``Maganda na ang bata.``).
 """
-
-from __future__ import annotations
 
 import pytest
 

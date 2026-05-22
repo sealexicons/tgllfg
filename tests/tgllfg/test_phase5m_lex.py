@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5m Commit 1: discourse / register / indefinite lex inventory.
 
 Roadmap §12.1 / plan-of-record §4.1-4.4. Twenty-five new lex
@@ -47,8 +50,6 @@ not lex'd; ``dito`` exists as ADP[DEM] only — preserved). Phase
 5l ``kahit`` (PART[COMP_TYPE=CONC]) is preserved and reused by
 Phase 5m Commit 8 indefinite-builder rules.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.B: proper-name + place-name + nationality-noun lex pass.
 
 Bucket B1.A of the Phase 9 plan — the highest-yield-per-effort lex
@@ -27,8 +30,6 @@ gaps (N-appositive proper-name attachment per 8.I/9.P,
 pedagogical-frame `Sentence:`/`Question:` prefixes per 9.M,
 multi-clause SUBJ binding, OCR noise) and pinned out-of-scope.
 """
-
-from __future__ import annotations
 
 import pytest
 

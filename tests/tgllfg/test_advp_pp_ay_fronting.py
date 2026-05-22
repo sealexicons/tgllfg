@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 3: AdvP / PP ay-fronting.
 
 Phase 4 §7.4's "Out-of-scope" list flagged AdvP / PP ay-fronting as
@@ -25,8 +28,6 @@ Sentences enabled:
 * ``Tungkol sa nanay ay sumulat ang bata.``
   "About mother the child wrote."
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

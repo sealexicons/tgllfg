@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5c §7.8 follow-on: pronominal possessive.
 
 Phase 4 §7.8 deferred ``ang aklat ko`` ("my book") because the
@@ -21,8 +24,6 @@ These tests cover:
 * Combinations: multiple clitics in one sentence (one moves, one
   stays); NEG + possessor; adverbial enclitic + possessor.
 """
-
-from __future__ import annotations
 
 from tgllfg.clitics import reorder_clitics
 from tgllfg.core.common import FStructure

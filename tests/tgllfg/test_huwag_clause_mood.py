@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 25: huwag MOOD=IMP lifted to matrix via CLAUSE-MOOD.
 
 Lifts the Phase 4 §7.2 limitation where the negation rule's
@@ -45,8 +48,6 @@ These tests cover:
   sentences (huwag and hindi each produce a single parse for
   their respective surfaces).
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

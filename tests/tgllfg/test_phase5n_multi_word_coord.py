@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 16 — Multi-word coord particles (§18 L76 + L82).
 
 Three multi-word coord phrases that combine two existing PARTs into
@@ -21,8 +24,6 @@ PART[COORD=OR]/[COORD=AND]; ``kaya`` exists as PART[COORD=SO]
 in this commit; ``nang`` exists as PART[COMP_TYPE=TEMP_SINCE]
 (the at-nang rule constrains by lemma).
 """
-
-from __future__ import annotations
 
 import pytest
 

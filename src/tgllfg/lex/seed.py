@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """YAML → Postgres seed loader for the §6.2 lexicon.
 
 Reads the existing ``data/tgl/`` YAML files (the same source the
@@ -24,8 +27,6 @@ Idempotency strategy:
   and re-inserts. YAML is the source of truth for these tables; the
   ``lex import`` CLI is the path for additive data with citations.
 """
-
-from __future__ import annotations
 
 import logging
 from dataclasses import dataclass

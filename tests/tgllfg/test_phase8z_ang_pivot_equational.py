@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.Z: generalize 8.Y Rule 2 to ang-pivot two-NP equational.
 
 Drops the ``(↓1 MARKER) =c 'SI'`` gate that Phase 8.Y put on the
@@ -15,8 +18,6 @@ wrapping to NP[CASE=NOM] under the current Phase 5e Commit 5
 free-relative rule's gating. Out of 8.Z scope; tracked as
 separate near-miss for future work.
 """
-
-from __future__ import annotations
 
 import pytest
 

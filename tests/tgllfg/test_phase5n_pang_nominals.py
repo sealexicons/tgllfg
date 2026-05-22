@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 25 — pang- purpose nominals (§18 L27).
 
 Closes §18 L27. Hand-authored ``pang-`` (and ``pam-`` / ``pan-``
@@ -25,8 +28,6 @@ intermediate-Tagalog corpus; ``pansulat`` / ``pangkain`` /
 ``pangsuot`` / ``pangharang`` are S&O 1972 §5.x derived-nominal
 class examples.
 """
-
-from __future__ import annotations
 
 import pytest
 

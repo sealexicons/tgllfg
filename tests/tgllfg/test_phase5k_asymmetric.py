@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5k Commit 8: asymmetric NP coord + negation × coord tests.
 
 Roadmap §12.1 / plan-of-record §5.7, §5.8, §6 Commit 8.
@@ -35,8 +38,6 @@ Juan.`` parses with POLARITY=NEG only on the first conjunct.
 Cross-conjunct scoping (``Hindi [si Maria at si Juan] kumain.``
 "Neither X nor Y") is a deferred follow-on (plan §9.2).
 """
-
-from __future__ import annotations
 
 import pytest
 

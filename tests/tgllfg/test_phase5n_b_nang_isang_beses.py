@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 24: narrative-opener idiom Nang isang beses
 (§18 L30).
 
@@ -31,8 +34,6 @@ their existing rules. The 6-daughter pattern + LEMMA / CARDINAL
 narrative-opener surface; mismatch on any constraint causes
 the rule to not fire.
 """
-
-from __future__ import annotations
 
 import pytest
 

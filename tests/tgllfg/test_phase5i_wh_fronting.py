@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5i Commit 2: cleft-style wh-fronting (NOM pivot).
 
 Roadmap §12.1 / plan-of-record §5.1, §6 Commit 2. New clause rule
@@ -25,8 +28,6 @@ End-to-end target sentences:
     Ano ang kinain mo?         "What did you eat?"
     Alin ang kinain mo?        "Which one did you eat?"
 """
-
-from __future__ import annotations
 
 import pytest
 

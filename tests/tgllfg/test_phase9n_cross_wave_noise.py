@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.N: cross-wave harvest-noise filter (B2.D).
 
 Two targeted additions to ``scripts/harvest_exemplars.py``:
@@ -51,8 +54,6 @@ eliminated). Cumulative 667/5197 (12.83%) → 666/5186 (12.84%),
 -1 abs / +0.01pp. Same quality-improvement-as-near-zero-yield
 pattern as 9.L / 9.M.
 """
-
-from __future__ import annotations
 
 import sys
 from pathlib import Path

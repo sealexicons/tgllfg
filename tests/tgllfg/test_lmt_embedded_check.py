@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5b — embedded-clause LMT validation.
 
 The :func:`tgllfg.lmt.apply_lmt_with_check` wrapper now recursively
@@ -9,8 +12,6 @@ path so the user can see where they came from.
 This was an "Open issues" item in :file:`docs/lmt.md` after Phase 5;
 Phase 5b lifts it.
 """
-
-from __future__ import annotations
 
 from typing import Any
 

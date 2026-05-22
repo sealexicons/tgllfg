@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.4 Commit 12 — BASE ↔ YAML parity test.
 
 For every lemma the YAML loader produces, the resulting
@@ -16,8 +19,6 @@ The directional check is **loader → BASE**, not the reverse:
   are still authoritative on the Python side until the migration
   reaches them).
 """
-
-from __future__ import annotations
 
 import pytest
 

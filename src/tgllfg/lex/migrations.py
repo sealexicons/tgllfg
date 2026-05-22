@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Alembic config helper for tests and CLI use.
 
 Builds an in-memory ``alembic.config.Config`` pointing at the project's
@@ -6,8 +9,6 @@ overridden to the caller's value. Used by the test harness (against the
 testcontainer URL) and by the eventual ``tgllfg lex migrate`` CLI
 subcommand (against ``DATABASE_URL``).
 """
-
-from __future__ import annotations
 
 from pathlib import Path
 

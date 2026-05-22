@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 7: ordinal NP-internal modifier (1st-10th).
 
 Adds ordinals 1st-10th as NP-internal modifiers via the linker
@@ -61,8 +64,6 @@ Tests cover:
   predicative cardinal (Commit 4), maka- adverbial (Commit 5),
   decimals + percentages (Commit 6) all still work.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

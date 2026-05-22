@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.E: VERB-base sweep lex pass.
 
 5 new VERB roots, 3 affix_class extensions on existing V roots,
@@ -34,8 +37,6 @@ produced by the retain pattern instead. The ``mangyari`` (IMP/INF)
 form is still missing — no IMP-aspect paradigm cell — deferred
 to 9.O / paradigm-cell-add work.
 """
-
-from __future__ import annotations
 
 import pytest
 

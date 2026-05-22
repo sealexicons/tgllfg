@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 8 — R&G "Ang Manok" combined essay-paragraph (§18 L64).
 
 R&G "Ang Manok" (Ramos & Goulet 1981, *Intermediate Tagalog*, p. 482)
@@ -32,8 +35,6 @@ Closure note: the combined essay parses with multiple readings due
 to genuine RC-attachment ambiguity in the deeply nested structure;
 test asserts ``>= 1`` rather than pinning a specific count.
 """
-
-from __future__ import annotations
 
 import pytest
 

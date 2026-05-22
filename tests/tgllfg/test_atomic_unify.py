@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 6.A — atomic unify via :class:`Snapshot` / :meth:`rollback`.
 
 C1: smoke tests for the snapshot / rollback API itself.
@@ -10,8 +13,6 @@ failure for arbitrary atom clashes, idempotent rollback under
 mutation, reentrancy preservation across snapshot boundaries, and
 nested snapshot stacks.
 """
-
-from __future__ import annotations
 
 from hypothesis import given, settings
 from hypothesis import strategies as st

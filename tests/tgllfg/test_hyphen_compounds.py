@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f closing deferral: hyphenation tokenizer pre-pass.
 
 The canonical orthography for several Phase 5f Commit 14 / 16 / 18 /
@@ -36,8 +39,6 @@ Tests cover:
   ``kanikaniya`` + ``-ng`` and parses identically to
   ``kanikaniyang aklat``.
 """
-
-from __future__ import annotations
 
 import pytest
 

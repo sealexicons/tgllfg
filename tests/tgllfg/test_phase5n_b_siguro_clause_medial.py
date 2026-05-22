@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 18: clause-medial siguro / marahil (§18 L98).
 
 Closes §18.1 deferral L98. Target sentences:
@@ -40,8 +43,6 @@ matrix top-level (Rule A doesn't lift custom feats — it only
 adds the daughter to the ADJ set). Tests check ADJ contents
 rather than matrix-top-level EPISTEMIC.
 """
-
-from __future__ import annotations
 
 import pytest
 

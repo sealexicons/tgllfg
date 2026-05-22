@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2025-2026 G & R Associates LLC
+SPDX-License-Identifier: MIT OR Apache-2.0
+-->
+
 # Root YAML metadata fields (Phase 9.C.pre)
 
 Root entries in `data/tgl/nouns.yaml`, `verbs.yaml`, `adjectives.yaml`

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5d Commit 9: IV applicative multi-GEN frames under control.
 
 Phase 5b §7.7 follow-on lifted top-level multi-GEN-NP applicative
@@ -40,8 +43,6 @@ These tests cover:
 * Regression: top-level Phase 5b multi-GEN unchanged.
 * LMT diagnostics clean.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

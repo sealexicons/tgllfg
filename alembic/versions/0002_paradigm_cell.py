@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Paradigm cells and root-level morph metadata on lemma.
 
 Revision ID: 0002
@@ -25,8 +28,6 @@ LFG predicates (Phase 4+).
 
 The deviation from §6.2 is recorded in ``docs/analysis-choices.md``.
 """
-
-from __future__ import annotations
 
 from collections.abc import Sequence
 

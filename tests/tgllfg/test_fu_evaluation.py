@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 6.B C2 + C3 + C4 + C5 + C6 + C7 — FSA-based FU regex-path evaluation.
 
 C2: deterministic unit tests for ``resolve_regex_for_read`` covering
@@ -31,8 +34,6 @@ C7 (this commit): Hypothesis property battery — termination,
 determinism, finite endpoint sets, base-as-shortest-endpoint for
 ``F*``, and binding-symmetric-under-rollback (uses 6.A atomic unify).
 """
-
-from __future__ import annotations
 
 import pytest
 from hypothesis import given, settings

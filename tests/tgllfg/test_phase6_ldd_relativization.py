@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 6.D Commit 3: Long-distance relativization via FU (§18 L47).
 
 Phase 4 §7.5 admitted depth-1 RCs only (the relativization wrap
@@ -46,8 +49,6 @@ These tests cover:
   smoke checks below ensure the new wrap rules don't disturb
   plain control parses.
 """
-
-from __future__ import annotations
 
 import pytest
 

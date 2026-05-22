@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 14: AV mang- retain readings.
 
 Schachter & Otanes 1972 §5.27 + Ramos 1971 paradigm tables note
@@ -22,8 +25,6 @@ Currently only ``bili`` carries the ``mang_retain`` affix-class
 flag; other roots can opt in by adding ``mang_retain`` to their
 ``affix_class`` list in ``data/tgl/verbs.yaml``.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import Token
 from tgllfg.morph.analyzer import _get_default

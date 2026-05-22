@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 3 — SAY_CLASS / ASK_CLASS paradigm-engine propagation (§18 L91).
 
 The §18.1 L91 entry described an "inconsistency in how the paradigm
@@ -26,8 +29,6 @@ projection mechanism is in
 applied uniformly across every paradigm cell that fires for the root's
 ``affix_class``).
 """
-
-from __future__ import annotations
 
 import pytest
 

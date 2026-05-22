@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Per-root sandhi flags on lemma.
 
 Revision ID: 0003
@@ -11,8 +14,6 @@ holds those strings as a JSONB array so the DB-backed loader
 preserves them when projecting :class:`LexCache` →
 :class:`MorphData`.
 """
-
-from __future__ import annotations
 
 from collections.abc import Sequence
 

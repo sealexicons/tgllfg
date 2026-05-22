@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 9: nested-control composition with multi-arg
 embedded clauses.
 
@@ -24,8 +27,6 @@ Both compositions work via existing rules; this commit is
 **test-only** — no grammar / lex changes — and adds explicit
 assertions on the cross-level f-node identity chains.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

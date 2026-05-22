@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/lmt/principles.py
 
 """Phase 5 §8.2 — Bresnan–Kanerva LMT principles as named functions.
@@ -23,8 +26,6 @@ by the lex entry's ``gf_defaults``. The orchestrator accepts a
 roles while still letting them participate in the Subject Condition
 (step 6) and biuniqueness (step 7) checks.
 """
-
-from __future__ import annotations
 
 from typing import Mapping, Sequence
 

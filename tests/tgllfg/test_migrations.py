@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Round-trip tests for the Alembic baseline migration (§6.2).
 
 Verifies that ``alembic upgrade head`` against an empty Postgres 17
@@ -6,8 +9,6 @@ plan, and that ``alembic downgrade base`` removes them all cleanly.
 Catches schema drift between the baseline migration and the plan
 specification.
 """
-
-from __future__ import annotations
 
 import asyncio
 from collections.abc import AsyncIterator

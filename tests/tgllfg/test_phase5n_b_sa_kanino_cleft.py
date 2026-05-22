@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 9: sa-DAT NP cleft (§18 L51).
 
 Closes §18.1 deferral L51 (``Sa kanino ang aklat?`` "Whose is
@@ -23,8 +26,6 @@ whereas the Phase 4 §7.8 bare-PRON shell shares the PRON's
 f-structure (no PRED). The bare-PRON cleft (Phase 5i Commit 9
 (b)) remains the canonical path for ``Kanino ang aklat?``.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.M: S&O 1972 harvest-extractor cleanup.
 
 Targets noise patterns in wave3-so1972.jsonl (1289 lines pre-9.M;
@@ -73,8 +76,6 @@ the current S&O corpus (already covered by Phase 9.K's
 tokens" mentioned in the plan turn out not to be filterable
 extractor-side — those are content lines, not noise.
 """
-
-from __future__ import annotations
 
 import sys
 from pathlib import Path

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.3 Commit 9 — L49 reduplicated wh-plural PRONs.
 
 Adds the productive ``redup_wh_plural`` paradigm cell to
@@ -32,8 +35,6 @@ Tests cover:
   surface keeps /o/ in both copies, distinct from ``full_redup``
   which would raise /o/→/u/ in the first copy.
 """
-
-from __future__ import annotations
 
 import pytest
 

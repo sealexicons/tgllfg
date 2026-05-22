@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.4 Commits 3 + 8 — compiler + equation parser accept bool literals.
 
 The compiler accepts:
@@ -21,8 +24,6 @@ Non-binary feats reject bool syntax:
 * ``PART[CASE]`` — shorthand error (CASE is enum NOM/GEN/DAT).
 * ``PART[CASE=true]`` — bool literal error (semantic mismatch).
 """
-
-from __future__ import annotations
 
 import pytest
 

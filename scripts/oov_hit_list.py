@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.A: emit a Phase 9 lex-pass hit list from the OOV-frequency
 artifact.
 
@@ -27,8 +30,6 @@ suggestions are layered on top to guide lex-pass authors:
 * English vocabulary signature (no Tagalog phonotactic match) →
   flag as harvest-noise candidate.
 """
-
-from __future__ import annotations
 
 import argparse
 import csv

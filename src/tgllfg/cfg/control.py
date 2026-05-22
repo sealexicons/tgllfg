@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/cfg/control.py
 
 """Control rules: ``S_XCOMP`` complement, raising, control wrap.
@@ -25,8 +28,6 @@ The composer in :mod:`tgllfg.cfg.grammar` calls this registrar
 sixth, after np / clause / clitic / negation / extraction, and
 before discourse — see the plan's "Migration strategy" §H.
 """
-
-from __future__ import annotations
 
 from ._helpers import _eqs
 from .grammar import Rule

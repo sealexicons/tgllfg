@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.3 Commit 4 — productive ``tag_season`` paradigm.
 
 Migrates the Phase 5f Commit 14 hand-coded ``tag*`` season NOUN
@@ -20,8 +23,6 @@ entries (``taginit`` / ``tagulan`` / ``taglamig`` / ``tagaraw``
 
 Closes the third piece of §18 L31 (productive paradigm classes).
 """
-
-from __future__ import annotations
 
 import pytest
 

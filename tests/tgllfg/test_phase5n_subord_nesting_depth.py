@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 24 — subord nesting depth 3+ stress fixtures
 (§18 L95).
 
@@ -22,8 +25,6 @@ The recursion is delivered by Phase 5l Commits 1–10 (subord lex
 machinery. This commit makes the unbounded-recursion property
 explicit via test assertion.
 """
-
-from __future__ import annotations
 
 import pytest
 

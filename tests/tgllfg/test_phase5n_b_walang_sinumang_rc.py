@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 21: PRON-headed RC for negative indefinites
 (§18 L101).
 
@@ -36,8 +39,6 @@ and CASE shares plus the ``(↓3 REL-PRO) =c (↓3 SUBJ)``
 constraining equation (anaphoric, not structure-sharing —
 same convention as the N-headed rule).
 """
-
-from __future__ import annotations
 
 import pytest
 

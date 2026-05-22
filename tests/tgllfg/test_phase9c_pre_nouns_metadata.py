@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.C.pre: nouns.yaml metadata schema + migration tests.
 
 Refactor sub-PR — no parser behavior change. Tests cover:
@@ -11,8 +14,6 @@ Refactor sub-PR — no parser behavior change. Tests cover:
   ``tita``/``tito`` carry ``[tiya]``/``[tiyo]`` spelling variants.
 * No regressions on existing parses (sanity sample).
 """
-
-from __future__ import annotations
 
 from pathlib import Path
 

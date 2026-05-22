@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.R: Non-SUBJ Ni-focus (B3.E).
 
 Closes the 8.V `test_non_subj_ni_focus` pin (R&G Conversational
@@ -43,8 +46,6 @@ Audit-corpus hits (single-Ni non-SUBJ — 9.R scope):
 Paired-Ni (``Ni X ni Y ay hindi Z``) is 9.S scope; ``Ni hindi V``
 intensifier-negation is 9.T scope — both pinned in 8.V test file.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f closing deferral: multiple lex entries per ``(lemma, pos)``.
 
 The morph analyzer's noun index used to be ``dict[str, MorphAnalysis]``
@@ -31,8 +34,6 @@ Tests cover:
   paths.
 * Other multi-entry lookups (verbs, particles) unchanged.
 """
-
-from __future__ import annotations
 
 from tgllfg.morph import analyze_tokens
 from tgllfg.core.pipeline import parse_text

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.L Commit 1: magkasing- distributive equative paradigm.
 
 Adds the productive ``magkasing-`` cell to ``adj_paradigms.yaml`` —
@@ -22,8 +25,6 @@ Citations: S&O 1972 §5, R&C 1990 ch. 5. The CV-redup intensive
 ``magkakasing-`` form lands in Phase 8.L Commit 2; the ``kasing-``
 + NOUN equative + hyphen-joined orthography lands in 8.L Commits 3-4.
 """
-
-from __future__ import annotations
 
 import pytest
 

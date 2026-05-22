@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.M: ``nang`` temporal subordinator "when" + post-matrix-comma.
 
 Commit 1 (TEMP_WHEN):
@@ -34,8 +37,6 @@ Constructed minimal-pair closures (this PR):
   * ``Kumain si Juan, kapag aalis si Pedro.`` (C2 NEW, generalizes
     across all subords)
 """
-
-from __future__ import annotations
 
 import pytest
 

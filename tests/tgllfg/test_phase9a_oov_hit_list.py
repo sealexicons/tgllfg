@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.A: tests for ``scripts/oov_hit_list.py`` helper.
 
 The helper feeds Phase 9 lex-pass sub-PRs (9.B-9.J). Tests cover:
@@ -9,8 +12,6 @@ The helper feeds Phase 9 lex-pass sub-PRs (9.B-9.J). Tests cover:
 * TSV/markdown emission shapes.
 * Wave filter substring-matching.
 """
-
-from __future__ import annotations
 
 import io
 import sys

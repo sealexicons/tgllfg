@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.W: R&G Conv harvest-extractor improvements.
 
 Closes the audit-surfaced noise classes in
@@ -35,8 +38,6 @@ Closes the audit-surfaced noise classes in
 Items 1-2 are tested in this file as part of the C1 commit; items
 3-5 are tested in subsequent commits.
 """
-
-from __future__ import annotations
 
 import sys
 from pathlib import Path

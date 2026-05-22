@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 16: fragment-host NOUN clause (§18 L96).
 
 Closes §18.1 deferral L96 for the NOUN-host path. Target
@@ -32,8 +35,6 @@ fragment-S path. Currently only ``salamat`` qualifies; future
 fragment-host NOUNs (greetings, exclamations) can opt in via the
 same lex feat without grammar changes.
 """
-
-from __future__ import annotations
 
 import pytest
 

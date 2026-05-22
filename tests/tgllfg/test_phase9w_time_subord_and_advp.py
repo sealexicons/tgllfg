@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.W Cluster A/H: temporal subord-clause body with bare-N +
 ALREADY; compound TIME AdvP; clause-final TIME-AdvP attachment;
 ``sayaw`` TR+AV_ABSOL polysemy; pre-ay PRON guard past intervening
@@ -13,8 +16,6 @@ Closes:
   clause-final TIME-AdvP attachment + ``rin`` clitic past topic-
   pre-ay guard + ``sayaw`` cognate-OBJ polysemy.
 """
-
-from __future__ import annotations
 
 import pytest
 

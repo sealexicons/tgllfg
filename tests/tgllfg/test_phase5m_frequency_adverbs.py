@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5m Commit 5: frequency adverbs at the clause level.
 
 Roadmap §12.1 / plan-of-record §1 / §4.2. The Commit 1 ADV[
@@ -29,8 +32,6 @@ and lifts the AdvP into the matrix's ADJUNCT set. No matrix-level
 lift of FREQ_VALUE — downstream consumers iterate ADJUNCT for
 the marker.
 """
-
-from __future__ import annotations
 
 import pytest
 

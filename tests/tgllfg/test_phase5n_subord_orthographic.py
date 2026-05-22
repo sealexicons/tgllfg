@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 23 — bagamat / 'pag orthographic contractions
 (§18 L94 + L107).
 
@@ -25,8 +28,6 @@ Adding a literal ``'pag`` lex entry was considered and rejected:
 the tokenizer never yields a single ``'pag`` token, so such an
 entry would never fire.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """CSV ingestion for additive lemma data with citation tracking.
 
 Where ``seed_database`` loads the project-owned YAML into the
@@ -20,8 +23,6 @@ CSV format (one row per lemma; header required):
 The source is supplied at import time, not per row: every row in the
 file is attributed to the same ``source.short_name``.
 """
-
-from __future__ import annotations
 
 import csv
 import logging

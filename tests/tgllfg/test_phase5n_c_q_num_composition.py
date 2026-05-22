@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C Commit 7.5 — universal Q + NUM composition.
 
 Closes the Phase 5f Commit 20 deferred Q + NUM piece per Phase 5n.C
@@ -15,8 +18,6 @@ ate", which was 0-parsing pre-Commit-7.5.
 Reference: Schachter & Otanes 1972 §4.7 / §10; Ramos & Bautista
 1986 ch.16.
 """
-
-from __future__ import annotations
 
 import pytest
 

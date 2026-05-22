@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 21 — HAVE-mayroon-with-linker (§18 L87).
 
 Closes the §18 L87 deferral. The Phase 5j Commit 5 HAVE rules covered
@@ -23,8 +26,6 @@ pattern: PRED='EXIST <SUBJ>', SUBJ=existence-asserted N,
 SUBJ POSSESSOR=possessor, CLAUSE_TYPE='EXISTENTIAL',
 HAVE='YES', POLARITY='POS'.
 """
-
-from __future__ import annotations
 
 import pytest
 

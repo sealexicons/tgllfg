@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Tests for the SQLAlchemy models, async repository, and LexCache builder.
 
 A single Postgres testcontainer is migrated, seeded with a minimal
@@ -8,8 +11,6 @@ repository and the cache builder. Verifies:
 * ``AsyncLexRepository`` returns frozen dataclasses, not ORM rows.
 * ``build_cache`` populates every collection and the surface indexes.
 """
-
-from __future__ import annotations
 
 import asyncio
 import json

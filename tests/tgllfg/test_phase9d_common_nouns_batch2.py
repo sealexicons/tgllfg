@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.D: common-noun batch 2 lex pass.
 
 24 audit-attested common nouns added to ``data/tgl/nouns.yaml``
@@ -18,8 +21,6 @@ V-root coexistence: 6 entries (``laro``, ``regalo``, ``sakit``,
 the V root continues to generate inflected verbal surfaces, the
 new N root attests only the bare nominal form.
 """
-
-from __future__ import annotations
 
 import pytest
 

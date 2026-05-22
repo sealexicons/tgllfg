@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """SQLAlchemy 2.x ORM models for the §6.2 lexicon schema.
 
 These are authored *to match* the hand-written Alembic baseline
@@ -9,8 +12,6 @@ Naming: the plan's ``metadata`` table is ``lex_metadata`` here to
 avoid collision with ``Base.metadata``. The plan's ``data_version``
 field is the row keyed by ``data_version`` in ``lex_metadata.value``.
 """
-
-from __future__ import annotations
 
 from typing import Any
 from uuid import UUID

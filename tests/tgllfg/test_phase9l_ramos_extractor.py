@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.L: Ramos 1971 harvest-extractor cleanup.
 
 Extends ``_OCR_NOISE_CHAR_RE`` with three Ramos-dominant
@@ -36,8 +39,6 @@ treated ``n1ya.`` (OCR garbage for ``niya``) as a proper-noun
 fallback. Removing the OCR-garbled line eliminates that
 sampling fluke; same pattern as Phase 9.G's ``kagabi`` lex add.
 """
-
-from __future__ import annotations
 
 import sys
 from pathlib import Path

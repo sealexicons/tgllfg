@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 9: reason subordination — dahil clausal.
 
 Roadmap §12.1 / plan-of-record §5.5, §6 Commit 9. One new rule
@@ -17,8 +20,6 @@ End-to-end target sentences:
     Dahil kumain si Maria, pumunta si Juan.
         # "Because Maria ate, Juan went."          (pre-matrix)
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

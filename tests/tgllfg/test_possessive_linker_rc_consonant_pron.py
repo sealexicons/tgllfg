@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 18: possessive-linker RC with consonant-final PRON.
 
 Phase 5d Commit 6 lifted the possessive-linker RC construction
@@ -55,8 +58,6 @@ These tests cover:
   verify the RC's OBJ-AGENT is the overt NOUN, not a pronoun).
 * LMT diagnostics clean.
 """
-
-from __future__ import annotations
 
 from tgllfg.clitics import reorder_clitics
 from tgllfg.core.common import FStructure

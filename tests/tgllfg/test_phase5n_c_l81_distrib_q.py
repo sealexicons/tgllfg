@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C Commit 7 — L81 distributive-Q topic.
 
 Closes the syntactic side of §18 L81 (distributive coord readings).
@@ -25,8 +28,6 @@ Design appendix: ``docs/analysis-choices.md`` Phase 5n.C Commit 6.
 Reference: Schachter & Otanes 1972 §10; Ramos & Bautista 1986
 ch.16.
 """
-
-from __future__ import annotations
 
 import pytest
 

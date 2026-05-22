@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 19: clause-final indefinite AdvP (§18 L99).
 
 Closes §18.1 deferral L99. Target sentences:
@@ -22,8 +25,6 @@ LOCATION (kahit saan) and TIME (kahit kailan); the INDEF=YES
 gate also admits MANNER (kahit paano) and REASON (kahit bakit)
 which are equally natural — covered in tests below.
 """
-
-from __future__ import annotations
 
 import pytest
 

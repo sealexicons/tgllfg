@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 14: Magkano cleft with trailing DAT-NP ADJUNCT
 (§18 L58).
 
@@ -29,8 +32,6 @@ Although Magkano is the primary motivation, the cleft+ADJUNCT
 rule generalises to any Q[WH=YES] head. Test coverage covers
 Magkano + variants and a small Ilan check.
 """
-
-from __future__ import annotations
 
 import pytest
 

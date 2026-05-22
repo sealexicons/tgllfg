@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5h Commit 2: ``kasing-`` / ``sing-`` equative cells +
 non-productive equative-identity ADJ entries (``pareho``,
 ``magkapareho``, ``magkaiba``) + analyzer's bare-citation indexer.
@@ -43,8 +46,6 @@ The two-NP standard-of-comparison construction
 (``Kasingganda si Maria si Ana``) needs a separate frame
 analysis and lands in Phase 5h Commit 6.
 """
-
-from __future__ import annotations
 
 import pytest
 

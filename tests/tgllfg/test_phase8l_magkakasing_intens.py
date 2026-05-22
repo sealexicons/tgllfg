@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.L Commit 2: magkakasing- intensive distributive equative.
 
 The ``magkakasing-`` prefix is the 3+-comparee intensive form of
@@ -32,8 +35,6 @@ The predicative-ADJ clause rule (Phase 5n.C.3 INTENS lift + Phase
 the matrix S so downstream consumers see the construction at
 clause level.
 """
-
-from __future__ import annotations
 
 import pytest
 

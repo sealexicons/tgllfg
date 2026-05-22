@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 1: pa-OV / pa-DV (CAUS=DIRECT) actor-fronting.
 
 Phase 5d Commit 5 added ``S_GAP_OBJ_AGENT`` for non-AV actor-fronting,
@@ -24,8 +27,6 @@ The wrap rule disambiguates against ``S_GAP_OBJ_AGENT`` by the inner
 V's CAUS feature: CAUS=DIRECT routes to ``S_GAP_OBJ_CAUSER``,
 CAUS=NONE routes to ``S_GAP_OBJ_AGENT``.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

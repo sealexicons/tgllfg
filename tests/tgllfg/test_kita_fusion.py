@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 20: ``kita`` clitic fusion (1sg-GEN + 2sg-NOM).
 
 Tagalog has a special second-position clitic ``kita`` that fuses
@@ -45,8 +48,6 @@ These tests cover:
   the current failure so any future paradigm expansion is
   intentional.
 """
-
-from __future__ import annotations
 
 from tgllfg.clitics import reorder_clitics
 from tgllfg.core.common import FStructure

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 2: predicative-N clause (§18 L43).
 
 Closes §18.1 deferral L43 (``Mas maraming aklat ako.``) by
@@ -32,8 +35,6 @@ The ``¬ (↓1 WH)`` constraint disambiguates the predicative-N
 rule from the Phase 5i Commit 6 wh-N-cleft (``S → N[WH=YES]
 NP[CASE=NOM]``).
 """
-
-from __future__ import annotations
 
 import pytest
 

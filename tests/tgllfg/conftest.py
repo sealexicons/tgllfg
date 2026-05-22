@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Postgres testcontainer fixtures for the lexicon backend.
 
 The session-scoped ``postgres_container`` fixture lazily spins a single
@@ -13,8 +16,6 @@ Tests that need any of these fixtures should also be marked
 ``@pytest.mark.postgres`` so they can be excluded by tag in environments
 without Docker (``pytest -m "not postgres"``).
 """
-
-from __future__ import annotations
 
 from collections.abc import AsyncIterator, Iterator
 

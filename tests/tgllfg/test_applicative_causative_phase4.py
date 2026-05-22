@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 4 §7.7: applicatives + pa-causatives.
 
 Three new affix classes are introduced:
@@ -30,8 +33,6 @@ These tests cover:
   ``EAT <SUBJ, OBJ>`` for kain) doesn't spuriously match a
   causative form.
 """
-
-from __future__ import annotations
 
 import pytest
 

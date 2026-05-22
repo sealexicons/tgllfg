@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Top-level ``tgllfg`` CLI dispatcher.
 
 Subcommands:
@@ -11,8 +14,6 @@ Subcommands:
   c-/f-structure summary. With ``--strict`` it suppresses fragment
   output on full-parse failure (Phase 4 §7.9).
 """
-
-from __future__ import annotations
 
 import argparse
 import asyncio

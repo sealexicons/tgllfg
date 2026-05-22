@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.L Commit 4: hyphen-joined ``Kasing-edad`` + pro-drop frame.
 
 Two related fixes:
@@ -41,8 +44,6 @@ Two related fixes:
    ``ADJ <SUBJ>`` so LMT's arg-binding pass finds the SUBJ slot
    bound (by PRO).
 """
-
-from __future__ import annotations
 
 import pytest
 

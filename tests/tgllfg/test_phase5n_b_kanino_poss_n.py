@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 15: Kanino predicative possessor over N (§18 L59).
 
 Closes §18.1 deferral L59 by adding a 3-daughter sibling rule
@@ -29,8 +32,6 @@ POSS. Both parses are linguistically valid; the new C15 rule
 provides the cleaner POSS-slot semantics. Tests filter for the
 POSS-slot parse to validate the new rule fires.
 """
-
-from __future__ import annotations
 
 import pytest
 

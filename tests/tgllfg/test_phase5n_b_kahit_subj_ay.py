@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 20: pre-V kahit-X SUBJ ay-fronted (§18 L100).
 
 Closes §18.1 deferral L100. Target sentences:
@@ -41,8 +44,6 @@ ADJUNCT-fronting construction (a separate analytical commitment;
 not pinned by L100). Phase 5n.B C19 closed the clause-final
 ADJUNCT use of those forms.
 """
-
-from __future__ import annotations
 
 import pytest
 

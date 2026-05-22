@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Async Alembic environment for the tgllfg lexicon.
 
 Uses SQLAlchemy 2.x's async engine + asyncpg under the hood. ``target_metadata``
@@ -5,8 +8,6 @@ is left as ``None`` because Phase 3 starts with a hand-written baseline
 migration; ORM-driven autogeneration is wired up later (Commit 3 introduces
 the SQLAlchemy models).
 """
-
-from __future__ import annotations
 
 import asyncio
 from logging.config import fileConfig

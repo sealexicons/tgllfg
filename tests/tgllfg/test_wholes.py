@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 22: wholes ``buo`` / ``buong`` (Group H3 item 8).
 
 Adds 1 ``Q[WHOLE="YES", QUANT=WHOLE]`` lex entry (``buo``) and
@@ -61,8 +64,6 @@ Out of scope (deferred follow-on commits):
   fires via the existing Phase 4 §7.8 ``S → S Q`` float rule
   but not idiomatic for ``buo``.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

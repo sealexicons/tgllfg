@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 7a.A: NP-internal ``mga`` plural marker (§18.1.1 #11).
 
 Three case-parallel rules added to ``cfg/nominal.py`` admit
@@ -11,8 +14,6 @@ during Phase 6.H.
 Closes §18.1.1 #11 (deferral promoted in Phase 6.H closing
 notes from informal stress-test gap to formal §18.1 inventory).
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

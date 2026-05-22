@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.A: Wave 1 lex pass.
 
 Closes the audit-surfaced lex gaps from the Wave 1 (rg81
@@ -47,8 +50,6 @@ Out of 8.A scope:
   distinct from lex addition. Tracked as a Phase 8.B-class
   follow-on near-miss.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5h Commit 1: ``pinaka-`` superlative + ``napaka-`` intensive cells.
 
 Roadmap §12.1 analytical commitment: comparative / degree morphology
@@ -28,8 +31,6 @@ the same productive opt-in. Phase 5h Commits 3+ introduce
 PART-driven grammar rules for the free-word degree markers
 (``mas``, ``kaysa``, particle intensifiers).
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/cfg/clitic.py
 
 """Clitic absorption rules: 2P enclitics, floated quantifiers, kita fusion.
@@ -28,8 +31,6 @@ third, after :mod:`tgllfg.cfg.nominal` and
 extraction / control / discourse registrars — see the plan's
 "Migration strategy" §H.
 """
-
-from __future__ import annotations
 
 from ._helpers import _eqs
 from .grammar import Rule

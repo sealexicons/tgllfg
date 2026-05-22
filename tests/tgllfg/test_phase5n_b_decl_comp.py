@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 13: declarative-COMP factive embedding (§18 L56).
 
 Closes §18.1 deferral L56 by adding a declarative-COMP path
@@ -26,8 +29,6 @@ Disambiguation from INTERROG-COMP: the linker token sits in a
 different position from the ``kung`` complementizer (and carries
 distinct feats), so the two paths are mutually exclusive.
 """
-
-from __future__ import annotations
 
 import pytest
 

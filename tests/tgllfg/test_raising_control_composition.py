@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 8: control / raising composition pinning.
 
 Phase 5d Commit 7's deferral list flagged two raising / control
@@ -26,8 +29,6 @@ grammar / lex changes — and adds explicit assertions:
 * All four raising forms (mukha / baka linked, parang / tila
   bare) work as the embedded raising V.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

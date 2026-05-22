@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.P: NP-appositive proper-name attachment.
 
 Closes Phase 8.I's ``test_n_appositive_proper_name`` pin (R&G
@@ -34,8 +37,6 @@ Wider construction class covered:
 * DAT-position appositive
 * Plural-head appositive (``ang mga kaibigan kong si Maria.``)
 """
-
-from __future__ import annotations
 
 import pytest
 

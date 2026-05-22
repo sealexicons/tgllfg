@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 11: yes/no indirect-Q (§18 L54).
 
 Closes §18.1 deferral L54 (``Alam ko kung kumain ang aso.``
@@ -15,8 +18,6 @@ to satisfy the wrap rule's ``=c 'INTERROG'`` constraint
 uniformly; the new yes/no variants additionally write
 ``COMP_QTYPE='YES_NO'`` to distinguish them from the wh case.
 """
-
-from __future__ import annotations
 
 import pytest
 

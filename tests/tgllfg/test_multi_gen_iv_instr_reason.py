@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5d Commit 4: multi-GEN-NP IV-INSTR / IV-REASON 3-arg frames.
 
 Phase 5b added three-arg IV-BEN frames (``ipinaggawa niya ng silya
@@ -36,8 +39,6 @@ The tests assert that AT LEAST ONE parse has the
 multi-GEN-binding structure, mirroring how Phase 5b's IV-BEN
 tests handle the same ambiguity.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

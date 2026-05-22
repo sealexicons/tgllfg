@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5j Commit 5: HAVE construction.
 
 Roadmap §12.1 / plan-of-record §5.4 + §5.5, §6 Commit 5. Four
@@ -50,8 +53,6 @@ End-to-end target sentences:
     Wala akong aklat.         "I don't have a book."
     Walang aklat si Maria.    "Maria doesn't have a book."
 """
-
-from __future__ import annotations
 
 import pytest
 

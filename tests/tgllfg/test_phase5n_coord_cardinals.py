@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 17 — Coordinated cardinals (§18 L79).
 
 Adds a NUM-level coord rule to ``cfg/coordination.py`` that admits
@@ -32,8 +35,6 @@ Surfaces NOT covered (out of L79 scope):
   ``apatnapu`` collapse (per Phase 5f comment, single-token spelling
   is canonical; multi-word spellings are deferred).
 """
-
-from __future__ import annotations
 
 import pytest
 

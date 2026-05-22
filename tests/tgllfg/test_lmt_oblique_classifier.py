@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5 §8 — sa-NP → typed OBL-θ classifier.
 
 Isolation tests that exercise
@@ -5,8 +8,6 @@ Isolation tests that exercise
 f-structures. Pipeline-level tests with a real Tagalog sentence
 live in ``test_lmt_oblique_pipeline.py``.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.lmt import Role, classify_oblique_slots

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.S: DAT-PRON possessive-pivot cleft.
 
 Audit-named construction (S&O 1972 §4.2 / R&G 1981 §10). A bare
@@ -35,8 +38,6 @@ The ``¬ (↓1 WH)`` gate excludes wh-DAT-PRONs (``kanino``,
 Lex addition: ``relos`` NOUN (Spanish loan; S&O 1972 page 284
 sent-397 audit hit ``Akin ang relos.``).
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/cfg/discourse.py
 
 """Discourse-level adjuncts: clause-final ADJUNCT (PP, AdvP, etc.).
@@ -21,8 +24,6 @@ last, after np / clause / clitic / negation / extraction / control
 the natural home for future clause-final ADJUNCT constructions
 (modal particles, vocatives, etc.).
 """
-
-from __future__ import annotations
 
 from .grammar import Rule
 

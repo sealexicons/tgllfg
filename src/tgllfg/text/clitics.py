@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/text/clitics.py
 
 """Token-stream pre-passes between tokenize and morph analysis:
@@ -20,8 +23,6 @@
   token routing to the standalone Phase 5k Commit 1 ``at``
   PART[COORD=AND] lex entry.
 """
-
-from __future__ import annotations
 
 import re
 

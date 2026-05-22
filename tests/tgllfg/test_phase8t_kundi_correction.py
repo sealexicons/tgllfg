@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.T: kundi-introduced phrasal correction.
 
 Audit-named construction (Wave 3, S&O 1972 §7.20 page 656):
@@ -23,8 +26,6 @@ CONJUNCTS); this is phrasal correction inside a single matrix.
 Lex addition: ``ben`` proper-name NOUN (S&O 1972 §7.20 sent
 ``Walang tao doon kundi si Ben.``).
 """
-
-from __future__ import annotations
 
 import pytest
 

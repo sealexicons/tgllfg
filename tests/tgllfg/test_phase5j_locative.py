@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5j Commit 4: locative existential clause (nasa).
 
 Roadmap §12.1 / plan-of-record §5.3, §6 Commit 4. Two new clause
@@ -34,8 +37,6 @@ End-to-end target sentences:
     Nasa tuktok ng bundok ang bahay.  "The house is on top of
                                        the mountain."
 """
-
-from __future__ import annotations
 
 import pytest
 

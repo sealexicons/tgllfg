@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2025-2026 G & R Associates LLC
+SPDX-License-Identifier: MIT OR Apache-2.0
+-->
+
 # Binary feats audit (Phase 5n.C.4 Commit 2)
 
 This audit underpins the YES/NO → bool sentinel migration that lands
@@ -69,7 +74,7 @@ negative.
 | `GAPPING` | matrix carries a gapping conjunction |
 | `HAVE` | possessive predicate marker |
 | `HUMAN` | NP/PRON is human-class |
-| `IMPERSONAL` | predicate licenses bare-S parse with synthesized PRO SUBJ (weather verbs `umulan` / atmospheric ADJs `mainit`; 9.X.c49) |
+| `IMPERSONAL` | predicate licenses bare-S with synth PRO SUBJ (weather `umulan`; atmospheric ADJs `mainit`; 9.X.c49) |
 | `INTENSIFIER` | particle is an intensifier (`talagang`) |
 | `INTERJ` | element is an interjection |
 | `KA_PRED` | N is a ka-N companion-predicate (`kasama` / `kasabay`; 9.X.c19; gates ka-N S_GAP rule) |

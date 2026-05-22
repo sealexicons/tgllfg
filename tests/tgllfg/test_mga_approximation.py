@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 14: mga time approximation (Group E item 3).
 
 The Tagalog plural / approximator particle ``mga`` is added
@@ -47,8 +50,6 @@ Tests cover:
 * Regression: clock-time alone, time-of-day, minute composition,
   date-of-week, cardinals, ordinals, fractions all unchanged.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

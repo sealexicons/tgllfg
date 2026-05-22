@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 21: SOC mood (hortative) with `tayo` 1pl-INCL pivot.
 
 Tagalog has a hortative ("let's X") construction using the bare
@@ -45,8 +48,6 @@ These tests cover:
   parses as MOOD=IND with the standard intransitive AV frame —
   the SOC cell only fires for mag-class roots.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

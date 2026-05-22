@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 4 §7.1: end-to-end parses across all four voices.
 
 Each anchor verb is exercised at least once per voice slot it
@@ -10,8 +13,6 @@ Word-order freedom is exercised by `test_av_tr_either_order` —
 ``Kumain ang aso ng isda`` and ``Kumain ng isda ang aso`` must both
 parse to f-structures with SUBJ=aso, OBJ=isda.
 """
-
-from __future__ import annotations
 
 from typing import Any
 

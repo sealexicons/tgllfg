@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.2 Commit 5 — L77 gapping in coordination.
 
 Closes §18.1 L77 (gapping in coord). Canonical pattern: ``<V>
@@ -23,8 +26,6 @@ flipped the Commit 3 tripwires (corpus expected: fragment →
 parse for DV cases; AV-spurious matrix-COORD absence → matrix
 COORD=AND on the new gapping parse).
 """
-
-from __future__ import annotations
 
 import pytest
 

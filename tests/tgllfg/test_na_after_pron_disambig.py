@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 6: ``na`` linker disambiguation after PRON.
 
 Phase 5d Commit 10's deferral list flagged: ``Tumakbo ang bata ko
@@ -20,8 +23,6 @@ hand-authored intransitive (e.g., ``kita`` → ``nakita``) need a
 synthesizer enhancement that emits ``<SUBJ>`` alongside
 ``<SUBJ, OBJ>``; that's a separate engineering follow-up.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

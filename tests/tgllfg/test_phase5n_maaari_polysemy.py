@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 9 — maaari polysemous noun reading (§18 L65).
 
 Pre-Commit-9 the surface ``maaari`` analyzed only as VERB[MODAL=YES]
@@ -15,8 +18,6 @@ dominates). The lex addition closes the §18.1 L65 deferral; downstream
 parsers / consumers can read off the dual analyses without ambiguity
 blowup because the rule contexts are structurally distinct.
 """
-
-from __future__ import annotations
 
 import pytest
 

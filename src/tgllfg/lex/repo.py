@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Async repository for lexicon read paths.
 
 A thin wrapper around an :class:`AsyncSession` that exposes the
@@ -9,8 +12,6 @@ The repository never returns ORM rows directly — the parser side is
 SQLAlchemy-free. Methods either return a built ``LexCache`` (for
 startup) or a list of frozen dataclasses (for ad-hoc queries).
 """
-
-from __future__ import annotations
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession

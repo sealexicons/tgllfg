@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.3 Commit 6 — ``redup_root`` op.
 
 Adds the post-prefix root-reduplication op to the paradigm-engine
@@ -28,8 +31,6 @@ original root with no sandhi.
 Infrastructure-only — Commit 7 (L37 intensives) is the first
 consumer.
 """
-
-from __future__ import annotations
 
 from tgllfg.morph.analyzer import _apply
 from tgllfg.morph.paradigms import Operation

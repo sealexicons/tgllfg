@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 4 — orthographic-variant collapse extension (§18 L74).
 
 Phase 5j Commit 7 introduced the ``MorphAnalysis.lemma = feats.get(
@@ -25,8 +28,6 @@ Tests use synthetic ``MorphData`` rather than mutating the seed YAML.
 The Phase 5j Commit 7 PART pattern is also regression-tested to
 confirm no behavioural change there.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import Token
 from tgllfg.morph import (

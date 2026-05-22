@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """LexCache → MorphData equivalence and parser-via-DB end-to-end.
 
 After migrating + seeding a Postgres testcontainer, the
@@ -7,8 +10,6 @@ require structural identity (UUIDs, ordering of equally-keyed rows)
 — we require the *analytic outputs* to be identical for a
 representative slice.
 """
-
-from __future__ import annotations
 
 import asyncio
 from collections.abc import AsyncIterator

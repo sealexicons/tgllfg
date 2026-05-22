@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5 §8 — lex-entry intrinsic profiles + LMT bridges.
 
 Exercises the bridges between :mod:`tgllfg.lexicon` and the LMT
@@ -8,8 +11,6 @@ the synthesizer fallback (:func:`tgllfg.lexicon._synthesize_verb_entry`)
 attaches a per-voice profile so verbs not in BASE still produce
 typed mappings.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 8: purpose subordination — para / upang.
 
 Roadmap §12.1 / plan-of-record §5.4, §6 Commit 8. One new rule
@@ -24,8 +27,6 @@ End-to-end target sentences:
     Pumunta si Juan upang kumain si Maria.
         # "Juan went in order for Maria to eat."   (post-matrix upang)
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

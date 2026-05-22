@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5g Commit 5: manner-adverb (S-level adjective adjunct).
 
 Roadmap §12.1 promised: "Manner adverb form (``mabilis na tumakbo``
@@ -33,8 +36,6 @@ Tests cover:
   bata.``, ``Maganda na ka.``) still parse via Phase 5g Commit 3.
 * Bare ADJ alone (no verbal S) doesn't form S.
 """
-
-from __future__ import annotations
 
 import pytest
 

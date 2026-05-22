@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5j Commit 6: modal lex inventory + LexicalEntry.
 
 Roadmap §12.1 / plan-of-record §4.2 + §4.4, §6 Commit 6. Six new
@@ -34,8 +37,6 @@ modal-headed matrix structure.
 Tests verify only the lex layer in this commit; parse-layer
 tests for the modal control wrap land in Commit 7.
 """
-
-from __future__ import annotations
 
 import pytest
 

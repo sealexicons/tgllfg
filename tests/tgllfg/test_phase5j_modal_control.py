@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5j Commit 7: modal control wrap.
 
 Roadmap §12.1 / plan-of-record §5.6, §6 Commit 7. Four new
@@ -31,8 +34,6 @@ template stays intact. Canonical form requires the linker:
 (no linker) is marginal / colloquial Tagalog and remains 0-parse
 (see ``test_phase5j_modal_lex.py::TestNoLinkerModalIsZeroParses``).
 """
-
-from __future__ import annotations
 
 import pytest
 

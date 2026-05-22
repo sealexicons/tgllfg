@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 26: comparative ``parang``.
 
 Lifts the Phase 5d Commit 1 deferral. The existing parang entry
@@ -56,8 +59,6 @@ These tests cover:
   still parses (regression).
 * Evidential ``tila + clause`` still parses (regression).
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

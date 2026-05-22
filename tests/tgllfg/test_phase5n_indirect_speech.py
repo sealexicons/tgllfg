@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 27 — OV-with-na-S complement (§18 L89.2).
 
 Closes §18 L89 part 2 of 2 — the rule + composition. Lifts the
@@ -30,8 +33,6 @@ F-structure shape:
     SUBJ         = the embedded S (the said-thing) — carries its
                    own PRED, VOICE, ASPECT, etc.
 """
-
-from __future__ import annotations
 
 import pytest
 

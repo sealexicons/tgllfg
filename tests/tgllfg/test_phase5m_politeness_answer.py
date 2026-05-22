@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5m Commit 3: politeness ``opo`` / ``oho`` interjection-answer.
 
 Roadmap §12.1 / plan-of-record §1 (politeness particles, third
@@ -37,8 +40,6 @@ Coverage:
 * ``Oo.`` / ``Hindi.`` 0-parse (deferred — needs new lex entries
   + INTERJ-tagged readings; Phase 5n debt).
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.W Cluster E: SAY-class V + ``na``-S OBJ profile —
 inner-clause clitic anchoring + plain AV-SAY rule + ``na``-linker
 disambiguation with intervening clitic-PRON.
@@ -28,8 +31,6 @@ Three coordinated changes in this slice:
   excludes plain ``nagsabi`` cases — and the existing 5n.A OV-SAY
   rule only covers OV voice + GEN-PRON actor.
 """
-
-from __future__ import annotations
 
 import pytest
 

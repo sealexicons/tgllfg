@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Baseline schema for the tgllfg lexicon (plan §6.2).
 
 Revision ID: 0001
@@ -20,8 +23,6 @@ Naming deviation from the plan: the plan's ``metadata`` table is named
 ``data_version`` field lives in ``lex_metadata.value`` keyed by
 ``data_version``.
 """
-
-from __future__ import annotations
 
 from collections.abc import Sequence
 

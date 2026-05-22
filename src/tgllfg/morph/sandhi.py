@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/morph/sandhi.py
 
 """Phonological rewrites applied during paradigm generation.
@@ -32,8 +35,6 @@ Citations: Schachter & Otanes 1972 §4.21 (vowel hiatus / deletion;
 o→u raising); §3.5 (sandhi); Kroeger 1993 §4.4 (mang- distributive,
 nasal substitution); Ramos & Bautista 1986 paradigm tables.
 """
-
-from __future__ import annotations
 
 VOWELS: frozenset[str] = frozenset("aeiouAEIOU")
 SONORANTS: frozenset[str] = frozenset("mnlrwyMNLRWY")

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5k Commit 2: apostrophe-t text-pass.
 
 Roadmap §12.1 / plan-of-record §5 (text-pass note), §6 Commit 2.
@@ -21,8 +24,6 @@ coordinated-cardinal compositions (``apat na pu't lima`` 45,
 ``isang daa't dalawampu`` 120) once the NUM-coordination grammar
 rule lands as a Phase 5f follow-on.
 """
-
-from __future__ import annotations
 
 import pytest
 

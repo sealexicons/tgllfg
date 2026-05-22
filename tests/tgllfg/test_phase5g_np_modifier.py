@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5g Commit 2: NP-internal ADJ modifier rules.
 
 Adds four ``N``-level rules that admit pre-N and post-N adjectival
@@ -25,8 +28,6 @@ f-structure inspection — the modifier sits on the head N's
 ``ADJ-MOD`` set, which is not lifted to the matrix NP in this
 commit. Lift to NP-level visibility lands separately if needed.
 """
-
-from __future__ import annotations
 
 import pytest
 

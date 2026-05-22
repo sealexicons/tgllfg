@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/renderers/text.py
 
 """Pretty-printers for c-, f-, and a-structures (text / JSON output).
@@ -13,8 +16,6 @@ Future renderer formats (GraphViz dot, HTML, …) live in sibling
 modules under :mod:`tgllfg.renderers`; this module owns the
 text / JSON output flavour.
 """
-
-from __future__ import annotations
 
 import json
 from typing import Any

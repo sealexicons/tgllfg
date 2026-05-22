@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 4 §7.6: control & raising — control half (raising deferred).
 
 Three control verb classes, all using SUBJ-control over an XCOMP
@@ -29,8 +32,6 @@ These tests cover:
 * Negative cases: bare control verb without complement (coherence
   failure); non-AV embedded clause (out of S_XCOMP scope).
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

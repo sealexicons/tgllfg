@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/lmt/common.py
 
 """Phase 5 §8.1 — Lexical Mapping Theory data types.
@@ -42,8 +45,6 @@ Design notes
   :func:`tgllfg.fstruct.checks.is_governable_gf` which already
   recognizes the ``OBJ-`` and ``OBL-`` prefixes.
 """
-
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum

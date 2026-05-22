@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 6: DAT-standard equative (§18 L44).
 
 Closes §18.1 deferral L44 (``Kasingganda kay Maria si Ana.``)
@@ -11,8 +14,6 @@ NP[CASE=NOM]``) one-for-one with ``CASE=DAT`` substituting for
 Tagalog (GEN-standard is canonical per S&O 1972 / R&B 1986)
 but attested.
 """
-
-from __future__ import annotations
 
 import pytest
 

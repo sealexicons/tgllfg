@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.4 Commit 1 — ``lemma_sense`` schema + ORM smoke tests.
 
 Spins up a migrated Postgres testcontainer, exercises the new
@@ -12,8 +15,6 @@ take in Commit 2), and verifies:
 * The ``lex_entry.lemma_sense_id`` FK is nullable in C1 (dual-FK
   during the additive migration window) and round-trips when set.
 """
-
-from __future__ import annotations
 
 import asyncio
 import json

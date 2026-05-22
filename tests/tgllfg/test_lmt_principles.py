@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5 §8.2 — Bresnan–Kanerva LMT principles.
 
 Unit tests for each principle as a standalone function plus
@@ -7,8 +10,6 @@ applicatives, causatives, psych control) lives in
 ``test_lmt_voice_mappings.py``; this file is the isolation-level
 safety net for each principle.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5k Commit 5: binary clausal coordination.
 
 Roadmap §12.1 / plan-of-record §5.4, §6 Commit 5. Two new rules
@@ -25,8 +28,6 @@ End-to-end target sentences:
     Kumain si Maria at pumunta si Juan.   "Maria ate and Juan went."
     Kumain si Maria o tumakbo si Juan.    "Maria ate or Juan ran."
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

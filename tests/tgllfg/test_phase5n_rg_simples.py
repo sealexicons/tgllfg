@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 7 — mama NOUN lex + R&G "Ang Manok" simples #1 / #3 (§18 L62 + L63).
 
 R&G "Ang Manok" (Ramos & Goulet 1981, *Intermediate Tagalog*, p. 482)
@@ -27,8 +30,6 @@ regression tests are bundled here for the R&G coverage net.
 The combined essay-paragraph (R&G p. 482 single-sentence form) is
 Commit 8's target — pinned at 0-parse here pending that commit.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import Token
 from tgllfg.core.pipeline import parse_text

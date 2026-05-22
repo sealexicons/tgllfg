@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.C: ``pinaka-`` superlative on N and ADJ heads.
 
 Closes the audit-surfaced gap from the Wave 1 / Wave 2 pilot
@@ -29,8 +32,6 @@ analyzer is given a NOUN root declaring ``affix_class:
 [pinaka_n]``. C2's sentence-level + lex coverage tests live
 below in their own test classes.
 """
-
-from __future__ import annotations
 
 import pytest
 

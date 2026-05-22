@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Postgres-backed lexicon backend (plan §6).
 
 Phase 3 module hosting the SQLAlchemy models, async repository,

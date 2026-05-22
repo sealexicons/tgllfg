@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 7a.G: kahit-X wh-PRONs in non-NOM slots (§18.1.1 item 10).
 
 New rule in ``cfg/nominal.py`` (parallel to the Phase 5i Commit 3
@@ -34,8 +37,6 @@ Note on ambiguity: each target surface produces 3 parses today
 filter on the canonical OBJ reading via `INDEF=YES` +
 `LEMMA` discriminator. Plan §3.8 documents the choice.
 """
-
-from __future__ import annotations
 
 import pytest
 

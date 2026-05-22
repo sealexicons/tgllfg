@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5 §8 — end-to-end LMT pipeline integration.
 
 Exercises the path :func:`tgllfg.pipeline.parse_text` →
@@ -16,8 +19,6 @@ Exercises the path :func:`tgllfg.pipeline.parse_text` →
 * AV cases, stipulated-XCOMP cases (control verbs, indirect
   causatives), and synthesized-fallback verbs all parse cleanly.
 """
-
-from __future__ import annotations
 
 from typing import Any
 

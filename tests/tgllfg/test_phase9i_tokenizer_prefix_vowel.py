@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.I: tokenizer rejoin of Tagalog-prefix-vowelStem hyphenated forms.
 
 The plan §B1.I scoped "Reduplicated/derived forms — ``aaral``
@@ -34,8 +37,6 @@ OBJ for ``Mag-aral ka.``, ``Nag-uusap ang dalaga.``; missing
 ``pag-`` nominalization paradigm cell for ``pag-aaral``). Those
 are deferred to 9.O / construction class.
 """
-
-from __future__ import annotations
 
 import pytest
 

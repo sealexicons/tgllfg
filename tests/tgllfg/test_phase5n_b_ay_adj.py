@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 3: ay-inversion of comparative ADJ (§18 L39).
 
 Closes §18.1 deferral L39 (``Si Maria ay mas matalino kaysa kay
@@ -25,8 +28,6 @@ handled by the existing Phase 5h Commit 4 kaysa wrap rule
 composing on top of the bare ay-fronted predicative-ADJ S; no
 new rule needed.
 """
-
-from __future__ import annotations
 
 import pytest
 

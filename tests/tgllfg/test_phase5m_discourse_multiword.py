@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5m Commit 11: multi-word discourse connectives.
 
 Roadmap §12.1 / plan-of-record §5.2. Adds three multi-word
@@ -37,8 +40,6 @@ Closure path (Phase 5n debt):
 
 Reference: R&B 1986 §15.7.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 7: Alternative-Q (§18 L45).
 
 Closes §18.1 deferral L45 (``Tao ka o multo?``) by extending
@@ -14,8 +17,6 @@ neither is in the grammar's purview. Both readings share the
 same syntactic structure in Tagalog; the syntax annotates the
 ALTERNATIVE potentiality and downstream consumers interpret.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 16: pre-modifier demonstrative with linker.
 
 Phase 5d Commit 3 added the post-modifier construction
@@ -45,8 +48,6 @@ These tests cover:
   parse.
 * LMT diagnostics clean.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

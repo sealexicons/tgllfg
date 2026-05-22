@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/fgraph.py
 
 """F-structure graph and unification primitive.
@@ -52,8 +55,6 @@ rollback that drops `Y`, so we forgo the optimization until the
 graph is back at depth 0. Find remains correct in either mode —
 compression is a pure optimization.
 """
-
-from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field

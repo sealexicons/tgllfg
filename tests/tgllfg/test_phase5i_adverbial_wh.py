@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5i Commit 4: adverbial wh fronting.
 
 Roadmap §12.1 / plan-of-record §5.3, §6 Commit 4. New clause
@@ -29,8 +32,6 @@ parsed today by silently dropping ``saan`` (1 → 0 after Commit
 1's lex add); this commit's rule restores 1 parse with the
 proper wh-Q matrix.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/morph/__init__.py
 
 from .analyzer import Analyzer, analyze_tokens, generate_form

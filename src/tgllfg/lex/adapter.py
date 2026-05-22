@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Convert a Postgres-backed :class:`LexCache` into the parser-facing
 :class:`MorphData` shape.
 
@@ -11,8 +14,6 @@ Filtering by language: a single ``LexCache`` may carry rows for
 multiple languages once §6.2 grows beyond Tagalog. ``cache_to_morph_data``
 takes an ISO code and projects only that language's rows.
 """
-
-from __future__ import annotations
 
 from tgllfg.lex.cache import LexCache
 from tgllfg.morph.paradigms import (

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5 §8 — blocking diagnostics from lmt_check.
 
 Phase 5 promotes two classes of LMT disagreement to blocking:
@@ -20,8 +23,6 @@ fixtures and call :func:`tgllfg.lmt.lmt_check` directly. End-to-end
 parse-level coverage (where the grammar normally always emits SUBJ)
 lives in :mod:`test_lmt_pipeline_integration`.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure, LexicalEntry
 from tgllfg.fstruct import Diagnostic

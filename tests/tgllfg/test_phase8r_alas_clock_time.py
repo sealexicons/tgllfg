@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.R: Spanish-loan clock-time construction `alas` + NUM.
 
 Closes the audit-named `alas`-construction class (`alas singko` "5
@@ -40,8 +43,6 @@ issue (affects all impersonal/DEM-pivot S — not 8.R-specific), and
 the colloquial `nang` time-marker reading (S&O 1972; orthogonal to
 the Phase 5l/8.M subordinator `nang`).
 """
-
-from __future__ import annotations
 
 import pytest
 

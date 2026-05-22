@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 17: numeric comparatives (Group H1 item 3).
 
 Adds 4 ``PART[COMP_PHRASE=...]`` lex entries (``higit``,
@@ -81,8 +84,6 @@ Out of scope (deferred follow-on commits):
   preservation; COMP is set on the inner NUM and rides
   unchanged.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

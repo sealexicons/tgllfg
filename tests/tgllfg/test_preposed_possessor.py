@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f closing deferral: generic preposed-possessor.
 
 Common Tagalog NP-internal possessive surface form: a DAT pronoun
@@ -45,8 +48,6 @@ aklat``) live in ``test_demonstrative_possessive_phase4.py`` and
 ``test_distributive_possessive.py`` respectively — not duplicated
 here.
 """
-
-from __future__ import annotations
 
 import pytest
 

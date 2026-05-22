@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 6 — nakatira resultative naka- paradigm (§18 L61).
 
 The verbal ``naka-`` paradigm in ``data/tgl/paradigms.yaml`` produces
@@ -23,8 +26,6 @@ The R&G simple #3 (``Nakatira siyang mag-isa sa bahay.``) full
 integration depends on Commit 7's ``mama`` lex + composition; pinned
 at 0-parse here.
 """
-
-from __future__ import annotations
 
 import pytest
 

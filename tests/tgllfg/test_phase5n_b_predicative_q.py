@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 1: predicative-Q clause (§18 L42 + L52).
 
 Closes §18.1 deferrals L42 (``Mas marami ang aklat.``) and L52
@@ -33,8 +36,6 @@ explicit ``LEMMA`` feat in ``data/tgl/particles.yaml`` — carry
 ``LEMMA = surface`` in their f-structure feats. This lets the
 new rule's ``(↑ Q_LEMMA) = ↓1 LEMMA`` lift the lemma cleanly.
 """
-
-from __future__ import annotations
 
 import pytest
 

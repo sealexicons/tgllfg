@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5h Commit 3: comparative ``mas`` PART + ADJ-wrapper rule.
 
 Roadmap §12.1 / plan-of-record §4.1, §5.1, §6 Commit 3. Three
@@ -50,8 +53,6 @@ Phase 5h Commits 4 / 5 / 7 build on this commit:
 * Commit 7 generalises this rule to ``Q[VAGUE=YES]`` heads
   (``mas marami`` / ``mas kaunti`` quantifier-comparative).
 """
-
-from __future__ import annotations
 
 import pytest
 

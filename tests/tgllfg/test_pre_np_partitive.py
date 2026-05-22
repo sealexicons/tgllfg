@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5b §7.8 follow-on: pre-NP partitive (lahat ng bata).
 
 Phase 4 §7.8 deferred the pre-NP partitive form
@@ -16,8 +19,6 @@ The pre-existing floated-quantifier rule (``Kumain ang bata
 lahat``) is unaffected — it operates at the S level, not within
 an NP.
 """
-
-from __future__ import annotations
 
 from typing import Any
 

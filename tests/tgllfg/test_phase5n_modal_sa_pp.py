@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 13 — Modal + sa-PP ADJUNCT in embedded XCOMP (§18 L70).
 
 Pre-Commit-13 the Phase 4 §7.6 S_XCOMP AV-frames covered:
@@ -16,8 +19,6 @@ that mirrors the 3-daughter form's ADJUNCT lift but drops the GEN-OBJ
 slot. Composes with the Phase 5j Commit 7 modal control wrap to admit
 the canonical ``modal + clitic + linker + V + sa-PP`` shape.
 """
-
-from __future__ import annotations
 
 import pytest
 

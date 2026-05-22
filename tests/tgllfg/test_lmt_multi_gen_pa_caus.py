@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5b Commit 2 — multi-GEN-NP pa-OV-direct causative frames.
 
 Three-argument direct causatives like ``Pinakain niya ng kanin ang
@@ -11,8 +14,6 @@ so the grammar binds to typed ``OBJ-CAUSER`` rather than
 Word-order convention is identical: first ng-NP after V is CAUSER
 (the agentive instigator), second is PATIENT (the affected entity).
 """
-
-from __future__ import annotations
 
 from typing import Any
 

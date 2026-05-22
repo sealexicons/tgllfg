@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5j Commit 8: negation × modal interactions + kailangan polysemy.
 
 Roadmap §12.1 / plan-of-record §6 Commit 8. No new grammar rules
@@ -27,8 +30,6 @@ NOM-clitic) fails to parse. This affects ``Hindi ako dapat na
 kumain.`` and similar by extension. Deferred — see plan §9.2
 ``Phase 4 hindi-wrap × non-ka NOM-clitic``.
 """
-
-from __future__ import annotations
 
 import pytest
 

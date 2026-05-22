@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2025-2026 G & R Associates LLC
+SPDX-License-Identifier: MIT OR Apache-2.0
+-->
+
 # LexicalEntry YAML schema (Phase 5n.C.4 Commit 11)
 
 This document specifies the YAML schema for the `data/tgl/lexicon/`

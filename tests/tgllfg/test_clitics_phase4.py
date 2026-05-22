@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 4 §7.3: Wackernagel 2P clitic placement.
 
 The clitic-placement pass moves pronominal clitics (PRON with
@@ -16,8 +19,6 @@ These tests cover:
 * word-order normalization: non-canonical input parses identically
   to canonical input.
 """
-
-from __future__ import annotations
 
 from typing import Any
 

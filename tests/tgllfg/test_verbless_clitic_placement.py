@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 22: verbless clitic placement.
 
 The Phase 4 §7.3 Wackernagel placement pass was verb-anchored:
@@ -33,8 +36,6 @@ These tests cover:
   skipped. Demonstrative DET (``ito``) and other content words
   still serve as valid anchors.
 """
-
-from __future__ import annotations
 
 from tgllfg.clitics import reorder_clitics
 from tgllfg.morph import analyze_tokens

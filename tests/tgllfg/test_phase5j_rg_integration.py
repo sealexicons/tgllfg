@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5j Commit 9: R&G "Ang Manok" integration benchmark.
 
 Roadmap §12.6 / plan-of-record §8, §6 Commit 9. Verifies the
@@ -27,8 +30,6 @@ simples continue to parse alongside.
 Combined essay-paragraph sentence (R&G p. 482) remains pending
 on the deferred items above.
 """
-
-from __future__ import annotations
 
 import pytest
 

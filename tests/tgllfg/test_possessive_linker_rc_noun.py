@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 19: possessive-linker RC with non-pronominal possessor.
 
 Phase 5d Commit 6 and Phase 5e Commit 18 lifted the dual-binding
@@ -48,8 +51,6 @@ These tests cover:
 * Regression: standard NP-poss + standard relativization with
   overt actor (``libro na binasa ng bata``) still works.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

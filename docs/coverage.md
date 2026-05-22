@@ -1,3 +1,8 @@
+<!--
+Copyright (c) 2025-2026 G & R Associates LLC
+SPDX-License-Identifier: MIT OR Apache-2.0
+-->
+
 # tgllfg Coverage Report — Phase 4 §7.10
 
 **Date:** 2026-05-22. Refreshed at Phase 9.X — the post-PANAHON-drive

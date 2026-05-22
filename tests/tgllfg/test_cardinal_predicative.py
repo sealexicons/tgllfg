@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 4: predicative cardinal.
 
 The cardinal serves as the matrix predicate with a NOM-NP
@@ -40,8 +43,6 @@ Tests cover:
 * Regression: cardinal-NP-modifier surfaces from Commits 1-3
   still parse as before (``Kumain ako ng tatlong isda``).
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

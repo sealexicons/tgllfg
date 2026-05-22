@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 5: multiplicative ratios.
 
 Two productive forms (S&O 1972 §4.5):
@@ -69,8 +72,6 @@ Out of scope (deferred to follow-on):
   (TIME / SPATIAL / MANNER) — kept deferred per the Phase 5e
   Commit 3 note.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

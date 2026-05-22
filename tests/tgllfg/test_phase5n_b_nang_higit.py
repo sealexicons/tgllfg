@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 5: formal ``nang higit`` ADJ-wrapper (§18 L41).
 
 Closes §18.1 deferral L41 (formal ``nang higit`` comparison)
@@ -18,8 +21,6 @@ colloquial comparative; ``nang higit`` is the formal alternative
 existing Phase 5g Commit 3 predicative-ADJ clause rule and the
 Phase 5h Commit 4 kaysa wrap unchanged.
 """
-
-from __future__ import annotations
 
 import pytest
 

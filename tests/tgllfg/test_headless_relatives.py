@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 5: headless / free relatives.
 
 Phase 4 §7.5's "Out-of-scope" list flagged headless / free
@@ -18,8 +21,6 @@ The headless NP gets PRED='PRO' (mirroring the standalone-
 demonstrative analysis), with the gapped S attached as ADJ and
 REL-PRO carrying PRED='PRO' plus the headless NP's CASE.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

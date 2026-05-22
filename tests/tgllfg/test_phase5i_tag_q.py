@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5i Commit 7: tag question `di ba?`.
 
 Roadmap §12.1 / plan-of-record §5.6, §6 Commit 7. New clause
@@ -36,8 +39,6 @@ parse.
 * Combined ``ba ... di ba?`` (yes/no + tag in same sentence)
   has ambiguous ba placement; defer.
 """
-
-from __future__ import annotations
 
 import pytest
 

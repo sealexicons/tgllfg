@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5g Commit 3: predicative-adj clause rule.
 
 Adds the verbless adj-pred clause rule:
@@ -28,8 +31,6 @@ Out of scope for this commit (deferred): ay-inversion of adj-pred
 was built for V pivots; extending to ADJ pivots is a separate
 commit).
 """
-
-from __future__ import annotations
 
 import pytest
 

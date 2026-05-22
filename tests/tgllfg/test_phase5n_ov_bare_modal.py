@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 14 — OV embedded V under modal (§18 L72).
 
 Pre-Commit-14 the OV paradigm cells produced only the standard
@@ -38,8 +41,6 @@ The colloquial high-vowel-deletion variants (``bilhin`` for
 ``bili``, ``gawin`` for ``gawa``) are separate sandhi paths —
 deferred until corpus pressure.
 """
-
-from __future__ import annotations
 
 import pytest
 

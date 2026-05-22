@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Paired surface↔analysis assertions across the seed verb lexicon.
 
 Each entry is ``(root, voice, aspect, expected_surface)`` for a cell
@@ -14,8 +17,6 @@ in a different shape, the form here matches R&B (the more recent and
 more comprehensively paradigmatized source) and the discrepancy is
 recorded in ``docs/analysis-choices.md``.
 """
-
-from __future__ import annotations
 
 import pytest
 

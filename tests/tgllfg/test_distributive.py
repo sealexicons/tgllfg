@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 19: distributive ``tig-`` (Group H2 item 5).
 
 Adds 10 ``NUM[CARDINAL=YES, DISTRIB=YES]`` lex entries
@@ -74,8 +77,6 @@ Out of scope (deferred follow-on commits):
   ``merge_hyphen_compounds``. Originally deferred for Phase 5f
   Commits 14 / 16 / 18.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

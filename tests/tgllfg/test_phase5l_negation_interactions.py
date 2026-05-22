@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 12: subord × negation interactions.
 
 Roadmap §12.1 / plan-of-record §6 Commit 12. **No grammar rules**
@@ -19,8 +22,6 @@ This file pins the more complex compositions:
   matrix POLARITY=NEG that does NOT propagate onto the
   SubordClause's f-structure.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/cfg/_helpers.py
 
 """Private utilities shared across the per-area rule modules.
@@ -20,8 +23,6 @@ Currently exports:
   Phase 4 / 5 / 5f rule corpus; the only contract is that ``↓1`` is
   the verb.
 """
-
-from __future__ import annotations
 
 # Equations every clausal rule emits to percolate verb features up to
 # the matrix f-structure. ``↓1`` is always the verb in our V-initial

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5k Commit 6: adversative clausal coordination.
 
 Roadmap §12.1 / plan-of-record §5.5, §6 Commit 6. One new rule
@@ -23,8 +26,6 @@ End-to-end target sentences:
     Kumain si Maria subalit hindi pumunta si Juan.
     Kumain si Maria pero pumunta si Juan.   (no negation)
 """
-
-from __future__ import annotations
 
 import pytest
 

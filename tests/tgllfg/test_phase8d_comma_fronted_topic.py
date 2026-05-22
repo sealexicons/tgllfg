@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.D: comma-fronted topic NP.
 
 Closes the audit-surfaced gap (rg81 ANG MANOK ch., Wave 1) by
@@ -42,8 +45,6 @@ Out of 8.D scope (pinned):
 - Discourse-particle-fronted (``Eto, ...`` / ``Oo, ...`` /
   ``Wala, ...``) — needs PART-variant.
 """
-
-from __future__ import annotations
 
 import pytest
 

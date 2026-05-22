@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 20: universal ``bawat`` / ``kada`` (Group H2 item 6).
 
 Adds 2 ``Q[UNIV="YES"]`` lex entries (``bawat``, ``kada``) and 4
@@ -56,8 +59,6 @@ Out of scope (deferred follow-on commits):
   existing Phase 4 §7.8 ``S → S Q`` float rule would fire
   mechanically but the result isn't natural.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.Y: ay-inverted N-pivot + Si-NP-pivot two-NP equational.
 
 Closes two near-misses surfaced during Phase 8.X probing
@@ -36,8 +39,6 @@ list, kept as deferral until corpus pressure surfaces):
   explicitly defers this to corpus pressure; the Wave 3 audit
   did not surface it.
 """
-
-from __future__ import annotations
 
 import pytest
 

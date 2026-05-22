@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.E: ``mga`` + DEM PRON head.
 
 Closes the audit-surfaced construction-class gap (10 corpus
@@ -34,8 +37,6 @@ Other corpus candidates (`Itapon mo ang mga ito.`,
 `Basahan mo ang mga iyan.`, etc.) remain zero-parse due to
 OOV-verb / OCR-junk blockers — not within 8.E scope.
 """
-
-from __future__ import annotations
 
 import pytest
 

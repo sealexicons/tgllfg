@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 18 — bukod sa / maliban sa exceptive PP (§18 L80).
 
 Adds two new PREP entries (``bukod`` / ``maliban``) with
@@ -14,8 +17,6 @@ position.
 ``bukod`` (in ``bukod dito``); the PREP vs PART POS disambiguates
 structurally — PREP fires only with a sa-NP complement.
 """
-
-from __future__ import annotations
 
 import pytest
 

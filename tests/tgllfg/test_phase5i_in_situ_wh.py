@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5i Commit 3: in-situ wh-PRON in case-marked NP positions.
 
 Roadmap §12.1 / plan-of-record §5.2, §6 Commit 3. Two new NP
@@ -31,8 +34,6 @@ Out-of-scope here:
 * ``Pumunta ka sa saan?`` (ADP + wh-ADV) — ``saan`` already
   encodes locative; ``sa saan`` is redundant. Skip.
 """
-
-from __future__ import annotations
 
 import pytest
 

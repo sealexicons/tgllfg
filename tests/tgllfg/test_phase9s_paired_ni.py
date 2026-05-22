@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.S: Paired Ni X ni Y correlative coordination of foci (B3.E).
 
 Closes the 8.V `test_paired_ni_correlative` pin (S&O 1972 p.604
@@ -38,8 +41,6 @@ Audit-corpus hits (R&G Conversational / S&O 1972):
 * ``Ni ngayon ni hulas ay hindi ako makakaalis.`` — lex-blocked
   on ``hulas`` (OOV; ADV-paired Ni-focus construction).
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 17: standalone Oo. / Hindi. answer clauses
 (§18 L97).
 
@@ -39,8 +42,6 @@ PRON with no trailing tokens; hindi-wrap (``S → PART[NEG] S``)
 requires an inner S as second daughter. The two paths are
 mutually exclusive on token count.
 """
-
-from __future__ import annotations
 
 import pytest
 

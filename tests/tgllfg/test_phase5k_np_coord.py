@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5k Commit 3: binary NP coordination — at / o.
 
 Roadmap §12.1 / plan-of-record §5.1, §5.2, §6 Commit 3. Six new
@@ -27,8 +30,6 @@ End-to-end target sentences:
     Pumunta si Maria sa palengke at sa bahay.  DAT-coord ADJUNCT
     Matanda si Maria at si Juan.           ADJ-pred + NOM coord
 """
-
-from __future__ import annotations
 
 import pytest
 

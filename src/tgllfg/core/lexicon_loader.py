@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Load :class:`LexicalEntry` records from the per-voice YAML tree
 under ``data/tgl/lexicon/``.
 
@@ -14,8 +17,6 @@ Public API:
 * :func:`load_lex_entries` — returns ``dict[str, list[LexicalEntry]]``
   keyed by lemma, with per-lemma entries in source-declaration order.
 """
-
-from __future__ import annotations
 
 from pathlib import Path
 from typing import Any

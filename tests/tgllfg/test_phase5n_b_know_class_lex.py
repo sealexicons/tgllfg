@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 12: additional KNOW-class predicates (§18 L55).
 
 Closes §18.1 deferral L55 (``Akala / isip / naririnig / naaalala``
@@ -19,8 +22,6 @@ existing ``S → V[CTRL_CLASS=KNOW] NP[CASE=GEN] S_INTERROG_COMP``
 wrap from ``cfg/control.py`` (Phase 5i C8 + 5n.B C11) handles all
 four predicates uniformly.
 """
-
-from __future__ import annotations
 
 import pytest
 

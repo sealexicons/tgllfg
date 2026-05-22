@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Parser-facing in-memory cache (frozen dataclasses, no SQLAlchemy).
 
 The parser must not depend on SQLAlchemy. ``LexCache`` is the typed,
@@ -5,8 +8,6 @@ read-only view it sees; ``build_cache(session)`` materializes one from
 a live async SQLAlchemy session by issuing a small fixed set of
 ``SELECT *`` queries (no per-token round-trips at parse time).
 """
-
-from __future__ import annotations
 
 from collections import defaultdict
 from collections.abc import Mapping

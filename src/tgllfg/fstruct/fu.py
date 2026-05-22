@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Functional-uncertainty (FU) regex-path evaluation.
 
 Implements the K&Z 1989 §3 / K&M 1988 finite-state algorithm for
@@ -31,8 +34,6 @@ pre-resolved ``base_node`` NodeId rather than a full ``Designator``
 ``unify.py`` to avoid a circular import with the equation
 orchestrator.
 """
-
-from __future__ import annotations
 
 from collections import deque
 from collections.abc import Callable

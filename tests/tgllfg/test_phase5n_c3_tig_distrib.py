@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.3 Commit 3 — productive ``tig_distrib`` paradigm.
 
 Migrates the Phase 5f Commit 19 hand-coded ``tig*`` particles
@@ -18,8 +21,6 @@ paradigm via:
 
 Closes the second piece of §18 L31 (productive paradigm classes).
 """
-
-from __future__ import annotations
 
 import pytest
 

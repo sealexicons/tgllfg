@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 7a.E: modal-rule variants (§18.1.1 items 6 + 7).
 
 Two coordinated closures extending the Phase 5j modal-control
@@ -22,8 +25,6 @@ rule (``cfg/control.py:488-524``):
 References: S&O 1972 §5.30, R&G 1981 ch. 6 (modal
 constructions).
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.G: ``bago`` as ADJ "new" + ``ani`` NOUN lex closures.
 
 Closes the audit-named `Bagong ani ang palay.` (rg81 ANG MANOK
@@ -24,8 +27,6 @@ in 8.G is zero — the 54 zero-parse corpus matches mostly use
 the subordinator sense, which belongs to the Phase 8.M
 (temporal subordinator) family of follow-ons.
 """
-
-from __future__ import annotations
 
 import pytest
 

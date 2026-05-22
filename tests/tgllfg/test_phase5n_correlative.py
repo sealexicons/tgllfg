@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 15 — Correlative ``hindi lang … kundi pati`` (§18 L75).
 
 Audit finding: the §18 L75 entry was a stale deferral. Phase 5l
@@ -15,8 +18,6 @@ The lex (``kundi`` PART[COORD=BUT_NOT], ``pati`` PART[ADV=ALSO_INCL],
 Commit 15 is tests-only — no new source rules. Closes L75 by adding
 the regression net + dedicated documentation.
 """
-
-from __future__ import annotations
 
 import pytest
 

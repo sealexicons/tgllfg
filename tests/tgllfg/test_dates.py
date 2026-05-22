@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 13: dates (Group F).
 
 Adds month NOUNs, day-of-week NOUNs, and temporal-frame
@@ -65,8 +68,6 @@ Out of scope (deferred follow-on commits):
   NP-from-N projection limitation as cardinal-modifier
   features.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

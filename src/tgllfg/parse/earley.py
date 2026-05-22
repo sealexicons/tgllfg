@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/earley.py
 
 """Earley chart parser with LFG-annotated rules.
@@ -42,8 +45,6 @@ advances at one state encode local ambiguity; the first advance is
 visited first by ``best_k``, giving deterministic output that
 matches the order rules were added to the grammar.
 """
-
-from __future__ import annotations
 
 import itertools
 from collections import deque

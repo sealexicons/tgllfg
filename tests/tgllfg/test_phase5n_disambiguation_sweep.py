@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 30 — COND vs reported-Q vs indirect-speech
 disambiguation sweep.
 
@@ -25,8 +28,6 @@ The Phase 5n.A baseline (``tests/tgllfg/data/parses.baseline.pkl``)
 was recaptured in this commit to absorb the Commit 25-29 corpus
 additions and the Commit 27 / 29 rule effects.
 """
-
-from __future__ import annotations
 
 import pytest
 

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 11: reported question — ASK_CLASS lex tagging.
 
 Roadmap §12.1 / plan-of-record §5.7, §6 Commit 11.
@@ -47,8 +50,6 @@ This commit therefore delivers:
   (``Alam ko kung sino ang kumain.``) is verified to continue
   parsing — that's the only correct reported-Q path today.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import Token
 from tgllfg.morph import Analyzer

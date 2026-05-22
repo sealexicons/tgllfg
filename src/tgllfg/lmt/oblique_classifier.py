@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/lmt/oblique_classifier.py
 
 """Phase 5 §8 — sa-NP → typed OBL-θ classification.
@@ -37,8 +40,6 @@ when multiple OBL-θ roles compete for multiple sa-NPs, each sa-NP's
 order is the fallback when no semantic preference applies, or when
 both sa-NPs have the same class.
 """
-
-from __future__ import annotations
 
 from collections.abc import Mapping
 

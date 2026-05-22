@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Pre-parse Wackernagel-cluster reordering.
 
 Algorithm
@@ -37,8 +40,6 @@ If the input sentence has neither a verb nor any other anchor
 candidate (e.g., the input is empty, all clitics, or only
 punctuation), no reordering is performed.
 """
-
-from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.F: ADJ batch lex pass.
 
 7 new ADJ roots in ``adjectives.yaml`` covering audit-attested
@@ -28,8 +31,6 @@ exist in ``verbs.yaml`` (``[um, ma, maka]`` / ``[ma, maka]`` /
 (``nabigat`` / ``napagod`` / etc.) while the new ADJ roots
 contribute the descriptive-predicate readings.
 """
-
-from __future__ import annotations
 
 import pytest
 

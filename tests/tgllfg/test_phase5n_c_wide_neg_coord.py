@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C Commit 2 — L78 wide-scope hindi over coord-NP.
 
 Closes §18 L78 (cross-conjunct negation scoping). The new rule in
@@ -16,8 +19,6 @@ the matrix.
 Design appendix: ``docs/analysis-choices.md`` Phase 5n.C Commit 1.
 Reference: Schachter & Otanes 1972 §10.
 """
-
-from __future__ import annotations
 
 import pytest
 

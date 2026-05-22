@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5d Commit 6: possessive-linker RC variant.
 
 The construction ``aklat kong binasa`` ("the book that I read") is a
@@ -49,8 +52,6 @@ These tests cover:
   clusters.
 * LMT diagnostics clean.
 """
-
-from __future__ import annotations
 
 from tgllfg.clitics import reorder_clitics
 from tgllfg.core.common import FStructure

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/fs_checks.py
 
 """LFG well-formedness conditions over solved f-structures.
@@ -23,8 +26,6 @@ Governable GFs are: SUBJ, OBJ, COMP, XCOMP, and any feature whose
 name starts with ``OBJ-`` or ``OBL-`` (the typed
 object/oblique slots from Bresnan–Kanerva LMT).
 """
-
-from __future__ import annotations
 
 from collections.abc import Iterator
 from dataclasses import dataclass

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 12: mag-...-an reciprocal / social.
 
 Schachter & Otanes 1972 §5.27 documents the ``mag-...-an``
@@ -32,8 +35,6 @@ This mirrors the Phase 5d §7.6 raising / control ambiguity:
 both readings are well-formed and the tests assert that the
 reciprocal reading is among the n-best.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

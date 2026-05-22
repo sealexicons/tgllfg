@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5l Commit 13: subord × coord, nesting, ay-fronted subord topic.
 
 Roadmap §12.1 / plan-of-record §5 (extended at sign-off) /
@@ -32,8 +35,6 @@ End-to-end target sentences:
         # coord-S inside subord (already supported via Commit 2,
         # pinned here for visibility)
 """
-
-from __future__ import annotations
 
 from tgllfg.core.pipeline import parse_text
 

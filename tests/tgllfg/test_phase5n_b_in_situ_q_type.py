@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.B Commit 8: in-situ Q_TYPE matrix lift (§18 L50).
 
 Closes §18.1 deferral L50 (in-situ wh-PRON inside an OBJ /
@@ -15,8 +18,6 @@ Filters out wh inside relative-clause bodies (sub-f-structures
 with REL-PRO defined) — the wh-PRON binding inside an RC is
 the relative-head's binding, not a matrix wh-Q.
 """
-
-from __future__ import annotations
 
 import pytest
 

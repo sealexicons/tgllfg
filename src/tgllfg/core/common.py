@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/core/common.py
 
 """Foundational data types shared across the tgllfg pipeline.
@@ -9,8 +12,6 @@ as the public surface of the core layer; new code should import
 from here directly when working inside the package, and from
 ``tgllfg.core`` when consuming it.
 """
-
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any

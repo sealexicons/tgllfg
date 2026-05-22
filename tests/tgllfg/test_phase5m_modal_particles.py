@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5m Commit 4: modal / mood particles ``siguro`` / ``marahil``.
 
 Roadmap §12.1 / plan-of-record §5.1. Adds the sentence-initial
@@ -35,8 +38,6 @@ this rule (which gates on DISCOURSE_POS=SENTENCE_INITIAL).
 Closure path is a polysemous 2P-clitic entry; revisit during
 Phase 5n inventory pass.
 """
-
-from __future__ import annotations
 
 import pytest
 

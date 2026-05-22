@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/cfg/negation.py
 
 """Clausal negation rules: ``hindi`` declarative + ``huwag`` imperative.
@@ -22,8 +25,6 @@ fourth, after :mod:`tgllfg.cfg.nominal` /
 and before extraction / control / discourse — see the plan's
 "Migration strategy" §H.
 """
-
-from __future__ import annotations
 
 from .grammar import Rule
 

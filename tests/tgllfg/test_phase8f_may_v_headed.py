@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.F: existential `may` + V-headed nominalized complement.
 
 Closes the audit-named construction class where Tagalog `may`
@@ -39,8 +42,6 @@ closures: 4 of 12 (33%). Remaining 8 blocked by OOV verb forms
 (`naisip`, `gagawin`, `kakilala`) or OOV nouns (`Jose`,
 `magagandang`, `banig`) — future 8.B-class lex pass.
 """
-
-from __future__ import annotations
 
 import pytest
 

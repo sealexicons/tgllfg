@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 9: arithmetic predicates (Group D).
 
 Word-form arithmetic: ``Dalawa dagdag tatlo ay lima`` "2+3=5",
@@ -56,8 +59,6 @@ Tests cover:
   beses-as-NOUN periphrastic frequency unchanged.
 * LMT diagnostics clean.
 """
-
-from __future__ import annotations
 
 from tgllfg.morph import analyze_tokens
 from tgllfg.core.pipeline import parse_text

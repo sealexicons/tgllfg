@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 6.G Commit 3: NP-from-N projection widening (§18.1 L32).
 
 The simple NP-from-DET/ADP+N rules in ``cfg/nominal.py`` and the
@@ -31,8 +34,6 @@ at ``NP.APPROX`` / ``NP.DISTRIB`` because the unifier's
 consumers checking ``is True`` skip these placeholders. The
 TestEmptyFNodeTolerance class pins this convention.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

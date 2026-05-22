@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.A Commit 29 — ASK-class reported-Q (§18 L90.2 + L92).
 
 Closes §18 L90 part 2 of 2. Positive-parse assertions for the 18
@@ -35,8 +38,6 @@ matching the convention used by ``MODAL: "YES"`` /
 ``ASK_CLASS: "YES"`` and the ``=c 'YES'`` constraining-equation
 syntax.
 """
-
-from __future__ import annotations
 
 import pytest
 

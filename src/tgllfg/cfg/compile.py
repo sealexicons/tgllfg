@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 # tgllfg/cfg/compile.py
 
 """Grammar compilation: category-pattern parsing and rule indexing.
@@ -59,8 +62,6 @@ legacy. Until C5 lands, the function docstrings (not this
 module docstring) remain the source of truth for runtime
 behavior.
 """
-
-from __future__ import annotations
 
 import re
 from dataclasses import dataclass

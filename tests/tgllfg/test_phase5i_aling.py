@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5i Commit 6: aling pre-N selector composition.
 
 Roadmap §12.1 / plan-of-record §5.5, §6 Commit 6. Three pieces:
@@ -43,8 +46,6 @@ wh-N-cleft rule predicting N at clause-initial position
 fragment extraction returns it). Documented in the corpus
 notes.
 """
-
-from __future__ import annotations
 
 import pytest
 

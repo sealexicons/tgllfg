@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 7a.D: wh-ADV with linker fronting (§18.1.1 item 5).
 
 New clause rule in ``cfg/clause.py`` (parallel to the Phase 5i
@@ -31,8 +34,6 @@ manner / location / time / reason / etc. The plan's proposed
 ``ASK_*`` feats exist for other wh-types; a paano-specific atom
 would break the existing wh-Q convention).
 """
-
-from __future__ import annotations
 
 import pytest
 

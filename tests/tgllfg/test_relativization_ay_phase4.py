@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 4 §7.4 + §7.5: ay-inversion and relativization.
 
 Both constructions share a SUBJ-gapped inner clause (``S_GAP``) whose
@@ -32,8 +35,6 @@ These tests cover:
   / verb / pronoun; bare ``Vng`` words (``bumibilang``,
   ``darating``, ...) stay intact.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

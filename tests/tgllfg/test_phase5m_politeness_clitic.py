@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5m Commit 2: politeness ``po`` / ``ho`` 2P-clitic absorption.
 
 Roadmap §12.1 / plan-of-record §5.1. The Phase 5m Commit 1 lex
@@ -31,8 +34,6 @@ Coverage:
   matrix-S infrastructure. Closure depends on Phase 5n debt-
   clearing or beyond.
 """
-
-from __future__ import annotations
 
 import pytest
 

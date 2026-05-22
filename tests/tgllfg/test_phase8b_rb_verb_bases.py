@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.B: R&B 1986 missing-from-lex verb bases + pag_an cell.
 
 Closes the audit-surfaced lex gap from the Wave 1 pilot's R&B
@@ -55,8 +58,6 @@ Known coverage edges (deferred):
   Either drop ``ika`` from those INTR registrations later
   or relax the cell's TR constraint — separate paradigm work.
 """
-
-from __future__ import annotations
 
 import pytest
 

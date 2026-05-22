@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.H: Loan + Spanish-time follow-on lex pass.
 
 Spanish-time finalization audit: the existing ``alas`` family
@@ -43,8 +46,6 @@ landed at-source (hand-correction of
 ``orth_variants: [bias]`` annotation was also dropped from
 the ``blas`` entry.
 """
-
-from __future__ import annotations
 
 import pytest
 

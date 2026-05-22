@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5 §8.2 — per-voice mapping corpus.
 
 Regression net for the LMT engine. Each test corresponds to a
@@ -15,8 +18,6 @@ treat the failure as load-bearing — it means the per-voice pivot
 selection has shifted and downstream parses will produce different
 GF assignments.
 """
-
-from __future__ import annotations
 
 import pytest
 

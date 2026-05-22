@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5d Commit 7: raising chains + raising under control.
 
 Two related constructions that compose existing Phase 5c / 5d
@@ -37,8 +40,6 @@ Tests in this file verify:
   parse (modulo the documented Phase 4 §7.8 ambiguities).
 * LMT diagnostics clean.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

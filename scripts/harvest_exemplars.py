@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Harvest exemplars from data/tgl/references/ for parser-coverage audit.
 
 Wave 1 (pilot): transcriptions/rg81-excerpts.md + R&B 1986.
@@ -10,8 +13,6 @@ Usage:
     python scripts/harvest_exemplars.py report
     python scripts/harvest_exemplars.py all
 """
-
-from __future__ import annotations
 
 import argparse
 import json

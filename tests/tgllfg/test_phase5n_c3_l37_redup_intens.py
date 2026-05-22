@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5n.C.3 Commit 7 — L37 reduplicated-intensive adjectives.
 
 Adds the productive ``redup_intens_adj`` paradigm cell to
@@ -22,8 +25,6 @@ Tests cover:
 * Hyphen-merge tokenizer pre-pass works: ``Maganda-ganda``
   tokenizes to single-token ``Magandaganda`` for lex lookup.
 """
-
-from __future__ import annotations
 
 import pytest
 

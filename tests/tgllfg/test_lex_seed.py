@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """End-to-end tests for ``tgllfg lex seed``.
 
 Migrates a fresh Postgres testcontainer, runs the YAML→DB seed against
@@ -6,8 +9,6 @@ idempotency on a second invocation. The full seed is exercised, not a
 fixture — so this is also a regression check that the YAML parses
 cleanly through the seed path.
 """
-
-from __future__ import annotations
 
 import asyncio
 from collections.abc import AsyncIterator

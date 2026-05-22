@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 8.H: AV-CAUS-INDIRECT flat 3-arg matrix wrap.
 
 Diagnostic outcome of the plan-of-record's "papaka- ... -in
@@ -47,8 +50,6 @@ and is the prefix-redup variant of the ``pakakainin`` form
 Phase 5n.C.4 Commit 16). Pinning that variant as a future
 paradigm-cell add (low audit pressure).
 """
-
-from __future__ import annotations
 
 import pytest
 

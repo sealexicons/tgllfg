@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5c §7.6 follow-on: non-AV control complements.
 
 Phase 4 §7.6 restricted ``S_XCOMP`` to ``V[VOICE=AV]``: the
@@ -20,8 +23,6 @@ Tests cover:
   ``S_XCOMP → PART[NEG] S_XCOMP``).
 * Phase 5b embedded-clause LMT check fires no diagnostics.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

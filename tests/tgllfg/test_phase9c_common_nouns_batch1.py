@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.C: common-noun batch 1 lex pass.
 
 25 audit-attested common nouns added to ``data/tgl/nouns.yaml``
@@ -19,8 +22,6 @@ sulat / tulong) are zero-conversion N–V pairs — the V root in
 the new N root only attests the bare citation form for nominal
 readings.
 """
-
-from __future__ import annotations
 
 import pytest
 

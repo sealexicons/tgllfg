@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5f Commit 23: dual ``pareho`` / ``kapwa`` (Group H3 item 9).
 
 Closes Phase 5f. Adds 2 ``Q[DUAL="YES", QUANT=BOTH]`` lex
@@ -55,8 +58,6 @@ Out of scope (deferred follow-on commits):
 * Equative predicate (``Pareho ang kanilang sapatos.``) —
   Phase 5h scope.
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.morph import analyze_tokens

@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 5e Commit 11: 3-argument plain DV (CAUS=NONE).
 
 Phase 5b's multi-GEN-NP rules covered IV-BEN three-arg
@@ -28,8 +31,6 @@ Sentences enabled:
 * ``Sinulatan ang anak ng nanay ng liham.`` (NOM-GEN-GEN)
 * ``Sinulatan ng nanay ang anak ng liham.`` (GEN-NOM-GEN)
 """
-
-from __future__ import annotations
 
 from tgllfg.core.common import FStructure
 from tgllfg.core.pipeline import parse_text

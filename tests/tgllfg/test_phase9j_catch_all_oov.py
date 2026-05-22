@@ -1,3 +1,6 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
 """Phase 9.J: catch-all final OOV pass.
 
 13 audit-attested entries closing the remaining top-30 OOV after
@@ -22,8 +25,6 @@ form analyzability via the N-V pair pattern from 9.D):
 1 colloquial DEM-DIST contraction:
   yon    — DET, LEMMA: iyon        (audit "Mabuti naman 'yon")
 """
-
-from __future__ import annotations
 
 import pytest
 
