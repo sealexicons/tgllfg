@@ -477,6 +477,20 @@
   gloss: thin
   affix_class: [ma_adj]
 
+# Phase 9.X.c41: ``malas`` is polysemous. nouns.yaml carries the
+# NOUN sense ("bad luck, misfortune"). This bare ADJ entry covers
+# the predicative-"unlucky" sense (``Malas siya.`` "He is unlucky.")
+# and the post-N attributive sense (PANAHON sent-33 ``may dalang
+# malas`` = "having a bringing of bad luck / bringing bad luck",
+# where ``dala-ng-malas`` composes via the Phase 5g
+# ``N → N PART[LINK] ADJ`` post-N modifier rule). POS-flip
+# precedent: c39 ``silangan``, c40 ``natitira``, c28 ``iba``.
+- citation: malas
+  pos: ADJ
+  gloss: unlucky (predicative / attributive)
+  affix_class: []
+  source: audit-corpus
+
 - citation: paborito
   pos: ADJ
   gloss: favorite, preferred
@@ -622,6 +636,22 @@
   pos: ADJ
   gloss: diligent, industrious
   affix_class: [ma_adj]
+
+# Phase 9.X.c41: ``suwerte`` is polysemous. nouns.yaml carries the
+# NOUN sense ("luck, fortune"). This bare ADJ entry covers the
+# predicative-"lucky" sense (``Suwerte siya.`` "He is lucky.") and
+# the post-N attributive sense (PANAHON sent-33 ``may dalang malas
+# at suwerte`` = "having a bringing of bad luck and good luck",
+# where ``malas at suwerte`` composes via the Phase 6.C ADJ-coord
+# rule and then attaches to ``dala`` via the Phase 5g
+# ``N → N PART[LINK] ADJ`` post-N modifier rule). POS-flip parallel
+# to c41 ``malas`` (above).
+- citation: suwerte
+  pos: ADJ
+  gloss: lucky (predicative / attributive)
+  affix_class: []
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: taas
   pos: ADJ

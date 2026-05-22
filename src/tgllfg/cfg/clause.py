@@ -948,6 +948,52 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.X.c41: impersonal-modal SAY (NVOL + bound -ng) ----
+    #
+    # ``Masasabing may dalang malas at suwerte ang panahong ito.``
+    #     "It can be said that this season brings both bad luck and
+    #      good luck." (PANAHON sent-33)
+    #
+    # The AV-NVOL ``masasabi`` "(it) can be said" is the
+    # impersonal-modal sub-class of SAY: no overt SUBJ (generic /
+    # impersonal actor), bound ``-ng`` linker (not the standalone
+    # ``na`` complementizer used by 5n.A C26 / 8.O / 9.W explicit-
+    # SUBJ SAY rules), and the asserted proposition surfaces as
+    # an OBJ-clause.
+    #
+    # LFG analysis: matrix predicate is the SAY-class V (PRED
+    # template ``SABI <SUBJ, OBJ>`` from morph synth); the embedded
+    # clause binds to OBJ; SUBJ is filled with a generic / impersonal
+    # PRO placeholder (an open f-node with PRED bound to a sentinel).
+    # The 9.W explicit-SUBJ rule above can't fire here because
+    # there's no overt NOM-NP to bind SUBJ. This rule mirrors 9.W
+    # minus the NOM-NP daughter and with the SUBJ filled by PRO
+    # internally.
+    #
+    # Gating:
+    #   * ``V[VOICE=AV, SAY_CLASS]`` — SAY-class only.
+    #   * ``(↓1 MOOD) =c 'NVOL'`` — non-volitional mood (maka-prefix)
+    #     is what licenses the impersonal reading; volitional
+    #     ``magsabi`` / ``sasabihin`` require an overt SUBJ via
+    #     the 9.W / 5n.A C26 rules above.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            [
+                "V[VOICE=AV, SAY_CLASS]",
+                f"PART[LINK={link}]",
+                "S",
+            ],
+            _eqs(
+                "(↑) = ↓1",
+                "(↑ OBJ) = ↓3",
+                "(↑ SUBJ PRED) = 'PRO'",
+                "(↓1 SAY_CLASS) =c true",
+                "(↓1 MOOD) =c 'NVOL'",
+            ),
+        ))
+
+
     # Phase 5c §8 follow-on (Commit 6): AV transitive frame
     # with two trailing sa-NPs — exercises the multi-OBL
     # semantic-disambiguation classifier. Both NP[CASE=DAT]
