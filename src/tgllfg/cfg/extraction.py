@@ -1824,6 +1824,39 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- 9.X.c53: sa-PP-fronted TIME topic without `ay` ---
+    #
+    # ``Sa panahong ito dinaraos ang mga piyesta...``
+    #     (PANAHON sent-10).
+    # ``Sa Hunyo dumating ang bagyo.`` (constructed)
+    #
+    # Tagalog admits a sentence-initial DAT-NP (sa-PP) as a
+    # topic-adjunct without the canonical ``ay`` marker or a
+    # following comma, when the DAT-NP is a temporal (SEM_CLASS=TIME)
+    # locative. This is the no-ay-no-comma variant of the c10
+    # ay-fronted topic-adjunct rule directly above.
+    #
+    # Restricted via ``(↓1 SEM_CLASS) =c 'TIME'`` so only temporal
+    # DAT-NPs ride into ADJ as fronted topics — generic locative
+    # sa-PPs (``Sa bahay V ...``) continue to require either ay,
+    # comma, or post-V attachment. This narrow scope avoids the
+    # PP-attachment over-generation that would arise from admitting
+    # any sentence-initial sa-PP as topic-adjunct.
+    #
+    # Reference: Schachter & Otanes 1972 §7.4 (topic-adjunct
+    # fronting with temporal sa-PPs); R&G 1981 PANAHON sent-10.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=DAT]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJ)",
+            "(↓1 SEM_CLASS) =c 'TIME'",
+        ],
+    ))
+
+
     # --- Phase 5e Commit 5: headless / free relatives ---
     #
     # ``ang kumain`` "the one who ate"; ``ang kumain ng isda``

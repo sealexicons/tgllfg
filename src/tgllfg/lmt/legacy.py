@@ -31,7 +31,16 @@ from ..core.common import AStructure, FStructure
 
 
 def apply_lmt(f: FStructure) -> AStructure:
-    pred_raw = (f.feats.get("PRED") or "").split()
+    pred_value = f.feats.get("PRED") or ""
+    # Phase 9.X.c53: defensive — PRED can be an FStructure when an
+    # ``(↑ PRED) = ↓N PRED`` equation chain resolves to an embedded
+    # f-node (e.g., on fragmentary or noise-input parses where an
+    # f-graph cycle leaves a structure-valued PRED). In that case
+    # the legacy heuristic has no meaningful PRED-name to extract;
+    # treat it as empty so downstream code doesn't crash.
+    if not isinstance(pred_value, str):
+        pred_value = ""
+    pred_raw = pred_value.split()
     if not pred_raw:
         # Phase 5k Commit 5: matrix coord-S f-structures carry no
         # PRED of their own (the predication lives on each conjunct

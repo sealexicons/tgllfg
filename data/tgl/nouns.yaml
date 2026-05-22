@@ -2716,6 +2716,7 @@
 - citation: panahon
   pos: NOUN
   gloss: weather, time, season
+  feats: {SEM_CLASS: TIME}
   source: audit-corpus
 
 - citation: pananampalataya
