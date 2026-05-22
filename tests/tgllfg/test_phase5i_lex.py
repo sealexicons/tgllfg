@@ -248,18 +248,25 @@ class TestComplementizerKung:
 
 
 class TestTagParticleDi:
-    """``di`` is the colloquial shortening of ``hindi`` used in the
-    sentence-final ``di ba?`` tag-Q construction. Phase 5i Commit 7
-    builds the tag-Q rule that combines ``di + ba``."""
+    """``di`` is the colloquial shortening of ``hindi``. Phase 5i
+    Commit 7 lex'd ``di`` as PART[NEG_TAG=YES] for the sentence-
+    final ``di ba?`` tag-Q construction. Phase 9.X.c47 added a
+    second PART entry with POLARITY=NEG to admit ``di`` as a
+    colloquial allophone of ``hindi`` in clausal-negation contexts
+    (PANAHON sent-25 ``Kapag di gaanong malakas ang bagyo...``).
+    Both PART readings coexist; chart context disambiguates."""
 
     def test_di_indexed_as_part(self) -> None:
         analyzer = Analyzer.from_default()
         out = analyzer.analyze_one(_tok("di"))
         parts = [a for a in out if a.pos == "PART"]
-        assert len(parts) == 1
-        part = parts[0]
-        assert part.feats.get("NEG_TAG") is True
-        assert part.lemma == "di"
+        assert len(parts) == 2
+        neg_tag = [p for p in parts if p.feats.get("NEG_TAG") is True]
+        polarity_neg = [p for p in parts if p.feats.get("POLARITY") == "NEG"]
+        assert len(neg_tag) == 1
+        assert len(polarity_neg) == 1
+        assert neg_tag[0].lemma == "di"
+        assert polarity_neg[0].lemma == "di"
 
 
 # === No collisions with existing lex ==================================

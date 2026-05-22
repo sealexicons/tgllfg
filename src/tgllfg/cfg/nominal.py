@@ -2055,6 +2055,43 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.X.c47: ``gaano`` degree-ADV + linker + ADJ wrapper -
+    #
+    # ``Di gaanong malakas ang bagyo.`` "The storm isn't so strong."
+    #     (PANAHON sent-25 inner-clause)
+    # ``Hindi gaanong malakas siya.``   "She isn't so strong."
+    # ``Gaano kalakas ang bagyo?``      "How strong is the storm?"
+    #     (the interrogative ``gaano + ka-`` variant uses a separate
+    #     wh-cleft path — Phase 5i)
+    #
+    # ``gaano`` (ADV[ADV_TYPE=DEGREE, WH=true]) used non-interrogatively
+    # functions as a polarity-sensitive degree intensifier — typically
+    # under negation (``hindi gaanong X`` / ``di gaanong X`` = "not so
+    # X"). The standalone ``gaano + linker + ADJ`` sequence is an
+    # NPI degree-modifier pattern.
+    #
+    # Structurally parallel to the Phase 5h Commit 3 ``mas`` ADJ-wrapper
+    # above: a degree-marker daughter wraps an ADJ, producing an
+    # ADJ with the degree feat lifted. Matrix advertises
+    # ``PREDICATIVE=true`` so the Phase 5g predicative-ADJ-S rule
+    # consumes the wrapped ADJ unchanged.
+    #
+    # Bracket-matching: the LHS ``ADJ[PREDICATIVE=true, ...]`` matches
+    # the runtime f-graph state — all ma- ADJ lex entries are
+    # PREDICATIVE=true (roadmap §12.1), and ``(↑) = ↓3`` makes the
+    # matrix share the inner ADJ's f-structure.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "ADJ[PREDICATIVE=true]",
+            ["ADV", f"PART[LINK={link}]", "ADJ"],
+            [
+                "(↑) = ↓3",
+                "(↑ DEGREE_MOD) = 'GAANO'",
+                "(↓1 LEMMA) =c 'gaano'",
+            ],
+        ))
+
+
     # --- Phase 5n.B Commit 5: formal ``nang higit`` ADJ-wrapper (§18 L41) ---
     #
     # ``Nang higit matalino si Maria.``

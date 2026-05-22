@@ -1354,3 +1354,57 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓8 COORD) =c 'AND'",
         ],
     ))
+
+
+    # === Phase 9.X.c47: AV V-coord with right-conjunct SUBJ sharing =====
+    #
+    # ``Naglalabasan ang mga bata at naglalaro sa kalye.``
+    #     "The children come out and play in the street."
+    # ``Naglalabasan ang mga bata at naglalaro sa tubig na umaapaw
+    #     sa kalye.`` (PANAHON sent-25 main clause)
+    # ``Kumain at uminom ang lalaki.`` -- SUBJ-final variant (out of
+    #     scope here; this rule fires only with SUBJ between V1 and
+    #     ``at``).
+    #
+    # Right-conjunct subject sharing: ``V1 SUBJ at V2 ...`` where V2
+    # shares its SUBJ with V1 (the SUBJ is overtly expressed only
+    # once, between V1 and the coordinator). LFG convention: both
+    # V1 and V2 are conjuncts of a single matrix S with shared SUBJ
+    # f-structure.
+    #
+    # Three rule variants for V2's argument structure (AV INTR
+    # only, no overt OBJ — sufficient for sent-25 closure;
+    # other voices and OBJ variants deferred):
+    #
+    #   1. ``V1 NP[NOM] PART[COORD=AND] V2`` (bare V2)
+    #   2. ``V1 NP[NOM] PART[COORD=AND] V2 NP[CASE=DAT]`` (V2 with
+    #      sa-PP adjunct; closes PANAHON sent-25)
+    #   3. ``V1 NP[NOM] PART[COORD=AND] V2 NP[CASE=GEN]`` (V2 with
+    #      GEN-OBJ)
+    #
+    # Both Vs go into CONJUNCTS; matrix SUBJ is shared between V1
+    # and V2 via direct binding. AND-coord only (the SO/BUT/OR
+    # variants would need separate analysis).
+    for v2_extras_label, v2_extras_daughters, v2_extras_eqs in [
+        ("bare", [], []),
+        ("with sa-PP", ["NP[CASE=DAT]"], ["↓5 ∈ (↓4 ADJUNCT)"]),
+        ("with GEN", ["NP[CASE=GEN]"], ["(↓4 OBJ) = ↓5"]),
+    ]:
+        rules.append(Rule(
+            "S",
+            [
+                "V[VOICE=AV]",
+                "NP[CASE=NOM]",
+                "PART[COORD=AND]",
+                "V[VOICE=AV]",
+            ] + v2_extras_daughters,
+            [
+                "(↑ SUBJ) = ↓2",
+                "(↓1 SUBJ) = ↓2",
+                "(↓4 SUBJ) = ↓2",
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓4 ∈ (↑ CONJUNCTS)",
+                "(↑ COORD) = 'AND'",
+                "(↓3 COORD) =c 'AND'",
+            ] + v2_extras_eqs,
+        ))
