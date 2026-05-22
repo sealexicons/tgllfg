@@ -258,6 +258,43 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.X.c42: impersonal DV-NVOL (no overt agent) ---------
+    #
+    # ``Masaklolohan ang mga napinsalaan.`` "The damaged ones can be
+    #     helped." (inner clause of PANAHON sent-27)
+    # ``Matulungan ang mga tao.``           "The people can be helped."
+    #
+    # The ma+root+-an paradigm cell (DV-NVOL) admits an impersonal
+    # reading where the AGENT is absorbed (discourse-generic; no
+    # overt actor mentioned). The canonical Phase 5b 3-arg DV frame
+    # ``V NP[NOM] NP[GEN] NP[GEN]`` requires an overt GEN-NP AGENT
+    # and PATIENT, so impersonal DV failed completeness at the V's
+    # ``<SUBJ, OBJ-AGENT>`` PRED frame.
+    #
+    # Parallel to the 9.X.c41 impersonal-modal SAY rule: SUBJ binds
+    # to the NOM-NP (= the GOAL / BENEFICIARY mapped to SUBJ by the
+    # DV voice); OBJ-AGENT is filled with a generic PRO placeholder
+    # (canonical pattern; precedent: c41, Phase 4 §7.6 control XCOMP
+    # cfg/control.py:480).
+    #
+    # Gating:
+    #   * ``V[VOICE=DV, MOOD=NVOL]`` — narrows to the ma+-an
+    #     non-volitional/ability paradigm cell. Volitional DV
+    #     (``tulungan`` IND) still requires explicit AGENT via the
+    #     Phase 5b 3-NP rules above.
+    #   * No ``AV_ABSOL`` gate (unlike 9.V.2 above) — impersonal
+    #     reading is broadly available across DV-NVOL forms, not
+    #     restricted to the lex-flagged ``AV_ABSOL`` subset.
+    rules.append(Rule(
+        "S",
+        ["V[VOICE=DV, MOOD=NVOL]", "NP[CASE=NOM]"],
+        _eqs(
+            "(↑ SUBJ) = ↓2",
+            "(↑ OBJ-AGENT PRED) = 'PRO'",
+        ),
+    ))
+
+
     # --- Phase 5e Commit 26: comparative `parang` ---
     #
     # ``Parang aso ang bata.`` "The child is like a dog." The
