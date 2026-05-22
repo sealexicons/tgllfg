@@ -118,6 +118,16 @@ def register_rules(rules: list[Rule]) -> None:
     # NP wrap. Gated on MOOD=NVOL so volitional OV/DV (``sinulat``
     # / ``tinulungan``) continue to require explicit agent via the
     # Phase 5b / 5n.A C26 paths.
+    #
+    # **Note on broadening (c45 investigation):** the matrix-S
+    # impersonal rules (cfg/clause.py) were broadened in c45 to
+    # cover OV/DV/IV at any MOOD. The S_GAP analog was probed but
+    # produces a spurious second parse for OV-RCs with overt
+    # PRON-GEN actors (``Tumakbo ang batang kinain ko.``: the
+    # canonical RC reading competes with an impersonal-RC reading
+    # where ``ko`` re-attaches as POSSESSOR). The S_GAP variant
+    # therefore stays narrow at MOOD=NVOL until a disambiguating
+    # constraint is identified.
     for voice in ("OV", "DV"):
         rules.append(Rule(
             "S_GAP",

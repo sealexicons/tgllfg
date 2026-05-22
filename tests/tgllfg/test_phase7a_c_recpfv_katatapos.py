@@ -178,15 +178,20 @@ class TestScopeLimits:
     These don't parse — but the failure is a pre-existing limitation
     of the embedded grammar, not a bug in the katatapos wiring."""
 
-    def test_ov_no_actor_does_not_parse(self) -> None:
+    def test_ov_no_actor_parses_via_impersonal(self) -> None:
         # `Katatapos kainin ang isda.` — bare OV without GEN actor.
-        # The inner `kainin ang isda` does not parse standalone
-        # (Phase 4 §7 OV grammar limitation), so the raising
-        # construction also fails.
+        # Phase 9.X.c44 added an OV-impersonal rule
+        # (``S → V[VOICE=OV] NP[CASE=NOM]`` with PRO OBJ-AGENT), so
+        # the inner ``kainin ang isda`` "(the fish) is to be eaten"
+        # now parses standalone and the recent-perfective raising
+        # construction composes ("the fish has just been eaten").
+        # Previously: documented Phase 4 §7 OV grammar limitation;
+        # now: agent-absorbed reading is the standard Tagalog
+        # impersonal-OV (Kroeger 1993 / S&O 1972).
         parses = parse_text("Katatapos kainin ang isda.")
-        assert not parses, (
-            "OV-without-actor embedded shouldn't parse "
-            "(inner standalone fails); documented scope limit"
+        assert parses, (
+            "OV-without-actor embedded should parse via the "
+            "9.X.c44 impersonal-OV rule"
         )
 
     def test_linker_kong_form_does_not_parse(self) -> None:

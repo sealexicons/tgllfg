@@ -258,41 +258,53 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
-    # --- Phase 9.X.c42: impersonal DV-NVOL (no overt agent) ---------
+    # --- Phase 9.X.c42 + c44 + c45: impersonal non-AV voice ----------
     #
-    # ``Masaklolohan ang mga napinsalaan.`` "The damaged ones can be
-    #     helped." (inner clause of PANAHON sent-27)
-    # ``Matulungan ang mga tao.``           "The people can be helped."
+    # ``Sinulat ang aklat.``       "The book was written." (OV-IND)
+    # ``Kinain ang pagkain.``      "The food was eaten." (OV-IND)
+    # ``Dinaraos ang mga piyesta.``  "The festivals were held."
+    #                                (OV-IND; PANAHON sent-10)
+    # ``Masaklolohan ang mga napinsalaan.``
+    #                              "The damaged ones can be helped."
+    #                              (DV-NVOL; PANAHON sent-27)
+    # ``Sisimulan ang ikalawang pagtatanim.``
+    #                              "The second planting will be
+    #                              started." (DV-IND; PANAHON sent-36)
+    # ``Itinanim ang palay noong Hunyo.``
+    #                              "The rice was planted in June."
+    #                              (IV-IND)
     #
-    # The ma+root+-an paradigm cell (DV-NVOL) admits an impersonal
-    # reading where the AGENT is absorbed (discourse-generic; no
-    # overt actor mentioned). The canonical Phase 5b 3-arg DV frame
-    # ``V NP[NOM] NP[GEN] NP[GEN]`` requires an overt GEN-NP AGENT
-    # and PATIENT, so impersonal DV failed completeness at the V's
-    # ``<SUBJ, OBJ-AGENT>`` PRED frame.
+    # Tagalog non-AV voices (OV / DV / IV) freely drop the AGENT for
+    # an agent-absorbed (discourse-generic) reading — Kroeger 1993 /
+    # Schachter & Otanes 1972 §9.2 (focus-construction patterns).
+    # The canonical Phase 5b 2-NP / 3-NP rules (``V NP[GEN] NP[NOM]``
+    # / ``V NP[NOM] NP[GEN] NP[GEN]`` / etc.) require an overt GEN-NP
+    # AGENT, so the agent-absorbed case failed completeness at the
+    # V's ``<SUBJ, OBJ-AGENT>`` PRED frame.
     #
     # Parallel to the 9.X.c41 impersonal-modal SAY rule: SUBJ binds
-    # to the NOM-NP (= the GOAL / BENEFICIARY mapped to SUBJ by the
-    # DV voice); OBJ-AGENT is filled with a generic PRO placeholder
-    # (canonical pattern; precedent: c41, Phase 4 §7.6 control XCOMP
-    # cfg/control.py:480).
+    # to the NOM-NP (= the PATIENT / GOAL / CONVEYED mapped to SUBJ
+    # by the non-AV voice); OBJ-AGENT is filled with a generic PRO
+    # placeholder. No MOOD restriction — impersonal is broadly
+    # available across all aspect/mood combinations.
     #
-    # Gating:
-    #   * ``V[VOICE=DV, MOOD=NVOL]`` — narrows to the ma+-an
-    #     non-volitional/ability paradigm cell. Volitional DV
-    #     (``tulungan`` IND) still requires explicit AGENT via the
-    #     Phase 5b 3-NP rules above.
-    #   * No ``AV_ABSOL`` gate (unlike 9.V.2 above) — impersonal
-    #     reading is broadly available across DV-NVOL forms, not
-    #     restricted to the lex-flagged ``AV_ABSOL`` subset.
-    rules.append(Rule(
-        "S",
-        ["V[VOICE=DV, MOOD=NVOL]", "NP[CASE=NOM]"],
-        _eqs(
-            "(↑ SUBJ) = ↓2",
-            "(↑ OBJ-AGENT PRED) = 'PRO'",
-        ),
-    ))
+    # History:
+    #   * c42 (2026-05-21): introduced for DV-NVOL only (gated
+    #     MOOD=NVOL); closed sent-17 (``matapatan ang oras``).
+    #   * c44 (2026-05-21): extended to OV (any MOOD); closed
+    #     ``Sinulat ang aklat`` etc.
+    #   * c45 (2026-05-21): consolidated as voice-loop covering
+    #     OV / DV / IV (any MOOD); closes ``Sisimulan ang ikalawang
+    #     pagtatanim`` (DV-IND) and ``Itinanim ang palay`` (IV-IND).
+    for voice in ("OV", "DV", "IV"):
+        rules.append(Rule(
+            "S",
+            [f"V[VOICE={voice}]", "NP[CASE=NOM]"],
+            _eqs(
+                "(↑ SUBJ) = ↓2",
+                "(↑ OBJ-AGENT PRED) = 'PRO'",
+            ),
+        ))
 
 
     # --- Phase 5e Commit 26: comparative `parang` ---
