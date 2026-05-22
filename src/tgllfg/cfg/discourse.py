@@ -108,6 +108,53 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.c51: clause-final bare time-N adjunct ---
+    #
+    # ``Natutulog ang mga tao pagkapananghalian.``
+    #     "People sleep after-lunch (= in the early afternoon)."
+    # ``Natutulog ako umaga.``    "I sleep mornings."
+    # ``Natutulog ang mga tao pagkapananghalian hanggang ikatlo o
+    #   ikaapat ng hapon.``   (PANAHON sent-14)
+    #
+    # Tagalog admits bare N[SEM_CLASS=TIME] in clause-final position
+    # as a temporal adjunct without a preposition, parallel to ADV
+    # time-adverbials (``kahapon`` / ``bukas``). The
+    # N[SEM_CLASS=TIME] entries (``umaga`` / ``hapon`` /
+    # ``pagkapananghalian`` / months) project as bare time-adverbials
+    # alongside their N-as-predicate use (the existing N → S
+    # ``BE-TIME`` rule).
+    #
+    # **TimeAdv non-terminal design.** The straightforward
+    # ``S → S N[SEM_CLASS=TIME]`` shape fails to fire in Earley —
+    # the bracket pattern doesn't gate the predicted N at chart
+    # time. Using a fresh ``TimeAdv`` non-terminal decouples the
+    # SEM_CLASS check: ``TimeAdv → N`` with the constraining
+    # equation gates which N entries can project to TimeAdv, and
+    # the S-level rule predicts only the TimeAdv slot. This
+    # avoids the over-generation that ``S → S N`` would introduce
+    # (which broke collective measure-N constructions like
+    # ``isang dosenang itlog`` by spuriously feeding ``itlog`` to
+    # the time-adjunct rule's SEM_CLASS=TIME constraint check).
+    #
+    # Reference: Schachter & Otanes 1972 §6.5 (bare time-noun
+    # adverbials); R&G 1981 PANAHON sent-14.
+    rules.append(Rule(
+        "TimeAdv",
+        ["N"],
+        [
+            "(↑) = ↓1",
+            "(↓1 SEM_CLASS) =c 'TIME'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["S", "TimeAdv"],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+
     # --- Phase 5n.A Commit 18 (§18 L80): clause-final EXCEPTIVE PP ---
     #
     # ``Kumain si Maria bukod sa Juan.`` "Maria ate besides Juan."

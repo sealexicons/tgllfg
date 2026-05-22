@@ -1708,6 +1708,84 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.X.c51: ordinal as time-of-day predicate ----------
+    #
+    # ``Ikatlo ng hapon.``      "(It is) 3 in the afternoon."
+    # ``Hanggang ikatlo o ikaapat ng hapon.``  (PANAHON sent-14)
+    #
+    # Parallel to the time-N → S BE-TIME rule above, but with an
+    # ORDINAL numeral as the time-value. The optional ``ng N``
+    # qualifier (where N is SEM_CLASS=TIME — ``hapon`` "afternoon",
+    # ``umaga`` "morning", ``gabi`` "night") specifies the
+    # part-of-day. Disjunctive ordinals (``ikatlo o ikaapat`` "3 or
+    # 4") express an approximate range — Tagalog idiom for "3 or so".
+    #
+    # F-structure shape:
+    #   PRED         = 'BE-TIME-AT'
+    #   TIME_VALUE   = ↓1 ORDINAL_VALUE (or two values for disjunctive)
+    #   PREDICATIVE  = true
+    #   PART_OF_DAY  = (optional) ↓2/↓4 LEMMA — when a ng-N qualifier
+    #                  follows; rides as ADJUNCT for now.
+    #
+    # The disjunctive variant uses ``DISJ_TIME_VALUE`` for the
+    # second operand alongside TIME_VALUE for the first — the
+    # equation language has no list-valued time slot, and this
+    # decomposition keeps each operand readable downstream.
+    #
+    # Reference: Schachter & Otanes 1972 §4.6 (ordinal time
+    # expressions); R&G 1981 PANAHON sent-14.
+    rules.append(Rule(
+        "S",
+        ["NUM[ORDINAL]"],
+        [
+            "(↑ PRED) = 'BE-TIME-AT'",
+            "(↑ TIME_VALUE) = ↓1 ORDINAL_VALUE",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 ORDINAL) =c true",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["NUM[ORDINAL]", "NP[CASE=GEN]"],
+        [
+            "(↑ PRED) = 'BE-TIME-AT'",
+            "(↑ TIME_VALUE) = ↓1 ORDINAL_VALUE",
+            "(↑ PREDICATIVE) = true",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓1 ORDINAL) =c true",
+            "(↓2 SEM_CLASS) =c 'TIME'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["NUM[ORDINAL]", "PART[COORD=OR]", "NUM[ORDINAL]"],
+        [
+            "(↑ PRED) = 'BE-TIME-AT'",
+            "(↑ TIME_VALUE) = ↓1 ORDINAL_VALUE",
+            "(↑ DISJ_TIME_VALUE) = ↓3 ORDINAL_VALUE",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 ORDINAL) =c true",
+            "(↓2 COORD) =c 'OR'",
+            "(↓3 ORDINAL) =c true",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["NUM[ORDINAL]", "PART[COORD=OR]", "NUM[ORDINAL]", "NP[CASE=GEN]"],
+        [
+            "(↑ PRED) = 'BE-TIME-AT'",
+            "(↑ TIME_VALUE) = ↓1 ORDINAL_VALUE",
+            "(↑ DISJ_TIME_VALUE) = ↓3 ORDINAL_VALUE",
+            "(↑ PREDICATIVE) = true",
+            "↓4 ∈ (↑ ADJUNCT)",
+            "(↓1 ORDINAL) =c true",
+            "(↓2 COORD) =c 'OR'",
+            "(↓3 ORDINAL) =c true",
+            "(↓4 SEM_CLASS) =c 'TIME'",
+        ],
+    ))
+
+
     # --- Phase 8.X Commit 1: DEM-pivot clause ------------------
     #
     # ``Ito ang aklat.``       "This is the book."
