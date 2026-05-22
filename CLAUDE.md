@@ -5,9 +5,10 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 
 # tgllfg — Claude Code project notes
 
-Prototype LFG parser for Tagalog. Python ≥ 3.13, Hatch-managed env, pytest-xdist,
-optional Postgres testcontainer. Phase 8 is the current effort — audit-driven
-closure of construction-class and lex gaps surfaced by the Wave 1+2+3 harvest.
+Prototype LFG parser for Tagalog. Python ≥ 3.14, Hatch-managed env, pytest-xdist,
+optional Postgres testcontainer. Dual-licensed MIT OR Apache-2.0. Phase 9 is
+the current effort — closing the naturalistic-tier audit corpus toward the
+≥80% parse-rate milestone (Wave 1+2+3 harvest, 2327 sentences).
 
 This file is the load-on-every-session brief for working in this repo. Personal
 preferences live in auto-memory; this file is project-wide.
@@ -36,9 +37,9 @@ excluded from `test-fast` / `test-slow` / `test-both` and only runs via
 the standard gates are enough.
 
 Bash timeouts: 180000ms is enough for `test-fast` / `test-slow` /
-`test-postgres` / `check`; use 240000ms for `test-both` (fast wall
-observed at ~195s in Phase 9.X.c30); bump to 600000ms for
-`test-xslow`. Don't pad to the ceiling for the standard gates.
+`test-postgres` / `check`; use 240000ms for `test-both` (typical
+wall ~155–170s post-Phase-9.X); bump to 600000ms for `test-xslow`.
+Don't pad to the ceiling for the standard gates.
 
 Capture-first idiom for failing runs:
 `hatch run test-fast 2>&1 | tee /tmp/pytest.log | tail -200`. Tee then tail —
@@ -72,8 +73,9 @@ data/tgl/       YAML lexicon: nouns / verbs / adjectives / numerals /
 
 docs/           Architecture and analytical decisions:
                 analysis-choices, diagnostics, definitions, lexicon, lmt,
-                coverage, coverage-audit-*, feats-binary-audit,
-                lex-yaml-schema, fu-evaluation, refactor-grammar-and-roots
+                coverage (incl. naturalistic-tier audit history),
+                feats-binary-audit, lex-yaml-schema, fu-evaluation,
+                refactor-grammar-and-roots, root-yaml-metadata
 
 tests/tgllfg/   Per-feature test modules; share fixtures from conftest.py
 
@@ -96,6 +98,21 @@ scripts/        harvest_exemplars.py, generate_coverage_corpus.py,
 
 ## Coding conventions
 
+- **SPDX header on every new tracked source file.** Every git-tracked
+  `*.{ini,md,py,toml,yaml,yml}` file carries the two-line header
+  `Copyright (c) 2025-2026 G & R Associates LLC` /
+  `SPDX-License-Identifier: MIT OR Apache-2.0` at the top. Comment
+  syntax: `#` for `.py / .toml / .yaml / .ini`; `<!-- ... -->` for
+  `.md`. Shebangs on `scripts/*.py` stay on line 1; the header
+  follows immediately after. Empty `__init__.py` files (no exports)
+  stay empty — the header convention applies only to files with
+  content. The corpus generator
+  (`scripts/generate_coverage_corpus.py`) emits the header on
+  regeneration so `tests/tgllfg/data/coverage_corpus.yaml` stays
+  headed after re-running.
+- **No `from __future__ import annotations`.** Python ≥ 3.14 ships
+  PEP 649 lazy annotations as the default; the future import is
+  redundant and removed across the tree.
 - **`__init__.py` for exports only.** Module code goes in `module/common.py` or
   `module/utils.py` and is re-exported from `__init__.py`. Don't accumulate
   logic in `__init__.py`.
@@ -152,8 +169,14 @@ scripts/        harvest_exemplars.py, generate_coverage_corpus.py,
 
 - Linguistic decisions and analyses → `docs/analysis-choices.md` and
   `docs/diagnostics.md`
-- Coverage history and audit snapshots → `docs/coverage*.md`
+- Coverage history (curated + naturalistic-tier audit roll-up) →
+  `docs/coverage.md` (audit snapshots were consolidated 2026-05-22;
+  prior `docs/coverage-audit-*.md` files retired into the
+  Phase 9 — Naturalistic-tier audit closures section)
 - f-structure feat inventory → `docs/feats-binary-audit.md`
-- Current Phase 8 plan-of-record → `.claude/plans/tgllfg-phase-8.md`
+- Current Phase 9 plan-of-record → `.claude/plans/tgllfg-phase-9.md`
 - The big picture / phase roadmap → `.claude/plans/tgllfg-evolution.md` +
   `tgllfg-roadmap.md`
+- License: dual MIT OR Apache-2.0 — see `LICENSE-MIT` and
+  `LICENSE-APACHE` at the repo root; the SPDX expression appears in
+  `pyproject.toml` and every source file's header.
