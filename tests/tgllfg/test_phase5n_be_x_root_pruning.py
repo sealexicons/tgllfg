@@ -90,9 +90,14 @@ STALE_VERBAL_SURFACES = [
     ("nabulag",   "bulag"),
     ("nabubulag", "bulag"),
     ("mabubulag", "bulag"),
-    ("nagalit",   "galit"),
-    ("nagagalit", "galit"),
-    ("magagalit", "galit"),
+    # Phase 9.X.c54: ``galit`` re-added to verbs.yaml with affix_class
+    # ``[ma, mag, maka]`` to close ANG MANOK sent-44 ``Nagalit ang
+    # mama.`` "The mother got angry." The ma- paradigm produces the
+    # inchoative VERB forms (``nagalit`` / ``nagagalit`` /
+    # ``magagalit``); these reinstate the VERB analyses that the
+    # Phase 5n.B Commit 1 pruning had removed. The stative-passive
+    # ADJ reading (``galit`` = "angry") remains as before — both
+    # categories co-exist for this lemma.
     ("naginaw",   "ginaw"),
     ("nagiginaw", "ginaw"),
     ("magiginaw", "ginaw"),

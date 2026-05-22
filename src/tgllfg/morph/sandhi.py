@@ -338,17 +338,30 @@ def nasal_substitute(base: str) -> str:
     * ``bili`` → ``mili``  (b → m)
     * ``tahi`` → ``nahi``  (t → n)
     * ``kuha`` → ``nguha`` (k → ng)
+    * ``itlog`` → ``ngitlog``  (vowel: ng prepended; Phase 9.X.c54)
+
+    Vowel-initial bases retain the prefix's ``ng`` as part of the
+    output (``mang + itlog → mangitlog``, ``nang + itlog →
+    nangitlog``); this matches the standard Tagalog mang-paradigm
+    behavior on vowel-initial bases (Schachter & Otanes 1972 §5.27).
 
     Bases beginning with a sonorant (``l``, ``m``, ``n``, ``r``,
-    ``h``, ``y``, ``w``) or a vowel are returned unchanged. The
-    caller is responsible for prepending the prefix head (e.g.
-    ``ma-`` from ``mang-``) afterwards.
+    ``h``, ``y``, ``w``) are returned unchanged — those route through
+    the separate ``mang_retain`` paradigm. The caller is responsible
+    for prepending the prefix head (e.g. ``ma-`` from ``mang-``)
+    afterwards.
     """
     if not base:
         return base
     initial = base[0].lower()
     if initial in _NASAL_SUBSTITUTION:
         return _NASAL_SUBSTITUTION[initial] + base[1:]
+    if initial in "aeiou":
+        # Phase 9.X.c54: vowel-initial bases retain the prefix's
+        # ``ng`` digraph as part of the output (mang/nang + V →
+        # mangV/nangV). Closes the mang-paradigm gap for vowel-
+        # initial roots like ``itlog`` (ANG MANOK sent-38, sent-43).
+        return "ng" + base
     return base
 
 
