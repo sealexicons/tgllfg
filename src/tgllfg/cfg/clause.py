@@ -1162,6 +1162,132 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+
+    # --- Phase 9.X.c48: ADJ + V-XCOMP tough construction --------------
+    #
+    # ``Mahirap kumilos.``  "It's hard to move." (PANAHON sent-18)
+    # ``Mahirap kumain.``    "It's hard to eat."
+    # ``Madali magluto.``    "It's easy to cook."
+    # ``Masarap kumain ng prutas.``  "Eating fruit is delicious."
+    #
+    # Tough-construction: an ADJ-predicate takes a V-headed
+    # infinitival XCOMP as its sole argument (the V denotes the
+    # eventuality being characterized by the ADJ). LFG analysis:
+    # matrix PRED is ``ADJ <XCOMP>``, XCOMP = V's f-structure,
+    # XCOMP's SUBJ is a generic PRO (impersonal — no overt
+    # participant).
+    #
+    # Three rule variants for V's argument structure:
+    #
+    #   1. Bare V (V-INTR or V-TR with AV_ABSOL):
+    #      ``Mahirap kumilos.``
+    #   2. V + GEN-OBJ:
+    #      ``Mahirap kumain ng prutas.``
+    #   3. V + DAT-PP (locative / sa-OBL):
+    #      ``Mahirap pumunta sa Maynila.``
+    #
+    # Matches the Phase 5g predicative-ADJ rule's bracket pattern
+    # ``ADJ[PREDICATIVE]`` so the same lex flag (PREDICATIVE=true
+    # on the analyzer's ADJ output) gates both.
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE]", "V[VOICE=AV]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+            "(↓2 SUBJ PRED) = 'PRO'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE]", "V[VOICE=AV]", "NP[CASE=GEN]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↓2 OBJ) = ↓3",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+            "(↓2 SUBJ PRED) = 'PRO'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE]", "V[VOICE=AV]", "NP[CASE=DAT]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "↓3 ∈ (↓2 ADJUNCT)",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+            "(↓2 SUBJ PRED) = 'PRO'",
+        ],
+    ))
+    # Variant with INTENSIFIER before V (``Mahirap talagang kumilos``):
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            [
+                "ADJ[PREDICATIVE]",
+                "PART[INTENSIFIER]",
+                f"PART[LINK={link}]",
+                "V[VOICE=AV]",
+            ],
+            [
+                "(↑ PRED) = 'ADJ <SUBJ>'",
+                "(↑ SUBJ) = ↓4",
+                "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+                "(↑ PREDICATIVE) = true",
+                "(↓1 PREDICATIVE) =c true",
+                "(↓4 SUBJ PRED) = 'PRO'",
+                "↓2 ∈ (↓4 ADJ)",
+                "(↓4 INTENSIFIER) = true",
+                "(↓4 INTENSITY) = ↓2 INTENSITY",
+                "(↓2 INTENSIFIER) =c true",
+                f"(↓3 LINK) =c '{link}'",
+            ],
+        ))
+
+
+    # --- Phase 9.X.c48: Mangyari'y impersonal-evidential -------------
+    #
+    # ``Mangyari'y mahirap talagang kumilos kapag nasa tuktok ang araw.``
+    #     "It (so) happens that it's really hard to move when the
+    #     sun is at its zenith." (PANAHON sent-18)
+    #
+    # ``mangyari`` (V[AV-CTPL-IND-INTR, POLITE_MARKER=true, LEMMA=yari])
+    # used impersonally with the bound ``'y`` (= ``ay``, LINK=AY)
+    # introduces an asserted proposition (the matrix clause). The V
+    # has the polite-marker reading from the morph analyzer's
+    # paradigm; this rule wraps it with the asserted S.
+    #
+    # LFG analysis: matrix S inherits the embedded clause's
+    # f-structure via ``(↑) = ↓3``; the modal-V joins ``(↑ ADJ)``
+    # as a parenthetical-evidential modifier. The V's own SUBJ
+    # slot is filled with PRO (impersonal). Parallel to the c41
+    # impersonal-modal SAY pattern but with ``ay`` linker instead
+    # of bound ``-ng``, and gated on POLITE_MARKER=true + LEMMA=yari
+    # to narrow to this specific evidential construction.
+    rules.append(Rule(
+        "S",
+        [
+            "V[VOICE=AV]",
+            "PART[LINK=AY]",
+            "S",
+        ],
+        [
+            "(↑) = ↓3",
+            "↓1 ∈ (↑ ADJ)",
+            "(↓1 POLITE_MARKER) =c true",
+            "(↓1 SUBJ PRED) = 'PRO'",
+        ],
+    ))
+
+
     # --- Phase 9.X.c7: predicative-ADV clause ------------------------
     #
     # ``Bigla ang pagdating ng tag-ulan.`` "The arrival of the rainy
@@ -2406,6 +2532,48 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑) = ↓3",
                 "↓1 ∈ (↑ ADJ)",
                 "(↓1 ADV_TYPE) =c 'FREQUENCY'",
+            ],
+        ))
+
+
+    # --- Phase 9.X.c48: INTENSIFIER PART pre-V modifier --------------
+    #
+    # ``Talagang kumain ang bata.``    "The child really ate."
+    # ``Sobrang natulog si Maria.``    "Maria really slept much."
+    # ``Mahirap talagang kumilos kapag nasa tuktok ang araw.``
+    #     "It's really hard to move when the sun is at its zenith."
+    #     (PANAHON sent-18 substring)
+    #
+    # Parallel to the c39 FREQUENCY-ADV pre-V rule above and the
+    # Phase 5h PART[INTENSIFIER] + linker + ADJ rule in
+    # cfg/nominal.py:2243. PART[INTENSIFIER] (``talaga`` / ``sobra``
+    # / ``masyado`` / ``medyo`` / ``lubos``) wraps a verbal S as a
+    # pre-V emphatic modifier; the matrix S inherits the inner S's
+    # f-structure (PRED, SUBJ, ASPECT, etc.) via ``(↑) = ↓3``, and
+    # the intensifier joins ``(↑ ADJ)`` and lifts its
+    # ``INTENSIFIER`` / ``INTENSITY`` feats onto the matrix.
+    #
+    # **V-headed inner only** (``(↓3 VOICE)`` existence check):
+    # ADJ-pred inner Ss are already covered by the Phase 5h
+    # PART[INTENSIFIER]+linker+ADJ rule (cfg/nominal.py:2243),
+    # which produces an INTENSIFIER-marked ADJ that then composes
+    # into a predicative-ADJ S. Without the VOICE gate, both this
+    # S-level rule and the ADJ-level path fire for ``Sobrang
+    # maganda ang bata`` etc., producing competing parses that
+    # break the Phase 5h ``test_double_degree_marking_rejected``
+    # uniqueness tests.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            ["PART[INTENSIFIER]", f"PART[LINK={link}]", "S"],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ)",
+                "(↑ INTENSIFIER) = true",
+                "(↑ INTENSITY) = ↓1 INTENSITY",
+                "(↓1 INTENSIFIER) =c true",
+                f"(↓2 LINK) =c '{link}'",
+                "(↓3 VOICE)",
             ],
         ))
 
