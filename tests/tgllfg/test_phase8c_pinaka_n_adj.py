@@ -1,7 +1,9 @@
 """Phase 8.C: ``pinaka-`` superlative on N and ADJ heads.
 
-Closes the audit-surfaced gap (§4 of ``docs/coverage-audit-2026-
-05.md`` Wave 1 ANG PAMILYA prose + Wave 2 R&C 1990) by:
+Closes the audit-surfaced gap from the Wave 1 / Wave 2 pilot
+(ANG PAMILYA prose + R&C 1990) — see ``docs/coverage.md`` §
+"Wave 1 pilot baseline" and § Phase 8 closure summary (formerly
+``docs/coverage-audit-2026-05.md`` §4; rolled up 2026-05-22). By:
 
 1. (C1) Adding a new ``pinaka_n`` paradigm cell with
    ``base_pos: NOUN`` in ``data/tgl/paradigms.yaml``. The cell

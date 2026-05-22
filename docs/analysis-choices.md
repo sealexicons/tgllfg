@@ -15791,17 +15791,21 @@ analyzer/tokenizer extension") was based on incorrect audit
 data. The actual scope is much smaller (engineering fix to
 the probe). The honest finding is recorded here rather than
 hidden behind an over-engineered "decomposition" that wasn't
-needed. The corresponding cluster claim in
-`docs/coverage-audit-2026-05.md` §15-§16 is updated.
+needed. The corresponding cluster claim has since been rolled
+into `docs/coverage.md` § Phase 8 closure summary (formerly
+`docs/coverage-audit-2026-05.md` §15-§16; consolidated
+2026-05-22).
 
 ## Phase 8.A: Wave 1 lex pass
 
-Closes the lex-gap inventory from `docs/coverage-audit-2026-05.md`
-§4 "Probable lex gaps (verbs)" — the 17-entry shortlist from the
-Wave 1 audit (rg81 transcriptions). 10 of those entries
-required actual lex addition or update; 7 were already present
-(`bahay`, `bukid`, `bunot`, `gulay`, `itlog`, `manok`, plus
-`balak` — already a verb entry).
+Closes the lex-gap inventory from the Wave 1 pilot audit (now
+rolled up into `docs/coverage.md` § "Wave 1 pilot baseline";
+formerly `docs/coverage-audit-2026-05.md` §4 "Probable lex gaps
+(verbs)") — the 17-entry shortlist from the Wave 1 audit (rg81
+transcriptions). 10 of those entries required actual lex
+addition or update; 7 were already present (`bahay`, `bukid`,
+`bunot`, `gulay`, `itlog`, `manok`, plus `balak` — already a verb
+entry).
 
 ### Entries added / updated
 
@@ -16038,12 +16042,13 @@ question that lives in its own sub-PR scope.
 
 ## Phase 8.B: R&B 1986 verb-base sweep + `pag_an` paradigm cell
 
-Closes the §5 audit gap on `docs/coverage-audit-2026-05.md` —
-the 71 R&B 1986 verb bases that the harvest extractor showed as
-missing from `data/tgl/verbs.yaml` (post-8.A/8.N). Adds 52 new
-VERB entries and lands the `pag_an` paradigm-cell follow-on
-from Phase 8.A (for `pinagbintangan`-style mag-class LF PFV
-surfaces).
+Closes the §5 R&B 1986 verb-base audit gap (now rolled up into
+`docs/coverage.md` § "Wave 1 pilot baseline"; formerly
+`docs/coverage-audit-2026-05.md` §5) — the 71 R&B 1986 verb
+bases that the harvest extractor showed as missing from
+`data/tgl/verbs.yaml` (post-8.A/8.N). Adds 52 new VERB entries
+and lands the `pag_an` paradigm-cell follow-on from Phase 8.A
+(for `pinagbintangan`-style mag-class LF PFV surfaces).
 
 ### Lex inventory triage
 

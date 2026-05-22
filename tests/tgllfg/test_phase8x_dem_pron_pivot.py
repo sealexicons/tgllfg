@@ -1,9 +1,9 @@
 """Phase 8.X: DEM-pivot and PRON-pivot predicational clauses.
 
-Closes the Phase 8.X audit gap surfaced in
-``docs/coverage-audit-2026-05.md`` §15 (R&G Conversational
-construction-gap rows). Adds two new clausal rules in
-``cfg/clause.py``:
+Closes the Phase 8.X audit gap surfaced in the R&G Conversational
+construction-gap rows — see ``docs/coverage.md`` § Phase 8 closure
+summary (formerly ``docs/coverage-audit-2026-05.md`` §15; rolled
+up 2026-05-22). Adds two new clausal rules in ``cfg/clause.py``:
 
     S → DET[CASE=NOM, DEM] NP[CASE=NOM]    (DEM-pivot)
         (↑ PRED)        = 'BE-DEM <SUBJ>'

@@ -1,8 +1,10 @@
 """Phase 8.A: Wave 1 lex pass.
 
 Closes the audit-surfaced lex gaps from the Wave 1 (rg81
-transcriptions) section of ``docs/coverage-audit-2026-05.md``
-§4. Adds 7 verb roots + 3 noun roots and updates one existing
+transcriptions) audit pilot — see ``docs/coverage.md`` §
+"Wave 1 pilot baseline" (formerly
+``docs/coverage-audit-2026-05.md`` §4; rolled up 2026-05-22).
+Adds 7 verb roots + 3 noun roots and updates one existing
 verb's ``affix_class``:
 
 Verbs added (with R&B / canonical-pattern affix-class

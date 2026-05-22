@@ -1794,10 +1794,10 @@ def register_rules(rules: list[Rule]) -> None:
     # ``Iyon ang trabaho ni Juan.``
     #                          "That is Juan's job."
     #
-    # Closes the Phase 8.X audit gap surfaced in
-    # docs/coverage-audit-2026-05.md §15 (R&G Conversational
-    # construction-gap rows: ``Ito ang tatay ko.`` / ``Ito ang
-    # bahay ko.``). The Wave 3 diagnostic showed both Wave-3
+    # Closes the Phase 8.X audit gap surfaced in the Wave 3 R&G
+    # Conversational construction-gap rows (``Ito ang tatay ko.``
+    # / ``Ito ang bahay ko.``) — see docs/coverage.md § Phase 8
+    # closure summary. The Wave 3 diagnostic showed both Wave-3
     # sources contain naturalistic DEM-pivot predications that
     # the grammar didn't license — the N-pivot rule above only
     # accepts bare-N left daughters, and the wh-cleft rule (§5i)
@@ -1845,8 +1845,9 @@ def register_rules(rules: list[Rule]) -> None:
     # ``Kami ang nanalo.``     "We are the winners."
     #
     # Closes the noun-pivot subset of Phase 8.S (pronominal-
-    # pivot clefts) surfaced in docs/coverage-audit-2026-05.md
-    # §15. The diagnostic for 8.X also surfaced this gap — the
+    # pivot clefts) surfaced in the Wave 3 R&G Conversational
+    # audit — see docs/coverage.md § Phase 8 closure summary.
+    # The diagnostic for 8.X also surfaced this gap — the
     # N-pivot rule above accepts ``Aklat ito.`` (bare-N pivot)
     # but not ``Ako ang guro.`` (bare-PRON pivot), and the
     # wh-PRON cleft (§5i Commit 2) only fires when ``WH=true``.

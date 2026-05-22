@@ -1,11 +1,13 @@
 """Phase 8.B: R&B 1986 missing-from-lex verb bases + pag_an cell.
 
-Closes the audit-surfaced lex gap (§5 of ``docs/coverage-audit-
-2026-05.md`` "Top 25 missing-from-lex R&B bases" — actually all 71
-distinct missing bases extracted post-8.A/8.N) by adding 52 new
-VERB entries to ``data/tgl/verbs.yaml``. Also lands the
-``pag_an`` paradigm cell follow-on from Phase 8.A for
-``pinagbintangan``-style LF PFV forms.
+Closes the audit-surfaced lex gap from the Wave 1 pilot's R&B
+1986 verb-base inventory — see ``docs/coverage.md`` § "Wave 1
+pilot baseline" (formerly ``docs/coverage-audit-2026-05.md`` §5;
+rolled up 2026-05-22). All 71 distinct missing bases extracted
+post-8.A/8.N are addressed here by adding 52 new VERB entries to
+``data/tgl/verbs.yaml``. Also lands the ``pag_an`` paradigm cell
+follow-on from Phase 8.A for ``pinagbintangan``-style LF PFV
+forms.
 
 Affix-class translations (R&B notation → YAML cell name):
 

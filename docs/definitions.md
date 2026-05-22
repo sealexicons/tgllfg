@@ -296,7 +296,7 @@ extends the same machinery to PART (via `Particle.affix_class`).
 | MORPH | Morphology | The rule-cascade morphological analyzer / generator (Phase 2 / 2C). |
 | MR | Merge Request | Synonym for PR in some shops; user uses both. |
 | OCR | Optical Character Recognition | Used to ingest dictionary scans during Phase 2C scale-up. |
-| OOV | Out-Of-Vocabulary | A surface form the morph analyzer can't analyze — falls through to `pos='_UNK'`. The Phase 8 coverage audit (`docs/coverage-audit-2026-05.md`) reports OOV inventories per source as a lex-gap signal. Probed by `oov_probe` in `scripts/harvest_exemplars.py`; Phase 8.Q corrected the probe to apply `split_linker_ng` before reporting, removing false positives on clitic-glued surfaces (`akong` = `ako` + `-ng`, etc.). |
+| OOV | Out-Of-Vocabulary | A surface form the morph analyzer can't analyze — falls through to `pos='_UNK'`. The Phase 8 coverage audit (rolled up into `docs/coverage.md` § "Phase 9 — Naturalistic-tier audit closures") reports OOV inventories per source as a lex-gap signal. Probed by `oov_probe` in `scripts/harvest_exemplars.py`; Phase 8.Q corrected the probe to apply `split_linker_ng` before reporting, removing false positives on clitic-glued surfaces (`akong` = `ako` + `-ng`, etc.). |
 | ORM | Object-Relational Mapper | SQLAlchemy 2.x. |
 | OS | Operating System | |
 | PDF | Portable Document Format | |
@@ -331,7 +331,7 @@ extends the same machinery to PART (via `Particle.affix_class`).
 
 ### Coverage audit / harvest
 
-Terms used in the Phase 8 audit work (`docs/coverage-audit-2026-05.md`, `.claude/plans/tgllfg-harvest-audit.md`, Phase 8 plan).
+Terms used in the Phase 8/9 audit work (rolled up into `docs/coverage.md` § "Phase 9 — Naturalistic-tier audit closures"; `.claude/plans/tgllfg-harvest-audit.md`; Phase 8/9 plans).
 
 | Term | Notes |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------- |

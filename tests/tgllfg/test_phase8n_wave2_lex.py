@@ -1,9 +1,10 @@
 """Phase 8.N: Wave 2 lex pass.
 
-Closes the audit-surfaced lex gaps from the Wave 2 (R&C 1990 +
-R&G Intermediate + Ramos 1971) section of
-``docs/coverage-audit-2026-05.md`` §§9-11 and the R&G Conv
-greeting-cluster from §16.
+Closes the audit-surfaced lex gaps from Wave 2 (R&C 1990 +
+R&G Intermediate + Ramos 1971) and the R&G Conv greeting-cluster
+— see ``docs/coverage.md`` § Phase 8 closure summary (formerly
+``docs/coverage-audit-2026-05.md`` §§9-11 + §16; rolled up
+2026-05-22).
 
 Lex additions (in ``data/tgl/nouns.yaml``):
 

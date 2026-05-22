@@ -1205,8 +1205,9 @@ def oov_probe(text: str) -> list[str]:
     were reported as OOV — the probe's pre-8.Q output overstated
     the lex-gap signal and produced a spurious "clitic-fused-token
     cluster" in the Wave 3 audit (covered in
-    ``docs/coverage-audit-2026-05.md`` §16 and corrected in
-    ``docs/analysis-choices.md`` "Phase 8.Q").
+    ``docs/coverage.md`` § Wave 1 pilot baseline + Phase 8 closure
+    summary, and corrected in ``docs/analysis-choices.md``
+    "Phase 8.Q").
 
     Module-level since Phase 8.Q so the probe is importable for
     testing.
@@ -1481,7 +1482,10 @@ def _parse_one(
 def cmd_report() -> None:
     parse_path = EXEMPLARS_DIR / "wave1-parse-results.jsonl"
     verbs_path = EXEMPLARS_DIR / "wave1-rb86-verbs.jsonl"
-    report_path = REPO_ROOT / "docs" / "coverage-audit-2026-05.md"
+    # Output to gitignored exemplars dir; the version-controlled
+    # roll-up lives in docs/coverage.md § "Phase 9 — Naturalistic-
+    # tier audit closures" / Wave 1 pilot baseline.
+    report_path = EXEMPLARS_DIR / "coverage-audit-wave1.md"
 
     if not parse_path.exists():
         print(f"ERROR: {parse_path} not found; run 'parse' first", file=sys.stderr)
@@ -1741,7 +1745,12 @@ def _xwave_oov_frequency_tsv(
 
 
 def cmd_xwave_report() -> None:
-    """Emit cross-wave audit summary at docs/coverage-audit-2026-05-post-phase8.md."""
+    """Emit cross-wave audit summary at data/tgl/exemplars/coverage-audit-xwave.md (gitignored).
+
+    Version-controlled roll-up lives in
+    ``docs/coverage.md`` § "Phase 9 — Naturalistic-tier audit closures"
+    (Cross-wave snapshot detail subsection).
+    """
     by_wave = _xwave_load_records()
     total = sum(len(v) for v in by_wave.values())
     if total == 0:
@@ -1964,11 +1973,12 @@ def cmd_xwave_report() -> None:
     out.append("- Phase 8 cumulative summary: "
                "`docs/analysis-choices.md` § \"Phase 8 cumulative "
                "summary\" (closing context).")
-    out.append("- Wave 1 audit snapshot (historical, 2026-05-14): "
-               "`docs/coverage-audit-2026-05.md`.")
+    out.append("- Version-controlled roll-up: "
+               "`docs/coverage.md` § \"Phase 9 — Naturalistic-tier "
+               "audit closures\".")
     out.append("")
 
-    out_path = REPO_ROOT / "docs" / "coverage-audit-2026-05-post-phase8.md"
+    out_path = EXEMPLARS_DIR / "coverage-audit-xwave.md"
     out_path.write_text("\n".join(out), encoding="utf-8")
     print(f"  → {out_path.relative_to(REPO_ROOT)}")
 
