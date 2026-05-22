@@ -1773,6 +1773,23 @@
 - surface: nang
   pos: PART
   feats: {COMP_TYPE: TEMP_WHEN, LEMMA: nang, SUBORD_VARIANT: WHEN}
+# Phase 9.X.c45: ``nang`` as standalone manner-linker. Allophone of
+# the bound ``-ng`` / standalone ``na`` linker, used between a verb
+# (or other predicate) and a manner-adverbial constituent — Schachter
+# & Otanes 1972 §6.5. Examples:
+#   * ``Gumigising nang maaga ang lalaki.``  "He wakes up early."
+#   * ``Tumakbo nang mabilis ang aso.``      "The dog ran quickly."
+#   * ``Karaniwan nang gumigising ...``      "It is usual to wake up
+#     ..." (PANAHON sent-16). The manner-ADJ ``karaniwan`` modifies
+#     the V via the existing Phase 5g ``S → ADJ PART[LINK] S`` rule
+#     with this LINK=NA ``nang`` variant.
+# This third lex entry coexists with the TEMP_SINCE / TEMP_WHEN
+# subordinator readings above; downstream chart rules disambiguate
+# by required daughter shape (subordinator rules expect S; linker
+# rules expect ADJ / ADV / NUM).
+- surface: nang
+  pos: PART
+  feats: {LINK: NA, LEMMA: nang}
 
 # (d) Purpose — ``para`` (S-taking; second entry) / ``upang``
 - surface: para
