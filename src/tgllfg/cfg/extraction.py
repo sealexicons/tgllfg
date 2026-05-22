@@ -1168,6 +1168,29 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # Variant 2 (Phase 9.X.c55): ``may + N`` existential predicate as
+    # the comment of an ay-fronted topic-NP. Closes ``Si Maria ay may
+    # aklat.`` "Maria has a book."; ``Ang mga anak ay may
+    # responsibilidad.`` (ANG PAMILYA sent-12); ``Ako ay may aklat.``;
+    # ``Sila ay may aklat.``. Mirrors the Phase 5j may-existential
+    # rule in cfg/clause.py — same equations on the existential body.
+    # The fronted NP rides into c34's TOPIC + ADJUNCT slots (above);
+    # the POSSESSOR relation between the topic and SUBJ is resolved
+    # discourse-pragmatically, consistent with c34's design.
+    rules.append(Rule(
+        "S_AY_COMMENT",
+        ["PART[EXISTENTIAL, POLARITY=POS]", "N"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↑ HAVE) = true",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'POS'",
+        ],
+    ))
+
     # --- Phase 8.V: Ni-SUBJ focus negation (``Ni X ay hindi Y``) -------------
     #
     # ``Ni si Juan ay hindi nakapunta doon.``
