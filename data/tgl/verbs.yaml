@@ -99,8 +99,13 @@
 - citation: almusal
   pos: VERB
   gloss: eat breakfast
-  transitivity: INTR
-  affix_class: [mag, maka]
+  transitivity: TR
+  # Phase 9.X.c54: ``inalmusal`` "had-for-breakfast" — OV-PFV form
+  # used in ``Inalmusal niya ito.`` "He had it for breakfast" (ANG
+  # MANOK sent-47). Promotes transitivity to TR (the OV-PFV form
+  # takes the food eaten as OBJ). The mag- AV form still admits
+  # absolutive use (``Nag-almusal siya.`` "He had breakfast").
+  affix_class: [mag, in_oblig, maka]
 
 - citation: alok
   pos: VERB
@@ -588,6 +593,20 @@
   gloss: recover, come from
   transitivity: INTR
   affix_class: [um, ma, maka]
+
+- citation: galit
+  pos: VERB
+  gloss: get angry, become angry
+  transitivity: INTR
+  # Phase 9.X.c54: ma- non-volitional paradigm for ``nagalit``
+  # "got angry" / ``magagalit`` (CTPL) / ``naggagalit`` (IPFV via
+  # mag-) (ANG MANOK sent-44). The bare ``galit`` is also lex'd
+  # as NOUN (anger) and ADJ (angry — PREDICATIVE STATIVE_PRED).
+  # The VERB adds the inflected forms. ``ma`` paradigm covers
+  # the inchoative "become angry" sense; ``mag`` adds the
+  # iterative AV form (``naggagalit`` "is becoming angry").
+  affix_class: [ma, mag, maka]
+  source: audit-corpus
 
 - citation: gamit
   pos: VERB

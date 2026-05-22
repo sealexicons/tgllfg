@@ -540,9 +540,13 @@ class TestNasalSubstitute:
         for base in ("linis", "manok", "nais", "rito", "hilamos", "yari"):
             assert nasal_substitute(base) == base
 
-    def test_vowel_initial_unchanged(self) -> None:
-        for base in ("alis", "isda", "uod"):
-            assert nasal_substitute(base) == base
+    def test_vowel_initial_prepends_ng(self) -> None:
+        # Phase 9.X.c54: vowel-initial bases retain the prefix's ``ng``
+        # digraph as part of the output (``mang/nang + V → mangV/nangV``).
+        # Closes the mang-paradigm gap for vowel-initial roots like
+        # ``itlog`` (ANG MANOK sent-38, sent-43).
+        for base in ("alis", "isda", "uod", "itlog"):
+            assert nasal_substitute(base) == "ng" + base
 
     def test_empty_base(self) -> None:
         assert nasal_substitute("") == ""
