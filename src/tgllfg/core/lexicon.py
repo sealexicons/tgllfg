@@ -539,6 +539,32 @@ def lookup_lexicon(
                 if not matched:
                     for le in _synthesize_verb_entries(ma):
                         pairs.append((ma, le))
+                # Phase 9.X.c52: when AV_ABSOL=true is set on the
+                # MorphAnalysis (lex feat from verbs.yaml) AND the
+                # BASE entries don't already include a 1-arg
+                # ``<SUBJ>``-only variant, synthesize the absolutive
+                # INTR variant alongside. This admits the
+                # headless-RC and pre-N participial uses
+                # (``ang tinatawag``, ``ang tinatawag na monsoon``;
+                # PANAHON sent-28) for verbs that are otherwise
+                # BASE-matched (which would skip the synth path
+                # entirely under the original lookup logic).
+                if (
+                    matched
+                    and bool(ma.feats.get("AV_ABSOL"))
+                    and ma.feats.get("TR") == "TR"
+                    and ma.feats.get("VOICE") in {"AV", "OV", "DV"}
+                ):
+                    base_preds = {
+                        pe.pred for pe in BASE.get(ma.lemma, ())
+                    }
+                    pred_name = ma.lemma.upper()
+                    intr_pred = f"{pred_name} <SUBJ>"
+                    if intr_pred not in base_preds:
+                        for le in _synthesize_verb_entries(ma):
+                            if le.pred == intr_pred:
+                                pairs.append((ma, le))
+                                break
             else:
                 pairs.append((ma, None))
         out.append(pairs)

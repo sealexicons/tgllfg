@@ -2243,6 +2243,14 @@
   gloss: call
   transitivity: TR
   affix_class: [um, in_oblig, an_oblig, maka, magpa_an]
+  # Phase 9.X.c52: AV_ABSOL admits the OV-absolutive S_GAP path for
+  # the headless-RC and pre-N participial uses — ``ang tinatawag na
+  # monsoon`` "what is called monsoon" (PANAHON sent-28); ``ang
+  # tinatawag``. The synth path's OV-INTR variant supplies the
+  # 1-arg ``<SUBJ>`` PRED so the S_GAP path's completeness holds
+  # with just REL-PRO-bound SUBJ. Same precedent as ``ani`` (Phase
+  # 9.X.c36).
+  feats: {AV_ABSOL: true}
 
 - citation: tawid
   pos: VERB
