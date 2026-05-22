@@ -422,6 +422,48 @@ def register_rules(rules: list[Rule]) -> None:
             ),
         ))
 
+    # --- Phase 9.X.c49: cross-case post-modifier DEM (NOM-form on non-NOM NP) ---
+    #
+    # ``sa panahong ito`` ("in this time"), ``sa bahay na ito`` ("in this
+    # house"), ``ng aklat na iyon`` ("of that book"). The post-modifier DEM
+    # surfaces in NOM form (``ito`` / ``iyan`` / ``iyon``) even when the
+    # head NP is GEN- or DAT-marked. The DAT-form DEMs (``dito`` / ``diyan``
+    # / ``doon``) do not post-modify — they stand alone as standalone-DEM
+    # NPs (``Pumunta ako dito.``). Likewise GEN-form (``nito`` / ``niyan``
+    # / ``niyon``).
+    #
+    # This complements the case-matched post-DEM rules above (which still
+    # admit the same-case form, even if seldom-attested for GEN/DAT
+    # post-modification). The new variants use the NOM-DET form of the DEM
+    # but ride into the matrix DAT/GEN NP's f-structure under (↑) = ↓1.
+    #
+    # Reference: R&G 1981 PANAHON essay (sent-35 ``sa panahong ito``).
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "NP[CASE=GEN]",
+            [
+                "NP[CASE=GEN]",
+                f"PART[LINK={link}]",
+                "DET[CASE=NOM, DEM]",
+            ],
+            _eqs(
+                "(↑) = ↓1",
+                "(↑ DEIXIS) = ↓3 DEIXIS",
+            ),
+        ))
+        rules.append(Rule(
+            "NP[CASE=DAT]",
+            [
+                "NP[CASE=DAT]",
+                f"PART[LINK={link}]",
+                "DET[CASE=NOM, DEM]",
+            ],
+            _eqs(
+                "(↑) = ↓1",
+                "(↑ DEIXIS) = ↓3 DEIXIS",
+            ),
+        ))
+
 
     # --- Phase 5e Commit 16: pre-modifier demonstrative -----------
     #

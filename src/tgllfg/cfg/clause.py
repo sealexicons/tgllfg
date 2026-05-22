@@ -307,6 +307,34 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 9.X.c49: bare impersonal V (weather verbs) -----------
+    #
+    # ``Umuulan.``    "It's raining."
+    # ``Umulan.``     "It rained."
+    # ``Kung umulan man, ...``   (R&G 1981 PANAHON sent-35)
+    #
+    # Weather verbs (``ulan`` "rain", and the class generally) are
+    # intrinsically impersonal in Tagalog: the weather situation
+    # itself is the subject, surfacing as a discourse-bound PRO.
+    # No overt NP-SUBJ daughter; the matrix synthesizes ``SUBJ
+    # PRED = 'PRO'``.
+    #
+    # Gated by ``IMPERSONAL=true`` on the V's lex entry (Phase 9.X.c49
+    # adds IMPERSONAL to BINARY_FEATS) — restricts the bare-V → S
+    # parse to verbs lexically flagged as impersonal. The flag is
+    # set only on weather/atmospheric roots in verbs.yaml.
+    #
+    # Reference: Schachter & Otanes 1972 §3.13 (impersonal weather
+    # predicates); R&G 1981 PANAHON sent-35.
+    rules.append(Rule(
+        "S",
+        ["V[VOICE=AV, IMPERSONAL=true]"],
+        _eqs(
+            "(↑ SUBJ PRED) = 'PRO'",
+        ),
+    ))
+
+
     # --- Phase 5e Commit 26: comparative `parang` ---
     #
     # ``Parang aso ang bata.`` "The child is like a dog." The
@@ -3238,6 +3266,54 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 POLARITY) =c 'POS'",
         ],
     ))
+
+
+    # --- Phase 9.X.c49: Q-existential bare-N clause ------------------
+    #
+    # ``Maraming kapistahan sa panahong ito.``
+    #     "(There are) many festivals in this season."
+    # ``Marami ring kapistahan sa panahong ito.``
+    #     PANAHON sent-35 main clause (with floated ``rin`` clitic
+    #     absorbed by the standard 2P-clitic placement at S level).
+    # ``Konting tubig.``  "(There's a) little water."
+    #
+    # Bare existential-Q clause: Q (``marami`` / ``konti`` /
+    # ``ilan`` etc.) wraps a linker-mediated bare N as the existent.
+    # Parallel to the Phase 5j ``may`` existential rule above but
+    # with Q in the existential-predicate slot. No DET (compare
+    # ``Maraming aklat ang lalaki.`` which is parsed as N-pred
+    # with ang-NP SUBJ — different construction; here the bare-N
+    # has no ang-pivot).
+    #
+    # ``(↑ QUANT) = ↓1 QUANT`` lifts the quantity feat onto the
+    # matrix (MANY / FEW / etc.).
+    #
+    # Two variants: bare and with clause-final sa-PP locative.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            ["Q", f"PART[LINK={link}]", "N"],
+            [
+                "(↑ PRED) = 'EXIST <SUBJ>'",
+                "(↑ SUBJ) = ↓3",
+                "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+                "(↑ QUANT) = ↓1 QUANT",
+                f"(↓2 LINK) =c '{link}'",
+            ],
+        ))
+        rules.append(Rule(
+            "S",
+            ["Q", f"PART[LINK={link}]", "N", "NP[CASE=DAT]"],
+            [
+                "(↑ PRED) = 'EXIST <SUBJ>'",
+                "(↑ SUBJ) = ↓3",
+                "↓4 ∈ (↑ ADJUNCT)",
+                "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+                "(↑ QUANT) = ↓1 QUANT",
+                f"(↓2 LINK) =c '{link}'",
+            ],
+        ))
+
 
     # === Phase 8.R-class follow-on (8.F): V-headed existential =========
     #

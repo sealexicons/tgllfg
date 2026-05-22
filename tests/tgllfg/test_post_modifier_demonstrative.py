@@ -169,40 +169,47 @@ class TestDatHeadedDemModifier:
 
 
 class TestCaseAgreement:
-    """The demonstrative must agree in case with the head NP.
-    `ng batang ito` (GEN head + NOM dem) is ungrammatical and
-    should not produce a parse for that constituent."""
+    """Post-modifier demonstratives appear in NOM-form on any-case
+    head NPs. Tagalog uses the unbound NOM form (``ito`` / ``iyan`` /
+    ``iyon``) as a post-N modifier regardless of the matrix NP's
+    case; the bound DAT-form (``dito`` / ``diyan`` / ``doon``) and
+    GEN-form (``nito`` / ``niyan`` / ``niyon``) function as
+    standalone-DEM NPs rather than post-modifiers.
 
-    def test_gen_head_with_nom_dem_rejected(self) -> None:
-        # `ng batang ito` would need `nito` (GEN dem) to agree.
-        # The sentence currently doesn't parse via the new
-        # dem-modifier rule for that constituent.
+    The Phase 5d Commit 3 case-matched post-DEM rules retain the
+    pre-existing ADP[CASE=X, DEM] daughter form (seldom-attested
+    but not ungrammatical). Phase 9.X.c49 adds the cross-case
+    NOM-form variant — required for ``sa panahong ito`` (R&G 1981
+    PANAHON sent-35) and the broader productive pattern.
+    """
+
+    def test_gen_head_with_nom_dem_agrees(self) -> None:
+        # ``ng batang ito`` — GEN head, NOM-DEM modifier
         rs = parse_text("Kinain ng batang ito ang isda.", n_best=5)
-        # Either no parses, or the OBJ-AGENT doesn't have DEIXIS
-        # set (the dem reading didn't fire on the GEN head).
+        # The cross-case modifier rule lifts DEIXIS onto the GEN head.
+        found = False
         for _, f, _, _ in rs:
             oa = f.feats.get("OBJ-AGENT")
-            if isinstance(oa, FStructure):
-                # If the modifier rule had fired, OBJ-AGENT would
-                # have DEIXIS=PROX. Verify it doesn't.
-                assert oa.feats.get("DEIXIS") != "PROX", (
-                    "GEN-head NOM-dem should not agree"
-                )
+            if isinstance(oa, FStructure) and oa.feats.get("DEIXIS") == "PROX":
+                found = True
+                break
+        assert found, "GEN-head NOM-DEM should agree (Phase 9.X.c49)"
 
-    def test_dat_head_with_nom_dem_rejected(self) -> None:
+    def test_dat_head_with_nom_dem_agrees(self) -> None:
+        # ``sa palengkeng ito`` — DAT head, NOM-DEM modifier
         rs = parse_text("Lumakad ang bata sa palengkeng ito.", n_best=5)
-        # Same: OBL-LOC / ADJUNCT shouldn't carry DEIXIS=PROX
-        # via the modifier rule.
+        found = False
         for _, f, _, _ in rs:
-            v = f.feats.get("OBL-LOC")
-            if isinstance(v, FStructure):
-                assert v.feats.get("DEIXIS") != "PROX"
             adj = f.feats.get("ADJUNCT")
             if adj is None:
                 continue
             for m in adj:  # type: ignore[union-attr]
-                if isinstance(m, FStructure):
-                    assert m.feats.get("DEIXIS") != "PROX"
+                if isinstance(m, FStructure) and m.feats.get("DEIXIS") == "PROX":
+                    found = True
+                    break
+            if found:
+                break
+        assert found, "DAT-head NOM-DEM should agree (Phase 9.X.c49)"
 
 
 # === Multiple modifiers in one clause ====================================

@@ -395,6 +395,28 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.c49: ``sapagkat`` cause subordinator --------------
+    #
+    # ``Sapagka't umulan, basa ang lupa.``
+    #     "Because it rained, the ground is wet."
+    # ``At sapagka't kung umulan man ay di gaanong malakas, marami
+    #     ring kapistahan sa panahong ito.``   (PANAHON sent-35)
+    #
+    # Parallel to the Phase 5l Commit 9 ``dahil`` reason-subordinator
+    # rule above. ``sapagkat`` (PART[SUBORDINATOR=true,
+    # COMP_TYPE=CAUSE, LEMMA=sapagkat]) heads a SubordClause taking
+    # an S body. The tokenizer's ``split_apostrophe_t`` normalizes
+    # surface ``sapagka't`` to lemma ``sapagkat``.
+    rules.append(Rule(
+        "SubordClause",
+        ["PART[COMP_TYPE=CAUSE]", "S"],
+        [
+            "(↑) = ↓2",
+            "(↑ SUBORD_TYPE) = 'CAUSE'",
+            "(↓1 COMP_TYPE) =c 'CAUSE'",
+        ],
+    ))
+
     # --- 9.X.c15: compound ``dahil sa + clause`` subordinator ---------
     #
     # ``Dahil sa tuyo ang lupa ay makapal ang alikabok.``
@@ -459,6 +481,58 @@ def register_rules(rules: list[Rule]) -> None:
         ["SubordClause", "PART[LINK=AY]", "S"],
         [
             "(↑) = ↓3",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+
+    # === Phase 9.X.c49: SubordClause ay [bare ADJ-pred] (topic-drop apodosis) ===
+    #
+    # ``Kung umulan man ay di gaanong malakas, ...``
+    #     "Even if it rains, it isn't so strong, ..." (R&G 1981
+    #     PANAHON sent-35).
+    # ``Kapag malakas ay tatakbo.``  (constructed)
+    #
+    # When a SubordClause is ay-fronted as TOPIC and the apodosis
+    # is a bare ADJ-pred without overt NP-SUBJ, the apodosis's
+    # SUBJ is bound by the discourse-set context (the SubordClause
+    # itself supplies the referent). LFG analysis: synthesize
+    # ``SUBJ PRED = 'PRO'`` on the matrix; the PRO is contextually
+    # bound to the discourse-supplied entity from the SubordClause.
+    #
+    # Two variants: bare apodosis (``ay malakas``) and NEG-wrapped
+    # apodosis (``ay di malakas``, ``ay di gaanong malakas``). The
+    # NEG variant absorbs the ``di`` particle directly into the
+    # rule rather than chaining through the generic NEG-wrap
+    # (since the inner ADJ-pred isn't itself a complete S without
+    # this rule firing first).
+    #
+    # Reference: R&G 1981 PANAHON sent-35; Schachter & Otanes 1972
+    # §9.4 (topic-drop and discourse-bound zero anaphora).
+    rules.append(Rule(
+        "S",
+        ["SubordClause", "PART[LINK=AY]", "ADJ[PREDICATIVE]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ ADJ_LEMMA) = ↓3 LEMMA",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ PREDICATIVE) = true",
+            "(↓3 PREDICATIVE) =c true",
+            "(↑ TOPIC) = ↓1",
+            "↓1 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["SubordClause", "PART[LINK=AY]", "PART[POLARITY=NEG]", "ADJ[PREDICATIVE]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ ADJ_LEMMA) = ↓4 LEMMA",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ PREDICATIVE) = true",
+            "(↑ POLARITY) = 'NEG'",
+            "(↓3 POLARITY) =c 'NEG'",
+            "(↓4 PREDICATIVE) =c true",
             "(↑ TOPIC) = ↓1",
             "↓1 ∈ (↑ ADJUNCT)",
         ],
