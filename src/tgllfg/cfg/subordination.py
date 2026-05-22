@@ -376,6 +376,81 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # === Phase 9.X.c50: bare-V purposive (control SUBJ) ================
+    #
+    # ``Kumain ako para makatapos.``   "I ate so I could finish."
+    # ``Kumain ako para makatapos ng trabaho.``
+    #     "I ate so I could finish (some) work."
+    # ``Para makatapos ng trabaho, kumain ako.``  (fronted)
+    # ``Karaniwan nang gumigising nang maagang-maaga ang mga
+    #   Pilipino para makatapos ng trabaho ...``  (PANAHON sent-16)
+    #
+    # The purposive ``para`` / ``upang`` PART takes a bare V[VOICE=AV,
+    # MOOD=NVOL] body without an overt NP-SUBJ — the SUBJ is
+    # controlled by the matrix SUBJ (functional-control reading).
+    # Three variants:
+    #
+    #   (a) ``para + V[NVOL]``           — INTR or no overt OBJ
+    #   (b) ``para + V[NVOL] + GEN-NP``  — V-TR with overt OBJ
+    #   (c) ``para + V[NVOL] + DAT-NP``  — V with sa-PP adjunct
+    #
+    # LFG analysis: the SubordClause f-structure has the bare V's
+    # PRED and a synthesized ``SUBJ PRED = 'PRO'`` placeholder. The
+    # control relation between matrix and purposive SUBJ is
+    # established at the f-graph by future inside-out designators
+    # (Phase 7+); for now the PRO is a discourse-bound placeholder.
+    #
+    # Variant (b) binds the GEN-NP to the V's OBJ via ``(↓2 OBJ) =
+    # ↓3`` (same pattern as the Phase 4 V-TR-OBJ rules); variant (c)
+    # rides the DAT-NP into V's ADJUNCT.
+    #
+    # Reference: Schachter & Otanes 1972 §6.6 (purposive ``para`` /
+    # ``upang`` with control reading); R&G 1981 PANAHON sent-16.
+    for mood in ("SOC", "NVOL"):
+        rules.append(Rule(
+            "SubordClause",
+            ["PART[COMP_TYPE=PURP]", f"V[VOICE=AV, MOOD={mood}, TR=INTR]"],
+            [
+                "(↑) = ↓2",
+                "(↑ SUBJ PRED) = 'PRO'",
+                "(↑ SUBORD_TYPE) = 'PURP'",
+                "(↓1 COMP_TYPE) =c 'PURP'",
+            ],
+        ))
+        rules.append(Rule(
+            "SubordClause",
+            ["PART[COMP_TYPE=PURP]", f"V[VOICE=AV, MOOD={mood}, TR=TR]"],
+            [
+                "(↑) = ↓2",
+                "(↑ SUBJ PRED) = 'PRO'",
+                "(↑ OBJ PRED) = 'PRO'",
+                "(↑ SUBORD_TYPE) = 'PURP'",
+                "(↓1 COMP_TYPE) =c 'PURP'",
+            ],
+        ))
+        rules.append(Rule(
+            "SubordClause",
+            ["PART[COMP_TYPE=PURP]", f"V[VOICE=AV, MOOD={mood}]", "NP[CASE=GEN]"],
+            [
+                "(↑) = ↓2",
+                "(↑ SUBJ PRED) = 'PRO'",
+                "(↑ OBJ) = ↓3",
+                "(↑ SUBORD_TYPE) = 'PURP'",
+                "(↓1 COMP_TYPE) =c 'PURP'",
+            ],
+        ))
+        rules.append(Rule(
+            "SubordClause",
+            ["PART[COMP_TYPE=PURP]", f"V[VOICE=AV, MOOD={mood}]", "NP[CASE=DAT]"],
+            [
+                "(↑) = ↓2",
+                "(↑ SUBJ PRED) = 'PRO'",
+                "↓3 ∈ (↑ ADJUNCT)",
+                "(↑ SUBORD_TYPE) = 'PURP'",
+                "(↓1 COMP_TYPE) =c 'PURP'",
+            ],
+        ))
+
     # === Phase 5l Commit 9: reason SubordClause builder ================
     # — dahil "because"
     #

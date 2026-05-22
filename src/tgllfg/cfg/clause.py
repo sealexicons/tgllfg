@@ -2497,6 +2497,53 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 9.X.c50: V + nang-manner-ADJ + SUBJ (pre-SUBJ manner-adv) ----
+    #
+    # ``Gumigising nang maaga ang mga Pilipino.``
+    #     "The Filipinos get up early."
+    # ``Tumakbo nang mabilis si Maria.``
+    #     "Maria ran quickly."
+    # ``Karaniwan nang gumigising nang maagang-maaga ang mga Pilipino...``
+    #                                              (PANAHON sent-16)
+    #
+    # The manner-adverbial phrase ``nang + ADJ`` (or its intensive
+    # variant ``nang + ADJ-redup``) appears between the verb and
+    # the NOM-SUBJ. Counterpart to the Phase 5g Commit 5 pre-V
+    # manner-adv rule (``ADJ + LINK + S``), which puts the manner
+    # phrase BEFORE the verb — Tagalog freely places manner adverbs
+    # in three positions (post-V-SUBJ / pre-SUBJ-post-V / pre-V).
+    #
+    # The ``nang`` PART is the c45 manner-linker variant (LINK=NA,
+    # LEMMA=nang). The ADJ daughter joins matrix ADJ-adjunct set;
+    # the matrix S's f-structure projects from the V daughter.
+    #
+    # Two link variants — the bound ``-ng`` (split off ``-ng`` after
+    # vowel-final words) doesn't appear here since ``nang`` is the
+    # explicit manner-linker form; we cover ``LINK=NA`` only, but
+    # the loop is left in for symmetry / future tightening.
+    #
+    # Reference: Schachter & Otanes 1972 §6.5 (manner-adverb
+    # placement); R&G 1981 PANAHON sent-16.
+    for link in ("NA",):
+        rules.append(Rule(
+            "S",
+            [
+                "V[VOICE=AV]",
+                f"PART[LINK={link}]",
+                "ADJ[PREDICATIVE]",
+                "NP[CASE=NOM]",
+            ],
+            [
+                "(↑) = ↓1",
+                "(↑ SUBJ) = ↓4",
+                "↓3 ∈ (↑ ADJ)",
+                f"(↓2 LINK) =c '{link}'",
+                "(↓2 LEMMA) =c 'nang'",
+                "(↓3 PREDICATIVE) =c true",
+            ],
+        ))
+
+
     # --- Phase 9.X.c40: deictic LOC_EXISTENTIAL pre-V modifier ----
     #
     # ``Ang natitirang limang buwan ay naroong maghati sa init at ulan.``
