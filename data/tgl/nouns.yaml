@@ -242,7 +242,7 @@
 - citation: araw
   pos: NOUN
   gloss: day, sun
-  affix_class: [tag_season]
+  affix_class: [tag_season, time_redup_freq]
 
 - citation: armando
   pos: NOUN
@@ -1059,6 +1059,7 @@
   pos: NOUN
   gloss: night
   feats: {SEM_CLASS: TIME}
+  affix_class: [time_redup_freq]
 
 - citation: galing
   pos: NOUN
@@ -2559,6 +2560,7 @@
 - citation: oras
   pos: NOUN
   gloss: hour, time
+  affix_class: [time_redup_freq]
 
 - citation: oscar
   pos: NOUN
@@ -3559,6 +3561,8 @@
 - citation: taon
   pos: NOUN
   gloss: year
+  affix_class: [time_redup_freq]
+  sandhi_flags: [redup_o_raise]
 
 - citation: taongbahay
   pos: NOUN

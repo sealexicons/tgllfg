@@ -2225,30 +2225,26 @@
   feats: {ADV_TYPE: FREQUENCY, LEMMA: bihira}
 
 # X-Y reduplication fixed forms — these are hyphenated in canonical
-# Tagalog orthography (``manaka-naka`` / ``taun-taon``); the
-# tokenizer's ``merge_hyphen_compounds`` pass collapses
-# ``X``-``Y`` triples into a single token when the joined form is
-# a known surface. Adding the joined surface here is what closes
-# the audit OOV. Productive content-word reduplication paradigm
-# (auto-handles the /o/→/u/ raising on first copy) is parked.
+# Tagalog orthography (``manaka-naka``); the tokenizer's
+# ``merge_hyphen_compounds`` pass collapses ``X``-``Y`` triples into
+# a single token when the joined form is a known surface.
+#
+# The TIME-N distributive-frequency class (``araw-araw`` / ``gabi-gabi``
+# / ``oras-oras`` / ``taun-taon``) is now handled by the productive
+# Phase 10.A ``time_redup_freq`` cell in ``data/tgl/paradigms.yaml``
+# (NOUN→ADV POS-flip; per-root ``redup_o_raise`` sandhi flag on
+# ``taon`` for first-copy /o/→/u/ raising). The previously-static
+# ``arawaraw`` (Phase 9.X.post-3) and ``tauntaon`` entries here have
+# been retired in favor of the productive derivation; their LEMMAs
+# (``araw-araw`` / ``taun-taon``) are reconstructed by the analyzer
+# via the cell's ``lemma_redup_hyphen: true`` opt-in.
+#
+# ``manakanaka`` stays static — its base ``manaka`` is not a NOUN
+# root in the lex, so the TIME-N cell doesn't apply.
 
 - surface: manakanaka
   pos: ADV
   feats: {ADV_TYPE: FREQUENCY, LEMMA: manaka-naka}
-
-- surface: tauntaon
-  pos: ADV
-  feats: {ADV_TYPE: FREQUENCY, LEMMA: taun-taon}
-
-# Phase 9.X.post-3: ``araw-araw`` ("every day, daily") — X-X redup
-# distributive frequency. Audit-attested at ANG MANOK sent-38
-# ``Siguro mangingitlog ito ng dalawa araw-araw.`` "Maybe it will
-# lay two [eggs] every day." Joined form ``arawaraw`` is what
-# ``merge_hyphen_compounds`` emits once it sees the surface is
-# known; LEMMA points to the canonical hyphenated form.
-- surface: arawaraw
-  pos: ADV
-  feats: {ADV_TYPE: FREQUENCY, LEMMA: araw-araw}
 
 # Reciprocal/intensive X-Y redup of mag-IPFV verb forms. The audit
 # attests ``nagtutulung-tulong`` ("helping each other repeatedly")
