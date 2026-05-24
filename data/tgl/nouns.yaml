@@ -1537,6 +1537,17 @@
   gloss: idea, thought
   source: audit-corpus
 
+# Phase 9.X.post-3.2: ``kakanin`` is polysemous. The VERB OV-CTPL
+# reading (kain "eat") lives in particles.yaml (added in
+# 9.X.post-3.1). This NOUN reading is the lexicalised "native
+# Philippine snack food" sense — suman, puto, biko, etc. —
+# etymologically derived from the verb form ("things to be eaten")
+# but functioning as a discrete NOUN category. Cited at R&G 1981
+# p.134; PDF-verified scan at data/tgl/references/scans/kakanin.png.
+- citation: kakanin
+  pos: NOUN
+  gloss: native Philippine snack food (e.g. suman, puto)
+
 - citation: kakao
   pos: NOUN
   gloss: cocoa, cacao
