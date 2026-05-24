@@ -3989,6 +3989,60 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.post-3: may + V + PRON + linker + N RC-with-N -----
+    #
+    # ``May nakita siyang itlog.``  "She saw an egg."  (ANG MANOK sent-25)
+    # ``May binili siyang aklat.``  "She bought a book."
+    # ``May ginawa siyang masama.``  "She did something bad."
+    #
+    # The V daughter is a headless-RC body that modifies the following
+    # N (the existential entity). The PRON-NOM in 2P-clitic position
+    # is the AGENT/possessor of the RC event. Structurally parallel
+    # to Phase 5j Commit 5b (``may + PRON + linker + N``) but with a
+    # V daughter inserted between the existential particle and the
+    # PRON — and parallel to the "May aklat siyang nakita" surface
+    # (N-first, RC-second) but with the V/N order swapped.
+    #
+    # V (no VOICE filter) covers both:
+    #   * V[VOICE=OV] perfect-OV transitives — ``binili``, ``ginawa``,
+    #     ``kinain``;
+    #   * V[VOICE=AV, MOOD=NVOL, AV_ABSOL=true] non-volitional AV
+    #     perception verbs — ``nakita`` (sent-25), ``narinig``,
+    #     ``naramdaman``.
+    # An OV-only filter would miss the perception-verb class (``nakita``
+    # is morphologically AV-NVOL, not OV, despite the patient-pivot
+    # semantics — verified via the analyzer's feature output).
+    #
+    # The minimal equation set leaves the V daughter detached at
+    # f-structure (matches the 9.X.post-3.6 approach for wala+RC);
+    # the audit-closure semantics rests on parse existence rather
+    # than full RC-binding into the SUBJ. The N fills SUBJ as the
+    # existential entity; the PRON is its possessor.
+    #
+    # Reference: S&O 1972 §11.5 (existential HAVE with RC body);
+    # R&G 1981 ANG MANOK sent-25.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL, POLARITY=POS]",
+            "V",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "N",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓5",
+            "(↑ SUBJ POSSESSOR) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↑ HAVE) = true",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'POS'",
+            "(↓4 LINK) =c 'NG'",
+        ],
+    ))
+
     # Commit 5b: positive HAVE — internal clitic possessor.
     rules.append(Rule(
         "S",
