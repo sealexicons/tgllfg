@@ -2240,6 +2240,16 @@
   pos: ADV
   feats: {ADV_TYPE: FREQUENCY, LEMMA: taun-taon}
 
+# Phase 9.X.post-3: ``araw-araw`` ("every day, daily") — X-X redup
+# distributive frequency. Audit-attested at ANG MANOK sent-38
+# ``Siguro mangingitlog ito ng dalawa araw-araw.`` "Maybe it will
+# lay two [eggs] every day." Joined form ``arawaraw`` is what
+# ``merge_hyphen_compounds`` emits once it sees the surface is
+# known; LEMMA points to the canonical hyphenated form.
+- surface: arawaraw
+  pos: ADV
+  feats: {ADV_TYPE: FREQUENCY, LEMMA: araw-araw}
+
 # Reciprocal/intensive X-Y redup of mag-IPFV verb forms. The audit
 # attests ``nagtutulung-tulong`` ("helping each other repeatedly")
 # at PANAHON sent-27. The full productive paradigm (any mag-VERB
