@@ -18264,9 +18264,11 @@ for category level.
   inventoried (TIME-N → FREQ-ADV; PLACE-N → distributive-LOC;
   NUM → distributive-count; CARD quantitative; bare-ADJ
   attenuative; PK91 `ma-X na ma-X` linked-intensive; V-stem
-  casual/manner). Phase 10.A landed the TIME-N → FREQ-ADV
-  `time_redup_freq` cell (`araw-araw` / `gabi-gabi` /
-  `oras-oras` / `taun-taon`); 10.B-10.H pending.
+  casual/manner). Phase 10.A landed `time_redup_freq` (TIME-N
+  → FREQ-ADV); Phase 10.B landed `place_redup_distr` (PLACE-N
+  → distributive-LOC) plus cross-cutting `REDUP=FULL` +
+  `REDUP_SEM=DISTR|FREQ|...` morphological feats (10.A
+  retrofitted with `REDUP_SEM=FREQ`); 10.C-10.H pending.
 - **Forest-density chart-disambiguation** — `Pinakain niya ang
   manok ng isang tasang palay.` (ANG MANOK sent-29) and PANAHON
   sent-2/3/9 (large colon-list constructions) need deeper
