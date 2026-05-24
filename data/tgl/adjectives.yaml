@@ -88,7 +88,11 @@
 - citation: baba
   pos: ADJ
   gloss: low
-  affix_class: [ma_adj]
+  affix_class: [ma_adj, pa_direct, i_loc]
+  # Phase 9.X.post-1: pa- / i- directional opt-in.
+  # pa_direct generates the directional ADV ``pababa`` "downward";
+  # i_loc generates the spatial NOUN ``ibaba`` "below, bottom".
+  # Both fire as ADJ→POS-flip paradigm cells (see paradigms.yaml).
 
 - citation: bagal
   pos: ADJ
@@ -494,6 +498,16 @@
   affix_class: []
   source: audit-corpus
 
+# Phase 9.X.post-1: stopwords-iso/stopwords-tl probe — marapat is the
+# lexicalized ma- + dapat form meaning "proper, fitting"; it doesn't
+# follow the productive ma_adj paradigm (dapat is a modal verb) so a
+# discrete ADJ entry is the cleanest closure.
+- citation: marapat
+  pos: ADJ
+  gloss: proper, fitting, deserving
+  affix_class: []
+  source: stopwords-tl
+
 - citation: paborito
   pos: ADJ
   gloss: favorite, preferred
@@ -659,7 +673,11 @@
 - citation: taas
   pos: ADJ
   gloss: high, tall
-  affix_class: [ma_adj]
+  affix_class: [ma_adj, pa_direct, i_loc]
+  # Phase 9.X.post-1: pa- / i- directional opt-in.
+  # pa_direct generates the directional ADV ``pataas`` "upward";
+  # i_loc generates the spatial NOUN ``itaas`` "above, top".
+  # Both fire as ADJ→POS-flip paradigm cells (see paradigms.yaml).
 
 - citation: tabi
   pos: ADJ

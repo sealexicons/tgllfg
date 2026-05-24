@@ -623,6 +623,14 @@ class Analyzer:
                 # lookup; the derived analyses carry the same
                 # pos="NUM" so grammar consumers see no distinction.
                 self._index.particles.setdefault(surface, []).append(analysis)
+            elif out_pos == "ADV":
+                # Phase 9.X.post-1: ADJ → ADV POS-flip cells (e.g.,
+                # the ``pa_direct`` directional adverb cell for
+                # ``pa + baba → pababa`` / ``pa + taas → pataas``)
+                # route to the particles table — same dispatch as the
+                # closed-class ADV entries loaded directly from
+                # particles.yaml.
+                self._index.particles.setdefault(surface, []).append(analysis)
             else:
                 # PRON / other POS-bases would extend here; ignored
                 # for now (no PRON-root paradigms in the seed).
