@@ -2320,3 +2320,21 @@
 - surface: nagkaroon
   pos: VERB
   feats: {VOICE: AV, ASPECT: PFV, LEMMA: magkaroon}
+
+# === Phase 9.X.post-3: ANG MANOK wave-1 closures ==========================
+#
+# Discrete VERB-surface lex closing ANG MANOK audit gaps where the
+# colloquial / contracted form differs from the canonical paradigm-
+# generated surface.
+#
+# kakanin — OV CTPL of kain "eat" via medial-vowel deletion
+# (kakainin → kakanin), the colloquial-preferred form per S&O 1972
+# §4.21 / R&G 1981 ch.9. The paradigm-generated kakainin remains
+# available; this entry adds the contracted variant as a parallel
+# discrete surface (LEMMA: kain routes via the synth-lex path to
+# the same a-structure as the paradigm form). Closes ANG MANOK
+# sent-19 ``Kakanin niya ang manok sa almusal.`` + sent-28
+# ``Kakanin niya ang itlog sa almusal.``
+- surface: kakanin
+  pos: VERB
+  feats: {VOICE: OV, ASPECT: CTPL, MOOD: IND, TR: TR, APPL: NONE, CAUS: NONE, CTRL_CLASS: NONE, LEMMA: kain}
