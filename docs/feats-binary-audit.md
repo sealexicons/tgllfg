@@ -35,8 +35,8 @@ inspection: comment text containing capitalized words followed by
 ## The 55 binary feats — migration targets
 
 Subsequent phases extended the inventory: 9.O.3 (+1), 9.O.4 (+1),
-9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1), 9.X.c49 (+1)
-→ 62 total.
+9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1), 9.X.c49 (+1),
+9.X.post-2 (+1) → 63 total.
 Each extension is documented inline below.
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
@@ -52,6 +52,7 @@ negative.
 | `CF` | clause is counterfactual (subj of `sakali` / `kahit pa`) |
 | `CLOCK_MARKER` | PART is the clock-time hour marker (`alas`) |
 | `COMPARATIVE` | ADJ is comparative-marked (`mas`) |
+| `COPULA` | V is a copular verb (`maging` / `naging`; gates `V[COPULA] N/ADJ NP[NOM]` clause rule, Phase 9.X.post-2) |
 | `CORREL` | particle is correlative (`pa` / `pa-rin` paired use) |
 | `COUNTERFACTUAL` | post-pass conditional inference |
 | `DECIMAL` | NUM is decimal-form |

@@ -1559,6 +1559,74 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.post-2: COPULA + predicative complement + SUBJ ---
+    #
+    # ``Naging tamad ito.``         "It became lazy."   (ANG MANOK sent-41)
+    # ``Naging guro siya.``         "She became a teacher."
+    # ``Naging matamad si Juan.``   "Juan became lazy."  (ADJ via ma- paradigm)
+    # ``Maging matiyaga ka!``       "Be patient!"
+    #
+    # Closes the 9.X.post-1 wave-1 regression on ANG MANOK sent-41.
+    # The 9.X.post-1.1 discrete-surface lex adds for ``maging`` /
+    # ``naging`` (VERB[COPULA, ASPECT=CTPL/PFV]) shadowed the prior
+    # UNK→synth-VERB fallback that was accidentally letting sent-41
+    # parse via the standard AV-INTR rule. The proper analytical
+    # commitment is the copular construction: a COPULA verb takes
+    # a predicative complement (N or ADJ) and a SUBJ NP.
+    #
+    # Two rule variants, parallel to the bare predicative rules they
+    # extend:
+    #
+    #   1. V[COPULA] + N + NP[CASE=NOM] — predicate-N case.
+    #      Extends the Phase 5n.B Commit 2 predicative-N rule above
+    #      with a COPULA verb prefix. PRED template ``BECOME-N <SUBJ>``
+    #      parallels ``BE-N <SUBJ>``.
+    #   2. V[COPULA] + ADJ[PREDICATIVE] + NP[CASE=NOM] — predicate-ADJ
+    #      case. Extends the Phase 5g Commit 3 predicative-ADJ rule
+    #      with a COPULA prefix. PRED template ``BECOME-ADJ <SUBJ>``
+    #      parallels ``ADJ <SUBJ>``.
+    #
+    # ASPECT (from the COPULA's lex entry — CTPL for maging, PFV for
+    # naging) lifts to the matrix so downstream consumers see the
+    # temporal anchoring. COPULA=true is set on the matrix S as an
+    # analytical marker.
+    #
+    # The ``¬ (↓2 WH)`` constraint on the N variant mirrors the
+    # bare predicative-N rule's ``¬ (↓1 WH)`` guard — keeps the
+    # rule from conflating with any wh-N cleft variant that might
+    # surface with a COPULA verb.
+    #
+    # References: Kroeger 1993 §3 (copular maging); S&O 1972 §11
+    # (becoming-predicates).
+    rules.append(Rule(
+        "S",
+        ["V[COPULA]", "N", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BECOME-N <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ N_LEMMA) = ↓2 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↑ COPULA) = true",
+            "(↑ ASPECT) = ↓1 ASPECT",
+            "(↓1 COPULA) =c true",
+            "¬ (↓2 WH)",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["V[COPULA]", "ADJ[PREDICATIVE]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BECOME-ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ ADJ_LEMMA) = ↓2 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↑ COPULA) = true",
+            "(↑ ASPECT) = ↓1 ASPECT",
+            "(↓1 COPULA) =c true",
+            "(↓2 PREDICATIVE) =c true",
+        ],
+    ))
+
     # --- 9.X.c19: ka-N companion S_GAP for RC bodies --------------
     #
     # ``Ang ulan na kasama nito ay nagpapabaha.`` "The rain that
