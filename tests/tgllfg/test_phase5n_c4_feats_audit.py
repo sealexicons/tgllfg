@@ -39,6 +39,8 @@ _KNOWN_ENUM = (
     "VOICE",      # enum: AV | OV | DV | IV | BV | LV
     "REGISTER",   # enum: POLITE | COLLOQUIAL_POLITE | LITERARY
     "CARDINAL_VALUE",  # numeric-string payload
+    "REDUP",      # enum: FULL | (CV reserved for future)  — Phase 10.B
+    "REDUP_SEM",  # enum: DISTR | FREQ | ITER | ATTEN | INTENS — Phase 10.B
 )
 
 
