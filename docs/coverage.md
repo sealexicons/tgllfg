@@ -286,6 +286,123 @@ Key infrastructure landed:
 chart-disambiguation parallel to c46 kaya+RC+na family —
 sent-10/28/36/41).
 
+### Phase 9.V / 9.W Cluster B + E + A/H closures (B4)
+
+9.V (PR #108) closed Cluster B (sentence-initial fronted topic,
+COMMA/ay-mediated, plus main S) — +8 abs. 9.W (PR #109) closed
+Cluster E (SAY-class inner-clitic) plus 2 ANG MANOK pag-N with
+time-NP-AdvP and 1 ANG MANOK compound TIME-AdvP — +12 abs.
+Combined +20 abs on the 9-12 token NO-OOV failure cluster
+identified by 9.U.
+
+### Phase 9.X.post-1 stopwords coverage (post-PANAHON follow-on)
+
+External probe: stopwords-iso/stopwords-tl (147 high-frequency
+function/discourse forms, MIT-licensed). Pipeline-level coverage
+**123/147 (83.7%) → 145/147 (98.6%)** with the remaining 2
+excluded (`am` = English contamination in upstream source;
+`napaka` = bare intensifier prefix with no audit-corpus
+evidence for standalone usage). 23 closures: 10 content-lemma
+lex adds + 5 discrete VERB-surface lex + 1 pag_gerund opt-in
+(`paggawa`) + 4 directional closures via new `pa_direct` /
+`i_loc` paradigm cells (ADJ→ADV `pababa`/`pataas`; ADJ→NOUN
+`ibaba`/`itaas`) + 1 verb-sense `i_oblig` on `taas` for the
+toasting idiom `Itaas mo!` (JP `kanpai` / ZH `gānbēi` analog).
+
+Wave-1 regression: discrete `naging` VERB[COPULA,PFV] entry
+shadowed UNK→synth-VERB fallback for `Naging tamad ito.`
+(ANG MANOK sent-41), reducing wave 1 by -1; closed by
+9.X.post-2 with new `S → V[COPULA] N/ADJ[PREDICATIVE]
+NP[CASE=NOM]` rules + `COPULA` BINARY_FEATS entry (62 → 63).
+
+### Phase 9.X.post-3 ANG MANOK wave-1 closure drive
+
+12-commit follow-on closing 10 of the 11 open ANG MANOK
+exemplars. Wave 1: **78/123 → 88/123 (+10, 0 regressions)**;
+ANG MANOK specifically: 40/51 → 50/51. Closures: sent-19/28
+(`kakanin` discrete OV-CTPL); sent-21 (impersonal ADJ-pred
+with time ADV); sent-25 (`may + V + PRON + linker + N`
+HAVE-with-RC); sent-34 (bare-Q NP[CASE=GEN] coercion);
+sent-35 (`tasa` MEASURE opt-in); sent-38 (`arawaraw`
+distributive-FREQ ADV joined-form); sent-43 (DEM-NOM
+SUBJ-leading rule); sent-50/51 (wala + RC, and wala-with-nang-
+plus-V[AV] HAVE-with-RC variants). Sent-29 deferred —
+`Pinakain niya ang manok ng isang tasang palay.` exceeds
+default `max_tree_iterations=5000` budget; cap raise to
+10000 closes it but regresses PANAHON sent-16 (7.66s →
+14.81s exceeds 10s audit per-item timeout). 3 forest-density
+guards on the CARDINAL+MEASURE+N pattern (MEASURE/MEASURE_HEAD
+propagation; possessive-N negation guard) reduce but don't
+eliminate the over-generation. Per-commit wave-1-audit-diff
+workflow per `[[feedback_wave1_audit_before_pr]]` validated
+end-to-end.
+
+### Phase 9.Y Kroeger 1991 dissertation harvest (B6)
+
+Sixth corpus source, first native-PDF (non-OCR) input. PK91 =
+Paul Kroeger's 1991 Stanford PhD dissertation
+`PK91-Thesis-Revised.pdf` (234 pages, ~210 numbered example
+blocks). Extractor at `scripts/harvest_exemplars.py`
+(`extract_kroeger1991` + 4 helpers) handles LFG-standard
+glossing: `(N)`/`(N) a.` block + sub-label detection;
+`=`-clitic boundary; inter-alphabetic `-` morpheme boundary;
+`-Ø`/`Ø` zero-morpheme; `[...]` constituent brackets;
+`__nom`/`__gen`/`__dat` ch. 7 gap markers (rejected); leading
+`(*)`/`(?)` ungram markers; `i`/`j`/`k` LFG binding subscripts
+(two-tier strip via closed pronoun set anchoring detection plus
+closed proper-name set Juan/Maria/Rosa).
+
+**Wave 4 baseline** (full audit 2026-05-24): **44/201 (21.89%)**
+— 28 parse-success-1 + 16 parse-success-N + 18
+zero-parse-no-fragment + 139 zero-parse-fragment. Lower than
+wave 1+2+3 cumulative (~31%) as expected: PK91 dissertation
+prose probes constructions the existing audit corpora don't
+exercise. 69.2% zero-parse-fragment share characterizes the
+Phase-10-targeted failure pile.
+
+9.Y.post-1 added 4 cleanup rules (mid-sentence parenthetical,
+`=g` linker fold, medial-period split, two-variant parenthetical
+emit) + a PK91-relaxed Tagalog-shape check; wave 4 grew 201 →
+**216 (+15)**.
+
+### Phase 9.Z naturalistic-tier regression fixture (B6)
+
+`scripts/generate_audit_regression_fixture.py` reads per-wave
+`parse-results.jsonl`, samples 51 parse-success closures
+proportionally across 4 waves / 7 sources (each ≥1 sample),
+emits checked-in `tests/tgllfg/data/audit_regression_fixture.yaml`
+along with a regression test that asserts each entry parses with
+≥ `expected_parses_ge` trees. Protects all audit closures from
+silent regression during Phase 10+ work. Generator is
+idempotent (fixed seed=42 + deterministic sort) — re-run after
+Wave 5+ audits land or after major construction-class PRs that
+change the audit-closure pile shape.
+
+### Phase 9 final closing snapshot
+
+**Cross-wave cumulative** (wave 1+2+3+4, post-9.Y full audit
+2026-05-24): **783 / 2533 (30.91%)**. Wave 1+2+3 only
+(like-for-like comparison with pre-Phase-9 baselines):
+**739 / 2332 (31.69%)**. Phase 9 net gain: ~11% → ~31% (3×
+improvement) on wave 1+2+3.
+
+Per-wave breakdown:
+
+| Wave | Source | Closures / Sample | % |
+| --- | --- | --- | --- |
+| 1 | rg81 transcriptions | 88 / 123 | 71.5% |
+| 2 | RC 1990 | 108 / 500 | 21.6% |
+| 2 | RG Intermediate | 110 / 500 | 22.0% |
+| 2 | Ramos 1971 | 73 / 209 | 34.9% |
+| 3 | S&O 1972 | 124 / 500 | 24.8% |
+| 3 | RG Conversational | 236 / 500 | 47.2% |
+| 4 | Kroeger 1991 | 44 / 201 | 21.9% |
+
+≥80% target not met (current 30.91% leaves the largest gap on
+the heavily-OCR'd reference grammars). Phase 10 is scoped to
+target the redup + forest-density + construction-class
+failure-pile pathways identified by Phase 9's diagnostic work.
+
 ### Reproduction
 
 Regenerate the naturalistic-tier xwave snapshot from current

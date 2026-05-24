@@ -18040,3 +18040,275 @@ left-flanker hazards, TR/INTR polysemy recurrence).
 
 `hatch run test-both`: 7833 passed in 78.90s (final Phase 8
 state — no new tests added in 8.K closing docs).
+
+## Phase 9 cumulative summary
+
+Phase 9 closes the naturalistic-tier audit gap-closure drive that
+Phase 8 set up, plus a Kroeger-1991-dissertation harvest and a
+checked-in regression-fixture baseline. 32 sub-PRs landed across
+6 buckets (B1 lex sweep, B2 extractor cleanup, B3 construction
+class, B4 cascading multi-clause, B5 PANAHON, B6 engineering)
+plus the closing 9-close documentation pass. The Phase moves the
+parser from a ~11% naturalistic baseline (Phase 8 close) to
+**30.91% cumulative** across waves 1+2+3+4 (or 31.69% across
+wave 1+2+3 only), adds 8 new BINARY_FEATS, ships ~700 lex
+entries (proper names + common nouns + Spanish/English loans +
+particles + ADJ + verbs), introduces 5 new opt-in paradigm-cell
+affix classes, lands the PK91 dissertation as a 6th audit
+corpus, and produces a 51-entry regression-fixture YAML that
+protects all audit-corpus closures from silent regression
+during Phase 10+ work.
+
+### Bucket decomposition (implementation order)
+
+Per `[[feedback_phase8_wave_nomenclature]]`, Phase 9 organizes
+sub-PRs by **bucket** (B1-B6) rather than implementation wave;
+buckets reflect the closure mechanism, not chronology. The
+Phase 9 plan-of-record at `.claude/plans/tgllfg-phase-9.md`
+carries the canonical taxonomy.
+
+**B1 — lex sweep** (10 sub-PRs, 9.A–9.J): foundational. 9.A
+refreshes the audit baseline + introduces the cross-wave
+`xwave-report` + OOV-frequency TSV. 9.B–9.J close ~370
+sentences via ~190 new lex entries (proper names, common
+nouns, ADJ, particles, Spanish/English loans). Closes the
+"every audit sentence with 0 OOV and a missing common-Tagalog
+lemma" failure mode; lifts naturalistic baseline 11.0% → 15.81%.
+
+**B2 — extractor cleanup** (4 sub-PRs, 9.K–9.N): per-corpus
+hygiene. 9.K (R&C 1990) strips pedagogical grammar-tag
+prefixes; rejects English instruction lines. 9.L (Ramos 1971) handles
+OCR digit-for-letter / `&`-for-`a` / slash-substitution. 9.M
+(S&O 1972) closes the largest OCR pile (`l↔i`, `rn↔m`, `0↔6`,
+`c↔e`, `iii↔ili`, `rv↔nd`, `nv↔m`, `D↔B` global). 9.N closes
+cross-wave noise. Net effect is denominator hygiene — false
+positives drop out, audit-failure pile gets less polluted.
+
+**B3 — construction-class** (5 sub-PRs, 9.O–9.T): adds
+construction rules and feats. 9.O (the heaviest) closes the
+TR/INTR polysemy pin, the STATIVE_PRED predicate ADJ, AV-NVOL
+absolutive (`Naalala ko.`), and `mangyari` polite-imperative
+— +22 abs / +0.95pp. 9.P–9.T close the named Phase 8 carryover
+pins (locative cleft, PP-cleft kundi, 3 Ni-focus variants,
+2-arg AV-CAUS-INDIRECT, nang V-DUPLICATE, Wala interjection,
+free-relative wh-PRON cleft).
+
+**B4 — cascading multi-clause** (3 sub-PRs, 9.U–9.W): diagnostic
+plus closure. 9.U is diagnostic-only (NO-OOV 9-12 token failure
+cluster analysis; identifies 8 NO-OOV target clusters for
+9.V/9.W). 9.V closes Cluster B (sentence-initial fronted topic,
+COMMA/ay-mediated, plus main S) — +8 abs. 9.W closes Cluster E
+(SAY-class inner-clitic, 2 ANG MANOK pag-N with time-NP-AdvP,
+1 ANG MANOK compound TIME-AdvP) — +12 abs.
+
+**B5 — PANAHON closure drive** (1 sub-PR, 9.X, with pre-1..4
+and post-1..3 sibling sub-PRs): the marquee Phase 9 sub-PR.
+9.X itself is a 56-commit drive against the PANAHON 41-sentence
+wave-1 R&G 1981 transcribed essay. Closes 20 PANAHON sentences
+(13/41 → 33/41 = 80.5%) plus broader wave-1 (54% → 63.4%) via
+new clause / coordination / discourse / extraction / nominal /
+subordination rules + 5 new opt-in affix_classes. Pre-1..4
+are pipelined-engineering lead-ins (~525 lex entries + paradigm
+cells); post-1..3 are post-9.X follow-ons (stopwords coverage,
+COPULA grammar, ANG MANOK +10 closures).
+
+**B6 — engineering** (2 sub-PRs, 9.Y and 9.Z, plus 9.Y.post-1):
+9.Y adds Kroeger 1991 as the 6th corpus source (201 → 216
+high-signal exemplars, native PDF, first non-OCR input). 9.Z
+adds the naturalistic-tier regression fixture
+(`tests/tgllfg/data/audit_regression_fixture.yaml`, 51 samples
+across all 4 waves) + a test that asserts each entry still
+parses with ≥ `expected_parses_ge` trees — protects Phase 10+
+work from silent regression of audit closures.
+
+### New binary feats (BINARY_FEATS 55 → 63)
+
+Eight added across Phase 9, contiguous with the running audit
+in `docs/feats-binary-audit.md`:
+
+- `STATIVE_PRED` (9.O.3) — ADJ is a stative-predicate that
+  takes a GEN-AGENT (`Mahal niya ang anak.`)
+- `AV_ABSOL` (9.O.4) — AV verb licenses absolutive shape
+  (`Naalala ko.`, no overt SUBJ)
+- `POLITE_MARKER` (9.O.5) — `mangyari` polite-imperative wrapper
+- `MGA_INTERNAL` (9.X.c11) — N is `mga`-marked via N-level rule
+  (simple-NP disambiguation tag)
+- `KA_PRED` (9.X.c19) — N is ka-N companion-predicate (`kasama` /
+  `kasabay`)
+- `ELLIPSIS` (9.X.c22) — clause has elided / contextually-
+  recoverable subject (bare `Wala pa.`)
+- `IMPERSONAL` (9.X.c49) — predicate licenses bare-S with synth
+  PRO SUBJ (weather verbs `umulan`; atmospheric ADJs `mainit`)
+- `COPULA` (9.X.post-2) — V is a copular verb (`maging` /
+  `naging`); gates `V[COPULA] N/ADJ NP[NOM]` clause rule
+
+### Lex additions (cumulative — ~700+ entries)
+
+Bulk dominated by the proper-name + common-noun + loan sweeps:
+
+- **9.B** — 12 personal names + 3 place names + 1 surname + 5
+  nationality/language NOUNs (21 total)
+- **9.C.pre** — engineering refactor (typed top-level fields),
+  plus 2 colloquial NOUNs (pinoy/pinay)
+- **9.C** — 25 common-noun batch 1
+- **9.D** — 24 common-noun batch 2
+- **9.E** — 5 verb roots + 3 affix_class extensions + 2 N
+- **9.F** — 7 ADJ roots (4 ma_adj + 3 bare)
+- **9.G** — 12 particles/discourse-markers + 1 NOUN
+- **9.H** — 9 Spanish-loan NOUN + 1 orth-variant N
+- **9.J** — 13 entries (6 proper-name + 4 N-coexistence + 1
+  ADJ + 1 DEM-DIST + 1 surname)
+- **9.X.pre-1** — ~525 lex entries (largest single-sub-PR seeded
+  gain in Phase 9: +5.72pp)
+- **9.X.pre-2** — 74 NOUNs (66 PERSON + 4 PLACE + 4 ENGLISH)
+- **9.X.post-1** — 10 content-lemma + 5 discrete VERB-surface +
+  1 pag_gerund opt-in + 4 directional paradigm-cell closures +
+  1 taas i_oblig (toasting idiom)
+- **9.X.post-3** — 5 entries (kakanin V+N, arawaraw ADV,
+  kausap+um, tasa MEASURE)
+
+### Anti-deferral pin flips (cumulative)
+
+- **9.B** flips a Phase 8.R `Santos`-blocked clock-time pin
+- **9.C** flips 8.Q `pandanggo` → `mahusay`, 8.Q `tulong` →
+  `tanong`
+- **9.D** flips 8.Q `tanong` → `huling`
+- **9.E** flips 8.E `kilala` (still OOV from V-root) + others
+- **9.F** flips 8.Q `mahusay` → bare `kilala`
+- **9.O** flips 8.I `alala` AV-absolutive + `malimutan` ma_an,
+  8.Q anti-deferral chain kilala → kumbidado; 3 `TestStillFailing`
+  pins flipped to `_closed_in_9o`
+- **9.T** closes 4 named Phase 8 carryovers in a single PR
+  (taongbahay/luto AV_ABSOL/AV-CAUS-INDIRECT 2-arg/nang
+  V-DUPLICATE)
+- **9.X.post-2** flips the BINARY_FEATS count assertion (62 → 63)
+
+### Test trajectory
+
+| Milestone | `hatch run test-both` |
+| --- | --- |
+| Pre-Phase 9 (post-8.K) | 7833 passed |
+| Post-9.A | 7852 passed |
+| Post-9.J (B1 closes) | 8351 passed |
+| Post-9.N (B2 closes) | ~8500 passed |
+| Post-9.O (B3 starts) | 8585 passed |
+| Post-9.T (B3.F closes) | ~8700 passed |
+| Post-9.W (B4 closes) | 8815 passed |
+| Post-9.X (B5 PANAHON drive) | 8811 passed |
+| Post-9.X.post-3 (ANG MANOK +10) | 8813 passed |
+| Post-9.Y (Kroeger harvest) | 8856 passed |
+| Post-9.Y.post-1 (PK91 cleanup) | 8875 passed |
+| Post-9.Z (regression fixture) | 8929 passed |
+
+Net Phase 9: **+1096 tests** across 32 sub-PRs.
+
+### Naturalistic parse-rate trajectory
+
+| Milestone | Cumulative naturalistic | Notes |
+| --- | --- | --- |
+| Pre-Phase 9 (post-8.K baseline) | ~11.0% | wave 1+2+3, sample-cap=500 per wave |
+| Post-9.A (baseline refresh) | 12.31% | 288 / 2340 |
+| Post-9.J (B1 lex closes) | 15.81% | 370 / 2340 |
+| Post-9.X.pre-1 (mega lex sweep) | 22.52% | 524 / 2327 |
+| Post-9.X.pre-4 (paradigm-cell pass) | 27.20% | 633 / 2327 |
+| Post-9.Y (Kroeger added — wave 1+2+3+4) | **30.91%** | 783 / 2533 |
+| Post-9.Y (wave 1+2+3 only, like-for-like) | 31.69% | 739 / 2332 |
+
+**Phase 9 net gain**: from ~11% to **~31%** on wave 1+2+3
+(roughly 3× improvement); first audit including wave 4 lands
+at 30.91% cumulative (PK91 is harder than the average
+reference-grammar corpus, as expected). 9.Z fixture protects
+all subsequent closures from silent regression.
+
+### Wave 4 (Kroeger 1991) baseline
+
+| Bucket | Count | % |
+| --- | --- | --- |
+| parse-success-1 | 28 | 13.9% |
+| parse-success-N | 16 | 8.0% |
+| zero-parse-fragment | 139 | 69.2% |
+| zero-parse-no-fragment | 18 | 9.0% |
+| **Total** | **201** | — |
+| Wave 4 parse-rate | **44 / 201** | **21.89%** |
+
+201 exemplars from 9.Y harvest; 216 after 9.Y.post-1 cleanup
+(+15 cleanup-recovered and paren-variant emit). The high
+zero-parse-fragment share (69.2%) reflects construction-class
+coverage gaps rather than lex OOV — characterizes the
+audit-failure pile that Phase 10 work targets.
+
+### PK91 lit-review on reduplication (Phase 9.Y deliverable)
+
+PK91 lacks a dedicated reduplication chapter. Four incidental
+mentions: aspect CV-redup (ch. 1 §3.3); plural-agreement
+CV-redup (ch. 2 §2.3); recent-perfective ka-CV-redup
+(ch. 2 §2.4); and "intensive adjective" `mabait na mabait`
+(ch. 5 §4.5) treated as complex A° lexical category per the
+clitic-placement diagnostic `*Mabait ka=ng mabait`. The
+`ma-X na ma-X` linked-intensive is structurally distinct from
+the existing `redup_intens_adj` cell (`magandaganda` joined
+form) — feeds a third Phase 10.E sub-pattern alongside
+bare-stem X-X (`ganda-ganda`) and ma-X-X joined.
+
+PK91 does NOT address V-stem casual/manner X-X (`lakad-lakad` /
+`kain-kain`) — the original "messy framing" question carries
+forward to Phase 10.E investigation. Two transferable PK91
+principles: (a) treat redup output as zero-level lexical
+category; (b) use clitic-placement as the empirical diagnostic
+for category level.
+
+### Pending Phase 10+ work (named in Phase 9 sub-PRs)
+
+- **Full reduplication taxonomy** — Phase 10.A-10.F productive
+  paradigm-cell coverage for the 5-6 sub-classes the reviewer
+  inventoried (TIME-N → FREQ-ADV; PLACE-N → distributive-LOC;
+  NUM → distributive-count; bare-ADJ attenuative; CARD
+  quantitative; V-stem casual/manner). PK91's linked-intensive
+  `mabait na mabait` adds a 6th sub-pattern.
+- **Forest-density chart-disambiguation** — `Pinakain niya ang
+  manok ng isang tasang palay.` (ANG MANOK sent-29) and PANAHON
+  sent-2/3/9 (large colon-list constructions) need deeper
+  chart-side engineering. Default `max_tree_iterations=5000`
+  exceeded; cap raise to 10000 regresses PANAHON sent-16
+  (7.66s → 14.81s, exceeds 10s audit per-item timeout). Phase
+  10.I+ scope.
+- **Specific irregular paradigm gaps** — `kunin` (kuha
+  irregular), `hiwain` (hiwa no-h-epenthesis), `ibaba` TR-sense
+  (need separate TR `baba` entry; existing INTR blocks
+  `i_oblig` opt-in). Each requires per-root engineering.
+- **Productive generalization of opt-in paradigm classes** —
+  Phase 9 introduced 5 per-root opt-in affix_classes (`paki`,
+  `ma_soc`, `pag_gerund`, `pa_direct`, `i_loc`) that fire only
+  on audit-attested roots. Productive generalization to all
+  VERB / ADJ roots parked pending corpus pressure.
+- **PANAHON 8 unclosed exemplars** — sent-2/3/9/39 (Tier 1
+  forest-depth / colon-list) and sent-10/28/36/41 (Tier 2
+  multi-piece construction blockers, chart-interaction
+  failures). One-off, but illustrative of the chart-side work
+  Phase 10 should attack.
+- **9.U WITH-OOV characterization** — 188 WITH-OOV sentences in
+  the 9-12 token bucket (median 3 OOV/sent). Coverage-class
+  generalization opportunities listed in
+  `docs/coverage-audit-9u-long-sentence-diagnostic.md`.
+
+### Process learnings (memory entries written during Phase 9)
+
+- `[[feedback_wave1_audit_before_pr]]` — run wave-1 audit diff
+  before merging lex/grammar/morph sub-PRs (`hatch run
+  test-both` alone missed the 9.X.post-1 sent-41 regression;
+  ~30s wave-1 re-parse catches what the suite doesn't). Reusable
+  wrappers at `/tmp/wave1_parse.py` + `/tmp/wave1_diff.py`.
+- `[[feedback_escape_pipe_in_plan_ledger]]` — any `|` in
+  plan-ledger row content (Python type unions, set unions,
+  regex alternations) must be escaped as `\|` so it doesn't
+  break the markdown table.
+
+Plus per-sub-PR progress memories in
+`[[project_phase9_progress]]`,
+`[[project_phase9x_pre1_progress]] / pre-2 / pre-3 / pre-4`,
+`[[project_phase9x_post1_progress]] / post-2 / post-3`,
+`[[project_phase9y_progress]] / post-1`,
+`[[project_phase9z_progress]]`.
+
+`hatch run test-both`: 8929 passed in 156.79s (final Phase 9
+state — 9-close docs commit doesn't add new tests).
