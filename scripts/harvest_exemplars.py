@@ -968,7 +968,221 @@ def extract_rg_conversational() -> Iterator[Exemplar]:
                     )
 
 
-# === Source 5: Ramos 1971 Dictionary (verb-example sentences) =============
+# === Source 5: Kroeger 1991 (Phrase Structure / LFG dissertation) =========
+#
+# PK91 = Paul Kroeger's 1991 Stanford PhD dissertation, "Phrase Structure
+# and Grammatical Relations in Tagalog". LFG-native treatment; cleanly
+# typeset (native PDF, not OCR). Examples follow the LFG dissertation
+# convention: numbered example blocks ``(N)`` with optional sub-divisions
+# ``a.``, ``b.``, ``c.``; three-line layout per example (Tagalog surface
+# with `=`-clitic and `-`-morpheme boundaries / morpheme gloss in
+# uppercase grammar labels / English translation indented further).
+#
+# Hand-curated dissertation examples are higher-signal than OCR'd
+# reference-grammar prose. Expect 100-200 high-quality exemplars across
+# the ~210 numbered blocks (each may have 1-4 sub-divisions; we filter
+# to Tagalog-shaped surfaces only — PK91 also presents Welsh, Irish,
+# and other cross-linguistic data).
+#
+# PK91 morpheme conventions to strip:
+#   * ``=`` separates clitics (``ang=mga=bata``) → replace with space
+#   * ``-`` separates affixes (``B-um-ili``, ``b-in-igy-an``,
+#     ``Ma-ta-talino``) → remove between alphabetic chars
+# The analyzer's ``merge_hyphen_compounds`` tokenizer handles the rare
+# genuine orthographic hyphens (``araw-araw``, ``mag-isa``) downstream.
+
+# Block label: ``(N)`` opens an example; ``(N) a.`` or ``a.``-indented
+# lines enumerate sub-examples within the block.
+_PK91_BLOCK_LABEL_RE = re.compile(r"^\((\d+)\)\s*(.*)$")
+_PK91_SUBLABEL_RE = re.compile(r"^([a-h])\.\s+(.+)$")
+
+# Gap-marker notation for abstract unbounded-dependency examples
+# (``__nom``, ``__gen``, ``__dat`` — Kroeger ch. 7). These are
+# theoretical f-structure abstractions, not parseable Tagalog —
+# reject any exemplar containing them.
+_PK91_GAP_MARKER_RE = re.compile(r"__\w+")
+
+# Leading ungrammaticality / marginal-acceptance markers PK91 uses:
+# ``(*)``, ``(?)``, ``(*?)`` — strip from surface and set
+# ``marked_ungrammatical=True``.
+_PK91_LEADING_MARKER_RE = re.compile(r"^\(\s*[*?]+\s*\)\s*")
+
+# Subscript co-indexing notation (LFG binding/coreference): pronouns
+# and a small closed list of proper names carry a subscript
+# ``i``/``j``/``k`` that pdftotext renders adjacent to the word
+# (``niyai`` for canonical ``niya``, ``Mariai`` for canonical
+# ``Maria``). The strip is two-tier: (a) pronoun-base set anchors
+# detection of which subscript letters are in use for this
+# exemplar; (b) any word whose stripped stem matches the pronoun
+# OR proper-name base set has the letter stripped. The proper-
+# name set is kept short (the only PK91 proper names that
+# actually appear with subscripts are Juan, Maria, Rosa) to
+# avoid false-stripping Title-Case-initial verbs like ``Nahuli``
+# / ``Sinabi`` that happen to end in subscript letters.
+_PK91_PRONOUN_SUBSCRIPT_BASES = frozenset({
+    "niya", "siya", "kaniya", "nila", "kanila", "ako", "akin",
+    "sino", "kanino", "ano", "ikaw",
+})
+_PK91_PROPER_SUBSCRIPT_BASES = frozenset({
+    "juan", "maria", "rosa",
+})
+_PK91_SUBSCRIPT_LETTERS = frozenset("ijk")
+
+
+def _pk91_strip_subscripts(text: str) -> str:
+    """Remove subscript co-indexing letters from a PK91 surface line.
+    Detection is pronoun-triggered: a pronoun-base + subscript
+    letter (``niyai``, ``kaniyaj``, ``Sinoi``) flags that letter as
+    a binding index for the exemplar. Words whose stripped stem
+    matches either the pronoun-base or the proper-name set
+    (``Juan``, ``Maria``, ``Rosa``) get the letter stripped."""
+    words = text.split()
+    letters_used: set[str] = set()
+    for w in words:
+        bare = w.rstrip(".,;:!?")
+        if len(bare) >= 4 and bare[-1].lower() in _PK91_SUBSCRIPT_LETTERS:
+            stem = bare[:-1].lower()
+            if stem in _PK91_PRONOUN_SUBSCRIPT_BASES:
+                letters_used.add(bare[-1].lower())
+    if not letters_used:
+        return text
+
+    def _strip(w: str) -> str:
+        suffix_len = len(w) - len(w.rstrip(".,;:!?"))
+        bare = w[:len(w) - suffix_len] if suffix_len else w
+        if len(bare) < 4:
+            return w
+        if bare[-1].lower() not in letters_used:
+            return w
+        stem = bare[:-1].lower()
+        if (stem in _PK91_PRONOUN_SUBSCRIPT_BASES
+                or stem in _PK91_PROPER_SUBSCRIPT_BASES):
+            return bare[:-1] + w[len(w) - suffix_len:]
+        return w
+
+    return " ".join(_strip(w) for w in words)
+
+
+def _clean_pk91_surface(text: str) -> str:
+    """Strip PK91 linguistic notation to recover the orthographic
+    surface form: ``=`` clitic boundaries become spaces, ``-``
+    morpheme boundaries between alphabetic chars are removed,
+    ``-Ø`` zero-morpheme markers are dropped, ``[...]`` constituent
+    brackets are stripped (content preserved), pronoun-triggered
+    subscript co-indexing is removed, and whitespace is collapsed."""
+    text = text.replace("=", " ")
+    text = text.replace("-Ø", "").replace("Ø", "")
+    text = re.sub(r"(?<=[a-zA-Z])-(?=[a-zA-Z])", "", text)
+    text = text.replace("[", "").replace("]", "")
+    text = re.sub(r"\s+", " ", text).strip()
+    text = _pk91_strip_subscripts(text)
+    return text
+
+
+def extract_kroeger1991() -> Iterator[Exemplar]:
+    """Walk Kroeger 1991 PhD dissertation (PK91) for Tagalog example
+    sentences. Native-PDF source (no OCR cleanup needed). Skip PDF
+    pages 1-12 (front matter: title, abstract, TOC, dedication).
+    Cross-linguistic examples (Welsh, Irish, Chamorro, etc.) are
+    filtered by the standard ``_looks_like_tagalog`` heuristic."""
+    path = REFERENCES_DIR / "PK91-Thesis-Revised.txt"
+
+    for page_num, page_text in _pages_from_pdftotext(path):
+        if page_num < 13:
+            continue
+        yield from _pk91_extract_from_page(page_num, page_text)
+
+
+def _pk91_extract_from_page(
+    page_num: int, page_text: str,
+) -> Iterator[Exemplar]:
+    """Extract example-block exemplars from one PK91 page. State
+    machine tracks the current block index; for each subsequent
+    non-blank line, check for sub-label or fall through to next-block
+    transition."""
+    current_block_n: str | None = None
+
+    for line in page_text.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+
+        block_m = _PK91_BLOCK_LABEL_RE.match(stripped)
+        if block_m:
+            current_block_n = block_m.group(1)
+            rest = block_m.group(2).strip()
+            if not rest:
+                continue
+            sub_m = _PK91_SUBLABEL_RE.match(rest)
+            if sub_m:
+                ex = _pk91_yield_exemplar(
+                    page_num, current_block_n,
+                    sub_m.group(1), sub_m.group(2),
+                )
+            else:
+                ex = _pk91_yield_exemplar(
+                    page_num, current_block_n, None, rest,
+                )
+            if ex is not None:
+                yield ex
+            continue
+
+        if current_block_n is None:
+            continue
+
+        sub_m = _PK91_SUBLABEL_RE.match(stripped)
+        if sub_m:
+            ex = _pk91_yield_exemplar(
+                page_num, current_block_n,
+                sub_m.group(1), sub_m.group(2),
+            )
+            if ex is not None:
+                yield ex
+
+
+def _pk91_yield_exemplar(
+    page_num: int, block_n: str, sub_letter: str | None, raw_surface: str,
+) -> Exemplar | None:
+    """Clean + filter a candidate PK91 surface line. Returns an
+    Exemplar on success, None if the line fails the Tagalog-shape /
+    sentence-shape filters or contains theoretical gap markers."""
+    # Reject abstract gap-marker examples (Kroeger ch. 7 unbounded-
+    # dependency notation, not parseable Tagalog).
+    if _PK91_GAP_MARKER_RE.search(raw_surface):
+        return None
+
+    # Strip leading ungrammaticality marker ``(*)`` / ``(?)`` for the
+    # surface, but capture it as marked_ungrammatical signal.
+    leading_marker_m = _PK91_LEADING_MARKER_RE.match(raw_surface)
+    if leading_marker_m:
+        raw_surface = raw_surface[leading_marker_m.end():]
+        explicit_ungram = True
+    else:
+        explicit_ungram = False
+
+    cleaned = _clean_pk91_surface(raw_surface)
+    if not _is_sentence_shape(cleaned):
+        return None
+    if not _looks_like_tagalog(cleaned):
+        return None
+
+    locator = (
+        f"page-{page_num}/ex-{block_n}{sub_letter}"
+        if sub_letter else f"page-{page_num}/ex-{block_n}"
+    )
+    return Exemplar(
+        source="kroeger1991",
+        locator=locator,
+        text_raw=cleaned,
+        text_normalized=normalize_orthography(cleaned),
+        has_gloss=True,
+        gloss_en=None,
+        marked_ungrammatical=explicit_ungram or cleaned.startswith(("*", "?")),
+        ocr_quality="native-pdf",
+    )
+
+
+# === Source 6: Ramos 1971 Dictionary (verb-example sentences) =============
 
 
 _RAMOS_ENTRY_RE = re.compile(r"^([a-zàáâèéêìíîòóôùúûñ'-]+(?:\s+\([A-Za-z]+\))?)\s+(n\.|v\.|adj\.|adv\.|conj\.|interj\.|prep\.|pron\.|part\.)\s*(.+)?$")
@@ -1168,6 +1382,7 @@ def cmd_extract() -> None:
         ("wave2-ramos1971.jsonl", extract_ramos1971()),
         ("wave3-so1972.jsonl", extract_so1972()),
         ("wave3-rg-conversational.jsonl", extract_rg_conversational()),
+        ("wave4-kroeger1991.jsonl", extract_kroeger1991()),
     ]
     for fname, it in pairs:
         path = EXEMPLARS_DIR / fname
@@ -1182,6 +1397,7 @@ _PARSE_SOURCES = [
     ("wave2-ramos1971.jsonl", "wave2-ramos1971-parse-results.jsonl", 500),
     ("wave3-so1972.jsonl", "wave3-so1972-parse-results.jsonl", 500),
     ("wave3-rg-conversational.jsonl", "wave3-rg-conversational-parse-results.jsonl", 500),
+    ("wave4-kroeger1991.jsonl", "wave4-kroeger1991-parse-results.jsonl", None),
 ]
 
 
@@ -1658,6 +1874,7 @@ _XWAVE_SOURCES = [
     ("Wave 2 — R&G Intermediate", "wave2-rg-intermediate-parse-results.jsonl"),
     ("Wave 3 — S&O 1972", "wave3-so1972-parse-results.jsonl"),
     ("Wave 3 — R&G Conversational", "wave3-rg-conversational-parse-results.jsonl"),
+    ("Wave 4 — Kroeger 1991", "wave4-kroeger1991-parse-results.jsonl"),
 ]
 
 # Harvest-noise OOV tokens (Phase 8/9 — not real OOV; surface from
