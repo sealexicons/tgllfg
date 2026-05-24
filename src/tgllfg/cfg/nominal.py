@@ -754,6 +754,17 @@ def register_rules(rules: list[Rule]) -> None:
                     "(↑ CARDINAL_VALUE) = ↓2 CARDINAL_VALUE",
                     "(↑ APPROX) = ↓2 APPROX",
                     "(↑ DISTRIB) = ↓2 DISTRIB",
+                    # Phase 9.X.post-3: lift MEASURE from the head N
+                    # so cardinal-modified measure-NPs surface as
+                    # MEASURE=true at the NP level. The downstream
+                    # NP-possessive guard (``¬ (↓2 MEASURE)``) uses
+                    # this to block ``ang manok ng isang tasang
+                    # palay`` from compiling as a possessive — its
+                    # absence was a major forest-density contributor
+                    # to ANG MANOK sent-29's 0-parse state under the
+                    # default ``max_tree_iterations=5000`` cap.
+                    "(↑ MEASURE) = ↓4 MEASURE",
+                    "(↑ MEASURE_HEAD) = ↓4 MEASURE_HEAD",
                     "¬ (↓4 CARDINAL_VALUE)",
                     # Constraining: enforce the daughter is actually
                     # CARDINAL=YES, not just any NUM. Without this,
@@ -793,6 +804,18 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE",
                 "¬ (↓3 CARDINAL_VALUE)",
                 "(↓1 CARDINAL) =c true",
+                # Phase 9.X.post-3: block measure-N heads at the
+                # N-level. ``isang tasang palay`` should compose at
+                # the NP level (the NP-level cardinal-modifier rule
+                # already handles this case directly, producing
+                # NP[CASE=GEN] with MEASURE=true). The N-level path
+                # creates a competing N which fans the chart forest
+                # and exceeds ``max_tree_iterations=5000`` on
+                # ANG MANOK sent-29 ``Pinakain niya ang manok ng
+                # isang tasang palay.``. Excluding measure-N heads
+                # here keeps the canonical NP-level parse reachable
+                # within the default tree-walk budget.
+                "¬ (↓3 MEASURE)",
             ],
         ))
 
@@ -926,7 +949,23 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             f"NP[CASE={case}]",
             [f"NP[CASE={case}]", "NP[CASE=GEN]"],
-            ["(↑) = ↓1", "(↑ POSS) = ↓2", "¬ (↑ POSS-EXTRACTED)"],
+            [
+                "(↑) = ↓1",
+                "(↑ POSS) = ↓2",
+                "¬ (↑ POSS-EXTRACTED)",
+                # Phase 9.X.post-3: block MEASURE-NPs from possessor
+                # position. ``ang manok ng isang tasang palay``
+                # (= "the chicken of one cup of rice") is implausible
+                # as a true possessive; the MEASURE-NP belongs in
+                # an argument slot (the V's GEN-THEME for ANG MANOK
+                # sent-29). Reduces forest density enough for the
+                # default ``max_tree_iterations=5000`` cap to surface
+                # the canonical V-rule parse. MEASURE propagation
+                # through the cardinal-NP-modifier rule was added in
+                # the same commit so MEASURE=true surfaces at the NP
+                # level for this guard to see.
+                "¬ (↓2 MEASURE)",
+            ],
         ))
 
     # --- 9.X.c8: NP-internal sa-PP locative/oblique modifier ---
