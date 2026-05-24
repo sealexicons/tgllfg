@@ -4055,6 +4055,85 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.post-3: wala + nang (contracted na+-ng) + V[AV] + OBL ---
+    #
+    # ``Wala nang kumakausap sa kanya.``
+    #     "No one talks to her anymore."   (ANG MANOK sent-51)
+    # ``Wala nang naninirahan dito.``
+    #     "No one lives here anymore."
+    #
+    # The ``nang`` here is the surface contraction of ``na + -ng``
+    # (2P-clitic ALREADY + bound linker), structurally the linker
+    # between ``wala`` and a headless-RC body. The tokenizer's bound-
+    # ``-ng`` splitter does NOT fire on ``nang`` because ``nang`` is
+    # already a recognized standalone PART surface (Phase 9.X.c45
+    # manner-linker reading at particles.yaml:1803, plus the
+    # subordinator entries above it). Splitting context-sensitively
+    # (only after wala / may / etc.) was rejected as too invasive;
+    # this rule instead consumes ``nang`` directly via its existing
+    # PART entry, with the ASPECT_PART=ALREADY semantics lifted to
+    # the matrix.
+    #
+    # F-structure shape:
+    #
+    #   PRED         = 'EXIST <SUBJ>'
+    #   CLAUSE_TYPE  = 'EXISTENTIAL'
+    #   POLARITY     = 'NEG'
+    #   ASPECT_PART  = 'ALREADY'           (from contracted na)
+    #   SUBJ         = [PRED='PRO']        (the missing AGENT)
+    #
+    # Gated on ``(↓2 LEMMA) =c 'nang'`` plus the existential-NEG
+    # left edge; the V[VOICE=AV] daughter consumes the headless-RC
+    # body (verb with implicit SUBJ — the missing entity) and the
+    # NP[CASE=DAT] consumes the sa-PP (DAT-OBL — the GOAL of the
+    # talk-to event in sent-51, ``sa kanya`` "to her").
+    #
+    # Two variants: with and without the DAT-OBL daughter. Sent-51
+    # uses the DAT variant; the bare-V variant covers cases like
+    # ``Wala nang dumarating.`` ("No one comes anymore.").
+    #
+    # Reference: S&O 1972 §11.5 (existential negation with RC);
+    # R&G 1981 ANG MANOK sent-51.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL, POLARITY=NEG]",
+            "PART[LEMMA=nang]",
+            "V[VOICE=AV]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ ASPECT_PART) = 'ALREADY'",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 LEMMA) =c 'nang'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL, POLARITY=NEG]",
+            "PART[LEMMA=nang]",
+            "V[VOICE=AV]",
+            "NP[CASE=DAT]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ ASPECT_PART) = 'ALREADY'",
+            "↓4 ∈ (↑ ADJUNCT)",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 LEMMA) =c 'nang'",
+        ],
+    ))
+
+
     # --- Phase 9.X.post-3: negative HAVE with V[OV] RC body -----------
     #
     # ``Wala siyang kinakausap.``  "She has no one to talk to."
