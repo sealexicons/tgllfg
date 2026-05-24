@@ -31,6 +31,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "CF",
         "CLOCK_MARKER",
         "COMPARATIVE",
+        "COPULA",
         "CORREL",
         "COUNTERFACTUAL",
         "DECIMAL",
