@@ -2250,3 +2250,73 @@
 - surface: nagtutulungtulong
   pos: ADV
   feats: {ADV_TYPE: MANNER, RECP: true, LEMMA: tulong}
+
+# === Phase 9.X.post-1: stopwords-iso/stopwords-tl coverage closures =======
+#
+# 11 closures driven by the stopwords-iso/stopwords-tl probe (147-form
+# function-word inventory; see tests/tgllfg/test_stopwords_coverage.py).
+# These are high-frequency function/discourse surfaces that surfaced
+# as _UNK at the pipeline level when probed against the analyzer +
+# lex pipeline (tokenize → enclitic-split → linker-split → lex lookup).
+#
+# Distribution:
+#   * 2 PREP — bilang, tulad (essive / similative)
+#   * 3 ADV — muli, kailanman, nasaan (the last is a wh-ADV existential)
+#   * 1 VERB[PSYCH] — nais (desire; parallel to gusto / ibig)
+#   * 5 VERB discrete-surface — maging / naging (copula),
+#     makita (ma- aptative of kita), nabanggit (na- PFV of banggit),
+#     nagkaroon (mag-ka- PFV of karoon)
+#
+# Discrete-surface rationale: maging / naging are irregular copular
+# verbs without standard paradigm membership; makita / nabanggit
+# avoid cross-POS lex ambiguity with kita (PRON) and don't warrant
+# adding banggit / kita as VERB roots for this single surface each;
+# nagkaroon avoids spurious magka- paradigm generation on a single
+# irregular form.
+#
+# Bare `napaka` (stopword #103) is NOT added — the intensifier
+# `napaka-` only attaches productively to ADJ roots (adj_paradigms.yaml
+# line 90) and standalone usage lacks audit-corpus evidence. The
+# test fixture excludes it alongside `am` (English contamination).
+#
+# References: S&O 1972 §6.7 (bilang/tulad as PREP); R&G 1981 §8
+# (interrogatives — nasaan parallel to saan); Kroeger 1993 §3
+# (copular maging).
+
+- surface: bilang
+  pos: PREP
+  feats: {PREP_TYPE: ROLE, LEMMA: bilang}
+- surface: tulad
+  pos: PREP
+  feats: {PREP_TYPE: SIMILATIVE, LEMMA: tulad}
+
+- surface: muli
+  pos: ADV
+  feats: {ADV_TYPE: REPETITION, LEMMA: muli}
+- surface: kailanman
+  pos: ADV
+  feats: {ADV_TYPE: TIME, QUANT: UNIV, LEMMA: kailanman}
+- surface: nasaan
+  pos: ADV
+  feats: {WH: true, ADV_TYPE: LOCATION, LOC_EXISTENTIAL: true, LEMMA: nasaan}
+
+- surface: nais
+  pos: VERB
+  feats: {CTRL_CLASS: PSYCH, LEMMA: nais}
+
+- surface: maging
+  pos: VERB
+  feats: {COPULA: true, ASPECT: CTPL, LEMMA: maging}
+- surface: naging
+  pos: VERB
+  feats: {COPULA: true, ASPECT: PFV, LEMMA: maging}
+
+- surface: makita
+  pos: VERB
+  feats: {VOICE: OV, MOOD: ABIL, ASPECT: CTPL, LEMMA: kita}
+- surface: nabanggit
+  pos: VERB
+  feats: {VOICE: OV, ASPECT: PFV, LEMMA: banggit}
+- surface: nagkaroon
+  pos: VERB
+  feats: {VOICE: AV, ASPECT: PFV, LEMMA: magkaroon}
