@@ -57,3 +57,6 @@ data/tgl/exemplars/
 # Per-project plan files (live alongside the repo for convenience but
 # remain personal working notes, not project artifacts).
 .claude/plans/
+
+# Per-session lock state written by the Claude Code harness.
+.claude/scheduled_tasks.lock
