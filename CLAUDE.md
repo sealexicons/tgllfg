@@ -42,7 +42,7 @@ wall ~155–170s post-Phase-9.X); bump to 600000ms for `test-xslow`.
 Don't pad to the ceiling for the standard gates.
 
 Capture-first idiom for failing runs:
-`hatch run test-fast 2>&1 | tee /tmp/pytest.log | tail -200`. Tee then tail —
+`hatch run test-fast 2>&1 | tee ./tmp/pytest.log | tail -200`. Tee then tail —
 never the reverse, or you lose the full log.
 
 Docs-only diffs: skip pytest and `hatch run check`; run `markdownlint` only.
@@ -159,11 +159,13 @@ scripts/        harvest_exemplars.py, generate_coverage_corpus.py,
   one-liners** — both trip the permission prompt. pytest already prints its
   duration; trust the summary line.
 - **No heredoc-wrapped hatch invocations** — write Python diagnostics to a
-  `/tmp/probe_*.py` scratch file or use `python -c "…"`.
+  `./tmp/probe_*.py` scratch file or use `python -c "…"`.
 - **Pipe pytest output into `grep` / `tee` on the first run** — never re-run
   pytest just to grep the failure list.
-- **`/tmp` ops are pre-authorized.** Read / write / execute / remove
-  `/tmp/*` files freely (probes, logs, head/tail/cat/grep) without asking.
+- **`./tmp` ops are pre-authorized.** Read / write / execute / remove
+  `./tmp/*` files freely (probes, logs, head/tail/cat/grep) without asking.
+  The project-local `./tmp/` directory (gitignored) supersedes system `/tmp`
+  as of 2026-05-24 — survives macOS reboot, stays portable across machines.
 
 ## Where to find context this file doesn't cover
 

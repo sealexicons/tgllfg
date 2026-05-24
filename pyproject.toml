@@ -93,6 +93,12 @@ check_untyped_defs = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
+# Restrict collection to the canonical test tree. The gitignored
+# project-local ./tmp/ directory (see feedback_use_project_tmp)
+# contains historical probe scripts that may name themselves
+# test_*.py for their internal pytest-style assertions — those
+# are not part of the test suite and must not be auto-collected.
+testpaths = ["tests"]
 markers = [
   "postgres: tests that require a running Docker daemon (Postgres 17 testcontainer)",
   "slow: tests with single-test call duration >= 5s (T2 bucket; excluded from test-fast)",

@@ -32,8 +32,6 @@ from typing import Iterator
 # wave1 alone before the SIGALRM cap). The 10s cap is well above
 # the observed p95 (~0.1s) so it only fires on pathological items.
 ITEM_TIMEOUT_S = 10
-AUDIT_MONITOR_LOG = Path("/tmp/audit_monitor.log")
-AUDIT_LAST_ITEM = Path("/tmp/audit_monitor.last_item")
 
 
 class ParseTimeout(Exception):
@@ -50,6 +48,12 @@ signal.signal(signal.SIGALRM, _alarm_handler)
 REPO_ROOT = Path(__file__).resolve().parent.parent
 REFERENCES_DIR = REPO_ROOT / "data" / "tgl" / "references"
 EXEMPLARS_DIR = REPO_ROOT / "data" / "tgl" / "exemplars"
+# Project-local scratch directory (gitignored) for audit-monitor
+# state; supersedes system ``/tmp`` paths as of 2026-05-24 — survives
+# macOS reboot and stays portable across machines.
+TMP_DIR = REPO_ROOT / "tmp"
+AUDIT_MONITOR_LOG = TMP_DIR / "audit_monitor.log"
+AUDIT_LAST_ITEM = TMP_DIR / "audit_monitor.last_item"
 
 
 @dataclass
@@ -1603,6 +1607,7 @@ def cmd_parse() -> None:
     # Phase 9.X.pre-1.19: reset the monitor log + last-item file at
     # the start of each audit run so external tail / monitor loops
     # see fresh state.
+    TMP_DIR.mkdir(parents=True, exist_ok=True)
     AUDIT_MONITOR_LOG.unlink(missing_ok=True)
     AUDIT_LAST_ITEM.unlink(missing_ok=True)
     grand_start = time.time()
@@ -1657,9 +1662,9 @@ def _audit_log(line: str) -> None:
 
 
 def _write_last_item(payload: dict) -> None:
-    """Atomically rewrite /tmp/audit_monitor.last_item with the
-    sentence currently being parsed. External monitors can read
-    this file to detect hangs (start_ts vs now)."""
+    """Atomically rewrite ``./tmp/audit_monitor.last_item`` with
+    the sentence currently being parsed. External monitors can
+    read this file to detect hangs (start_ts vs now)."""
     tmp = AUDIT_LAST_ITEM.with_suffix(".tmp")
     tmp.write_text(json.dumps(payload), encoding="utf-8")
     import os as _os
@@ -1682,7 +1687,7 @@ def _parse_one(
     loop continues. Per-item latency is captured in the record
     (``latency_s``) and rolled up into periodic progress lines
     (every 25 items + at wave end) written to
-    ``/tmp/audit_monitor.log``."""
+    ``./tmp/audit_monitor.log``."""
 
     n = 0
     bucket_counts: Counter[str] = Counter()

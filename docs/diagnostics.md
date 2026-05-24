@@ -334,16 +334,16 @@ that `hatch run test-both` did not catch. The wave-1 corpus
 (123 sentences) catches construction-class regressions that
 the curated test suite doesn't.
 
-Reusable wrappers live at `/tmp/wave1_parse.py` and
-`/tmp/wave1_diff.py`. Workflow:
+Reusable wrappers live at `./tmp/wave1_parse.py` and
+`./tmp/wave1_diff.py`. Workflow:
 
 ```bash
 # Pre-change baseline (once per branch start):
-hatch run python /tmp/wave1_parse.py > /tmp/wave1_pre.jsonl
+hatch run python ./tmp/wave1_parse.py > ./tmp/wave1_pre.jsonl
 # After each commit:
-hatch run python /tmp/wave1_parse.py > /tmp/wave1_post.jsonl
-hatch run python /tmp/wave1_diff.py /tmp/wave1_pre.jsonl \
-    /tmp/wave1_post.jsonl
+hatch run python ./tmp/wave1_parse.py > ./tmp/wave1_post.jsonl
+hatch run python ./tmp/wave1_diff.py ./tmp/wave1_pre.jsonl \
+    ./tmp/wave1_post.jsonl
 # Output: +N closures / -N regressions per locator
 ```
 

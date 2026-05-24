@@ -15,7 +15,7 @@ Usage::
     python scripts/oov_hit_list.py --threshold 5
     python scripts/oov_hit_list.py --limit 50
     python scripts/oov_hit_list.py --wave wave2-rc1990 --threshold 3
-    python scripts/oov_hit_list.py --format markdown > /tmp/hits.md
+    python scripts/oov_hit_list.py --format markdown > ./tmp/hits.md
 
 The morphological probe runs the same analyzer the parser uses
 (``tgllfg.morph.analyzer._get_default``) so the POS hint surfaces
