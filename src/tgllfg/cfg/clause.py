@@ -1192,6 +1192,54 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.X.post-3: predicative ADJ + temporal ADV (impersonal) ---
+    #
+    # ``Maaga noon.``      "It was early then."   (ANG MANOK sent-21)
+    # ``Mainit ngayon.``   "It's hot now."
+    # ``Malamig kahapon.`` "It was cold yesterday."
+    #
+    # Predicative-ADJ variant with a temporal-ADV adjunct in place of
+    # the NOM-NP subject. Tagalog admits this verbless impersonal-
+    # predicative shape for weather / atmospheric / time-bound ADJ
+    # predicates where the situational subject is discourse-bound
+    # rather than overt — parallel to the Phase 9.X.c49 weather-V
+    # impersonal but with an ADJ head instead of a V head.
+    #
+    # F-structure shape:
+    #
+    #   PRED        = 'ADJ <SUBJ>'
+    #   ADJ_LEMMA   = the adjective's lemma (``aga``, ``init``, ...)
+    #   PREDICATIVE = true
+    #   IMPERSONAL  = true
+    #   SUBJ        = [PRED='PRO']                 — synth impersonal
+    #   ADJUNCT     ∋ the temporal ADV's f-structure
+    #
+    # The IMPERSONAL flag mirrors the c49 weather-V analytical
+    # commitment and gates downstream consumers that branch on
+    # impersonal subjects (LMT, semantic interpretation).
+    #
+    # Gating: ADV[ADV_TYPE=TIME] only — restricts to the temporal
+    # adverb subclass to avoid spurious matches on MANNER / FREQUENCY
+    # / LOCATION ADVs (those have their own predicative-licensed
+    # constructions where applicable).
+    #
+    # Reference: Schachter & Otanes 1972 §11.4 (verbless temporal
+    # predicates); R&G 1981 ANG MANOK sent-21.
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE]", "ADV[ADV_TYPE=TIME]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↑ IMPERSONAL) = true",
+            "(↓1 PREDICATIVE) =c true",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "↓2 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+
+
     # --- Phase 9.X.c48: ADJ + V-XCOMP tough construction --------------
     #
     # ``Mahirap kumilos.``  "It's hard to move." (PANAHON sent-18)
