@@ -61,6 +61,7 @@ from .sandhi import (
     infix_after_first_consonant,
     nasal_assim_prefix,
     nasal_substitute,
+    raise_final_o,
 )
 
 # Phase 5f closing deferral (digit tokenization): a bare digit string
@@ -135,13 +136,25 @@ def _apply(
         # (the L37 pattern requires the order
         # ``prefix → redup_root`` so the prefix appears only
         # on the first copy).
+        #
+        # Phase 10.A: per-root ``redup_o_raise`` sandhi flag raises
+        # the first-copy's stem-final /o/ to /u/ before the citation
+        # is appended (``taon`` → ``taun`` + ``taon`` = ``tauntaon``;
+        # canonical orthography ``taun-taon``). The rule is the same
+        # /o/→/u/ raising that applies on suffixation (S&O 1972
+        # §4.21): once the stem-final /o/ is no longer in the final
+        # syllable of the word, it raises. Per-root opt-in (not
+        # default) so existing wh-PRON redup (``ano`` → ``anoano``,
+        # canonical pronunciation per S&O 1972) stays unchanged
+        # pending a separate canonical-form review.
         if not root_citation:
             raise ValueError(
                 "redup_root op requires root_citation context "
                 "(generate_form passes it; standalone callers "
                 "must pass it explicitly)"
             )
-        return base + root_citation
+        first_copy = raise_final_o(base) if "redup_o_raise" in flags else base
+        return first_copy + root_citation
     if op.op == "infix":
         return infix_after_first_consonant(base, op.value)
     if op.op == "suffix":
@@ -600,7 +613,33 @@ class Analyzer:
             feats: dict[str, object] = {**root.feats}
             for k, v in cell.feats.items():
                 feats[k] = v
-            feats.setdefault("LEMMA", root.citation)
+            # Phase 10.A: opt-in canonical-hyphenated LEMMA for
+            # ``redup_root``-final cells (parallel to the always-on
+            # behavior in :meth:`_index_particle_paradigms` for
+            # particle-base cells). The first copy is what running
+            # the cell minus its last op produces, plus the same
+            # per-root sandhi the live op applies (currently only
+            # ``redup_o_raise`` for taon → taun).
+            if (
+                cell.lemma_redup_hyphen
+                and cell.operations
+                and cell.operations[-1].op == "redup_root"
+            ):
+                pre_redup_cell = type(cell)(
+                    **{
+                        **{
+                            f.name: getattr(cell, f.name)
+                            for f in cell.__dataclass_fields__.values()
+                        },
+                        "operations": list(cell.operations[:-1]),
+                    }
+                )
+                first_copy = generate_form(root, pre_redup_cell)
+                if "redup_o_raise" in root.sandhi_flags:
+                    first_copy = raise_final_o(first_copy)
+                feats["LEMMA"] = f"{first_copy}-{root.citation}"
+            else:
+                feats.setdefault("LEMMA", root.citation)
             canonical_lemma = feats.get("LEMMA", root.citation)
             if not isinstance(canonical_lemma, str):
                 canonical_lemma = root.citation
