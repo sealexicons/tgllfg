@@ -1680,6 +1680,17 @@
 # new TIME-N entry to the inventory is a one-line YAML wiring; no
 # paradigm-cell or analyzer changes needed.
 #
+# Phase 10.B retrofit: stamps ``REDUP=FULL`` + ``REDUP_SEM=FREQ`` —
+# the cross-cutting full-reduplication feats introduced with the
+# Phase 10.B ``place_redup_distr`` cell below, per the Phase 10
+# plan-of-record's REDUP=FULL / REDUP_SEM=DISTR|ITER|ATTEN|INTENS|FREQ
+# enum and per external-reviewer recommendation (Phase 10 reviewer
+# memo, archived in [[project_phase10_a_progress]]). These are
+# orthogonal to ADV_TYPE / FREQ_VALUE: ``ADV_TYPE=FREQUENCY +
+# REDUP_SEM=FREQ`` tags the AdvP as both a syntactic frequency
+# adjunct and a morphological full-redup derivation; downstream
+# consumers can gate on either axis.
+#
 # References: Schachter & Otanes 1972 §40.7 (frequency adverb
 # reduplication — explicit list "araw-araw / oras-oras / gabi-gabi");
 # Ramos 1971 dict (gabi-gabi); R&B 1986 ch.4 (productive
@@ -1690,9 +1701,58 @@
   affix_class: time_redup_freq
   operations:
     - {op: redup_root}
-  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: DISTRIBUTIVE}
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: DISTRIBUTIVE, REDUP: FULL, REDUP_SEM: FREQ}
   lemma_redup_hyphen: true
-  notes: time_redup_freq — araw/gabi/oras/taon → araw-araw etc. (Phase 10.A distributive-frequency redup)
+  notes: time_redup_freq — araw/gabi/oras/taon → araw-araw etc. (Phase 10.A distributive-frequency redup; 10.B REDUP/REDUP_SEM retrofit)
+
+# --- Phase 10.B: place_redup_distr (NOUN → distributive-LOC ADV) --------
+# Productive bare reduplication of PLACE-N roots ("X to X") into the
+# distributive-locative adverb class: ``bahay`` → ``bahay-bahay``
+# "house to house", ``pinto`` → ``pinto-pinto`` "door to door",
+# ``bayan`` → ``bayan-bayan`` "town to town", ``bundok`` →
+# ``bundok-bundok`` "mountain after mountain", ``bukid`` →
+# ``bukid-bukid`` "from farm to farm / rural areas".
+#
+# Mirrors the Phase 10.A ``time_redup_freq`` cell structure: single
+# ``redup_root`` op, NOUN→ADV POS-flip, ``lemma_redup_hyphen: true``
+# for canonical hyphenated LEMMA. No PLACE-N currently needs
+# ``redup_o_raise`` — the external-reviewer's 100-form taxonomy
+# attests ``pinto-pinto`` / ``bundok-bundok`` (no first-copy
+# raising on stems with stem-final /o/ in PLACE-N use).
+#
+# ADV_TYPE=LOCATION (existing value, consumed by the wh-LOC
+# ``saan`` / ``nasaan`` entries). REDUP_SEM=DISTR distinguishes
+# the distributive-locative "X-to-X" reading from the FREQ
+# "every X" reading on the TIME-N cell. The output AdvP does NOT
+# yet have a clause-final attachment rule — per discourse.py
+# §5f-C5 closing comment, clause-final LOCATION/MANNER AdvPs are
+# still in the Phase 9.W-class deferral block (Wackernagel-cluster
+# + quantifier-float interaction); the morphological cell here
+# productizes the LEX side, with grammar-side attachment held back
+# pending audit pressure. Reviewer endorsement to keep productive
+# redup machinery in morphology/lex layer rather than CFG syntax
+# (Phase 10 reviewer memo).
+#
+# Per-root opt-in via ``affix_class: [place_redup_distr]`` in
+# nouns.yaml (currently 5 roots: bahay, pinto, bayan, bundok,
+# bukid). Adding a new PLACE-N entry is a one-line YAML wiring;
+# the reviewer's caveat "many roots would sound odd without
+# contextual motivation" argues for per-root opt-in rather than
+# wholesale generalization to every NOUN with SEM_CLASS=LOCATION.
+#
+# References: Phase 10 external-reviewer 100-example reduplication
+# typology (archived in [[project_phase10_a_progress]]); S&O 1972
+# (no explicit list — productive PLACE-N redup is treated as a
+# semantically-constrained productive pattern rather than a
+# closed lexical class).
+- base_pos: NOUN
+  pos: ADV
+  affix_class: place_redup_distr
+  operations:
+    - {op: redup_root}
+  feats: {ADV_TYPE: LOCATION, REDUP: FULL, REDUP_SEM: DISTR}
+  lemma_redup_hyphen: true
+  notes: place_redup_distr — bahay/pinto/bayan/bundok/bukid → bahay-bahay etc. (Phase 10.B distributive-locative redup)
 
 # === Phase 9.X.post-1: pa- / i- ADJ-derived directional + spatial ========
 #

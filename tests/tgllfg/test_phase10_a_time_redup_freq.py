@@ -68,7 +68,9 @@ def test_time_redup_freq_indexed_with_hyphenated_lemma(
 ) -> None:
     """The productive cell indexes each TIME-N redup surface as ADV
     with the canonical hyphenated LEMMA, ADV_TYPE=FREQUENCY, and
-    the new FREQ_VALUE=DISTRIBUTIVE."""
+    the new FREQ_VALUE=DISTRIBUTIVE. Phase 10.B retrofit: also
+    asserts the cross-cutting REDUP=FULL + REDUP_SEM=FREQ feats
+    (introduced with the Phase 10.B place_redup_distr sibling)."""
     analyses = _get_default()._index.particles.get(surface, [])
     redup = [
         a for a in analyses
@@ -83,6 +85,8 @@ def test_time_redup_freq_indexed_with_hyphenated_lemma(
     a = redup[0]
     assert a.lemma == lemma
     assert a.feats.get("LEMMA") == lemma
+    assert a.feats.get("REDUP") == "FULL"
+    assert a.feats.get("REDUP_SEM") == "FREQ"
 
 
 def test_taon_o_raising_only_on_first_copy() -> None:

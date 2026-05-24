@@ -334,6 +334,7 @@
 - citation: bahay
   pos: NOUN
   gloss: house
+  affix_class: [place_redup_distr]
 
 - citation: baka
   pos: NOUN
@@ -461,6 +462,7 @@
 - citation: bayan
   pos: NOUN
   gloss: town, country
+  affix_class: [place_redup_distr]
 
 - citation: bayaw
   pos: NOUN
@@ -662,6 +664,7 @@
 - citation: bukid
   pos: NOUN
   gloss: field / countryside
+  affix_class: [place_redup_distr]
 
 - citation: bukirin
   pos: NOUN
@@ -690,6 +693,7 @@
 - citation: bundok
   pos: NOUN
   gloss: mountain
+  affix_class: [place_redup_distr]
 
 - citation: bunso
   pos: NOUN
@@ -2994,6 +2998,7 @@
 - citation: pinto
   pos: NOUN
   gloss: door
+  affix_class: [place_redup_distr]
 
 - citation: pisara
   pos: NOUN

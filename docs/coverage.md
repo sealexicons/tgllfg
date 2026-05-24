@@ -468,6 +468,48 @@ opt-in); existing wh-PRON redup keeps `anoano` / `sinosino`
 unraised (canonical-form audit deferred — S&O lists `anu-ano` /
 `sinu-sino`).
 
+### Phase 10.B PLACE-N → distributive-LOC ADV productive cell
+
+Sibling of 10.A on the morphological side: new
+`place_redup_distr` paradigm cell (same shape — `base_pos:
+NOUN, pos: ADV`, single `redup_root` op, `lemma_redup_hyphen:
+true`). Five PLACE-N roots opt in: `bahay` ("house"), `pinto`
+("door"), `bayan` ("town"), `bundok` ("mountain"), `bukid`
+("field/countryside"). Generates `bahay-bahay` "house to house",
+`pinto-pinto` "door to door", etc. with `ADV_TYPE=LOCATION`.
+
+Wave-1 audit diff: **88/123 → 88/123 (0/0)** — no audit
+attestations for any PLACE-N redup surface across all four
+waves. Reference grounding: the Phase 10 external-reviewer's
+100-form reduplication typology (archived in
+`[[project_phase10_a_progress]]`) explicitly attests the five
+opt-ins as productive distributive locatives; S&O 1972 / Ramos
+1971 / R&G transcriptions don't enumerate the pattern but
+treat it as productive with semantic restrictions rather than
+a closed lexical class. Per the reviewer's caveat "many roots
+would sound odd without contextual motivation", the cell stays
+per-root opt-in (not blanket SEM_CLASS=LOCATION wholesale).
+
+Cross-cutting feats introduced + retrofitted: new enum feats
+`REDUP=FULL` + `REDUP_SEM=DISTR|FREQ|ITER|ATTEN|INTENS` (the
+plan-of-record's morphological discriminators, per reviewer
+recommendation). Stamped by both 10.B's `place_redup_distr`
+(`REDUP_SEM=DISTR`) and retrofitted onto 10.A's
+`time_redup_freq` (`REDUP_SEM=FREQ`). Both share `REDUP=FULL`;
+`REDUP_SEM` is the morphology-semantic discriminator orthogonal
+to syntactic `ADV_TYPE`. Existing `redup_intens_adj`
+(ADJ→ADJ) is NOT yet retrofitted — deferred to Phase 10.E as
+part of the ADJ attenuative/intensive family work.
+
+**Scope limit (morphology-only)**: no clause-final
+`S → S AdvP[LOCATION]` grammar rule. Per discourse.py §5f-C5
+closing comment + Phase 9.W Cluster A/H precedent, clause-final
+LOCATION / MANNER AdvPs remain in the Wackernagel-interaction
+deferral block. The reviewer endorsed keeping productive redup
+machinery in morphology rather than CFG syntax. Grammar-side
+attachment is a Phase 10.B follow-on (10.B.post-N or Phase 11+)
+gated on audit pressure.
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
