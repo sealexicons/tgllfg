@@ -4055,6 +4055,57 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.post-3: negative HAVE with V[OV] RC body -----------
+    #
+    # ``Wala siyang kinakausap.``  "She has no one to talk to."
+    #   (ANG MANOK sent-50 audit form, with ``na`` 2P-clitic absorbed.)
+    # ``Wala siyang ginagawa.``    "She has nothing to do."
+    # ``Wala siyang kinain.``      "She ate nothing." / "She has nothing she ate."
+    #
+    # Parallel to the Phase 5j Commit 5d negative-HAVE rule above
+    # (``wala + PRON-NOM + linker + N``) but with a V[VOICE=OV] daughter
+    # in place of N. The V serves as the headless-RC body describing
+    # the negated entity: the V's SUBJ slot (= PATIENT in OV) binds
+    # to the missing PRO, and the V's OBJ-AGENT slot is filled with
+    # a synth PRO (the AGENT is anaphorically coreferent with the
+    # surface POSSESSOR ``siya`` but treated as discourse-recoverable
+    # at the f-structure level rather than via direct unification —
+    # avoids spurious CASE-conflict on NOM possessor vs GEN actor).
+    #
+    # F-structure shape:
+    #
+    #   PRED         = 'EXIST <SUBJ>'
+    #   CLAUSE_TYPE  = 'EXISTENTIAL'
+    #   POLARITY     = 'NEG'
+    #   HAVE         = true
+    #   SUBJ         = [PRED='PRO',
+    #                   POSSESSOR=↓2,
+    #                   ADJ ∋ ↓4]
+    #   SUBJ ADJ ∋ ↓4 = the V-headed RC body, with V's SUBJ = ↑SUBJ
+    #                    (REL-PRO-style binding via shared f-structure)
+    #                    and V's OBJ-AGENT = [PRED='PRO'] (implicit
+    #                    AGENT, anaphorically coreferent with possessor).
+    #
+    # Reference: S&O 1972 §11.5 (HAVE-with-RC); ANG MANOK sent-50.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL, POLARITY=NEG]",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "V[VOICE=OV]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓3 LINK) =c 'NG'",
+        ],
+    ))
+
     # --- Phase 5n.A Commit 21: positive HAVE with leading linker (§18 L87) ---
     #
     # ``mayroon`` is the vowel-final variant of ``may`` and ALWAYS
