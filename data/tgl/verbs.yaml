@@ -645,8 +645,11 @@
   pos: VERB
   gloss: do, make
   transitivity: TR
-  affix_class: [um, in_oblig, an_oblig, maka, ipag]
+  affix_class: [um, in_oblig, an_oblig, maka, ipag, pag_gerund]
   sandhi_flags: [a_deletion]
+  # Phase 9.X.post-1: pag_gerund opt-in closes the stopwords-iso
+  # probe gap on ``paggawa`` "the doing", riding on the existing
+  # pre-4.7 pag- gerund cells in paradigms.yaml.
   # Phase 9.X.pre-4.2: a_deletion sandhi flag triggers low-vowel
   # deletion at suffix attachment per S&O 1972 §4.21. Closes
   # `gawin` (gawa + in via /a/-deletion) and the CV-redup variant
@@ -2062,7 +2065,20 @@
   pos: VERB
   gloss: raise, lift up
   transitivity: TR
-  affix_class: [mag, in_oblig, an_oblig, maka]
+  affix_class: [mag, in_oblig, an_oblig, maka, i_oblig]
+  # Phase 9.X.post-1: i_oblig opt-in generates the IV PFV ``itaas``
+  # "raise/lift up (something)" — the verb sense alongside the
+  # NOUN-locative i_loc reading ("the top") from the parallel
+  # paradigm. Audit context: ``Itaas mo!`` is a common toasting
+  # expression. The TR transitivity matches: an actor-pivot
+  # raises an object-pivot.
+  #
+  # ``ibaba`` (lower X) has the parallel structure but the existing
+  # ``baba`` VERB entry (line ~201) is INTR ("go down, descend"),
+  # so adding ``i_oblig`` to it would generate spurious IV forms
+  # on an intransitive root. Closing the TR sense of ``baba``
+  # cleanly requires a separate TR entry — out of scope for
+  # 9.X.post-1; tracked as follow-on lex work.
 
 - citation: taba
   pos: VERB

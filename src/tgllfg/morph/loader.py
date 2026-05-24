@@ -63,6 +63,12 @@ _SOURCE_ALLOWED = frozenset({
     "rg81-transcriptions",
     "audit-corpus",
     "ref-grammar",
+    # Phase 9.X.post-1: stopwords-iso/stopwords-tl coverage probe
+    # surfaces high-frequency function/discourse forms that aren't
+    # in the curated reference grammars or audit corpora; route to
+    # this bucket so the loader's source-attribution audit stays
+    # explicit about provenance.
+    "stopwords-tl",
 })
 
 # Loan-source language. Empty (default) = native Tagalog.

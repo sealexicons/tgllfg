@@ -3921,3 +3921,37 @@
   gloss: yogurt
   source: audit-corpus
   loan: ENGLISH
+
+# === Phase 9.X.post-1: stopwords-iso/stopwords-tl noun closures ===========
+#
+# 5 abstract / locative NOUNs driven by the stopwords-iso/stopwords-tl
+# probe. See tests/tgllfg/test_stopwords_coverage.py and the parallel
+# particles.yaml section.
+#
+# pagkakaroon and pamamagitan are derivationally complex (pag- gerund
+# + ka-redup on magkaroon; pang- + cv-redup on mamagitan) but
+# lexicalized as standalone NOUNs in audit-attested usage; engineering
+# the full magka- / pang- nominalization paradigms is out of scope
+# for this sub-PR. Re-evaluate when corpus sweeps surface more
+# members of either pattern.
+- citation: katiyakan
+  pos: NOUN
+  gloss: certainty, assurance
+  source: stopwords-tl
+- citation: paraan
+  pos: NOUN
+  gloss: way, method, manner
+  source: stopwords-tl
+- citation: pagitan
+  pos: NOUN
+  gloss: space between, interval
+  source: stopwords-tl
+- citation: pamamagitan
+  pos: NOUN
+  gloss: means, intervention (often "sa pamamagitan ng" = "by means of")
+  source: stopwords-tl
+- citation: pagkakaroon
+  pos: NOUN
+  feats: {NOMINALIZED: true}
+  gloss: the having, possession (gerund of magkaroon)
+  source: stopwords-tl

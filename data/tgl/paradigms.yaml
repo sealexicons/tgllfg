@@ -1643,3 +1643,50 @@
     - {op: redup_root}
   feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: OCCASIONAL}
   notes: adv_redup — minsan → paminsanminsan / LEMMA paminsan-minsan (L105 productive frequency redup)
+
+# === Phase 9.X.post-1: pa- / i- ADJ-derived directional + spatial ========
+#
+# Two ADJ→POS-flip paradigm cells closing 4 stopwords-iso/stopwords-tl
+# probe gaps in one stroke. Both fire on opted-in ADJ roots
+# (currently `baba` and `taas`; opt-in via `affix_class: pa_direct`
+# and `affix_class: i_loc` in adjectives.yaml) and produce different
+# output POS:
+#
+# * pa_direct (ADJ → ADV): prefix `pa` on the bare ADJ root yields a
+#   directional adverb. `pa + baba → pababa` "downward";
+#   `pa + taas → pataas` "upward". Output is ADV with
+#   ADV_TYPE=DIRECTION. The pa-prefix here is the same morpheme as
+#   the directional locative case-marker; the productive cell
+#   captures the per-ADJ-root opt-in pattern.
+# * i_loc (ADJ → NOUN): prefix `i` on the bare ADJ root yields a
+#   spatial noun. `i + baba → ibaba` "below, bottom";
+#   `i + taas → itaas` "above, top". Output is NOUN with
+#   SEM_CLASS=LOCATION. These are the canonical "the X part" /
+#   "the X side" derivations used in `sa ibaba ng X` /
+#   `sa itaas ng X` PP frames.
+#
+# Both cells use `base_pos: ADJ` (loader's _require validator skips
+# voice/aspect on non-VERB cells) and set `pos` explicitly to flip
+# output POS for analyzer indexing. Opt-in is per-root (audit-
+# attestation-gated), matching the pre-4.7 pag_gerund pattern, so
+# every ADJ root doesn't spuriously gain directional / spatial
+# analyses.
+#
+# References: Schachter & Otanes 1972 §6 (directional pa-);
+# R&B 1986 ch.7 (spatial i-/sa-prefix nouns).
+
+- base_pos: ADJ
+  pos: ADV
+  affix_class: pa_direct
+  operations:
+    - {op: prefix, value: "pa"}
+  feats: {ADV_TYPE: DIRECTION}
+  notes: pa_direct — baba → pababa, taas → pataas (Phase 9.X.post-1 directional ADV)
+
+- base_pos: ADJ
+  pos: NOUN
+  affix_class: i_loc
+  operations:
+    - {op: prefix, value: "i"}
+  feats: {SEM_CLASS: LOCATION}
+  notes: i_loc — baba → ibaba, taas → itaas (Phase 9.X.post-1 spatial NOUN)
