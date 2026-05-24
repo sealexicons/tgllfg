@@ -313,3 +313,100 @@ for a future implementation commit.
   voice paradigm. Add a negative-fixture test in Phase 5j.
 - **Idiom-chunk preservation for raising** (deferred until
   corpus-driven idiom inventory). See §4.3.
+
+## 6. Phase 9 audit-driven diagnostic patterns
+
+Phase 9's naturalistic-tier closure drive surfaced several
+diagnostic / process patterns worth keeping for Phase 10+
+reference.
+
+### 6.1 Per-commit wave-1 audit-diff workflow
+
+Standard pre-merge discipline for any sub-PR touching lex /
+grammar / morphology: in addition to the standard
+`hatch run test-both` (~155-170s wall), run a wave-1-only
+audit-diff (~30s wall) before merging. Established by
+`[[feedback_wave1_audit_before_pr]]` after the 9.X.post-1
+sent-41 regression — a discrete `naging` VERB[COPULA,PFV]
+entry shadowed the prior UNK→synth-VERB fallback that fed the
+AV-INTR rule, producing zero-parse on `Naging tamad ito.`
+that `hatch run test-both` did not catch. The wave-1 corpus
+(123 sentences) catches construction-class regressions that
+the curated test suite doesn't.
+
+Reusable wrappers live at `/tmp/wave1_parse.py` and
+`/tmp/wave1_diff.py`. Workflow:
+
+```bash
+# Pre-change baseline (once per branch start):
+hatch run python /tmp/wave1_parse.py > /tmp/wave1_pre.jsonl
+# After each commit:
+hatch run python /tmp/wave1_parse.py > /tmp/wave1_post.jsonl
+hatch run python /tmp/wave1_diff.py /tmp/wave1_pre.jsonl \
+    /tmp/wave1_post.jsonl
+# Output: +N closures / -N regressions per locator
+```
+
+Applies to: any sub-PR adding lex entries, grammar rules,
+paradigm cells, or morph analyzer changes. Does NOT apply to
+docs-only commits or test-fixture-only commits.
+
+### 6.2 Forest-density vs per-item-timeout tradeoff
+
+Phase 9 surfaced the architectural tension that closing one
+sentence by raising chart budgets can regress another that
+depends on the budget staying low. Concrete case: ANG MANOK
+sent-29 (`Pinakain niya ang manok ng isang tasang palay.`)
+needs `max_tree_iterations` raised from 5000 to 10000 to find
+its canonical V[CAUS=DIRECT] 4-arg parse; raising the default
+closes sent-29 but regresses PANAHON sent-16 (closed in
+9.X.c50 — pre-PR latency 7.66s; at cap=10000 latency 14.81s,
+exceeds the audit's 10s per-item timeout). The 9.X.post-3
+sub-PR shipped 3 forest-density guards (MEASURE/MEASURE_HEAD
+propagation through cardinal-NP-modifier; the constraint
+`¬ (↓3 MEASURE)` on the N-level cardinal rule; the constraint
+`¬ (↓2 MEASURE)` on the NP-internal possessive) that reduced
+over-generation but didn't close sent-29 within the default
+budget.
+
+The diagnostic: when a sentence parses at higher
+`max_tree_iterations` but not the default, run the rest of
+the wave-1 audit at the candidate cap to verify no
+regressions. If any cap-raise regresses a closed sentence,
+the gap is chart-side architectural (deeper chart
+disambiguation, per-rule budgets, smarter pruning) and
+deferred to Phase 10.I+ scope.
+
+### 6.3 Construction vs paradigm: opt-in audit-attestation
+
+Phase 9 introduced 5 per-root opt-in affix_classes (`paki`,
+`ma_soc`, `pag_gerund`, `pa_direct`, `i_loc`). Each fires
+only on roots that explicitly include the class in their
+`affix_class: [...]` field. Productive generalization to all
+VERB / ADJ roots is parked pending corpus pressure
+(audit-attestation-gated per the
+`[[feedback_audit_before_scheduling]]` convention).
+
+The diagnostic question for whether to generalize: does the
+audit corpus contain ≥5 non-attested roots whose surface
+forms would be closed by enabling the class globally? If
+yes, generalize; if not, keep per-root opt-in. Phase 9.X.pre-4
+applied this rule to all 5 introduced classes.
+
+### 6.4 Sample-shift in seeded xwave-report
+
+`scripts/harvest_exemplars.py cmd_parse` uses a shared RNG
+(seed=42) across waves 2-3 with `sample_cap=500`. When a
+corpus's source JSONL changes size (e.g., a B2 extractor
+cleanup removes 50 noise lines), the seeded sample shifts —
+some sentences drop out, others get drawn in. This produces
+sample-shift noise in the seeded xwave-report's parse-rate
+numbers that is NOT a real grammar regression.
+
+The diagnostic: when reporting parse-rate deltas across B2
+extractor-cleanup PRs, prefer full-corpus measurements
+(compute manually) over the seeded xwave-report numbers. The
+seeded numbers are appropriate for B3/B5 construction-class
+sub-PRs where the underlying corpus is stable. Phase 9.K and
+9.L explicitly noted this limitation in their PR
+descriptions.

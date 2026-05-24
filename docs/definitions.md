@@ -256,6 +256,11 @@ extends the same machinery to PART (via `Particle.affix_class`).
 | redup_wh_plural | PRON | Phase 5n.C.3 Commit 9 (§18 L49) — wh-PRON plural redup (`anoano` / `sinosino`). |
 | tag_season | NOUN | Phase 5f Commit 14 — season N from a root (`init` → `tag-init` with `SEM_CLASS=SEASON`). |
 | tig_distrib | NUM | Phase 5n.C.3 Commit 4 — distributive `tig-` cardinal (`tigisa` "one each"). |
+| paki | VERB | Phase 9.X.pre-4 — `paki-`-prefixed polite-request stem (`pakiabot` / `pakisara`). Per-root opt-in only on audit-attested roots (`abot`, `sara`, `putol`, `bura`). |
+| ma_soc | VERB | Phase 9.X.pre-4 — `ma-` + SOC (`mauna`). Per-root opt-in; clean alternative to global `ma_adj` cross-POS ambiguity. |
+| pag_gerund | VERB→NOUN | Phase 9.X.pre-4 — `pag-` gerund nominalization with VERB→NOUN POS-flip routing (`pagdating` / `pag-aaral` / `pagtulong`). Per-root opt-in on 10 audit-attested verbs. |
+| pa_direct | ADJ→ADV | Phase 9.X.post-1 — `pa-`-prefixed directional ADV from a directional ADJ root (`pa + baba` → `pababa` "downward"). Per-root opt-in (`baba`, `taas`). |
+| i_loc | ADJ→NOUN | Phase 9.X.post-1 — `i-`-prefixed locative-N from a directional ADJ root (`i + baba` → `ibaba` "below/bottom"). Per-root opt-in (`baba`, `taas`). |
 
 ### Paradigm operation kinds (`paradigms.yaml` `op:`)
 
@@ -351,7 +356,7 @@ Terms used in the Phase 8/9 audit work (rolled up into `docs/coverage.md` § "Ph
 | two-NP equational | A predicational clause whose pivot AND subject are both full NPs: `Si Juan ito.` (Si-pivot, Phase 8.Y) / `Ang lalaki ang doktor.` (ang-pivot, Phase 8.Z). PRED = `'BE-NP <SUBJ>'`. |
 | pseudo-cleft | A focus-marked clause of the form `<NP> ang <V-headed-NP>` where the V-headed NP is a headless relative ("the one who Xed"). E.g., `Ang nanay ang nagluto.` "It's the mother who cooked." / "The mother is the one who cooked." Currently zero-parsing in tgllfg (the headless RC doesn't wrap to NP[CASE=NOM]); Phase 8 follow-on. |
 | ay-fronting / ay-inverted | The Phase 4 §7.4 topicalization construction `<NP> ay <S>` where the fronted NP is the topic (and typically SUBJ). Examples: `Ako ay kumain.` (V-clause; works), `Ito ay aklat.` (N-pred; Phase 8.Y). |
-| naturalistic baseline | The clean-parse rate against unprepared reference-grammar text. As of Phase 8.Z: 7.4% → 8.0% on 2220 sentences across Waves 1+2+3, vs 99.6% on the curated `coverage_corpus.yaml`. |
+| naturalistic baseline | The clean-parse rate against unprepared reference-grammar text. As of Phase 9 close (2026-05-24): **30.91% on 2533 sentences across Waves 1+2+3+4** (or 31.69% on Waves 1+2+3 only, like-for-like with pre-Phase-9 baselines); vs 99.6% on the curated `coverage_corpus.yaml`. Phase 9 lifted this from the ~11% Phase 8 close baseline. |
 
 ## 2. References — algorithms, processes, and analytical decisions
 
