@@ -52,6 +52,36 @@ def register_rules(rules: list[Rule]) -> None:
         ["V[VOICE=AV]", "NP[CASE=NOM]"],
         _eqs("(↑ SUBJ) = ↓2"),
     ))
+    # Phase 9.X.post-3: SUBJ-leading variant with pronominal-DEM
+    # SUBJ. The bare-DEM-NOM NPs ``ito`` / ``iyan`` / ``iyon`` can
+    # function pronominally (R&G 1981 §4.2 — DEM-as-PRON), and in
+    # that use admit pre-V SUBJ position paralleling 2P-clitic PRON
+    # behavior. Full NPs (``si Juan``) still require ``ay`` for
+    # fronting (Phase 9.X.c34 / S_AY_COMMENT), so the rule is gated
+    # on the constraining equation ``(↓1 DEM) =c true`` to keep
+    # proper-name / common-NP topic-fronting routed through the
+    # ay-construction. The DEM feat lives on the NP's f-structure
+    # (via the Phase 5d Commit 3 ``NP[CASE=NOM] → DET[CASE=NOM, DEM]``
+    # rule's ``(↑) = ↓1`` chain) but not on the NP's bracketed
+    # category, which is why the constraint is an f-structure equation
+    # rather than a category bracket. Closes ANG MANOK sent-43
+    # ``Hindi ito nangitlog.`` via the Phase 4 §7.2 Hindi-wrap
+    # consuming this rule's inner S; also unblocks bare ``Ito
+    # nangitlog.`` / ``Ito kumain.`` etc.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=NOM]", "V[VOICE=AV]"],
+        [
+            # V-percolation (↓2 here, not the usual ↓1 — SUBJ leads)
+            "(↑ PRED) = ↓2 PRED",
+            "(↑ VOICE) = ↓2 VOICE",
+            "(↑ ASPECT) = ↓2 ASPECT",
+            "(↑ MOOD) = ↓2 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓2 LEX-ASTRUCT",
+            "(↑ SUBJ) = ↓1",
+            "(↓1 DEM) =c true",
+        ],
+    ))
     rules.append(Rule(
         "S",
         ["V[VOICE=AV]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
