@@ -52,6 +52,36 @@ def register_rules(rules: list[Rule]) -> None:
         ["V[VOICE=AV]", "NP[CASE=NOM]"],
         _eqs("(↑ SUBJ) = ↓2"),
     ))
+    # Phase 9.X.post-3: SUBJ-leading variant with pronominal-DEM
+    # SUBJ. The bare-DEM-NOM NPs ``ito`` / ``iyan`` / ``iyon`` can
+    # function pronominally (R&G 1981 §4.2 — DEM-as-PRON), and in
+    # that use admit pre-V SUBJ position paralleling 2P-clitic PRON
+    # behavior. Full NPs (``si Juan``) still require ``ay`` for
+    # fronting (Phase 9.X.c34 / S_AY_COMMENT), so the rule is gated
+    # on the constraining equation ``(↓1 DEM) =c true`` to keep
+    # proper-name / common-NP topic-fronting routed through the
+    # ay-construction. The DEM feat lives on the NP's f-structure
+    # (via the Phase 5d Commit 3 ``NP[CASE=NOM] → DET[CASE=NOM, DEM]``
+    # rule's ``(↑) = ↓1`` chain) but not on the NP's bracketed
+    # category, which is why the constraint is an f-structure equation
+    # rather than a category bracket. Closes ANG MANOK sent-43
+    # ``Hindi ito nangitlog.`` via the Phase 4 §7.2 Hindi-wrap
+    # consuming this rule's inner S; also unblocks bare ``Ito
+    # nangitlog.`` / ``Ito kumain.`` etc.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=NOM]", "V[VOICE=AV]"],
+        [
+            # V-percolation (↓2 here, not the usual ↓1 — SUBJ leads)
+            "(↑ PRED) = ↓2 PRED",
+            "(↑ VOICE) = ↓2 VOICE",
+            "(↑ ASPECT) = ↓2 ASPECT",
+            "(↑ MOOD) = ↓2 MOOD",
+            "(↑ LEX-ASTRUCT) = ↓2 LEX-ASTRUCT",
+            "(↑ SUBJ) = ↓1",
+            "(↓1 DEM) =c true",
+        ],
+    ))
     rules.append(Rule(
         "S",
         ["V[VOICE=AV]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
@@ -1188,6 +1218,54 @@ def register_rules(rules: list[Rule]) -> None:
             # derived equatives. No-op when daughter lacks the
             # feat.
             "(↑ KASING_N) = ↓1 KASING_N",
+        ],
+    ))
+
+
+    # --- Phase 9.X.post-3: predicative ADJ + temporal ADV (impersonal) ---
+    #
+    # ``Maaga noon.``      "It was early then."   (ANG MANOK sent-21)
+    # ``Mainit ngayon.``   "It's hot now."
+    # ``Malamig kahapon.`` "It was cold yesterday."
+    #
+    # Predicative-ADJ variant with a temporal-ADV adjunct in place of
+    # the NOM-NP subject. Tagalog admits this verbless impersonal-
+    # predicative shape for weather / atmospheric / time-bound ADJ
+    # predicates where the situational subject is discourse-bound
+    # rather than overt — parallel to the Phase 9.X.c49 weather-V
+    # impersonal but with an ADJ head instead of a V head.
+    #
+    # F-structure shape:
+    #
+    #   PRED        = 'ADJ <SUBJ>'
+    #   ADJ_LEMMA   = the adjective's lemma (``aga``, ``init``, ...)
+    #   PREDICATIVE = true
+    #   IMPERSONAL  = true
+    #   SUBJ        = [PRED='PRO']                 — synth impersonal
+    #   ADJUNCT     ∋ the temporal ADV's f-structure
+    #
+    # The IMPERSONAL flag mirrors the c49 weather-V analytical
+    # commitment and gates downstream consumers that branch on
+    # impersonal subjects (LMT, semantic interpretation).
+    #
+    # Gating: ADV[ADV_TYPE=TIME] only — restricts to the temporal
+    # adverb subclass to avoid spurious matches on MANNER / FREQUENCY
+    # / LOCATION ADVs (those have their own predicative-licensed
+    # constructions where applicable).
+    #
+    # Reference: Schachter & Otanes 1972 §11.4 (verbless temporal
+    # predicates); R&G 1981 ANG MANOK sent-21.
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE]", "ADV[ADV_TYPE=TIME]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↑ IMPERSONAL) = true",
+            "(↓1 PREDICATIVE) =c true",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "↓2 ∈ (↑ ADJUNCT)",
         ],
     ))
 
@@ -3911,6 +3989,60 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 9.X.post-3: may + V + PRON + linker + N RC-with-N -----
+    #
+    # ``May nakita siyang itlog.``  "She saw an egg."  (ANG MANOK sent-25)
+    # ``May binili siyang aklat.``  "She bought a book."
+    # ``May ginawa siyang masama.``  "She did something bad."
+    #
+    # The V daughter is a headless-RC body that modifies the following
+    # N (the existential entity). The PRON-NOM in 2P-clitic position
+    # is the AGENT/possessor of the RC event. Structurally parallel
+    # to Phase 5j Commit 5b (``may + PRON + linker + N``) but with a
+    # V daughter inserted between the existential particle and the
+    # PRON — and parallel to the "May aklat siyang nakita" surface
+    # (N-first, RC-second) but with the V/N order swapped.
+    #
+    # V (no VOICE filter) covers both:
+    #   * V[VOICE=OV] perfect-OV transitives — ``binili``, ``ginawa``,
+    #     ``kinain``;
+    #   * V[VOICE=AV, MOOD=NVOL, AV_ABSOL=true] non-volitional AV
+    #     perception verbs — ``nakita`` (sent-25), ``narinig``,
+    #     ``naramdaman``.
+    # An OV-only filter would miss the perception-verb class (``nakita``
+    # is morphologically AV-NVOL, not OV, despite the patient-pivot
+    # semantics — verified via the analyzer's feature output).
+    #
+    # The minimal equation set leaves the V daughter detached at
+    # f-structure (matches the 9.X.post-3.6 approach for wala+RC);
+    # the audit-closure semantics rests on parse existence rather
+    # than full RC-binding into the SUBJ. The N fills SUBJ as the
+    # existential entity; the PRON is its possessor.
+    #
+    # Reference: S&O 1972 §11.5 (existential HAVE with RC body);
+    # R&G 1981 ANG MANOK sent-25.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL, POLARITY=POS]",
+            "V",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "N",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓5",
+            "(↑ SUBJ POSSESSOR) = ↓3",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'POS'",
+            "(↑ HAVE) = true",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'POS'",
+            "(↓4 LINK) =c 'NG'",
+        ],
+    ))
+
     # Commit 5b: positive HAVE — internal clitic possessor.
     rules.append(Rule(
         "S",
@@ -3971,6 +4103,136 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
             "(↑ POLARITY) = 'NEG'",
             "(↑ HAVE) = true",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓3 LINK) =c 'NG'",
+        ],
+    ))
+
+    # --- Phase 9.X.post-3: wala + nang (contracted na+-ng) + V[AV] + OBL ---
+    #
+    # ``Wala nang kumakausap sa kanya.``
+    #     "No one talks to her anymore."   (ANG MANOK sent-51)
+    # ``Wala nang naninirahan dito.``
+    #     "No one lives here anymore."
+    #
+    # The ``nang`` here is the surface contraction of ``na + -ng``
+    # (2P-clitic ALREADY + bound linker), structurally the linker
+    # between ``wala`` and a headless-RC body. The tokenizer's bound-
+    # ``-ng`` splitter does NOT fire on ``nang`` because ``nang`` is
+    # already a recognized standalone PART surface (Phase 9.X.c45
+    # manner-linker reading at particles.yaml:1803, plus the
+    # subordinator entries above it). Splitting context-sensitively
+    # (only after wala / may / etc.) was rejected as too invasive;
+    # this rule instead consumes ``nang`` directly via its existing
+    # PART entry, with the ASPECT_PART=ALREADY semantics lifted to
+    # the matrix.
+    #
+    # F-structure shape:
+    #
+    #   PRED         = 'EXIST <SUBJ>'
+    #   CLAUSE_TYPE  = 'EXISTENTIAL'
+    #   POLARITY     = 'NEG'
+    #   ASPECT_PART  = 'ALREADY'           (from contracted na)
+    #   SUBJ         = [PRED='PRO']        (the missing AGENT)
+    #
+    # Gated on ``(↓2 LEMMA) =c 'nang'`` plus the existential-NEG
+    # left edge; the V[VOICE=AV] daughter consumes the headless-RC
+    # body (verb with implicit SUBJ — the missing entity) and the
+    # NP[CASE=DAT] consumes the sa-PP (DAT-OBL — the GOAL of the
+    # talk-to event in sent-51, ``sa kanya`` "to her").
+    #
+    # Two variants: with and without the DAT-OBL daughter. Sent-51
+    # uses the DAT variant; the bare-V variant covers cases like
+    # ``Wala nang dumarating.`` ("No one comes anymore.").
+    #
+    # Reference: S&O 1972 §11.5 (existential negation with RC);
+    # R&G 1981 ANG MANOK sent-51.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL, POLARITY=NEG]",
+            "PART[LEMMA=nang]",
+            "V[VOICE=AV]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ ASPECT_PART) = 'ALREADY'",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 LEMMA) =c 'nang'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL, POLARITY=NEG]",
+            "PART[LEMMA=nang]",
+            "V[VOICE=AV]",
+            "NP[CASE=DAT]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ ASPECT_PART) = 'ALREADY'",
+            "↓4 ∈ (↑ ADJUNCT)",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 LEMMA) =c 'nang'",
+        ],
+    ))
+
+
+    # --- Phase 9.X.post-3: negative HAVE with V[OV] RC body -----------
+    #
+    # ``Wala siyang kinakausap.``  "She has no one to talk to."
+    #   (ANG MANOK sent-50 audit form, with ``na`` 2P-clitic absorbed.)
+    # ``Wala siyang ginagawa.``    "She has nothing to do."
+    # ``Wala siyang kinain.``      "She ate nothing." / "She has nothing she ate."
+    #
+    # Parallel to the Phase 5j Commit 5d negative-HAVE rule above
+    # (``wala + PRON-NOM + linker + N``) but with a V[VOICE=OV] daughter
+    # in place of N. The V serves as the headless-RC body describing
+    # the negated entity: the V's SUBJ slot (= PATIENT in OV) binds
+    # to the missing PRO, and the V's OBJ-AGENT slot is filled with
+    # a synth PRO (the AGENT is anaphorically coreferent with the
+    # surface POSSESSOR ``siya`` but treated as discourse-recoverable
+    # at the f-structure level rather than via direct unification —
+    # avoids spurious CASE-conflict on NOM possessor vs GEN actor).
+    #
+    # F-structure shape:
+    #
+    #   PRED         = 'EXIST <SUBJ>'
+    #   CLAUSE_TYPE  = 'EXISTENTIAL'
+    #   POLARITY     = 'NEG'
+    #   HAVE         = true
+    #   SUBJ         = [PRED='PRO',
+    #                   POSSESSOR=↓2,
+    #                   ADJ ∋ ↓4]
+    #   SUBJ ADJ ∋ ↓4 = the V-headed RC body, with V's SUBJ = ↑SUBJ
+    #                    (REL-PRO-style binding via shared f-structure)
+    #                    and V's OBJ-AGENT = [PRED='PRO'] (implicit
+    #                    AGENT, anaphorically coreferent with possessor).
+    #
+    # Reference: S&O 1972 §11.5 (HAVE-with-RC); ANG MANOK sent-50.
+    rules.append(Rule(
+        "S",
+        [
+            "PART[EXISTENTIAL, POLARITY=NEG]",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "V[VOICE=OV]",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
             "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'NEG'",
             "(↓3 LINK) =c 'NG'",

@@ -134,6 +134,53 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.X.post-3: NP coercion from bare Q[VAGUE] ----------
+    #
+    # ``ng marami``           "of many [things]"
+    # ``ng mas marami``       "of more"          (ANG MANOK sent-34
+    #                         ``Papakainin niya ng mas marami ang manok.``
+    #                         "She will feed the chicken more.")
+    # ``ang marami``          "the many [things] / the majority"
+    # ``sa marami``           "to many [things]"
+    # ``ang mas marami``      "the more (numerous) ones"
+    #
+    # A bare vague-Q (``marami`` / ``kaunti`` / etc., plus the
+    # ``mas + Q`` comparative wrapping at nominal.py:2495) can stand
+    # in for a full NP with implicit ``PRO`` head. Parallel to the
+    # standalone-DEM rules (nominal.py:358 — ``NP[CASE=X] →
+    # DET[CASE=X, DEM] ...`` with ``(↑ PRED) = 'PRO'``) and the
+    # headless-RC family (extraction.py:1912 — ``NP[CASE=X] →
+    # DET[CASE=X, DEM=false] S_GAP``).
+    #
+    # PRED='PRO' synthesizes the implicit referent. The Q's LEMMA /
+    # QUANT / VAGUE / COMP_DEGREE feats propagate via the
+    # ``(↑) = ↓2`` share. ``(↓2 VAGUE) =c true`` belt-and-braces
+    # gates the rule to vague Qs only — same defensive constraint
+    # the predicative-Q clause rule uses (clause.py:1562 area).
+    #
+    # Reference: S&O 1972 §3.18 (Q as bare NP); R&G 1981 ANG MANOK
+    # sent-34.
+    # GEN-only for now — NOM/DAT variants are out of scope until
+    # corpus pressure surfaces them. The existing
+    # ``test_vague_partitive_blocked`` (tests/tgllfg/test_vague_cardinals.py)
+    # gates ``*ang marami ng bata`` (vague-Q partitive in NOM
+    # position composing with a GEN-partitive); adding the NOM
+    # variant of this rule would silently unblock that pattern,
+    # contradicting the Phase 5b analytical commitment. The GEN
+    # variant alone is the audit-attested case (sent-34
+    # ``ng mas marami`` as bare GEN-OBJ).
+    rules.append(Rule(
+        "NP[CASE=GEN]",
+        ["ADP[CASE=GEN]", "Q[VAGUE]"],
+        [
+            "(↑) = ↓1",
+            "(↑) = ↓2",
+            "(↑ PRED) = 'PRO'",
+            "(↓2 VAGUE) =c true",
+        ],
+    ))
+
+
     # --- Phase 7a.A: NP-internal ``mga`` plural marker -----------
     #
     # Closes §18.1.1 #11 (``mga`` plural marker on regular nouns).
@@ -707,6 +754,17 @@ def register_rules(rules: list[Rule]) -> None:
                     "(↑ CARDINAL_VALUE) = ↓2 CARDINAL_VALUE",
                     "(↑ APPROX) = ↓2 APPROX",
                     "(↑ DISTRIB) = ↓2 DISTRIB",
+                    # Phase 9.X.post-3: lift MEASURE from the head N
+                    # so cardinal-modified measure-NPs surface as
+                    # MEASURE=true at the NP level. The downstream
+                    # NP-possessive guard (``¬ (↓2 MEASURE)``) uses
+                    # this to block ``ang manok ng isang tasang
+                    # palay`` from compiling as a possessive — its
+                    # absence was a major forest-density contributor
+                    # to ANG MANOK sent-29's 0-parse state under the
+                    # default ``max_tree_iterations=5000`` cap.
+                    "(↑ MEASURE) = ↓4 MEASURE",
+                    "(↑ MEASURE_HEAD) = ↓4 MEASURE_HEAD",
                     "¬ (↓4 CARDINAL_VALUE)",
                     # Constraining: enforce the daughter is actually
                     # CARDINAL=YES, not just any NUM. Without this,
@@ -746,6 +804,18 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ CARDINAL_VALUE) = ↓1 CARDINAL_VALUE",
                 "¬ (↓3 CARDINAL_VALUE)",
                 "(↓1 CARDINAL) =c true",
+                # Phase 9.X.post-3: block measure-N heads at the
+                # N-level. ``isang tasang palay`` should compose at
+                # the NP level (the NP-level cardinal-modifier rule
+                # already handles this case directly, producing
+                # NP[CASE=GEN] with MEASURE=true). The N-level path
+                # creates a competing N which fans the chart forest
+                # and exceeds ``max_tree_iterations=5000`` on
+                # ANG MANOK sent-29 ``Pinakain niya ang manok ng
+                # isang tasang palay.``. Excluding measure-N heads
+                # here keeps the canonical NP-level parse reachable
+                # within the default tree-walk budget.
+                "¬ (↓3 MEASURE)",
             ],
         ))
 
@@ -879,7 +949,23 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             f"NP[CASE={case}]",
             [f"NP[CASE={case}]", "NP[CASE=GEN]"],
-            ["(↑) = ↓1", "(↑ POSS) = ↓2", "¬ (↑ POSS-EXTRACTED)"],
+            [
+                "(↑) = ↓1",
+                "(↑ POSS) = ↓2",
+                "¬ (↑ POSS-EXTRACTED)",
+                # Phase 9.X.post-3: block MEASURE-NPs from possessor
+                # position. ``ang manok ng isang tasang palay``
+                # (= "the chicken of one cup of rice") is implausible
+                # as a true possessive; the MEASURE-NP belongs in
+                # an argument slot (the V's GEN-THEME for ANG MANOK
+                # sent-29). Reduces forest density enough for the
+                # default ``max_tree_iterations=5000`` cap to surface
+                # the canonical V-rule parse. MEASURE propagation
+                # through the cardinal-NP-modifier rule was added in
+                # the same commit so MEASURE=true surfaces at the NP
+                # level for this guard to see.
+                "¬ (↓2 MEASURE)",
+            ],
         ))
 
     # --- 9.X.c8: NP-internal sa-PP locative/oblique modifier ---
