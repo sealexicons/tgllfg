@@ -198,8 +198,8 @@ class TestPK91YieldExemplarGapMarkerRejection:
         "Iniwanan ko siya ng [sinususulat __gen ang liham].",
     ])
     def test_gap_marker_rejected(self, raw: str) -> None:
-        result = he._pk91_yield_exemplar(99, "1", "a", raw)
-        assert result is None
+        results = list(he._pk91_yield_exemplar(99, "1", "a", raw))
+        assert results == []
 
 
 class TestPK91YieldExemplarUngramMarker:
@@ -217,10 +217,10 @@ class TestPK91YieldExemplarUngramMarker:
     def test_ungram_marker_stripped(
         self, raw: str, expected_text: str,
     ) -> None:
-        result = he._pk91_yield_exemplar(99, "1", "a", raw)
-        assert result is not None
-        assert result.text_raw == expected_text
-        assert result.marked_ungrammatical is True
+        results = list(he._pk91_yield_exemplar(99, "1", "a", raw))
+        assert len(results) == 1
+        assert results[0].text_raw == expected_text
+        assert results[0].marked_ungrammatical is True
 
 
 class TestPK91YieldExemplarCleanCase:
@@ -229,33 +229,175 @@ class TestPK91YieldExemplarCleanCase:
 
     def test_canonical_emit(self) -> None:
         raw = "B-um-ili    ang=lalake ng=isda sa=tindahan."
-        result = he._pk91_yield_exemplar(21, "13", "a", raw)
-        assert result is not None
-        assert result.source == "kroeger1991"
-        assert result.locator == "page-21/ex-13a"
-        assert result.text_raw == "Bumili ang lalake ng isda sa tindahan."
-        assert result.has_gloss is True
-        assert result.marked_ungrammatical is False
-        assert result.ocr_quality == "native-pdf"
+        results = list(he._pk91_yield_exemplar(21, "13", "a", raw))
+        assert len(results) == 1
+        ex = results[0]
+        assert ex.source == "kroeger1991"
+        assert ex.locator == "page-21/ex-13a"
+        assert ex.text_raw == "Bumili ang lalake ng isda sa tindahan."
+        assert ex.has_gloss is True
+        assert ex.marked_ungrammatical is False
+        assert ex.ocr_quality == "native-pdf"
 
 
 class TestPK91YieldExemplarLocator:
     """Locator format: ``page-N/ex-NLETTER`` with sub-letter,
-    ``page-N/ex-N`` without."""
+    ``page-N/ex-N`` without; ``-paren`` suffix on the elaborated
+    variant of parenthetical exemplars."""
 
     def test_sub_letter_present(self) -> None:
-        result = he._pk91_yield_exemplar(
+        results = list(he._pk91_yield_exemplar(
             32, "9", "b", "Bumili ang lalake ng isda sa tindahan.",
-        )
-        assert result is not None
-        assert result.locator == "page-32/ex-9b"
+        ))
+        assert len(results) == 1
+        assert results[0].locator == "page-32/ex-9b"
 
     def test_sub_letter_absent(self) -> None:
-        result = he._pk91_yield_exemplar(
+        results = list(he._pk91_yield_exemplar(
             32, "9", None, "Bumili ang lalake ng isda sa tindahan.",
+        ))
+        assert len(results) == 1
+        assert results[0].locator == "page-32/ex-9"
+
+
+# === Phase 9.Y.post-1 cleanup additions ===============================
+
+
+class TestCleanPK91SurfaceMidSentenceParens:
+    """Mid-sentence ``(X)`` parenthetical-optional notation is
+    stripped from ``_clean_pk91_surface``; the per-exemplar
+    dispatcher generates a separate -paren variant."""
+
+    @pytest.mark.parametrize("inp,expected", [
+        ("Mapanganib (ang) lumapit sa ahas.",
+         "Mapanganib lumapit sa ahas."),
+        ("Dapat (na) makausap ko siya.",
+         "Dapat makausap ko siya."),
+        ("Gusto ko ng tawagan (ni Maria) si Juan.",
+         "Gusto ko ng tawagan si Juan."),
+    ])
+    def test_mid_sentence_parens_stripped(
+        self, inp: str, expected: str,
+    ) -> None:
+        assert he._clean_pk91_surface(inp) == expected
+
+
+class TestCleanPK91SurfaceEqualsGFold:
+    """PK91's ``=g`` linker after n-final stems
+    (``Mayroon=g`` / ``mayaman=g``) folds to ``g`` joined
+    directly to the prior word, yielding the canonical
+    ``-ng``-allomorph orthography (``Mayroong`` / ``mayamang``)."""
+
+    @pytest.mark.parametrize("inp,expected", [
+        ("Mayroon=g tumatakbo sa=kuwarto.",
+         "Mayroong tumatakbo sa kuwarto."),
+        ("Ibig niya ng=mayaman=g lalaki.",
+         "Ibig niya ng mayamang lalaki."),
+    ])
+    def test_equals_g_folds_to_joined_ng(
+        self, inp: str, expected: str,
+    ) -> None:
+        assert he._clean_pk91_surface(inp) == expected
+
+
+class TestCleanPK91SurfaceMedialPeriod:
+    """Medial ``.`` between letters (PK91's compound-marker
+    convention ``pambansang.awit`` = ``national.anthem`` and
+    abbreviation forms ``Dr.Lopez``) becomes a space."""
+
+    @pytest.mark.parametrize("inp,expected", [
+        ("Hinalikan ni=David si=Linda at.saka umalis.",
+         "Hinalikan ni David si Linda at saka umalis."),
+        ("Inasah-an ko na awit-in ni=Linda ang=pambansang.awit.",
+         "Inasahan ko na awitin ni Linda ang pambansang awit."),
+        ("Suri-in ka ni=Dr.Lopez!",
+         "Suriin ka ni Dr Lopez!"),
+    ])
+    def test_medial_period_to_space(
+        self, inp: str, expected: str,
+    ) -> None:
+        assert he._clean_pk91_surface(inp) == expected
+
+    def test_terminal_period_preserved(self) -> None:
+        """The terminal sentence period is not touched (no
+        following letter)."""
+        assert he._clean_pk91_surface("Maganda siya.") == "Maganda siya."
+
+
+class TestPK91YieldExemplarParenVariants:
+    """When raw surface contains a parenthetical optional
+    element, ``_pk91_yield_exemplar`` emits TWO exemplars:
+    bare (parenthetical excluded) at the canonical locator and
+    elaborated (parenthetical content kept inline) at the
+    ``-paren``-suffixed locator. Both are grammatical per
+    Kroeger's notation convention."""
+
+    def test_two_variants_emitted(self) -> None:
+        raw = "Mapanganib (ang) l-um-apit sa=ahas."
+        results = list(he._pk91_yield_exemplar(92, "27", "a", raw))
+        assert len(results) == 2
+        assert results[0].locator == "page-92/ex-27a"
+        assert results[0].text_raw == "Mapanganib lumapit sa ahas."
+        assert results[1].locator == "page-92/ex-27a-paren"
+        assert results[1].text_raw == "Mapanganib ang lumapit sa ahas."
+
+    def test_two_variants_with_multi_word_paren(self) -> None:
+        raw = "Gusto ko ng tawagan (ni Maria) si Juan."
+        results = list(he._pk91_yield_exemplar(186, "27", "a", raw))
+        assert len(results) == 2
+        assert results[0].text_raw == "Gusto ko ng tawagan si Juan."
+        assert results[1].text_raw == (
+            "Gusto ko ng tawagan ni Maria si Juan."
         )
-        assert result is not None
-        assert result.locator == "page-32/ex-9"
+
+    def test_no_paren_single_variant(self) -> None:
+        raw = "Bumili ang lalake ng=isda sa=tindahan."
+        results = list(he._pk91_yield_exemplar(21, "13", "a", raw))
+        assert len(results) == 1
+
+
+class TestPK91LooksLikeTagalog:
+    """PK91-specific Tagalog-shape check relaxes the strict
+    ``_looks_like_tagalog`` along two axes: joined-``-ng`` linker
+    tolerance (so ``Mayroong`` counts as a marker via base
+    ``mayroon``), and ≥1-marker threshold when there are zero
+    English markers (PK91's block context already vouches for
+    source quality; cross-linguistic non-Tagalog examples in PK91
+    lack any Tagalog markers entirely)."""
+
+    @pytest.mark.parametrize("text", [
+        # Mayroong = mayroon + -ng (n-final stem; -1 strip recovers).
+        "Mayroong tumatakbo sa kuwarto.",
+        # Mapanganib + 1 marker (sa) + 0 English — passes via the
+        # ≥1-marker threshold.
+        "Mapanganib lumapit sa ahas.",
+        # Multi-marker sentence — passes via the strict path.
+        "Pumunta ang batang lalaki sa palengke.",
+    ])
+    def test_pk91_accepts(self, text: str) -> None:
+        assert he._pk91_looks_like_tagalog(text) is True
+
+    @pytest.mark.parametrize("text", [
+        # Welsh: 0 Tagalog markers under any strip — still rejected.
+        "Gwelodd Sion ddraig.",
+        # English: tokens overlap with English markers + 0 Tagalog.
+        "She drives a car to the store.",
+        # Mixed: 1 Tagalog marker but 1 English marker too — fails
+        # (the relaxed-threshold path requires 0 English markers).
+        "I gave the regalo to my friend yesterday.",
+    ])
+    def test_pk91_rejects(self, text: str) -> None:
+        assert he._pk91_looks_like_tagalog(text) is False
+
+    def test_strict_path_unchanged(self) -> None:
+        """The strict ``_looks_like_tagalog`` is unchanged — the
+        relaxation lives only in the PK91-specific variant."""
+        assert he._looks_like_tagalog(
+            "Mayroong tumatakbo sa kuwarto."
+        ) is False
+        assert he._looks_like_tagalog(
+            "Mapanganib lumapit sa ahas."
+        ) is False
 
 
 # === Block detection: _pk91_extract_from_page =========================
@@ -357,8 +499,8 @@ class TestKroeger1991Integration:
             )
 
         results = list(he.extract_kroeger1991())
-        assert len(results) >= 150, (
-            f"expected ≥150 PK91 exemplars; got {len(results)}"
+        assert len(results) >= 200, (
+            f"expected ≥200 PK91 exemplars; got {len(results)}"
         )
 
         # All exemplars should be tagged correctly.
@@ -372,6 +514,17 @@ class TestKroeger1991Integration:
             assert "]" not in r.text_raw
             assert "Ø" not in r.text_raw
             assert "__" not in r.text_raw
-            # Hyphens may remain on orthographic compounds like
-            # ``mag-isa`` if they reach here, but morpheme-style
-            # ``X-um-Y`` patterns should be cleaned.
+            assert "(" not in r.text_raw
+            assert ")" not in r.text_raw
+            # Mid-word period (compound-marker / abbreviation) is
+            # split to space; only terminal punctuation periods
+            # remain.
+            import re as _re
+            assert not _re.search(r"[a-zA-Z]\.[a-zA-Z]", r.text_raw)
+
+        # Phase 9.Y.post-1: parenthetical-variant locators
+        # appear in the corpus.
+        paren_variants = [r for r in results if r.locator.endswith("-paren")]
+        assert len(paren_variants) >= 2, (
+            f"expected ≥2 -paren variants; got {len(paren_variants)}"
+        )
