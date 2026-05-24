@@ -134,6 +134,53 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 9.X.post-3: NP coercion from bare Q[VAGUE] ----------
+    #
+    # ``ng marami``           "of many [things]"
+    # ``ng mas marami``       "of more"          (ANG MANOK sent-34
+    #                         ``Papakainin niya ng mas marami ang manok.``
+    #                         "She will feed the chicken more.")
+    # ``ang marami``          "the many [things] / the majority"
+    # ``sa marami``           "to many [things]"
+    # ``ang mas marami``      "the more (numerous) ones"
+    #
+    # A bare vague-Q (``marami`` / ``kaunti`` / etc., plus the
+    # ``mas + Q`` comparative wrapping at nominal.py:2495) can stand
+    # in for a full NP with implicit ``PRO`` head. Parallel to the
+    # standalone-DEM rules (nominal.py:358 — ``NP[CASE=X] →
+    # DET[CASE=X, DEM] ...`` with ``(↑ PRED) = 'PRO'``) and the
+    # headless-RC family (extraction.py:1912 — ``NP[CASE=X] →
+    # DET[CASE=X, DEM=false] S_GAP``).
+    #
+    # PRED='PRO' synthesizes the implicit referent. The Q's LEMMA /
+    # QUANT / VAGUE / COMP_DEGREE feats propagate via the
+    # ``(↑) = ↓2`` share. ``(↓2 VAGUE) =c true`` belt-and-braces
+    # gates the rule to vague Qs only — same defensive constraint
+    # the predicative-Q clause rule uses (clause.py:1562 area).
+    #
+    # Reference: S&O 1972 §3.18 (Q as bare NP); R&G 1981 ANG MANOK
+    # sent-34.
+    # GEN-only for now — NOM/DAT variants are out of scope until
+    # corpus pressure surfaces them. The existing
+    # ``test_vague_partitive_blocked`` (tests/tgllfg/test_vague_cardinals.py)
+    # gates ``*ang marami ng bata`` (vague-Q partitive in NOM
+    # position composing with a GEN-partitive); adding the NOM
+    # variant of this rule would silently unblock that pattern,
+    # contradicting the Phase 5b analytical commitment. The GEN
+    # variant alone is the audit-attested case (sent-34
+    # ``ng mas marami`` as bare GEN-OBJ).
+    rules.append(Rule(
+        "NP[CASE=GEN]",
+        ["ADP[CASE=GEN]", "Q[VAGUE]"],
+        [
+            "(↑) = ↓1",
+            "(↑) = ↓2",
+            "(↑ PRED) = 'PRO'",
+            "(↓2 VAGUE) =c true",
+        ],
+    ))
+
+
     # --- Phase 7a.A: NP-internal ``mga`` plural marker -----------
     #
     # Closes §18.1.1 #11 (``mga`` plural marker on regular nouns).
