@@ -3573,6 +3573,12 @@
 - citation: tasa
   pos: NOUN
   gloss: cup
+  feats: {MEASURE: true}
+  # Phase 9.X.post-3: MEASURE opt-in. ``tasa`` participates in the
+  # Phase 5f Commit 18 measure-N rule (N → N PART[LINK] N) producing
+  # ``tasang palay`` "cup of rice" / ``tasang kape`` "cup of coffee".
+  # Closes ANG MANOK sent-29 + sent-35 GEN-NP gap on
+  # ``isang tasang palay`` / ``dalawang tasang palay``.
 
 - citation: tatay
   pos: NOUN
