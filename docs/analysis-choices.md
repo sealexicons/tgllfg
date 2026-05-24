@@ -18297,7 +18297,7 @@ for category level.
   before merging lex/grammar/morph sub-PRs (`hatch run
   test-both` alone missed the 9.X.post-1 sent-41 regression;
   ~30s wave-1 re-parse catches what the suite doesn't). Reusable
-  wrappers at `/tmp/wave1_parse.py` + `/tmp/wave1_diff.py`.
+  wrappers at `./tmp/wave1_parse.py` and `./tmp/wave1_diff.py`.
 - `[[feedback_escape_pipe_in_plan_ledger]]` — any `|` in
   plan-ledger row content (Python type unions, set unions,
   regex alternations) must be escaped as `\|` so it doesn't
