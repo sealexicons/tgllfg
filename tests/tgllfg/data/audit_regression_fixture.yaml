@@ -1,0 +1,262 @@
+metadata:
+  phase: 9.Z
+  sampling_seed: 42
+  target_sample_total: 50
+  actual_sample_count: 51
+  source: audit parse-results from data/tgl/exemplars/wave*-parse-results.jsonl
+samples:
+- wave: 1
+  source: rg81
+  locator: ANG MANOK/sent-15
+  text: Hinuli niya ang manok.
+  expected_parses_ge: 1
+- wave: 1
+  source: rg81
+  locator: ANG MANOK/sent-30
+  text: Kinausap siya ng manok.
+  expected_parses_ge: 1
+- wave: 1
+  source: rg81
+  locator: ANG MANOK/sent-33
+  text: May naisip siya.
+  expected_parses_ge: 1
+- wave: 1
+  source: rg81
+  locator: ANG MANOK/sent-37
+  text: Papakainin niya ito sa gabi.
+  expected_parses_ge: 1
+- wave: 1
+  source: rg81
+  locator: ANG MANOK/sent-4
+  text: Maliit ang bahay.
+  expected_parses_ge: 1
+- wave: 1
+  source: rg81
+  locator: PANAHON/sent-37
+  text: Bihira ang bagyo sa mga buwang ito.
+  expected_parses_ge: 1
+- wave: 2
+  source: ramos
+  locator: entry-abot/sent-13
+  text: Umabot ka ng ulam.
+  expected_parses_ge: 1
+- wave: 2
+  source: ramos
+  locator: entry-hasa'/sent-84
+  text: Ihasa mo ang kutsilyo.
+  expected_parses_ge: 1
+- wave: 2
+  source: ramos
+  locator: entry-surot/sent-162
+  text: Sumuso ang bata sa ina.
+  expected_parses_ge: 1
+- wave: 2
+  source: ramos
+  locator: entry-uuing/sent-206
+  text: Mag-uwi ka ng makakain.
+  expected_parses_ge: 1
+- wave: 2
+  source: ramos
+  locator: entry-úrong/sent-203
+  text: Umurong ang mga kalaban.
+  expected_parses_ge: 1
+- wave: 2
+  source: rc1990
+  locator: Ch5-Some Changes/Embedding        163/sent-891
+  text: Ang pagkatok niya sa pinto ang bumulahaw kay Fred.
+  expected_parses_ge: 1
+- wave: 2
+  source: rc1990
+  locator: Ch5-Some Changes/Exercise/sent-128
+  text: May mga silya ba sa kuwarto?
+  expected_parses_ge: 1
+- wave: 2
+  source: rc1990
+  locator: Ch5-Some Changes/Exercise/sent-310
+  text: Bumili ka ng pagkain.
+  expected_parses_ge: 1
+- wave: 2
+  source: rc1990
+  locator: Ch5-Some Changes/Exercises/sent-400
+  text: Tanghali na kasi siya nagising.
+  expected_parses_ge: 1
+- wave: 2
+  source: rc1990
+  locator: Ch5-Some Changes/Intensive Sentences/sent-112
+  text: Mahusay ang mekaniko. ... ng mekaniko.
+  expected_parses_ge: 1
+- wave: 2
+  source: rc1990
+  locator: Ch5-Some Changes/Predicate             Subject/sent-1006
+  text: Bumili si David ng motorsiklo para kay Nora.
+  expected_parses_ge: 1
+- wave: 2
+  source: rc1990
+  locator: Ch5-Some Changes/Subject                           Subject/sent-53
+  text: Itapon mo ang mga ito.
+  expected_parses_ge: 1
+- wave: 2
+  source: rg-int
+  locator: page-13/prose/sent-60
+  text: Dumaan ka sa amin.
+  expected_parses_ge: 1
+- wave: 2
+  source: rg-int
+  locator: page-186/prose/sent-1277
+  text: Karaniwan ba ito sa Pilipinas?
+  expected_parses_ge: 1
+- wave: 2
+  source: rg-int
+  locator: page-255/prose/sent-1860
+  text: Ito ang dumidilig sa mga bukirin.
+  expected_parses_ge: 1
+- wave: 2
+  source: rg-int
+  locator: page-27/prose/sent-150
+  text: Mauna na ako.
+  expected_parses_ge: 1
+- wave: 2
+  source: rg-int
+  locator: page-37/dialog/sent-237
+  text: Pilipino ka ba?
+  expected_parses_ge: 1
+- wave: 2
+  source: rg-int
+  locator: page-69/prose/sent-500
+  text: Hindi na ho bale.
+  expected_parses_ge: 1
+- wave: 2
+  source: rg-int
+  locator: page-79/prose/sent-544
+  text: Mauna na kayo.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-107/prose/sent-455
+  text: Tumatawag siya sa telepono.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-128/prose/sent-587
+  text: May bisikleta ang bata.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-134/prose/sent-600
+  text: Sa gitna ng sine at simbahan ang botika.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-17/prose/sent-22
+  text: Mauuna na ako.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-19/prose/sent-37
+  text: Diyan ka na.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-23/prose/sent-60
+  text: Maganda ang kapatid mo.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-32/prose/sent-83
+  text: May kotse ka ba?
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-41/prose/sent-124
+  text: May pusa ka ba?
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-56/prose/sent-182
+  text: Linggo ba ang "party"?
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-58/prose/sent-206
+  text: Tatlo ang ilong niya.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-58/prose/sent-208
+  text: Tatlo ang tenga niya.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-65/prose/sent-270
+  text: Ito ang 1.ibro ko.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-67/prose/sent-285
+  text: Kay Ray iyan.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-73/prose/sent-317
+  text: Tama ka na.
+  expected_parses_ge: 1
+- wave: 3
+  source: rg-conv
+  locator: page-93/numbered/sent-384
+  text: Nanood siya ng sine.
+  expected_parses_ge: 1
+- wave: 3
+  source: so1972
+  locator: page-100/sent-102
+  text: Nakita namin kayo.
+  expected_parses_ge: 1
+- wave: 3
+  source: so1972
+  locator: page-414/sent-570
+  text: Ito ang basahin mo.
+  expected_parses_ge: 1
+- wave: 3
+  source: so1972
+  locator: page-447/sent-698
+  text: Aalis tayo nang ala-una.
+  expected_parses_ge: 1
+- wave: 3
+  source: so1972
+  locator: page-598/sent-1101
+  text: Ang sulat ay tinanggap ko kahapon.
+  expected_parses_ge: 1
+- wave: 3
+  source: so1972
+  locator: page-603/sent-1112
+  text: Ni ito ay hindi umiinom si Rosa.
+  expected_parses_ge: 1
+- wave: 3
+  source: so1972
+  locator: page-607/sent-1126
+  text: Bago ka kumain, kailangan mong hugasan ang kamay mo.
+  expected_parses_ge: 1
+- wave: 3
+  source: so1972
+  locator: page-61/sent-23
+  text: Magluto ka nga ng kape.
+  expected_parses_ge: 1
+- wave: 3
+  source: so1972
+  locator: page-75/sent-39
+  text: Kailangan ko ang kuwalta.
+  expected_parses_ge: 1
+- wave: 4
+  source: kroeger1991
+  locator: page-123/ex-19b
+  text: Minamahal ang anak niya ni Juan.
+  expected_parses_ge: 1
+- wave: 4
+  source: kroeger1991
+  locator: page-140/ex-50a
+  text: Buhat sa Maynila siya.
+  expected_parses_ge: 1
+- wave: 4
+  source: kroeger1991
+  locator: page-210/ex-70b
+  text: Gusto ko si Maria ng tumawag kay Juan.
+  expected_parses_ge: 1

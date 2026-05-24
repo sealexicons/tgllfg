@@ -46,6 +46,7 @@ Thumbs.db
 *~
 *.bak
 *.log
+tmp/
 
 # Reference works staged locally for grep / corpus mining;
 # excluded from the repo for binary-size and licensing reasons.
