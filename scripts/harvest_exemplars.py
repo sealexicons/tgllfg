@@ -258,6 +258,56 @@ def _looks_like_tagalog(text: str) -> bool:
     return True
 
 
+def _pk91_looks_like_tagalog(text: str) -> bool:
+    """PK91-specific Tagalog-shape check, relaxed from the strict
+    :func:`_looks_like_tagalog` along two dimensions:
+
+    1. **Joined-linker tolerance**: trailing ``-ng`` / ``-g``
+       linker is stripped from each word when counting markers, so
+       ``Mayroong`` (base ``mayroon`` + ``-ng``) and ``batang``
+       (base ``bata`` + ``-ng``) contribute to the marker count.
+    2. **Single-marker threshold**: ``≥ 1`` Tagalog marker
+       qualifies (vs. strict's ``≥ 2``), provided there are zero
+       English markers. Safe for PK91 because the cross-linguistic
+       examples in PK91 (Welsh ``Gwelodd Sion ddraig.``, Irish,
+       Chamorro citations) lack any Tagalog markers entirely; the
+       block-structure context (sentences harvested only from
+       numbered ``(N)`` example blocks) is a strong enough
+       source-quality signal that ``Mapanganib lumapit sa ahas.``
+       (4 tokens, 1 marker ``sa``) can be admitted without
+       admitting wider noise.
+
+    PK91-only because the broader (OCR-degraded) reference-grammar
+    corpora accumulate substantial noise (~2100 additional
+    exemplars including OCR fragments, English mixed-in, and
+    bibliographic boilerplate) from the same relaxation."""
+    toks = re.findall(r"[a-zA-Z']+", text.lower())
+    if len(toks) < 3:
+        return False
+    single_char = sum(1 for t in toks if len(t) == 1)
+    if single_char > len(toks) * 0.4:
+        return False
+    tgl: set[str] = set()
+    for t in toks:
+        if t in _TGL_MARKERS:
+            tgl.add(t)
+            continue
+        # Joined -ng linker: try both ``X[:-2]`` (vowel-final stems
+        # like batang → bata) and ``X[:-1]`` (n-final stems where
+        # the linker n merges, like Mayroong → Mayroon).
+        if t.endswith("ng") and len(t) > 3:
+            if t[:-2] in _TGL_MARKERS:
+                tgl.add(t[:-2])
+            elif t[:-1] in _TGL_MARKERS:
+                tgl.add(t[:-1])
+    en = {t for t in toks if t in _EN_MARKERS}
+    if len(tgl) >= 2:
+        return len(en) <= len(tgl)
+    if len(tgl) == 1:
+        return len(en) == 0
+    return False
+
+
 def _is_sentence_shape(text: str) -> bool:
     """First char uppercase or quoted; ends with terminal punctuation;
     has at least 3 tokens."""
@@ -1065,15 +1115,34 @@ def _pk91_strip_subscripts(text: str) -> str:
 
 def _clean_pk91_surface(text: str) -> str:
     """Strip PK91 linguistic notation to recover the orthographic
-    surface form: ``=`` clitic boundaries become spaces, ``-``
-    morpheme boundaries between alphabetic chars are removed,
-    ``-Ø`` zero-morpheme markers are dropped, ``[...]`` constituent
-    brackets are stripped (content preserved), pronoun-triggered
-    subscript co-indexing is removed, and whitespace is collapsed."""
+    surface form. Order of operations:
+
+    1. Mid-sentence parenthetical strip — PK91 marks optional
+       constituents like ``(ang)`` / ``(na)`` / ``(ni Maria)`` in
+       parentheses; the surface form excludes them.
+    2. ``=g`` linker fold — PK91's ``=g`` after an n-final stem
+       (``Mayroon=g`` / ``mayaman=g``) is the ``-ng`` linker
+       allomorph where the stem's final ``n`` is already in place;
+       join the ``g`` directly to the prior word (``Mayroong`` /
+       ``mayamang``).
+    3. ``=`` clitic boundaries → space (general case after the
+       ``=g`` fold).
+    4. ``-Ø`` / ``Ø`` zero-morpheme markers → dropped.
+    5. ``-`` morpheme boundaries between alphabetic chars → removed.
+    6. ``[...]`` constituent brackets → stripped (content preserved).
+    7. Medial ``.`` between letters → space — handles PK91's
+       compound-marker convention (``pambansang.awit`` =
+       "national.anthem") and abbreviation forms (``Dr.Lopez`` =
+       "Dr. Lopez") uniformly.
+    8. Whitespace collapse.
+    9. Pronoun-triggered subscript co-indexing removed."""
+    text = re.sub(r"\s*\([^)]*\)\s*", " ", text)
+    text = re.sub(r"=g\b", "g", text)
     text = text.replace("=", " ")
     text = text.replace("-Ø", "").replace("Ø", "")
     text = re.sub(r"(?<=[a-zA-Z])-(?=[a-zA-Z])", "", text)
     text = text.replace("[", "").replace("]", "")
+    text = re.sub(r"(?<=[a-zA-Z])\.(?=[a-zA-Z])", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
     text = _pk91_strip_subscripts(text)
     return text
@@ -1115,16 +1184,14 @@ def _pk91_extract_from_page(
                 continue
             sub_m = _PK91_SUBLABEL_RE.match(rest)
             if sub_m:
-                ex = _pk91_yield_exemplar(
+                yield from _pk91_yield_exemplar(
                     page_num, current_block_n,
                     sub_m.group(1), sub_m.group(2),
                 )
             else:
-                ex = _pk91_yield_exemplar(
+                yield from _pk91_yield_exemplar(
                     page_num, current_block_n, None, rest,
                 )
-            if ex is not None:
-                yield ex
             continue
 
         if current_block_n is None:
@@ -1132,24 +1199,32 @@ def _pk91_extract_from_page(
 
         sub_m = _PK91_SUBLABEL_RE.match(stripped)
         if sub_m:
-            ex = _pk91_yield_exemplar(
+            yield from _pk91_yield_exemplar(
                 page_num, current_block_n,
                 sub_m.group(1), sub_m.group(2),
             )
-            if ex is not None:
-                yield ex
 
 
 def _pk91_yield_exemplar(
     page_num: int, block_n: str, sub_letter: str | None, raw_surface: str,
-) -> Exemplar | None:
-    """Clean + filter a candidate PK91 surface line. Returns an
-    Exemplar on success, None if the line fails the Tagalog-shape /
-    sentence-shape filters or contains theoretical gap markers."""
+) -> Iterator[Exemplar]:
+    """Clean + filter a candidate PK91 surface line. Yields zero,
+    one, or two Exemplars:
+
+    * Zero if the line fails the Tagalog-shape / sentence-shape
+      filters or contains theoretical gap markers.
+    * One in the common case (no parenthetical optional elements).
+    * Two when the raw surface contains a parenthetical optional
+      element like ``(ang)`` / ``(na)`` / ``(ni Maria)`` — emits
+      both the bare variant (parenthetical content excluded) at
+      the canonical locator and the elaborated variant
+      (parenthetical content included as a regular token) at a
+      ``-paren``-suffixed locator. Per Kroeger's notation
+      convention, both forms are grammatical."""
     # Reject abstract gap-marker examples (Kroeger ch. 7 unbounded-
     # dependency notation, not parseable Tagalog).
     if _PK91_GAP_MARKER_RE.search(raw_surface):
-        return None
+        return
 
     # Strip leading ungrammaticality marker ``(*)`` / ``(?)`` for the
     # surface, but capture it as marked_ungrammatical signal.
@@ -1160,15 +1235,57 @@ def _pk91_yield_exemplar(
     else:
         explicit_ungram = False
 
+    has_parens = "(" in raw_surface and ")" in raw_surface
+
+    if has_parens:
+        # Bare variant: parenthetical content excluded.
+        raw_bare = re.sub(r"\s*\([^)]*\)\s*", " ", raw_surface)
+        ex_bare = _pk91_build_exemplar(
+            page_num, block_n, sub_letter, raw_bare,
+            explicit_ungram, variant_suffix=None,
+        )
+        if ex_bare is not None:
+            yield ex_bare
+        # Elaborated variant: parenthetical content kept inline.
+        raw_elab = re.sub(r"\(([^)]+)\)", r"\1", raw_surface)
+        ex_elab = _pk91_build_exemplar(
+            page_num, block_n, sub_letter, raw_elab,
+            explicit_ungram, variant_suffix="paren",
+        )
+        if ex_elab is not None:
+            yield ex_elab
+    else:
+        ex = _pk91_build_exemplar(
+            page_num, block_n, sub_letter, raw_surface,
+            explicit_ungram, variant_suffix=None,
+        )
+        if ex is not None:
+            yield ex
+
+
+def _pk91_build_exemplar(
+    page_num: int, block_n: str, sub_letter: str | None,
+    raw_surface: str, explicit_ungram: bool,
+    variant_suffix: str | None,
+) -> Exemplar | None:
+    """Internal: clean a raw PK91 surface, run the sentence-shape +
+    Tagalog-shape filters, and construct an Exemplar. Returns None
+    if filters fail. The ``variant_suffix`` is appended to the
+    locator (e.g., ``-paren`` for the elaborated parenthetical
+    variant); None means the canonical locator without suffix."""
     cleaned = _clean_pk91_surface(raw_surface)
     if not _is_sentence_shape(cleaned):
         return None
-    if not _looks_like_tagalog(cleaned):
+    if not _pk91_looks_like_tagalog(cleaned):
         return None
 
-    locator = (
+    base_locator = (
         f"page-{page_num}/ex-{block_n}{sub_letter}"
         if sub_letter else f"page-{page_num}/ex-{block_n}"
+    )
+    locator = (
+        f"{base_locator}-{variant_suffix}" if variant_suffix
+        else base_locator
     )
     return Exemplar(
         source="kroeger1991",
