@@ -1644,6 +1644,56 @@
   feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: OCCASIONAL}
   notes: adv_redup — minsan → paminsanminsan / LEMMA paminsan-minsan (L105 productive frequency redup)
 
+# --- Phase 10.A: time_redup_freq (NOUN → FREQ-ADV bare X-X) -------------
+# Productive bare reduplication of TIME-N roots ("every X") into the
+# distributive-frequency adverb class: ``araw`` → ``araw-araw``
+# "every day", ``gabi`` → ``gabi-gabi`` "every night", ``oras`` →
+# ``oras-oras`` "every hour", ``taon`` → ``taun-taon`` "every year"
+# (the last with /o/→/u/ raising on the first copy via the per-root
+# ``redup_o_raise`` sandhi flag).
+#
+# Operations: ``[redup_root]`` — single op. The first copy is just
+# ``root.citation`` (possibly with raising); the second copy is
+# ``root.citation`` appended. The Phase 5f Commit 14
+# ``merge_hyphen_compounds`` tokenizer pre-pass collapses the
+# canonical hyphenated input ``araw-araw`` to the single-token
+# surface ``arawaraw`` this cell generates.
+#
+# POS-flip: ``base_pos: NOUN, pos: ADV``. The TIME-N root keeps its
+# bare-noun analysis (handled by the regular NOUN-indexing path);
+# this cell adds a parallel ADV reading routed via the particles
+# index (see :meth:`_index_paradigm_via_base_pos`). FREQ_VALUE is
+# DISTRIBUTIVE — the new "every X" reading distinct from the
+# existing OCCASIONAL (paminsan-minsan), HABITUAL (palagi, lagi),
+# HIGH (madalas, kadalasan), and SOMETIMES (minsan) values.
+#
+# ``lemma_redup_hyphen: true`` (Phase 10.A) opts the cell into
+# canonical-hyphenated LEMMA construction, parallel to what
+# ``_index_particle_paradigms`` already does for ``adv_redup``:
+# ``arawaraw`` carries LEMMA ``araw-araw``, ``tauntaon`` carries
+# LEMMA ``taun-taon``. Without the flag the LEMMA would default to
+# ``root.citation`` (just ``araw`` / ``taon``), conflicting with
+# the established FREQ-ADV convention.
+#
+# Per-root opt-in via ``affix_class: [time_redup_freq]`` in
+# nouns.yaml (currently 4 roots: araw, gabi, oras, taon). Adding a
+# new TIME-N entry to the inventory is a one-line YAML wiring; no
+# paradigm-cell or analyzer changes needed.
+#
+# References: Schachter & Otanes 1972 §40.7 (frequency adverb
+# reduplication — explicit list "araw-araw / oras-oras / gabi-gabi");
+# Ramos 1971 dict (gabi-gabi); R&B 1986 ch.4 (productive
+# reduplication); R&G 1981 Intermediate (taun-taon canonical
+# orthography with raising).
+- base_pos: NOUN
+  pos: ADV
+  affix_class: time_redup_freq
+  operations:
+    - {op: redup_root}
+  feats: {ADV_TYPE: FREQUENCY, FREQ_VALUE: DISTRIBUTIVE}
+  lemma_redup_hyphen: true
+  notes: time_redup_freq — araw/gabi/oras/taon → araw-araw etc. (Phase 10.A distributive-frequency redup)
+
 # === Phase 9.X.post-1: pa- / i- ADJ-derived directional + spatial ========
 #
 # Two ADJ→POS-flip paradigm cells closing 4 stopwords-iso/stopwords-tl

@@ -173,6 +173,20 @@ class ParadigmCell:
     # paradigm derives Q-pos surfaces (distributive-possessive
     # quantifiers) from PRON bases, so its cell sets ``pos: Q``.
     pos: str = ""
+    # Phase 10.A: per-cell opt-in for canonical-hyphenated LEMMA
+    # construction on ``redup_root``-final cells, mirroring the
+    # behavior already baked into :meth:`Analyzer._index_particle_paradigms`
+    # for particle-base cells (paminsanminsan / LEMMA paminsan-minsan).
+    # When True, the analyzer's NOUN/ADJ/NUM-base indexer computes
+    # ``<first_copy>-<root.citation>`` as LEMMA instead of defaulting
+    # to ``root.citation``. The first copy is what the cell's
+    # operations-minus-last produce, with the same per-root sandhi
+    # (e.g., ``redup_o_raise`` on ``taon`` yields first copy ``taun``
+    # and LEMMA ``taun-taon``). Opt-in (not default) so existing
+    # NOUN/ADJ redup-root cells like ``redup_intens_adj`` keep their
+    # established ``lemma = root.citation`` convention (``magandaganda``
+    # stays ``ganda``, not ``maganda-ganda``).
+    lemma_redup_hyphen: bool = False
 
 
 @dataclass

@@ -247,6 +247,7 @@ def _load_paradigm_cells(path: Path) -> list[VerbalCell]:
             operations=operations,
             notes=rec.get("notes", ""),
             feats=dict(feats_raw),
+            lemma_redup_hyphen=bool(rec.get("lemma_redup_hyphen", False)),
         ))
     return out
 

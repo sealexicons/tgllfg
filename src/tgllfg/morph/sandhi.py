@@ -151,14 +151,15 @@ def infix_after_first_consonant(base: str, infix: str) -> str:
     return base[0] + infix + base[1:]
 
 
-def _raise_final_o(stem: str) -> str:
+def raise_final_o(stem: str) -> str:
     """Raise the final-syllable /o/ of ``stem`` to /u/.
 
     Walks back from the end of the stem to the last vowel; if it is
     ``o`` (or ``O``), replace it with ``u`` (or ``U``); otherwise
     return the stem unchanged. Phase 2C automatic rule, applied at
     suffix-attachment time only — bare-stem and reduplicated-stem
-    surfaces keep their /o/.
+    surfaces keep their /o/ unless an opt-in flag (Phase 10.A
+    ``redup_o_raise`` for ``redup_root``) extends the rule.
     """
     for i in range(len(stem) - 1, -1, -1):
         ch = stem[i]
@@ -222,7 +223,7 @@ def attach_suffix(
     if not suffix:
         return base
     if not no_o_raise:
-        base = _raise_final_o(base)
+        base = raise_final_o(base)
     if base and is_vowel(base[-1]) and is_vowel(suffix[0]):
         if high_vowel_deletion and base[-1].lower() in "iu":
             return base[:-1] + "h" + suffix
@@ -260,7 +261,7 @@ def full_reduplicate(base: str) -> str:
     matches the same rule that operates on suffix attachment
     (§4.21).
     """
-    return _raise_final_o(base) + base
+    return raise_final_o(base) + base
 
 
 def kani_reduplicate(base: str) -> str:

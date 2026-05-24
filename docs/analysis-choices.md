@@ -18259,12 +18259,14 @@ for category level.
 
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 
-- **Full reduplication taxonomy** — Phase 10.A-10.F productive
-  paradigm-cell coverage for the 5-6 sub-classes the reviewer
+- **Full reduplication taxonomy** — Phase 10.A-10.H productive
+  paradigm-cell coverage for the 6-7 sub-classes the reviewer
   inventoried (TIME-N → FREQ-ADV; PLACE-N → distributive-LOC;
-  NUM → distributive-count; bare-ADJ attenuative; CARD
-  quantitative; V-stem casual/manner). PK91's linked-intensive
-  `mabait na mabait` adds a 6th sub-pattern.
+  NUM → distributive-count; CARD quantitative; bare-ADJ
+  attenuative; PK91 `ma-X na ma-X` linked-intensive; V-stem
+  casual/manner). Phase 10.A landed the TIME-N → FREQ-ADV
+  `time_redup_freq` cell (`araw-araw` / `gabi-gabi` /
+  `oras-oras` / `taun-taon`); 10.B-10.H pending.
 - **Forest-density chart-disambiguation** — `Pinakain niya ang
   manok ng isang tasang palay.` (ANG MANOK sent-29) and PANAHON
   sent-2/3/9 (large colon-list constructions) need deeper

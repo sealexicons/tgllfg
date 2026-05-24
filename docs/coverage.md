@@ -422,6 +422,52 @@ hatch run python scripts/harvest_exemplars.py cmd_parse
 Output JSONL lives at `data/tgl/exemplars/wave*-parse-results.jsonl`
 (gitignored). OOV ranking at `data/tgl/exemplars/oov-frequency.tsv`.
 
+## Phase 10 — Reduplication taxonomy + forest-density engineering
+
+Phase 10 plan-of-record at `.claude/plans/tgllfg-phase-10.md`.
+Three buckets: R (reduplication taxonomy, 10.A–10.H), F
+(forest-density chart engineering, 10.I–10.K), U (FU extensions
+from §18.1.3, optional 10.L–10.N). Closes the construction-class
+half of the Phase 9 deferral pile while leaving OCR-degraded
+reference grammars and PK91 dissertation prose for Phase 11+
+extractor work.
+
+### Phase 10.A TIME-N → FREQ-ADV bare X-X productive cell
+
+Productizes the previously-static `arawaraw` (Phase 9.X.post-3)
+and `tauntaon` particles via a new `time_redup_freq` paradigm
+cell (`base_pos: NOUN, pos: ADV`, single `redup_root` op,
+`lemma_redup_hyphen: true` opt-in). Four TIME-N roots opt in:
+`araw`, `gabi`, `oras`, `taon` (the last via the new
+`redup_o_raise` per-root sandhi flag for first-copy /o/→/u/
+raising — `taon` → `taun-taon`). New `FREQ_VALUE=DISTRIBUTIVE`
+value distinguishes the "every X" semantics from existing
+OCCASIONAL / HABITUAL / HIGH / SOMETIMES values; flows through
+the Phase 5f S-rule `S → S AdvP[FREQUENCY]` unchanged.
+
+Wave-1 audit diff: **88/123 → 88/123 (0 closures, 0
+regressions)** — infrastructure sub-PR validates the productive
+path covers the two existing wave-1 closures (ANG MANOK sent-38,
+PANAHON sent-21) without regression while unlocking productive
+derivation for the broader TIME-N inventory. Adding any new
+TIME-N opt-in is now a one-line YAML edit; the next four
+plausible adds (`umaga`, `hapon`, `linggo`, `buwan`) are
+reference-attested in S&O 1972 §40.7 + R&G Conv but absent from
+the current audit corpus — held back per `[[feedback_audit_
+before_scheduling]]`.
+
+Engineering scaffolding: new `ParadigmCell.lemma_redup_hyphen`
+field (analyzer extends `_index_paradigm_via_base_pos` to mirror
+`_index_particle_paradigms`'s hyphenated-LEMMA behavior on opt-
+in); new `redup_o_raise` per-root sandhi flag (extends the
+existing /o/→/u/ raising rule from suffix-attachment time to
+the first copy of a `redup_root` op); `_raise_final_o` →
+`raise_final_o` public rename. Existing `redup_intens_adj`
+(ADJ→ADJ) keeps its `lemma == root.citation` convention (no
+opt-in); existing wh-PRON redup keeps `anoano` / `sinosino`
+unraised (canonical-form audit deferred — S&O lists `anu-ano` /
+`sinu-sino`).
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
