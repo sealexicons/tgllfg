@@ -18408,6 +18408,9 @@ Audit: **+12 closures, 0 regressions** across all 8 waves (wave-1
   shared `redup_root` op (removing the bespoke `full_redup` op +
   `full_reduplicate`), added `milyon` (→ `milyonmilyon`, a
   no-raise Spanish loan) + `REDUP=FULL` / `REDUP_SEM=QUANT`;
+  Phase 10.D.post-1 added the native `angaw` (→ `angawangaw`),
+  which S&O 1972 p.224 lists as the *primary* "millions" form
+  (`milyon-milyon` "less common") — correcting the loan-only gap;
   Phase 10.E.1 landed the `ang`-exclamative (`Ang ganda-ganda
   mo!`) + the `adj_redup` bare-ADJ cell (degree underspecified) +
   the `redup_intens_adj`=ATTEN retrofit; 10.F landed the
