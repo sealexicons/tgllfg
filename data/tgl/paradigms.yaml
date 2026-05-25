@@ -1321,24 +1321,44 @@
 # during indexing. See ``src/tgllfg/morph/analyzer.py``
 # ``_index_paradigm_via_base_pos``.
 
-# --- Phase 5n.C.3 Commit 2: card_redup (§18 L31) ------------------------
-# Compound cardinals via full-root reduplication: ``libo`` →
-# ``libulibo`` "thousands of", ``daan`` → ``daandaan`` "hundreds of".
-# The ``full_redup`` op (analyzer.py + sandhi.full_reduplicate)
-# duplicates the root and raises the first copy's final-syllable /o/
-# to /u/ (same rule as ``attach_suffix``). Cell.feats contributes
-# ``MEASURE=YES`` so the existing measure-N grammar rule
-# (``cfg/nominal.py`` line 1011) fires on the derived surface.
-# Root-side ``COLL_VALUE`` (HUNDREDS / THOUSANDS) propagates
-# per-root via the standard root.feats merge.
-# References: Schachter & Otanes 1972 §6 (collective cardinal redup);
-# R&B 1986 paradigm tables.
+# --- Phase 5n.C.3 Commit 2 / Phase 10.D: card_redup (§18 L31) -----------
+# Quantitative compound cardinals via full-root reduplication: ``daan``
+# → ``daandaan`` "hundreds (of)", ``libo`` → ``libulibo`` "thousands
+# (of)", ``milyon`` → ``milyonmilyon`` "millions (of)". Cell.feats
+# contributes ``MEASURE=true`` so the existing measure-N grammar rule
+# (``cfg/nominal.py``) fires on the derived surface; root-side
+# ``COLL_VALUE`` (HUNDREDS / THOUSANDS / MILLIONS) propagates per-root.
+#
+# Phase 10.D unified this onto the ``redup_root`` op (was the
+# bespoke ``full_redup`` op, now removed — card_redup was its sole
+# user). First-copy /o/→/u/ raising is now the per-root
+# ``redup_o_raise`` sandhi flag (same machinery as 10.A ``taon`` →
+# ``taun-taon``) rather than baked into the op: ``libo`` opts in
+# (→ ``libulibo``); ``daan`` has no stem /o/ so needs nothing
+# (→ ``daandaan``); ``milyon`` is a Spanish loan whose closed final
+# syllable /-on/ does NOT raise (→ ``milyonmilyon``, not
+# ``*milyunmilyon``) so it also opts out. Surfaces for daan/libo are
+# byte-identical to the pre-10.D ``full_redup`` output.
+#
+# Phase 10.D also stamps the cross-cutting ``REDUP=FULL`` +
+# ``REDUP_SEM=QUANT`` morphology feats (QUANT = quantitative
+# large-number redup, distinct from the DISTR/FREQ siblings). No
+# ``lemma_redup_hyphen``: card_redup is NOUN→NOUN (no POS-flip), so
+# per the established convention (POS-flip redup cells hyphenate the
+# LEMMA; same-POS cells keep the root citation — cf. redup_intens_adj)
+# the LEMMA stays the bare root (``libo`` / ``daan`` / ``milyon``),
+# which also feeds MEASURE_HEAD cleanly.
+#
+# References: Schachter & Otanes 1972 §6 (collective cardinal redup;
+# attests ``daan-daan`` / ``libu-libo`` + linker form ``libu-libong
+# tao``); Phase 10 external-reviewer typology (daan-daan / libo-libo
+# / milyon-milyon); R&B 1986 paradigm tables.
 - base_pos: NOUN
   affix_class: card_redup
   operations:
-    - {op: full_redup}
-  feats: {MEASURE: true}
-  notes: card_redup — libo → libulibo, daan → daandaan
+    - {op: redup_root}
+  feats: {MEASURE: true, REDUP: FULL, REDUP_SEM: QUANT}
+  notes: card_redup — daan → daandaan, libo → libulibo (redup_o_raise), milyon → milyonmilyon (Phase 10.D)
 
 # --- Phase 5n.C.3 Commit 3: tig_distrib (§18 L31) -----------------------
 # Productive distributive numerals: ``tig-isa`` "one each",

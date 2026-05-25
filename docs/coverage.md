@@ -546,6 +546,55 @@ attestations in any wave. Morphology-only like 10.B: no
 clause-final `S → S AdvP[MANNER]` / `nang` + distributive-ADV
 rule (MANNER AdvPs share the LOCATION deferral block).
 
+### Phase 10.D CARD quantitative X-X (card_redup unification + milyon)
+
+Fourth R-bucket sibling, and a consolidation of the pre-10.A
+`card_redup` cell (Phase 5n.C.3) into the newer productive redup
+approach. Three parts:
+
+Op unification — `card_redup` migrated from the bespoke
+`full_redup` op (which always raised the first-copy /o/) onto the
+shared `redup_root` op. First-copy /o/→/u/ raising is now the
+per-root `redup_o_raise` sandhi flag (the same machinery 10.A
+uses for `taon` → `taun-taon`) rather than baked into the op.
+Since `card_redup` was `full_redup`'s sole user, the
+`full_redup` op and `sandhi.full_reduplicate` (plus their 3 unit
+tests) were removed as dead code. Surfaces for `daan`/`libo` are
+byte-identical to the pre-10.D output.
+
+milyon coverage — new `milyon` "million" NOUN root
+(COLL_VALUE=MILLIONS) joins `daan`/`libo` in the card_redup
+series, completing the reviewer typology's daan-daan /
+libo-libo / milyon-milyon. As a Spanish loan with a closed final
+syllable /-on/, `milyon` does NOT take first-copy raising
+(`milyon` → `milyonmilyon`, not `*milyunmilyon`) — it simply
+opts out of `redup_o_raise`, which the unified op makes the
+default. This is the payoff of the op unification: the no-raise
+case is free (no flag) instead of needing a special op variant.
+
+Cross-cutting feats — `REDUP=FULL` + `REDUP_SEM=QUANT`
+(quantitative large-number redup, distinct from the DISTR/FREQ
+siblings) added to the cell; `REDUP_SEM=QUANT` registered in the
+feats-audit enum. No `lemma_redup_hyphen`: `card_redup` is
+NOUN→NOUN (no POS-flip), so per the convention that only
+POS-flip redup cells hyphenate (cf. `redup_intens_adj`), the
+LEMMA stays the bare root (`libo`/`daan`/`milyon`), which also
+keeps `MEASURE_HEAD` clean.
+
+The `card_redup` affix_class stays load-bearing — it's the
+per-root opt-in gate selecting the three collective-numeral
+NOUNs; it can't merge with `time_redup_freq`/`place_redup_distr`
+(different root-set → different output). What the redup family
+now shares is the op (`redup_root`) and the raising mechanism
+(`redup_o_raise`), not the affix_class.
+
+Wave-1 audit diff: **88/123 → 88/123 (0/0)** — the migration is
+surface-preserving (daan/libo unchanged; milyon is new and
+audit-absent). S&O 1972 §6 attests `daan-daan` / `libu-libo`
+(+ linker `libu-libong tao`); `libu-libo` appears 3× in the
+existing audit corpus, already closed via the unchanged
+`libulibo` surface.
+
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 
 Fifth corpus source and second native-PDF (after PK91 wave 4):

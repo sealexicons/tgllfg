@@ -246,24 +246,6 @@ def cv_reduplicate(base: str, *, cluster_redup: bool = False) -> str:
     return first_cv(base, cluster_redup=cluster_redup) + base
 
 
-def full_reduplicate(base: str) -> str:
-    """Reduplicate the full root. The first copy has its final-
-    syllable /o/ raised to /u/ (matching the standard
-    suffix-attachment sandhi from :func:`attach_suffix`); the
-    second copy keeps its /o/. ``libo`` → ``libulibo``;
-    ``daan`` → ``daandaan``; ``baka`` → ``bakabaka``.
-
-    Used by the Phase 5n.C.3 ``card_redup`` paradigm class for
-    productive compound cardinals (§18 L31): ``libo`` "thousand"
-    yields ``libulibo`` "thousands of"; ``daan`` "hundred" yields
-    ``daandaan`` "hundreds of". Schachter & Otanes 1972 §6 documents
-    the redup pattern for collective cardinals; the o→u raising
-    matches the same rule that operates on suffix attachment
-    (§4.21).
-    """
-    return raise_final_o(base) + base
-
-
 def kani_reduplicate(base: str) -> str:
     """Distributive-possessive reduplication for DAT pronouns.
 
