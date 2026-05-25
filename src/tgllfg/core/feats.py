@@ -46,6 +46,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "ELLIPSIS",
         "EMPHATIC",
         "EQUATIVE",
+        "EXCLAM",
         "EXISTENTIAL",
         "EXTRACTED",
         "FOCUS_NEG",

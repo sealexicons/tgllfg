@@ -36,7 +36,7 @@ inspection: comment text containing capitalized words followed by
 
 Subsequent phases extended the inventory: 9.O.3 (+1), 9.O.4 (+1),
 9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1), 9.X.c49 (+1),
-9.X.post-2 (+1) → 63 total.
+9.X.post-2 (+1), 10.E.1 (+1) → 64 total.
 Each extension is documented inline below.
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
@@ -67,6 +67,7 @@ negative.
 | `ELLIPSIS` | clause has elided / contextually-recoverable subject (`Wala pa.`; 9.X.c22 bare wala) |
 | `EMPHATIC` | clause carries emphasis |
 | `EQUATIVE` | ADJ is equative (`kasingganda`) |
+| `EXCLAM` | `ang`-exclamative predication (`Ang ganda-ganda mo!`) — Phase 10.E.1 |
 | `EXISTENTIAL` | clause is existential (`may`, `mayroon`) |
 | `EXTRACTED` | NP-of-extraction marker |
 | `FOCUS_NEG` | Ni-focus-negation construction marker (Phase 8.V) |
