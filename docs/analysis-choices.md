@@ -18257,6 +18257,56 @@ principles: (a) treat redup output as zero-level lexical
 category; (b) use clitic-placement as the empirical diagnostic
 for category level.
 
+### Phase 10.E.1 — ang-exclamative + attenuative redup (2026-05-25)
+
+**Informant ruling on bare adjectival full reduplication.** A
+native-speaker reviewer (relayed by the user), corroborated against
+Zamar 2023 §4.1.1 and GT: bare X-X is **root-dependent in degree —
+no single deterministic meaning.** The `adj_redup` cell is modelled
+as degree-**underspecified** (`REDUP=FULL` only); the root's
+semantic class or the construction fixes the reading.
+
+| Root class | Examples | Bare X-X reading |
+| --- | --- | --- |
+| Scalar quality | puti, mura, payat, init, lamig, taba, haba | usually moderate (`puti-puti` "whitish") |
+| Result-state / damage | sira, basag, punit, putol | usually intensive/resultative (`sira-sira` "all busted up") |
+
+The reliable *moderate* form is `ma-X-X` (`maganda-ganda`, the
+Phase 5n.C.3 `redup_intens_adj` cell) — "fairly/tolerably X",
+overlapping but not synonymous with the safer, compositional
+`medyo` + adj. Retrofitted `REDUP_SEM=ATTEN` (not INTENS: genuine
+intensification is the *linker* form `mabait na mabait`, Phase
+10.E.2). Surface: full-root redup is correct (`matalino →
+matalino-talino`, our `redup_root` op — not Zamar's first-two-
+syllable `matali-talino`).
+
+**The `ang`-exclamative (S&O 1972 §4).** `Ang ganda mo!` =
+`ang` + abstract-quality head + GEN possessor = "the beauty
+of-you", an exclamative predication; the possessor is the logical
+SUBJ and `EXCLAM=true` marks the affective force (GT renders the
+bare construction as the plain predication "you are beautiful" —
+the propositional core). The reduplication does **not** carry the
+degree here: the `Ang X-X!` frame itself forces INTENSIVE
+(`Ang ganda-ganda mo!` "so beautiful"), so the redup head variant
+stamps `REDUP_SEM=INTENS` at the construction while the cell stays
+underspecified. Three head sources — `ADJ[REDUP=FULL]` (redup),
+`ADJ[PREDICATIVE]` (simple adj), `QualityN` (quality NOUN) — over
+an `NP[CASE=GEN]` possessor.
+
+**c-structure gating gotcha (→ Phase 10.F).** The quality-NOUN
+head needs a `QualityN → N` wrapper rather than a bare
+`N[SEM_CLASS=QUALITY]` daughter, because nouns scan as category
+`NOUN` and reach phrase-level `N` only via `N → NOUN`, whose
+category pattern carries no lexical `SEM_CLASS` — so a
+`N[<lexical-feat>]` bracket is statically unsatisfiable and
+silently never fires. (Verbs are immune: the `VERB→V` alias makes
+`V` the lexical category; nouns can't be aliased because `N` is a
+recursive projection.) The fix is the constraining-equation wrapper
+(`(↓1 SEM_CLASS) =c 'QUALITY'`), mirroring the Phase 5m `TimeAdv`
+idiom. This footgun already produced dead rules
+(`N[SEM_CLASS=TIME]` in subordination.py; `N[WH]`); a compile-time
+lint to flag such brackets is scheduled as Phase 10.F.
+
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 
 - **Full reduplication taxonomy** — Phase 10.A-10.H productive
@@ -18275,8 +18325,12 @@ for category level.
   shared `redup_root` op (removing the bespoke `full_redup` op +
   `full_reduplicate`), added `milyon` (→ `milyonmilyon`, a
   no-raise Spanish loan) + `REDUP=FULL` / `REDUP_SEM=QUANT`;
-  10.E-10.H pending. Bucket Z (Zamar wave-5 harvest) landed
-  out-of-sequence before the R-bucket remainder.
+  Phase 10.E.1 landed the `ang`-exclamative (`Ang ganda-ganda
+  mo!`) + the `adj_redup` bare-ADJ cell (degree underspecified) +
+  the `redup_intens_adj`=ATTEN retrofit; 10.E.2-10.H pending
+  (10.F grammar-compiler bracket lint inserted before 10.E.2).
+  Bucket Z (Zamar wave-5 harvest) landed out-of-sequence before
+  the R-bucket remainder.
 - **Forest-density chart-disambiguation** — `Pinakain niya ang
   manok ng isang tasang palay.` (ANG MANOK sent-29) and PANAHON
   sent-2/3/9 (large colon-list constructions) need deeper
