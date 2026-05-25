@@ -664,6 +664,64 @@ Closes 4 rg-intermediate `ang`-exclamative exemplars
 global clitic-placement + ADJ-indexer changes introduce no wave-1
 regression. Tests: `test_phase10_e1_ang_exclamative` (24).
 
+### Phase 10.F grammar-compiler dead-bracket lint + dead-rule repair
+
+An engineering interlude (surfaced by 10.E.1): a category-bracket
+gating footgun, its compile-time guard, and the dead rules it found.
+
+The footgun — a rule daughter `Cat[feat=val]` whose `Cat` is a
+*derived non-terminal* (reached via a unary projection like
+`N → NOUN`) silently never matches when it gates on a lexical-only
+feat. The Earley matcher (`cfg/compile.py` `matches`) requires
+category equality plus the bracketed feats present on the candidate's
+*c-structure category pattern*, but the derived `N` carries no lexical
+`SEM_CLASS` / `Q_TYPE` (those live in the f-structure). Such a rule
+compiles cleanly and runs but never fires — no error. (Verbs are
+immune: the `VERB→V` alias makes `V` the lexical category; nouns can't
+be aliased because `N` is a recursive projection — `N → NOUN` would go
+cyclic.)
+
+The lint — `find_unsatisfiable_brackets(rules, lexical_categories)`
+flags any daughter `Cat[feat]` where `Cat` is neither a lexical
+preterminal category nor a category whose rule-LHS supplies the feat.
+`compile_grammar` gains an optional `lexical_categories` param that
+runs the lint and raises; the build-time guard is
+`tests/tgllfg/test_phase10_f_bracket_lint.py`, which derives the
+lexical-category set from the loaded lexicon (POS tags after
+`_POS_ALIASES`) and asserts zero dead brackets.
+
+Two dead rules repaired — each had a redundant dead bracket alongside
+an already-correct constraining equation, so the fix drops the bracket
+to the bare category:
+
+- `N[SEM_CLASS=TIME]` → `N` (subordination.py, the Phase 9.W
+  pag-N[TIME]-na SubordClause) — gated by the existing
+  `(↓2 SEM_CLASS) =c 'TIME'`.
+- `S[Q_TYPE=YES_NO]` → `S` (control.py, the ba-reported yes/no-Q
+  indirect complement) — gated by the existing `(↓2 Q_TYPE) =c
+  'YES_NO'`, mirroring the sibling declarative rule. (The originally
+  suspected `N[WH]` was a false alarm — those are `PRON[WH]`, and
+  `PRON` is a lexical category.)
+
+Repairing `S[Q_TYPE=YES_NO]` exposed a second issue: the embedded
+ba-reported-Q (`Alam ko kung kumain ba siya.` "I know whether he ate")
+still failed because `reorder_clitics` hoisted the embedded clause's
+clitics (`siya`, `ba`) across the `kung` complementizer into the
+matrix cluster. `_enclosing_anchor_for_clitic` (clitics/placement.py)
+only recognized `na`-linker inner-clause boundaries; 10.F extends it to
+treat a complementizer (`PART` with a `COMP_TYPE` feat) as an
+embedded-clause boundary, so post-`kung` clitics anchor to the embedded
+verb. The construction now parses with the correct embedded-Q reading
+(the COMP carries `Q_TYPE=YES_NO`).
+
+No new feats. Wave-1 audit diff: **88/123 → 88/123 (0/0)**. Re-checked
+against all 8 wave parse-results baselines: **0 regressions, +10
+closures** — the dead-rule repairs and the complementizer clitic-domain
+fix close real embedded-clause / ba-reported-Q / pag-TIME-na
+constructions (rc1990 +1, rg-intermediate +3, so1972 +1, kroeger1991
++1, zamar2023 +4). So an engineering interlude, but a net audit gain.
+Tests: `test_phase10_f_bracket_lint` (7).
+
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 
 Fifth corpus source and second native-PDF (after PK91 wave 4):
