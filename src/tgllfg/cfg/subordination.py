@@ -133,7 +133,12 @@ def register_rules(rules: list[Rule]) -> None:
         "SubordClause",
         [
             "PART[COMP_TYPE=COND]",
-            "N[SEM_CLASS=TIME]",
+            # Phase 10.F: bare ``N`` (not the dead c-structure bracket
+            # ``N[SEM_CLASS=TIME]`` — ``N`` is a projection non-terminal
+            # via ``N → NOUN`` and carries no lexical SEM_CLASS on its
+            # category pattern). The TIME gate is the constraining
+            # equation ``(↓2 SEM_CLASS) =c 'TIME'`` below.
+            "N",
             "PART[ASPECT_PART=ALREADY]",
         ],
         [
