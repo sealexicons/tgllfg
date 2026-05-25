@@ -268,19 +268,89 @@ class CompiledGrammar:
         return pattern.category in self._nonterminal_cats
 
 
+def find_unsatisfiable_brackets(
+    rules: Iterable[CompiledRule],
+    lexical_categories: frozenset[str],
+) -> list[tuple[CompiledRule, CategoryPattern]]:
+    """Return ``(rule, daughter)`` pairs whose bracketed RHS daughter
+    ``Cat[feat=val]`` can never match any constituent — a silently
+    dead rule (Phase 10.F).
+
+    A daughter with a non-empty feature bracket is satisfiable iff:
+
+    * **scan path** — ``Cat`` is a lexical preterminal category (in
+      ``lexical_categories`` — the POS tags after ``_POS_ALIASES``); a
+      lexical entry may supply the feat (it flows in via the morph
+      analysis), or
+    * **complete path** — some rule with LHS category ``Cat`` has an
+      LHS pattern that :func:`matches` the daughter (a rule sets the
+      feat on the ``Cat`` category pattern).
+
+    When neither holds the bracket is statically unsatisfiable: the
+    matcher requires category equality plus the bracketed feats present
+    on the candidate's *category pattern*, but a derived non-terminal
+    (e.g. ``N`` reached via ``N → NOUN``) carries no lexical feats on
+    its pattern — feats like ``SEM_CLASS`` / ``Q_TYPE`` live only in the
+    f-structure and must be checked with a constraining equation
+    (``(↓i feat) =c 'val'``) on a bare-category daughter, or via a
+    wrapper non-terminal (cf. ``TimeAdv`` / ``QualityN``). See
+    ``docs/analysis-choices.md`` § "Phase 10.E.1 ... c-structure gating
+    gotcha".
+    """
+    rule_list = list(rules)
+    lhs_by_cat: dict[str, list[CategoryPattern]] = {}
+    for r in rule_list:
+        lhs_by_cat.setdefault(r.lhs.category, []).append(r.lhs)
+    dead: list[tuple[CompiledRule, CategoryPattern]] = []
+    for r in rule_list:
+        for d in r.rhs:
+            if not d.features:
+                continue
+            if d.category in lexical_categories:
+                continue
+            if any(matches(d, lhs) for lhs in lhs_by_cat.get(d.category, [])):
+                continue
+            dead.append((r, d))
+    return dead
+
+
 def compile_grammar(
     grammar: Grammar,
     start: CategoryPattern = CategoryPattern("S", ()),
+    lexical_categories: frozenset[str] | None = None,
 ) -> CompiledGrammar:
     """Compile a :class:`tgllfg.grammar.Grammar` to a
     :class:`CompiledGrammar`, parsing every LHS and RHS string and
-    indexing rules by LHS category."""
+    indexing rules by LHS category.
+
+    Phase 10.F: when ``lexical_categories`` is supplied (the set of POS
+    tags after ``_POS_ALIASES``), the compiled grammar is linted for
+    statically-unsatisfiable category brackets via
+    :func:`find_unsatisfiable_brackets`, raising ``ValueError`` listing
+    any found (silently dead rule daughters). The production default
+    (``None``) skips the lint — the build-time guard is
+    ``tests/tgllfg/test_phase10_f_bracket_lint.py``, which derives the
+    lexical-category set from the loaded lexicon and runs the check."""
     compiled: list[CompiledRule] = []
     for r in grammar.rules:
         lhs = parse_pattern(r.lhs)
         rhs = tuple(parse_pattern(s) for s in r.rhs)
         compiled.append(CompiledRule(lhs=lhs, rhs=rhs, equations=tuple(r.equations)))
-    return CompiledGrammar(compiled, start=start)
+    cg = CompiledGrammar(compiled, start=start)
+    if lexical_categories is not None:
+        dead = find_unsatisfiable_brackets(cg.rules, lexical_categories)
+        if dead:
+            listing = "; ".join(
+                f"{d.category}{list(d.features)} (in a rule for {r.lhs.category})"
+                for r, d in dead
+            )
+            raise ValueError(
+                "statically-unsatisfiable category bracket(s) — silently "
+                f"dead rule daughters (Phase 10.F): {listing}. Gate the feat "
+                "with a constraining equation on a bare-category daughter, or "
+                "a wrapper non-terminal (cf. TimeAdv / QualityN)."
+            )
+    return cg
 
 
 def compile_rule(rule: Rule) -> CompiledRule:
@@ -298,6 +368,7 @@ __all__ = [
     "CompiledGrammar",
     "compile_grammar",
     "compile_rule",
+    "find_unsatisfiable_brackets",
     "matches",
     "merge_features",
     "parse_pattern",
