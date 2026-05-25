@@ -2408,6 +2408,75 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # --- Phase 10.E.2: ``ma-X na ma-X`` linked-intensive adjective ----
+    #
+    # ``Mabait na mabait ka.``         "You are very kind." (PK91 §4.5 ex-25a)
+    # ``Magandang maganda ang bata.``  "The child is very beautiful."
+    # ``Kayo ay mabait na mabait.``    (S&O 1972 page-498, ay-inversion)
+    #
+    # PK91 (Kroeger 1991 §4.5) analyses the linked-intensive as a
+    # complex zero-level adjective (A°): a gradable ``ma-`` adjective
+    # doubled across the linker — free ``na`` after consonant-final
+    # ``mabait``; bound ``-ng`` after vowel-final ``maganda`` (split
+    # off by ``split_linker_ng`` to ``PART[LINK=NG]``). Semantically it
+    # is the *true* intensive ("very X"), distinct from the moderate
+    # single-word ``ma-X-X`` (``maganda-ganda`` = ``REDUP_SEM=ATTEN``,
+    # Phase 5n.C.3 C7) and from the construction-forced intensive of
+    # the Phase 10.E.1 ``ang``-exclamative.
+    #
+    # **Structure** mirrors the Phase 5h intensifier-particle wrap
+    # directly above (``ADJ → PART[INTENSIFIER] PART[LINK] ADJ``), with
+    # a doubled ADJ replacing the particle. ``(↑) = ↓1`` shares the
+    # *first* conjunct's f-structure, so its ``LEMMA`` / ``PREDICATIVE``
+    # ride up unchanged; the LHS advertises ``PREDICATIVE=true`` so the
+    # Phase 5g predicative-ADJ-S rule (and the ay-fronting / pivot
+    # rules) admit the complex under the Phase 6.C graph-constraint
+    # matcher.
+    #
+    # **Same-lemma gate** — ``(↑ LEMMA) = ↓3 LEMMA`` forces the two
+    # conjuncts to share a lemma by unification clash (``(↑) = ↓1``
+    # already carries ↓1's ``LEMMA``). The doubling is what yields the
+    # intensive reading; this blocks the unrelated two-adjective linker
+    # construction ``mahirap na masarap`` ("difficult but delicious",
+    # rg-int sent-1372) from misparsing as an intensive.
+    #
+    # **Degree feats** — ``COMP_DEGREE=INTENSIVE`` joins the established
+    # intensive-adjective class (parallel to the particle wrapper and
+    # ``napaka-``); ``REDUP_SEM=INTENS`` is the Phase-10 reduplication-
+    # taxonomy tag (informant ruling 2026-05-25: INTENSIVE → INTENS),
+    # parallel to the Phase 10.E.1 exclamative. No new feat is minted —
+    # the §2.2 ``INTENS_LINKED`` sketch is superseded by reusing the
+    # shipped enums per the §2.1.1 ruling.
+    #
+    # **Belt-and-braces** — ``(↓2 LINK) =c '{link}'`` closes the
+    # non-conflict-matcher leak (a bare ``PART`` without ``LINK`` would
+    # otherwise absorb the linker slot, exactly as on the particle
+    # wrapper); ``(↓1 PREDICATIVE) =c true`` / ``(↓3 PREDICATIVE) =c
+    # true`` restrict both conjuncts to genuine predicative adjectives.
+    #
+    # Clitic placement: ``reorder_clitics`` keeps a post-complex 2P
+    # clitic in situ (``_is_post_doubled_adj_pron``) rather than hoisting
+    # it between the conjuncts — PK91's A° diagnostic ``*Mabait ka=ng
+    # mabait``.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "ADJ[PREDICATIVE=true, COMP_DEGREE=INTENSIVE]",
+            [
+                "ADJ",
+                f"PART[LINK={link}]",
+                "ADJ",
+            ],
+            [
+                "(↑) = ↓1",
+                "(↑ LEMMA) = ↓3 LEMMA",
+                "(↑ COMP_DEGREE) = 'INTENSIVE'",
+                "(↑ REDUP_SEM) = 'INTENS'",
+                "(↓1 PREDICATIVE) =c true",
+                "(↓3 PREDICATIVE) =c true",
+                f"(↓2 LINK) =c '{link}'",
+            ],
+        ))
+
     # --- 9.X.c17: N-level intensifier wrap (parallel to ADJ form) ----
     #
     # ``masyadong pansin`` "(too much) attention" (R&G 1981 PANAHON

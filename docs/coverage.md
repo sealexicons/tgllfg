@@ -722,6 +722,55 @@ constructions (rc1990 +1, rg-intermediate +3, so1972 +1, kroeger1991
 +1, zamar2023 +4). So an engineering interlude, but a net audit gain.
 Tests: `test_phase10_f_bracket_lint` (7).
 
+### Phase 10.E.2 ma-X na ma-X linked-intensive adjective
+
+PK91 (Kroeger 1991 §4.5) `ma-X na ma-X` — a gradable `ma-` adjective
+doubled across the linker (free `na` after consonant-final `mabait`;
+bound `-ng` after vowel-final `maganda`) meaning the true intensive
+"very X" (`Mabait na mabait ka.` "you are very kind", PK91 ex-25a). PK91
+analyses it as a complex zero-level adjective (A°), diagnosed by clitic
+placement: a 2P clitic attaches after the whole complex, never between
+the conjuncts (`*Mabait ka=ng mabait`).
+
+A `cfg/nominal.py` rule
+`ADJ[PREDICATIVE=true, COMP_DEGREE=INTENSIVE] → ADJ PART[LINK] ADJ`
+(NA + NG variants) mirrors the Phase 5h intensifier-particle wrapper
+with a doubled ADJ in place of the particle. `(↑) = ↓1` shares the
+first conjunct's f-structure; a same-lemma gate `(↑ LEMMA) = ↓3 LEMMA`
+forces both conjuncts to share a lemma by unification clash — the
+doubling is what yields the intensive, and the gate blocks the
+unrelated two-adjective linker construction `mahirap na masarap`
+("difficult but delicious", rg-int sent-1372) from misparsing as one.
+The constituent carries `COMP_DEGREE=INTENSIVE` (joining the
+established intensive-adjective class) plus the Phase-10 redup-taxonomy
+tag `REDUP_SEM=INTENS` (informant ruling 2026-05-25: INTENSIVE →
+INTENS). No new feat is minted — the early `INTENS_LINKED` sketch is
+superseded by reusing the shipped enums. The basic predicative-ADJ-S
+rule lifts `REDUP_SEM` to the matrix (parallel to the existing
+`INTENS` / `DISTRIB` / `KASING_N` lifts), so the common forms surface
+the intensive reading at the clause root.
+
+Clitic placement: `_is_post_doubled_adj_pron` (clitics/placement.py)
+keeps a post-complex 2P clitic in situ rather than letting the
+Wackernagel pass hoist it between the conjuncts (`Mabait na mabait ka`
+→ `*Mabait ka na mabait`) — the same in-situ idiom as the Phase 10.E.1
+`_is_post_ang_quality_pron`.
+
+OCR tokenisation: the ay-fronted surface's OCR'd form
+`Kayo•y mabait na mabait` (so1972 sent-1099) was blocked because the
+`'y` (= `ay`) enclitic apostrophe is rendered as a bullet (U+2022). The
+bound-clitic splitters (`split_apostrophe_y` / `split_apostrophe_t`)
+now accept `•` / `·` in the apostrophe slot, guarded by the existing
+vowel-final-host + bare-`y`/`t`-follower so hyphen-redup
+(`dala•dalawa`) and leading bullets (`•Juan`) are untouched.
+
+No new feats. Wave-1 audit diff: **88/123 → 88/123 (0/0)**. Re-checked
+against all 8 wave parse-results baselines: **0 regressions, +12
+closures** — the doubled-ADJ rule generalises across the gradable `ma-`
+adjectives (rc1990 +1, rg-intermediate +3, so1972 +3, kroeger1991 +1,
+zamar2023 +4); the so1972 +3 includes the `•y`-OCR closure (sent-1099).
+Tests: `test_phase10_e2_linked_intensive` (24).
+
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 
 Fifth corpus source and second native-PDF (after PK91 wave 4):

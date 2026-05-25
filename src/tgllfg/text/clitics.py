@@ -60,6 +60,15 @@ def split_enclitics(tokens: list[Token]) -> list[Token]:
 
 _VOWELS = "aeiouAEIOU"
 
+# Apostrophe glyphs the bound-clitic splitters accept in the ``[X, ', C]``
+# slot. The OCR'd reference corpora render the ``'y`` / ``'t`` enclitic
+# apostrophe variously as a straight quote, a bullet (U+2022), or a
+# middle dot (U+00B7) — ``Kayo•y`` / ``ko•y`` / ``bawa•t``. The
+# vowel-final-host + bare-``y``/``t``-follower guard keeps this from
+# firing on the hyphen-redup (``dala•dalawa``) or leading-bullet
+# (``•Juan``) uses of the same glyphs.
+_APOSTROPHE_LIKE = ("'", "•", "·")
+
 
 def split_apostrophe_t(tokens: list[Token]) -> list[Token]:
     """Merge the post-vowel bound clitic ``'t`` into a synthetic
@@ -104,7 +113,7 @@ def split_apostrophe_t(tokens: list[Token]) -> list[Token]:
         host = tokens[i]
         if (
             i + 2 < n
-            and tokens[i + 1].surface == "'"
+            and tokens[i + 1].surface in _APOSTROPHE_LIKE
             and tokens[i + 2].norm == "t"
             and host.surface
             and host.surface[-1] in _VOWELS
@@ -171,7 +180,7 @@ def split_apostrophe_y(tokens: list[Token]) -> list[Token]:
         host = tokens[i]
         if (
             i + 2 < n
-            and tokens[i + 1].surface == "'"
+            and tokens[i + 1].surface in _APOSTROPHE_LIKE
             and tokens[i + 2].norm == "y"
             and host.surface
             and host.surface[-1] in _VOWELS

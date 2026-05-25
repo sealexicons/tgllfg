@@ -1218,6 +1218,13 @@ def register_rules(rules: list[Rule]) -> None:
             # derived equatives. No-op when daughter lacks the
             # feat.
             "(↑ KASING_N) = ↓1 KASING_N",
+            # Phase 10.E.2: lift REDUP_SEM so the linked-intensive
+            # ``ma-X na ma-X`` reading (``Mabait na mabait ka`` →
+            # ``REDUP_SEM=INTENS``, from the cfg/nominal.py doubled-ADJ
+            # rule) surfaces on the matrix S, parallel to the
+            # Phase 10.E.1 exclamative's clause-level REDUP_SEM. No-op
+            # when the daughter lacks the feat (unification semantics).
+            "(↑ REDUP_SEM) = ↓1 REDUP_SEM",
         ],
     ))
 
