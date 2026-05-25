@@ -1222,6 +1222,80 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 10.E.1: ang-exclamative predication (Ang ganda mo!) -------
+    #
+    # ``Ang ganda-ganda mo naman!``  "You're so beautiful!"  (rg-int
+    #                                 sent-1068 / sent-1069)
+    # ``Bakit ang payat-payat mo?``  "Why are you so thin?"   (rg-int
+    #                                 sent-655 / sent-656)
+    # ``Ang ganda mo!``              "How beautiful you are!"
+    # ``Ang puti mo!``               "How fair/white you are!"
+    #
+    # The Schachter & Otanes 1972 exclamatory construction: ``ang`` + an
+    # abstract-quality head + a genitive possessor (the entity the
+    # quality is predicated of). Structurally ``[ang [ganda] [mo]]`` =
+    # "the beauty of-you", licensed as a standalone exclamative
+    # predication. The possessor is the logical SUBJ; ``EXCLAM=true``
+    # marks the affective force (GT renders the bare construction as the
+    # plain predication "you are beautiful" — the propositional core).
+    #
+    # Quality head, three surface sources — all map to
+    # ``PRED='ADJ <SUBJ>'`` with ``ADJ_LEMMA`` = the quality root:
+    #   1. ``ADJ[REDUP=FULL]`` — bare-X-X redup (``ganda-ganda`` /
+    #      ``payat-payat``) from the adj_redup cell. The ``Ang X-X!``
+    #      frame forces ``REDUP_SEM=INTENS`` (informant 2026-05-25: the
+    #      exclamative pulls bare redup to high degree regardless of the
+    #      root's elsewhere-attenuative reading). Closes the four audit
+    #      sentences.
+    #   2. ``ADJ[PREDICATIVE]`` — a simple (non-ma) adjective surface
+    #      (``puti`` / ``pula``) via the adj_redup additive bare-root
+    #      path; also productive ``maganda`` etc.
+    #   3. ``QualityN`` — a bare abstract-quality NOUN (``ganda`` /
+    #      ``payat``) wrapped via ``QualityN → N`` with a SEM_CLASS=
+    #      QUALITY constraint, so ordinary ``ang N ng-poss`` possessed
+    #      NPs (``ang bahay mo``) don't spuriously license an
+    #      exclamative S. The wrapper is required because a bare
+    #      ``N[SEM_CLASS=...]`` daughter doesn't gate at Earley chart-
+    #      prediction time (the ADJ daughters above do) — the same
+    #      limitation the Phase 5m ``TimeAdv`` wrapper works around
+    #      (cfg/discourse.py).
+    #
+    # The possessor slot ``NP[CASE=GEN]`` subsumes the clitic GEN-PRON
+    # (``mo``) via the ``NP[CASE=GEN] → PRON[CASE=GEN]`` shell
+    # (nominal.py) and full ``ng``-phrases (``Ang ganda ng bata!``).
+    # The GEN-PRON possessor stays in situ (not Wackernagel-hoisted)
+    # via ``_is_post_noun_pron`` (NOUN head) / ``_is_post_ang_quality_
+    # pron`` (ADJ head) in clitics/placement.py. ``naman`` (sent-1068/
+    # 1069) and a fronted ``Bakit`` (sent-655/656) compose over the
+    # matrix S via the existing enclitic / wh-question machinery.
+    #
+    # Reference: S&O 1972 §4 (exclamatory sentences); Zamar 2023 §4.1.1
+    # (``ang`` + redup intensive); informant ruling 2026-05-25.
+    rules.append(Rule(
+        "QualityN",
+        ["N"],
+        ["(↑) = ↓1", "(↓1 SEM_CLASS) =c 'QUALITY'"],
+    ))
+    for _excl_head, _excl_extra in (
+        ("ADJ[REDUP=FULL]",
+         ["(↓2 REDUP) =c 'FULL'", "(↑ REDUP) = ↓2 REDUP",
+          "(↑ REDUP_SEM) = 'INTENS'"]),
+        ("ADJ[PREDICATIVE]", ["(↓2 PREDICATIVE) =c true"]),
+        ("QualityN", []),
+    ):
+        rules.append(Rule(
+            "S",
+            ["DET[CASE=NOM]", _excl_head, "NP[CASE=GEN]"],
+            [
+                "(↑ PRED) = 'ADJ <SUBJ>'",
+                "(↑ SUBJ) = ↓3",
+                "(↑ ADJ_LEMMA) = ↓2 LEMMA",
+                "(↑ EXCLAM) = true",
+                *_excl_extra,
+            ],
+        ))
+
+
     # --- Phase 9.X.post-3: predicative ADJ + temporal ADV (impersonal) ---
     #
     # ``Maaga noon.``      "It was early then."   (ANG MANOK sent-21)
