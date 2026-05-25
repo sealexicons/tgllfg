@@ -356,7 +356,7 @@ Terms used in the Phase 8/9 audit work (rolled up into `docs/coverage.md` § "Ph
 | two-NP equational | A predicational clause whose pivot AND subject are both full NPs: `Si Juan ito.` (Si-pivot, Phase 8.Y) / `Ang lalaki ang doktor.` (ang-pivot, Phase 8.Z). PRED = `'BE-NP <SUBJ>'`. |
 | pseudo-cleft | A focus-marked clause of the form `<NP> ang <V-headed-NP>` where the V-headed NP is a headless relative ("the one who Xed"). E.g., `Ang nanay ang nagluto.` "It's the mother who cooked." / "The mother is the one who cooked." Currently zero-parsing in tgllfg (the headless RC doesn't wrap to NP[CASE=NOM]); Phase 8 follow-on. |
 | ay-fronting / ay-inverted | The Phase 4 §7.4 topicalization construction `<NP> ay <S>` where the fronted NP is the topic (and typically SUBJ). Examples: `Ako ay kumain.` (V-clause; works), `Ito ay aklat.` (N-pred; Phase 8.Y). |
-| naturalistic baseline | The clean-parse rate against unprepared reference-grammar text. As of Phase 9 close (2026-05-24): **30.91% on 2533 sentences across Waves 1+2+3+4** (or 31.69% on Waves 1+2+3 only, like-for-like with pre-Phase-9 baselines); vs 99.6% on the curated `coverage_corpus.yaml`. Phase 9 lifted this from the ~11% Phase 8 close baseline. |
+| naturalistic baseline | The clean-parse rate against unprepared reference-grammar text. As of the Phase 10.Z wave-5 harvest (2026-05-25): **30.42% on 3031 sentences across Waves 1-5** (Wave 5 = Zamar 2023, 139/498 = 27.91%). At Phase 9 close (2026-05-24) it was 30.91% on 2533 sentences across Waves 1-4 (or 31.69% on Waves 1-3 only, like-for-like with pre-Phase-9 baselines); vs 99.6% on the curated `coverage_corpus.yaml`. Phase 9 lifted this from the ~11% Phase 8 close baseline. |
 
 ## 2. References — algorithms, processes, and analytical decisions
 
