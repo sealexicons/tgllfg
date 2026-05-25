@@ -2038,6 +2038,7 @@
   pos: NOUN
   gloss: thousand
   affix_class: [card_redup]
+  sandhi_flags: [redup_o_raise]
   feats: {COLL_VALUE: THOUSANDS}
 
 - citation: libro
@@ -2366,6 +2367,19 @@
   gloss: Mike
   subclass: [PERSON, MALE]
   source: audit-corpus
+
+# Phase 10.D: ``milyon`` "million" collective-numeral NOUN — the
+# third member of the card_redup quantitative-redup series
+# (daan / libo / milyon → daandaan / libulibo / milyonmilyon).
+# No ``redup_o_raise``: the Spanish-loan closed final syllable
+# /-on/ does not raise, so milyon → milyonmilyon (not
+# ``*milyunmilyon``), per the Phase 10 reviewer typology.
+- citation: milyon
+  pos: NOUN
+  gloss: million
+  affix_class: [card_redup]
+  feats: {COLL_VALUE: MILLIONS}
+  loan: SPANISH
 
 - citation: milyunaryo
   pos: NOUN
