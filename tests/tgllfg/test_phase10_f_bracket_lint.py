@@ -107,8 +107,8 @@ def test_embedded_ba_reported_yes_no_q() -> None:
     parses = parse_text("Alam ko kung kumain ba siya.")
     assert len(parses) >= 1
     assert any(
-        fs.feats.get("COMP") is not None
-        and fs.feats.get("COMP").feats.get("Q_TYPE") == "YES_NO"
+        (comp := fs.feats.get("COMP")) is not None
+        and comp.feats.get("Q_TYPE") == "YES_NO"
         for _ct, fs, _a, _d in parses
     ), "expected an embedded yes/no-Q reading (COMP.Q_TYPE=YES_NO)"
 

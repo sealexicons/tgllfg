@@ -321,6 +321,45 @@ def _is_post_ang_quality_pron(
     return "DET" in {ma.pos for ma in analyses[i - 2]}
 
 
+def _is_post_doubled_adj_pron(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is a pronominal clitic immediately
+    following a ``ma-X na ma-X`` linked-intensive adjective complex
+    (Phase 10.E.2 / PK91 §4.5 — ``Mabait na mabait ka.`` "you are very
+    kind", ``Magandang maganda ka.``).
+
+    PK91 (Kroeger 1991 §4.5) treats the linked-intensive as a complex
+    zero-level adjective (A°): for Wackernagel purposes it is a single
+    prosodic word, so a 2P clitic attaches *after the whole complex*,
+    never between the conjuncts (``*Mabait ka=ng mabait``). The default
+    placement pass anchors the clitic to the first content word and so
+    hoists it into the middle (``Mabait na mabait ka`` →
+    ``*Mabait ka na mabait``), destroying the construction. Leaving the
+    clitic in place is exactly right — every attested surface already
+    has it post-complex, and the in-between order is ungrammatical.
+
+    Detection: a clitic PRON at ``i`` preceded by ``[ADJ,
+    PART[LINK=NA|NG], ADJ]`` whose two ADJs share a lemma. The
+    same-lemma gate mirrors the grammar rule's ``(↑ LEMMA) = ↓3 LEMMA``
+    so this never fires on the unrelated two-adjective linker
+    construction (``mahirap na masarap``).
+    """
+    if i < 3:
+        return False
+    if not _is_pron_clitic(analyses[i]):
+        return False
+    adj1, link, adj2 = analyses[i - 3], analyses[i - 2], analyses[i - 1]
+    if not any(
+        ma.pos == "PART" and ma.feats.get("LINK") in ("NA", "NG")
+        for ma in link
+    ):
+        return False
+    lemmas1 = {ma.lemma for ma in adj1 if ma.pos == "ADJ"}
+    lemmas2 = {ma.lemma for ma in adj2 if ma.pos == "ADJ"}
+    return bool(lemmas1 and lemmas2 and (lemmas1 & lemmas2))
+
+
 def _is_pre_linker_pron(
     analyses: list[list[MorphAnalysis]], i: int
 ) -> bool:
@@ -1053,6 +1092,7 @@ def reorder_clitics(
         and _is_pron_clitic(cands)
         and not _is_post_noun_pron(analyses, i)
         and not _is_post_ang_quality_pron(analyses, i)
+        and not _is_post_doubled_adj_pron(analyses, i)
         and not _is_pre_linker_pron(analyses, i)
         and not _is_post_embedded_v_pron(analyses, i, anchor_idx)
         and not _is_pre_ay_pron(analyses, i)

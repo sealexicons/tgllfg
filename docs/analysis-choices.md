@@ -18312,6 +18312,84 @@ constraining equation. (The suspected `N[WH]` was a false alarm —
 those are `PRON[WH]`, and `PRON` is a lexical category, so the bracket
 matches at scan time.)
 
+### Phase 10.E.2 — ma-X na ma-X linked-intensive (2026-05-25)
+
+PK91 (Kroeger 1991 §4.5) `ma-X na ma-X` (`mabait na mabait` "very
+kind") is the true intensive sub-pattern of the Phase 10.E
+attenuative/intensive family — distinct from the moderate single-word
+`ma-X-X` (`maganda-ganda` = `REDUP_SEM=ATTEN`, Phase 5n.C.3 C7) and the
+construction-forced intensive of the 10.E.1 `ang`-exclamative. PK91
+analyses it as a complex zero-level adjective (A°): for Wackernagel
+purposes the doubled form is a single prosodic word, so a 2P clitic
+attaches after the whole complex, never between the conjuncts
+(`*Mabait ka=ng mabait`).
+
+**Grammar.** A `cfg/nominal.py` rule
+`ADJ[PREDICATIVE=true, COMP_DEGREE=INTENSIVE] → ADJ PART[LINK] ADJ`
+(NA + NG link variants) mirrors the Phase 5h intensifier-particle
+wrapper (`ADJ → PART[INTENSIFIER] PART[LINK] ADJ`) with a doubled ADJ
+replacing the particle. `(↑) = ↓1` shares the first conjunct's
+f-structure (its `LEMMA` / `PREDICATIVE` ride up); the LHS advertises
+`PREDICATIVE=true` so the Phase 5g predicative-ADJ-S rule (and the
+ay-fronted / pivot rules) admit the complex under the Phase 6.C
+graph-constraint matcher.
+
+**Same-lemma gate.** `(↑ LEMMA) = ↓3 LEMMA` forces the two conjuncts to
+share a lemma by unification clash (`(↑) = ↓1` already carries ↓1's
+`LEMMA`). The doubling is what yields the intensive reading; the gate
+blocks the unrelated two-adjective linker construction
+`mahirap na masarap` ("difficult but delicious", rg-int sent-1372) from
+misparsing as a linked-intensive.
+
+**Feature decision.** The constituent carries `COMP_DEGREE=INTENSIVE`
+(joining the established intensive-adjective class — parallel to the
+particle wrapper and `napaka-`) plus the Phase-10 redup-taxonomy tag
+`REDUP_SEM=INTENS` (informant ruling 2026-05-25 reconciliation:
+INTENSIVE → `REDUP_SEM=INTENS`, the same enum value the 10.E.1
+exclamative uses). **No new feat is minted** — the early §2.2
+`INTENS_LINKED` sketch is superseded by reusing the shipped enums per
+the §2.1.1 ruling (CLAUDE.md: no abstraction without a consumer). The
+basic predicative-ADJ-S rule lifts `REDUP_SEM` to the matrix
+(`(↑ REDUP_SEM) = ↓1 REDUP_SEM`), with coverage matching the existing
+`INTENS` / `DISTRIB` / `KASING_N` lifts — so the predicate-initial
+forms (`Mabait na mabait ka`) surface the intensive at the clause root,
+while the ay-fronted variant (routed through `S_GAP_PREDADJ`, where
+`INTENS` also isn't lifted) keeps the marking on the ADJ constituent.
+The lift creates an empty-`FStructure` no-op node on degree-less
+predicates — a known unifier limitation shared by the existing lifts,
+parked for the Phase 10.L-N U-bucket extension.
+
+**Benign spurious parse.** With the clitic in its natural post-complex
+position, `mabait na mabait ka` also admits the pre-existing Phase 5g
+manner-adverb reading (`S → ADJ PART[LINK] S`, designed for verbal
+inner clauses like `mabilis na tumakbo`): `mabait na [mabait ka]`. This
+is a shared-rule over-generation reachable only now that the clitic
+fix yields the natural token order; tightening the manner rule to
+require a verbal inner clause is out of scope here (a separate
+shared-rule concern). The intensive parse carries `REDUP_SEM=INTENS`;
+the manner parse does not.
+
+**Clitic placement.** `_is_post_doubled_adj_pron` (clitics/placement.py)
+keeps a post-complex 2P clitic in situ rather than letting the
+Wackernagel pass hoist it between the conjuncts — the same in-situ idiom
+as the 10.E.1 `_is_post_ang_quality_pron`, gated on the
+`[ADJ, PART[LINK=NA|NG], ADJ]` same-lemma window.
+
+**OCR tokenisation.** The ay-fronted surface's OCR'd form
+`Kayo•y mabait na mabait` (so1972 sent-1099) was blocked because the
+`'y` (= `ay`) enclitic apostrophe is rendered as a bullet (U+2022). The
+bound-clitic splitters (`split_apostrophe_y` / `split_apostrophe_t`)
+now accept `•` / `·` in the apostrophe slot, guarded by the existing
+vowel-final-host + bare-`y`/`t`-follower so the same glyphs' hyphen-redup
+(`dala•dalawa`) and leading-bullet (`•Juan`) uses are untouched. The
+broader `•`/`·`-as-hyphen redup normalisation (`dala•dalawa` →
+`dalawa-dalawa`, `Kaha•kahapon`) remains open — a separate OCR/tokeniser
+hygiene item, deferred to a Phase 10 R-bucket OCR sweep.
+
+Audit: **+12 closures, 0 regressions** across all 8 waves (wave-1
+88/123 unchanged). The doubled-ADJ rule generalises across the gradable
+`ma-` adjectives, not just the hand-identified `mabait` surfaces.
+
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 
 - **Full reduplication taxonomy** — Phase 10.A-10.H productive
@@ -18332,10 +18410,19 @@ matches at scan time.)
   no-raise Spanish loan) + `REDUP=FULL` / `REDUP_SEM=QUANT`;
   Phase 10.E.1 landed the `ang`-exclamative (`Ang ganda-ganda
   mo!`) + the `adj_redup` bare-ADJ cell (degree underspecified) +
-  the `redup_intens_adj`=ATTEN retrofit; 10.E.2-10.H pending
-  (10.F grammar-compiler bracket lint inserted before 10.E.2).
+  the `redup_intens_adj`=ATTEN retrofit; 10.F landed the
+  grammar-compiler bracket lint (inserted before 10.E.2); 10.E.2
+  landed the PK91 `ma-X na ma-X` linked-intensive
+  (`COMP_DEGREE=INTENSIVE` + `REDUP_SEM=INTENS`, no new feat) plus
+  the `•`/`·`-as-apostrophe OCR tokeniser fix; 10.E.3-10.H pending.
   Bucket Z (Zamar wave-5 harvest) landed out-of-sequence before
   the R-bucket remainder.
+- **`•`/`·`-as-hyphen redup OCR normalisation** — the bullet/middle-dot
+  OCR artifact also renders the redup/compound hyphen
+  (`dala•dalawa` = `dalawa-dalawa`, `Kaha•kahapon`, `Tigi•tigisang`).
+  10.E.2 normalised only the `•y`/`•t` apostrophe-clitic use; the
+  hyphen-redup use is a separate Phase 10 R-bucket OCR-sweep item
+  (would feed `merge_hyphen_compounds` / the redup paradigm cells).
 - **Forest-density chart-disambiguation** — `Pinakain niya ang
   manok ng isang tasang palay.` (ANG MANOK sent-29) and PANAHON
   sent-2/3/9 (large colon-list constructions) need deeper
