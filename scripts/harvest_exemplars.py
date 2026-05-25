@@ -1364,6 +1364,111 @@ def extract_ramos1971() -> Iterator[Exemplar]:
             )
 
 
+# === Source 7: Zamar 2023 (wave-5 — clean native-PDF grammar) ============
+#
+# Sheila Zamar, *Filipino: An Essential Grammar* (Routledge 2023).
+# Native digital PDF (NOT a scan); the `.txt` is a clean pdftotext
+# extract with form-feed page delimiters. Contemporary descriptive
+# grammar of standardized Filipino — present-day register check
+# against the older reference works.
+#
+# The book's running examples follow a regular triplet layout:
+#
+#     <Tagalog example sentence.>
+#     <interlinear gloss line>          (e.g. "Wash–gen.you–subjmark.dishes")
+#     <English translation.>
+#
+# under "Examples of ..." section headers. pdftotext's -layout
+# rendering interleaves two contaminants into the example lines:
+# (a) a left-margin chapter sidebar label ("Nouns and", "Verbal
+# aspect"), and (b) a right-column English gloss — both separated
+# from the Tagalog by a column gap of 2+ spaces. The extractor
+# splits each line on those gaps and keeps only the segment that is
+# a Tagalog sentence; the interlinear gloss line is rejected because
+# it carries 0 Tagalog function-word markers (fails
+# `_looks_like_tagalog`) plus the en-dash morpheme-joiner reject.
+#
+# Front matter (endorsements / TOC / preface / chapter-1 phonology,
+# whose only examples are phonemic /slash/ forms) runs through PDF
+# page 28; the first running syntax example is on PDF page 29
+# (chapter 2, nouns & pronouns).
+
+# Zamar's interlinear gloss lines join morpheme glosses with the
+# en-dash U+2013 ("Eat–you", "Can–subj.I.lnk–cook"); natural Tagalog
+# reduplication / compounding uses the ASCII hyphen ("araw-araw"),
+# so an en-dash anywhere in a segment marks it as gloss notation.
+_ZAMAR_FRONT_MATTER_PAGES = 28
+_ZAMAR_COLGAP_RE = re.compile(r"\s{2,}")
+_ZAMAR_TERMINAL_RE = re.compile(r"^(.*?[.?!])(?:\s.*)?$")
+_ZAMAR_PAREN_RE = re.compile(r"\s*\([^)]*\)\s*")
+
+
+def _zamar_clean_segment(seg: str) -> str | None:
+    """Clean one column-gap-delimited segment of a Zamar line.
+
+    Returns the cleaned Tagalog sentence, or None if the segment is
+    an interlinear gloss line (en-dash joiner), a phonemic /slash/
+    form, or empty after cleaning. Strips parenthetical optional
+    elements (``(Sa) Kanyang...`` → ``Kanyang...``) and truncates at
+    the first terminal punctuation so a same-segment English gloss
+    tail joined by a single space (``... papel. I took ...``) is
+    dropped."""
+    seg = seg.strip()
+    if not seg:
+        return None
+    if "–" in seg:  # en-dash gloss-morpheme joiner
+        return None
+    if _PHONETIC_RE.search(seg):
+        return None
+    seg = _ZAMAR_PAREN_RE.sub(" ", seg).strip()
+    m = _ZAMAR_TERMINAL_RE.match(seg)
+    if m:
+        seg = m.group(1).strip()
+    return seg or None
+
+
+def extract_zamar2023() -> Iterator[Exemplar]:
+    """Walk Zamar 2023 for Tagalog example sentences. Native-PDF
+    source (no OCR cleanup needed); skip front-matter pages."""
+    path = REFERENCES_DIR / "Zamar-Filipino-Essential-Grammar-2023.txt"
+    for page_num, page_text in _pages_from_pdftotext(path):
+        if page_num <= _ZAMAR_FRONT_MATTER_PAGES:
+            continue
+        yield from _zamar_extract_from_page(page_num, page_text)
+
+
+def _zamar_extract_from_page(
+    page_num: int, page_text: str,
+) -> Iterator[Exemplar]:
+    """Yield one Exemplar per Tagalog example sentence on a page.
+    Splits each physical line on column gaps, cleans each segment,
+    and admits the ones that pass the shared sentence-shape +
+    Tagalog-shape filters."""
+    sent_idx = 0
+    for line in page_text.splitlines():
+        if not line.strip():
+            continue
+        for seg in _ZAMAR_COLGAP_RE.split(line.strip()):
+            cleaned = _zamar_clean_segment(seg)
+            if cleaned is None:
+                continue
+            if not _is_sentence_shape(cleaned):
+                continue
+            if not _looks_like_tagalog(cleaned):
+                continue
+            sent_idx += 1
+            yield Exemplar(
+                source="zamar2023",
+                locator=f"page-{page_num}/sent-{sent_idx}",
+                text_raw=cleaned,
+                text_normalized=normalize_orthography(cleaned),
+                has_gloss=True,
+                gloss_en=None,
+                marked_ungrammatical=cleaned.startswith(("*", "?")),
+                ocr_quality="native-pdf",
+            )
+
+
 # === Source 2: R&B 1986 (verb-base inventory) =============================
 
 
@@ -1504,6 +1609,7 @@ def cmd_extract() -> None:
         ("wave3-so1972.jsonl", extract_so1972()),
         ("wave3-rg-conversational.jsonl", extract_rg_conversational()),
         ("wave4-kroeger1991.jsonl", extract_kroeger1991()),
+        ("wave5-zamar2023.jsonl", extract_zamar2023()),
     ]
     for fname, it in pairs:
         path = EXEMPLARS_DIR / fname
@@ -1519,6 +1625,7 @@ _PARSE_SOURCES = [
     ("wave3-so1972.jsonl", "wave3-so1972-parse-results.jsonl", 500),
     ("wave3-rg-conversational.jsonl", "wave3-rg-conversational-parse-results.jsonl", 500),
     ("wave4-kroeger1991.jsonl", "wave4-kroeger1991-parse-results.jsonl", None),
+    ("wave5-zamar2023.jsonl", "wave5-zamar2023-parse-results.jsonl", None),
 ]
 
 
@@ -1997,6 +2104,7 @@ _XWAVE_SOURCES = [
     ("Wave 3 — S&O 1972", "wave3-so1972-parse-results.jsonl"),
     ("Wave 3 — R&G Conversational", "wave3-rg-conversational-parse-results.jsonl"),
     ("Wave 4 — Kroeger 1991", "wave4-kroeger1991-parse-results.jsonl"),
+    ("Wave 5 — Zamar 2023", "wave5-zamar2023-parse-results.jsonl"),
 ]
 
 # Harvest-noise OOV tokens (Phase 8/9 — not real OOV; surface from
