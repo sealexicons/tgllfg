@@ -55,7 +55,6 @@ from .paradigms import (
 from .sandhi import (
     attach_suffix,
     cv_reduplicate,
-    full_reduplicate,
     kani_reduplicate,
     d_to_r_intervocalic,
     infix_after_first_consonant,
@@ -105,13 +104,6 @@ def _apply(
 ) -> str:
     if op.op == "cv_redup":
         return cv_reduplicate(base, cluster_redup="cluster_redup" in flags)
-    if op.op == "full_redup":
-        # Phase 5n.C.3 Commit 2 (§18 L31): whole-root reduplication
-        # for compound cardinals (``libo`` → ``libulibo``). Distinct
-        # from ``cv_redup`` (first-CV only) and from the
-        # Phase 5n.C.3 Commit 6 ``redup_root`` op (which redups
-        # AFTER prefix attachment, used by ADJ intensives).
-        return full_reduplicate(base)
     if op.op == "kani_redup":
         # Phase 5n.C.3 Commit 5 (§18 L31): distributive-possessive
         # redup for 3rd-person DAT pronouns. ``kanya`` (2-syl) →
@@ -120,33 +112,37 @@ def _apply(
         # full base (``kanikaniya`` / ``kanikanila``).
         return kani_reduplicate(base)
     if op.op == "redup_root":
-        # Phase 5n.C.3 Commit 6 (§18 L31): post-prefix root
-        # reduplication. Appends the original root citation to
-        # the current base. ``ganda`` after ``ma-`` prefix
-        # (giving ``maganda``) followed by ``redup_root`` yields
-        # ``maganda`` + ``ganda`` = ``magandaganda`` — the L37
-        # reduplicated-intensive surface (canonical orthography
-        # ``maganda-ganda``; the hyphen-merge tokenizer pre-pass
-        # collapses the hyphenated input to the single-token
-        # form for lex lookup).
+        # Phase 5n.C.3 Commit 6 (§18 L31): full-root reduplication.
+        # Appends the original root citation to the current base.
+        # The canonical X-X reduplication op across the redup family:
         #
-        # Distinct from ``full_redup`` (Commit 2) which redups
-        # the WHOLE current base — that op produces
-        # ``magandaganda`` only if applied BEFORE the prefix
-        # (the L37 pattern requires the order
-        # ``prefix → redup_root`` so the prefix appears only
-        # on the first copy).
+        #   * Post-prefix (L37 ADJ intensives): ``ganda`` after ``ma-``
+        #     prefix (giving ``maganda``) → ``maganda`` + ``ganda`` =
+        #     ``magandaganda`` (the prefix lands on the first copy only
+        #     because redup_root runs last).
+        #   * No-prefix (Phase 10.A-D bare X-X): the base is just the
+        #     citation, so ``araw`` → ``arawaraw``, ``bahay`` →
+        #     ``bahaybahay``, ``isa`` → ``isaisa``, ``daan`` →
+        #     ``daandaan``.
         #
-        # Phase 10.A: per-root ``redup_o_raise`` sandhi flag raises
-        # the first-copy's stem-final /o/ to /u/ before the citation
-        # is appended (``taon`` → ``taun`` + ``taon`` = ``tauntaon``;
-        # canonical orthography ``taun-taon``). The rule is the same
-        # /o/→/u/ raising that applies on suffixation (S&O 1972
-        # §4.21): once the stem-final /o/ is no longer in the final
-        # syllable of the word, it raises. Per-root opt-in (not
-        # default) so existing wh-PRON redup (``ano`` → ``anoano``,
-        # canonical pronunciation per S&O 1972) stays unchanged
-        # pending a separate canonical-form review.
+        # The hyphen-merge tokenizer pre-pass collapses canonical
+        # hyphenated input (``maganda-ganda`` / ``araw-araw``) to the
+        # single-token form this op generates.
+        #
+        # Phase 10.A/10.D: per-root ``redup_o_raise`` sandhi flag
+        # raises the first-copy's stem-final /o/ to /u/ before the
+        # citation is appended (``taon`` → ``taun`` + ``taon`` =
+        # ``tauntaon``; ``libo`` → ``libu`` + ``libo`` = ``libulibo``).
+        # Same /o/→/u/ rule as suffixation (S&O 1972 §4.21): once the
+        # stem-final /o/ is no longer word-final, it raises. Per-root
+        # opt-in (not default): native vowel-final stems (``taon`` /
+        # ``libo``) opt in; closed-syllable Spanish loans (``milyon``
+        # → ``milyonmilyon``) and the wh-PRON redup (``ano`` →
+        # ``anoano``, canonical per S&O 1972) opt out. Phase 10.D
+        # folded the former bespoke ``full_redup`` op (always-raise)
+        # into this single op + per-root flag; ``full_redup`` /
+        # ``full_reduplicate`` were removed (card_redup was their
+        # sole user).
         if not root_citation:
             raise ValueError(
                 "redup_root op requires root_citation context "

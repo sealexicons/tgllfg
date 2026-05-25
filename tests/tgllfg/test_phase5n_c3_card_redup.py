@@ -4,23 +4,28 @@
 """Phase 5n.C.3 Commit 2 — ``card_redup`` productive paradigm.
 
 Replaces the Phase 5f Commit 18 hand-coded ``daandaan`` /
-``libulibo`` NOUN entries with productive derivation via:
+``libulibo`` NOUN entries with productive derivation via the
+``card_redup`` paradigm cell (``data/tgl/paradigms.yaml``):
+``base_pos: NOUN``, ``affix_class: card_redup``, single
+reduplication op, ``feats: {MEASURE: true, ...}``. NOUN roots
+``libo`` / ``daan`` (and Phase 10.D ``milyon``) carry
+``affix_class: [card_redup]`` + root-side ``COLL_VALUE``
+(THOUSANDS / HUNDREDS / MILLIONS).
 
-* New ``full_redup`` op (``src/tgllfg/morph/sandhi.py``
-  ``full_reduplicate``): whole-root redup with first-copy /o/→/u/
-  raising. ``libo`` → ``libulibo``; ``daan`` → ``daandaan``.
-* New ``card_redup`` paradigm cell
-  (``data/tgl/paradigms.yaml`` end of file): ``base_pos: NOUN``,
-  ``affix_class: card_redup``, single ``full_redup`` op,
-  ``feats: {MEASURE: YES}``.
-* New NOUN roots ``libo`` and ``daan`` in
-  ``data/tgl/nouns.yaml`` with ``affix_class: [card_redup]`` and
-  root-side ``COLL_VALUE`` (THOUSANDS / HUNDREDS).
+**Phase 10.D migration**: the cell was unified onto the
+``redup_root`` op (the former bespoke ``full_redup`` op +
+``sandhi.full_reduplicate`` were removed — card_redup was their
+sole user). First-copy /o/→/u/ raising is now the per-root
+``redup_o_raise`` sandhi flag rather than baked into the op:
+``libo`` opts in (→ ``libulibo``); ``daan`` has no stem /o/
+(→ ``daandaan``); the Spanish-loan ``milyon`` opts out
+(→ ``milyonmilyon``). Surfaces for daan/libo are byte-identical
+to the pre-10.D output. See ``test_phase10_d_card_quantitative``
+for the op-level surface tests + the milyon coverage.
 
-The Phase 5n.B Commit 11.5 ``tokenize`` hyphen-merge pre-pass
-continues to fold ``daan-daan`` and ``libu-libo`` into single
-tokens that match the derived ``daandaan`` / ``libulibo``
-surfaces.
+The ``tokenize`` hyphen-merge pre-pass continues to fold
+``daan-daan`` / ``libu-libo`` into single tokens matching the
+derived ``daandaan`` / ``libulibo`` surfaces.
 
 Closes the first piece of §18 L31 (productive paradigm classes
 for compound cardinals).
@@ -28,26 +33,6 @@ for compound cardinals).
 
 from tgllfg.core.common import Token
 from tgllfg.morph.analyzer import Analyzer
-from tgllfg.morph.sandhi import full_reduplicate
-
-
-# === Sandhi op ===========================================================
-
-
-def test_full_reduplicate_o_raise() -> None:
-    """``libo`` → ``libulibo`` (final /o/ raises to /u/ in the
-    first copy)."""
-    assert full_reduplicate("libo") == "libulibo"
-
-
-def test_full_reduplicate_no_o() -> None:
-    """``daan`` → ``daandaan`` (no /o/ in stem; nothing to raise)."""
-    assert full_reduplicate("daan") == "daandaan"
-
-
-def test_full_reduplicate_baka() -> None:
-    """Sanity: ``baka`` → ``bakabaka`` (no /o/, no special sandhi)."""
-    assert full_reduplicate("baka") == "bakabaka"
 
 
 # === Productive cell fires ================================================
@@ -83,6 +68,9 @@ def test_libulibo_produced_by_paradigm() -> None:
     n = measure_nouns[0]
     assert n.lemma == "libo"
     assert n.feats.get("COLL_VALUE") == "THOUSANDS"
+    # Phase 10.D cross-cutting redup feats.
+    assert n.feats.get("REDUP") == "FULL"
+    assert n.feats.get("REDUP_SEM") == "QUANT"
 
 
 def test_daandaan_produced_by_paradigm() -> None:
@@ -98,6 +86,9 @@ def test_daandaan_produced_by_paradigm() -> None:
     n = measure_nouns[0]
     assert n.lemma == "daan"
     assert n.feats.get("COLL_VALUE") == "HUNDREDS"
+    # Phase 10.D cross-cutting redup feats.
+    assert n.feats.get("REDUP") == "FULL"
+    assert n.feats.get("REDUP_SEM") == "QUANT"
 
 
 def test_old_hand_coded_entries_removed() -> None:
