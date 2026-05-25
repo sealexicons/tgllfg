@@ -18271,7 +18271,12 @@ for category level.
   retrofitted with `REDUP_SEM=FREQ`); Phase 10.C landed
   `num_redup_distr` (NUM → distributive-count: `isa-isa`,
   `dalawa-dalawa`, ..., `sampu-sampu`, all 10 cardinals);
-  10.D-10.H pending.
+  Phase 10.D unified the pre-existing `card_redup` cell onto the
+  shared `redup_root` op (removing the bespoke `full_redup` op +
+  `full_reduplicate`), added `milyon` (→ `milyonmilyon`, a
+  no-raise Spanish loan) + `REDUP=FULL` / `REDUP_SEM=QUANT`;
+  10.E-10.H pending. Bucket Z (Zamar wave-5 harvest) landed
+  out-of-sequence before the R-bucket remainder.
 - **Forest-density chart-disambiguation** — `Pinakain niya ang
   manok ng isang tasang palay.` (ANG MANOK sent-29) and PANAHON
   sent-2/3/9 (large colon-list constructions) need deeper
