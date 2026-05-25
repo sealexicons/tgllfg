@@ -18303,9 +18303,14 @@ silently never fires. (Verbs are immune: the `VERB→V` alias makes
 `V` the lexical category; nouns can't be aliased because `N` is a
 recursive projection.) The fix is the constraining-equation wrapper
 (`(↓1 SEM_CLASS) =c 'QUALITY'`), mirroring the Phase 5m `TimeAdv`
-idiom. This footgun already produced dead rules
-(`N[SEM_CLASS=TIME]` in subordination.py; `N[WH]`); a compile-time
-lint to flag such brackets is scheduled as Phase 10.F.
+idiom. This footgun had already produced dead rules — repaired in
+Phase 10.F, which also adds a compile-time lint
+(`find_unsatisfiable_brackets`): `N[SEM_CLASS=TIME]`
+(subordination.py) and `S[Q_TYPE=YES_NO]` (control.py), each a dead
+category bracket that was redundant with an already-correct
+constraining equation. (The suspected `N[WH]` was a false alarm —
+those are `PRON[WH]`, and `PRON` is a lexical category, so the bracket
+matches at scan time.)
 
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 

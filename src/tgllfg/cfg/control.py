@@ -686,7 +686,12 @@ def register_rules(rules: list[Rule]) -> None:
     # consumers needing the yes/no vs wh distinction.
     rules.append(Rule(
         "S_INTERROG_COMP",
-        ["PART[COMP_TYPE=INTERROG]", "S[Q_TYPE=YES_NO]"],
+        # Phase 10.F: bare ``S`` (not the dead c-structure bracket
+        # ``S[Q_TYPE=YES_NO]`` — ``Q_TYPE`` is set as an f-structure feat
+        # by the ba-rule, not on the matrix S's category pattern). The
+        # yes/no gate is the constraining equation ``(↓2 Q_TYPE) =c
+        # 'YES_NO'`` below; mirrors rule (b)'s bare-``S`` + ``¬(↓2 Q_TYPE)``.
+        ["PART[COMP_TYPE=INTERROG]", "S"],
         [
             "(↑) = ↓2",
             "(↑ COMP_TYPE) = 'INTERROG'",

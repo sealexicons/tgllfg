@@ -521,7 +521,7 @@ def _enclosing_anchor_for_clitic(
         return matrix_anchor
     if not _is_verb_token(analyses[matrix_anchor]):
         return matrix_anchor
-    last_na_linker = -1
+    last_boundary = -1
     for j in range(matrix_anchor + 1, i):
         cands = analyses[j]
         is_confirmed_linker = (
@@ -535,11 +535,22 @@ def _enclosing_anchor_for_clitic(
                 ma.feats.get("is_clitic") is True for ma in cands
             )
         )
-        if is_confirmed_linker:
-            last_na_linker = j
-    if last_na_linker == -1:
+        # Phase 10.F: a complementizer (``PART`` with a ``COMP_TYPE``
+        # feat — ``kung`` / ``kapag`` / ``na`` / ...) also opens an
+        # embedded clause. Clitics after it (``Alam ko kung kumain ba
+        # siya`` — the embedded yes/no-Q ``ba`` + subject ``siya``)
+        # belong to that clause, not the matrix; they must anchor to the
+        # embedded verb instead of being hoisted across the boundary
+        # into the matrix cluster (which destroyed the embedded ba-Q).
+        is_complementizer = any(
+            ma.pos == "PART" and ma.feats.get("COMP_TYPE") is not None
+            for ma in cands
+        )
+        if is_confirmed_linker or is_complementizer:
+            last_boundary = j
+    if last_boundary == -1:
         return matrix_anchor
-    for j in range(last_na_linker + 1, i):
+    for j in range(last_boundary + 1, i):
         if _is_verb_token(analyses[j]):
             return j
     for j in range(i + 1, len(analyses)):
