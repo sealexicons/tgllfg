@@ -1083,6 +1083,7 @@
 - citation: ganda
   pos: NOUN
   gloss: beauty
+  feats: {SEM_CLASS: QUALITY}
   source: audit-corpus
 
 - citation: garahe
@@ -2898,6 +2899,7 @@
 - citation: payat
   pos: NOUN
   gloss: thinness
+  feats: {SEM_CLASS: QUALITY}
   source: audit-corpus
 
 - citation: pebrero

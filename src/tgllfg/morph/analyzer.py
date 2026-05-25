@@ -73,6 +73,16 @@ from .sandhi import (
 # / Devanagari digits, which the corpus doesn't use).
 _DIGIT_RE = re.compile(r"^[0-9]+$")
 
+# Phase 10.E.1: ADJ affix classes that are ADDITIVE — the bare citation
+# stays a standalone adjective surface alongside the derived forms.
+# Contrast the prefix-deriving classes (``ma_adj`` → ``maganda``;
+# ``naka_resultative`` → ``nakaupo``) whose bare root is not itself an
+# adjective. A root whose affix_class is a subset of this set keeps its
+# bare citation indexed as ADJ (``pula`` / ``puti`` with ``[adj_redup]``);
+# ``[ma_adj, adj_redup]`` (e.g. ``ganda``) does not — its bare form is the
+# NOUN "beauty".
+_ADDITIVE_ADJ_AFFIX_CLASSES = frozenset({"adj_redup"})
+
 
 def generate_form(root: Root, cell: ParadigmCell) -> str:
     """Apply ``cell.operations`` to ``root.citation`` in YAML-declared
@@ -431,7 +441,14 @@ class Analyzer:
                 # every root including the productive ``ma_adj`` ones.
                 if r.affix_class:
                     self._index_adjective_paradigms(r)
-                else:
+                # Phase 10.E.1: index the bare citation as a standalone
+                # ADJ surface unless the affix_class includes a prefix-
+                # deriving class whose bare form is not itself an adjective
+                # (``ma_adj``, ``naka_resultative``). ``adj_redup`` is
+                # additive — the bare adjective (``pula``, ``puti``)
+                # survives alongside its reduplication — so adj_redup-only
+                # roots stay bare-indexed; ``[ma_adj, adj_redup]`` does not.
+                if not (set(r.affix_class) - _ADDITIVE_ADJ_AFFIX_CLASSES):
                     self._index_adjective_bare_root(r)
                 # Phase 5n.C.3 Commit 1: ADJ-base paradigm cells
                 # (Phase 5n.C.3 L37 reduplicated intensives, L38

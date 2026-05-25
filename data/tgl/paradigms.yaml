@@ -1560,8 +1560,45 @@
   operations:
     - {op: prefix, value: "ma"}
     - {op: redup_root}
-  feats: {PREDICATIVE: true, INTENS: MILD}
+  feats: {PREDICATIVE: true, INTENS: MILD, REDUP: FULL, REDUP_SEM: ATTEN}
   notes: redup_intens_adj — ganda → magandaganda (L37 redup intensive)
+
+# --- Phase 10.E.1: adj_redup (bare ADJ X-X) ----------------------------
+# Bare adjectival full reduplication — ``ganda → gandaganda``,
+# ``payat → payatpayat``, ``puti → putiputi``. The hyphen-merge
+# tokenizer pre-pass collapses the canonical hyphenated surface
+# (``ganda-ganda``) to the single token this cell generates.
+#
+# Operation: ``[redup_root]`` (base + citation, no prefix) — the same
+# op as the 10.A-D redup family. Full-root redup is the correct form
+# (informant 2026-05-25: ``matalino → matalino-talino``, NOT Zamar's
+# first-two-syllable ``matali-talino``).
+#
+# Degree is **underspecified**: bare X-X is root-dependent — moderate
+# for scalar qualities (``puti-puti`` "whitish"), intensive/resultative
+# for damage-state roots (``sira-sira`` "all busted up") — so the cell
+# sets only ``REDUP: FULL`` and leaves ``REDUP_SEM`` for the
+# construction or root-class to fix. The Phase 10.E.1 ``Ang X-X mo!``
+# exclamative (cfg/clause.py) forces ``REDUP_SEM=INTENS``. No
+# ``PREDICATIVE``: the cell feeds only the exclamative (via
+# ``ADJ[REDUP=FULL]``); bare predicative redup with root-class-
+# conditioned degree (scalar MODERATE vs damage RESULTATIVE) is
+# deferred — no audit pressure.
+#
+# Per-root opt-in restricted to gradable scalar adjectives (informant
+# ruling: result-state / non-scalar / borrowed roots behave
+# differently). Audit-attested: ganda, payat (rg-int sent-655/656/
+# 1068/1069). Reference scalars opted in: puti, init, pula. Further
+# scalars (mura, mahal, itim, lamig, taba, haba, ikli, lapit, layo)
+# held for audit pressure per the opt-in convention.
+# Reference: S&O 1972 §4 (full redup); Zamar 2023 §4.1.1; informant
+# 2026-05-25.
+- base_pos: ADJ
+  affix_class: adj_redup
+  operations:
+    - {op: redup_root}
+  feats: {REDUP: FULL}
+  notes: adj_redup — bare ADJ X-X (ganda → gandaganda); degree underspecified
 
 # --- Phase 5n.C.3 Commit 8: kasing_redup_adj (§18 L38) ------------------
 # CV-reduplicated equative variant — "just as X" / "exactly as X":
