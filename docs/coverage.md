@@ -595,6 +595,27 @@ audit-absent). S&O 1972 §6 attests `daan-daan` / `libu-libo`
 existing audit corpus, already closed via the unchanged
 `libulibo` surface.
 
+### Phase 10.D.post-1 angaw (native primary "millions")
+
+A canonical-completeness follow-on to 10.D: S&O 1972 **p.224** lists
+`daan-daan` / `libu-libo` / `angaw-angaw` as the common
+indefinite-large-number reduplications and adds that the loan
+`milyon-milyon` "also occurs, but is less common than the forms listed
+above." 10.D had shipped only the loan `milyon`, so the native primary
+`angaw` was missing — a `dont-pin-canonical-by-absence` gap (10.D chose
+`milyon` to illustrate the loan-vs-native `redup_o_raise` contrast).
+
+Adds the native `angaw` "million" NOUN (`COLL_VALUE=MILLIONS`,
+`affix_class: [card_redup]`, no `loan` field) → `angawangaw`. It ends in
+the glide `-aw` (no stem /o/), so like `daan` it has nothing to raise
+(no `redup_o_raise`); `milyon`'s comment is reworded to flag it as the
+less-common loan alternative. The card_redup family is now
+daan / libo / angaw / milyon.
+
+Audit-absent (S&O-attested completeness, not an audit-closer):
+**0 closures, 0 regressions**; wave-1 88/123 unchanged. Tests:
+`test_phase10_d_card_quantitative` (+5 → 20).
+
 ### Phase 10.E.1 ang-exclamative + bare-ADJ X-X redup
 
 Opens the redup intensive/attenuative family (the ADJ side of the

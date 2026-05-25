@@ -30,9 +30,16 @@ approach:
    ``milyon``), per the convention that only POS-flip redup cells
    hyphenate (cf. ``redup_intens_adj``).
 
-References: Schachter & Otanes 1972 §6 (attests ``daan-daan`` /
-``libu-libo`` + ``libu-libong tao``); Phase 10 external-reviewer
-typology (daan-daan / libo-libo / milyon-milyon).
+Phase 10.D.post-1 adds the native ``angaw`` "million"
+(``angaw-angaw``), which S&O 1972 p.224 lists as the *primary*
+"millions" form — noting ``milyon-milyon`` "also occurs, but is less
+common than the forms listed above." Same COLL_VALUE=MILLIONS, no
+``loan`` field; ends in the glide ``-aw`` (no stem /o/), so like
+``daan`` it has nothing to raise → ``angawangaw``.
+
+References: Schachter & Otanes 1972 §6 / p.224 (attests ``daan-daan`` /
+``libu-libo`` / ``angaw-angaw`` + ``libu-libong tao``); Phase 10
+external-reviewer typology.
 """
 
 import pytest
@@ -50,6 +57,9 @@ from tgllfg.morph.paradigms import Operation
     # daan has no stem /o/ — raising is a no-op even with the flag.
     ("daan",   {"redup_o_raise"}, "daandaan"),
     ("daan",   set(),             "daandaan"),
+    # angaw ends in the glide -aw (no stem /o/) — raise is a no-op.
+    ("angaw",  {"redup_o_raise"}, "angawangaw"),
+    ("angaw",  set(),             "angawangaw"),
     # milyon opts OUT — the Spanish-loan closed syllable keeps /o/.
     ("milyon", set(),             "milyonmilyon"),
 ])
@@ -83,6 +93,7 @@ def test_full_reduplicate_function_removed() -> None:
 @pytest.mark.parametrize("surface,lemma,coll", [
     ("daandaan",     "daan",   "HUNDREDS"),
     ("libulibo",     "libo",   "THOUSANDS"),
+    ("angawangaw",   "angaw",  "MILLIONS"),
     ("milyonmilyon", "milyon", "MILLIONS"),
 ])
 def test_card_redup_measure_nouns(
@@ -128,6 +139,23 @@ def test_libo_raises_milyon_does_not() -> None:
     assert "milyunmilyon" not in idx.nouns  # milyon did NOT raise
 
 
+def test_angaw_native_millions() -> None:
+    """``angaw`` is the native primary "millions" form (S&O 1972 p.224 —
+    ``angaw-angaw``; the loan ``milyon-milyon`` "less common"). It shares
+    COLL_VALUE=MILLIONS with ``milyon`` but carries no ``loan`` field,
+    and ends in the glide -aw (no stem /o/), so ``angawangaw`` is the
+    only indexed redup surface (no raised ``*angawangaw`` variant to
+    consider)."""
+    idx = _get_default()._index
+    assert "angawangaw" in idx.nouns
+    bare = [
+        a for a in idx.nouns.get("angaw", [])
+        if a.pos == "NOUN" and a.feats.get("REDUP") is None
+    ]
+    assert len(bare) >= 1, "expected a bare native angaw NOUN"
+    assert bare[0].feats.get("COLL_VALUE") == "MILLIONS"
+
+
 def test_bare_milyon_noun() -> None:
     """The bare ``milyon`` citation analyses as a plain NOUN
     (COLL_VALUE=MILLIONS), unaffected by the card_redup opt-in."""
@@ -149,6 +177,7 @@ def test_bare_milyon_noun() -> None:
 @pytest.mark.parametrize("hyphenated,merged", [
     ("daan-daan",     "daandaan"),
     ("libu-libo",     "libulibo"),
+    ("angaw-angaw",   "angawangaw"),
     ("milyon-milyon", "milyonmilyon"),
 ])
 def test_hyphenated_input_known_surface(

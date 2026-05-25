@@ -215,6 +215,20 @@
   pos: NOUN
   gloss: child, offspring
 
+# Phase 10.D.post-1: ``angaw`` "million" — the native primary "millions"
+# form (``angaw-angaw``), per S&O 1972 p.224, which lists
+# daan-daan / libu-libo / angaw-angaw as the common indefinite-large-
+# number reduplications and adds that ``milyon-milyon`` "also occurs,
+# but is less common than the forms listed above." Fourth member of the
+# card_redup series; ends in the glide ``-aw`` (no final /o/), so no
+# ``redup_o_raise`` → ``angawangaw`` (cf. ``daandaan``). Native, so no
+# ``loan`` field; shares ``COLL_VALUE=MILLIONS`` with the loan ``milyon``.
+- citation: angaw
+  pos: NOUN
+  gloss: million
+  affix_class: [card_redup]
+  feats: {COLL_VALUE: MILLIONS}
+
 - citation: angela
   pos: NOUN
   gloss: Angela
@@ -2370,10 +2384,12 @@
   source: audit-corpus
 
 # Phase 10.D: ``milyon`` "million" collective-numeral NOUN — the
-# third member of the card_redup quantitative-redup series
-# (daan / libo / milyon → daandaan / libulibo / milyonmilyon).
-# No ``redup_o_raise``: the Spanish-loan closed final syllable
-# /-on/ does not raise, so milyon → milyonmilyon (not
+# Spanish-loan member of the card_redup quantitative-redup series
+# (daan / libo / angaw / milyon → daandaan / libulibo / angawangaw /
+# milyonmilyon). Per S&O 1972 p.224 the loan ``milyon-milyon`` "also
+# occurs, but is less common than" the native ``angaw-angaw`` (added in
+# Phase 10.D.post-1). No ``redup_o_raise``: the Spanish-loan closed
+# final syllable /-on/ does not raise, so milyon → milyonmilyon (not
 # ``*milyunmilyon``), per the Phase 10 reviewer typology.
 - citation: milyon
   pos: NOUN
