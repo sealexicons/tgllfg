@@ -186,7 +186,7 @@
 - citation: ganda
   pos: ADJ
   gloss: beautiful
-  affix_class: [ma_adj]
+  affix_class: [ma_adj, adj_redup]
 
 - citation: ginaw
   pos: ADJ
@@ -314,7 +314,7 @@
 - citation: init
   pos: ADJ
   gloss: hot
-  affix_class: [ma_adj]
+  affix_class: [ma_adj, adj_redup]
 
 - citation: kailangan
   pos: ADJ
@@ -594,7 +594,7 @@
 - citation: pula
   pos: ADJ
   gloss: red
-  affix_class: []
+  affix_class: [adj_redup]
 
 # Phase 9.W: ``puno`` is polysemous. nouns.yaml carries the N
 # entries (``tree``; ``head, principal, leader``). The bare ADJ
@@ -607,6 +607,11 @@
   affix_class: []
   source: audit-corpus
 
+- citation: puti
+  pos: ADJ
+  gloss: white
+  affix_class: [adj_redup]
+
 - citation: pareho
   pos: ADJ
   gloss: same, alike (equative-identity predicate)
@@ -616,7 +621,7 @@
 - citation: payat
   pos: ADJ
   gloss: skinny, thin (body)
-  affix_class: [ma_adj]
+  affix_class: [ma_adj, adj_redup]
 
 - citation: runong
   pos: ADJ

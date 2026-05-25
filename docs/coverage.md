@@ -595,6 +595,75 @@ audit-absent). S&O 1972 §6 attests `daan-daan` / `libu-libo`
 existing audit corpus, already closed via the unchanged
 `libulibo` surface.
 
+### Phase 10.E.1 ang-exclamative + bare-ADJ X-X redup
+
+Opens the redup intensive/attenuative family (the ADJ side of the
+R bucket) — a morphology cell, a grammar construction, and a
+retrofit.
+
+`adj_redup` cell — new `base_pos: ADJ` cell (`redup_root` op) for
+bare adjectival full reduplication: `ganda → gandaganda`,
+`payat → payatpayat`, `puti → putiputi`. Per the informant ruling
+(2026-05-25; recorded in `docs/analysis-choices.md`), bare X-X is
+**root-dependent** in degree — moderate for scalar qualities
+(`puti-puti` "whitish"), intensive/resultative for damage-state
+roots (`sira-sira` "all busted up") — so the cell sets only
+`REDUP=FULL` and leaves `REDUP_SEM` **underspecified**; the
+construction or root class fixes it. Per-root opt-in on the
+gradable scalars ganda / payat / puti / init / pula (audit-attested
+ganda + payat plus reference scalars). A new
+`_ADDITIVE_ADJ_AFFIX_CLASSES` set in the analyzer keeps a simple
+adjective's bare surface (`pula` / `puti`) indexed alongside its
+reduplication — `adj_redup` is additive, unlike the prefix-deriving
+`ma_adj` / `naka_resultative` whose bare root is not itself an
+adjective.
+
+ang-exclamative — the Schachter & Otanes 1972 §4 exclamatory
+construction `Ang ganda-ganda mo!` "you're so beautiful!" (rg-int
+sent-1068/1069), `Bakit ang payat-payat mo?` "why are you so
+thin?" (sent-655/656). A new S-rule family `Ang + [quality head] +
+NP[CASE=GEN]`-possessor projecting `PRED='ADJ <SUBJ>'` (the
+possessor is the SUBJ) + `EXCLAM=true`. Three head variants:
+`ADJ[REDUP=FULL]` — the redup forms, where the `Ang X-X!` frame
+forces `REDUP_SEM=INTENS` (informant: the exclamative pulls bare
+redup to high degree regardless of the root's elsewhere-moderate
+reading); `ADJ[PREDICATIVE]` — simple adjectives (`Ang puti mo!`);
+and `QualityN` — a `QualityN → N` wrapper gating
+`SEM_CLASS=QUALITY` for the abstract-quality NOUN heads `ganda` /
+`payat` (`Ang ganda mo!`). The possessor `NP[CASE=GEN]` subsumes
+the clitic GEN-PRON `mo` (existing PRON-GEN shell) and `ni`/`ng`-
+phrases. A new clitic-placement detector
+`_is_post_ang_quality_pron` keeps the GEN-PRON possessor in situ
+(not Wackernagel-hoisted) for the ADJ-headed cases, mirroring the
+existing `_is_post_noun_pron` for the NOUN-headed case. New binary
+feat `EXCLAM` (BINARY_FEATS 63 → 64).
+
+The `QualityN` wrapper is required because a bare
+`N[SEM_CLASS=QUALITY]` daughter can't gate: nouns scan as category
+`NOUN` and reach the phrase-level `N` only via the `N → NOUN`
+projection, whose category pattern carries no lexical `SEM_CLASS`
+(that feature lives in the f-structure, not the c-structure
+pattern). The wrapper's constraining equation
+`(↓1 SEM_CLASS) =c 'QUALITY'` checks the f-structure instead — the
+same idiom as the Phase 5m `TimeAdv` wrapper. This silent-gating
+footgun — and the existing dead `N[SEM_CLASS=TIME]` /
+`N[WH]` rules it implies — is scheduled for a dedicated
+grammar-compiler lint sub-PR (10.F).
+
+`redup_intens_adj` retrofit — the pre-existing ma-X-X cell
+(`magandaganda` "rather beautiful") gains `REDUP=FULL` +
+`REDUP_SEM=ATTEN` (moderate; the informant classes `ma-X-X` as
+"fairly/tolerably X", overlapping but not synonymous with
+`medyo` + adj). The legacy `INTENS=MILD` is retained. True
+intensification is the linker form (`mabait na mabait`,
+Phase 10.E.2).
+
+Closes 4 rg-intermediate `ang`-exclamative exemplars
+(sent-655/656/1068/1069), all in wave 2. Wave-1 audit diff:
+**88/123 → 88/123 (0/0)** — the closures are wave-2, and the
+global clitic-placement + ADJ-indexer changes introduce no wave-1
+regression. Tests: `test_phase10_e1_ang_exclamative` (24).
+
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 
 Fifth corpus source and second native-PDF (after PK91 wave 4):

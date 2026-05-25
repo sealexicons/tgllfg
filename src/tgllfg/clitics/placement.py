@@ -291,6 +291,36 @@ def _is_post_noun_pron(
     return "NOUN" in prev_pos or "N" in prev_pos
 
 
+def _is_post_ang_quality_pron(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is a GEN pronominal clitic that is the
+    possessor in the Phase 10.E.1 ``ang``-exclamative
+    (``Ang ganda-ganda mo!`` / ``Ang puti mo!``): a GEN-PRON
+    immediately preceded by an ADJ quality head that is itself
+    immediately preceded by ``ang`` (DET[CASE=NOM]).
+
+    The NOUN-headed exclamative (``Ang ganda mo!``) already keeps its
+    pronoun in place via :func:`_is_post_noun_pron`; this is the
+    parallel for the ADJ-headed surfaces (the bare-X-X redup
+    ``ADJ[REDUP=FULL]`` and the simple ``ADJ[PREDICATIVE]``). The
+    pronoun is a phrasal possessor, not a clause-level argument — the
+    Wackernagel pass must not hoist it into a post-anchor cluster, or
+    the ``S → DET[CASE=NOM] ADJ ... NP[CASE=GEN]`` exclamative rule
+    can't consume it. Gated on the preceding ``ang`` so it doesn't
+    affect ordinary post-ADJ NOM pronouns (``Maganda ka``).
+    """
+    if i < 2:
+        return False
+    if not _is_pron_clitic(analyses[i]):
+        return False
+    if not any(ma.feats.get("CASE") == "GEN" for ma in analyses[i]):
+        return False
+    if "ADJ" not in {ma.pos for ma in analyses[i - 1]}:
+        return False
+    return "DET" in {ma.pos for ma in analyses[i - 2]}
+
+
 def _is_pre_linker_pron(
     analyses: list[list[MorphAnalysis]], i: int
 ) -> bool:
@@ -1011,6 +1041,7 @@ def reorder_clitics(
         if i != anchor_idx
         and _is_pron_clitic(cands)
         and not _is_post_noun_pron(analyses, i)
+        and not _is_post_ang_quality_pron(analyses, i)
         and not _is_pre_linker_pron(analyses, i)
         and not _is_post_embedded_v_pron(analyses, i, anchor_idx)
         and not _is_pre_ay_pron(analyses, i)

@@ -194,17 +194,19 @@ def test_redup_sem_distinguishes_distr_from_freq() -> None:
     assert araw_freq[0].feats.get("REDUP") == "FULL"
 
 
-# === Regression: redup_intens_adj ADJ→ADJ stays unchanged ==============
+# === Regression flip: redup_intens_adj retrofitted by Phase 10.E.1 =====
 
 
-def test_redup_intens_adj_unchanged_by_phase10b() -> None:
-    """The Phase 5n.C.3 Commit 7 ``redup_intens_adj`` cell still
-    has no REDUP / REDUP_SEM feats — these cross-cutting feats
-    are opt-in per-cell (set on time_redup_freq via Phase 10.B
-    retrofit and on the new place_redup_distr; not on
-    redup_intens_adj). Phase 10.E may retrofit redup_intens_adj
-    later (REDUP=FULL + REDUP_SEM=INTENS) as part of the ADJ
-    attenuative/intensive family — out of 10.B scope."""
+def test_redup_intens_adj_retrofitted_phase10e1() -> None:
+    """Phase 10.E.1 retrofits the Phase 5n.C.3 Commit 7
+    ``redup_intens_adj`` cell (``magandaganda`` "rather beautiful")
+    with the cross-cutting ``REDUP=FULL`` + ``REDUP_SEM=ATTEN``
+    feats. ATTEN, not INTENS: the ma-X-X form is moderate
+    ("fairly / tolerably X") per the informant ruling 2026-05-25 —
+    genuine intensification is the linker form (``mabait na mabait``,
+    Phase 10.E.2). The legacy ``INTENS=MILD`` feat is retained.
+    (This guard formerly asserted the retrofit was deferred past
+    Phase 10.B; 10.E.1 flips it.)"""
     idx = _get_default()._index
     analyses = idx.adjectives.get("magandaganda", [])
     intens = [
@@ -212,8 +214,5 @@ def test_redup_intens_adj_unchanged_by_phase10b() -> None:
         if a.pos == "ADJ" and a.feats.get("INTENS") == "MILD"
     ]
     assert len(intens) >= 1
-    assert intens[0].feats.get("REDUP") is None, (
-        "redup_intens_adj must NOT carry REDUP feat yet — "
-        "retrofit deferred to Phase 10.E"
-    )
-    assert intens[0].feats.get("REDUP_SEM") is None
+    assert intens[0].feats.get("REDUP") == "FULL"
+    assert intens[0].feats.get("REDUP_SEM") == "ATTEN"
