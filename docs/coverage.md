@@ -510,6 +510,40 @@ machinery in morphology rather than CFG syntax. Grammar-side
 attachment is a Phase 10.B follow-on (10.B.post-N or Phase 11+)
 gated on audit pressure.
 
+### Phase 10.C NUM → distributive-count ADV productive cell
+
+Third sibling (after 10.A TIME-N + 10.B PLACE-N): new
+`num_redup_distr` paradigm cell derives distributive-count
+adverbials ("X at a time / one by one") from the cardinal-NUM
+roots. All ten cardinals 1-10 opt in (`isa` → `isa-isa` "one
+by one", `dalawa` → `dalawa-dalawa` "two at a time", ...,
+`sampu` → `sampu-sampu` "by tens") — distributive count is
+productive across the full series per S&O 1972 §4 + the
+external-reviewer typology.
+
+Routing detail: the cardinals are NUM *roots* in
+`data/tgl/numerals.yaml` (the paradigm-engine inputs; bare-NUM
+analyses come from the separate `particles.yaml` entries), so
+the cell fires via `_index_paradigm_via_base_pos` — the same
+NUM-root indexer that drives the existing `tig_distrib`
+(`tigisa` "one each") and `approx_redup` (`iisa` "about one")
+cells — and POS-flips NUM→ADV into the particles index.
+`lemma_redup_hyphen: true` gives the hyphenated LEMMA.
+
+Feats: `ADV_TYPE=MANNER`, `DISTRIB=true` (same binary feat
+`tig_distrib` sets), `REDUP=FULL` + `REDUP_SEM=DISTR` (shared
+with 10.B). `CARDINAL=false` overrides the inherited NUM-root
+`CARDINAL=true` (the derived form is categorially an adverb,
+not a cardinal — it must not feed the cardinal-NP-modifier
+rule); `CARDINAL_VALUE` is retained for the "by Xs" reading.
+No `redup_o_raise` — `tatlo-tatlo` (not `tatlu-tatlo`) per the
+reviewer typology.
+
+Wave-1 audit diff: **88/123 → 88/123 (0/0)** — no NUM-redup
+attestations in any wave. Morphology-only like 10.B: no
+clause-final `S → S AdvP[MANNER]` / `nang` + distributive-ADV
+rule (MANNER AdvPs share the LOCATION deferral block).
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —

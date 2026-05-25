@@ -18268,7 +18268,10 @@ for category level.
   → FREQ-ADV); Phase 10.B landed `place_redup_distr` (PLACE-N
   → distributive-LOC) plus cross-cutting `REDUP=FULL` +
   `REDUP_SEM=DISTR|FREQ|...` morphological feats (10.A
-  retrofitted with `REDUP_SEM=FREQ`); 10.C-10.H pending.
+  retrofitted with `REDUP_SEM=FREQ`); Phase 10.C landed
+  `num_redup_distr` (NUM → distributive-count: `isa-isa`,
+  `dalawa-dalawa`, ..., `sampu-sampu`, all 10 cardinals);
+  10.D-10.H pending.
 - **Forest-density chart-disambiguation** — `Pinakain niya ang
   manok ng isang tasang palay.` (ANG MANOK sent-29) and PANAHON
   sent-2/3/9 (large colon-list constructions) need deeper

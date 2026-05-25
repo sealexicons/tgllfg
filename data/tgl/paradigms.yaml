@@ -1754,6 +1754,68 @@
   lemma_redup_hyphen: true
   notes: place_redup_distr — bahay/pinto/bayan/bundok/bukid → bahay-bahay etc. (Phase 10.B distributive-locative redup)
 
+# --- Phase 10.C: num_redup_distr (NUM → distributive-count ADV) ---------
+# Productive bare reduplication of cardinal-NUM roots into the
+# distributive-count adverb class ("X at a time / by Xs / one by
+# one"): ``isa`` → ``isa-isa`` "one by one", ``dalawa`` →
+# ``dalawa-dalawa`` "two at a time", ``tatlo`` → ``tatlo-tatlo``
+# "three at a time", ..., ``sampu`` → ``sampu-sampu`` "by tens".
+#
+# Routing: fires on the NUM Roots in ``data/tgl/numerals.yaml``
+# (NOT the bare-NUM particles in particles.yaml) via
+# ``_index_paradigm_via_base_pos`` — the same NOUN/ADJ/NUM-root
+# indexer that already drives ``tig_distrib`` (``tigisa``) and
+# ``approx_redup`` (``dadalawa``). POS-flip NUM→ADV routes the
+# derived surface into the particles index. ``lemma_redup_hyphen:
+# true`` gives the canonical hyphenated LEMMA (``isa-isa``); the
+# NUM-root path needs the explicit opt-in (the particle path's
+# ``_index_particle_paradigms`` hyphenates unconditionally, but
+# cardinals here are roots, not particles).
+#
+# No ``redup_o_raise`` — the external-reviewer typology attests
+# ``tatlo-tatlo`` (not ``tatlu-tatlo``); /o/-final cardinals
+# (tatlo / pito / walo) take no first-copy raising in this use.
+#
+# Feats: ``ADV_TYPE=MANNER`` (the distributive-count phrase is a
+# manner-of-action adverbial, parallel to ``dahan-dahan``
+# "slowly"); ``DISTRIB=true`` (the distributive reading, same
+# binary feat ``tig_distrib`` sets); ``REDUP=FULL`` +
+# ``REDUP_SEM=DISTR`` (the Phase 10.B cross-cutting morphology
+# feats). ``CARDINAL=false`` overrides the inherited
+# ``CARDINAL=true`` from the NUM root — the derived form is
+# categorially an adverb, not a cardinal numeral, so it must NOT
+# feed the cardinal-NP-modifier rule (which gates on
+# ``NUM[CARDINAL]``; the ADV POS-flip already blocks it, but the
+# explicit override keeps the feature semantics honest).
+# ``CARDINAL_VALUE`` is retained from the root (useful: the
+# "by Xs" reading where X is the value).
+#
+# Like the 10.B ``place_redup_distr`` sibling, this is
+# morphology-only: no clause-final ``S → S AdvP[MANNER]`` /
+# ``nang`` + distributive-ADV attachment rule. MANNER AdvPs are
+# in the same discourse.py §5f-C5 deferral block as LOCATION;
+# grammar-side attachment is a follow-on gated on audit pressure.
+#
+# Per-NUM opt-in via ``affix_class: [..., num_redup_distr]`` on
+# all ten cardinal roots in numerals.yaml (distributive-count is
+# productive across the full 1-10 series per S&O 1972 §4 + the
+# external-reviewer typology).
+#
+# References: Schachter & Otanes 1972 §4 (cardinal numerals;
+# attests ``isa-isa`` "by ones", ``apat-apat`` "by fours",
+# ``lima-lima`` "by fives, in groups of five",
+# ``nang isa-isa`` "one by one"); Phase 10 external-reviewer
+# 100-form typology (isa-isa / dalawa-dalawa / tatlo-tatlo /
+# apat-apat / lima-lima).
+- base_pos: NUM
+  pos: ADV
+  affix_class: num_redup_distr
+  operations:
+    - {op: redup_root}
+  feats: {ADV_TYPE: MANNER, DISTRIB: true, CARDINAL: false, REDUP: FULL, REDUP_SEM: DISTR}
+  lemma_redup_hyphen: true
+  notes: num_redup_distr — isa/dalawa/.../sampu → isa-isa etc. (Phase 10.C distributive-count redup)
+
 # === Phase 9.X.post-1: pa- / i- ADJ-derived directional + spatial ========
 #
 # Two ADJ→POS-flip paradigm cells closing 4 stopwords-iso/stopwords-tl

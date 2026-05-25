@@ -24,49 +24,49 @@
 - citation: isa
   pos: NUM
   feats: {CARDINAL: true, CARDINAL_VALUE: "1", NUM: SG}
-  affix_class: [tig_distrib, approx_redup]
+  affix_class: [tig_distrib, approx_redup, num_redup_distr]
 
 - citation: dalawa
   pos: NUM
   feats: {CARDINAL: true, CARDINAL_VALUE: "2", NUM: PL}
-  affix_class: [tig_distrib, approx_redup]
+  affix_class: [tig_distrib, approx_redup, num_redup_distr]
 
 - citation: tatlo
   pos: NUM
   feats: {CARDINAL: true, CARDINAL_VALUE: "3", NUM: PL}
-  affix_class: [tig_distrib, approx_redup]
+  affix_class: [tig_distrib, approx_redup, num_redup_distr]
 
 - citation: apat
   pos: NUM
   feats: {CARDINAL: true, CARDINAL_VALUE: "4", NUM: PL}
-  affix_class: [tig_distrib, approx_redup]
+  affix_class: [tig_distrib, approx_redup, num_redup_distr]
 
 - citation: lima
   pos: NUM
   feats: {CARDINAL: true, CARDINAL_VALUE: "5", NUM: PL}
-  affix_class: [tig_distrib, approx_redup]
+  affix_class: [tig_distrib, approx_redup, num_redup_distr]
 
 - citation: anim
   pos: NUM
   feats: {CARDINAL: true, CARDINAL_VALUE: "6", NUM: PL}
-  affix_class: [tig_distrib, approx_redup]
+  affix_class: [tig_distrib, approx_redup, num_redup_distr]
 
 - citation: pito
   pos: NUM
   feats: {CARDINAL: true, CARDINAL_VALUE: "7", NUM: PL}
-  affix_class: [tig_distrib, approx_redup]
+  affix_class: [tig_distrib, approx_redup, num_redup_distr]
 
 - citation: walo
   pos: NUM
   feats: {CARDINAL: true, CARDINAL_VALUE: "8", NUM: PL}
-  affix_class: [tig_distrib, approx_redup]
+  affix_class: [tig_distrib, approx_redup, num_redup_distr]
 
 - citation: siyam
   pos: NUM
   feats: {CARDINAL: true, CARDINAL_VALUE: "9", NUM: PL}
-  affix_class: [tig_distrib, approx_redup]
+  affix_class: [tig_distrib, approx_redup, num_redup_distr]
 
 - citation: sampu
   pos: NUM
   feats: {CARDINAL: true, CARDINAL_VALUE: "10", NUM: PL}
-  affix_class: [tig_distrib, approx_redup]
+  affix_class: [tig_distrib, approx_redup, num_redup_distr]
