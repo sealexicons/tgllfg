@@ -18657,6 +18657,41 @@ Two design calls:
   bare-predicate reading would pin grammaticality the references do not
   support.
 
+### Phase 10.E.6 — noun → affective-redup cell (2026-05-26)
+
+Closes the 10.E.4 noun-primary deferral. The reviewer's ITER-affective
+inventory included `alit` "conflict" and `bunganga` "mouth", but
+`v_iter_redup` is `base_pos: VERB` and neither root is cleanly a verb in
+our engine. A new `noun_affective_redup` cell (`base_pos: NOUN`, `pos:
+ADJ`; precedent `pinaka_adj_from_n` / `kasing_n_eq`) gives them the bare
+affective redup as a predicative ADJ — `alit-alit`, `bunganga-bunganga`
+— `REDUP_SEM=ITER`, the noun root as hyphenated LEMMA, consumed by the
+Phase 5g predicative-ADJ-S rule unchanged.
+
+**Why a NOUN cell and not a verb opt-in.** The cell is deliberately
+non-inflecting, which is exactly what unblocks `alit`:
+
+- `alit`'s verbal sense `mag-alit` "quarrel" is orthographically
+  `nag-alit` (PFV), but the `prefix` op plain-concatenates (`nag` +
+  `alit` → `nagalit`), colliding with `galit`'s `nagalit` "got angry". A
+  non-inflecting NOUN→ADJ cell generates no verb form, so no `nagalit` is
+  injected (test-verified).
+- `bunganga`'s verbal "rant" sense is unattested (GT gives only the
+  literal `mag-bunganga` "open a mouth").
+
+**Stretch deferred (named engine follow-on).** The full `alit` "quarrel"
+verb would need the engine to render the prefix-before-vowel hyphen so
+`nag-alit` ≠ `nagalit`. That is not a lexical tweak: ~436 existing
+vowel-initial prefixed verb surfaces (`magaaral`, `magaarte`,
+`magaartearte`, …) plain-concatenate today and would all gain a hyphen,
+and the change interacts with the hyphen-merge tokenizer / normalisation.
+It is a cross-cutting orthography/morphology-engine item (U-bucket class),
+parked as a successor rather than forced into this lexical sub-PR.
+
+Additive and per-root gated (no existing root declares the new
+`affix_class`), so no pre-existing parse changes; full-wave audit 0
+regressions.
+
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 
 - **Full reduplication taxonomy** — Phase 10.A-10.H productive
