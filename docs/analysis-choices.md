@@ -18692,6 +18692,44 @@ Additive and per-root gated (no existing root declares the new
 `affix_class`), so no pre-existing parse changes; full-wave audit 0
 regressions.
 
+### Phase 10.G — lexicalized reduplication residue (2026-05-26)
+
+The close of the productive R-bucket leaves a residue of reduplicated
+forms that are synchronically *frozen*: their meaning is idiosyncratic
+and not derivable by the productive cells (10.A–10.E). These are stored
+as static lexical entries carrying a new `LEXICALIZED=true` binary feat
+(64→65) — the marker that says "reduplicated in form, lexicalized in
+function; not a productive derivation."
+
+Four forms (refs: S&O 1972; tagalog.com; standard dictionaries):
+
+- `halo-halo` (NOUN) — the shaved-ice dessert / "mixture, medley". The
+  dessert sense is the lexicalized one (≠ the compositional "mixed" a
+  productive redup of `halo` "mix" would give).
+- `sari-sari` (ADJ) — "assorted, various, sundry"; canonical in
+  `sari-saring tindahan` "variety store". Parses both attributively (via
+  the linker) and predicatively.
+- `uli-uli` (NOUN) — "whirlpool, eddy". Deliberately distinct from the
+  iterative adverb `uli-uli` "again and again" (from `uli` "again"),
+  which is out of scope; were both present they would be homophonous on
+  the merged surface `uliuli` but distinguished by POS.
+- `tabi-tabi` (NOUN) — the courtesy formula `tabi-tabi po` ("by your
+  leave", said when passing, esp. spirit dwellings).
+
+**tabi-tabi closed in-PR (no deferral).** The formula needs a standalone
+utterance, which standalone interjections do not generally get (only the
+`ANSWER`-gated `Oo` / `Hindi` do). Rather than a new grammar rule, it
+reuses the Phase 5n.B L96 fragment-host mechanism: `tabi-tabi` is a
+`FRAGMENT_HOST` noun (sibling of `salamat`), so `S → N[FRAGMENT_HOST]` +
+po-clitic absorption parse `Tabi-tabi po.` and bare `Tabi-tabi.` — the
+L96 comment explicitly anticipates "greetings, exclamations" as future
+fragment-host nouns.
+
+`kanya-kanya` (a ledger candidate) is already productive via the Phase
+5n.C.3 `kani_redup` distributive-possessive cell, so it is not re-added.
+The entries are additive (new merged-surface citations), so no
+pre-existing parse changes; full-wave audit 0 regressions.
+
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 
 - **Full reduplication taxonomy** — Phase 10.A-10.H productive

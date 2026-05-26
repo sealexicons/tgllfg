@@ -989,6 +989,33 @@ Additive and per-root gated → no existing form changes; full-wave audit
 **0 regressions, 0 closures**. Tests:
 `test_phase10_e6_noun_affective_redup`.
 
+### Phase 10.G lexicalized redup residue
+
+The reduplicated forms that are synchronically frozen (idiosyncratic
+meaning, not productively derived) — the residue the productive R-bucket
+cells (10.A–10.E) deliberately do not generate. Added as static lexical
+entries with a new `LEXICALIZED=true` binary feat (64→65):
+
+- `halo-halo` — NOUN, the shaved-ice dessert / "mixture" (≠ a productive
+  redup of `halo` "mix").
+- `sari-sari` — ADJ, "assorted, various" (`sari-saring tindahan`;
+  predicative `Sari-sari ang prutas`).
+- `uli-uli` — NOUN, "whirlpool" (≠ the iterative adverb `uli-uli` "again
+  and again" from `uli`).
+- `tabi-tabi` — NOUN, the courtesy formula `tabi-tabi po` ("by your
+  leave"). Modeled as a `FRAGMENT_HOST` noun (sibling of `salamat`), so
+  the Phase 5n.B L96 fragment-S rule + po-clitic absorption parse
+  `Tabi-tabi po.` (and bare `Tabi-tabi.`) with **no new grammar rule** —
+  closing the formula in-PR rather than deferring it.
+
+Citations are the merged surfaces (`halohalo` …) the hyphen-merge
+tokenizer produces, so both hyphen and merged spellings reach the entry.
+`kanya-kanya` (a ledger candidate) is already covered productively by the
+Phase 5n.C.3 `kani_redup` cell, so it is not re-added.
+
+Additive lexical entries → no existing parse changes; full-wave audit **0
+regressions**. Tests: `test_phase10_g_lexicalized_redup`.
+
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 
 Fifth corpus source and second native-PDF (after PK91 wave 4):
