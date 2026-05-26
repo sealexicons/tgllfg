@@ -41,7 +41,7 @@ _KNOWN_ENUM = (
     "REGISTER",   # enum: POLITE | COLLOQUIAL_POLITE | LITERARY
     "CARDINAL_VALUE",  # numeric-string payload
     "REDUP",      # enum: FULL | (CV reserved for future)  — Phase 10.B
-    "REDUP_SEM",  # enum: DISTR | FREQ | QUANT | ITER | ATTEN | INTENS — Phase 10.B/10.D
+    "REDUP_SEM",  # enum: DISTR | FREQ | QUANT | ITER | ATTEN | INTENS | CASUAL — Phase 10.B/10.D/10.E.3.post-1
 )
 
 

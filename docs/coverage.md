@@ -829,6 +829,35 @@ No new feats. Audit-absent (productive-cell completeness per the
 reviewer ruling, not an audit-closer): **0 closures, 0 regressions**;
 wave-1 88/123 unchanged. Tests: `test_phase10_e3_v_iter_redup` (17).
 
+### Phase 10.E.3.post-1 CASUAL / ITER taxonomy split
+
+A reviewer taxonomy refinement (2026-05-26) split the single
+`REDUP_SEM=ITER` tag of the 10.E.3 V-stem cell into two semantic
+classes. Both are iterative in practice; the contrast is intensity /
+stance: **`CASUAL`** (low-intensity, leisurely, recreational activity —
+`lakad` / `kain` / `inom`) vs **`ITER`** (repeated, emotionally /
+socially salient behaviour with speaker stance, the *affective* class —
+`iyak` / `tawa`; laughter is inherently expressive, so `tawa` is
+affective, not casual).
+
+`v_iter_redup` was split into two POS-flip cells differing only in the
+`REDUP_SEM` value: `v_casual_redup` (`CASUAL`) and `v_iter_redup`
+(`ITER`). The three shipped leisurely-activity roots re-route to
+`v_casual_redup`; `iyak` / `tawa` stay `ITER`. New enum value `CASUAL`
+(REDUP_SEM is already a registered enum feat → comment-only, no
+binary-feat-count change). The reviewer's compositional `{ITER,
+ATTENUATED, AFFECTIVE}` decomposition is kept as the documented gloss of
+each atom (`CASUAL` = +ITER +ATTEN -AFFECT; `ITER` = +ITER -ATTEN
++AFFECT), not separate parser feats — a representation call recorded in
+the plan and `analysis-choices.md`.
+
+No new grammar rule (the 10.E.2 `REDUP_SEM` matrix lift is
+value-agnostic). Mechanism + retag only, no new vocabulary (the
+existing-root opt-ins and ~16 new roots land in 10.E.4). **0 closures,
+0 regressions**; wave-1 88/123 unchanged. Tests:
+`test_phase10_e3_v_iter_redup` (now CASUAL/ITER-parameterised + a CASUAL
+clause-lift test).
+
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 
 Fifth corpus source and second native-PDF (after PK91 wave 4):

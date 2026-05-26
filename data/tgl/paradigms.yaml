@@ -696,27 +696,46 @@
     - {op: prefix, value: "pag"}
   notes: pagaaral (V-initial main), pagtatanim, pagsasabi (pag- IPFV gerund / C-initial intensive)
 
-# Phase 10.E.3: moderative / iterative V-stem full reduplication.
-# S&O 1972 §5.16 (moderative) + the informant 2026-05-25 productivity
-# ruling: motion / activity / affective verb roots reduplicate fully to
-# a casual-iterative predicate — ``lakad`` → ``lakadlakad`` "walk
-# around / stroll", ``iyak`` → ``iyakiyak`` "crying repeatedly / whiny",
-# ``kain`` → ``kainkain`` "snack / eat casually". Modeled as a VERB→ADJ
-# POS-flip (precedent: ``naka_resultative`` VERB→ADJ) so the Phase 5g
-# predicative-ADJ-S rule (``S → ADJ[PREDICATIVE] NP[CASE=NOM]``) consumes
-# the bare form with NO new grammar rule — informant: "iyak-iyak
-# functions adjectivally or verbally", ``Iyak-iyak ang bata``. The verb
-# root rides up as the (hyphenated) LEMMA and ``REDUP_SEM=ITER`` marks
-# the construction, so the deverbal origin is recoverable. Per-root
-# opt-in (``v_iter_redup``), semantically gated per the reviewer's
-# productivity table: motion / activity / affective = high (lakad, kain,
-# inom, iyak, tawa opt in); formal/abstract verbs (``dumalo`` "attend")
-# and weak adjectivals (``ginaw``) excluded. ``REDUP_SEM=ITER`` is the
-# reserved enum value (no new feat). The *inflected* moderative
-# (``gumala-gala`` / ``naglakad-lakad``) needs the engine to inflect a
-# pre-reduplicated stem — a separate paradigm-engine follow-on.
-# POS-flip schema: empty voice/aspect (cf. ``pag_gerund`` above);
-# ``lemma_redup_hyphen`` per the POS-flip-hyphenates-LEMMA convention.
+# Phase 10.E.3 + 10.E.3.post-1: bare V-stem full reduplication →
+# casual / iterative-affective predicate. S&O 1972 §5.16 (moderative) +
+# the informant productivity ruling (2026-05-25) and taxonomy refinement
+# (2026-05-26). Both classes are iterative in practice; the reviewer
+# splits them by intensity / stance into two cells:
+#   * ``v_casual_redup`` (``REDUP_SEM=CASUAL``) — low-intensity, leisurely,
+#     socially unstructured / recreational activity, weak speaker
+#     judgment: ``lakad`` → ``lakadlakad`` "stroll around", ``kain`` →
+#     ``kainkain`` "snack", ``inom`` → ``inominom`` "drink socially".
+#   * ``v_iter_redup`` (``REDUP_SEM=ITER``) — repeated, emotionally /
+#     socially salient behaviour with speaker stance (the *affective*
+#     class): ``iyak`` → ``iyakiyak`` "whiny", ``tawa`` → ``tawatawa``
+#     "giggling around" (laughter is inherently expressive, so tawa is
+#     affective, not casual).
+# Both are modelled as a VERB→ADJ POS-flip (precedent: ``naka_resultative``
+# VERB→ADJ) so the Phase 5g predicative-ADJ-S rule
+# (``S → ADJ[PREDICATIVE] NP[CASE=NOM]``) consumes the bare form with NO
+# new grammar rule — informant: "iyak-iyak functions adjectivally or
+# verbally", ``Iyak-iyak ang bata``. The verb root rides up as the
+# (hyphenated) LEMMA; ``REDUP_SEM`` marks the construction so the
+# deverbal origin is recoverable. Per-root opt-in, semantically gated
+# (reviewer productivity table). ``CASUAL`` / ``ITER`` are reserved enum
+# values (no new binary feat). The compositional ``{ITER, ATTENUATED,
+# AFFECTIVE}`` decomposition the reviewer proposed is kept as the
+# documented gloss (CASUAL = +ITER +ATTEN -AFFECT; ITER = +ITER -ATTEN
+# +AFFECT), not separate feats — see plan §7. The *inflected* moderative
+# (``naglakad-lakad``) is the 10.E.3.follow engine extension (inflect the
+# first member, append the bare root). POS-flip schema: empty
+# voice/aspect (cf. ``pag_gerund`` above); ``lemma_redup_hyphen`` per the
+# POS-flip-hyphenates-LEMMA convention.
+- base_pos: VERB
+  pos: ADJ
+  voice: ''
+  aspect: ''
+  affix_class: v_casual_redup
+  lemma_redup_hyphen: true
+  feats: {PREDICATIVE: true, REDUP: FULL, REDUP_SEM: CASUAL}
+  operations:
+    - {op: redup_root}
+  notes: lakadlakad / kainkain / inominom (CASUAL — low-intensity leisurely activity)
 - base_pos: VERB
   pos: ADJ
   voice: ''
@@ -726,7 +745,7 @@
   feats: {PREDICATIVE: true, REDUP: FULL, REDUP_SEM: ITER}
   operations:
     - {op: redup_root}
-  notes: lakadlakad / kainkain / iyakiyak / tawatawa / inominom (moderative/iterative V-stem redup)
+  notes: iyakiyak / tawatawa (ITER_AFFECTIVE — repeated salient behaviour + speaker stance)
 
 # Phase 9.X.pre-4.6: bare ma- AV SOC cell. Productive opt-in via
 # ``affix_class: [ma_soc]`` — distinct from the ``ma`` affix_class
