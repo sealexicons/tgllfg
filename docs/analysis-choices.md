@@ -18469,6 +18469,60 @@ Audit: V-stem redup is corpus-absent, so this is a productive-cell
 **completeness** build (per the reviewer ruling), not an audit-closer —
 0 closures, 0 regressions expected.
 
+### Phase 10.E.3.post-1 — CASUAL / ITER taxonomy split (2026-05-26)
+
+A reviewer follow-up sharpened the single `REDUP_SEM=ITER` tag of the
+10.E.3 V-stem cell. Both classes are iterative in practice; the real
+contrast is **intensity / stance**, not casual-vs-iterative:
+
+- **`CASUAL`** — low-intensity, leisurely, socially unstructured /
+  recreational activity, weak speaker judgment: `lakad-lakad` "stroll
+  around", `kain-kain` "snack", `inom-inom` "drink socially" (plus the
+  10.E.4 additions `gala`, `tingin`, `kuwento`). Not emotionally charged.
+- **`ITER`** (the *affective* class) — repeated, emotionally / socially
+  salient behaviour with speaker stance (annoyance / amusement /
+  disapproval), often performative: `iyak-iyak` "whiny", `tawa-tawa`
+  "giggling around". `tawa` is affective, not casual — laughter is
+  inherently expressive, not leisurely locomotion / consumption.
+
+**Prototypes, not rigid bins.** Some roots drift by context
+(`kuwento-kuwento` = casual chatting or gossiping); these are handled by
+**dual opt-in** (the root joins both cells → two readings = the genuine
+ambiguity), as 10.E.1 underspecified scalar-vs-damage degree.
+
+**Representation decision — atomic enum, not compositional feats.** The
+reviewer proposed decomposing the semantics into orthogonal `{ITER,
+ATTENUATED, AFFECTIVE}` features. We **keep the atomic `REDUP_SEM` enum**
+(new value `CASUAL`; `REDUP_SEM` is already a registered enum feat, so a
+comment-only change, no binary-feat-count drift) and record the
+decomposition as the documented *gloss* of each atom:
+
+| Form | ITER | ATTENUATED | AFFECTIVE | `REDUP_SEM` |
+| --- | --- | --- | --- | --- |
+| lakad-lakad | + | + | - | `CASUAL` |
+| kain-kain | + | + | - | `CASUAL` |
+| inom-inom | + | + | - | `CASUAL` |
+| iyak-iyak | + | - | + | `ITER` |
+| tawa-tawa | + | -/+ | + | `ITER` |
+
+Rationale: (1) the whole shipped R-bucket (10.A–10.E.3) uses atomic
+`REDUP_SEM` — three orthogonal feats would force a retrofit of every
+cell + tests + feats-audit; (2) `REDUP_SEM` is a *descriptive
+provenance* tag, consumed by no parse / disambiguation / LMT decision,
+so the gradient buys no parsing payoff (YAGNI); (3) drift is already
+expressible via dual opt-in. A compositional representation stays a
+downstream option if a future consumer needs to query the components.
+
+**Implementation.** `v_iter_redup` split into two POS-flip cells
+differing only in `REDUP_SEM`: `v_casual_redup` (`CASUAL`) +
+`v_iter_redup` (`ITER`). The three shipped leisurely-activity roots
+(`lakad` / `kain` / `inom`) re-route to `v_casual_redup`; `iyak` / `tawa`
+stay `ITER`. No new grammar rule — the 10.E.2 matrix lift is
+value-agnostic. Mechanism + retag only; the existing-root opt-ins and
+~16 new affective / casual roots land in 10.E.4. (Also distinct:
+`tawa nang tawa` "laughing and laughing" is the `X nang X` repetitive
+construction, not redup.)
+
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 
 - **Full reduplication taxonomy** — Phase 10.A-10.H productive
