@@ -18578,6 +18578,43 @@ lexicon-inventory change folded into 10.E.4 (it expands lakad's whole
 paradigm, not just the moderative). Corpus-absent productive-cell
 completeness: 0 closures, 0 regressions expected.
 
+### Phase 10.E.4 — iterative-affective + casual vocabulary (2026-05-26)
+
+Populates the post-1 cells with the reviewer's inventory: 6 existing-root
+opt-ins (`tingin`/`kuwento`/`takbo` → CASUAL; `sigaw`/`ngiti`/`galit` →
+ITER) + 14 new native VERB roots (`gala` CASUAL; `ubo`/`bahing`/`hikbi`/
+`daing`/`kaway`/`kembot` um-, `daldal`/`reklamo`/`sumbong`/`tampo`/`arte`/
+`drama`/`emote` mag- ITER), minimal `[<AV>, v_*_redup]` entries. `lakad`
+gains `mag` (GT-confirmed `maglakad` "go on foot") → the canonical
+`naglakad-lakad` moderative.
+
+**Noun-primary roots deferred (10.E.6).** `alit` and `bunganga` are
+fundamentally nouns whose affective redups the reviewer attested, but
+neither is cleanly a verb, and `v_iter_redup` is `base_pos: VERB`:
+
+- `alit` (conflict): GT confirms `mag-alit` "quarrel" ≠ `magalit` "get
+  angry" — but the distinction is *orthographic* (the prefix-before-vowel
+  hyphen). Our `prefix` op plain-concatenates (`nag-aral` → `nagaral`;
+  confirmed across vowel-initial mag- roots), so `mag-alit`'s PFV
+  `nagalit` collides with `galit`'s `nagalit`. Adding `alit` as a verb
+  would inject a spurious "quarrel" reading on every `nagalit`.
+- `bunganga` (mouth): GT gives only the literal `mag-bunganga` "open a
+  mouth", not the colloquial "rant" — the verbal sense is unattested.
+
+A `base_pos: NOUN` affective-redup cell (10.E.6, sibling of 10.B's
+`place_redup_distr`) is the right home — it yields `alit-alit` /
+`bunganga-bunganga` as ITER predicates with no verbal inflection, so no
+`nagalit` collision and no reliance on an unattested `mag-bunganga`.
+
+**Audit: net 0, qualitatively net-positive.** `mag`-on-`lakad` closes a
+real full parse (`Naglakad si Pedro nang mabilis.`) and drops one
+fragment-only pass (`Buhat sa Maynila siya maglalakad.` — a **fronted
+source-PP** order that never fully parsed; the V-initial `Maglalakad
+siya buhat sa Maynila.` parses, full=2). The baseline pass was an
+OOV-fragment crutch (`maglalakad` was unknown while `lakad` was um-only);
+making it a real form removed the crutch. The fronted-source-PP
+topicalization is a separate pre-existing gap, not introduced here.
+
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 
 - **Full reduplication taxonomy** — Phase 10.A-10.H productive

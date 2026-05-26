@@ -71,10 +71,11 @@ def test_inflected_moderative_verb_surface(
     assert a.feats.get("ASPECT") == aspect
 
 
-@pytest.mark.parametrize("surface", ["dumalodalo", "ginawginaw", "tumakbotakbo"])
+@pytest.mark.parametrize("surface", ["dumalodalo", "ginawginaw"])
 def test_inflected_moderative_opt_in_required(surface: str) -> None:
     """A root NOT opted into the V-stem redup cells produces no inflected
-    moderative VERB — the post-pass is gated on the shared opt-in."""
+    moderative VERB — the post-pass is gated on the shared opt-in.
+    (``takbo`` is opted in as of 10.E.4.)"""
     forms = _get_default()._index.verb_forms.get(surface, [])
     assert not [a for a in forms if a.feats.get("REDUP_SEM") in ("CASUAL", "ITER")]
 

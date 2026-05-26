@@ -62,13 +62,13 @@ def test_v_stem_redup_produces_classed_adj(surface: str, lemma: str, sem: str) -
     assert a.feats.get("LEMMA") == lemma
 
 
-@pytest.mark.parametrize("surface", ["ginawginaw", "dumalodalo", "dalodalo", "takbotakbo"])
+@pytest.mark.parametrize("surface", ["ginawginaw", "dumalodalo", "dalodalo"])
 def test_v_stem_redup_opt_in_required(surface: str) -> None:
     """Roots NOT opted into either V-stem redup cell produce no
     casual/iterative-redup ADJ — the semantic-class gate holds.
     ``ginaw`` (weak adjectival) and ``dumalo`` (formal verb) are excluded
-    per the reviewer ruling; ``takbo`` joins (CASUAL, no ``/o/``-raise per
-    reviewer Q4) only in 10.E.4, not here."""
+    per the reviewer ruling. (``takbo`` is now opted in as of 10.E.4 —
+    CASUAL, no ``/o/``-raise per reviewer Q4.)"""
     adjs = _get_default()._index.adjectives.get(surface, [])
     assert not [a for a in adjs if a.feats.get("REDUP_SEM") in ("CASUAL", "ITER")]
 

@@ -902,6 +902,41 @@ reviewer's canonical `naglakad-lakad` (mag-) follows once `mag` joins
 regressions** (corpus-absent productive-cell completeness). Tests:
 `test_phase10_e3_post2_inflected_moderative`.
 
+### Phase 10.E.4 iterative-affective + casual redup vocabulary
+
+Populates the 10.E.3.post-1 redup cells with the reviewer's 2026-05-26
+inventory. Six existing VERB roots opt in (`tingin` / `kuwento` /
+`takbo` → CASUAL — `takbo` with no `/o/`-raise per reviewer Q4; `sigaw`
+/ `ngiti` / `galit` → ITER), and 14 native roots are added with minimal
+`[<AV affix>, v_(casual|iter)_redup]` entries:
+
+- **CASUAL**: `gala` (wander).
+- **ITER** (affective): `ubo`, `bahing`, `hikbi`, `daing`, `kaway`,
+  `kembot` (um-); `daldal`, `reklamo`, `sumbong`, `tampo`, `arte`,
+  `drama`, `emote` (mag-).
+
+Each yields the bare redup (`gala-gala`, `arte-arte`) plus, via
+10.E.3.post-2, the inflected moderative (`gumala-gala`,
+`nagreklamo-reklamo`, the `nag-aarte` IPFV). `lakad` gains `mag` so the
+reviewer's canonical `naglakad-lakad` surfaces alongside `lumakad-lakad`.
+
+Scope: modern code-switch (`text`/`chat`/`post`/`selfie`) is out per the
+user. The noun-primary `alit` / `bunganga` are deferred to a `noun →
+affective-redup` follow-on (10.E.6): `alit`'s `mag-alit` "quarrel"
+collides with `magalit` "get angry" in our hyphenless engine (we don't
+render the `nag-alit` ≠ `nagalit` distinction), and `bunganga`'s verbal
+"rant" sense is unattested (GT gives only the literal "open mouth").
+
+**Full-wave audit: net 0.** `mag`-on-`lakad` closes a real full parse
+(wave4 `Naglakad si Pedro nang mabilis.`) and drops one fragment-only
+pass (wave4 `Buhat sa Maynila siya maglalakad.` — a fronted source-PP
+order that never fully parsed; the V-initial `Maglalakad siya buhat sa
+Maynila.` parses fine, so the loss is the removal of an OOV-fragment
+crutch once `maglalakad` became a real form, not a capability
+regression). All other waves 0/0. Validation is unit tests +, when it
+lands, the 10.E.5 unattributed corpus. Tests:
+`test_phase10_e4_affective_vocab`.
+
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 
 Fifth corpus source and second native-PDF (after PK91 wave 4):
