@@ -155,6 +155,13 @@
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka, pag_gerund]
 
+# Phase 10.E.4 iterative-affective redup
+- citation: arte
+  pos: VERB
+  gloss: act affected, put on airs
+  transitivity: INTR
+  affix_class: [mag, v_iter_redup]
+
 - citation: asa
   pos: VERB
   gloss: expect, rely on
@@ -215,6 +222,13 @@
   gloss: flood
   transitivity: INTR
   affix_class: [um, ma, maka, magpa]
+
+# Phase 10.E.4 iterative-affective redup
+- citation: bahing
+  pos: VERB
+  gloss: sneeze
+  transitivity: INTR
+  affix_class: [um, v_iter_redup]
 
 - citation: balaan
   pos: VERB
@@ -446,6 +460,13 @@
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka]
 
+# Phase 10.E.4 iterative-affective redup
+- citation: daing
+  pos: VERB
+  gloss: lament, groan
+  transitivity: INTR
+  affix_class: [um, v_iter_redup]
+
 - citation: dakot
   pos: VERB
   gloss: scoop with the hand
@@ -463,6 +484,13 @@
   gloss: visit
   transitivity: TR
   affix_class: [um, in_oblig, maka]
+
+# Phase 10.E.4 iterative-affective redup
+- citation: daldal
+  pos: VERB
+  gloss: chatter, babble
+  transitivity: INTR
+  affix_class: [mag, v_iter_redup]
 
 - citation: dali
   pos: VERB
@@ -547,6 +575,13 @@
   affix_class: [ma, maka]
   sandhi_flags: [d_to_r]
 
+# Phase 10.E.4 iterative-affective redup
+- citation: drama
+  pos: VERB
+  gloss: be dramatic, make a scene
+  transitivity: INTR
+  affix_class: [mag, v_iter_redup]
+
 - citation: dukit
   pos: VERB
   gloss: hollow out, gouge
@@ -583,6 +618,13 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, i_oblig, maka]
 
+# Phase 10.E.4 iterative-affective redup
+- citation: emote
+  pos: VERB
+  gloss: emote, be theatrical
+  transitivity: INTR
+  affix_class: [mag, v_iter_redup]
+
 - citation: ensayo
   pos: VERB
   gloss: practice, rehearse
@@ -590,6 +632,13 @@
   affix_class: [mag, maka]
   source: audit-corpus
   loan: SPANISH
+
+# Phase 10.E.4 casual-activity redup
+- citation: gala
+  pos: VERB
+  gloss: wander, roam
+  transitivity: INTR
+  affix_class: [um, v_casual_redup]
 
 - citation: galing
   pos: VERB
@@ -608,7 +657,7 @@
   # The VERB adds the inflected forms. ``ma`` paradigm covers
   # the inchoative "become angry" sense; ``mag`` adds the
   # iterative AV form (``naggagalit`` "is becoming angry").
-  affix_class: [ma, mag, maka]
+  affix_class: [ma, mag, maka, v_iter_redup]
   source: audit-corpus
 
 - citation: gamit
@@ -830,6 +879,13 @@
   gloss: sip
   transitivity: TR
   affix_class: [um, in_oblig, maka]
+
+# Phase 10.E.4 iterative-affective redup
+- citation: hikbi
+  pos: VERB
+  gloss: sob
+  transitivity: INTR
+  affix_class: [um, v_iter_redup]
 
 - citation: hila
   pos: VERB
@@ -1109,6 +1165,20 @@
   # reading. Closes the ``kumakausap`` lex gap on ANG MANOK sent-51
   # ``Wala nang kumakausap sa kanya.`` ("no one talks to her").
 
+# Phase 10.E.4 iterative-affective redup
+- citation: kaway
+  pos: VERB
+  gloss: wave (the hand)
+  transitivity: INTR
+  affix_class: [um, v_iter_redup]
+
+# Phase 10.E.4 iterative-affective redup
+- citation: kembot
+  pos: VERB
+  gloss: sway the hips
+  transitivity: INTR
+  affix_class: [um, v_iter_redup]
+
 - citation: kibo
   pos: VERB
   gloss: move slightly, stir
@@ -1175,7 +1245,7 @@
   pos: VERB
   gloss: tell a story
   transitivity: TR
-  affix_class: [mag, in_oblig, an_oblig, maka]
+  affix_class: [mag, in_oblig, an_oblig, maka, v_casual_redup]
 
 - citation: laba
   pos: VERB
@@ -1217,7 +1287,7 @@
   pos: VERB
   gloss: walk
   transitivity: INTR
-  affix_class: [um, in_oblig, an_oblig, maka, v_casual_redup]
+  affix_class: [um, mag, in_oblig, an_oblig, maka, v_casual_redup]
   sandhi_flags: [d_to_r]
 
 - citation: lakas
@@ -1482,7 +1552,7 @@
   pos: VERB
   gloss: smile
   transitivity: INTR
-  affix_class: [um, mag, an_oblig, maka]
+  affix_class: [um, mag, an_oblig, maka, v_iter_redup]
 
 - citation: nguya
   pos: VERB
@@ -1763,6 +1833,13 @@
   affix_class: [mag, i_oblig, an_oblig, maka]
   feats: {AV_ABSOL: true}
 
+# Phase 10.E.4 iterative-affective redup
+- citation: reklamo
+  pos: VERB
+  gloss: complain
+  transitivity: INTR
+  affix_class: [mag, v_iter_redup]
+
 - citation: sabi
   pos: VERB
   gloss: say, tell
@@ -1905,7 +1982,7 @@
   pos: VERB
   gloss: shout
   transitivity: TR
-  affix_class: [um, mag, in_oblig, maka]
+  affix_class: [um, mag, in_oblig, maka, v_iter_redup]
 
 - citation: sigla
   pos: VERB
@@ -2022,6 +2099,13 @@
   gloss: incite, instigate
   transitivity: TR
   affix_class: [mang, in_oblig, maka]
+
+# Phase 10.E.4 iterative-affective redup
+- citation: sumbong
+  pos: VERB
+  gloss: tattle, report on
+  transitivity: TR
+  affix_class: [mag, v_iter_redup]
 
 - citation: sundo
   pos: VERB
@@ -2168,7 +2252,7 @@
   pos: VERB
   gloss: run
   transitivity: INTR
-  affix_class: [um, mag, maka]
+  affix_class: [um, mag, maka, v_casual_redup]
 
 - citation: takip
   pos: VERB
@@ -2211,6 +2295,13 @@
   gloss: splash in water
   transitivity: INTR
   affix_class: [mag, maka]
+
+# Phase 10.E.4 iterative-affective redup
+- citation: tampo
+  pos: VERB
+  gloss: sulk
+  transitivity: INTR
+  affix_class: [mag, v_iter_redup]
 
 - citation: tanaw
   pos: VERB
@@ -2358,7 +2449,7 @@
   pos: VERB
   gloss: look at
   transitivity: TR
-  affix_class: [um, an_oblig, maka, pag_gerund]
+  affix_class: [um, an_oblig, maka, pag_gerund, v_casual_redup]
   feats: {AV_ABSOL: true}
 
 - citation: tipid
@@ -2470,6 +2561,13 @@
   transitivity: INTR
   affix_class: [ma, maka]
   source: audit-corpus
+
+# Phase 10.E.4 iterative-affective redup
+- citation: ubo
+  pos: VERB
+  gloss: cough
+  transitivity: INTR
+  affix_class: [um, v_iter_redup]
 
 - citation: uhaw
   pos: VERB
