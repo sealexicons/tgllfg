@@ -53,7 +53,15 @@ tmp/
 data/tgl/references/
 
 # Exemplar harvest output (derived from gitignored references/).
-data/tgl/exemplars/
+# Contents are ignored EXCEPT the hand-authored unattributed-construction
+# corpus (Phase 10.E.5) — `unattributed*.*` is tracked so its regression
+# test reads it on a fresh clone. Listing the dir contents (`/*`) rather
+# than the dir itself keeps the dir traversable so the negation can
+# re-include. Derived parse-results stay ignored (regenerable via
+# `scripts/harvest_exemplars.py parse`).
+data/tgl/exemplars/*
+!data/tgl/exemplars/unattributed*.*
+data/tgl/exemplars/*-parse-results.jsonl
 
 # Per-project plan files (live alongside the repo for convenience but
 # remain personal working notes, not project artifacts).

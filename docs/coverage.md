@@ -933,9 +933,36 @@ pass (wave4 `Buhat sa Maynila siya maglalakad.` — a fronted source-PP
 order that never fully parsed; the V-initial `Maglalakad siya buhat sa
 Maynila.` parses fine, so the loss is the removal of an OOV-fragment
 crutch once `maglalakad` became a real form, not a capability
-regression). All other waves 0/0. Validation is unit tests +, when it
-lands, the 10.E.5 unattributed corpus. Tests:
-`test_phase10_e4_affective_vocab`.
+regression). All other waves 0/0. Validation is unit tests + the 10.E.5
+unattributed corpus. Tests: `test_phase10_e4_affective_vocab`.
+
+### Phase 10.E.5 unattributed construction corpus
+
+A tracked regression home for productive R-bucket (reduplication) forms
+the naturalistic audit corpora do not attest. 33 hand-authored sentences
+spanning every clause-parseable redup construction class — bare +
+inflected casual / iterative V-stem redups (10.E.3 / 10.E.4), time-noun
+frequency adverbs (10.A), distributive numerals (10.C), and
+scalar-adjective degree redups (10.E.1) — live in
+`data/tgl/exemplars/unattributed-constructions.jsonl`.
+
+The exemplars directory is gitignored (licensed-PDF derivatives), so the
+corpus is exposed via a `.gitignore` override
+(`!data/tgl/exemplars/unattributed*.*`, with `*-parse-results.jsonl`
+re-ignored): the source JSONL is tracked — so
+`test_phase10_e5_unattributed_corpus` reads it on a fresh clone — while
+the derived parse-results stay ignored. `harvest_exemplars.py
+unattributed-report` writes `coverage-unattributed.md` (gitignored) at
+**33/33 (100%)** by construction.
+
+**Reported separately from the naturalistic ≥80% parse-rate metric** — a
+curated grammaticality set, not a representative sample, so it is
+deliberately excluded from the `_XWAVE_SOURCES` cumulative. 10.B
+place-distributive (`bahay-bahay` as a locative adverb) is
+morphology-only (no `AdvP[LOCATION]` attach rule), so it has no
+clause-level entry — covered by its own per-sub-PR morph test. **0
+closures, 0 regressions** (no parser change). Tests:
+`test_phase10_e5_unattributed_corpus`.
 
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 

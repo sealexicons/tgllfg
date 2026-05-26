@@ -1626,6 +1626,14 @@ _PARSE_SOURCES = [
     ("wave3-rg-conversational.jsonl", "wave3-rg-conversational-parse-results.jsonl", 500),
     ("wave4-kroeger1991.jsonl", "wave4-kroeger1991-parse-results.jsonl", None),
     ("wave5-zamar2023.jsonl", "wave5-zamar2023-parse-results.jsonl", None),
+    # Phase 10.E.5: hand-authored unattributed-construction corpus
+    # (tracked source). Parse it like any wave so the curated forms get a
+    # self-check, but report it SEPARATELY (``unattributed-report``) — it
+    # is deliberately absent from the naturalistic ``_XWAVE_SOURCES``
+    # cumulative since it is a grammaticality regression set, not a
+    # representative sample.
+    ("unattributed-constructions.jsonl",
+     "unattributed-constructions-parse-results.jsonl", None),
 ]
 
 
@@ -2431,11 +2439,81 @@ def cmd_xwave_report() -> None:
     print(f"  → {out_path.relative_to(REPO_ROOT)}")
 
 
+def cmd_unattributed_report() -> None:
+    """Phase 10.E.5: summarise the unattributed-construction corpus parse
+    results, REPORTED SEPARATELY from the naturalistic ≥80% metric.
+
+    The corpus is hand-authored productive R-bucket (reduplication) forms
+    that the naturalistic audit corpora do not attest — it is a curated
+    grammaticality regression set, so it is intentionally excluded from
+    ``_XWAVE_SOURCES`` (the naturalistic cumulative). Every entry is
+    expected to parse; a non-passing row is a regression signal, surfaced
+    explicitly here. Reads ``unattributed-constructions-parse-results.jsonl``
+    (run ``parse`` first) and writes ``coverage-unattributed.md``
+    (gitignored). Construction classes are read off the locator prefix
+    (e.g. ``casual-bare`` from ``casual-bare/lakad``)."""
+    path = EXEMPLARS_DIR / "unattributed-constructions-parse-results.jsonl"
+    if not path.exists():
+        print("  (skip unattributed-report; parse-results not found "
+              "— run 'parse' first)", file=sys.stderr)
+        return
+    recs = [json.loads(ln) for ln in path.open(encoding="utf-8") if ln.strip()]
+    total = len(recs)
+    if total == 0:
+        print("  (skip unattributed-report; no records)", file=sys.stderr)
+        return
+
+    def _passed(r: dict) -> bool:
+        return r.get("bucket", "").startswith("parse-success")
+
+    passed = sum(1 for r in recs if _passed(r))
+    by_class: dict[str, list[dict]] = defaultdict(list)
+    for r in recs:
+        by_class[r.get("locator", "?/").split("/")[0]].append(r)
+
+    out: list[str] = []
+    out.append("# Phase 10.E.5 — unattributed-construction corpus coverage")
+    out.append("")
+    out.append("Hand-authored productive R-bucket (reduplication) forms that "
+               "are absent from the naturalistic audit corpora. **Reported "
+               "separately** from the Phase 9/10 naturalistic ≥80% parse-rate "
+               "metric — a curated grammaticality regression set, not a "
+               "representative sample. Every entry is expected to parse; a "
+               "non-passing row is a regression signal.")
+    out.append("")
+    out.append(f"**Overall: {passed}/{total} parse "
+               f"({100.0 * passed / total:.1f}%).**")
+    out.append("")
+    out.append("| Construction class | Pass | Total |")
+    out.append("| --- | ---: | ---: |")
+    for cls in sorted(by_class):
+        rs = by_class[cls]
+        out.append(f"| `{cls}` | {sum(1 for r in rs if _passed(r))} "
+                   f"| {len(rs)} |")
+    out.append("")
+    fails = [r for r in recs if not _passed(r)]
+    if fails:
+        out.append("## ⚠ Non-passing rows (regression signal)")
+        out.append("")
+        out.append("| Locator | Text | Bucket |")
+        out.append("| --- | --- | --- |")
+        for r in fails:
+            out.append(f"| `{r['locator']}` | {r['text']} | {r['bucket']} |")
+        out.append("")
+
+    out_path = EXEMPLARS_DIR / "coverage-unattributed.md"
+    out_path.write_text("\n".join(out) + "\n", encoding="utf-8")
+    print(f"  → {out_path.relative_to(REPO_ROOT)} ({passed}/{total} parse)")
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument(
         "stage",
-        choices=["extract", "parse", "report", "xwave-report", "all"],
+        choices=[
+            "extract", "parse", "report", "xwave-report",
+            "unattributed-report", "all",
+        ],
     )
     args = p.parse_args(argv)
 
@@ -2451,6 +2529,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.stage in ("xwave-report", "all"):
         print("[xwave-report]")
         cmd_xwave_report()
+    if args.stage in ("unattributed-report", "all"):
+        print("[unattributed-report]")
+        cmd_unattributed_report()
     return 0
 
 
