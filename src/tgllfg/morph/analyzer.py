@@ -780,6 +780,16 @@ class Analyzer:
             # :meth:`_index_paradigm_via_base_pos` below.
             if cell.base_pos != "VERB":
                 continue
+            # Phase 10.E.3.post-2: skip POS-flip cells — base_pos VERB
+            # with a target ``pos`` (the v_casual_redup / v_iter_redup
+            # VERB→ADJ cells, ``naka_resultative``, ``pag_gerund``).
+            # Those are indexed into their target index by
+            # :meth:`_index_paradigm_via_base_pos`; without this guard
+            # they were *also* indexed here as spurious ``VOICE=''``
+            # VERBs. Symmetric complement to that method's
+            # ``base_pos == "VERB" and not cell.pos`` skip.
+            if cell.pos:
+                continue
             if cell.transitivity and cell.transitivity != root.transitivity:
                 continue
             if not _affix_class_match(cell.affix_class, root.affix_class):
@@ -850,6 +860,40 @@ class Analyzer:
                 feats=feats,
             )
             self._index.verb_forms.setdefault(surface, []).append(analysis)
+            # Phase 10.E.3.post-2: inflected moderative / iterative redup.
+            # For a basic AV form (``um`` / ``mag``) of a root opted into
+            # the bare V-stem redup cells, also emit the doubled surface —
+            # the inflected first member + the bare root (the ``redup_root``
+            # semantics: the voice/aspect affix rides the first copy only) —
+            # as a VERB carrying the same voice / aspect + ``REDUP=FULL`` and
+            # the root's ``REDUP_SEM`` class. Reviewer 2026-05-26: aspect
+            # sits on the first member only; the construction is AV-primary
+            # (non-AV is lexically licensed, not productively generated).
+            # The opt-in is shared with the bare cells, so a CASUAL / ITER
+            # root automatically gains its inflected forms, and the voice
+            # inventory (``um`` vs ``mag``) follows the root's own cells.
+            redup_sem = (
+                "CASUAL"
+                if "v_casual_redup" in root.affix_class
+                else "ITER"
+                if "v_iter_redup" in root.affix_class
+                else None
+            )
+            if (
+                redup_sem is not None
+                and cell.voice == "AV"
+                and cell.affix_class in ("um", "mag")
+            ):
+                redup_feats = dict(feats)
+                redup_feats["REDUP"] = "FULL"
+                redup_feats["REDUP_SEM"] = redup_sem
+                self._index.verb_forms.setdefault(
+                    surface + root.citation, []
+                ).append(
+                    MorphAnalysis(
+                        lemma=canonical_lemma, pos="VERB", feats=redup_feats
+                    )
+                )
 
 
 def _affix_class_match(cell_class: str, root_classes: list[str]) -> bool:

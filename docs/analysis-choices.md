@@ -18523,6 +18523,61 @@ value-agnostic. Mechanism + retag only; the existing-root opt-ins and
 `tawa nang tawa` "laughing and laughing" is the `X nang X` repetitive
 construction, not redup.)
 
+### Phase 10.E.3.post-2 — inflected moderative V-stem redup (2026-05-26)
+
+The eventive counterpart of the bare 10.E.3 forms (reviewer Q1/Q2,
+2026-05-26): inflect the first member, append the bare root. Only the
+first member carries voice / aspect (`naglakad-lakad` /
+`naglalakad-lakad` / `maglalakad-lakad`, not `*naglakad-naglakad`);
+aspectual CV-redup and full redup stack on that first member. AV-primary
+(non-AV is lexically licensed, not productively generated). The clitic
+diagnostic (`Naglakad-lakad muna tayo`) confirms a single predicate
+word.
+
+**Engine.** No new op: the existing `redup_root` op already appends the
+bare citation to the *inflected* first copy (the L37 precedent — `ma-`
+prefix → `maganda` → `magandaganda`). The implementation is an inline
+post-pass in `_index_verb_paradigms`: for each basic AV cell
+(`affix_class ∈ {um, mag}`, `voice == AV`) that fires for a root opted
+into the bare V-stem redup cells, also emit `surface + citation` as a
+VERB carrying the cell's VOICE / ASPECT / MOOD + `REDUP=FULL` and the
+root's `REDUP_SEM`. This **reuses the bare-cell opt-in** (a CASUAL / ITER
+root automatically gains inflected forms) and **follows the root's own
+voice inventory** (an `um`-only root yields only `um` moderatives) —
+avoiding the conjunctive-`affix_class` gating a cell-replication approach
+would need. The existing V-initial AV S frames consume the result with
+no new grammar rule.
+
+**Paired hygiene fix.** `_index_verb_paradigms` now skips POS-flip cells
+(`if cell.pos: continue`), the symmetric complement to the
+`base_pos == "VERB" and not cell.pos` skip in
+`_index_paradigm_via_base_pos`. Without it, every VERB→{ADJ, NOUN}
+POS-flip surface (the bare `v_*_redup` cells, `naka_resultative`,
+`pag_gerund`) was double-indexed — its intended target-index entry plus
+a spurious `VOICE=''` VERB. The spurious VERBs were inert (full-wave
+audit: 0 regressions on removal) but polluted the index; landed in-PR
+per anti-deferral.
+
+**Decision A — `REDUP_SEM` stays verb-level.** For the inflected
+moderative, `REDUP_SEM` is a predicate-level / lexical-aspectual feat on
+the VERB; it is *not* percolated to the matrix f-structure root.
+Percolating it would mean adding `REDUP_SEM` to the universal
+`_VERB_PERCOLATION` tuple (PRED/VOICE/ASPECT/MOOD/LEX-ASTRUCT), which
+fires in 100+ clausal rules and would attach an empty `REDUP_SEM` node
+to *every* verb clause (the known empty-FStructure no-op pollution). The
+asymmetry with the bare-ADJ path (which *does* surface `REDUP_SEM` at the
+clause) is principled: there the ADJ is itself the predicate, so its feat
+is the clause's; here the verb is the predicate and the marker is its
+property. Matrix percolation is parked with the U-bucket
+empty-FStructure work.
+
+**Voice inventory.** `lakad` is um-only in the lexicon, so post-2
+produces `lumakad-lakad`; the reviewer's canonical `naglakad-lakad`
+(mag-, GT-confirmed) follows once `mag` joins `lakad`'s `affix_class` — a
+lexicon-inventory change folded into 10.E.4 (it expands lakad's whole
+paradigm, not just the moderative). Corpus-absent productive-cell
+completeness: 0 closures, 0 regressions expected.
+
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 
 - **Full reduplication taxonomy** — Phase 10.A-10.H productive
