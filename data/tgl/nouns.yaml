@@ -160,6 +160,12 @@
   gloss: athlete's foot (skin condition)
   source: audit-corpus
 
+# Phase 10.E.6 noun → affective redup
+- citation: alit
+  pos: NOUN
+  gloss: conflict, quarrel, dispute
+  affix_class: [noun_affective_redup]
+
 - citation: almusal
   pos: NOUN
   gloss: breakfast
@@ -708,6 +714,12 @@
   pos: NOUN
   gloss: mountain
   affix_class: [place_redup_distr]
+
+# Phase 10.E.6 noun → affective redup
+- citation: bunganga
+  pos: NOUN
+  gloss: mouth, gullet, maw
+  affix_class: [noun_affective_redup]
 
 - citation: bunso
   pos: NOUN
