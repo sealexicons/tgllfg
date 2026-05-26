@@ -858,6 +858,50 @@ existing-root opt-ins and ~16 new roots land in 10.E.4). **0 closures,
 `test_phase10_e3_v_iter_redup` (now CASUAL/ITER-parameterised + a CASUAL
 clause-lift test).
 
+### Phase 10.E.3.post-2 inflected moderative / iterative V-stem redup
+
+The eventive counterpart of the bare 10.E.3 forms (reviewer 2026-05-26):
+an inflected first member + the bare root — `lumakad` → `lumakad-lakad`
+"walked around", `umiyak` → `umiyak-iyak` "kept crying", `kumain` →
+`kumain-kain` "snacked". Only the first member carries voice / aspect;
+the construction is AV-primary (non-AV lexically licensed, not
+productively generated).
+
+No new op and no new grammar rule. An inline post-pass in
+`_index_verb_paradigms` emits, for each basic AV form (`um` / `mag`) of
+a root already opted into the bare V-stem redup cells, the doubled
+surface `inflected-form + citation` as a VERB carrying the same VOICE /
+ASPECT + `REDUP=FULL` and the root's `REDUP_SEM` (CASUAL: lakad / kain /
+inom; ITER: iyak / tawa). The doubling reuses the `redup_root` "append
+to the inflected first copy" semantics; the existing V-initial AV S
+frames consume it, and the hyphen-merge tokenizer collapses
+`Lumakad-lakad ang lalaki` → the indexed surface. The opt-in is shared
+with the bare cells, so a CASUAL / ITER root automatically gains its
+inflected forms, and the voice inventory (`um` vs `mag`) follows the
+root's own cells.
+
+Also lands a paired hygiene fix: `_index_verb_paradigms` now skips
+POS-flip cells (`if cell.pos: continue`) — the symmetric complement to
+the `base_pos == VERB and not cell.pos` skip in
+`_index_paradigm_via_base_pos`. Previously the bare-redup,
+`naka_resultative`, and `pag_gerund` surfaces were double-indexed: both
+their intended ADJ / NOUN entry and a spurious `VOICE=''` VERB. The
+latter is now removed (full-wave audit confirms 0 regressions — the
+spurious entries were inert).
+
+`REDUP_SEM` rides on the VERB analysis as a predicate-level property; it
+is not percolated to the matrix f-structure root (decision A — that
+would require the universal `_VERB_PERCOLATION` tuple, attaching an empty
+node to every verb clause; parked with the U-bucket empty-FStructure
+work). The bare-ADJ path surfaces it at the clause because there the ADJ
+is itself the predicate.
+
+`lakad` is um-only here, so the produced form is `lumakad-lakad`; the
+reviewer's canonical `naglakad-lakad` (mag-) follows once `mag` joins
+`lakad`'s affix_class in 10.E.4. No new feats. **0 closures, 0
+regressions** (corpus-absent productive-cell completeness). Tests:
+`test_phase10_e3_post2_inflected_moderative`.
+
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 
 Fifth corpus source and second native-PDF (after PK91 wave 4):
