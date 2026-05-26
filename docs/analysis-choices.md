@@ -18615,6 +18615,48 @@ OOV-fragment crutch (`maglalakad` was unknown while `lakad` was um-only);
 making it a real form removed the crutch. The fronted-source-PP
 topicalization is a separate pre-existing gap, not introduced here.
 
+### Phase 10.E.5 — unattributed construction corpus (2026-05-26)
+
+A persistent regression home for productive R-bucket forms the
+naturalistic corpora do not attest. The reviewer-sanctioned casual /
+iterative V-stem redups (10.E.3 / 10.E.4) and the earlier nominal /
+numeral / adjectival redups (10.A / 10.C / 10.E.1) are *productive
+paradigm* work whose gate is grammaticality, not attestation count (the
+audit corpus is a sampling, not a grammaticality oracle); but the
+per-sub-PR test files (`test_phase10_*`) churn and get refactored away.
+This corpus is the canonical baseline that survives that churn — the
+R-bucket analogue of the Phase 9.Z naturalistic-audit regression fixture.
+
+33 hand-authored sentences (`ocr_quality: "authored"`) in
+`data/tgl/exemplars/unattributed-constructions.jsonl`, one tracked source
+file exposed through a `.gitignore` override:
+
+```text
+data/tgl/exemplars/*
+!data/tgl/exemplars/unattributed*.*
+data/tgl/exemplars/*-parse-results.jsonl
+```
+
+Listing the directory *contents* (`/*`) rather than the directory keeps
+it traversable so the negation can re-include; the third line re-ignores
+the derived parse-results (regenerable via `harvest_exemplars.py parse`).
+The test reads the JSONL directly, asserting each form parses with ≥1
+tree.
+
+Two design calls:
+
+- **Reported separately.** The corpus is wired into `_PARSE_SOURCES` (so
+  `parse` self-checks it) and a dedicated `unattributed-report` stage,
+  but deliberately kept out of `_XWAVE_SOURCES` — a curated
+  grammaticality set must neither dilute nor inflate the naturalistic
+  ≥80% metric.
+- **Clause-parseable only.** Every entry heads a full clause. 10.B
+  place-distributive (`bahay-bahay` as a locative adverb) is
+  morphology-only (no `AdvP[LOCATION]` attach rule), so it has no entry
+  here — its morph test is the regression home. Asserting an incidental
+  bare-predicate reading would pin grammaticality the references do not
+  support.
+
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 
 - **Full reduplication taxonomy** — Phase 10.A-10.H productive
