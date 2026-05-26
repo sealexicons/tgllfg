@@ -747,6 +747,41 @@
     - {op: redup_root}
   notes: iyakiyak / tawatawa (ITER_AFFECTIVE — repeated salient behaviour + speaker stance)
 
+# Phase 10.E.6: noun-primary affective full reduplication → predicative
+# ADJ. Sibling of the 10.E.3.post-1 ``v_iter_redup`` cell, but for roots
+# that are fundamentally NOUNS, not verbs: ``alit`` "conflict" →
+# ``alit-alit`` "bickering / at odds", ``bunganga`` "mouth" →
+# ``bunganga-bunganga`` "mouthy / all talk / ranting". Both are in the
+# reviewer's 2026-05-26 ITER-affective inventory but were held out of
+# 10.E.4 because ``v_iter_redup`` is ``base_pos: VERB`` and neither root
+# is cleanly a verb in our engine:
+#   * ``alit``'s verbal sense ``mag-alit`` "quarrel" is orthographically
+#     ``nag-alit`` (PFV), but our ``prefix`` op plain-concatenates
+#     (``nag`` + ``alit`` → ``nagalit``), colliding with ``galit``'s
+#     ``nagalit`` "got angry" — adding ``alit`` as a verb would inject a
+#     spurious "quarrel" reading on every ``nagalit``.
+#   * ``bunganga``'s verbal "rant" sense is unattested (GT gives only the
+#     literal ``mag-bunganga`` "open a mouth").
+# A NOUN→ADJ POS-flip (precedent ``pinaka_adj_from_n`` / ``kasing_n_eq``,
+# both ``base_pos: NOUN`` + ``pos: ADJ``) sidesteps both: it is
+# **non-inflecting** (no ``um`` / ``mag`` cell, so no ``nagalit`` is
+# generated, and the 10.E.3.post-2 inflected-moderative post-pass — gated
+# on ``v_*_redup`` — does not fire), yielding only the bare doubled
+# predicate, which the Phase 5g predicative-ADJ-S rule consumes with no
+# new grammar rule (``Alit-alit sila``). ``REDUP_SEM=ITER`` (the affective
+# class); the NOUN root rides up as the hyphenated LEMMA. The full
+# ``alit`` "quarrel" verb (needing the prefix-before-vowel hyphen
+# ``nag-alit`` ≠ ``nagalit``) is a named engine follow-on — see
+# docs/analysis-choices.md "Phase 10.E.6".
+- base_pos: NOUN
+  pos: ADJ
+  affix_class: noun_affective_redup
+  lemma_redup_hyphen: true
+  feats: {PREDICATIVE: true, REDUP: FULL, REDUP_SEM: ITER}
+  operations:
+    - {op: redup_root}
+  notes: alit-alit / bunganga-bunganga (noun-primary ITER-affective redup → predicative ADJ; non-inflecting, sidesteps the mag-alit/magalit homophony)
+
 # Phase 9.X.pre-4.6: bare ma- AV SOC cell. Productive opt-in via
 # ``affix_class: [ma_soc]`` — distinct from the ``ma`` affix_class
 # (which produces na-/ma-+CV-redup NVOL forms). The per-root

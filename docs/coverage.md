@@ -964,6 +964,31 @@ clause-level entry — covered by its own per-sub-PR morph test. **0
 closures, 0 regressions** (no parser change). Tests:
 `test_phase10_e5_unattributed_corpus`.
 
+### Phase 10.E.6 noun → affective-redup cell
+
+Closes the last 10.E.4 deferral. The two noun-primary roots from the
+reviewer's ITER-affective inventory — `alit` "conflict" and `bunganga`
+"mouth" — gain their bare affective redup as a predicative ADJ via a new
+`noun_affective_redup` cell (`base_pos: NOUN`, `pos: ADJ`, `redup_root`
+op, `lemma_redup_hyphen`): `alit-alit` "bickering / at odds",
+`bunganga-bunganga` "mouthy / all talk". It is the NOUN-base sibling of
+10.E.3's `v_iter_redup`; the existing Phase 5g predicative-ADJ-S rule
+consumes the bare form (`Alit-alit sila`) with no new grammar rule, and
+the 10.E.2 `REDUP_SEM` lift surfaces ITER at the matrix.
+
+The NOUN→ADJ POS-flip is **non-inflecting** by design — which is what
+sidesteps the homophony that held `alit` out of 10.E.4: `alit`'s verbal
+`mag-alit` "quarrel" PFV `nagalit` collides with `galit`'s `nagalit`
+"got angry" in our hyphenless prefix-concat engine. Because the cell
+generates no `um`/`mag` form, no `nagalit` is injected (verified). The
+full `alit` "quarrel" verb needs the prefix-before-vowel hyphen
+(`nag-alit` ≠ `nagalit`) — a ~436-form orthography/morphology-engine
+change, deferred as a named follow-on (see `analysis-choices.md`).
+
+Additive and per-root gated → no existing form changes; full-wave audit
+**0 regressions, 0 closures**. Tests:
+`test_phase10_e6_noun_affective_redup`.
+
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 
 Fifth corpus source and second native-PDF (after PK91 wave 4):
