@@ -61,6 +61,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "KA_PRED",
         "KASING_N",
         "KITA",
+        "LEXICALIZED",
         "LOC_EXISTENTIAL",
         "MAGISA",
         "MEASURE",

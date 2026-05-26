@@ -36,7 +36,7 @@ inspection: comment text containing capitalized words followed by
 
 Subsequent phases extended the inventory: 9.O.3 (+1), 9.O.4 (+1),
 9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1), 9.X.c49 (+1),
-9.X.post-2 (+1), 10.E.1 (+1) → 64 total.
+9.X.post-2 (+1), 10.E.1 (+1), 10.G (+1) → 65 total.
 Each extension is documented inline below.
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
@@ -82,6 +82,7 @@ negative.
 | `KA_PRED` | N is a ka-N companion-predicate (`kasama` / `kasabay`; 9.X.c19; gates ka-N S_GAP rule) |
 | `KASING_N` | ADJ surface derives from a NOUN via `kasing-` (Phase 8.L) |
 | `KITA` | special clitic pronoun `kita` |
+| `LEXICALIZED` | surface is a frozen / lexicalized reduplication, not productively derived (Phase 10.G) |
 | `LOC_EXISTENTIAL` | locative existential reading |
 | `MAGISA` | "alone" emphatic predicate |
 | `MEASURE` | NP is a measure phrase |

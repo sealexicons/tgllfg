@@ -649,6 +649,12 @@
   gloss: delicious, tasty
   affix_class: [ma_adj]
 
+# Phase 10.G lexicalized redup residue (canonical spelling sari-sari)
+- citation: sarisari
+  pos: ADJ
+  gloss: assorted, various, sundry
+  feats: {LEXICALIZED: true}
+
 - citation: saya
   pos: ADJ
   gloss: happy, joyful

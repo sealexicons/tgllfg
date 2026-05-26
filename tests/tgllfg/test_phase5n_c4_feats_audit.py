@@ -68,11 +68,12 @@ def test_binary_feats_count_matches_audit() -> None:
     ``MGA_INTERNAL`` → 59. Phase 9.X.c19 adds ``KA_PRED`` → 60.
     Phase 9.X.c22 adds ``ELLIPSIS`` → 61. Phase 9.X.c49 adds
     ``IMPERSONAL`` → 62. Phase 9.X.post-2 adds ``COPULA`` → 63.
-    Phase 10.E.1 adds ``EXCLAM`` → 64.
+    Phase 10.E.1 adds ``EXCLAM`` → 64. Phase 10.G adds
+    ``LEXICALIZED`` → 65.
     Drift means update both the doc and this assertion together."""
-    assert len(BINARY_FEATS) == 64, (
+    assert len(BINARY_FEATS) == 65, (
         f"BINARY_FEATS has {len(BINARY_FEATS)} entries; "
-        f"docs/feats-binary-audit.md says 64. "
+        f"docs/feats-binary-audit.md says 65. "
         f"Update both together if the audit changes."
     )
 

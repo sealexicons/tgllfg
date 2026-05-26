@@ -1257,6 +1257,12 @@
   gloss: alternative; substitute (used in `sa halip na X` = `instead of X`)
   source: audit-corpus
 
+# Phase 10.G lexicalized redup residue (canonical spelling halo-halo)
+- citation: halohalo
+  pos: NOUN
+  gloss: halo-halo (shaved-ice dessert); mixture, medley
+  feats: {LEXICALIZED: true}
+
 - citation: handa
   pos: NOUN
   gloss: preparation, feast
@@ -3573,6 +3579,16 @@
   gloss: side, edge
   source: audit-corpus
 
+# Phase 10.G lexicalized redup residue — courtesy formula "tabi-tabi po"
+# ("by your leave", said when passing, esp. spirit dwellings). Modeled as
+# a FRAGMENT_HOST noun (sibling of `salamat`) so the Phase 5n.B L96
+# fragment-S rule + po-clitic absorption parse `Tabi-tabi po.` with no new
+# grammar rule.
+- citation: tabitabi
+  pos: NOUN
+  gloss: (courtesy formula, "tabi-tabi po") by your leave; excuse me
+  feats: {FRAGMENT_HOST: true, LEXICALIZED: true}
+
 - citation: tagalog
   pos: NOUN
   gloss: Tagalog
@@ -3920,6 +3936,13 @@
   gloss: times (repetitions)
   feats: {SEM_CLASS: FREQUENCY}
   synonyms: [beses]
+
+# Phase 10.G lexicalized redup residue (whirlpool; ≠ iterative adv
+# `uli-uli` from `uli` "again" — canonical spelling uli-uli)
+- citation: uliuli
+  pos: NOUN
+  gloss: whirlpool, eddy
+  feats: {LEXICALIZED: true}
 
 - citation: ulo
   pos: NOUN
