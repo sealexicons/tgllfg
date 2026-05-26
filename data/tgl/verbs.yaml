@@ -982,7 +982,7 @@
   pos: VERB
   gloss: drink
   transitivity: TR
-  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an, magsi]
+  affix_class: [um, in_oblig, an_oblig, maka, pa_in, magpa, pa_an, magsi, v_iter_redup]
 
 - citation: ipit
   pos: VERB
@@ -1036,7 +1036,7 @@
   pos: VERB
   gloss: cry, weep
   transitivity: INTR
-  affix_class: [um, mag, an_oblig, maka]
+  affix_class: [um, mag, an_oblig, maka, v_iter_redup]
 
 - citation: kabit
   pos: VERB
@@ -1060,7 +1060,7 @@
   pos: VERB
   gloss: eat
   transitivity: TR
-  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an, mag_an, magsi, magpa_an]
+  affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an, mag_an, magsi, magpa_an, v_iter_redup]
 
 - citation: kalog
   pos: VERB
@@ -1217,7 +1217,7 @@
   pos: VERB
   gloss: walk
   transitivity: INTR
-  affix_class: [um, in_oblig, an_oblig, maka]
+  affix_class: [um, in_oblig, an_oblig, maka, v_iter_redup]
   sandhi_flags: [d_to_r]
 
 - citation: lakas
@@ -2278,7 +2278,7 @@
   pos: VERB
   gloss: laugh
   transitivity: INTR
-  affix_class: [um, maka, pag_gerund]
+  affix_class: [um, maka, pag_gerund, v_iter_redup]
 
 - citation: tawag
   pos: VERB

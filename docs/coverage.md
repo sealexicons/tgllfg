@@ -792,6 +792,43 @@ adjectives (rc1990 +1, rg-intermediate +3, so1972 +3, kroeger1991 +1,
 zamar2023 +4); the so1972 +3 includes the `•y`-OCR closure (sent-1099).
 Tests: `test_phase10_e2_linked_intensive` (24).
 
+### Phase 10.E.3 moderative / iterative V-stem reduplication
+
+The third E-bucket sub-pattern: full reduplication of a verb stem to a
+casual / iterative predicate — `lakad` → `lakad-lakad` "walk around",
+`iyak` → `iyak-iyak` "crying / whiny", `kain` → `kain-kain` "snack".
+S&O 1972 §5.16 (moderative).
+
+The spike found the canonical forms **audit-absent** (the corpus is
+formal/written), but a native-reviewer ruling established the
+construction is genuinely productive colloquially — a
+`dont-pin-canonical-by-absence` build, with productivity **semantically
+constrained** (motion / activity / affective verbs high; formal verbs
+like `dumalo` and weak adjectivals like `ginaw` excluded). The clitic
+diagnostic resolves it as lexical (`Lakad-lakad muna tayo` — clitic
+after the whole form, a single V°).
+
+A `v_iter_redup` paradigm cell (`base_pos: VERB`, `pos: ADJ` POS-flip,
+`redup_root` op) produces an `ADJ[PREDICATIVE, REDUP=FULL,
+REDUP_SEM=ITER]` surface (verb root as the hyphenated LEMMA;
+`REDUP_SEM=ITER` is the reserved enum value, no new feat). The POS-flip
+routes to the adjectives index, so the existing Phase 5g
+predicative-ADJ-S rule consumes the bare form — `Iyak-iyak ang bata`
+parses with **no new grammar rule**, and the Phase 10.E.2 `REDUP_SEM`
+matrix lift surfaces `ITER` at the clause root. Per-root opt-in
+(`v_iter_redup`), semantically gated: `lakad` (motion), `kain` / `inom`
+(activity), `iyak` / `tawa` (affective). The opt-in is additive — the
+roots keep their ordinary voice inflection.
+
+Deferred (named): the **inflected** moderative (`gumala-gala`,
+`Naglakad-lakad ako`) needs the engine to inflect a pre-reduplicated
+stem — a paradigm-engine follow-on; `/o`/-final roots (`takbo`) pending
+an informant sandhi call; `tabi-tabi` / `uliuli` are lexicalized (10.G).
+
+No new feats. Audit-absent (productive-cell completeness per the
+reviewer ruling, not an audit-closer): **0 closures, 0 regressions**;
+wave-1 88/123 unchanged. Tests: `test_phase10_e3_v_iter_redup` (17).
+
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 
 Fifth corpus source and second native-PDF (after PK91 wave 4):

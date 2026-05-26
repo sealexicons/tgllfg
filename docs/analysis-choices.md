@@ -18390,6 +18390,85 @@ Audit: **+12 closures, 0 regressions** across all 8 waves (wave-1
 88/123 unchanged). The doubled-ADJ rule generalises across the gradable
 `ma-` adjectives, not just the hand-identified `mabait` surfaces.
 
+### Phase 10.E.3 — moderative / iterative V-stem redup (2026-05-25)
+
+The third E-bucket sub-pattern: full reduplication of a **verb** stem to
+a casual / iterative predicate — `lakad` → `lakad-lakad` "walk around /
+stroll", `iyak` → `iyak-iyak` "crying repeatedly / whiny", `kain` →
+`kain-kain` "snack / eat casually". S&O 1972 §5.16 documents the
+*moderative* ("now and then / here and there": `gumala-gala`,
+`dumalu-dalo`).
+
+**Investigation (the plan's gate).** The spike found the canonical forms
+**audit-absent** (`lakad-lakad` etc. appear 0× in the naturalistic
+corpus — which is formal/written), so by the bare audit metric this
+looked like a defer. But a native-reviewer ruling (2026-05-25,
+**[[productivity table below]]**) established it is **genuinely
+productive** colloquially — exactly the `dont-pin-canonical-forms` case
+(audit corpus is a sampling, not a grammaticality oracle), so we build
+it. The clitic diagnostic the plan specified (`*Lakad ka-lakad`)
+resolves **lexical**: `Lakad-lakad muna tayo` / `Iyak-iyak ang bata`
+place the clitic after the whole doubled form → a single word (V°), so
+this is a paradigm derivation, not a phrasal rule.
+
+**Native-reviewer productivity ruling (2026-05-25) — the R-bucket model.**
+Full reduplication productivity is **semantically constrained**, not
+templatic-unrestricted (typical Austronesian behavior):
+
+| Semantic class | Productivity |
+| --- | --- |
+| motion / activity verbs | very high (`lakad-lakad`, `gumala-gala`, `kain-kain`) |
+| distributive numerals / time nouns | very high (10.A / 10.C) |
+| affective predicates | high (`iyak-iyak`) |
+| scalar adjectives | moderate (10.E.1 `adj_redup`) |
+| formal / abstract verbs | weak (`dumalo-dalo` marginal/odd) |
+| borrowed / non-native roots | variable |
+
+Per-form rulings folded in: `lakad-lakad` / `gumala-gala` / `kain-kain`
+/ `iyak-iyak` productive → opt in; `ginaw-ginaw` weak/marginal adjectival
+(speakers prefer `medyo ginaw` / `malamig-lamig`) and `dumalo-dalo`
+formal → excluded; `kari-kari` (the dish kare-kare) and `sami-sami`
+(corruption of `sama-sama`) are not productive reduplication; `tabi-tabi`
+(fixed "tabi-tabi po") and `uliuli` (whirlpool, vs. the secondary
+iterative adverb `uli-uli`) are lexicalized → Phase 10.G. GT
+over-lexicalizes several (`kain-kain` is verbal/eventive, not the noun
+"food and drink").
+
+**Design.** A `v_iter_redup` paradigm cell (`data/tgl/paradigms.yaml`):
+`base_pos: VERB`, **`pos: ADJ`** (POS-flip — precedent: the
+`naka_resultative` VERB→ADJ class and the `pag_gerund` VERB→NOUN cells),
+`redup_root` op, feats `{PREDICATIVE: true, REDUP: FULL, REDUP_SEM:
+ITER}`. The POS-flip routes the derived surface to the adjectives index
+(via `_index_paradigm_via_base_pos`'s `cell.pos` routing), so the
+existing Phase 5g predicative-ADJ-S rule (`S → ADJ[PREDICATIVE]
+NP[CASE=NOM]`) consumes the bare form — `Iyak-iyak ang bata` parses with
+**no new grammar rule**, and the Phase 10.E.2 `REDUP_SEM` matrix lift
+surfaces `ITER` at the clause root. The verb root rides up as the
+hyphenated LEMMA (`iyak-iyak`, the POS-flip-hyphenates-LEMMA convention),
+and `REDUP_SEM=ITER` (the reserved enum value — **no new feat**) marks
+the construction, so the deverbal origin is recoverable. Per-root opt-in
+via `affix_class: v_iter_redup`, gated by the semantic-class table:
+motion `lakad`, activity `kain` / `inom`, affective `iyak` / `tawa`. The
+opt-in is additive — the roots keep their ordinary voice inflection.
+
+**Modeling note.** Tagging a motion/activity verb's redup as `ADJ` is a
+c-structure simplification (the bare casual-iterative predicate patterns
+like a predicative ADJ — the reviewer: "iyak-iyak functions adjectivally
+or verbally"); the f-structure keeps the verbal root + `REDUP_SEM=ITER`.
+
+**Deferred (named).** (1) The **inflected** moderative — `gumala-gala`,
+`Naglakad-lakad ako` — needs the paradigm engine to inflect a
+*pre-reduplicated stem* (voice affix over the doubled root), a genuine
+engine extension; parked as a Phase 10 R-bucket follow-on. (2) `takbo`
+and other `/o/`-final motion roots (raise-ambiguous first copy:
+`takbu-takbo`?) — deferred pending an informant call on the sandhi.
+(3) `Huwag kang iyak-iyak` (negative-imperative `huwag` + predicate) —
+an orthogonal `huwag`+predicate-composition gap, not redup-specific.
+
+Audit: V-stem redup is corpus-absent, so this is a productive-cell
+**completeness** build (per the reviewer ruling), not an audit-closer —
+0 closures, 0 regressions expected.
+
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 
 - **Full reduplication taxonomy** — Phase 10.A-10.H productive
@@ -18417,9 +18496,13 @@ Audit: **+12 closures, 0 regressions** across all 8 waves (wave-1
   grammar-compiler bracket lint (inserted before 10.E.2); 10.E.2
   landed the PK91 `ma-X na ma-X` linked-intensive
   (`COMP_DEGREE=INTENSIVE` + `REDUP_SEM=INTENS`, no new feat) plus
-  the `•`/`·`-as-apostrophe OCR tokeniser fix; 10.E.3-10.H pending.
-  Bucket Z (Zamar wave-5 harvest) landed out-of-sequence before
-  the R-bucket remainder.
+  the `•`/`·`-as-apostrophe OCR tokeniser fix; Phase 10.E.3 landed
+  the moderative/iterative V-stem redup (`v_iter_redup` VERB→ADJ
+  POS-flip cell, `REDUP_SEM=ITER`, per-root opt-in by semantic
+  class — `lakad`/`kain`/`inom`/`iyak`/`tawa`), with the *inflected*
+  moderative (`gumala-gala`) deferred as a paradigm-engine follow-on;
+  10.G / 10.H pending. Bucket Z (Zamar wave-5 harvest) landed
+  out-of-sequence before the R-bucket remainder.
 - **`•`/`·`-as-hyphen redup OCR normalisation** — the bullet/middle-dot
   OCR artifact also renders the redup/compound hyphen
   (`dala•dalawa` = `dalawa-dalawa`, `Kaha•kahapon`, `Tigi•tigisang`).
