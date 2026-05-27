@@ -28,6 +28,24 @@ the natural home for future clause-final ADJUNCT constructions
 from .grammar import Rule
 
 
+# Phase 10.I: per-span emission budget for the recursive ``S → S PP``
+# adjunct-attachment rules below. The five rules (TIME_FRAME / EXCEPTIVE /
+# BENEFICIARY / TOPIC / GOAL) share the ``S → S PP`` c-structure and are
+# the dominant forest-density driver: on ANG MANOK sent-29
+# (``Pinakain niya ang manok ng isang tasang palay.``) one span emits
+# 1736 alternative subtrees, burying the lone valid V[CAUS=DIRECT] 4-arg
+# parse at forest position #8684 — past the default
+# ``max_tree_iterations=5000`` cap, so it was a 0-parse. The canonical
+# parse attaches ``ng isang tasang palay`` as the verb's GEN-theme
+# argument, NOT via ``S → S PP``, so capping this rule's per-span fan-out
+# prunes the junk without touching the canonical reading: the budget
+# pulls sent-29's parse to #1004 (forest 10206 → 2526), closing it within
+# the existing 5000 cap with no global-cap raise. 200 is far above any
+# legitimate per-span PP-adjunct ambiguity in real text, so cheap
+# sentences are unaffected. See docs/diagnostics.md §6.2.
+_SS_PP_BUDGET = 200
+
+
 def register_rules(rules: list[Rule]) -> None:
     """Append the discourse-area rules in source order."""
     # --- Phase 5f Commit 13: temporal-frame PP (Group F item 5)
@@ -107,6 +125,7 @@ def register_rules(rules: list[Rule]) -> None:
             "↓2 ∈ (↑ ADJUNCT)",
             "(↓2 TIME_FRAME)",
         ],
+        budget=_SS_PP_BUDGET,
     ))
 
     # --- Phase 9.X.c51: clause-final bare time-N adjunct ---
@@ -178,6 +197,7 @@ def register_rules(rules: list[Rule]) -> None:
             "↓2 ∈ (↑ ADJUNCT)",
             "(↓2 PREP_TYPE) =c 'EXCEPTIVE'",
         ],
+        budget=_SS_PP_BUDGET,
     ))
 
     # --- 9.X.c13: sentence-initial REASON PP fronted with comma -----
@@ -262,6 +282,7 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓2 ∈ (↑ ADJUNCT)",
                 f"(↓2 PREP_TYPE) =c '{prep_type}'",
             ],
+            budget=_SS_PP_BUDGET,
         ))
 
 
