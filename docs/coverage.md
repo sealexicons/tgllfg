@@ -1119,6 +1119,44 @@ inventory) and the redup + `-an` "pretending to be" sub-pattern
 original R-bucket sketch. See `.claude/plans/tgllfg-phase-10.md`
 §4.5.4.
 
+### Phase 10.I S → S PP per-rule budget (bucket F opener)
+
+Bucket F (forest-density chart engineering) opens with per-rule
+emission budgets: `Rule.budget` → `CompiledRule.budget`, enforced
+per-span in `parse/earley.py:_iter_cnodes`. A budgeted rule emits at
+most `budget` c-trees per span it labels; because child sub-forests
+are materialized eagerly, the cap composes multiplicatively up the
+tree, shrinking the forest reaching the solve loop. This replaces the
+all-or-nothing global `max_tree_iterations` knob for the
+forest-density-deferred sentences (`docs/diagnostics.md` §6.2). The
+mechanism is inert for every rule that does not opt in.
+
+A fan-out probe localized ANG MANOK sent-29
+(`Pinakain niya ang manok ng isang tasang palay.`) to the recursive
+`S → S PP` adjunct rule — one span emits 1736 alternative subtrees,
+burying the lone valid V[CAUS=DIRECT] 4-arg parse at forest
+position #8684 (past the default 5000 cap, so it was a 0-parse). The
+canonical parse attaches `ng isang tasang palay` as the verb's
+GEN-theme argument, not via `S → S PP`, so capping that rule at 200
+emissions per span prunes the spurious trees and pulls the canonical
+parse to #1004 — closing sent-29 within the *unchanged* 5000 cap.
+PANAHON
+sent-16 (which only regressed when the cap was raised to 10000) is
+therefore untouched.
+
+Wave-1 audit diff: **88/123 → 89/123 (+1 closure: ANG MANOK
+sent-29, 0 regressions, no new timeouts)**. `test-xslow` (the R&G
+combined-essay) passes in 11.48s — the same budget caps the
+attachment-ambiguity fan-out that drives that test's documented
+cubic scaling.
+
+PANAHON sent-2/3/9 (the colon-list family) are NOT closed here:
+sent-2 produces 0 complete trees and sent-3/9 have no valid parse in
+a 45000-tree walk — they are *structural* (a missing
+colon-appositive-list construction), not forest-density, so per-rule
+budgets cannot surface a parse that does not exist. They carry
+forward to a construction sub-PR / the 10.J chart-side-pruning bucket.
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
