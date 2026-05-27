@@ -18749,7 +18749,7 @@ marker), mapped to the mechanism that populates each:
 | `ATTEN` | MODERATIVE (adj degree) | 10.E.1 | `maganda-ganda` |
 | `INTENS` | RESULTATIVE_INTENSIVE | 10.E.2, 10.E.1 | `mabait na mabait` |
 | `CASUAL` | CASUAL_ACTIVITY (verbal) | 10.E.3 / .post-1 / .post-2, 10.E.4 | `lakad-lakad`, `lumakad-lakad` |
-| `ITER` | ITER_AFFECTIVE | 10.E.3–.E.4, 10.E.6, 10.H | `iyak-iyak`, `alit-alit`, `mura-mura` |
+| `ITER` | ITER_AFFECTIVE | 10.E.3–.E.4, 10.E.6 | `iyak-iyak`, `alit-alit` |
 | `LEXICALIZED=true` | frozen residue | 10.G | `halo-halo`, `sari-sari`, `uli-uli`, `tabi-tabi` |
 
 The populating cells (all on the shared `redup_root` op): `time_redup_freq`,
@@ -18768,13 +18768,28 @@ asserts every value above is reachable from shipped lexicon / grammar.
 
 **Affective inventory complete.** Of the reviewer's ~22
 iterative-affective roots (emotional / speech-noise / social-performance /
-bodily-repetitive), all native roots now land across 10.E.3 / 10.E.4 /
-10.E.6 / 10.H. The last gap, `mura` "curse" (speech-noise class), is
-closed here as a VERB (`mag`, `v_iter_redup` → `mura-mura`); it is
-collision-free because the scalar ADJ `mura` "cheap" is not in the lexicon
-(were it added, `mura-mura` would be a genuine ITER/ATTEN ambiguity). The
-reviewer's "less compatible" set (`?isip-isip`, `?alam-alam`,
+bodily-repetitive), all native roots land across 10.E.3 / 10.E.4 / 10.E.6.
+The reviewer's "less compatible" set (`?isip-isip`, `?alam-alam`,
 `?dating-dating`) is correctly *not* built.
+
+**Correction (10.H.post-1, 2026-05-26).** 10.H originally added `mura`
+"curse" as a VERB (`v_iter_redup` → `mura-mura` ITER), called
+collision-free because the scalar adjective was absent — and *that absence
+was the bug*. The curse reading is unattested across all eight project
+references; the scalar ADJ `mura` "cheap" is canonical (S&O 1972 contrasts
+it with `mahal` — *Mahal ang damit na ito. Pero mura ang damit na iyan.* —
+and glosses `mura-mura` "rather cheap"; the informant confirms two
+frequent, contrastive ADJ senses, "cheap" (↔ `mahal`) and
+"young / tender / unripe", and reports never meeting the curse VERB). The
+fix drops the VERB and adds one scalar ADJ `mura` carrying both senses
+(no grammatical reflex distinguishes them → a single PRED avoids spurious
+ambiguity), opted into `adj_redup`. `mura-mura` is now `REDUP=FULL` with
+degree underspecified — the scalar-moderate "rather cheap" the cell
+intends — no longer `ITER`. Separately, the 10.E.2 linked-intensive
+(`X na X`) rule is ADJ-generic, so the new entry also licenses
+`mura na mura` "very cheap" (`REDUP_SEM=INTENS` lifted to the matrix) —
+the intensive the informant reports alongside `mahal na mahal` (already
+covered, `mahal` being an extant ADJ; cf. the `ma-X na ma-X` of 10.E.2).
 
 **Validation home.** The canonical forms are largely audit-absent (the
 naturalistic corpora are formal/written), so the R-bucket is

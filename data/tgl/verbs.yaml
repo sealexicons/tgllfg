@@ -1530,15 +1530,6 @@
   transitivity: TR
   affix_class: [mag, an_oblig, maka]
 
-# Phase 10.H affective-inventory completion (reviewer speech/noise class;
-# the one native affective root not landed in 10.E.4 — collision-free, as
-# the scalar ADJ `mura` "cheap" is not in the lexicon)
-- citation: mura
-  pos: VERB
-  gloss: curse, swear (utter profanity)
-  transitivity: INTR
-  affix_class: [mag, v_iter_redup]
-
 - citation: nais
   pos: VERB
   gloss: desire, want

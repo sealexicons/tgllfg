@@ -1023,16 +1023,43 @@ reviewer's 2026-05-26 typology — every class landed. The `REDUP_SEM` enum
 finalizes at seven values (`FREQ` 10.A, `DISTR` 10.B/C, `QUANT` 10.D,
 `ATTEN` 10.E.1, `INTENS` 10.E.2, `CASUAL`/`ITER` 10.E.3–E.6) plus the
 `LEXICALIZED=true` frozen-residue marker (10.G); all productive cells
-share the `redup_root` op. The native iterative-affective inventory is
-completed here by adding `mura` "curse" (VERB, `mag`/`v_iter_redup` →
-`mura-mura` ITER) — the one reviewer-listed affective root not landed in
-10.E.4, collision-free since the scalar ADJ `mura` "cheap" is absent. Full
+share the `redup_root` op. The native iterative-affective inventory lands
+across 10.E.3–E.6; `mura` was first added here as a curse VERB, but that
+reading was retracted in **10.H.post-1** (unattested — the canonical `mura`
+is the scalar ADJ "cheap"; see below). Full
 mapping table + named residuals (10.Y prefix-vowel hyphen; `RESULTATIVE`
 damage-state; iterative-adv `uli-uli`; `•`-OCR sweep; modern code-switch)
 in `analysis-choices.md` § "Phase 10.H". Regression-anchored by the 10.E.5
 unattributed corpus + per-sub-PR tests; a capstone test asserts every
-`REDUP_SEM` value is reachable. Additive (`mura`) → **0 regressions, 0
-closures**. Tests: `test_phase10_h_typology_closeout`.
+`REDUP_SEM` value is reachable. **0 regressions, 0 closures**.
+Tests: `test_phase10_h_typology_closeout`.
+
+### Phase 10.H.post-1 mura analysis correction
+
+10.H added `mura` as a curse VERB (`v_iter_redup` → `mura-mura` ITER),
+"collision-free" because the scalar adjective was absent — the absence was
+the bug. The curse reading is unattested across all eight references; the
+scalar ADJ `mura` "cheap" is canonical (S&O 1972 contrasts it with `mahal`
+and glosses `mura-mura` "rather cheap"; the informant confirms two frequent
+senses — "cheap" ↔ `mahal` and "young / tender / unripe" — and has never met
+the curse VERB). The fix drops the VERB and adds one scalar ADJ `mura` (both
+senses share a single PRED — no grammatical reflex distinguishes them),
+opted into `adj_redup`: `mura-mura` is now `REDUP=FULL`, degree
+underspecified (scalar-moderate "rather cheap"), no longer `ITER`. The bare
+predicate parses (`Mura ang bahay.`); the redup feeds the 10.E.1 exclamative
+(`Ang mura-mura ng bahay!`); bare predicative redup stays deferred. The 10.E.2
+linked-intensive (`X na X`) rule is ADJ-generic, so the entry also licenses
+`mura na mura` "very cheap" (`REDUP_SEM=INTENS`), the intensive the informant
+reports alongside the already-covered `mahal na mahal`.
+
+The corpora do attest the cheap sense — `Mura ba o mahal?`, `Mura lang ito.`,
+`Ang mura ng tiket na nabili ko.` (RC1990 / rg-intermediate / rg-conversational
+/ Zamar) — but those sentences carry independent structure (the `Ang X ng Y`
+exclamative-genitive, relative clauses, `kasi`-subordination) that the lexical
+fix alone does not unlock, so **0 regressions, 0 closures**; as across the
+R-bucket the value is correctness + the regression-anchored test corpus.
+Tests: `test_phase10_h_post1_mura_adj_correction` (curse tests removed from
+`test_phase10_h_typology_closeout`).
 
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 

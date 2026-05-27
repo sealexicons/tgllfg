@@ -1678,9 +1678,11 @@
 # Per-root opt-in restricted to gradable scalar adjectives (informant
 # ruling: result-state / non-scalar / borrowed roots behave
 # differently). Audit-attested: ganda, payat (rg-int sent-655/656/
-# 1068/1069). Reference scalars opted in: puti, init, pula. Further
-# scalars (mura, mahal, itim, lamig, taba, haba, ikli, lapit, layo)
-# held for audit pressure per the opt-in convention.
+# 1068/1069). Reference scalars opted in: puti, init, pula, mura
+# (mura → ``mura-mura`` "rather cheap", S&O 1972; informant 2026-05-26;
+# Phase 10.H.post-1 — both scalar senses "cheap"/"young" share the
+# cell). Further scalars (mahal, itim, lamig, taba, haba, ikli, lapit,
+# layo) held for audit pressure per the opt-in convention.
 # Reference: S&O 1972 §4 (full redup); Zamar 2023 §4.1.1; informant
 # 2026-05-25.
 - base_pos: ADJ
