@@ -18730,6 +18730,77 @@ fragment-host nouns.
 The entries are additive (new merged-surface citations), so no
 pre-existing parse changes; full-wave audit 0 regressions.
 
+### Phase 10.H — reduplication typology close-out (2026-05-26)
+
+Cumulative close-out of the R-bucket (10.A–10.G + the E-series) against
+the reviewer's 2026-05-26 reduplication typology. Every typology class
+landed; the productive cells all share the `redup_root` op and the
+cross-cutting `REDUP=FULL` + `REDUP_SEM` enum (10.B), with the frozen
+residue marked `LEXICALIZED=true` (10.G).
+
+**Final `REDUP_SEM` inventory** (seven values + the `LEXICALIZED`
+marker), mapped to the mechanism that populates each:
+
+| `REDUP_SEM` | Reviewer class | Sub-PR | Example |
+| --- | --- | --- | --- |
+| `FREQ` | temporal | 10.A | `araw-araw` |
+| `DISTR` | DISTRIBUTIVE | 10.B, 10.C | `bahay-bahay`, `isa-isa` |
+| `QUANT` | collective-numeral | 10.D, 10.D.post-1 | `daan-daan`, `angaw-angaw` |
+| `ATTEN` | MODERATIVE (adj degree) | 10.E.1 | `maganda-ganda` |
+| `INTENS` | RESULTATIVE_INTENSIVE | 10.E.2, 10.E.1 | `mabait na mabait` |
+| `CASUAL` | CASUAL_ACTIVITY (verbal) | 10.E.3 / .post-1 / .post-2, 10.E.4 | `lakad-lakad`, `lumakad-lakad` |
+| `ITER` | ITER_AFFECTIVE | 10.E.3–.E.4, 10.E.6, 10.H | `iyak-iyak`, `alit-alit`, `mura-mura` |
+| `LEXICALIZED=true` | frozen residue | 10.G | `halo-halo`, `sari-sari`, `uli-uli`, `tabi-tabi` |
+
+The populating cells (all on the shared `redup_root` op): `time_redup_freq`,
+`place_redup_distr` / `num_redup_distr`, `card_redup`, `adj_redup` /
+`redup_intens_adj`, `v_casual_redup` / `v_iter_redup` /
+`noun_affective_redup`; `INTENS` is grammar-produced (`ma-X na ma-X` linked
+rule + the `Ang X-X!` exclamative), and `LEXICALIZED` forms are static lex.
+
+The reviewer's five-way verb/adj `REDUP_CLASS` maps onto five terse atoms
+(DISTR / ATTEN / CASUAL / ITER / INTENS); the nominal/numeral classes
+(FREQ / QUANT) sit outside that five-way; only `CASUAL` was a new value.
+The compositional `{ITER, ATTENUATED, AFFECTIVE}` decomposition is kept
+as the documented *gloss* of each atom, not as parser feats (see "Phase
+10.E.3.post-1"). A capstone test (`test_phase10_h_typology_closeout`)
+asserts every value above is reachable from shipped lexicon / grammar.
+
+**Affective inventory complete.** Of the reviewer's ~22
+iterative-affective roots (emotional / speech-noise / social-performance /
+bodily-repetitive), all native roots now land across 10.E.3 / 10.E.4 /
+10.E.6 / 10.H. The last gap, `mura` "curse" (speech-noise class), is
+closed here as a VERB (`mag`, `v_iter_redup` → `mura-mura`); it is
+collision-free because the scalar ADJ `mura` "cheap" is not in the lexicon
+(were it added, `mura-mura` would be a genuine ITER/ATTEN ambiguity). The
+reviewer's "less compatible" set (`?isip-isip`, `?alam-alam`,
+`?dating-dating`) is correctly *not* built.
+
+**Validation home.** The canonical forms are largely audit-absent (the
+naturalistic corpora are formal/written), so the R-bucket is
+regression-anchored by the tracked unattributed-construction corpus
+(10.E.5) + the per-sub-PR test modules — reported separately from the
+naturalistic ≥80% metric.
+
+**Named residuals (open, out of scope here):**
+
+- **10.Y** — prefix + vowel-initial hyphenation (`nag-alit` ≠ `nagalit`)
+  to unlock the full `alit` "quarrel" verb; a ~436-form
+  orthography/morphology-engine change.
+- **`RESULTATIVE`** — a future `REDUP_SEM` value for the damage-state
+  reading (`sira-sira` "all busted up"); deferred for want of audit
+  attestation (10.E.1 root-class note).
+- **Iterative adverb `uli-uli`** ("again and again", from `uli`) —
+  distinct from the lexicalized whirlpool `uli-uli` (10.G); not built (no
+  pressure).
+- **`•`-as-hyphen redup OCR normalisation** (named in 10.E.2).
+- **Modern code-switch redup** (`text-text` / `chat-chat` /
+  `selfie-selfie`) — productive but out of scope per the user (10.E.4).
+
+This closes the **R-bucket** (10.A–10.H). Remaining Phase 10: the
+F-bucket (forest-density, 10.I–K), the U-bucket (FU unifier extensions,
+10.L–N), 10.Y, the Zamar post-harvest pass (10.Z.post-N), and 10.final.
+
 ### Pending Phase 10+ work (named in Phase 9 sub-PRs)
 
 - **Full reduplication taxonomy** — Phase 10.A-10.H productive

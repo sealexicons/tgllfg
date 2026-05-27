@@ -1016,6 +1016,24 @@ Phase 5n.C.3 `kani_redup` cell, so it is not re-added.
 Additive lexical entries → no existing parse changes; full-wave audit **0
 regressions**. Tests: `test_phase10_g_lexicalized_redup`.
 
+### Phase 10.H reduplication typology close-out
+
+Cumulative close-out of the R-bucket (10.A–10.G + E-series) against the
+reviewer's 2026-05-26 typology — every class landed. The `REDUP_SEM` enum
+finalizes at seven values (`FREQ` 10.A, `DISTR` 10.B/C, `QUANT` 10.D,
+`ATTEN` 10.E.1, `INTENS` 10.E.2, `CASUAL`/`ITER` 10.E.3–E.6) plus the
+`LEXICALIZED=true` frozen-residue marker (10.G); all productive cells
+share the `redup_root` op. The native iterative-affective inventory is
+completed here by adding `mura` "curse" (VERB, `mag`/`v_iter_redup` →
+`mura-mura` ITER) — the one reviewer-listed affective root not landed in
+10.E.4, collision-free since the scalar ADJ `mura` "cheap" is absent. Full
+mapping table + named residuals (10.Y prefix-vowel hyphen; `RESULTATIVE`
+damage-state; iterative-adv `uli-uli`; `•`-OCR sweep; modern code-switch)
+in `analysis-choices.md` § "Phase 10.H". Regression-anchored by the 10.E.5
+unattributed corpus + per-sub-PR tests; a capstone test asserts every
+`REDUP_SEM` value is reachable. Additive (`mura`) → **0 regressions, 0
+closures**. Tests: `test_phase10_h_typology_closeout`.
+
 ### Phase 10.Z Zamar 2023 wave-5 harvest (bucket Z)
 
 Fifth corpus source and second native-PDF (after PK91 wave 4):
