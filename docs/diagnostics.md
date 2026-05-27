@@ -377,6 +377,32 @@ the gap is chart-side architectural (deeper chart
 disambiguation, per-rule budgets, smarter pruning) and
 deferred to Phase 10.I+ scope.
 
+**Resolution (Phase 10.I).** Per-rule emission budgets
+(`Rule.budget` → `CompiledRule.budget`, enforced per-span in
+`parse/earley.py:_iter_cnodes`) replace the all-or-nothing
+global knob. A fan-out probe localized sent-29's explosion to
+the recursive `S → S PP` adjunct rule — one span emits 1736
+alternative subtrees, burying the lone valid parse at forest
+position #8684. The canonical parse attaches `ng isang tasang
+palay` as the verb's GEN-theme argument (not via `S → S PP`),
+so capping that rule's per-span fan-out at 200
+(`cfg/discourse.py`) prunes the spurious trees and pulls the
+canonical parse to #1004 — closing sent-29 within the
+*unchanged* default 5000 cap. Because the global cap is not
+raised, PANAHON sent-16 is untouched and the tradeoff is
+dissolved rather than balanced. (The earlier 9.X.post-3
+MEASURE guards were not the dominant driver — budgeting them
+moved sent-29's parse by < 60 trees; the recursive adjunct
+rule was.)
+
+PANAHON sent-2/3/9 (the colon-list family) are NOT closed by
+budgets: sent-2 produces 0 complete trees and sent-3/9 have no
+valid parse in a 45000-tree walk — they are structural (a
+missing colon-appositive-list construction), not forest-
+density, so per-rule budgets cannot surface a parse that does
+not exist. They carry forward to a construction sub-PR / the
+10.J chart-side-pruning bucket.
+
 ### 6.3 Construction vs paradigm: opt-in audit-attestation
 
 Phase 9 introduced 5 per-root opt-in affix_classes (`paki`,

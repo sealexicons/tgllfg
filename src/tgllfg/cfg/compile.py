@@ -230,6 +230,9 @@ class CompiledRule:
     lhs: CategoryPattern
     rhs: tuple[CategoryPattern, ...]
     equations: tuple[str, ...]
+    # Phase 10.I: per-span emission cap forwarded from ``Rule.budget``;
+    # read at tree-extraction time in ``parse/earley.py:_iter_cnodes``.
+    budget: int | None = None
 
 
 class CompiledGrammar:
@@ -335,7 +338,9 @@ def compile_grammar(
     for r in grammar.rules:
         lhs = parse_pattern(r.lhs)
         rhs = tuple(parse_pattern(s) for s in r.rhs)
-        compiled.append(CompiledRule(lhs=lhs, rhs=rhs, equations=tuple(r.equations)))
+        compiled.append(CompiledRule(
+            lhs=lhs, rhs=rhs, equations=tuple(r.equations), budget=r.budget,
+        ))
     cg = CompiledGrammar(compiled, start=start)
     if lexical_categories is not None:
         dead = find_unsatisfiable_brackets(cg.rules, lexical_categories)
@@ -359,6 +364,7 @@ def compile_rule(rule: Rule) -> CompiledRule:
         lhs=parse_pattern(rule.lhs),
         rhs=tuple(parse_pattern(s) for s in rule.rhs),
         equations=tuple(rule.equations),
+        budget=rule.budget,
     )
 
 
