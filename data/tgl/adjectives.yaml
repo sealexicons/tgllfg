@@ -508,6 +508,11 @@
   affix_class: []
   source: stopwords-tl
 
+- citation: mura
+  pos: ADJ
+  gloss: cheap, inexpensive (antonym of mahal); young, tender, unripe, immature
+  affix_class: [adj_redup]
+
 - citation: paborito
   pos: ADJ
   gloss: favorite, preferred
