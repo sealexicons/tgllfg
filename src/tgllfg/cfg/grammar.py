@@ -53,6 +53,13 @@ class Rule:
     lhs: str
     rhs: list[str]          # nonterminals/terminals with feature labels like NP[CASE=NOM]
     equations: list[str]    # LFG equations using ↑ and ↓i (i = child index, 1-based)
+    # Phase 10.I: optional per-span CNode-emission cap for this rule.
+    # When set, the forest walk (``parse/earley.py:_iter_cnodes``) yields
+    # at most ``budget`` c-trees per span this rule labels — bounding the
+    # local-ambiguity fan-out of known forest-density culprits without
+    # affecting unbudgeted (cheap) rules. ``None`` = uncapped (the default
+    # for every rule unless it explicitly opts in).
+    budget: int | None = None
 
 
 class Grammar:

@@ -210,6 +210,65 @@ class TestForestCap:
         assert len(forest.best_k(10)) == 3
 
 
+# === Per-rule budget (Phase 10.I) =========================================
+
+class TestRuleBudget:
+    """``Rule.budget`` caps the c-trees a rule emits per span it labels.
+    The cap lives in ``_iter_cnodes`` so it composes multiplicatively: a
+    budgeted child bounds every parent's ``itertools.product``."""
+
+    def test_budget_truncates_own_span(self) -> None:
+        # S → A is ambiguous over [0,1] (A→B→X and A→C→X), so the S
+        # state emits two c-trees; budget=1 truncates that span to one.
+        g = _grammar(
+            Rule("S", ["A"], [], budget=1),
+            Rule("A", ["B"], []),
+            Rule("A", ["C"], []),
+            Rule("B", ["X"], []),
+            Rule("C", ["X"], []),
+        )
+        forest = parse_with_annotations([_tok("X")], g)
+        assert len(forest.trees) == 1
+
+    def test_no_budget_yields_all(self) -> None:
+        # Same grammar, default budget=None → both derivations survive.
+        g = _grammar(
+            Rule("S", ["A"], []),
+            Rule("A", ["B"], []),
+            Rule("A", ["C"], []),
+            Rule("B", ["X"], []),
+            Rule("C", ["X"], []),
+        )
+        forest = parse_with_annotations([_tok("X")], g)
+        assert len(forest.trees) == 2
+
+    def test_child_budget_bounds_parent_product(self) -> None:
+        # The ambiguity is one level down: A → B is ambiguous (B→C→X,
+        # B→D→X). Budgeting the *child* rule A→B to 1 shrinks parent S's
+        # product from 2 to 1 — the multiplicative-composition property
+        # that lets a culprit rule be capped without budgeting its
+        # parents.
+        g = _grammar(
+            Rule("S", ["A"], []),
+            Rule("A", ["B"], [], budget=1),
+            Rule("B", ["C"], []),
+            Rule("B", ["D"], []),
+            Rule("C", ["X"], []),
+            Rule("D", ["X"], []),
+        )
+        assert len(parse_with_annotations([_tok("X")], g).trees) == 1
+        # Control: without the child budget, the product is 2.
+        g2 = _grammar(
+            Rule("S", ["A"], []),
+            Rule("A", ["B"], []),
+            Rule("B", ["C"], []),
+            Rule("B", ["D"], []),
+            Rule("C", ["X"], []),
+            Rule("D", ["X"], []),
+        )
+        assert len(parse_with_annotations([_tok("X")], g2).trees) == 2
+
+
 # === Non-content stripping ================================================
 
 class TestStripNonContent:

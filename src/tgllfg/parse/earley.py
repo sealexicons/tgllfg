@@ -138,6 +138,9 @@ class PackedForest:
 
     def __len__(self) -> int:
         # Counts trees, not states. Use sparingly on large forests.
+        # Phase 10.I: reflects *budgeted* trees — per-rule budgets
+        # (``CompiledRule.budget``) truncate ``_iter_cnodes`` emission,
+        # so this is the post-budget forest size, not the raw count.
         return sum(1 for _ in self.iter_trees())
 
     @property
@@ -394,8 +397,22 @@ def _iter_cnodes(state: StateInfo) -> Iterator[CNode]:
     alternatives at every nonterminal slot. This propagates lex
     ambiguity (e.g. AV-intransitive vs AV-transitive entries for
     ``kumain``) outwards through nested rule completions, where the
-    earlier first-sub-history shortcut would have collapsed it."""
+    earlier first-sub-history shortcut would have collapsed it.
+
+    Phase 10.I: if ``state.rule.budget`` is set, at most ``budget``
+    c-trees are emitted for this span (counted across all histories
+    and combos). Because each nonterminal child sub-forest is
+    materialized eagerly below (``list(_iter_cnodes(c))``), a budgeted
+    child contributes ≤ ``budget`` alternatives to every parent's
+    ``itertools.product`` — so per-span budgets compose multiplicatively
+    up the tree and shrink the total forest reaching the pipeline's
+    solve loop. ``None`` (the default) is uncapped and preserves
+    byte-identical behavior."""
+    budget = state.rule.budget
+    emitted = 0
     for hist in _iter_histories(state):
+        if budget is not None and emitted >= budget:
+            return
         slot_options: list[list[CNode]] = []
         for c in hist:
             if isinstance(c, LeafCompletion):
@@ -414,13 +431,17 @@ def _iter_cnodes(state: StateInfo) -> Iterator[CNode]:
                 children=[],
                 equations=list(state.rule.equations),
             )
+            emitted += 1
             continue
         for combo in itertools.product(*slot_options):
+            if budget is not None and emitted >= budget:
+                return
             yield CNode(
                 label=_format_pattern(state.rule.lhs),
                 children=list(combo),
                 equations=list(state.rule.equations),
             )
+            emitted += 1
 
 
 # === Lexical interface ====================================================
