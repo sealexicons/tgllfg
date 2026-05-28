@@ -1208,6 +1208,90 @@ PANAHON sent-2/3/9 and sent-39 do not close from 10.J
 engineering and route to the per-sentence construction sub-PRs
 `10.J.post-1..4`.
 
+### Phase 10.J.post-1 PANAHON sent-2 + sent-9 close-out
+
+Per the user's structure-first directive (2026-05-28):
+**structure / construction / grammar solutions FIRST**, forest-
+density mitigation as last resort. Four mechanisms shipped:
+
+(a) **AV-NVOL-TR pre-N participial modifier** (`extraction.py`):
+`N → V[VOICE=AV, MOOD=NVOL, TR=TR] PART N` parallel to the
+Phase 9.X.c52 V[OV/DV/IV] rule. The AV potentive variant inverts
+the argument binding — head N saturates V's OBJ (the thing-said),
+SUBJ='PRO' (agent absorbed) — so completeness on the lex
+`<SUBJ, OBJ>` profile holds without an overt OBJ daughter. Closes
+`masasabing panahon` inside an ang-NP (S&O 1972 §6.6).
+
+(b) **PP[PREP_TYPE=RANGE] for `mula X hanggang Y`** (`nominal.py`):
+four rules, one per SEM_CLASS in {MONTH, TIME, DAY, YEAR},
+parallel to the Phase 9.X.c24 NUM[CARDINAL] range rule but for
+temporal endpoints. Bracket-narrowed via constraining equations
+(LEMMA=c 'mula' / 'hanggang', SEM_CLASS=c '…'). The companion
+**NP[CASE=NOM] → NP[CASE=NOM] PP** attach rule (NOM-only,
+narrowed because GEN/DAT broadening regressed the
+`test_phase5k_coord_interactions.test_cardinal_plus_adj_plus_coord`
+canonical-parse rank under the default tree-iteration cap)
+admits the range PP as an NP-internal post-modifier via the
+constraining equation `(↓2 PREP_TYPE) =c 'RANGE'`.
+
+(c) **Colon-split pipeline fast path** (`core/pipeline.py`):
+when the input contains a sentence-internal `:`, parse each half
+independently (using a new `start_symbol` parameter on
+`parse_with_annotations` to let the post-half parse against
+`NP[CASE=NOM]` / `S` / `N`), then synthesize the matrix
+`S → S PUNCT[COLON] X` whose APP set carries the post-half's
+f-structure. This is structurally equivalent to the chart-level
+9.X.c26 colon rule but with no cross-colon span fan-out (sent-2
+closes in 1.2s via the split vs. >12s via the chart-level rule —
+well clear of the 10s audit budget).
+
+(d) **Comma+at NP coord pipeline synthesis** (`core/pipeline.py`):
+the post-half of a colon-split frequently looks like `NP1, at
+NP2` (PANAHON sent-2). A chart rule with this shape was
+prototyped but increased chart-state count enough to push the
+canonical BUY parse on `Bumili ng dalawang malalaking aklat at
+ng tatlong maliliit na lapis si Maria` past the default 5000
+tree-iteration cap (`Rule.budget=1` did not help — budget caps
+forest emission, not chart-state count). The synthesis lives at
+pipeline level, activated only when `start_symbol` begins with
+`NP[` and the segment contains the `, at` separator — keeping
+the chart unchanged for non-colon sentences.
+
+Full 8-wave audit (baseline run with all changes stashed): wave-1
+89/123 → 91/123 (+2 closures — PANAHON sent-2 parse-success-1,
+sent-9 parse-success-N). All other waves unchanged (`wave2-rc1990`
+109/500, `wave2-rg-intermediate` 113/500, `wave2-ramos1971`
+73/209, `wave3-so1972` 127/500, `wave3-rg-conversational`
+237/500, `wave4-kroeger1991` 49/216, `wave5-zamar2023` 140/498).
+**Cumulative xwave 970 → 972 / 2569 (+2 absolute, 0 regressions,
+0 bucket-only changes).** 124 colon-bearing exemplars exist
+across all waves (96 in wave3-so1972, 17 in wave3-rg-
+conversational, 4 in wave2-rg-intermediate, 4 in wave5-zamar2023,
+2 in wave1, 1 in wave2-rc1990); the wave-2/3 OCR-noise /
+parentheticals / English block independently of the colon
+machinery, so they don't surface as closures in this round.
+
+Per-sentence performance verification: PANAHON sent-2 chart →
+split timing **12.2s → 1.2s (10× speedup)**; sent-9 chart → split
+**12.8s → 4.1s (3× speedup)**. Both were timing-blocked at the
+10s audit SIGALRM under the chart-level 9.X.c26 colon rule and
+now close.
+
+The `test-both` gate stays clean at 9259 / 9259 passed in 163.95s.
+
+An interim draft with the un-narrowed range-PP attach (bracket
+gate on the bare `PP` daughter) regressed
+`wave3-rg-conversational.jsonl/page-64/numbered/sent-262`
+(`Nasa gitna ba ang tatay at nanay ni Fred?`) — the canonical
+LOC parse slipped past the 5000 tree-iteration cap because every
+NP-PP attach prediction triggered prediction of every PP rule
+(generic / time-frame / year / range × 4). Advertising
+`PREP_TYPE=RANGE` as a chart-side feat on the range-PP rule's
+LHS and bracket-gating the attach rule's PP daughter on the
+same feat narrowed prediction to my rule only and restored the
+parse. The multi-wave audit run is the only diagnostic that
+caught it.
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
