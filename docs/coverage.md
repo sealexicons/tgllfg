@@ -1292,6 +1292,78 @@ same feat narrowed prediction to my rule only and restored the
 parse. The multi-wave audit run is the only diagnostic that
 caught it.
 
+### Phase 10.J.post-2 PANAHON sent-39 close-out (bucket F)
+
+Per the same structure-first directive: PANAHON sent-39
+(`Dahil sa ganitong pagkakaayos ng panahon, iba ang kamalayang
+Pilipino tungkol sa oras.`) was timing-blocked under the
+chart-level Phase 9.X.c13 fronted-REASON-PP rule. The 10.I-style
+fan-out probe (`tmp/probe_10i_fanout.py PANAHON/sent-39`) ranked
+the offenders in order: **`S → PART S`** at span_max=38880,
+**`S → NP[CASE=DAT] S`** at 9960, **`S → S PP`** at 8448 (already
+budgeted), **`S → PP PUNCT[COMMA] S`** (c13) at 7440. Two
+chart-time narrowings + one pipeline-level fast path:
+
+(a) **`S → PART S` narrowed to
+`PART[DISCOURSE_POS=SENTENCE_INITIAL]`** (`cfg/discourse.py`).
+The constraining equation
+`(↓1 DISCOURSE_POS) =c 'SENTENCE_INITIAL'` was solve-time —
+chart admitted every PART token at the slot. Lex entries for
+sentence-initial connectives (`at` / `kaya` / `samakatuwid` /
+`siguro` / `marahil` / …) advertise the feat, so the bracket
+gate pushes the check to chart time. The four multi-word
+connective rules (`gayon din` / `ganon din` / `bukod dito` /
+`una sa lahat`) had their own LHS lifted to the same feat so
+they keep feeding the rule; the 9.V.4b comma variant
+(`S → PART[…] PUNCT[COMMA] S`) was narrowed analogously.
+Eliminates the span_max=38880 contributor — `S → PART S` and
+the related `S → NP[DAT] S` (which had ambiguous interactions
+through the same chart paths) both fall off the fan-out
+top-list after the change.
+
+(b) **Generic PP rule refactored per-PREP_TYPE**
+(`cfg/extraction.py`). One rule per value in {BENEFICIARY,
+TOPIC, SOURCE, REASON, GOAL, EXCEPTIVE, ROLE, SIMILATIVE} so
+the LHS advertises `PREP_TYPE` as a chart-side feat. The c13
+fronted-REASON-PP rule's PP daughter now bracket-gates on
+`PP[PREP_TYPE=REASON]`, eliminating chart-time prediction of
+the non-REASON variants at that slot. Bare-`PP`-expecting
+consumers (e.g., `S → S PP`, `S → PP PART[LINK=AY] S`) still
+match every variant under graph-constraint matching
+(expected-empty matches any candidate).
+
+(c) **Fronted-PP-comma pipeline split** (`core/pipeline.py`).
+The chart narrowings shrunk total tree count from ~88K → ~20K
+but didn't dislodge the canonical c13 parse from past the
+5000 cap — the remaining fan-out is intrinsic NP / S internal
+ambiguity (the pre-comma `sa ganitong pagkakaayos ng panahon`
+has 48 NP[DAT] parses, the post-comma matrix has 155 S parses,
+product 7440 at one span). The pipeline-level
+`_try_fronted_pp_comma_split` is the principled non-forest
+fix: when input starts with a REASON-PREP lemma (currently
+`dahil`) and contains a sentence-internal comma, parse the
+pre-comma half as `PP[PREP_TYPE=REASON]` and the post-comma
+half as `S`, then synthesize the matrix S mirroring c13's
+`(↑) = ↓3`, `(↑ TOPIC) = ↓1`, `↓1 ∈ (↑ ADJ)`. The split runs
+**before** the chart attempt — sent-39 closes in 0.9s at
+cap=5000 (vs. 22.5s at cap=20000 under the chart-level rule).
+The activation pattern is conservative — restricted to `dahil`
+for the lemma gate — so unrelated colon-less comma sentences
+fall through to the chart unchanged.
+
+Full 8-wave audit: **wave-1 91/123 → 92/123 (+1: PANAHON
+sent-39 parse-success-1)**; 0 closures on other waves. **0
+parse-success regressions**. Cumulative xwave (8 audit
+waves): 940 / 3046 (+1 from the post-1 baseline of 939). The
+chart narrowings produce ~30 bucket-only shifts across the
+other waves (mostly `zero-parse-fragment → zero-parse-no-
+fragment` on wave-2/3 sentences with OCR / English noise —
+the removed chart paths were producing spurious fragments
+without ever leading to a parse, so the diagnostic-quality
+shift is benign). 12 new tests in
+`test_phase10_j_post2_sent39.py`. `test-both` gate clean at
+9271 / 9271 passed in 147.91s.
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
