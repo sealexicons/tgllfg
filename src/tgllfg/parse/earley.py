@@ -420,6 +420,7 @@ def _iter_cnodes(
     state: StateInfo,
     *,
     precheck_defining: bool = False,
+    _precheck_cache: dict[int, bool] | None = None,
 ) -> Iterator[CNode]:
     """Yield every CNode for ``state``, expanding sub-history
     alternatives at every nonterminal slot. This propagates lex
@@ -443,11 +444,19 @@ def _iter_cnodes(
     before being yielded; combos whose subtree already contains a
     blocking monotone clash are skipped. The flag is also forwarded
     on the recursive call, so pruning composes multiplicatively up
-    the tree — at the cost of one defining-only solve per candidate
-    combo (memoization lands in the follow-on commit). ``False``
-    (the default) preserves byte-identical behavior."""
+    the tree.
+
+    Phase 10.J commit 3: when precheck is enabled and no
+    ``_precheck_cache`` is passed, a fresh per-parse dict is created
+    and forwarded to every recursive call and every
+    ``precheck_defining_subtree`` invocation. The cache scope is one
+    top-level ``_iter_cnodes`` call (one root), so ``id(cnode)``
+    keys can't collide with freed objects from prior parses.
+    ``False`` (the default) preserves byte-identical behavior."""
     budget = state.rule.budget
     emitted = 0
+    if precheck_defining and _precheck_cache is None:
+        _precheck_cache = {}
     for hist in _iter_histories(state):
         if budget is not None and emitted >= budget:
             return
@@ -463,7 +472,9 @@ def _iter_cnodes(
                 ])
             else:
                 slot_options.append(list(_iter_cnodes(
-                    c, precheck_defining=precheck_defining,
+                    c,
+                    precheck_defining=precheck_defining,
+                    _precheck_cache=_precheck_cache,
                 )))
         if not slot_options:
             cnode = CNode(
@@ -471,7 +482,9 @@ def _iter_cnodes(
                 children=[],
                 equations=list(state.rule.equations),
             )
-            if precheck_defining and precheck_defining_subtree(cnode):
+            if precheck_defining and precheck_defining_subtree(
+                cnode, cache=_precheck_cache,
+            ):
                 continue
             yield cnode
             emitted += 1
@@ -484,7 +497,9 @@ def _iter_cnodes(
                 children=list(combo),
                 equations=list(state.rule.equations),
             )
-            if precheck_defining and precheck_defining_subtree(cnode):
+            if precheck_defining and precheck_defining_subtree(
+                cnode, cache=_precheck_cache,
+            ):
                 continue
             yield cnode
             emitted += 1

@@ -179,3 +179,76 @@ class TestIterCnodesHook:
         ).trees)
         assert n_off >= 1
         assert n_on == n_off
+
+
+# === Memoization (commit 3) ===============================================
+
+class TestPrecheckCache:
+    """The optional ``cache`` parameter on ``precheck_defining_subtree``:
+    short-circuits on a cache hit, fills on a miss, no behavior change
+    when omitted. Scope is meant to be one parse session; the cache
+    helper in ``_iter_cnodes`` creates a fresh dict per top-level call."""
+
+    def test_no_cache_arg_preserves_behavior(self) -> None:
+        # The cache parameter is optional; absence must match the
+        # commit-1 behavior exactly on both clean and clashing inputs.
+        clean = CNode(label="N", equations=["(↑ LEMMA) = 'foo'"])
+        n1 = CNode(label="N", equations=["(↑ LEMMA) = 'foo'"])
+        n2 = CNode(label="N", equations=["(↑ LEMMA) = 'bar'"])
+        clash = CNode(
+            label="S", children=[n1, n2],
+            equations=["(↑) = ↓1", "(↑) = ↓2"],
+        )
+        assert precheck_defining_subtree(clean) is False
+        assert precheck_defining_subtree(clash) is True
+
+    def test_cache_fills_on_miss(self) -> None:
+        # Empty cache + first call → result computed AND cached.
+        node = CNode(label="N", equations=["(↑ LEMMA) = 'foo'"])
+        cache: dict[int, bool] = {}
+        assert precheck_defining_subtree(node, cache=cache) is False
+        assert cache == {id(node): False}
+
+    def test_cache_short_circuits_on_hit(self) -> None:
+        # Poison the cache with the WRONG value: a cache hit returns the
+        # cached value without recomputing (proves the cache shorts the
+        # solver). The CNode itself would compute False (no equations);
+        # the cache makes it return True.
+        node = CNode(label="S")
+        cache: dict[int, bool] = {id(node): True}
+        assert precheck_defining_subtree(node, cache=cache) is True
+
+    def test_cache_independent_per_cnode(self) -> None:
+        # Two distinct CNodes don't pollute each other's cache entries.
+        clean = CNode(label="N", equations=["(↑ LEMMA) = 'foo'"])
+        n1 = CNode(label="N", equations=["(↑ LEMMA) = 'foo'"])
+        n2 = CNode(label="N", equations=["(↑ LEMMA) = 'bar'"])
+        clash = CNode(
+            label="S", children=[n1, n2],
+            equations=["(↑) = ↓1", "(↑) = ↓2"],
+        )
+        cache: dict[int, bool] = {}
+        precheck_defining_subtree(clean, cache=cache)
+        precheck_defining_subtree(clash, cache=cache)
+        assert cache[id(clean)] is False
+        assert cache[id(clash)] is True
+
+    def test_hook_creates_cache_when_omitted(self) -> None:
+        # The opt-in hook path through ``parse_with_annotations`` should
+        # produce the same forest whether the user provides a cache or
+        # not — _iter_cnodes creates one automatically when precheck is
+        # on. We can only observe the OUTPUT here, not the cache itself.
+        g = Grammar([
+            Rule("S", ["A", "B"], ["(↑) = ↓1", "(↑) = ↓2"]),
+            Rule("A", ["X"], ["(↑) = ↓1"]),
+            Rule("B", ["X"], ["(↑) = ↓1"]),
+        ])
+        lat_clash = [_tok("X", VOICE="A"), _tok("X", VOICE="B")]
+        lat_clean = [_tok("X", VOICE="A"), _tok("X", VOICE="A")]
+        # Behavior matches commit-2 expectations:
+        assert len(parse_with_annotations(
+            lat_clash, g, precheck_defining=True,
+        ).trees) == 0
+        assert len(parse_with_annotations(
+            lat_clean, g, precheck_defining=True,
+        ).trees) >= 1

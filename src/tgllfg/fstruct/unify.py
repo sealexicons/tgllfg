@@ -143,7 +143,10 @@ _MONOTONE_DEF_CLASH_KINDS: frozenset[str] = frozenset({
 })
 
 
-def precheck_defining_subtree(root: CNode) -> bool:
+def precheck_defining_subtree(
+    root: CNode,
+    cache: dict[int, bool] | None = None,
+) -> bool:
     """Return ``True`` iff the subtree rooted at ``root`` contains a
     blocking **monotone** defining-equation clash — meaning no
     containing tree can satisfy this subtree's defining equations
@@ -158,12 +161,20 @@ def precheck_defining_subtree(root: CNode) -> bool:
     — same ``_assign_ids`` / ``_parse_equations`` / ``_pass_defining``
     helpers — and does **not** run the constraining pass.
 
-    Phase 10.J: parse-set-preserving early-prune predicate. The
-    follow-on commit folds this into
-    ``parse/earley.py:_iter_cnodes`` (opt-in flag) to skip
-    provably-dead subtrees before they enter the cartesian product.
-    This commit ships the predicate only; no parser change.
+    Phase 10.J (commit 3): if ``cache`` is provided, results are
+    memoized keyed by ``id(root)``. The cache **must be scoped to a
+    single parse session** — passing the same cache across
+    independent parses risks ``id`` collision on garbage-collected
+    CNodes. ``parse/earley.py:_iter_cnodes`` creates a fresh cache
+    per top-level call when ``precheck_defining=True``. Hit rate is
+    low when each candidate combo builds a fresh ``CNode`` (the
+    current materialization pattern) but the scaffolding is in
+    place for future structural-interning changes.
     """
+    if cache is not None:
+        cached = cache.get(id(root))
+        if cached is not None:
+            return cached
     graph = FGraph()
     nid_for: dict[int, NodeId] = {}
     parsed_for: dict[int, list[tuple[str, Equation | None]]] = {}
@@ -171,7 +182,10 @@ def precheck_defining_subtree(root: CNode) -> bool:
     _assign_ids(root, graph, nid_for)
     _parse_equations(root, parsed_for, diagnostics)
     _pass_defining(root, graph, nid_for, parsed_for, diagnostics)
-    return any(d.kind in _MONOTONE_DEF_CLASH_KINDS for d in diagnostics)
+    result = any(d.kind in _MONOTONE_DEF_CLASH_KINDS for d in diagnostics)
+    if cache is not None:
+        cache[id(root)] = result
+    return result
 
 
 # === Tree walks ============================================================
