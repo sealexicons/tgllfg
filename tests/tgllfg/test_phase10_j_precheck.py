@@ -252,3 +252,41 @@ class TestPrecheckCache:
         assert len(parse_with_annotations(
             lat_clean, g, precheck_defining=True,
         ).trees) >= 1
+
+
+# === parse_text plumbing (commit 4) =======================================
+
+class TestParseTextPrecheckPlumbing:
+    """Phase 10.J commit 4: ``precheck_defining`` exposed on
+    ``parse_text`` and ``parse_text_with_fragments`` so callers can opt
+    in per-call without flipping any default."""
+
+    def test_parse_text_default_off_matches_explicit_off(self) -> None:
+        # Default and explicit-off must produce the same parses.
+        from tgllfg.core.pipeline import parse_text
+        a = parse_text("Kinain ng aso ang isda.")
+        b = parse_text("Kinain ng aso ang isda.", precheck_defining=False)
+        assert len(a) == len(b)
+        assert len(a) >= 1
+
+    def test_parse_text_on_smoke_clean_sentence(self) -> None:
+        # Smoke: precheck_defining=True parses a clean sentence to the
+        # same accepted-parse count as off (parse-set preservation
+        # through the full pipeline).
+        from tgllfg.core.pipeline import parse_text
+        n_off = len(parse_text("Kinain ng aso ang isda."))
+        n_on = len(parse_text(
+            "Kinain ng aso ang isda.", precheck_defining=True,
+        ))
+        assert n_off == n_on
+        assert n_on >= 1
+
+    def test_parse_text_with_fragments_threads_flag(self) -> None:
+        # The fragment-returning variant must accept and forward the
+        # flag too. Smoke: identical accepted parses on a clean sentence.
+        from tgllfg.core.pipeline import parse_text_with_fragments
+        off = parse_text_with_fragments("Kinain ng aso ang isda.")
+        on = parse_text_with_fragments(
+            "Kinain ng aso ang isda.", precheck_defining=True,
+        )
+        assert len(off.parses) == len(on.parses) >= 1
