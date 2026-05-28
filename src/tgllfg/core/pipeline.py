@@ -251,6 +251,39 @@ def parse_text_with_fragments(
         if split_result is not None and split_result.parses:
             return split_result
 
+    # === Phase 10.J.post-2: fronted-PP-comma split fast path ===============
+    #
+    # Same split-and-glue pattern as the colon-split above, but for
+    # the chart's 9.X.c13 ``S → PP[PREP_TYPE=REASON] PUNCT[COMMA] S``
+    # fronted-Dahil-PP construction. The pre-comma PP and post-comma
+    # matrix S are parsed independently against the chart, then the
+    # matrix S is synthesized from the two halves. This bypasses the
+    # ``(PP_internal_alts × matrix_S_alts)`` cross-product that the
+    # chart-level c13 rule enumerates (sent-39's pre-comma
+    # ``Dahil sa ganitong pagkakaayos ng panahon`` has 48 internal
+    # NP[DAT] alternatives, post-comma matrix has 155 — product 7440
+    # at one span, dominating the tree-iteration budget so the
+    # canonical parse sat past cap 5000).
+    #
+    # Activation gates: the input must (1) start with a token whose
+    # lex entry advertises ``PREP_TYPE=REASON`` (``Dahil``) and
+    # (2) contain a sentence-internal comma. The pre-comma half is
+    # parsed against ``PP[PREP_TYPE=REASON]`` (chart-side feat from
+    # the post-2 LHS refactor); the post-comma half against ``S``.
+    # If either fails the split is dropped and the chart attempt
+    # runs as fallback.
+    if "," in text:
+        split_result = _try_fronted_pp_comma_split(
+            text,
+            n_best=n_best,
+            chart_state_cap=chart_state_cap,
+            max_candidates=max_candidates,
+            max_tree_iterations=max_tree_iterations,
+            precheck_defining=precheck_defining,
+        )
+        if split_result is not None and split_result.parses:
+            return split_result
+
     forest = parse_with_annotations(
         lex_items, grammar,
         chart_state_cap=chart_state_cap,
@@ -739,6 +772,153 @@ def _glue_comma_at_np(
         return None
     diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
     return matrix_ctree, matrix_fs, post_a, diagnostics
+
+
+# === Phase 10.J.post-2: fronted-PP-comma split ============================
+#
+# Same split-and-glue pattern as the colon-split, but for the
+# chart's 9.X.c13 ``S → PP[PREP_TYPE=REASON] PUNCT[COMMA] S`` rule.
+# Parses pre and post halves independently then synthesizes the
+# matrix S — bypassing the cross-product fan-out the chart-level
+# rule produces at the matrix span (PANAHON sent-39 had 7440
+# trees at one span; the canonical parse sat past cap 5000 even
+# after pushing PREP_TYPE / DISCOURSE_POS gates to chart-time).
+
+
+def _try_fronted_pp_comma_split(
+    text: str,
+    *,
+    n_best: int,
+    chart_state_cap: int | None,
+    max_candidates: int | None,
+    max_tree_iterations: int | None,
+    precheck_defining: bool,
+) -> ParseResult | None:
+    """If ``text`` looks like ``REASON-PREP X, Y`` (e.g.,
+    ``Dahil sa ganitong pagkakaayos ng panahon, …``), parse the
+    pre-comma half as ``PP[PREP_TYPE=REASON]`` and the post-comma
+    half as ``S``, then synthesize the matrix ``S → PP PUNCT[COMMA]
+    S`` parse.
+
+    Returns ``None`` when the activation pattern doesn't match,
+    when either half fails to parse, or when the synthesized
+    f-structure fails well-formedness.
+    """
+    # Activation: input must start with a known REASON-PREP lemma.
+    # We restrict to attested fronted-REASON-PP heads (currently
+    # ``Dahil``) — a broader trigger (any PREP head) would over-
+    # activate on sentences where the leading PREP isn't actually
+    # being fronted (e.g., a clause-internal PP).
+    stripped = text.lstrip()
+    if not stripped:
+        return None
+    first_word = stripped.split(None, 1)[0]
+    if first_word.casefold() not in _REASON_PREP_LEMMAS:
+        return None
+    # Find the leftmost top-level comma — we don't try to handle
+    # nested fronted PPs (would need to track quotes / parens etc.).
+    comma_idx = text.find(",")
+    if comma_idx <= 0 or comma_idx >= len(text) - 1:
+        return None
+    pre_text = text[:comma_idx].strip()
+    post_text = text[comma_idx + 1:].strip()
+    if not pre_text or not post_text:
+        return None
+    pre_text = _normalize_terminal_punct(pre_text)
+    post_text = _normalize_terminal_punct(post_text)
+
+    pre_parses = _parse_segment_as(
+        pre_text,
+        start_symbol="PP[PREP_TYPE=REASON]",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+    )
+    if not pre_parses:
+        return None
+    post_parses = _parse_segment_as(
+        post_text,
+        start_symbol="S",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+    )
+    if not post_parses:
+        return None
+
+    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    for pre_parse in pre_parses:
+        for post_parse in post_parses:
+            g = _glue_fronted_pp_comma(pre_parse, post_parse)
+            if g is not None:
+                glued.append(g)
+                if len(glued) >= n_best:
+                    break
+        if len(glued) >= n_best:
+            break
+    if not glued:
+        return None
+    return ParseResult(parses=glued, fragments=[])
+
+
+_REASON_PREP_LEMMAS: frozenset[str] = frozenset({"dahil"})
+
+
+def _glue_fronted_pp_comma(
+    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    """Synthesize ``S → PP[PREP_TYPE=REASON] PUNCT[COMMA] S`` from
+    two parsed halves, mirroring the chart-level c13 rule:
+    ``(↑) = ↓3``, ``(↑ TOPIC) = ↓1``, ``↓1 ∈ (↑ ADJ)``.
+
+    Returns ``None`` if the assembled f-structure fails the
+    well-formedness check the chart rule would have run.
+    """
+    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
+    post_ctree, post_fs, post_a, post_diags = post_parse
+    comma_leaf = CNode(
+        label="PUNCT[PUNCT_CLASS=COMMA]", children=[], equations=[],
+    )
+    matrix_ctree = CNode(
+        label="S",
+        children=[pre_ctree, comma_leaf, post_ctree],
+        equations=[],
+    )
+    # Matrix f-structure shares identity with the post-comma S
+    # (c13's ``(↑) = ↓3``); we mutate post_fs.feats in place to
+    # add TOPIC and ADJ-membership (``(↑ TOPIC) = ↓1``,
+    # ``↓1 ∈ (↑ ADJ)``).
+    if "TOPIC" in post_fs.feats:
+        # Don't overwrite an existing TOPIC — the chart rule's
+        # equality would fail-by-clash there too.
+        return None
+    post_fs.feats["TOPIC"] = pre_fs
+    existing_adj = post_fs.feats.get("ADJ")
+    if existing_adj is None:
+        new_adj: frozenset[FStructure] = frozenset({pre_fs})
+    elif isinstance(existing_adj, frozenset):
+        new_adj = existing_adj | {pre_fs}
+    else:  # pragma: no cover — ADJ is set-valued
+        return None
+    post_fs.feats["ADJ"] = new_adj
+    _lift_in_situ_q_type(post_fs)
+    _, wf_diags = lfg_well_formed(post_fs, matrix_ctree)
+    if any(d.is_blocking() for d in wf_diags):
+        # Restore if the glued state is rejected so subsequent
+        # candidates don't see our writes.
+        del post_fs.feats["TOPIC"]
+        if existing_adj is None:
+            del post_fs.feats["ADJ"]
+        else:
+            post_fs.feats["ADJ"] = existing_adj
+        return None
+    diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
+    return matrix_ctree, post_fs, post_a, diagnostics
 
 
 # === Phase 5n.B Commit 8: in-situ Q_TYPE matrix lift (§18 L50) ============
