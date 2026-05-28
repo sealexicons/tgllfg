@@ -1154,8 +1154,59 @@ PANAHON sent-2/3/9 (the colon-list family) are NOT closed here:
 sent-2 produces 0 complete trees and sent-3/9 have no valid parse in
 a 45000-tree walk — they are *structural* (a missing
 colon-appositive-list construction), not forest-density, so per-rule
-budgets cannot surface a parse that does not exist. They carry
-forward to a construction sub-PR / the 10.J chart-side-pruning bucket.
+budgets cannot surface a parse that does not exist. Bucket F's
+complementary mechanism (10.J, below) is shipped but disqualified
+as default; closures route to the per-sentence sub-PRs
+(`10.J.post-1..4`).
+
+### Phase 10.J monotone defining-clash subtree precheck (bucket F)
+
+Bucket F's second mechanism: a parse-set-preserving subtree
+precheck that prunes c-trees whose defining equations already
+clash at the subtree level. Implementation is
+`tgllfg.fstruct.precheck_defining_subtree` (reuses `solve()`'s
+defining pass on an isolated `FGraph`) folded into
+`parse/earley.py:_iter_cnodes` behind the opt-in
+`precheck_defining` flag (default off; threaded through
+`parse_text` / `parse_text_with_fragments`). Soundness:
+defining-equation unification is monotone, so a subtree clashing
+on `atom-mismatch` / `type-mismatch` / `occurs-check` /
+`set-membership-clash` / `path-through-non-complex` cannot
+un-clash inside any containing tree — pruning is
+parse-set-preserving by construction.
+
+Wave-1 audit diff (default off, opt-in inert): **89/123 →
+89/123 (0 closures, 0 regressions)** — the
+byte-identical-default verification.
+
+Wave-1 audit diff (`precheck_defining=True` at the unchanged
+5000 cap): **89/123 → 86/123 (0 closures gained, -3
+regressions)** — PANAHON sent-16, sent-25, and sent-35 all
+regress parse-success-N → parse-timeout as the per-combo
+precheck overhead pushes them past the 10s audit cap; sent-16
+is the §6.2 regression guard the no-cap-raise rule specifically
+protects. The one PANAHON sentence the precheck *would* close,
+sent-9 (100% defining-clash at NOUN; full sentence parses at
+~24.6s in a no-timeout end-to-end probe), also exceeds the 10s
+audit budget so it lands in parse-timeout too. **Default-on is
+disqualified by the audit-timeout budget**; the precheck stays
+opt-in for future selective use — a per-rule opt-in analogous
+to `Rule.budget`, or a structural-interning memoization that
+drops the per-combo cost enough to make default-on viable.
+Probes that document the disqualification:
+`tmp/probe_10j_*.py` and `tmp/wave1_parse_precheck.py`.
+
+Five commits: (1) `precheck_defining_subtree` predicate +
+monotone-clash whitelist + 9 unit tests; (2) `_iter_cnodes`
+opt-in hook (default off, byte-identical) + 3 plumbing tests;
+(3) per-parse id-keyed cache (scaffolding — low hit rate today
+since each combo constructs a fresh `CNode`; forward-compatible
+for structural interning) + 5 cache-correctness tests; (4)
+`parse_text` / `parse_text_with_fragments` plumbing + 3 smoke
+tests; (5) close-out documentation. Total new tests: 20.
+PANAHON sent-2/3/9 and sent-39 do not close from 10.J
+engineering and route to the per-sentence construction sub-PRs
+`10.J.post-1..4`.
 
 ## Headline numbers
 
