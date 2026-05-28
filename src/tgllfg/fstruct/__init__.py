@@ -51,6 +51,7 @@ from .fu import (
 from .unify import (
     SolveResult,
     build_f_structure,
+    precheck_defining_subtree,
     solve,
 )
 
@@ -92,6 +93,7 @@ __all__ = [
     # unifier orchestration
     "SolveResult",
     "build_f_structure",
+    "precheck_defining_subtree",
     "solve",
     # FU evaluation (Phase 6.B)
     "resolve_regex_for_read",

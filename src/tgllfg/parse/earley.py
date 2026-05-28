@@ -60,6 +60,7 @@ from ..cfg import (
     matches,
 )
 from ..core.common import CNode, LexicalEntry, MorphAnalysis
+from ..fstruct import precheck_defining_subtree
 
 
 # Treat morph POS tag VERB as the grammar category V; nothing else
@@ -111,6 +112,7 @@ class PackedForest:
         size_cap: int | None = None,
         chart: list[dict[tuple[int, int, int], StateInfo]] | None = None,
         sentence_length: int = 0,
+        precheck_defining: bool = False,
     ) -> None:
         self.roots: list[StateInfo] = list(roots)
         self.size_cap: int | None = size_cap
@@ -118,6 +120,12 @@ class PackedForest:
             tuple(chart) if chart is not None else ()
         )
         self.sentence_length: int = sentence_length
+        # Phase 10.J: opt-in monotone defining-clash subtree prune in
+        # :func:`_iter_cnodes`. Default ``False`` preserves byte-identical
+        # behavior; ``True`` skips c-trees whose subtree contains a
+        # blocking monotone defining-equation clash (parse-set
+        # preserving — see :func:`tgllfg.fstruct.precheck_defining_subtree`).
+        self.precheck_defining: bool = precheck_defining
 
     def best_k(self, k: int) -> list[CNode]:
         out: list[CNode] = []
@@ -130,7 +138,9 @@ class PackedForest:
     def iter_trees(self) -> Iterator[CNode]:
         emitted = 0
         for root in self.roots:
-            for cnode in _iter_cnodes(root):
+            for cnode in _iter_cnodes(
+                root, precheck_defining=self.precheck_defining,
+            ):
                 if self.size_cap is not None and emitted >= self.size_cap:
                     return
                 yield cnode
@@ -182,7 +192,9 @@ class PackedForest:
             if key in seen:
                 continue
             seen.add(key)
-            for cnode in _iter_cnodes(state):
+            for cnode in _iter_cnodes(
+                state, precheck_defining=self.precheck_defining,
+            ):
                 yield (state.start, state.end), cnode
                 # One CNode per (label, span) is enough for fragment
                 # debugging; more would dilute the signal.
@@ -195,6 +207,7 @@ def parse_with_annotations(
     *,
     forest_size_cap: int | None = None,
     chart_state_cap: int | None = None,
+    precheck_defining: bool = False,
 ) -> PackedForest:
     """Parse the input lexical lattice against the grammar, returning a
     packed forest of c-tree derivations.
@@ -205,6 +218,13 @@ def parse_with_annotations(
     once that many distinct states have been added. The two caps are
     independent: tree iteration may be bounded without a chart cap
     (legacy behavior) or vice versa.
+
+    ``precheck_defining`` (Phase 10.J, default ``False``) opts into the
+    parse-set-preserving monotone defining-clash prune in
+    :func:`_iter_cnodes`: candidate c-trees whose subtree contains a
+    blocking monotone defining-equation clash are pruned before they
+    enter the cartesian product. The default is off → byte-identical
+    behavior. See :func:`tgllfg.fstruct.precheck_defining_subtree`.
     """
     cg = grammar if isinstance(grammar, CompiledGrammar) else compile_grammar(grammar)
     content = _strip_non_content(sentence_lex)
@@ -212,6 +232,7 @@ def parse_with_annotations(
         content, cg,
         forest_size_cap=forest_size_cap,
         chart_state_cap=chart_state_cap,
+        precheck_defining=precheck_defining,
     ).run()
 
 
@@ -225,10 +246,12 @@ class _Earley:
         *,
         forest_size_cap: int | None,
         chart_state_cap: int | None = None,
+        precheck_defining: bool = False,
     ) -> None:
         self.tokens = tokens
         self.grammar = grammar
         self.cap = forest_size_cap
+        self.precheck_defining = precheck_defining
         # Phase 9.X.c35: separate chart-construction cap (distinct
         # from the existing ``forest_size_cap`` which restricts tree
         # enumeration in ``PackedForest.iter_trees``). When set,
@@ -280,6 +303,7 @@ class _Earley:
             size_cap=self.cap,
             chart=self._chart,
             sentence_length=n,
+            precheck_defining=self.precheck_defining,
         )
 
     def _step(self, col: int, state: StateInfo) -> None:
@@ -392,7 +416,12 @@ def _iter_histories(state: StateInfo) -> Iterator[tuple[Completion, ...]]:
             yield prefix + (completion,)
 
 
-def _iter_cnodes(state: StateInfo) -> Iterator[CNode]:
+def _iter_cnodes(
+    state: StateInfo,
+    *,
+    precheck_defining: bool = False,
+    _precheck_cache: dict[int, bool] | None = None,
+) -> Iterator[CNode]:
     """Yield every CNode for ``state``, expanding sub-history
     alternatives at every nonterminal slot. This propagates lex
     ambiguity (e.g. AV-intransitive vs AV-transitive entries for
@@ -407,9 +436,27 @@ def _iter_cnodes(state: StateInfo) -> Iterator[CNode]:
     ``itertools.product`` — so per-span budgets compose multiplicatively
     up the tree and shrink the total forest reaching the pipeline's
     solve loop. ``None`` (the default) is uncapped and preserves
-    byte-identical behavior."""
+    byte-identical behavior.
+
+    Phase 10.J: when ``precheck_defining=True``, each candidate CNode
+    is run through :func:`tgllfg.fstruct.precheck_defining_subtree`
+    (the parse-set-preserving monotone defining-clash predicate)
+    before being yielded; combos whose subtree already contains a
+    blocking monotone clash are skipped. The flag is also forwarded
+    on the recursive call, so pruning composes multiplicatively up
+    the tree.
+
+    Phase 10.J commit 3: when precheck is enabled and no
+    ``_precheck_cache`` is passed, a fresh per-parse dict is created
+    and forwarded to every recursive call and every
+    ``precheck_defining_subtree`` invocation. The cache scope is one
+    top-level ``_iter_cnodes`` call (one root), so ``id(cnode)``
+    keys can't collide with freed objects from prior parses.
+    ``False`` (the default) preserves byte-identical behavior."""
     budget = state.rule.budget
     emitted = 0
+    if precheck_defining and _precheck_cache is None:
+        _precheck_cache = {}
     for hist in _iter_histories(state):
         if budget is not None and emitted >= budget:
             return
@@ -424,23 +471,37 @@ def _iter_cnodes(state: StateInfo) -> Iterator[CNode]:
                     )
                 ])
             else:
-                slot_options.append(list(_iter_cnodes(c)))
+                slot_options.append(list(_iter_cnodes(
+                    c,
+                    precheck_defining=precheck_defining,
+                    _precheck_cache=_precheck_cache,
+                )))
         if not slot_options:
-            yield CNode(
+            cnode = CNode(
                 label=_format_pattern(state.rule.lhs),
                 children=[],
                 equations=list(state.rule.equations),
             )
+            if precheck_defining and precheck_defining_subtree(
+                cnode, cache=_precheck_cache,
+            ):
+                continue
+            yield cnode
             emitted += 1
             continue
         for combo in itertools.product(*slot_options):
             if budget is not None and emitted >= budget:
                 return
-            yield CNode(
+            cnode = CNode(
                 label=_format_pattern(state.rule.lhs),
                 children=list(combo),
                 equations=list(state.rule.equations),
             )
+            if precheck_defining and precheck_defining_subtree(
+                cnode, cache=_precheck_cache,
+            ):
+                continue
+            yield cnode
             emitted += 1
 
 

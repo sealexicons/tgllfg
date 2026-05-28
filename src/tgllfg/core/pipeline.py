@@ -79,6 +79,7 @@ def parse_text(
     chart_state_cap: int | None = None,
     max_candidates: int | None = None,
     max_tree_iterations: int | None = 5000,
+    precheck_defining: bool = False,
 ) -> list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]]:
     """Parse a sentence end to end.
 
@@ -132,6 +133,16 @@ def parse_text(
     zero existing closures are excluded) but well under the typical
     10s SIGALRM ceiling. Set explicitly higher (or to ``None`` for
     unbounded) when investigating pathological inputs.
+
+    Phase 10.J: ``precheck_defining`` (default ``False``) opts into
+    the parse-set-preserving monotone defining-clash prune in
+    ``parse/earley.py:_iter_cnodes``. The default is OFF because the
+    per-combo precheck overhead is high on forests where
+    defining-clashes are rare (per ``probe_10j_classify`` the audit
+    corpus is mostly clash-free) — but the pruning win is large on
+    forests dominated by defining-clashes (e.g., the bare-noun list
+    inside PANAHON sent-9's colon appositive). Per-call selective
+    use; see :func:`tgllfg.fstruct.precheck_defining_subtree`.
     """
     return parse_text_with_fragments(
         text,
@@ -139,6 +150,7 @@ def parse_text(
         chart_state_cap=chart_state_cap,
         max_candidates=max_candidates,
         max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
     ).parses
 
 
@@ -150,6 +162,7 @@ def parse_text_with_fragments(
     chart_state_cap: int | None = None,
     max_candidates: int | None = None,
     max_tree_iterations: int | None = 5000,
+    precheck_defining: bool = False,
 ) -> ParseResult:
     """Parse text, returning either complete parses (Phase 4 §7.9
     "happy path") or fragments (the failure-recovery mode).
@@ -209,7 +222,9 @@ def parse_text_with_fragments(
     lex_items = lookup_lexicon(mlist)
     grammar = Grammar.load_default()
     forest = parse_with_annotations(
-        lex_items, grammar, chart_state_cap=chart_state_cap,
+        lex_items, grammar,
+        chart_state_cap=chart_state_cap,
+        precheck_defining=precheck_defining,
     )
 
     # Walk candidate trees, collect well-formed ones, then rank.

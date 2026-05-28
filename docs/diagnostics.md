@@ -400,8 +400,45 @@ budgets: sent-2 produces 0 complete trees and sent-3/9 have no
 valid parse in a 45000-tree walk — they are structural (a
 missing colon-appositive-list construction), not forest-
 density, so per-rule budgets cannot surface a parse that does
-not exist. They carry forward to a construction sub-PR / the
-10.J chart-side-pruning bucket.
+not exist.
+
+**Mechanism (Phase 10.J).** Bucket F also shipped a
+parse-set-preserving subtree precheck
+(`fstruct.precheck_defining_subtree`, folded into
+`parse/earley.py:_iter_cnodes` behind the opt-in
+`precheck_defining` flag, default off, exposed through
+`parse_text` / `parse_text_with_fragments`). For each candidate
+combo the precheck runs `solve()`'s defining pass on an
+isolated graph; combos whose subtree already contains a
+blocking MONOTONE defining-equation clash (`atom-mismatch` /
+`type-mismatch` / `occurs-check` / `set-membership-clash` /
+`path-through-non-complex`) are pruned before they enter the
+cartesian product. The prune is sound by construction —
+defining-equation unification is monotone, so a clashing
+subtree cannot un-clash inside any containing tree.
+
+Empirically the mechanism is **disqualified as a default**.
+A full wave-1 audit run at `precheck_defining=True` under the
+unchanged 5000 cap returned 86/123 vs the 89/123 baseline —
+**net -3, zero closures gained**. All three losses are PANAHON
+sentences (sent-16, sent-25, sent-35) regressing from
+parse-success-N to parse-timeout because the per-combo
+precheck overhead pushes them past the 10s audit cap;
+corpus-wide the parse-timeout bucket jumped 1 → 12. sent-16
+specifically is the §6.2 regression guard. sent-9 (the one
+PANAHON sentence the precheck *would* close, 0 → 1 parse at
+~24.6s in a no-timeout end-to-end probe) also exceeds the 10s
+audit budget, so the closure window is empty. The mechanism
+stays opt-in for future selective use — a per-rule opt-in
+analogous to `Rule.budget`, or a structural-interning
+memoization that drops the per-combo cost enough to make
+default-on viable. Probes that document the disqualification:
+`./tmp/probe_10j_*.py` + `./tmp/wave1_parse_precheck.py`.
+
+PANAHON sent-2/3/9 (and sent-39) therefore do not close from
+bucket-F engineering and route to the per-sentence
+construction sub-PRs (`10.J.post-1..4`) for their respective
+closure paths.
 
 ### 6.3 Construction vs paradigm: opt-in audit-attestation
 
