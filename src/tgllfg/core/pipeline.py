@@ -221,6 +221,36 @@ def parse_text_with_fragments(
     mlist = reorder_clitics(mlist)
     lex_items = lookup_lexicon(mlist)
     grammar = Grammar.load_default()
+
+    # === Phase 10.J.post-1: colon-split fast path ===========================
+    #
+    # When the input contains a sentence-internal colon, try the
+    # split-and-glue path **first**. Each half parses independently
+    # against a fresh chart, then we synthesize the matrix ``S →
+    # S PUNCT[COLON] X`` whose APP set carries the post-colon
+    # constituent — structurally equivalent to the chart-level rule
+    # in ``cfg/discourse.py:740-771`` but with no cross-colon span
+    # fan-out.
+    #
+    # The full-chart attempt is the fallback: if the colon-split
+    # fails (no NP[NOM] / S / N parses for the post-half, or the
+    # glued f-structure fails well-formedness), we fall through.
+    # This ordering keeps the fast path fast (sent-2 closes in 1.2s
+    # vs. 12.2s under the chart-level rule, audit p100 cap is 10s)
+    # while preserving the chart as the safety net for unusual
+    # colon shapes the split doesn't handle.
+    if ":" in text:
+        split_result = _try_colon_split(
+            text,
+            n_best=n_best,
+            chart_state_cap=chart_state_cap,
+            max_candidates=max_candidates,
+            max_tree_iterations=max_tree_iterations,
+            precheck_defining=precheck_defining,
+        )
+        if split_result is not None and split_result.parses:
+            return split_result
+
     forest = parse_with_annotations(
         lex_items, grammar,
         chart_state_cap=chart_state_cap,
@@ -284,7 +314,431 @@ def parse_text_with_fragments(
             astructure=a,
             diagnostics=diagnostics,
         ))
+
     return ParseResult(parses=[], fragments=fragments)
+
+
+# === Phase 10.J.post-1: colon-split helpers ===============================
+#
+# Sentence shapes covered: ``X : NP[CASE=NOM]`` (sent-2 enumeration
+# head), ``X : S`` (resultative / consequence clause), ``X : N`` (bare
+# N enumeration head). These parallel the three chart-level colon-
+# appositive variants in ``cfg/discourse.py``: lines 748 / 756 / 764.
+
+
+_POST_COLON_CATEGORIES: tuple[str, ...] = (
+    "NP[CASE=NOM]",
+    "S",
+    "N",
+)
+
+
+def _split_on_colon(text: str) -> tuple[str, str] | None:
+    """Find the first non-leaf ``:`` and return ``(pre, post)``.
+
+    Returns ``None`` when the colon is at the very start / end (no
+    matrix to glue) or absent. The ``:`` itself is dropped from the
+    output halves.
+    """
+    idx = text.find(":")
+    if idx <= 0 or idx >= len(text) - 1:
+        return None
+    pre = text[:idx].strip()
+    post = text[idx + 1:].strip()
+    if not pre or not post:
+        return None
+    return pre, post
+
+
+def _normalize_terminal_punct(text: str) -> str:
+    """Add a trailing ``.`` if the segment doesn't already end in
+    sentence-terminal punctuation. The chart's matrix S rules expect
+    a closing PUNCT[PUNCT_CLASS=PERIOD]; segments lifted out of a
+    colon-split don't carry their own terminator, so we add one."""
+    if text.endswith((".", "!", "?")):
+        return text
+    # Strip a trailing comma if the segment carries one (the pre-colon
+    # half won't, but a post-colon half might if the source text had
+    # ``... , ``: extra commas before the period). The synthesized
+    # period replaces any trailing comma.
+    if text.endswith(","):
+        text = text[:-1].rstrip()
+    return text + "."
+
+
+def _try_colon_split(
+    text: str,
+    *,
+    n_best: int,
+    chart_state_cap: int | None,
+    max_candidates: int | None,
+    max_tree_iterations: int | None,
+    precheck_defining: bool,
+) -> ParseResult | None:
+    """Parse ``pre`` (as ``S``) and ``post`` (as one of
+    :data:`_POST_COLON_CATEGORIES`) independently, then synthesize a
+    matrix ``S`` whose APP set contains the post constituent.
+
+    Returns ``None`` when the split itself isn't possible, when the
+    pre-half doesn't yield an ``S`` parse, or when no post-category
+    succeeds. Otherwise returns a :class:`ParseResult` carrying one
+    or more glued parses (one per post-category that succeeded × the
+    pre-half's n-best alternatives).
+    """
+    halves = _split_on_colon(text)
+    if halves is None:
+        return None
+    pre_text, post_text = halves
+    pre_text = _normalize_terminal_punct(pre_text)
+    post_text = _normalize_terminal_punct(post_text)
+
+    # Parse the pre-colon half as ``S`` via the segment helper. We
+    # deliberately avoid re-entering :func:`parse_text_with_fragments`
+    # so multi-colon inputs don't recurse — the chart-level rules
+    # handle any residual colon when the pre-half is solved as a
+    # standalone clause.
+    pre_parses = _parse_segment_as(
+        pre_text,
+        start_symbol="S",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+    )
+    if not pre_parses:
+        return None
+
+    # Try each post-colon category in order; the first that yields a
+    # parse wins. This mirrors the three chart-level colon-appositive
+    # variants in cfg/discourse.py — we don't enumerate post-NP and
+    # post-S parses, the first success short-circuits.
+    post_parses: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    for category in _POST_COLON_CATEGORIES:
+        post_parses = _parse_segment_as(
+            post_text,
+            start_symbol=category,
+            n_best=n_best,
+            chart_state_cap=chart_state_cap,
+            max_candidates=max_candidates,
+            max_tree_iterations=max_tree_iterations,
+            precheck_defining=precheck_defining,
+        )
+        if post_parses:
+            break
+    if not post_parses:
+        return None
+
+    # Synthesize one glued parse per (pre × post) combination, capped
+    # at ``n_best``. Both halves must keep passing well-formedness on
+    # the glued f-structure or the candidate is dropped.
+    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    for pre_parse in pre_parses:
+        for post_parse in post_parses:
+            glued_one = _glue_colon_appositive(pre_parse, post_parse)
+            if glued_one is not None:
+                glued.append(glued_one)
+                if len(glued) >= n_best:
+                    break
+        if len(glued) >= n_best:
+            break
+
+    if not glued:
+        return None
+    return ParseResult(parses=glued, fragments=[])
+
+
+def _parse_segment_as(
+    text: str,
+    *,
+    start_symbol: str,
+    n_best: int,
+    chart_state_cap: int | None,
+    max_candidates: int | None,
+    max_tree_iterations: int | None,
+    precheck_defining: bool,
+) -> list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]]:
+    """Parse ``text`` against the grammar with a non-default start
+    symbol (e.g., ``NP[CASE=NOM]``). Returns the surviving parses.
+
+    Mirrors the pre-processing chain in :func:`parse_text_with_fragments`
+    up through the chart call, then runs the same solve / LMT / WF
+    loop but writes the start symbol into ``parse_with_annotations``.
+    """
+    toks = tokenize(text)
+    toks = split_apostrophe_t(toks)
+    toks = split_apostrophe_y(toks)
+    toks = split_linker_ng(toks)
+    toks = merge_hyphen_compounds(toks)
+    toks = split_enclitics(toks)
+    mlist = analyze_tokens(toks)
+    mlist = reorder_clitics(mlist)
+    lex_items = lookup_lexicon(mlist)
+    grammar = Grammar.load_default()
+    forest = parse_with_annotations(
+        lex_items, grammar,
+        chart_state_cap=chart_state_cap,
+        precheck_defining=precheck_defining,
+        start_symbol=start_symbol,
+    )
+
+    candidates: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    iterations = 0
+    for ctree in forest.iter_trees():
+        iterations += 1
+        if (max_tree_iterations is not None
+                and iterations > max_tree_iterations):
+            break
+        result = solve(ctree)
+        a, lmt_diags = apply_lmt_with_check(result.fstructure, lex_items)
+        _, wf_diags = lfg_well_formed(result.fstructure, ctree)
+        diagnostics = list(result.diagnostics) + wf_diags + lmt_diags
+        if any(d.is_blocking() for d in diagnostics):
+            continue
+        candidates.append((ctree, result.fstructure, a, diagnostics))
+        if max_candidates is not None and len(candidates) >= max_candidates:
+            break
+    candidates.sort(key=lambda r: _rank_key(r[0]))
+    if candidates:
+        return candidates[:n_best]
+
+    # Phase 10.J.post-1: pipeline-level comma+at NP split fallback.
+    # When parsing an NP-shaped segment fails (e.g., the post-half of
+    # a colon-split on PANAHON sent-2), try splitting on ``, at`` and
+    # gluing the two NP halves as a COORD=AND coordination. This
+    # avoids the chart-state-count cost of a binary comma+at coord
+    # rule (which would push canonical short-c-tree parses past the
+    # default tree-iteration cap on sentences without a comma) by
+    # keeping the synthesis fully at pipeline level.
+    if start_symbol.startswith("NP["):
+        comma_at_result = _try_comma_at_np_split(
+            text,
+            start_symbol=start_symbol,
+            n_best=n_best,
+            chart_state_cap=chart_state_cap,
+            max_candidates=max_candidates,
+            max_tree_iterations=max_tree_iterations,
+            precheck_defining=precheck_defining,
+        )
+        if comma_at_result:
+            return comma_at_result
+    return []
+
+
+def _glue_colon_appositive(
+    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    """Synthesize the matrix ``S → S PUNCT[COLON] X`` parse from two
+    independently-parsed halves.
+
+    Returns ``None`` if the synthesized f-structure fails the same
+    well-formedness check the chart-level colon rule would have run.
+    Otherwise returns the glued ``(ctree, fstruct, astruct, diags)``.
+
+    The matrix f-structure shares identity with the pre-half (the
+    chart rule's ``(↑) = ↓1``), so we mutate ``pre_fs.feats`` in
+    place to add the post-half's f-structure to APP (the chart
+    rule's ``↓3 ∈ (↑ APP)``). The pre-half's diagnostics already
+    reflect its solve / WF / LMT passes; we just append the post's.
+    """
+    pre_ctree, pre_fs, pre_a, pre_diags = pre_parse
+    post_ctree, post_fs, _post_a, post_diags = post_parse
+    # Synthetic colon PUNCT leaf — no equations, syncategorematic in
+    # the chart rule too.
+    colon_leaf = CNode(
+        label="PUNCT[PUNCT_CLASS=COLON]",
+        children=[],
+        equations=[],
+    )
+    matrix_ctree = CNode(
+        label="S",
+        children=[pre_ctree, colon_leaf, post_ctree],
+        equations=[],
+    )
+    # Set-membership write: APP gets a new frozenset containing the
+    # post f-structure (union with any prior APP membership, but the
+    # pre-half typically has none — this is the first colon-appositive
+    # to attach).
+    existing_app = pre_fs.feats.get("APP")
+    if existing_app is None:
+        new_app: frozenset[FStructure] = frozenset({post_fs})
+    elif isinstance(existing_app, frozenset):
+        new_app = existing_app | {post_fs}
+    else:  # pragma: no cover — APP is set-valued in every grammar path
+        return None
+    pre_fs.feats["APP"] = new_app
+    # Re-run the in-situ Q_TYPE lift over the matrix f-structure (the
+    # post-half's WH-bearing GFs may need to surface as Q_TYPE=WH).
+    _lift_in_situ_q_type(pre_fs)
+    # Verify the glued f-structure still passes well-formedness.
+    _, wf_diags = lfg_well_formed(pre_fs, matrix_ctree)
+    if any(d.is_blocking() for d in wf_diags):
+        # Restore APP so subsequent glue attempts don't see our write.
+        if existing_app is None:
+            del pre_fs.feats["APP"]
+        else:
+            pre_fs.feats["APP"] = existing_app
+        return None
+    diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
+    return matrix_ctree, pre_fs, pre_a, diagnostics
+
+
+# === Phase 10.J.post-1: comma+at NP coord split ==========================
+#
+# ``ang panahon ng tag-init mula Abril hanggang Hunyo, at ang
+# panahon ng tag-ulan mula Hulyo hanggang Oktubre`` — binary
+# Oxford-comma-style NP coord. Synthesized at pipeline level to
+# avoid the chart-state count cost that a competing chart rule
+# would incur on every NP[CASE=X, COORD=AND] prediction.
+
+
+def _try_comma_at_np_split(
+    text: str,
+    *,
+    start_symbol: str,
+    n_best: int,
+    chart_state_cap: int | None,
+    max_candidates: int | None,
+    max_tree_iterations: int | None,
+    precheck_defining: bool,
+) -> list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] | None:
+    """If ``text`` looks like ``X, at Y`` (or ``X, at Y.``), parse each
+    half as ``start_symbol`` (typically ``NP[CASE=NOM]``) and
+    synthesize a COORD=AND coordination NP whose CONJUNCTS set
+    holds both halves' f-structures.
+
+    Returns ``None`` when no ``, at`` separator is found, when
+    either half fails to parse, or when the case extracted from
+    ``start_symbol`` is unrecognised. Otherwise returns the glued
+    parses.
+    """
+    # Extract the CASE from the start symbol so the synthesized
+    # matrix carries the same case. The colon-split fast path passes
+    # ``NP[CASE=NOM]`` for sent-2-style enumerations; the same
+    # synthesis applies to GEN and DAT NPs if a caller ever requests
+    # them via that start symbol.
+    case = _extract_case(start_symbol)
+    if case is None:
+        return None
+    # Find a ``, at`` separator (or ``,at``) that's the binary
+    # join's hinge. The split is conservative: at most one ``, at``
+    # split, on the outermost (= leftmost) match. Trailing period /
+    # whitespace is tolerated.
+    work = text.rstrip().rstrip(".").rstrip()
+    sep_idx = work.find(", at ")
+    if sep_idx < 0:
+        sep_idx = work.find(",at ")
+        if sep_idx < 0:
+            return None
+        sep_len = len(",at ")
+    else:
+        sep_len = len(", at ")
+    pre_text = work[:sep_idx].strip()
+    post_text = work[sep_idx + sep_len:].strip()
+    if not pre_text or not post_text:
+        return None
+    pre_text = _normalize_terminal_punct(pre_text)
+    post_text = _normalize_terminal_punct(post_text)
+    # Parse each conjunct independently with the requested start
+    # symbol. We use ``_parse_segment_as`` directly — this triggers
+    # the same fallback chain (so a conjunct may itself be another
+    # comma+at split if the corpus ever needs it).
+    pre_parses = _parse_segment_as(
+        pre_text,
+        start_symbol=start_symbol,
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+    )
+    if not pre_parses:
+        return None
+    post_parses = _parse_segment_as(
+        post_text,
+        start_symbol=start_symbol,
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+    )
+    if not post_parses:
+        return None
+    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    for pre_parse in pre_parses:
+        for post_parse in post_parses:
+            g = _glue_comma_at_np(pre_parse, post_parse, case=case)
+            if g is not None:
+                glued.append(g)
+                if len(glued) >= n_best:
+                    break
+        if len(glued) >= n_best:
+            break
+    return glued or None
+
+
+def _extract_case(start_symbol: str) -> str | None:
+    """Parse the CASE feature out of an ``NP[CASE=X, ...]`` start
+    symbol string; return ``X`` or ``None`` if not present.
+    """
+    if not start_symbol.startswith("NP["):
+        return None
+    bracket = start_symbol[len("NP["):].rstrip("]")
+    for kv in bracket.split(","):
+        k, _, v = kv.strip().partition("=")
+        if k == "CASE":
+            return v.strip()
+    return None
+
+
+def _glue_comma_at_np(
+    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    *,
+    case: str,
+) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    """Synthesize ``NP[CASE=case, COORD=AND] → NP[CASE=case]
+    PUNCT[COMMA] PART[COORD=AND] NP[CASE=case]`` from two parsed
+    halves. The matrix f-structure is a fresh node (neither
+    conjunct IS the matrix — both are CONJUNCTS members) carrying
+    ``CASE``, ``COORD='AND'``, and ``NUM='PL'``.
+
+    Returns ``None`` if the synthesized f-structure fails the
+    chart-equivalent well-formedness check.
+    """
+    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
+    post_ctree, post_fs, post_a, post_diags = post_parse
+    comma_leaf = CNode(
+        label="PUNCT[PUNCT_CLASS=COMMA]", children=[], equations=[],
+    )
+    at_leaf = CNode(
+        label="PART[COORD=AND]", children=[], equations=[],
+    )
+    matrix_ctree = CNode(
+        label=f"NP[CASE={case},COORD=AND]",
+        children=[pre_ctree, comma_leaf, at_leaf, post_ctree],
+        equations=[],
+    )
+    matrix_fs = FStructure(feats={
+        "CASE": case,
+        "COORD": "AND",
+        "NUM": "PL",
+        "CONJUNCTS": frozenset({pre_fs, post_fs}),
+    })
+    # The matrix is structurally simple; the well-formedness pass
+    # mostly verifies that the CONJUNCTS members don't themselves
+    # carry blocking diagnostics — but since both halves already
+    # passed their own WF/LMT checks during _parse_segment_as,
+    # the union is well-formed by construction. We still run the
+    # check to mirror the chart-rule equivalence and surface any
+    # unexpected interaction.
+    _, wf_diags = lfg_well_formed(matrix_fs, matrix_ctree)
+    if any(d.is_blocking() for d in wf_diags):
+        return None
+    diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
+    return matrix_ctree, matrix_fs, post_a, diagnostics
 
 
 # === Phase 5n.B Commit 8: in-situ Q_TYPE matrix lift (§18 L50) ============

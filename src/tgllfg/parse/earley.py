@@ -208,6 +208,7 @@ def parse_with_annotations(
     forest_size_cap: int | None = None,
     chart_state_cap: int | None = None,
     precheck_defining: bool = False,
+    start_symbol: str | None = None,
 ) -> PackedForest:
     """Parse the input lexical lattice against the grammar, returning a
     packed forest of c-tree derivations.
@@ -225,6 +226,13 @@ def parse_with_annotations(
     blocking monotone defining-equation clash are pruned before they
     enter the cartesian product. The default is off → byte-identical
     behavior. See :func:`tgllfg.fstruct.precheck_defining_subtree`.
+
+    ``start_symbol`` (Phase 10.J.post-1, default ``None``) overrides
+    the grammar's default start symbol (``grammar.start``, typically
+    ``S``) for chart seeding and root filtering. The pipeline-level
+    colon-split fallback uses this to parse post-colon segments as
+    ``NP[CASE=NOM]`` constituents directly. When ``None``, behavior
+    is unchanged from prior releases.
     """
     cg = grammar if isinstance(grammar, CompiledGrammar) else compile_grammar(grammar)
     content = _strip_non_content(sentence_lex)
@@ -233,6 +241,7 @@ def parse_with_annotations(
         forest_size_cap=forest_size_cap,
         chart_state_cap=chart_state_cap,
         precheck_defining=precheck_defining,
+        start_symbol=start_symbol,
     ).run()
 
 
@@ -247,11 +256,22 @@ class _Earley:
         forest_size_cap: int | None,
         chart_state_cap: int | None = None,
         precheck_defining: bool = False,
+        start_symbol: str | None = None,
     ) -> None:
         self.tokens = tokens
         self.grammar = grammar
         self.cap = forest_size_cap
         self.precheck_defining = precheck_defining
+        # Phase 10.J.post-1: optional override of the start symbol.
+        # When ``None`` we fall back to ``grammar.start`` (the canonical
+        # ``S``); the colon-split pipeline fallback passes
+        # ``"NP[CASE=NOM]"`` here to parse a bare post-colon segment.
+        # The string is parsed into a CategoryPattern once.
+        if start_symbol is None:
+            self.start_symbol = grammar.start
+        else:
+            from ..cfg.compile import parse_pattern
+            self.start_symbol = parse_pattern(start_symbol)
         # Phase 9.X.c35: separate chart-construction cap (distinct
         # from the existing ``forest_size_cap`` which restricts tree
         # enumeration in ``PackedForest.iter_trees``). When set,
@@ -273,7 +293,10 @@ class _Earley:
 
     def run(self) -> PackedForest:
         # Seed: every rule with an LHS compatible with the start symbol.
-        for r in self.grammar.rules_for(self.grammar.start):
+        # Phase 10.J.post-1: ``self.start_symbol`` may override
+        # ``self.grammar.start`` (e.g., parse a bare post-colon segment
+        # as ``NP[CASE=NOM]``).
+        for r in self.grammar.rules_for(self.start_symbol):
             self._add(0, StateInfo(rule=r, dot=0, start=0, end=0, advances=[]))
         while self._agenda:
             # Phase 9.X.c35: bail out of chart construction when the
@@ -295,7 +318,7 @@ class _Earley:
             if (
                 state.start == 0
                 and state.dot == len(state.rule.rhs)
-                and matches(self.grammar.start, state.rule.lhs)
+                and matches(self.start_symbol, state.rule.lhs)
             ):
                 roots.append(state)
         return PackedForest(

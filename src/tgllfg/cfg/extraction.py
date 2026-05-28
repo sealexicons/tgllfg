@@ -442,6 +442,48 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # === Phase 10.J.post-1: V-AV-NVOL-TR pre-N participial modifier =====
+    #
+    # ``masasabing panahon`` "weather that-can-be-said-to-be-X"
+    # (PANAHON sent-2 matrix sub-construction). Parallel to the c52
+    # rule directly above, but for VOICE=AV potentive (MOOD=NVOL)
+    # forms where the surface argument structure inverts: the
+    # agent-PRO is absorbed and the head N saturates the V's OBJ
+    # slot (the thing-said), giving completeness on V's lex
+    # ``<SUBJ, OBJ>`` profile. Without this, transitive AV-NVOL
+    # verbs used attributively fail completeness on the unfilled
+    # OBJ governable function.
+    #
+    # The c52 rule writes head N → V's SUBJ (= PATIENT in OV/DV/IV).
+    # For AV, V's SUBJ is the AGENT, so the c52 binding would put
+    # the head N in agent position — semantically wrong for the
+    # "what-can-be-called-X" reading. The AV-NVOL variant instead
+    # binds head N → V's OBJ (= the implicit theme) and SUBJ='PRO'
+    # (agent absorbed, parallel to how c52 absorbs OBJ-AGENT to
+    # 'PRO').
+    #
+    # Narrow gates:
+    #   * V[VOICE=AV, MOOD=NVOL, TR=TR] — only transitive AV
+    #     potentives match. Non-NVOL AV verbs (the dominant class)
+    #     are excluded by the MOOD=NVOL constraint; intransitive
+    #     potentives don't need an OBJ filler.
+    #   * PART must have a LINK feat (the linker -ng/-na).
+    #
+    # Reference: Schachter & Otanes 1972 §6.6 (AV-NVOL attributive
+    # participial); R&G 1981 PANAHON sent-2.
+    rules.append(Rule(
+        "N",
+        ["V[VOICE=AV, MOOD=NVOL, TR=TR]", "PART", "N"],
+        [
+            "(↑) = ↓3",
+            "↓1 ∈ (↑ ADJ)",
+            "(↓1 OBJ PRED) = (↓3 PRED)",
+            "(↓1 SUBJ PRED) = 'PRO'",
+            "(↓2 LINK)",
+        ],
+    ))
+
+
     # === Phase 5n.A Commit 8: nasa-headed gapped clause for RC bodies (§18 L64) =====
     #
     # ``May bahay na nasa bundok.`` "There is a house in the mountain"

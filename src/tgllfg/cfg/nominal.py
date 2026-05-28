@@ -659,6 +659,102 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 10.J.post-1: PP[RANGE] temporal-range PP ---------------
+    #
+    # ``mula Abril hanggang Hunyo``    "from April to June" (PANAHON
+    #                                    sent-2 apposition)
+    # ``mula Lunes hanggang Sabado``   "from Monday to Saturday"
+    # ``mula umaga hanggang gabi``     "from morning to evening"
+    #
+    # Parallel to the Phase 9.X.c24 NUM[CARDINAL] range rule above,
+    # but for **temporal** endpoints — months / days / time-of-day /
+    # years. Projects a PP carrying PREP_TYPE='RANGE' plus the two
+    # endpoints as RANGE_LO / RANGE_HI sub-attributes. Same fixed-
+    # frame gates: ``mula`` PREP at slot 1, ``hanggang`` PART at
+    # slot 3, with both bracketed nominals sharing a SEM_CLASS from
+    # the closed set {MONTH, TIME, DAY, YEAR}.
+    #
+    # Pairs with the post-N PP[PREP_TYPE=RANGE] attach rule directly
+    # below — the narrow ADJ-attach lets a range-PP modify any NP
+    # without admitting arbitrary PPs into NP-internal position
+    # (the grammar elsewhere keeps PP-attach at clause level only).
+    #
+    # Reference: R&G 1981 PANAHON sent-2 (apposition with month
+    # range); Schachter & Otanes 1972 (temporal range PPs).
+    for sem_class in ("MONTH", "TIME", "DAY", "YEAR"):
+        rules.append(Rule(
+            # LHS advertises ``PREP_TYPE=RANGE`` as a chart-side feat
+            # (in addition to the f-equation below). This lets the
+            # N-modifier attach rule below bracket-gate its PP daughter
+            # on the same feat — without that gate, parent rules
+            # expecting a bare ``PP`` would predict every PP rule
+            # (generic, time-frame, year, range × 4 — plus the
+            # combinatorial cost compounded across NP positions)
+            # and the canonical short-c-tree parses of common
+            # wave-3 inputs slipped past the 5000 tree-iteration cap.
+            "PP[PREP_TYPE=RANGE]",
+            [
+                "PREP",
+                "N",
+                "PART",
+                "N",
+            ],
+            [
+                "(↑ PREP_TYPE) = 'RANGE'",
+                "(↑ RANGE_LO) = ↓2",
+                "(↑ RANGE_HI) = ↓4",
+                "(↓1 LEMMA) =c 'mula'",
+                "(↓1 PREP_TYPE) =c 'SOURCE'",
+                "(↓3 LEMMA) =c 'hanggang'",
+                f"(↓2 SEM_CLASS) =c '{sem_class}'",
+                f"(↓4 SEM_CLASS) =c '{sem_class}'",
+            ],
+        ))
+
+    # NP-modifier attach for range-PPs (NOM only). The PP daughter is
+    # bare in the c-structure pattern (PREP_TYPE is set by f-equation
+    # in the PP rule above, not by a chart-side feat); a constraining
+    # equation gates the attach to ``PREP_TYPE='RANGE'``. Parallels
+    # the ``S → S PP`` clause-level rules in discourse.py, which use
+    # the same constraining-equation idiom (TIME_FRAME / EXCEPTIVE)
+    # to narrow PP types without bracket-filtering.
+    #
+    # **NOM-only** narrowing: the audit-attested use of an NP-internal
+    # range-PP is the ``ang`` enumeration head in PANAHON sent-2.
+    # Extending to GEN / DAT broadens the chart predictions per case
+    # symbol and pushed the canonical parse of
+    # ``Bumili ng dalawang malalaking aklat at ng tatlong maliliit
+    # na lapis si Maria`` past the 5000-tree iteration cap (the test
+    # ``test_phase5k_coord_interactions.test_cardinal_plus_adj_plus_coord``
+    # regressed under the broader rule). When a GEN / DAT instance
+    # surfaces in a future corpus the per-case variant lands then.
+    # NP-modifier attach for range-PPs (NOM only). Bracket-gated on
+    # ``PP[PREP_TYPE=RANGE]`` (a chart-side feat advertised by the
+    # PP[RANGE] rule's LHS above) — when this rule predicts a PP
+    # daughter, only the range-PP rule's LHS matches, not the
+    # generic ``PREP NP[DAT]`` or temporal-frame PP rules. This
+    # keeps chart-state count down (cf. the wave-3 regression on
+    # ``Nasa gitna ba ang tatay at nanay ni Fred?`` that the
+    # un-narrowed earlier draft produced — the canonical LOC parse
+    # slipped past the 5000 tree-iteration cap).
+    #
+    # **NOM-only** narrowing: the audit-attested use of an NP-internal
+    # range-PP is the ``ang`` enumeration head in PANAHON sent-2.
+    # Extending to GEN / DAT broadens chart predictions per case
+    # symbol; per-case variants land when corpus evidence requires.
+    rules.append(Rule(
+        "NP[CASE=NOM]",
+        [
+            "NP[CASE=NOM]",
+            "PP[PREP_TYPE=RANGE]",
+        ],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJ)",
+        ],
+    ))
+
+
     # --- Phase 9.X.c30: bare cardinal as NP head ----------------------
     #
     # ``ang dalawa`` "the two", ``ang isa`` "the one (of them)",
