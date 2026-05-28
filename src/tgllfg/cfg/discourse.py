@@ -231,14 +231,20 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Reference: R&G 1981 §7.7 (sentence-fronted adjunct PP); R&G
     # 1981 PANAHON essay (sent-12 + sent-39).
+    # Phase 10.J.post-2 narrowing: the PP daughter's bracket gate
+    # ``PP[PREP_TYPE=REASON]`` pushes the REASON check from
+    # solve-time to chart time. The generic PP rule in
+    # extraction.py now advertises ``PREP_TYPE`` on its LHS
+    # (one rule per value), so the chart's prediction at this
+    # position predicts only the REASON variant — pruning the
+    # spurious chart states the un-gated rule produced.
     rules.append(Rule(
         "S",
-        ["PP", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
+        ["PP[PREP_TYPE=REASON]", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
         [
             "(↑) = ↓3",
             "(↑ TOPIC) = ↓1",
             "↓1 ∈ (↑ ADJ)",
-            "(↓1 PREP_TYPE) =c 'REASON'",
         ],
     ))
 
@@ -406,13 +412,27 @@ def register_rules(rules: list[Rule]) -> None:
     # lift COUNTERFACTUAL / REGISTER to the matrix because those are
     # clausal-mood properties; epistemic and discourse markers are
     # inherently adjunct-scoped.)
+    # Phase 10.J.post-2 narrowing: the bracket gate on the PART
+    # daughter pushes the ``DISCOURSE_POS=SENTENCE_INITIAL`` check
+    # from solve time to **chart time**. Lex entries for
+    # discourse-initial connectives (``at`` / ``kaya`` /
+    # ``samakatuwid`` / ``gayunpaman`` / ``siguro`` / ``marahil`` /
+    # …) carry the feat on the PART category pattern; non-connective
+    # PARTs (linkers, polarity, 2P clitics) don't. Without the
+    # bracket gate the chart predicted this rule wherever ``S``
+    # was expected and admitted any PART token there, multiplying
+    # ``(PART-token × S-parse)`` combinations into the packed
+    # forest — the 10.I-style fan-out probe (``tmp/probe_10i_fanout
+    # .py PANAHON/sent-39``) ranked this rule first at span_max
+    # 38880 emissions / span, dominating sent-39's tree-iteration
+    # budget so the canonical 9.X.c13 fronted-Dahil-PP parse sat
+    # past cap 5000.
     rules.append(Rule(
         "S",
-        ["PART", "S"],
+        ["PART[DISCOURSE_POS=SENTENCE_INITIAL]", "S"],
         [
             "(↑) = ↓2",
             "↓1 ∈ (↑ ADJUNCT)",
-            "(↓1 DISCOURSE_POS) =c 'SENTENCE_INITIAL'",
         ],
     ))
 
@@ -446,9 +466,16 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # Reference: R&B 1986 §15.7.
     #
+    # Phase 10.J.post-2: LHS advertises ``DISCOURSE_POS=SENTENCE_INITIAL``
+    # as a chart-side feat so the Phase 5m C4 rule above
+    # (``S → PART[DISCOURSE_POS=SENTENCE_INITIAL] S``) can bracket-
+    # gate on it without re-running the solve-time check. Bare-PART
+    # parents still match because the matcher takes
+    # ``expected=PART`` as feature-empty.
+    #
     # gayon din → DISCOURSE=LIKEWISE
     rules.append(Rule(
-        "PART",
+        "PART[DISCOURSE_POS=SENTENCE_INITIAL]",
         ["PART", "PART"],
         [
             "(↑ DISCOURSE) = 'LIKEWISE'",
@@ -460,7 +487,7 @@ def register_rules(rules: list[Rule]) -> None:
     ))
     # ganon din → DISCOURSE=LIKEWISE (colloquial variant)
     rules.append(Rule(
-        "PART",
+        "PART[DISCOURSE_POS=SENTENCE_INITIAL]",
         ["PART", "PART"],
         [
             "(↑ DISCOURSE) = 'LIKEWISE'",
@@ -482,7 +509,7 @@ def register_rules(rules: list[Rule]) -> None:
     # ``=c`` equation would compare against the string ``'YES'``
     # and silently fail to match).
     rules.append(Rule(
-        "PART",
+        "PART[DISCOURSE_POS=SENTENCE_INITIAL]",
         ["PART", "ADP[CASE=DAT, DEIXIS=PROX, DEM]"],
         [
             "(↑ DISCOURSE) = 'ALSO'",
@@ -513,7 +540,7 @@ def register_rules(rules: list[Rule]) -> None:
     # ("likewise"). Once built, it feeds the comma-variant of the
     # 5m C4 sentence-initial PART rule below.
     rules.append(Rule(
-        "PART",
+        "PART[DISCOURSE_POS=SENTENCE_INITIAL]",
         ["NUM[ORDINAL=true]", "ADP[CASE=DAT, MARKER=SA]", "Q[QUANT=ALL]"],
         [
             "(↑ DISCOURSE) = 'PRIMARY_RANKING'",
@@ -543,13 +570,18 @@ def register_rules(rules: list[Rule]) -> None:
     # ``bukod dito`` ("moreover") appear with a comma — natural in
     # written register. Pre-9.V they had to appear without comma
     # (the 8.D2 INTERJ-comma rule only matched INTERJ=true PARTs).
+    # Phase 10.J.post-2 narrowing: the PART daughter's bracket gate
+    # ``PART[DISCOURSE_POS=SENTENCE_INITIAL]`` pushes the check
+    # from solve time to chart time. Both single-word connective
+    # lex entries and the multi-word PART-LHS rules above
+    # advertise the feat — so the chart admits only connective
+    # PARTs at this slot.
     rules.append(Rule(
         "S",
-        ["PART", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
+        ["PART[DISCOURSE_POS=SENTENCE_INITIAL]", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
         [
             "(↑) = ↓3",
             "↓1 ∈ (↑ ADJUNCT)",
-            "(↓1 DISCOURSE_POS) =c 'SENTENCE_INITIAL'",
         ],
     ))
 

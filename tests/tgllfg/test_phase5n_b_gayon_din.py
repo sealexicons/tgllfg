@@ -42,11 +42,19 @@ from tgllfg.core.pipeline import parse_text
 
 
 def _has_likewise_part_lhs(parses) -> bool:
-    """True if any parse has children=[PART, S] with the PART
-    matrix carrying DISCOURSE='LIKEWISE'."""
+    """True if any parse has children=[PART…, S] with the PART
+    matrix carrying DISCOURSE='LIKEWISE'.
+
+    Phase 10.J.post-2 narrowed the multi-word connective rule's
+    LHS to ``PART[DISCOURSE_POS=SENTENCE_INITIAL]`` so the c-tree
+    label is now bracketed — accept either bare ``PART`` or any
+    ``PART[…]`` variant.
+    """
     for ct, fs, _astr, _diags in parses:
         labels = [c.label for c in ct.children]
-        if labels == ["PART", "S"]:
+        if (len(labels) == 2
+                and (labels[0] == "PART" or labels[0].startswith("PART["))
+                and labels[1] == "S"):
             return True
     return False
 

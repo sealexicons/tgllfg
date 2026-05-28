@@ -1807,14 +1807,39 @@ def register_rules(rules: list[Rule]) -> None:
     # inherits PREP_TYPE from the head and exposes the
     # complement NP as ``OBJ`` for downstream consumers
     # (analogous to how a clause's V exposes its NP arguments).
-    rules.append(Rule(
-        "PP",
-        ["PREP", "NP[CASE=DAT]"],
-        _eqs(
-            "(↑) = ↓1",
-            "(↑ OBJ) = ↓2",
-        ),
-    ))
+    # Phase 10.J.post-2: parametric LHS — one PP rule per known
+    # PREP_TYPE value so the chart-side category pattern carries
+    # the feat. Without the LHS feat, the chart's bare ``PP``
+    # candidate matched every parent rule's PP expectation
+    # regardless of PREP_TYPE; the c13 fronted-REASON-PP rule's
+    # solve-time ``(↓1 PREP_TYPE) =c 'REASON'`` rejected
+    # non-REASON PPs only after the chart had paid the prediction
+    # + advance cost, and the resulting cross-product ``(PP_alts ×
+    # S_alts)`` on the matrix span ranked the canonical sent-39
+    # parse past cap 5000. With chart-side LHSs the c13 rule's
+    # ``PP[PREP_TYPE=REASON]`` daughter bracket admits only the
+    # REASON variant at chart time.
+    #
+    # Bare-``PP``-expecting consumers (e.g., ``S → S PP``,
+    # ``S → PP PART[LINK=AY] S``) still match every variant
+    # because the graph-constraint matcher takes ``expected=PP``
+    # as a feature-empty pattern — any candidate with a
+    # ``PP[PREP_TYPE=X]`` LHS satisfies it.
+    #
+    # PREP_TYPE values: from particles.yaml (BENEFICIARY / TOPIC /
+    # SOURCE / REASON / GOAL / EXCEPTIVE / ROLE / SIMILATIVE).
+    # The PP[PREP_TYPE=RANGE] variant is registered separately by
+    # the Phase 10.J.post-1 range-PP rule in nominal.py.
+    for prep_type in ("BENEFICIARY", "TOPIC", "SOURCE", "REASON",
+                       "GOAL", "EXCEPTIVE", "ROLE", "SIMILATIVE"):
+        rules.append(Rule(
+            f"PP[PREP_TYPE={prep_type}]",
+            [f"PREP[PREP_TYPE={prep_type}]", "NP[CASE=DAT]"],
+            _eqs(
+                "(↑) = ↓1",
+                "(↑ OBJ) = ↓2",
+            ),
+        ))
 
     # ay-fronting an AdvP. The fronted phrase is BOTH the matrix
     # TOPIC and a member of the matrix's ADJ set (sentential
