@@ -115,6 +115,10 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # (Phase 10.J.post-1 binary comma+at coord moved to pipeline-level
+    # synthesis — see _try_comma_at_np_split in core/pipeline.py)
+
+
     # --- Phase 5k Commit 4 + Phase 5n.A Commit 20: 3-flat coord ---
     #
     # Two surface variants per case × two coord values, twelve rules
@@ -1409,3 +1413,25 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↓3 COORD) =c 'AND'",
             ] + v2_extras_eqs,
         ))
+
+
+    # --- Phase 10.J.post-1: binary NP coord with leading comma ---
+    #
+    # ``ang panahon ng tag-init mula Abril hanggang Hunyo, at ang
+    # panahon ng tag-ulan mula Hulyo hanggang Oktubre`` — the two
+    # appositive NPs in PANAHON sent-2's post-colon enumeration.
+    #
+    # **Moved to pipeline-level synthesis** in
+    # :func:`tgllfg.core.pipeline._try_comma_at_np_split`. A chart
+    # rule with this shape was tried first (``NP[CASE=X, COORD=AND]
+    # → NP[CASE=X] PUNCT[COMMA] PART[COORD=AND] NP[CASE=X]``) but
+    # increased chart-state count enough to push the canonical
+    # short-c-tree parse of ``Bumili ng dalawang malalaking aklat
+    # at ng tatlong maliliit na lapis si Maria`` past the default
+    # 5000-tree iteration cap — even with ``budget=1`` and
+    # registered-last placement (chart-state count is independent
+    # of forest-emission budget). The pipeline-level synthesis
+    # avoids chart competition entirely: it activates only when the
+    # caller explicitly parses a segment as ``NP[CASE=NOM]`` (the
+    # colon-split fast path's post-half) and the text contains
+    # ``, at ``. Outside that context the chart is unchanged.
