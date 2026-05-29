@@ -2724,6 +2724,18 @@
   feats: {SEM_CLASS: TIME}
   source: audit-corpus
 
+# Phase 10.J.post-7.2: ``pagkawala`` "loss, disappearance, absence"
+# — pagka- nominalization of ``wala`` (be lost, become absent). The
+# pagka-V nominal pattern is productive (Schachter & Otanes 1972
+# §6 noun-derivation, R&G 1981 ch. 4). Closes the inner NP
+# ``pagkawala niya ng trabaho`` "(his) loss of (the) job" in the
+# post-7.2 dahilan-2 exemplar (``Dahilan sa pagkawala niya ng
+# trabaho, naghirap ang pamilya.``).
+- citation: pagkawala
+  pos: NOUN
+  gloss: loss, disappearance, absence
+  source: audit-corpus
+
 - citation: paglalagyan
   pos: NOUN
   gloss: container; placing site; receptacle
@@ -2737,6 +2749,18 @@
 - citation: pagmamadali
   pos: NOUN
   gloss: haste, rush
+  source: audit-corpus
+
+# Phase 10.J.post-7.2: ``pagod`` "tiredness, exhaustion" as a state
+# nominal — polysemous with the ADJ ``pagod`` ("tired",
+# adjectives.yaml:523) and the INTR VERB ``pagod`` ("be tired",
+# verbs.yaml:1581). The N entry licenses the bare nominal use after
+# ``sa`` (``sa pagod`` "from exhaustion") which feeds the post-7.2
+# dahilan-3 exemplar (``Dahilan sa pagod, natulog kaagad si Maria.``).
+# Reference: S&O 1972 §6 (ADJ ↔ N coercion for state terms).
+- citation: pagod
+  pos: NOUN
+  gloss: tiredness, exhaustion
   source: audit-corpus
 
 - citation: pagpatak

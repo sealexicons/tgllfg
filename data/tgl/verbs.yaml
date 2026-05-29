@@ -933,7 +933,19 @@
   pos: VERB
   gloss: have difficulty (with), struggle, find arduous
   transitivity: TR
-  affix_class: [ma, ma_an, maka]
+  # Phase 10.J.post-7.2: ``mag`` added — productive AV-INTR
+  # ``naghirap`` "suffered, underwent hardship" (PFV mag- + hirap),
+  # ``naghihirap`` (IPFV), ``maghihirap`` (CTPL). Closes the inner
+  # clause ``naghirap ang pamilya`` in the post-7.2 dahilan-2
+  # exemplar (``Dahilan sa pagkawala niya ng trabaho, naghirap ang
+  # pamilya.``). Citation: S&O 1972 mag- intransitive paradigm.
+  #
+  # ``AV_ABSOL: true`` licenses the bare ``S → V[AV] NP[CASE=NOM]``
+  # for AV-TR forms with implicit OBJ — required so ``Naghirap ang
+  # pamilya.`` parses (the ``suffer`` reading has no inherent OBJ).
+  # Parallel to ``sagot`` (post-7.1), ``sayaw``, ``luto`` in this file.
+  feats: {AV_ABSOL: true}
+  affix_class: [mag, ma, ma_an, maka]
   source: audit-corpus
 
 - citation: hiwa
