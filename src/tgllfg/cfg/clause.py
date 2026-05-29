@@ -1819,6 +1819,57 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 10.J.post-7.3: V[COPULA] + Wackernagel-clitic + ADJ ----
+    #
+    # ``Naging masungit siya.``    "He became grumpy." (clitic-reordered)
+    # ``Naging maganda siya.``     "She became beautiful."
+    # ``Naging mabait siya.``      "She became kind."
+    #
+    # Companion to the ``V[COPULA] ADJ[PREDICATIVE] NP[CASE=NOM]``
+    # rule directly above (canonical V-ADJ-NP order). When the
+    # SUBJ-NP is a 2P PRON-clitic, ``reorder_clitics`` (Phase 4 §7.3
+    # Wackernagel placement) moves it to the second-position slot
+    # past the COPULA verb — so the chart sees the
+    # ``V[COPULA] PRON[CASE=NOM] ADJ[PREDICATIVE]`` shape instead.
+    #
+    # Without this rule ``Naging masungit siya.`` (and parallel
+    # forms like ``Naging mabait siya.``) zero-parse, because the
+    # canonical V-ADJ-NP rule never matches the post-reorder token
+    # stream. The N-pred companion (``Naging tamad siya.``) parses
+    # because Wackernagel doesn't reorder PRON before NOUN — only
+    # before ADJ/V.
+    #
+    # Narrowed to ``PRON[CASE=NOM]`` (not the broader ``NP[CASE=NOM]``)
+    # because only PRON-clitics trigger Wackernagel reorder; full NPs
+    # stay in post-V position and are handled by the canonical rule.
+    # The narrower bracket gate prevents forest-density expansion on
+    # sentences with multiple NP-NOM positions (e.g., the wave-2 rc1990
+    # ``kahit na``-Subord sentence that was bumping against the
+    # 10s SIGALRM under the broader rule).
+    #
+    # Equation set matches the canonical rule above except for the
+    # daughter indices on SUBJ binding and ADJ_LEMMA lift (↓2 ↔ ↓3
+    # swap reflecting the swapped daughter order).
+    #
+    # Closes the post-comma half of the post-7.3 alalaong-1 exemplar
+    # (``Alalaong baga, naging masungit na siya.``). The ``na``
+    # particle attaches via the standard 2P-clitic mechanism — it
+    # rides along with ``siya`` in the reordered cluster.
+    rules.append(Rule(
+        "S",
+        ["V[COPULA]", "PRON[CASE=NOM]", "ADJ[PREDICATIVE]"],
+        [
+            "(↑ PRED) = 'BECOME-ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "(↑ ADJ_LEMMA) = ↓3 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↑ COPULA) = true",
+            "(↑ ASPECT) = ↓1 ASPECT",
+            "(↓1 COPULA) =c true",
+            "(↓3 PREDICATIVE) =c true",
+        ],
+    ))
+
     # --- 9.X.c19: ka-N companion S_GAP for RC bodies --------------
     #
     # ``Ang ulan na kasama nito ay nagpapabaha.`` "The rain that

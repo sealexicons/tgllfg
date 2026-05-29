@@ -1944,6 +1944,25 @@
   pos: PART
   feats: {LEMMA: bukod}
 
+# Phase 10.J.post-7.3: REFORM (reformulation) multi-word discourse
+# marker ``alalaong baga`` "in other words / that is to say".
+# Heads (``alalaong`` / ``baga``) are LEMMA-only PARTs that
+# compose to a virtual ``PART[DISCOURSE_POS=SENTENCE_INITIAL]``
+# via a new Commit-11-style multi-word rule in cfg/discourse.py.
+# Each head also exists in the historical Tagalog lex as a
+# standalone word (alalaong = "as if to say", baga = archaic
+# emphatic / "lung / lungs (anatomical)"); the multi-word REFORM
+# reading is fixed-idiom only — composes only via the discourse.py
+# builder, not as a free phrasal combination.
+# Reference: S&O 1972 §3.5 discourse-connective inventory; user-
+# verified via GT 2026-05-29 for post-7.3 constructed exemplars.
+- surface: alalaong
+  pos: PART
+  feats: {LEMMA: alalaong}
+- surface: baga
+  pos: PART
+  feats: {LEMMA: baga}
+
 # (e) Emphatic post-N particle
 #
 # ``mismo`` "self / exactly" attaches post-N as an ADJUNCT

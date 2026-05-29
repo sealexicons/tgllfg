@@ -181,11 +181,12 @@ class TestInventoryTotals:
             r for r in data.roots
             if r.pos == "ADJ" and "ma_adj" in r.affix_class
         ]
-        assert len(ma_adj_roots) == 64, (
-            f"expected 64 ma_adj-opting ADJ roots (30 Phase 5g "
+        assert len(ma_adj_roots) == 65, (
+            f"expected 65 ma_adj-opting ADJ roots (30 Phase 5g "
             f"+ 9 Phase 5n.A C1 + 1 Phase 5n.C.3 C8 + 1 Phase 8.C "
             f"+ 3 Phase 8.L + 4 Phase 9.F + 9 Phase 9.X.pre-1.8 "
-            f"+ 1 Phase 9.X.pre-1.18 + 6 Phase 9.X.pre-1.30); "
+            f"+ 1 Phase 9.X.pre-1.18 + 6 Phase 9.X.pre-1.30 "
+            f"+ 1 Phase 10.J.post-7.3 sungit); "
             f"got {len(ma_adj_roots)}"
         )
 

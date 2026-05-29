@@ -686,6 +686,17 @@
   source: audit-corpus
   loan: SPANISH
 
+# Phase 10.J.post-7.3: ``sungit`` ROOT → ``masungit`` ADJ "grumpy,
+# ill-tempered, surly". Productive ma_adj derivation (the root
+# carries the abstract-quality reading, the ma- prefix forms the
+# predicative ADJ). Closes the post-comma half of the post-7.3
+# alalaong-1 exemplar (``Alalaong baga, naging masungit na siya.``).
+- citation: sungit
+  pos: ADJ
+  gloss: grumpy, ill-tempered, surly
+  affix_class: [ma_adj]
+  source: audit-corpus
+
 - citation: taas
   pos: ADJ
   gloss: high, tall

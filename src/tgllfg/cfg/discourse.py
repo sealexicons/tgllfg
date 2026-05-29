@@ -531,6 +531,47 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 10.J.post-7.3: ``alalaong baga`` REFORM marker ---------
+    #
+    # ``Alalaong baga, naging masungit na siya.``
+    #     "In other words, he has become grumpy."
+    # ``Alalaong baga, marami pa tayong dapat gawin.``
+    #     "That is to say, we still have a lot to do." (inner clause
+    #     deferred to post-7.3.post-1 — Q-existential-possessive +
+    #     dapat-V-cluster construction)
+    #
+    # Two-token phrasal discourse marker building a virtual PART
+    # node with DISCOURSE_POS=SENTENCE_INITIAL + DISCOURSE=REFORM
+    # (reformulation marker). The fixed idiom means "in other words"
+    # / "that is to say" — a metalinguistic reformulation operator
+    # paralleling Spanish ``es decir`` / English ``i.e.``.
+    #
+    # Heads (``alalaong`` / ``baga``) are LEMMA-only PARTs added in
+    # particles.yaml § (d). Neither composes to REFORM on its own;
+    # only the fixed two-token sequence fires this rule. The
+    # daughters are matched by LEMMA constraining equations
+    # (parallel to Phase 5m Commit 11's ``gayon din`` / ``ganon din``
+    # builders).
+    #
+    # Once built, this virtual PART feeds the existing Phase 9.V.4b
+    # comma-variant rule at the end of this function
+    # (``S → PART[DISCOURSE_POS=SENTENCE_INITIAL] PUNCT[COMMA] S``)
+    # to yield the comma-fronted matrix shape.
+    #
+    # Reference: S&O 1972 §3.5 discourse-connective inventory; user-
+    # verified via GT 2026-05-29 for post-7.3 constructed exemplars.
+    rules.append(Rule(
+        "PART[DISCOURSE_POS=SENTENCE_INITIAL]",
+        ["PART", "PART"],
+        [
+            "(↑ DISCOURSE) = 'REFORM'",
+            "(↑ DISCOURSE_POS) = 'SENTENCE_INITIAL'",
+            "(↑ LEMMA) = 'alalaong_baga'",
+            "(↓1 LEMMA) =c 'alalaong'",
+            "(↓2 LEMMA) =c 'baga'",
+        ],
+    ))
+
     # --- Phase 9.V.4a: "Una sa lahat" multi-word discourse marker -----
     #
     # ``Una sa lahat, ang isang Pilipino ay bahagi ng kanyang pamilya.``
