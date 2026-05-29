@@ -3815,6 +3815,239 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 10.J.post-7.3.1: Q-existential-possessive ----------
+    #
+    # ``Marami akong aklat.``         "I have many books."
+    # ``Marami siyang aklat.``        "She has many books."
+    # ``Marami akong gagawin.``       "I have many to do."
+    # ``Marami tayong dapat gawin.``  "We have many to do."
+    # ``Marami pa tayong dapat gawin.`` (alalaong-2 inner clause —
+    #     trailing ``pa`` reordered to end-of-sentence and absorbed
+    #     by the standard ``S → S PART`` rule)
+    #
+    # Companions to the Q-existential rules above for the internal-
+    # clitic possessor pattern: a PRON-NOM clitic between the Q and
+    # the linker-bound complement, semantically the possessor of the
+    # existent. Parallel to the Phase 5j Commit 5b internal-clitic
+    # HAVE rule (line 4274) which uses ``PART[EXISTENTIAL]`` in the
+    # predicate slot; here Q fills that slot. The Q lifts QUANT to
+    # the matrix; the rule lifts ``HAVE = true`` and
+    # ``CLAUSE_TYPE = 'EXISTENTIAL'`` for downstream consumers.
+    #
+    # Three variants on the complement:
+    #
+    #   (a) N — the canonical possessed-N pattern
+    #       (``Marami akong aklat.``)
+    #   (b) V — a single V-cluster as the possessed-action
+    #       (``Marami akong gagawin.`` — V[VOICE=OV, CTPL]
+    #       functioning as a deverbal noun "things-to-do")
+    #   (c) V[CTRL_CLASS=MODAL] V[VOICE=OV] — modal+OV verb cluster
+    #       (``Marami tayong dapat gawin.`` — "many we-should-do")
+    #
+    # The V-variant follows the Phase 8.R V-headed existential pattern
+    # (line 3843) — the V is functioning as a nominalized possessum;
+    # the matrix SUBJ carries ``NOMINALIZED = true`` and the V's
+    # LEMMA/VOICE/ASPECT signature.
+    #
+    # Audit-attested: wave-2 rg-int sent-325
+    # (``Marami akong matututunan sa inyo.``) blocked at lex by the
+    # ``matututunan`` ma-CV-X-an LV-potentive paradigm cell (post-11
+    # target). The R(b) V-variant covers the construction once
+    # the paradigm cell lands.
+    # ``¬ (↓1 DUAL)`` excludes the DUAL Q ``kapwa`` / ``pareho``
+    # (QUANT=BOTH) from firing as existentials — those carry their
+    # own DUAL-modifier clause type (test_q_clitic_predicate) which
+    # would conflict with the EXIST PRED produced here.
+    for link in ("NA", "NG"):
+        # (a) Q + PRON + LINK + N (Q-existential-possessive, N variant)
+        rules.append(Rule(
+            "S",
+            ["Q", "PRON[CASE=NOM]", f"PART[LINK={link}]", "N"],
+            [
+                "(↑ PRED) = 'EXIST <SUBJ>'",
+                "(↑ SUBJ) = ↓4",
+                "(↑ SUBJ POSSESSOR) = ↓2",
+                "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+                "(↑ QUANT) = ↓1 QUANT",
+                "(↑ HAVE) = true",
+                f"(↓3 LINK) =c '{link}'",
+                "¬ (↓1 DUAL)",
+            ],
+        ))
+        # (b) Q + PRON + LINK + V (Q-existential-possessive, V-cluster
+        # variant; V as deverbal nominalization)
+        rules.append(Rule(
+            "S",
+            ["Q", "PRON[CASE=NOM]", f"PART[LINK={link}]", "V"],
+            [
+                "(↑ PRED) = 'EXIST <SUBJ>'",
+                "(↑ SUBJ NOMINALIZED) = true",
+                "(↑ SUBJ V_LEMMA) = ↓4 LEMMA",
+                "(↑ SUBJ V_VOICE) = ↓4 VOICE",
+                "(↑ SUBJ V_ASPECT) = ↓4 ASPECT",
+                "(↑ SUBJ POSSESSOR) = ↓2",
+                "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+                "(↑ QUANT) = ↓1 QUANT",
+                "(↑ HAVE) = true",
+                f"(↓3 LINK) =c '{link}'",
+                "¬ (↓1 DUAL)",
+            ],
+        ))
+        # (c) Q + PRON + LINK + V[MODAL] + V[OV] (modal+OV cluster
+        # — closes the alalaong-2 inner clause)
+        rules.append(Rule(
+            "S",
+            [
+                "Q",
+                "PRON[CASE=NOM]",
+                f"PART[LINK={link}]",
+                "V[CTRL_CLASS=MODAL]",
+                "V[VOICE=OV]",
+            ],
+            [
+                "(↑ PRED) = 'EXIST <SUBJ>'",
+                "(↑ SUBJ NOMINALIZED) = true",
+                "(↑ SUBJ V_LEMMA) = ↓5 LEMMA",
+                "(↑ SUBJ V_MODAL_LEMMA) = ↓4 LEMMA",
+                "(↑ SUBJ POSSESSOR) = ↓2",
+                "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+                "(↑ QUANT) = ↓1 QUANT",
+                "(↑ HAVE) = true",
+                f"(↓3 LINK) =c '{link}'",
+                "(↓4 CTRL_CLASS) =c 'MODAL'",
+                "¬ (↓1 DUAL)",
+            ],
+        ))
+
+    # --- Phase 10.J.post-7.3.1: Q-existential without possessor ----
+    #
+    # ``Maraming gagawin.``        "There is much to do."
+    # ``Maraming dapat gawin.``    "There is much that should be done."
+    #
+    # Parallel to the existing Q-existential-with-N rules above
+    # (line 3793, ``S → Q PART[LINK] N``) but with V or V-cluster
+    # complements instead of N. The Q acts as existential predicate
+    # over the V's deverbal nominalization; no possessor.
+    for link in ("NA", "NG"):
+        # Q + LINK + V
+        rules.append(Rule(
+            "S",
+            ["Q", f"PART[LINK={link}]", "V"],
+            [
+                "(↑ PRED) = 'EXIST <SUBJ>'",
+                "(↑ SUBJ NOMINALIZED) = true",
+                "(↑ SUBJ V_LEMMA) = ↓3 LEMMA",
+                "(↑ SUBJ V_VOICE) = ↓3 VOICE",
+                "(↑ SUBJ V_ASPECT) = ↓3 ASPECT",
+                "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+                "(↑ QUANT) = ↓1 QUANT",
+                f"(↓2 LINK) =c '{link}'",
+                "¬ (↓1 DUAL)",
+            ],
+        ))
+        # Q + LINK + V[MODAL] + V[OV]
+        rules.append(Rule(
+            "S",
+            [
+                "Q",
+                f"PART[LINK={link}]",
+                "V[CTRL_CLASS=MODAL]",
+                "V[VOICE=OV]",
+            ],
+            [
+                "(↑ PRED) = 'EXIST <SUBJ>'",
+                "(↑ SUBJ NOMINALIZED) = true",
+                "(↑ SUBJ V_LEMMA) = ↓4 LEMMA",
+                "(↑ SUBJ V_MODAL_LEMMA) = ↓3 LEMMA",
+                "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+                "(↑ QUANT) = ↓1 QUANT",
+                f"(↓2 LINK) =c '{link}'",
+                "(↓3 CTRL_CLASS) =c 'MODAL'",
+                "¬ (↓1 DUAL)",
+            ],
+        ))
+
+    # Bare modal+OV imperative (``Dapat gawin.`` / ``Dapat gawin
+    # natin.``) — deferred from post-7.3.1 to a follow-on. The chart
+    # daughter sequence ``V[CTRL_CLASS=MODAL] V[VOICE=OV]`` is
+    # tractable; the obstacle is XCOMP-completeness: the V[OV]'s
+    # PRED template (e.g., ``GAWA <SUBJ, OBJ>``) demands SUBJ and
+    # OBJ argument slots that the bare-imperative reading PRO-fills
+    # implicitly. The existing Phase 7a.E modal-control rules
+    # (control.py:476–600) route through ``S_XCOMP`` (a SUBJ-gapped
+    # clause) which has the PRO machinery built in. Adapting the
+    # bare-V[OV] case requires either (a) introducing an
+    # ``XCOMP_PRO`` shape that PRO-fills the OV verb's argument
+    # slots, or (b) building a V-cluster non-terminal that wraps
+    # the OV in an S_XCOMP-shaped structure. Either is bigger scope
+    # than post-7.3.1's Q-existential closure goal.
+
+    # --- Phase 10.J.post-7.3.1: mayroon-existential-possessive (V) ---
+    #
+    # ``Mayroon akong gagawin.``       "I have things to do."
+    # ``Mayroon siyang dapat gawin.``  "She has things to do."
+    #
+    # Companion to the Phase 5j Commit 5b ``PART[EXISTENTIAL] + PRON
+    # + LINK + N`` rule (line 4274, may/mayroon HAVE with internal
+    # clitic possessor) for the V-complement case. The Phase 9.X.post-3
+    # V-variant rule (line 4251) handles the alternate V-PRON-LINK-N
+    # order (``May binili siyang aklat.``); this companion handles
+    # the PRON-LINK-V order surfaced by ``Mayroon akong gagawin.``.
+    #
+    # Parallel to the post-7.3.1 Q-existential V-variant directly
+    # above but with ``PART[EXISTENTIAL]`` in the predicate slot
+    # instead of Q. No QUANT lift (mayroon carries no quantity feat).
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            [
+                "PART[EXISTENTIAL, POLARITY=POS]",
+                "PRON[CASE=NOM]",
+                f"PART[LINK={link}]",
+                "V",
+            ],
+            [
+                "(↑ PRED) = 'EXIST <SUBJ>'",
+                "(↑ SUBJ NOMINALIZED) = true",
+                "(↑ SUBJ V_LEMMA) = ↓4 LEMMA",
+                "(↑ SUBJ V_VOICE) = ↓4 VOICE",
+                "(↑ SUBJ V_ASPECT) = ↓4 ASPECT",
+                "(↑ SUBJ POSSESSOR) = ↓2",
+                "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+                "(↑ POLARITY) = 'POS'",
+                "(↑ HAVE) = true",
+                "(↓1 EXISTENTIAL) =c true",
+                "(↓1 POLARITY) =c 'POS'",
+                f"(↓3 LINK) =c '{link}'",
+            ],
+        ))
+        # Modal+OV cluster variant
+        rules.append(Rule(
+            "S",
+            [
+                "PART[EXISTENTIAL, POLARITY=POS]",
+                "PRON[CASE=NOM]",
+                f"PART[LINK={link}]",
+                "V[CTRL_CLASS=MODAL]",
+                "V[VOICE=OV]",
+            ],
+            [
+                "(↑ PRED) = 'EXIST <SUBJ>'",
+                "(↑ SUBJ NOMINALIZED) = true",
+                "(↑ SUBJ V_LEMMA) = ↓5 LEMMA",
+                "(↑ SUBJ V_MODAL_LEMMA) = ↓4 LEMMA",
+                "(↑ SUBJ POSSESSOR) = ↓2",
+                "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+                "(↑ POLARITY) = 'POS'",
+                "(↑ HAVE) = true",
+                "(↓1 EXISTENTIAL) =c true",
+                "(↓1 POLARITY) =c 'POS'",
+                f"(↓3 LINK) =c '{link}'",
+                "(↓4 CTRL_CLASS) =c 'MODAL'",
+            ],
+        ))
+
+
     # === Phase 8.R-class follow-on (8.F): V-headed existential =========
     #
     # ``May binalak siya.``               "He had a plan."
