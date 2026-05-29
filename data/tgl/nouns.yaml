@@ -74,6 +74,15 @@
   gloss: memory, remembrance
   source: audit-corpus
 
+# Phase 10.J.post-6: NOUN used in the unattributed-construction
+# corpus exemplar ``Ang alaga ko ay mga hayop: ang aso at pusa.``
+# (pred-n/alaga-hayop-2item). The bare-N "ang aso at pusa" coord
+# still doesn't parse — that's a post-10 (bare-comma N coord) gap.
+- citation: alaga
+  pos: NOUN
+  gloss: pet, ward; charge (someone or something cared for)
+  source: audit-corpus
+
 - citation: alak
   pos: NOUN
   gloss: wine, liquor
@@ -1045,6 +1054,18 @@
   subclass: [PERSON, FEMALE]
   source: audit-corpus
 
+# Phase 10.J.post-6: Spanish-loan NOUN for the language name
+# (``espanyol`` "Spanish language" / "Spaniard"). Cognate of
+# Sp. ``español``; used in the unattributed-construction corpus
+# exemplar ``Ang regalo ay tatlong libro: tagalog, ingles at
+# espanyol.`` (pred-n/regalo-libro-3coord). Parallel to existing
+# language-name NOUNs ``tagalog`` and ``ingles``.
+- citation: espanyol
+  pos: NOUN
+  gloss: Spanish (language); Spaniard
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: espiya
   pos: NOUN
   gloss: spy
@@ -2005,6 +2026,16 @@
   pos: NOUN
   gloss: outside
 
+# Phase 10.J.post-6: English-loan NOUN for the dog breed, used in
+# the unattributed-construction corpus exemplar ``Ang aso ay isang
+# hayop: ang labrador.`` (pred-n/aso-hayop-labrador). Common in
+# spoken Tagalog; alphabetised between ``labas`` and ``lakad``.
+- citation: labrador
+  pos: NOUN
+  gloss: labrador (dog breed)
+  source: audit-corpus
+  loan: ENGLISH
+
 - citation: lakad
   pos: NOUN
   gloss: walk, errand
@@ -2164,6 +2195,18 @@
 - citation: lupa
   pos: NOUN
   gloss: earth, soil
+
+# Phase 10.J.post-6: NOUN sense of ``luto`` (the VERB ``luto`` "cook" is
+# in verbs.yaml). The deverbal-noun sense "cooked food, dish; cooking,
+# cuisine" surfaces in the equational ay-fronted construction
+# ``Ang gulay ay ang luto ng nanay.`` "Vegetables are mother's
+# dish/cooking." Parallel to other dual-POS lemmas: ``galit`` (NOUN
+# "anger" + ADJ "angry"); ``lungkot`` (NOUN "sadness" + VERB "feel
+# sad").
+- citation: luto
+  pos: NOUN
+  gloss: cooked food, dish; cooking, cuisine
+  source: audit-corpus
 
 - citation: maaari
   pos: NOUN
@@ -3165,6 +3208,17 @@
 - citation: puso
   pos: NOUN
   gloss: heart
+
+# Phase 10.J.post-6: Spanish-loan NOUN used in the equational ay-fronted
+# construction ``Ang tradisyonal na putahe sa pista ay ang litson.``
+# (wave-2 rg-intermediate). Cognate of Sp. ``potaje`` "stew, thick
+# soup"; in Tagalog discourse, ``putahe`` generalises to "dish, course
+# (in a meal)".
+- citation: putahe
+  pos: NOUN
+  gloss: dish, course (in a meal)
+  source: audit-corpus
+  loan: SPANISH
 
 - citation: putik
   pos: NOUN
