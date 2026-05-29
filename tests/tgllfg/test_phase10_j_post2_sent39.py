@@ -40,8 +40,6 @@ Two structural changes plus one pipeline mechanism:
     budget.
 """
 
-import pytest
-
 from tgllfg.cfg import Grammar
 from tgllfg.core.pipeline import parse_text
 

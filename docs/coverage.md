@@ -1364,6 +1364,79 @@ shift is benign). 12 new tests in
 `test_phase10_j_post2_sent39.py`. `test-both` gate clean at
 9271 / 9271 passed in 147.91s.
 
+### Phase 10.J.post-3 PANAHON sent-3 close-out (bucket F)
+
+Per the same structure-first directive: PANAHON sent-3
+(`Ang natitirang limang buwan ay naroong maghati sa init at
+ulan.`) was timing-blocked at cap=50000 (60.8s for 1 parse)
+under the chart-level Phase 4 §7.4 ay-fronting rule alone. The
+fan-out probe (`tmp/probe_10i_fanout.py PANAHON/sent-3`) ranked
+the matrix-span culprits in order: **`S → S PP`** at
+span_max=38896 (already 10.I-budgeted, still dominant via the
+cross-product), **`S → S TimeAdv`** at 29172 (spurious — `buwan`
+has SEM_CLASS=TIME but is inside the SUBJ NP), **`S → NP[CASE
+=NOM] S_GAP`** at 21164 (Phase 5n.B C21 colloquial no-`ay`
+variant, solve-time `(↓1 INDEF) =c 'YES'` over-predicting at
+every NP[NOM]+S_GAP position), **`S → S NP[CASE=DAT]`** at
+16120, **`S → NP[CASE=NOM] PART[LINK=AY] S_GAP`** (the chart's
+canonical ay-fronting rule, also fanning out via the
+matrix-span cross-product). Total forest at the un-budgeted
+estimate: 271K trees — the canonical parse sat past the cap.
+
+Pipeline-level ay-fronting split — **third instance** of the
+post-* split-and-glue pattern (after the post-1 colon-split and
+the post-2 fronted-PP-comma split). Activates when the input
+contains a free-standing `ay` token (or the bound `'y`
+contraction) at a sentence-internal position with non-trivial
+halves on each side. Pre-`ay` half parses as `NP[CASE=NOM]`;
+post-`ay` half as `S_GAP` (a SUBJ-gapped clause). The matrix S
+is synthesized mirroring the chart rule's equations: matrix
+inherits the inner S_GAP's f-structure (`(↑) = ↓3`); TOPIC is
+the fronted NP (`(↑ TOPIC) = ↓1`); REL-PRO and SUBJ are
+re-pointed to the fronted NP so all three share identity
+(matching the chart-level `(↓3 REL-PRO) = ↓1` defining
+unification + the S_GAP body's internal `(↑ SUBJ) =
+(↑ REL-PRO)` reentrancy).
+
+Activation gate: `_looks_ay_fronted(text)` is a cheap surface
+check. The split logic uses **only** `ay` (and `'y` contraction
+markers) — never `at` (the coord conjunctor "and"). For sent-3
+the `at` between `init` and `ulan` stays intact inside the
+post-`ay` half and the chart's standard at-coord rule
+`N[COORD=AND] → N PART N` handles it normally inside the
+sa-PP.
+
+Per-sentence perf: sent-3 **60.8s @ cap=50000 → 0.8s @
+cap=5000 (~76× speedup)**.
+
+Full 8-wave audit: **wave-1 92/123 → 93/123 (+1: PANAHON
+sent-3 parse-success-1)**; **0 closures, 0 regressions, 0
+bucket-only changes on all other waves** (cleanest post-* yet
+— the ay-split is a pure pipeline addition that activates only
+on inputs matching the `NP ay S_GAP` shape; the chart is
+unchanged). Cumulative xwave (8 audit waves): 941 / 3046 (+1
+from the post-2 baseline of 940).
+
+12 new tests in `test_phase10_j_post3_sent3.py`:
+
+- `TestSent3Closure` (1): closure + the canonical TOPIC ==
+  REL-PRO == SUBJ identity invariant from the chart-level
+  Phase 4 §7.4 rule.
+- `TestAyDetection` (5): activation heuristic accepts `ay` in
+  middle and bound `'y`; rejects leading `ay`, comma-less
+  inputs, too-short inputs.
+- `TestAySplit` (4): split function partitions correctly on
+  free-standing `ay` and bound `'y`; returns `None` when
+  absent; verifies `init at ulan` stays in the post-half
+  for sent-3.
+- `TestNoRegressionOnExistingAyFronting` (2):
+  `Ang aso ay tumakbo.` and `Ang aso ay kumain ng isda.` still
+  parse correctly with the TOPIC == SUBJ invariant
+  (chart-level rule's behavior preserved through the new
+  fast path).
+
+`test-both` gate clean at 9283 / 9283 passed in 149.41s.
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
