@@ -178,7 +178,40 @@ class TestColonSplitFastPath:
 
     def test_panahon_sent9_closes(self) -> None:
         """PANAHON sent-9 — the long-tail comma-enumeration after a
-        colon. Same fast-path mechanism as sent-2."""
+        colon. Same fast-path mechanism as sent-2.
+
+        **Phase 10.J.post-4 tightening (analysis A pin).** The
+        colon-split fires first (pipeline.py:243) and early-returns,
+        collapsing the ``(X ay Y) : Z`` vs ``X ay (Y : Z)``
+        ambiguity in favor of analysis A (matrix-level colon-
+        appositive). Analysis B handling is deferred to post-5
+        (the spike-then-decide sub-PR).
+
+        Structure of analysis A on sent-9:
+
+        * Matrix is an S-coord (``COORD=AND``) with 2 conjuncts
+          for the top-level ``at`` (``Tigang rin ... bukirin`` +
+          ``karaniwang ang inaani ay mga prutas at gulay``).
+        * The post-colon enumeration (``ang mangga, bayabas,
+          santol, abokado, melon at pakwan``) sits in the matrix's
+          ``APP`` set as a single ``COORD=AND`` NP with 6
+          conjuncts.
+        * The second S-coord conjunct carries the inner ay-clause
+          (``ang inaani ay mga prutas at gulay``). Its ``TOPIC ==
+          SUBJ`` identity comes from the chart-level Phase 4 §7.4
+          rule. ``REL-PRO`` is not surfaced at the matrix (the
+          chart's ``=c`` constraining equation enforces the
+          binding but doesn't write the feature). The post-4
+          chained-pipeline-split infra does NOT change this — the
+          ``ay`` is inside an S-coord conjunct of the colon-
+          split's pre-half, not at its matrix level, so the
+          chained ay-split doesn't fire here. (Top-level ay-
+          fronting + chained-ay-from-colon-pre both DO surface
+          REL-PRO; tests for those identities live in
+          ``test_phase10_j_post4.py``.)
+        * The first S-coord conjunct (``Tigang rin ang mga
+          bukirin``) has no TOPIC (no ay-fronting on that side).
+        """
         text = (
             "Tigang rin ang mga bukirin at karaniwang ang inaani ay "
             "mga prutas at gulay: ang mangga, bayabas, santol, "
@@ -186,6 +219,62 @@ class TestColonSplitFastPath:
         )
         parses = parse_text(text)
         assert len(parses) >= 1
+        _ct, fs, _astr, _diags = parses[0]
+
+        # Matrix S is the top-level `at`-coord: COORD=AND, 2
+        # conjuncts, 1 APP from the colon-appositive enumeration.
+        assert fs.feats.get("COORD") == "AND", (
+            "Top-level should be S-coord (`Tigang rin ... at "
+            "karaniwang ...`)."
+        )
+        conjuncts = fs.feats.get("CONJUNCTS")
+        assert conjuncts is not None
+        assert len(conjuncts) == 2, (
+            f"Expected 2 S-coord conjuncts; got {len(conjuncts)}"
+        )
+        conj_list = list(conjuncts)
+
+        # APP is the post-colon enumeration NP: COORD=AND with 6
+        # conjuncts (mangga, bayabas, santol, abokado, melon,
+        # pakwan).
+        app = fs.feats.get("APP")
+        assert app is not None, "Colon appositive missing from APP"
+        assert len(app) == 1
+        appositive = next(iter(app))
+        assert appositive.feats.get("COORD") == "AND", (
+            "Post-colon enumeration should be a COORD=AND NP"
+        )
+        enum_conjuncts = appositive.feats.get("CONJUNCTS")
+        assert enum_conjuncts is not None
+        assert len(enum_conjuncts) == 6, (
+            f"Expected 6 fruits/vegs in enumeration; got "
+            f"{len(enum_conjuncts)}"
+        )
+
+        # Inner ay-clause (the second S-coord conjunct) has
+        # TOPIC == SUBJ from chart-level Phase 4 §7.4. REL-PRO
+        # is not surfaced at the matrix (see docstring).
+        inner_ay = conj_list[1]
+        assert inner_ay.feats.get("PRED") == "BE-N <SUBJ>", (
+            "Inner ay-clause should be predicative-N"
+        )
+        topic = inner_ay.feats.get("TOPIC")
+        subj = inner_ay.feats.get("SUBJ")
+        assert topic is not None, (
+            "Inner ay-clause should have TOPIC (the fronted NP)"
+        )
+        assert subj is not None, "Inner ay-clause should have SUBJ"
+        assert topic is subj, (
+            "Inner ay-clause TOPIC must equal SUBJ (Phase 4 §7.4)"
+        )
+
+        # First S-coord conjunct (Tigang rin ang mga bukirin) has
+        # no TOPIC — no ay-fronting on that side.
+        first_conj = conj_list[0]
+        assert first_conj.feats.get("TOPIC") is None, (
+            "First S-coord conjunct should have no TOPIC "
+            "(no ay-fronting on that side)"
+        )
 
     def test_short_colon_sentence_still_works(self) -> None:
         """A short colon-appositive sentence should parse via the

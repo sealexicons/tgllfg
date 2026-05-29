@@ -163,6 +163,7 @@ def parse_text_with_fragments(
     max_candidates: int | None = None,
     max_tree_iterations: int | None = 5000,
     precheck_defining: bool = False,
+    splits_applied: frozenset[str] = frozenset(),
 ) -> ParseResult:
     """Parse text, returning either complete parses (Phase 4 §7.9
     "happy path") or fragments (the failure-recovery mode).
@@ -239,7 +240,7 @@ def parse_text_with_fragments(
     # vs. 12.2s under the chart-level rule, audit p100 cap is 10s)
     # while preserving the chart as the safety net for unusual
     # colon shapes the split doesn't handle.
-    if ":" in text:
+    if ":" in text and "colon" not in splits_applied:
         split_result = _try_colon_split(
             text,
             n_best=n_best,
@@ -247,6 +248,7 @@ def parse_text_with_fragments(
             max_candidates=max_candidates,
             max_tree_iterations=max_tree_iterations,
             precheck_defining=precheck_defining,
+            splits_applied=splits_applied,
         )
         if split_result is not None and split_result.parses:
             return split_result
@@ -272,7 +274,7 @@ def parse_text_with_fragments(
     # the post-2 LHS refactor); the post-comma half against ``S``.
     # If either fails the split is dropped and the chart attempt
     # runs as fallback.
-    if "," in text:
+    if "," in text and "fronted_pp_comma" not in splits_applied:
         split_result = _try_fronted_pp_comma_split(
             text,
             n_best=n_best,
@@ -280,6 +282,7 @@ def parse_text_with_fragments(
             max_candidates=max_candidates,
             max_tree_iterations=max_tree_iterations,
             precheck_defining=precheck_defining,
+            splits_applied=splits_applied,
         )
         if split_result is not None and split_result.parses:
             return split_result
@@ -310,7 +313,7 @@ def parse_text_with_fragments(
     # position with non-trivial halves on each side. The detection
     # uses surface tokens (whitespace + the contraction marker)
     # rather than running the full pre-pass — fast and conservative.
-    if _looks_ay_fronted(text):
+    if _looks_ay_fronted(text) and "ay_fronting" not in splits_applied:
         split_result = _try_ay_fronting_split(
             text,
             n_best=n_best,
@@ -318,6 +321,7 @@ def parse_text_with_fragments(
             max_candidates=max_candidates,
             max_tree_iterations=max_tree_iterations,
             precheck_defining=precheck_defining,
+            splits_applied=splits_applied,
         )
         if split_result is not None and split_result.parses:
             return split_result
@@ -445,6 +449,7 @@ def _try_colon_split(
     max_candidates: int | None,
     max_tree_iterations: int | None,
     precheck_defining: bool,
+    splits_applied: frozenset[str] = frozenset(),
 ) -> ParseResult | None:
     """Parse ``pre`` (as ``S``) and ``post`` (as one of
     :data:`_POST_COLON_CATEGORIES`) independently, then synthesize a
@@ -476,6 +481,7 @@ def _try_colon_split(
         max_candidates=max_candidates,
         max_tree_iterations=max_tree_iterations,
         precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"colon"}),
     )
     if not pre_parses:
         return None
@@ -494,6 +500,7 @@ def _try_colon_split(
             max_candidates=max_candidates,
             max_tree_iterations=max_tree_iterations,
             precheck_defining=precheck_defining,
+            splits_applied=splits_applied | frozenset({"colon"}),
         )
         if post_parses:
             break
@@ -528,6 +535,7 @@ def _parse_segment_as(
     max_candidates: int | None,
     max_tree_iterations: int | None,
     precheck_defining: bool,
+    splits_applied: frozenset[str] = frozenset(),
 ) -> list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]]:
     """Parse ``text`` against the grammar with a non-default start
     symbol (e.g., ``NP[CASE=NOM]``). Returns the surviving parses.
@@ -535,7 +543,35 @@ def _parse_segment_as(
     Mirrors the pre-processing chain in :func:`parse_text_with_fragments`
     up through the chart call, then runs the same solve / LMT / WF
     loop but writes the start symbol into ``parse_with_annotations``.
+
+    Phase 10.J.post-4: when called from inside a split (``splits_applied``
+    is non-empty) with ``start_symbol == "S"``, route through
+    :func:`parse_text_with_fragments` so the other (un-applied) splits
+    can fire on this segment too. This gives sent-9's inner ay-clause
+    (whose pre-half rides the colon-split path) access to post-3's
+    ay-fronting-split, producing the same TOPIC == REL-PRO == SUBJ
+    identity that a top-level ay-fronted sentence gets — a consistency
+    fix more than just future-proofing. For non-S start symbols
+    (``NP[X]``, ``S_GAP``, ``PP[X]``, ``N``) the splits' glue
+    functions wouldn't fit so we go direct to chart.
     """
+    if start_symbol == "S" and splits_applied:
+        chained_result = parse_text_with_fragments(
+            text,
+            n_best=n_best,
+            chart_state_cap=chart_state_cap,
+            max_candidates=max_candidates,
+            max_tree_iterations=max_tree_iterations,
+            precheck_defining=precheck_defining,
+            splits_applied=splits_applied,
+        )
+        if chained_result.parses:
+            return list(chained_result.parses)
+        # Pipeline routing returned no parses — the chart attempt
+        # inside parse_text_with_fragments already tried and failed,
+        # so no falling-through to a duplicate chart parse here.
+        return []
+
     toks = tokenize(text)
     toks = split_apostrophe_t(toks)
     toks = split_apostrophe_y(toks)
@@ -831,6 +867,7 @@ def _try_fronted_pp_comma_split(
     max_candidates: int | None,
     max_tree_iterations: int | None,
     precheck_defining: bool,
+    splits_applied: frozenset[str] = frozenset(),
 ) -> ParseResult | None:
     """If ``text`` looks like ``REASON-PREP X, Y`` (e.g.,
     ``Dahil sa ganitong pagkakaayos ng panahon, …``), parse the
@@ -873,6 +910,7 @@ def _try_fronted_pp_comma_split(
         max_candidates=max_candidates,
         max_tree_iterations=max_tree_iterations,
         precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"fronted_pp_comma"}),
     )
     if not pre_parses:
         return None
@@ -884,6 +922,7 @@ def _try_fronted_pp_comma_split(
         max_candidates=max_candidates,
         max_tree_iterations=max_tree_iterations,
         precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"fronted_pp_comma"}),
     )
     if not post_parses:
         return None
@@ -1003,6 +1042,7 @@ def _try_ay_fronting_split(
     max_candidates: int | None,
     max_tree_iterations: int | None,
     precheck_defining: bool,
+    splits_applied: frozenset[str] = frozenset(),
 ) -> ParseResult | None:
     """If ``text`` matches the ``NP ay S_GAP`` ay-fronting pattern,
     parse the pre-``ay`` half as ``NP[CASE=NOM]`` and the
@@ -1030,6 +1070,7 @@ def _try_ay_fronting_split(
         max_candidates=max_candidates,
         max_tree_iterations=max_tree_iterations,
         precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"ay_fronting"}),
     )
     if not pre_parses:
         return None
@@ -1041,6 +1082,7 @@ def _try_ay_fronting_split(
         max_candidates=max_candidates,
         max_tree_iterations=max_tree_iterations,
         precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"ay_fronting"}),
     )
     if not post_parses:
         return None
