@@ -279,7 +279,19 @@ def register_rules(rules: list[Rule]) -> None:
     # semantically parallel to BENEFICIARY / TOPIC (a thematic
     # role scoping the matrix proposition), structurally identical
     # via the same ``S → S PP`` rule.
-    for prep_type in ("BENEFICIARY", "TOPIC", "GOAL"):
+    #
+    # Phase 10.J.post-7.2 lifts the c12 deferral on REASON
+    # (``dahil sa`` / ``dahilan sa``). The original deferral cited
+    # "PP-vs-SubordClause complement disambiguation" — but at chart
+    # level the PP daughter requires ``NP[CASE=DAT]`` (no S
+    # complement possible), and the post-7 ``SubordClause →
+    # PART[COMP_TYPE=REAS] S`` rule (subordination.py:471) already
+    # routes the bare-S complement case through a distinct
+    # SubordClause category. No chart-time ambiguity remains, so
+    # adding REASON to this loop is safe. Closes ``Hindi kami
+    # nakapasok sa eskwela dahilan sa ulan.`` (post-7.2 dahilan-4-postv)
+    # and the parallel ``dahil sa ulan`` clause-final exemplar.
+    for prep_type in ("BENEFICIARY", "TOPIC", "GOAL", "REASON"):
         rules.append(Rule(
             "S",
             ["S", "PP"],

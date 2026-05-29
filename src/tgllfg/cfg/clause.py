@@ -102,6 +102,39 @@ def register_rules(rules: list[Rule]) -> None:
         _eqs("(↑ SUBJ) = ↓3", "↓2 ∈ (↑ ADJUNCT)"),
     ))
 
+    # --- Phase 10.J.post-7.2: V + AdvP + NOM-SUBJ (AV) -----------------
+    #
+    # ``Natulog kaagad si Maria.``   "Maria fell asleep right away."
+    # ``Sumulat dati si Pedro.``      "Pedro wrote (previously)."
+    #
+    # AV verb (intransitive or AV_ABSOL-licensed TR) with an adverbial
+    # phrase inserted before the SUBJ-NP. The existing
+    # ``V[VOICE=AV] NP[CASE=NOM]`` rule (line 50) handles bare V-SUBJ
+    # and the post-wrap ``S → S AdvP`` (discourse.py:377) handles
+    # V-SUBJ-ADV; the V-ADV-SUBJ ordering was missing — it surfaces
+    # when a time-frame ADV scopes between V and SUBJ (one of three
+    # licit Tagalog adverbial slots, alongside post-V-SUBJ and the
+    # post-wrap).
+    #
+    # Gate: ``(↓2 ADV_TYPE) =c 'TIME'`` restricts to time-frame
+    # adverbials (``kaagad`` / ``dati`` / ``kahapon``) — keeps
+    # MANNER / LOCATION / SPATIAL AdvPs (still deferred for placement
+    # elsewhere) from over-firing here. Mirrors the existing
+    # post-wrap gate at discourse.py:383.
+    #
+    # Closes the post-half ``Natulog kaagad si Maria.`` in the
+    # post-7.2 dahilan-3 exemplar (``Dahilan sa pagod, natulog
+    # kaagad si Maria.``).
+    rules.append(Rule(
+        "S",
+        ["V[VOICE=AV]", "AdvP", "NP[CASE=NOM]"],
+        [
+            "(↑ SUBJ) = ↓3",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↓2 ADV_TYPE) =c 'TIME'",
+        ],
+    ))
+
     # --- Phase 9.V.1: SUBJ-trailing 4-element AV-TR (GEN-DAT-NOM) ------
     #
     # ``Kahapon ay sumulat ng liham kay Maria si Juan.``

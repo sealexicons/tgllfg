@@ -696,6 +696,21 @@
 - surface: dahil
   pos: PREP
   feats: {PREP_TYPE: REASON}
+# Phase 10.J.post-7.2: ``dahilan sa X`` "due to X / because of X" —
+# REASON preposition variant of ``dahil sa X``. ``dahilan`` is the
+# nominal-form variant (literally "cause / reason") that has
+# grammaticalised as a fixed REASON-PP head — semantically equivalent
+# to ``dahil sa X`` in causal-adjunct PPs. Both surface forms are
+# attested (S&O 1972 §6 reason adjuncts; pre-verified via GT
+# 2026-05-29 for post-7.2). Shares PREP_TYPE=REASON so it fires the
+# same chart rules as ``dahil``: ``PP → PREP NP[CASE=DAT]``, the
+# clause-final ``S → S PP[PREP_TYPE=REASON]`` (added post-7.2),
+# and the fronted-PP-comma split (pipeline.py ``_REASON_PREP_LEMMAS``).
+# Polysemous with no other lex entry — ``dahilan`` was previously
+# unrecognised (``_UNK``).
+- surface: dahilan
+  pos: PREP
+  feats: {PREP_TYPE: REASON, LEMMA: dahilan}
 # Phase 9.X.c29: ``tungo sa X`` "toward X / to X" — GOAL preposition.
 # Polysemous with the existing ``tungo`` NOUN ("destination,
 # direction, purpose") in nouns.yaml. Disambiguates by syntactic
