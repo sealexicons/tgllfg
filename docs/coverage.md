@@ -1437,6 +1437,100 @@ from the post-2 baseline of 940).
 
 `test-both` gate clean at 9283 / 9283 passed in 149.41s.
 
+### Phase 10.J.post-4 chained pipeline-split infra + sent-9 structural tighten (bucket F)
+
+Two scopes in one PR:
+
+1. **Chained pipeline-split infra.** Previously a split's `S`-shaped
+   segment (e.g., colon-split's pre-half) was parsed directly against
+   the chart via `_parse_segment_as`, which meant a segment with an
+   internal `ay` got the chart-level Phase 4 §7.4 rule's identity
+   pattern (TOPIC == SUBJ only, with REL-PRO surfacing for
+   predicative-V but not for predicative-N) rather than the post-3
+   ay-split's identity (TOPIC == REL-PRO == SUBJ unconditionally on
+   the split's glue). The post-4 infra adds a `splits_applied:
+   frozenset[str]` parameter that flows through
+   `parse_text_with_fragments`, each `_try_X_split`, and
+   `_parse_segment_as`. Each split guards on `'X' not in
+   splits_applied` (preventing infinite recursion) and passes
+   `splits_applied | {'X'}` to its `_parse_segment_as` calls. When
+   `_parse_segment_as` receives `start_symbol == "S"` with a
+   non-empty `splits_applied`, it routes the segment through
+   `parse_text_with_fragments` so the un-applied splits can fire on
+   it. Non-S start symbols (NP[X], S_GAP, PP[X], N) still go direct
+   to chart — the splits' glue functions don't fit at those levels.
+
+   This is a **consistency** fix more than a parse-rate fix: the
+   same text `X ay Y` produces the same f-structure regardless of
+   whether parsed at top level (post-3 ay-split fires) or inside
+   another split's S-shaped segment (was: chart only; now: chained
+   ay-split via the post-4 infra). It is also the enabling
+   infrastructure for **post-5's approach 2(b)** (chart-level
+   `NP → NP PUNCT[COLON] NP` rule — to be empirically evaluated in
+   the spike-then-decide sub-PR for the `(X ay Y) : Z` vs
+   `X ay (Y : Z)` analysis-B handling).
+
+2. **sent-9 structural tighten (analysis A pin).** The
+   `test_panahon_sent9_closes` test in `test_phase10_j_post1_sent2.py`
+   was loose (`len(parses) >= 1` only). Tightened to assert
+   analysis A's full structure:
+
+   - Matrix S has `COORD=AND` with 2 CONJUNCTS (top-level `at`-coord
+     between `Tigang rin ang mga bukirin` and `karaniwang ang inaani
+     ay mga prutas at gulay`).
+   - Post-colon enumeration sits in the matrix's APP set as a single
+     `COORD=AND` NP with 6 CONJUNCTS (mangga, bayabas, santol,
+     abokado, melon, pakwan).
+   - Inner ay-clause (second S-coord conjunct) has `PRED="BE-N
+     <SUBJ>"` (predicative-N) and `TOPIC == SUBJ` identity from
+     Phase 4 §7.4. **REL-PRO is not surfaced at the matrix** —
+     predicative-N constructions don't surface REL-PRO at all
+     (chart OR ay-split path; the post-3 split's glue does set
+     REL-PRO unconditionally, but the predicative-N body's
+     resolution overwrites it). The chained-pipeline-split infra
+     doesn't change this for sent-9's specific shape because the
+     `ay` lives inside an S-coord conjunct of the colon-split's
+     pre-half, not at its matrix level — chained-ay-split tries to
+     fire, parses the pre-`ay` "Tigang rin ang mga bukirin at
+     karaniwang ang inaani" as NP[CASE=NOM] (which fails — it's an
+     S-coord, not an NP), and falls through to the chart. The pin
+     focuses on what the parser actually produces.
+   - First S-coord conjunct (`Tigang rin ang mga bukirin`, no
+     ay-fronting) has no TOPIC.
+
+   The colon-split fires first (`core/pipeline.py:243`) and
+   early-returns, collapsing the `(X ay Y) : Z` vs `X ay (Y : Z)`
+   ambiguity in favor of analysis A. Analysis B handling is
+   deferred to post-5.
+
+Full 8-wave audit (vs post-3 baseline snapshot at
+`tmp/audit-baseline-post3/`): **0 closures, 0 regressions, 0
+bucket-only changes on every wave**. wave-1 93/123 unchanged; xwave
+941/3046 unchanged across all 8 waves; unattributed-constructions
+33/33 unchanged. The cleanest post-* audit result yet — the
+chained infra is purely additive in audit outcomes (it changes
+internal f-structure shape for affected sentences but doesn't flip
+any parse-success bucket).
+
+New tests in `test_phase10_j_post4.py` (9 tests):
+
+- `TestChainedAyFromColonPre` (2): colon-split's pre-half with
+  internal `ay` produces TOPIC == REL-PRO == SUBJ identity via the
+  chained ay-split (`Ang aso ay tumakbo: ang pusa.`); the chained
+  identity matches the top-level ay-split identity exactly.
+- `TestSplitsAppliedGuard` (3): each split is skipped when its name
+  is in `splits_applied`; propagation through `_parse_segment_as`
+  works as designed.
+- `TestNonSStartSymbolBypassesChain` (1): NP/S_GAP/PP segments still
+  go direct to chart (no chained route at those levels).
+- `TestNoRegressionOnExistingSplits` (3): top-level
+  colon / ay / dahil splits still fire when `splits_applied` is
+  empty (the default).
+
+`test-both` gate clean at 9292 / 9292 passed in 164.85s (+9 new
+tests). `test-xslow` (combined-essay) 1 passed in 12.74s. `check`
+clean (no ruff or mypy issues).
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
