@@ -287,6 +287,41 @@ def parse_text_with_fragments(
         if split_result is not None and split_result.parses:
             return split_result
 
+    # === Phase 10.J.post-7: fronted-SubordClause-comma split ============
+    #
+    # Same split-and-glue pattern as post-2's fronted-PP-comma split
+    # but with the pre-half parsed as ``SubordClause`` (post-2 was
+    # gated to PP[PREP_TYPE=REASON] only). Activates on a broader
+    # head set: subordinating conjunctions attested in waves 2/3/5 as
+    # sentence-initial with internal comma (``bago``, ``kapag``,
+    # ``habang``, ``noong``, ``pagkatapos``, ``mula``, ``kahit``,
+    # ``dahil`` — `dahil` shared with post-2; routes by category).
+    #
+    # Glue mirrors subordination.py's ``S → SubordClause
+    # PUNCT[PUNCT_CLASS=COMMA] S`` chart rule (line 187):
+    # ``(↑) = ↓3``, ``↓1 ∈ (↑ ADJUNCT)``. Simpler than the PP-comma
+    # glue — no TOPIC binding, no ADJ-set membership (SubordClause
+    # adjuncts go to a separate ADJUNCT slot per Phase 5l).
+    #
+    # Audit-attested closures (post-7 audit; multi-wave):
+    # - ``Noong minsan, huli ka rin.`` (wave-2 rg-int)
+    # - ``Dahil gusto nilang... binibisita, nagsasalita sila...``
+    #   (wave-1 PANAHON; `dahil` here is SubordClause-introducing
+    #   rather than the canonical PP[REASON] `dahil sa X`)
+    # - other 1-hit heads close when both halves parse.
+    if "," in text and "fronted_subord_comma" not in splits_applied:
+        split_result = _try_fronted_subord_comma_split(
+            text,
+            n_best=n_best,
+            chart_state_cap=chart_state_cap,
+            max_candidates=max_candidates,
+            max_tree_iterations=max_tree_iterations,
+            precheck_defining=precheck_defining,
+            splits_applied=splits_applied,
+        )
+        if split_result is not None and split_result.parses:
+            return split_result
+
     # === Phase 10.J.post-3: ay-fronting split fast path ====================
     #
     # Same split-and-glue pattern as the colon-split (post-1) and
@@ -943,6 +978,150 @@ def _try_fronted_pp_comma_split(
 
 
 _REASON_PREP_LEMMAS: frozenset[str] = frozenset({"dahil"})
+
+
+# === Phase 10.J.post-7: fronted-SubordClause-comma split ===============
+#
+# Subordinating heads attested in the audit corpus as sentence-initial
+# with an internal comma. Each fronts a SubordClause that joins the
+# matrix's ADJUNCT set via subordination.py's ``S → SubordClause
+# PUNCT[COMMA] S`` rule. `dahil` is the only head shared with
+# `_REASON_PREP_LEMMAS` — when the pre-half parses as PP[REASON],
+# the PP path wins (called first); the SubordClause path catches
+# `dahil + S-clause` (no `sa`, no NP) as a non-PP variant.
+_FRONTED_SUBORD_HEADS: frozenset[str] = frozenset({
+    "dahil",
+    "bago", "kapag", "habang", "noong",
+    "pagkatapos", "matapos",
+    "mula",
+    "kahit",
+    "kung",
+    "samantalang",
+})
+
+
+def _try_fronted_subord_comma_split(
+    text: str,
+    *,
+    n_best: int,
+    chart_state_cap: int | None,
+    max_candidates: int | None,
+    max_tree_iterations: int | None,
+    precheck_defining: bool,
+    splits_applied: frozenset[str] = frozenset(),
+) -> ParseResult | None:
+    """If ``text`` looks like ``SUBORD-HEAD ... , S`` (e.g.,
+    ``Bago kayo pumasok sa eskuwela, mag-almusal muna kayo.``),
+    parse the pre-comma half as ``SubordClause`` and the post-comma
+    half as ``S``, then synthesize the matrix ``S → SubordClause
+    PUNCT[COMMA] S`` parse mirroring the chart rule in subordination.py.
+
+    Returns ``None`` when the activation pattern doesn't match, when
+    either half fails to parse, or when the synthesized f-structure
+    fails well-formedness.
+    """
+    stripped = text.lstrip()
+    if not stripped:
+        return None
+    first_word = stripped.split(None, 1)[0].casefold()
+    if first_word not in _FRONTED_SUBORD_HEADS:
+        return None
+    comma_idx = text.find(",")
+    if comma_idx <= 0 or comma_idx >= len(text) - 1:
+        return None
+    pre_text = text[:comma_idx].strip()
+    post_text = text[comma_idx + 1:].strip()
+    if not pre_text or not post_text:
+        return None
+    pre_text = _normalize_terminal_punct(pre_text)
+    post_text = _normalize_terminal_punct(post_text)
+
+    pre_parses = _parse_segment_as(
+        pre_text,
+        start_symbol="SubordClause",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"fronted_subord_comma"}),
+    )
+    if not pre_parses:
+        return None
+    post_parses = _parse_segment_as(
+        post_text,
+        start_symbol="S",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"fronted_subord_comma"}),
+    )
+    if not post_parses:
+        return None
+
+    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    for pre_parse in pre_parses:
+        for post_parse in post_parses:
+            g = _glue_fronted_subord_comma(pre_parse, post_parse)
+            if g is not None:
+                glued.append(g)
+                if len(glued) >= n_best:
+                    break
+        if len(glued) >= n_best:
+            break
+    if not glued:
+        return None
+    return ParseResult(parses=glued, fragments=[])
+
+
+def _glue_fronted_subord_comma(
+    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    """Synthesize ``S → SubordClause PUNCT[COMMA] S`` from two parsed
+    halves, mirroring subordination.py's chart rule: ``(↑) = ↓3``,
+    ``↓1 ∈ (↑ ADJUNCT)``.
+
+    Simpler than the fronted-PP-comma glue — no TOPIC binding, no
+    ADJ-set membership (SubordClause adjuncts use the ADJUNCT slot,
+    not the ADJ set).
+
+    Returns ``None`` if the assembled f-structure fails the
+    well-formedness check.
+    """
+    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
+    post_ctree, post_fs, post_a, post_diags = post_parse
+    comma_leaf = CNode(
+        label="PUNCT[PUNCT_CLASS=COMMA]", children=[], equations=[],
+    )
+    matrix_ctree = CNode(
+        label="S",
+        children=[pre_ctree, comma_leaf, post_ctree],
+        equations=[],
+    )
+    # Matrix f-structure shares identity with the post-comma S
+    # (chart rule's ``(↑) = ↓3``); add the SubordClause to ADJUNCT.
+    existing_adj = post_fs.feats.get("ADJUNCT")
+    if existing_adj is None:
+        new_adj: frozenset[FStructure] = frozenset({pre_fs})
+    elif isinstance(existing_adj, frozenset):
+        new_adj = existing_adj | {pre_fs}
+    else:  # pragma: no cover — ADJUNCT is set-valued
+        return None
+    post_fs.feats["ADJUNCT"] = new_adj
+    _lift_in_situ_q_type(post_fs)
+    _, wf_diags = lfg_well_formed(post_fs, matrix_ctree)
+    if any(d.is_blocking() for d in wf_diags):
+        # Restore so subsequent candidates don't see our writes.
+        if existing_adj is None:
+            del post_fs.feats["ADJUNCT"]
+        else:
+            post_fs.feats["ADJUNCT"] = existing_adj
+        return None
+    diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
+    return matrix_ctree, post_fs, post_a, diagnostics
 
 
 def _glue_fronted_pp_comma(

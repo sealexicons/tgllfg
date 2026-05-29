@@ -204,17 +204,29 @@ class TestPhase8mOutOfScope:
 
     def test_postcomma_nom_pron_pivot_chart_issue(self) -> None:
         """``Kapag X, tinawag niya ako.`` — matrix has ng-PRON +
-        NOM-PRON pivot post-comma; fails at the chart level via a
-        pre-existing clitic-placement issue affecting all temporal
-        subords (not just nang). Documented as Phase 8.M follow-on
-        for diagnostic deep-dive."""
+        NOM-PRON pivot post-comma; was Phase 8.M-pinned on a chart-
+        level clitic-placement issue affecting all temporal subords.
+        Closes in Phase 10.J.post-7 via the new SubordClause+COMMA+S
+        pipeline split (`_try_fronted_subord_comma_split`): the
+        pipeline split bypasses the chart-level interaction by
+        parsing pre and post halves independently and synthesizing
+        the matrix S, mirroring subordination.py's chart rule
+        equations. The underlying chart issue itself isn't fixed —
+        the pipeline split is a fast-path that sidesteps it."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Kapag aalis ako, tinawag niya ako.", n_best=3
         )
-        assert len(parses) == 0, (
-            "Post-comma NOM-PRON-pivot now parses — flip if the "
-            "underlying chart issue was fixed."
+        assert len(parses) >= 1, (
+            "post-7 SubordClause+COMMA+S split closure"
+        )
+        _ctree, fs, _astr, _diags = parses[0]
+        # The SubordClause "Kapag aalis ako" joins the matrix
+        # ADJUNCT set; the matrix predicate is from the post-comma
+        # clause.
+        adjunct = fs.feats.get("ADJUNCT")
+        assert adjunct is not None and len(adjunct) >= 1, (
+            "SubordClause not in ADJUNCT set"
         )
 
     def test_postmatrix_comma_audit_oov_blocker(self) -> None:
