@@ -1531,6 +1531,123 @@ New tests in `test_phase10_j_post4.py` (9 tests):
 tests). `test-xslow` (combined-essay) 1 passed in 12.74s. `check`
 clean (no ruff or mypy issues).
 
+### Phase 10.J.post-5 analysis-B handling for `X ay Y : Z` — deferred (bucket F)
+
+**Status**: deferred 2026-05-29. The structural-correctness gap
+between analysis A (`(X ay Y) : Z` — matrix-level colon-appositive)
+and analysis B (`X ay (Y : Z)` — predicate-NP-internal appositive)
+**persists**; the parser continues to produce only analysis A for
+any `X ay Y : Z` input (the post-1 colon-split at
+`core/pipeline.py:243` fires first and early-returns,
+structurally collapsing the ambiguity in favor of analysis A).
+
+#### Spike findings
+
+Per the user's spike-then-decide protocol, two approaches were
+evaluated empirically before deciding to defer:
+
+**(2a) pipeline-level `_try_ay_with_inner_colon_split`** — a new
+split function that explicitly partitions `X ay Y : Z` and parses
+each piece independently. Conceptual sketch only (not implemented);
+the f-structure schema analysis showed that **without enrichment of
+the predicative-N schema** (currently the predicate-N is stored as
+just a `N_LEMMA` string, not a nested f-structure with its own
+APP slot), 2a would produce f-structures equivalent to baseline
+analysis A. The colon-split's `(↑) = ↓1` matrix-equals-pre-half
+equation already makes matrix share fs with the pre-half (the
+predicative-N ay-clause for cases without an outer wrapper), so
+matrix already carries the ay-clause's PRED + the colon's APP —
+which is f-structurally analysis B for cases where the colon's
+scope IS the ay-clause's predicate. For sent-9 specifically (the
+only real corpus case), the `ay` is buried inside an S-coord
+conjunct, so 2a's `_split_on_ay` would split at the wrong
+boundary; 2a returns None → falls back to colon-split → no
+behavior change.
+
+**(2b) chart-level NP/N colon-appositive rules** — three new
+chart rules (`NP[CASE=NOM] → NP[CASE=NOM] PUNCT[COLON] NP[CASE=NOM]`,
+`N → N PUNCT[COLON] NP[CASE=NOM]`, `N → N PUNCT[COLON] N`) paired
+with a pipeline reorder (try chart-first when both `ay` + `:`
+anchors are present). Implemented and audited. Results:
+
+- **Wave-1 regressed -1**: `PANAHON/sent-9` flipped from
+  `parse-success-N → parse-timeout`. The new chart rules
+  increase forest density at sent-9's span; the chart-first
+  attempt blows past the 10s SIGALRM cap before falling
+  through to the colon-split. **Violates the hard constraint
+  wave-1 ≥93/123** (sent-16 §6.2 guard).
+- **Wave-3-so1972 +1**: an OCR'd ay+colon shape benefited
+  from the new rules.
+- **Wave 2/4/5: unchanged.**
+- **Unattributed**: 33/33 original entries unchanged (0
+  closures, 0 regressions, 0 bucket-only); +10 of 17 new
+  constructed exemplars parse.
+- **Structural quality of analysis-B output**: matrix
+  f-structure has `APP=0` (the APP set on the chart's
+  internal N daughter is not lifted to the matrix by the
+  existing predicative-N ay equations; only LEMMA is lifted).
+  So spike 2b produces a "matrix without APP" — strictly a
+  regression vs baseline's matrix-with-APP.
+- **Attachment ambiguity**: for multi-conjunct post-colon NPs,
+  the chart's ranker prefers a parse where the colon-rule's
+  post-colon daughter is the FIRST conjunct only, with the
+  rest of the coord wrapping outside (incorrect bracketing).
+  Parse[0] is structurally wrong.
+
+#### Empirical context
+
+Corpus survey (all 8 waves) found **only PANAHON sent-9 as a
+real-world ay+colon case**; the other 5 ay+colon greps were
+OCR noise (mid-word colons like `Ba:7uio`, `sas:iyaw`).
+
+17 constructed exemplars added to
+`data/tgl/exemplars/unattributed-constructions.jsonl` to expand
+the test surface for future work, covering 4 categories:
+
+- ay+colon with at-coord post-colon (4 exemplars; 3 parse,
+  1 OOV-blocked)
+- ay+colon with Oxford-comma post-colon (2 exemplars; both
+  parse)
+- ay+colon with non-Oxford comma-only post-colon (2 exemplars;
+  both fail — orthogonal `bare-comma N coord rule` gap, see
+  post-10)
+- no-ay + colon + various predicate types (8 exemplars;
+  4 parse, 4 OOV-or-structural)
+- 1 additional ay+colon flavor (single-NP appositive) —
+  OOV-blocked
+
+Of 17 new exemplars, **10 parse under analysis A baseline**.
+
+#### Deferral rationale
+
+The structural fix doesn't pay back:
+
+1. **The only real corpus case (sent-9) is unreachable** by either
+   spike approach. Chart approach 2b regresses sent-9. Pipeline
+   approach 2a gracefully falls through to baseline (no change).
+2. **For inaani-style cases (no outer S-coord wrapper)**, baseline
+   analysis A produces an f-structure that is **f-structurally
+   equivalent to analysis B**, because the colon-split's
+   `(↑) = ↓1` shares matrix identity with the pre-half (the
+   predicative-N ay-clause). The semantic distinction
+   "colon's appositive belongs to the predicate" already holds at
+   the f-structure level.
+3. The "true analysis B" (predicate-N as nested f-structure with
+   its own APP slot) requires schema enrichment — substantially
+   bigger scope than the post-5 framing.
+
+#### What survives post-5
+
+- 17 new constructed exemplars in `unattributed-constructions.jsonl`
+  as future test targets (covered above).
+- This documentation of the structural gap + the audit-validated
+  spike findings.
+- The 3 non-Oxford comma-only enumeration failures from the new
+  exemplars surface a higher-leverage adjacent gap (`bare-comma N
+  coord rule`), which becomes **post-10** in the plan ledger.
+
+No code changes shipped from post-5.
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
