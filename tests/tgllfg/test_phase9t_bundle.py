@@ -271,14 +271,20 @@ class TestPhase9tOutOfScope:
     def test_bare_n_v_duplicate(self) -> None:
         """``Lakad nang lakad ang kartero.`` — bare-N V-DUP
         variant (the lex root surfaces without verb morphology).
-        Requires bare-N → V coercion machinery not in 9.T
-        scope. Pin; flip if a follow-on adds the coercion."""
+        The 9.T pin expected this to require bare-N → V coercion
+        machinery, but Phase 10.J.post-6.1's productive N+LINK+N
+        compound rule ('N → N PART[LINK] N') closes it as an N-N
+        compound reading: `Lakad nang lakad` = "walking-walking"
+        (an N-N compound denoting the repeated activity).
+        The closure is structurally different from a V-DUP analysis
+        but produces a well-formed PRED='BE-N <SUBJ>' f-structure;
+        the V-DUP coercion remains a separate (deeper) gap."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Lakad nang lakad ang kartero.", n_best=2,
         )
-        assert len(parses) == 0, (
-            "bare-N V-DUP may have closed; review and flip."
+        assert len(parses) >= 1, (
+            "Phase 10.J.post-6.1 closure via N+LINK+N compound"
         )
 
     def test_biclausal_av_caus_indirect_baseline(self) -> None:

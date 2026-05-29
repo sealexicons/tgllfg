@@ -3209,14 +3209,17 @@
   pos: NOUN
   gloss: heart
 
-# Phase 10.J.post-6: Spanish-loan NOUN used in the equational ay-fronted
-# construction ``Ang tradisyonal na putahe sa pista ay ang litson.``
-# (wave-2 rg-intermediate). Cognate of Sp. ``potaje`` "stew, thick
-# soup"; in Tagalog discourse, ``putahe`` generalises to "dish, course
-# (in a meal)".
+# Phase 10.J.post-6: Spanish/French-loan NOUN used in the equational
+# ay-fronted construction ``Ang tradisyonal na putahe sa pista ay ang
+# litson.`` (wave-2 rg-intermediate). Borrowed from Sp. ``potaje`` /
+# Fr. ``potage`` "soup, stew, broth, cooked food"; the Tagalog reading
+# narrows to "dish, viand, prepared food" (one of a set of dishes
+# served, esp. at a meal or feast). Phase 10.J.post-6.1 added an
+# N+LINK+N compound rule (`putaheng gulay` = "vegetable dish") for
+# this and parallel food-class compounds.
 - citation: putahe
   pos: NOUN
-  gloss: dish, course (in a meal)
+  gloss: dish, viand, prepared food
   source: audit-corpus
   loan: SPANISH
 
