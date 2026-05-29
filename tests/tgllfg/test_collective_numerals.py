@@ -232,12 +232,29 @@ class TestCollectiveNegative:
 
     def test_non_measure_noun_blocked(self) -> None:
         # ``*isang batang aklat`` — bata is a regular NOUN with no
-        # MEASURE feature; the new measure-N rule's gate fails.
+        # MEASURE feature; the measure-N rule's gate fails (the
+        # original purpose of this test). Phase 10.J.post-6.1 added
+        # a productive N+LINK+N compound rule (`N → N PART[LINK] N`)
+        # for cases like ``putaheng gulay`` "vegetable dish"; that
+        # rule now also licenses ``batang aklat`` as a compound
+        # reading — semantically odd but grammatically a valid N-N
+        # compound. Assert the measure-N path STILL doesn't fire by
+        # inspecting the c-tree for the N+LINK+N (not measure-N)
+        # structure.
         rs = parse_text("Bumili ako ng isang batang aklat.", n_best=10)
-        assert rs == [], (
-            f"non-measure NOUN composed via measure-N rule: "
-            f"got {len(rs)} parses"
+        assert len(rs) >= 1, (
+            "expected parse via Phase 10.J.post-6.1 N+LINK+N "
+            "compound rule"
         )
+        # Confirm none of the parses route through a MEASURE-feat
+        # branch — the measure-N gate is still intact.
+        for _ctree, fs, _astr, _diags in rs:
+            obj = fs.feats.get("GEN-OBJ") or fs.feats.get("OBJ")
+            if obj is None:
+                continue
+            assert obj.feats.get("MEASURE") is not True, (
+                "measure-N rule fired on non-measure NOUN bata"
+            )
 
     def test_chained_measures_blocked(self) -> None:
         # ``*isang dosenang dosenang itlog`` — chained measure

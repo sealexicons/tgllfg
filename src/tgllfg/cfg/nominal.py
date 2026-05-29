@@ -2231,6 +2231,55 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # --- Phase 10.J.post-6.1: N-N noun-modifier compound ---------------
+    #
+    # ``putaheng gulay``      "vegetable dish"    (S&O 1972 sent-1873)
+    # ``bahay na bato``       "stone house"        (productive)
+    # ``aklat na pambata``    "children's book"
+    #
+    # Tagalog admits a productive N+linker+N compound where the LEFT
+    # N is the head and the RIGHT N specifies a type / material /
+    # purpose. Parallel to the Phase 5g post-N ADJ-modifier rule
+    # directly above (``N → N PART[LINK] ADJ``), with the modifier
+    # daughter ADJ → N. Joint head from ↓1; ↓3 joins a new ``N-MOD``
+    # set (distinct from ``ADJ-MOD`` to keep the modifier-class
+    # source recoverable for consumers).
+    #
+    # The mirror pre-N compound (``N → N PART[LINK] N`` left-recursive)
+    # is intentionally NOT added here — Tagalog has a strong
+    # head-leftward preference for N-N compounds in non-comma contexts;
+    # post-N modifiers are linker-mediated, pre-N ones are typically
+    # apposition (no linker) or hyphenation. The corpus surfaces only
+    # the post-N N-modifier pattern.
+    #
+    # **Audit context (10.J.post-6.1)**: this rule closes the
+    # `putaheng gulay` N+LINK+N parse that 10.J.post-6 regressed by
+    # lex-adding `putahe` as NOUN (the pre-post-6 parse came from
+    # `putahe` being OOV, with `putaheng` falling through some
+    # unknown-token heuristic; once `putahe` was known as N, the
+    # chart had no N+LINK+N composition path).
+    #
+    # **Gate**: `¬ (↓3 N_RC)` blocks composition when the modifier-N
+    # is already modified by a relative clause (avoids spurious
+    # ambiguity with the chart's existing N-level RC wrap rule).
+    #
+    # A proper-noun-modifier gate (e.g., `¬ (↓3 PROPER)`) was
+    # considered but isn't needed in practice: real corpora use
+    # GEN-marked possession (``bahay ni Juan``) for proper-noun
+    # relations, not the linker-mediated compound. The rule will
+    # over-permit `bahay na Juan`-style compositions, but they
+    # don't surface in audited corpora.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "N",
+            ["N", f"PART[LINK={link}]", "N"],
+            [
+                "(↑) = ↓1",
+                "↓3 ∈ (↑ N-MOD)",
+                "¬ (↓3 N_RC)",
+            ],
+        ))
+
 
     # --- Phase 5h Commit 3: comparative ``mas`` ADJ-wrapper -----
     #
