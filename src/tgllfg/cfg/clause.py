@@ -3967,20 +3967,66 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
-    # Bare modal+OV imperative (``Dapat gawin.`` / ``Dapat gawin
-    # natin.``) — deferred from post-7.3.1 to a follow-on. The chart
-    # daughter sequence ``V[CTRL_CLASS=MODAL] V[VOICE=OV]`` is
-    # tractable; the obstacle is XCOMP-completeness: the V[OV]'s
-    # PRED template (e.g., ``GAWA <SUBJ, OBJ>``) demands SUBJ and
-    # OBJ argument slots that the bare-imperative reading PRO-fills
-    # implicitly. The existing Phase 7a.E modal-control rules
-    # (control.py:476–600) route through ``S_XCOMP`` (a SUBJ-gapped
-    # clause) which has the PRO machinery built in. Adapting the
-    # bare-V[OV] case requires either (a) introducing an
-    # ``XCOMP_PRO`` shape that PRO-fills the OV verb's argument
-    # slots, or (b) building a V-cluster non-terminal that wraps
-    # the OV in an S_XCOMP-shaped structure. Either is bigger scope
-    # than post-7.3.1's Q-existential closure goal.
+    # --- Phase 10.J.post-7.3.1.1: bare modal+OV imperative ----------
+    #
+    # ``Dapat gawin.``          "(It) should be done."
+    # ``Dapat gawin natin.``    "We should do (it)."
+    # ``Puwede gawin natin.``   "We can do (it)."
+    #
+    # Tagalog admits a bare modal+OV-verb sequence as an impersonal
+    # imperative/obligation. Parallel to the Phase 7a.E modal-control
+    # rules (control.py:489–525) which route through ``S_XCOMP`` (a
+    # SUBJ-gapped clause); here the embedded action is just a bare
+    # V[OV] daughter (no NOM-pivot, no separate S_XCOMP).
+    #
+    # F-structure shape (parallel to Phase 7a.E §3.6 colloquial-modal):
+    #
+    #   (↑) = ↓1                        — matrix = V[MODAL] f-structure
+    #                                     (PRED `DAPAT <SUBJ, XCOMP>`,
+    #                                     ASPECT, MOOD, etc.)
+    #   (↑ XCOMP) = ↓2                  — XCOMP = V[OV] f-structure
+    #   (↑ SUBJ PRED) = 'PRO'           — matrix SUBJ = impersonal PRO
+    #   (↑ XCOMP SUBJ) = (↑ SUBJ)       — control: XCOMP SUBJ shares
+    #                                     matrix SUBJ (raising-style)
+    #
+    # XCOMP-completeness: the V[OV]'s PRED template (e.g.,
+    # ``MAKE <SUBJ, OBJ-AGENT>``) demands SUBJ and OBJ-AGENT slots.
+    # The SUBJ is filled via the share above; OBJ-AGENT is either
+    # PRO-filled (bare variant) or bound to the GEN-NP daughter
+    # (with-experiencer variant).
+    #
+    # Reference: S&O 1972 §5 modal-imperatives; Kroeger 1993 §6
+    # (modal-OV constructions).
+    rules.append(Rule(
+        "S",
+        ["V[CTRL_CLASS=MODAL]", "V[VOICE=OV]"],
+        [
+            "(↑) = ↓1",
+            "(↑ XCOMP) = ↓2",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ XCOMP SUBJ) = (↑ SUBJ)",
+            "(↑ XCOMP OBJ-AGENT PRED) = 'PRO'",
+            "(↑ MODAL_IMPER) = true",
+            "(↓1 CTRL_CLASS) =c 'MODAL'",
+            "(↓1 MODAL) =c true",
+            "(↓2 VOICE) =c 'OV'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["V[CTRL_CLASS=MODAL]", "V[VOICE=OV]", "NP[CASE=GEN]"],
+        [
+            "(↑) = ↓1",
+            "(↑ XCOMP) = ↓2",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ XCOMP SUBJ) = (↑ SUBJ)",
+            "(↑ XCOMP OBJ-AGENT) = ↓3",
+            "(↑ MODAL_IMPER) = true",
+            "(↓1 CTRL_CLASS) =c 'MODAL'",
+            "(↓1 MODAL) =c true",
+            "(↓2 VOICE) =c 'OV'",
+        ],
+    ))
 
     # --- Phase 10.J.post-7.3.1: mayroon-existential-possessive (V) ---
     #
