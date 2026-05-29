@@ -15,13 +15,16 @@ from tgllfg.core.pipeline import parse_text
 
 class TestForestBudgetOptIn:
     def test_ss_pp_rules_carry_budget(self) -> None:
-        # The five recursive ``S → S PP`` adjunct-attachment rules
-        # (TIME_FRAME / EXCEPTIVE / BENEFICIARY / TOPIC / GOAL) opt into a
-        # per-span emission budget (Phase 10.I). Guards against a sixth
-        # S→S PP rule being added without considering the fan-out budget.
+        # The six recursive ``S → S PP`` adjunct-attachment rules
+        # (TIME_FRAME / EXCEPTIVE / BENEFICIARY / TOPIC / GOAL / REASON)
+        # opt into a per-span emission budget (Phase 10.I). Guards
+        # against a seventh S→S PP rule being added without considering
+        # the fan-out budget. REASON was added by Phase 10.J.post-7.2
+        # (lifting the Phase 9.X.c12 deferral) — see the loop comment
+        # in cfg/discourse.py.
         g = Grammar.load_default()
         ss_pp = [r for r in g.rules if r.lhs == "S" and r.rhs == ["S", "PP"]]
-        assert len(ss_pp) == 5
+        assert len(ss_pp) == 6
         assert all(r.budget == 200 for r in ss_pp)
 
 
