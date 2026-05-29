@@ -284,6 +284,44 @@ def parse_text_with_fragments(
         if split_result is not None and split_result.parses:
             return split_result
 
+    # === Phase 10.J.post-3: ay-fronting split fast path ====================
+    #
+    # Same split-and-glue pattern as the colon-split (post-1) and
+    # fronted-PP-comma split (post-2), but for the chart's Phase 4
+    # §7.4 ay-fronting rule ``S → NP[CASE=NOM] PART[LINK=AY] S_GAP``
+    # (extraction.py:1130). Pre-``ay`` half parses as
+    # ``NP[CASE=NOM]``, post-``ay`` half parses as ``S_GAP``
+    # (a SUBJ-gapped clause whose REL-PRO binds to the fronted NP).
+    # The matrix S is synthesized mirroring the chart rule's
+    # equations.
+    #
+    # Motivation: sent-3 (``Ang natitirang limang buwan ay naroong
+    # maghati sa init at ulan.``) was timing-blocked at cap 50000
+    # (60.8s for 1 parse) because of (NP_alts × S_GAP_alts) cross-
+    # product fan-out at the matrix span — plus a solve-time-only
+    # ``S → NP[CASE=NOM] S_GAP`` colloquial-fronting rule (Phase
+    # 5n.B C21, gated on ``(↓1 INDEF) =c 'YES'``) that the chart
+    # over-predicted at every NP[NOM] + S_GAP position. The split
+    # bypasses the matrix-span cross-product entirely; each half
+    # parses against a small chart.
+    #
+    # Activation: input must contain a free-standing ``ay`` token
+    # (or the bound contraction ``'y``) at a sentence-internal
+    # position with non-trivial halves on each side. The detection
+    # uses surface tokens (whitespace + the contraction marker)
+    # rather than running the full pre-pass — fast and conservative.
+    if _looks_ay_fronted(text):
+        split_result = _try_ay_fronting_split(
+            text,
+            n_best=n_best,
+            chart_state_cap=chart_state_cap,
+            max_candidates=max_candidates,
+            max_tree_iterations=max_tree_iterations,
+            precheck_defining=precheck_defining,
+        )
+        if split_result is not None and split_result.parses:
+            return split_result
+
     forest = parse_with_annotations(
         lex_items, grammar,
         chart_state_cap=chart_state_cap,
@@ -916,6 +954,191 @@ def _glue_fronted_pp_comma(
             del post_fs.feats["ADJ"]
         else:
             post_fs.feats["ADJ"] = existing_adj
+        return None
+    diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
+    return matrix_ctree, post_fs, post_a, diagnostics
+
+
+# === Phase 10.J.post-3: ay-fronting split ================================
+#
+# Same split-and-glue pattern as the colon-split (post-1) and
+# fronted-PP-comma split (post-2), but for the chart's Phase 4
+# §7.4 ay-fronting rule ``S → NP[CASE=NOM] PART[LINK=AY] S_GAP``
+# (extraction.py:1130). PANAHON sent-3 (``Ang natitirang limang
+# buwan ay naroong maghati sa init at ulan.``) was timing-
+# blocked at cap=50000 (60.8s) under the chart-level cross-product
+# fan-out — the colloquial no-``ay`` variant (Phase 5n.B C21,
+# solve-time INDEF=YES gate) over-predicted at every
+# NP[NOM]+S_GAP position, compounding the matrix-span fan-out.
+# Splitting on ``ay`` parses each half independently against a
+# small chart (sent-3 halves: NP 0.7s + S_GAP 0.1s = 0.8s vs.
+# >60s for the full sentence).
+
+
+def _looks_ay_fronted(text: str) -> bool:
+    """Cheap heuristic: ``text`` contains a free-standing ``ay``
+    token (between whitespace boundaries) or the bound contraction
+    ``'y``. False on pure leading ``ay`` (``Ay, sandali`` etc.) and
+    purely trailing ``ay`` — the split needs non-trivial halves
+    on each side.
+    """
+    # The split-pre-pass tokenizer would canonicalize ``'y`` to
+    # ``ay``, but at the surface-string level we look for either.
+    lowered = text.lower()
+    # Bound contraction: e.g., ``rito'y siyesta``.
+    if "'y " in lowered:
+        return True
+    # Free-standing ``ay`` token bounded by whitespace on both sides.
+    parts = lowered.split()
+    if "ay" in parts[1:-1]:  # not first / last token
+        return True
+    return False
+
+
+def _try_ay_fronting_split(
+    text: str,
+    *,
+    n_best: int,
+    chart_state_cap: int | None,
+    max_candidates: int | None,
+    max_tree_iterations: int | None,
+    precheck_defining: bool,
+) -> ParseResult | None:
+    """If ``text`` matches the ``NP ay S_GAP`` ay-fronting pattern,
+    parse the pre-``ay`` half as ``NP[CASE=NOM]`` and the
+    post-``ay`` half as ``S_GAP``, then synthesize the matrix
+    ``S → NP PART[LINK=AY] S_GAP`` parse.
+
+    Returns ``None`` when the split isn't possible, either half
+    fails to parse, or the synthesized f-structure fails
+    well-formedness.
+    """
+    halves = _split_on_ay(text)
+    if halves is None:
+        return None
+    pre_text, post_text = halves
+    if not pre_text or not post_text:
+        return None
+    pre_text = _normalize_terminal_punct(pre_text)
+    post_text = _normalize_terminal_punct(post_text)
+
+    pre_parses = _parse_segment_as(
+        pre_text,
+        start_symbol="NP[CASE=NOM]",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+    )
+    if not pre_parses:
+        return None
+    post_parses = _parse_segment_as(
+        post_text,
+        start_symbol="S_GAP",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+    )
+    if not post_parses:
+        return None
+
+    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    for pre_parse in pre_parses:
+        for post_parse in post_parses:
+            g = _glue_ay_fronted(pre_parse, post_parse)
+            if g is not None:
+                glued.append(g)
+                if len(glued) >= n_best:
+                    break
+        if len(glued) >= n_best:
+            break
+    if not glued:
+        return None
+    return ParseResult(parses=glued, fragments=[])
+
+
+def _split_on_ay(text: str) -> tuple[str, str] | None:
+    """Find the leftmost free-standing ``ay`` (or bound ``'y``) and
+    return ``(pre, post)`` with the splitter dropped. Returns
+    ``None`` when the splitter is at an edge or absent.
+    """
+    # Bound ``'y`` contraction: split at the apostrophe, keep the
+    # preceding vowel-final word in the pre-half. Surface example:
+    # ``Rito'y siyesta`` → pre=``Rito``, post=``siyesta``.
+    apos_idx = text.find("'y ")
+    if apos_idx >= 0:
+        pre = text[:apos_idx].rstrip()
+        post = text[apos_idx + 3:].lstrip()
+        return (pre, post) if pre and post else None
+    # Free-standing ``ay`` between whitespace boundaries.
+    # We use a word-aligned search: split on whitespace, find ``ay``,
+    # then reassemble. Conservative — first hit only.
+    parts = text.split()
+    if len(parts) < 3:
+        return None
+    for i, w in enumerate(parts):
+        if w.lower() == "ay" and 0 < i < len(parts) - 1:
+            pre = " ".join(parts[:i])
+            post = " ".join(parts[i + 1:])
+            return pre, post
+    return None
+
+
+def _glue_ay_fronted(
+    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    """Synthesize ``S → NP[CASE=NOM] PART[LINK=AY] S_GAP`` from
+    two parsed halves, mirroring the Phase 4 §7.4 chart rule:
+    ``(↑) = ↓3`` (matrix = inner S_GAP),
+    ``(↑ TOPIC) = ↓1`` (fronted NP is the topic),
+    ``(↓3 REL-PRO) = ↓1`` (REL-PRO bound to fronted NP),
+    ``(↓3 REL-PRO) =c (↓3 SUBJ)`` (constraining — gap is SUBJ).
+
+    Returns ``None`` if the synthesized f-structure fails the
+    well-formedness check.
+    """
+    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
+    post_ctree, post_fs, post_a, post_diags = post_parse
+    ay_leaf = CNode(
+        label="PART[LINK=AY]", children=[], equations=[],
+    )
+    matrix_ctree = CNode(
+        label="S",
+        children=[pre_ctree, ay_leaf, post_ctree],
+        equations=[],
+    )
+    # Matrix shares identity with the inner S_GAP (``(↑) = ↓3``);
+    # mutate post_fs.feats in place.
+    if "TOPIC" in post_fs.feats:
+        return None
+    # REL-PRO / SUBJ re-pointing: the chart rule's
+    # ``(↓3 REL-PRO) = ↓1`` defining-unifies REL-PRO with the
+    # fronted NP, and the S_GAP body's internal
+    # ``(↑ SUBJ) = (↑ REL-PRO)`` makes SUBJ share identity with
+    # REL-PRO. To mirror that — and to pass the test pin
+    # ``TOPIC.id == SUBJ.id`` — re-point both slots to pre_fs.
+    # The standalone S_GAP body's REL-PRO / SUBJ nodes were
+    # empty placeholders (the gap), so no information is lost.
+    snapshot: dict[str, object] = {}
+    for slot in ("TOPIC", "REL-PRO", "SUBJ"):
+        if slot in post_fs.feats:
+            snapshot[slot] = post_fs.feats[slot]
+    post_fs.feats["TOPIC"] = pre_fs
+    post_fs.feats["REL-PRO"] = pre_fs
+    post_fs.feats["SUBJ"] = pre_fs
+    _lift_in_situ_q_type(post_fs)
+    _, wf_diags = lfg_well_formed(post_fs, matrix_ctree)
+    if any(d.is_blocking() for d in wf_diags):
+        # Restore so subsequent glue attempts don't see our writes.
+        for slot in ("TOPIC", "REL-PRO", "SUBJ"):
+            if slot in snapshot:
+                post_fs.feats[slot] = snapshot[slot]
+            elif slot in post_fs.feats:
+                del post_fs.feats[slot]
         return None
     diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
     return matrix_ctree, post_fs, post_a, diagnostics
