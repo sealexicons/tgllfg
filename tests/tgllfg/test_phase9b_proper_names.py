@@ -166,14 +166,28 @@ class TestPhase9bOutOfScope:
 
     def test_pamilyang_pilipino_n_modifier_chain(self) -> None:
         """ANG PAMILYA/sent-5 ``Ang pinakaubod ng pamilyang Pilipino
-        ay ang ama, ina at mga anak.`` — blocked by N+linker+ADJ
-        modifier chain with a comma-final NP coordination
-        ``ama, ina at mga anak``. Distinct from lex; 9.J or 9.U
-        territory."""
+        ay ang ama, ina at mga anak.`` — was 9.B-blocked by the
+        absence of an ay-fronted two-NP equational chart rule; closed
+        in Phase 10.J.post-6 by adding ``S → NP[CASE=NOM]
+        PART[LINK=AY] NP[CASE=NOM]`` (parallel to the bare two-NP
+        equational of Phase 8.Y/8.Z). The post-`ay` half
+        ``ang ama, ina at mga anak`` was already an NP[CASE=NOM]
+        with COORD=AND (Oxford-comma + ``at`` final via 9.X.c5
+        NP-comma-at coord); the missing piece was the ay-fronted
+        equational glue."""
         from tgllfg.core.pipeline import parse_text
         s = ("Ang pinakaubod ng pamilyang Pilipino ay "
              "ang ama, ina at mga anak.")
-        assert len(parse_text(s, n_best=2)) == 0
+        parses = parse_text(s, n_best=2)
+        assert len(parses) >= 1, "10.J.post-6 closure"
+        _ctree, fs, _astr, _diags = parses[0]
+        assert fs.feats.get("PRED") == "BE-NP <SUBJ>"
+        assert fs.feats.get("PREDICATIVE") is True
+        # TOPIC bound to SUBJ (the fronted ``Ang pinakaubod...``).
+        topic = fs.feats.get("TOPIC")
+        subj = fs.feats.get("SUBJ")
+        assert topic is not None and subj is not None
+        assert topic.id == subj.id, "TOPIC == SUBJ for ay-fronting"
 
     def test_lisa_appositive_kay_ben(self) -> None:
         """page-237/numbered/sent-1695 ``Sasama ba si Lisa kay Ben?``

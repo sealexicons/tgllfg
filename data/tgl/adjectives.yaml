@@ -779,6 +779,17 @@
   gloss: living, residing (in a place)
   affix_class: [naka_resultative]
 
+# Phase 10.J.post-6: Spanish-loan ADJ used in the equational ay-fronted
+# construction ``Ang tradisyonal na putahe sa pista ay ang litson.``
+# (wave-2 rg-intermediate). Linker-introduced N modifier; no Tagalog
+# verbal morphology (parallel to ``tropiko``, ``klasiko``).
+- citation: tradisyonal
+  pos: ADJ
+  gloss: traditional
+  source: audit-corpus
+  loan: SPANISH
+  affix_class: []
+
 - citation: tropiko
   pos: ADJ
   gloss: tropical

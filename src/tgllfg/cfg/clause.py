@@ -2483,6 +2483,68 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 10.J.post-6: ay-fronted two-NP equational ---------------
+    #
+    # ``Ang pinakaubod ng pamilyang Pilipino ay ang ama, ina at mga anak.``
+    #     "The core of the Filipino family is the father, mother, and
+    #      children." (PANAHON sent-9 inner — Phase 10.J.post-6 wave-1 hit)
+    # ``Ang nadadalian ay ang hindi nahihiyang magkamali.``
+    #     "The one who finds it easy is the one not ashamed to make
+    #      mistakes." (PANAHON wave-1 hit — both halves headless RCs)
+    # ``Ang tradisyonal na putahe sa pista ay ang litson.``
+    #     "The traditional dish at the fiesta is the lechon."
+    #     (wave-2 rg-intermediate hit)
+    # ``Si Juan ay ang doktor.``       "Juan is the doctor."
+    # ``Ang doktor ay si Juan.``       "The doctor is Juan."
+    #
+    # Ay-fronted variant of the Phase 8.Y/8.Z two-NP equational
+    # (``S → NP[CASE=NOM] NP[CASE=NOM]`` directly below). The bare
+    # two-NP form has the predicate-NP as the LEFT daughter and the
+    # SUBJ as the RIGHT daughter; the ay-fronted form INVERTS this:
+    # the LEFT daughter (the fronted topic) is the SUBJ, and the
+    # RIGHT daughter is the predicate-NP. This mirrors the
+    # predicative-N ay rule directly above (Phase 5n.B / 9.V.4) —
+    # the ay-fronted topic always binds to SUBJ + TOPIC at the
+    # matrix, and the post-`ay` body is the predicate (whether bare
+    # N, N+GEN, or a full NP[CASE=NOM] equational predicate).
+    #
+    # F-structure shape mirrors the bare equational rule but with
+    # SUBJ/PRED-NP daughter indices swapped (∵ the ay-fronted topic
+    # is SUBJ, not predicate) plus a TOPIC binding:
+    #
+    #   PRED         = 'BE-NP <SUBJ>'
+    #   SUBJ         = ↓1 (the fronted topic — discourse subject)
+    #   TOPIC        = ↓1 (LFG discourse function for ay-fronting)
+    #   PRED-NP      = ↓3 (the predicate NP, preserved as sub-fstructure)
+    #   PREDICATIVE  = true
+    #
+    # **WH gate** on ↓1 (the topic): wh-fronting through equational
+    # ay isn't a canonical Tagalog construction (wh predicates take
+    # the wh-cleft path; wh subjects take the in-situ Q_TYPE lift).
+    # The bare 2-NP equational rule's WH gate is on ↓1 (the pivot);
+    # this rule's gate is also on ↓1 (now the topic-SUBJ) — keeping
+    # the gate in the same syntactic position.
+    #
+    # Disambiguation from predicative-N (line 2354 above):
+    # predicative-N's ↓3 is a bare ``N`` (not ``NP``); this rule's
+    # ↓3 is a full ``NP[CASE=NOM]``. The two rules don't share a
+    # parse-set fingerprint — when ↓3 has a determiner / case marker
+    # (``ang X``, ``si X``), only this rule fires; when ↓3 is a
+    # bare N, only the predicative-N rule fires.
+    rules.append(Rule(
+        "S",
+        ["NP[CASE=NOM]", "PART[LINK=AY]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BE-NP <SUBJ>'",
+            "(↑ SUBJ) = ↓1",
+            "(↑ TOPIC) = ↓1",
+            "(↑ PRED-NP) = ↓3",
+            "(↑ PREDICATIVE) = true",
+            "¬ (↓1 WH)",
+        ],
+    ))
+
+
     # --- Phase 8.Y Commit 2 / Phase 8.Z: NP-pivot two-NP equational -----
     #
     # ``Si Juan ito.``           "This is Juan."
