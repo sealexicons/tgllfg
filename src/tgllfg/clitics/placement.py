@@ -381,16 +381,42 @@ def _is_pre_linker_pron(
     Note: this also fires for ``isda kong kinain`` (head noun
     without its own linker) — which is the same construction.
     Both are kept in place uniformly.
+
+    Phase 10.J.post-7.1: narrowed to **only the possessor-of-N
+    case**. When the preceding token is an ADJ (not an N), the
+    same surface shape is the *clitic-absorbed-linker* pattern
+    (``madali + niya + -ng + nasagot`` = "easily he/she answered"),
+    where ``niya`` is the V's GEN-AGENT clitic absorbing the
+    ADJ-modifier's ``-ng`` linker. In that pattern the clitic MUST
+    move to the canonical post-V position so the chart's
+    ``ADJ + -ng + V + ...`` rule fires. Without this narrowing the
+    audit case ``Madali niyang nasagot ang tanong.`` (palibhasa-
+    marunong exemplar) zero-parsed because the chart had no
+    ``ADJ + PRON-CLITIC + LINKER + V`` rule.
     """
     if not _is_pron_clitic(analyses[i]):
         return False
     if i + 1 >= len(analyses):
         return False
     next_cands = analyses[i + 1]
-    return any(
+    next_is_link = any(
         ma.pos == "PART" and ma.feats.get("LINK") == "NG"
         for ma in next_cands
     )
+    if not next_is_link:
+        return False
+    # Phase 10.J.post-7.1: exclude the *ADJ-preceded* case — that's
+    # the clitic-absorbed-linker pattern (``ADJ + PRON + -ng + V``)
+    # where the PRON belongs as the V's GEN-AGENT and the -ng is
+    # the ADJ-modifier linker. The pre-existing keep-in-place cases
+    # all involve N / Q / PART (possessor-of-N RC, Q-PRON-linker
+    # ``Pareho silang kumain``, ``Mayroon akong aklat``, etc.).
+    if i == 0:
+        return True
+    prev = analyses[i - 1]
+    if prev and all(ma.pos == "ADJ" for ma in prev):
+        return False
+    return True
 
 
 def _is_pre_ay_pron(

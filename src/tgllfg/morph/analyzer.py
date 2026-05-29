@@ -100,13 +100,44 @@ def generate_form(root: Root, cell: ParadigmCell) -> str:
     base, so the operation-application engine is shared across both
     paradigm families.
     """
-    flags = set(root.sandhi_flags)
+    return _generate_one(root, cell, set(root.sandhi_flags))
+
+
+def _generate_one(
+    root: Root, cell: ParadigmCell, flags: set[str],
+) -> str:
+    """Apply ``cell.operations`` under a given ``flags`` set."""
     base = root.citation
     for op in cell.operations:
         base = _apply(op, base, flags, root.citation)
     if "d_to_r" in flags:
         base = d_to_r_intervocalic(base)
     return base
+
+
+def _generate_form_variants(root: Root, cell: ParadigmCell) -> list[str]:
+    """Return all surface variants for ``(root, cell)``.
+
+    Phase 10.J.post-7.1: when the root carries ``cluster_redup`` and
+    the cell uses ``cv_redup``, both the cluster-preserved variant
+    (e.g., ``nagtratrabaho``) AND the cluster-stripped variant
+    (e.g., ``nagtatrabaho``) are productive in modern Tagalog (per
+    the ``first_cv`` docstring's note "Both forms are attested in
+    modern Tagalog; the cluster variant is common in colloquial
+    usage"). Generate both so analyzer-time surface lookup accepts
+    either.
+
+    For roots without ``cluster_redup``, or for cells without a
+    ``cv_redup`` operation, returns the single canonical variant.
+    """
+    flags = set(root.sandhi_flags)
+    primary = _generate_one(root, cell, flags)
+    if "cluster_redup" not in flags:
+        return [primary]
+    if not any(op.op == "cv_redup" for op in cell.operations):
+        return [primary]
+    alt = _generate_one(root, cell, flags - {"cluster_redup"})
+    return [primary] if alt == primary else [primary, alt]
 
 
 def _apply(
@@ -794,7 +825,7 @@ class Analyzer:
                 continue
             if not _affix_class_match(cell.affix_class, root.affix_class):
                 continue
-            surface = generate_form(root, cell).lower()
+            surfaces = _generate_form_variants(root, cell)
             feats: dict[str, object] = {
                 "VOICE": cell.voice,
                 "ASPECT": cell.aspect,
@@ -859,7 +890,17 @@ class Analyzer:
                 pos="VERB",
                 feats=feats,
             )
-            self._index.verb_forms.setdefault(surface, []).append(analysis)
+            # Phase 10.J.post-7.1: ``surfaces`` is the list of
+            # variants from ``_generate_form_variants`` — single
+            # entry by default, two entries when ``cluster_redup``
+            # is set on a ``cv_redup`` cell (both cluster-preserved
+            # and cluster-stripped variants are indexed).
+            for surface in (s.lower() for s in surfaces):
+                self._index.verb_forms.setdefault(surface, []).append(analysis)
+            # Use the primary (cluster-preserved when applicable)
+            # surface as the canonical handle for the downstream
+            # moderative/iterative-redup index that follows.
+            surface = surfaces[0].lower()
             # Phase 10.E.3.post-2: inflected moderative / iterative redup.
             # For a basic AV form (``um`` / ``mag``) of a root opted into
             # the bare V-stem redup cells, also emit the doubled surface —
