@@ -1857,7 +1857,20 @@
   pos: VERB
   gloss: answer
   transitivity: TR
-  affix_class: [um, i_oblig, in_oblig, maka]
+  # Phase 10.J.post-7.1: ``ma`` added for potentive-AV ``nasagot``
+  # ("happen to answer / manage to answer") attested in the post-7
+  # palibhasa-marunong exemplar (``Palibhasa marunong siya, madali
+  # niyang nasagot ang tanong.``).
+  #
+  # ``AV_ABSOL: true`` marks the absolutive (SUBJ) of the AV voice as
+  # the agent — required by the chart's bare ``S → V[AV] NP[CASE=NOM]``
+  # rule for AV-TR verbs that allow an implicit OBJ (parallel to
+  # ``sayaw`` and ``luto`` in this file). Without it, ``Sumagot siya.``
+  # / ``Nasagot siya.`` zero-parse because the chart requires either
+  # ``mag``-class or ``AV_ABSOL`` to license the bare AV-TR + NOM
+  # composition.
+  feats: {AV_ABSOL: true}
+  affix_class: [um, ma, i_oblig, in_oblig, maka]
 
 - citation: saing
   pos: VERB

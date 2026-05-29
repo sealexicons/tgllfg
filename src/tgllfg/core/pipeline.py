@@ -991,6 +991,7 @@ _REASON_PREP_LEMMAS: frozenset[str] = frozenset({"dahil"})
 # `dahil + S-clause` (no `sa`, no NP) as a non-PP variant.
 _FRONTED_SUBORD_HEADS: frozenset[str] = frozenset({
     "dahil",
+    "palibhasa",       # Phase 10.J.post-7.1
     "bago", "kapag", "habang", "noong",
     "pagkatapos", "matapos",
     "mula",

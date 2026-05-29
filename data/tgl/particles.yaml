@@ -1817,6 +1817,17 @@
   pos: PART
   feats: {COMP_TYPE: REAS, LEMMA: dahil}
 
+# Phase 10.J.post-7.1: ``palibhasa`` — REASON subordinator
+# (literary register; "since, because"). Closes the post-7-shipped
+# exemplars marked ``pending_closure: post-7.1`` (palibhasa-juan-rich
+# etc.) — see ``data/tgl/exemplars/unattributed-constructions.jsonl``.
+# Composes via the same Phase 5l Commit 9 SubordClause builder rule
+# (``SubordClause → PART[COMP_TYPE=REAS] S``) as ``dahil`` (S-taking
+# variant directly above); no new chart rule needed.
+- surface: palibhasa
+  pos: PART
+  feats: {COMP_TYPE: REAS, LEMMA: palibhasa}
+
 # (f) Counterfactual enclitic — ``sana``
 - surface: sana
   pos: PART
