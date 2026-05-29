@@ -977,7 +977,10 @@ def _try_fronted_pp_comma_split(
     return ParseResult(parses=glued, fragments=[])
 
 
-_REASON_PREP_LEMMAS: frozenset[str] = frozenset({"dahil"})
+# Phase 10.J.post-7.2: ``dahilan`` is the nominal-form variant of
+# ``dahil`` — both head REASON-PPs (``dahilan sa ulan``, ``dahil sa
+# ulan``) and route through the same fronted-PP-comma split.
+_REASON_PREP_LEMMAS: frozenset[str] = frozenset({"dahil", "dahilan"})
 
 
 # === Phase 10.J.post-7: fronted-SubordClause-comma split ===============
