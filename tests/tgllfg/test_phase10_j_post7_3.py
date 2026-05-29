@@ -153,24 +153,20 @@ class TestSungitAdj:
 
 
 class TestDeferredInnerClause:
-    """post-7.3 deferred residue — Q-existential-possessive +
-    dapat-V-cluster construction class (post-7.3.1).
-
-    The post-comma half of alalaong-2 (``marami pa tayong dapat
-    gawin``) requires a Q-have-RC construction that's beyond
-    REFORM-marker scope. Pinned here as a smoke test that the
-    construction-class gap is still active (XPASS-flips will signal
-    when post-7.3.1 lands).
+    """post-7.3.1 (PR #154) closed the alalaong-2 inner-clause
+    construction class (Q-existential-possessive + dapat-V-cluster).
+    The smoke test that previously asserted ZPF now asserts the
+    closure — flipped from ``len(parses) == 0`` to ``len(parses) >= 1``.
+    Retained as a regression guard.
     """
 
-    def test_marami_q_have_rc_still_blocks(self) -> None:
-        """Q + PRON-LINK + dapat-V-cluster still ZPFs — class is
-        the post-7.3.1 target."""
+    def test_marami_q_have_rc_closes(self) -> None:
+        """Q + PRON-LINK + dapat + V[OV] cluster closes via the
+        post-7.3.1 ``S → Q PRON[CASE=NOM] PART[LINK=NG]
+        V[CTRL_CLASS=MODAL] V[VOICE=OV]`` rule. Regression guard
+        for that closure."""
         parses = parse_text("Marami pa tayong dapat gawin.", n_best=2)
-        # If this becomes `>= 1`, post-7.3.1 has effectively
-        # landed and the alalaong-2 exemplar's pending_closure tag
-        # should be re-evaluated.
-        assert len(parses) == 0, (
-            "Q-existential-possessive + dapat-V-cluster now parses — "
-            "re-evaluate alalaong-2 pending_closure tag (post-7.3.1?)"
+        assert len(parses) >= 1, (
+            "post-7.3.1 closure regressed — Q-existential-possessive "
+            "+ dapat-V-cluster should parse"
         )
