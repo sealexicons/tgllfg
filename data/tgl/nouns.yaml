@@ -2091,6 +2091,14 @@
   pos: NOUN
   gloss: man
 
+# Phase 10.J.post-8.5.1: ``lahi`` NOUN — "race, lineage,
+# ethnicity, generation". Used in ``salin-lahi`` compound "passing
+# of generations" (PAMILYA/sent-17). Also free-standing.
+- citation: lahi
+  pos: NOUN
+  gloss: race, lineage, ethnicity
+  source: audit-corpus
+
 - citation: lamig
   pos: NOUN
   gloss: cold
@@ -3476,6 +3484,15 @@
 - citation: salanta
   pos: NOUN
   gloss: damaged or weakened person; victim
+  source: audit-corpus
+
+# Phase 10.J.post-8.5.1: ``salin`` NOUN — "translation, transfer,
+# generation". In ``salin-lahi`` compound = "passing of
+# generations" (PAMILYA/sent-17 ``tatlong salin-lahi`` "three
+# generations"). Also free-standing for translations.
+- citation: salin
+  pos: NOUN
+  gloss: translation, transfer, generation
   source: audit-corpus
 
 - citation: salapi

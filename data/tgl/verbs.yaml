@@ -294,6 +294,19 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, ma, maka]
 
+# Phase 10.J.post-8.5.1: ``bigkas`` VERB — "pronounce, articulate".
+# Produces ``magbigkas`` AV, ``bigkasin`` OV-CTPL, ``pagbigkas``
+# NOUN gerund (via ``pag_gerund`` opt-in). The gerund ``pagbigkas``
+# closes PAG-AARAL/sent-5 (one of three lex/paradigm gaps in that
+# sentence — see post-8.5.N for ``mapintasan`` + ``pagsasamasama``
+# follow-ons).
+- citation: bigkas
+  pos: VERB
+  gloss: pronounce, articulate
+  transitivity: TR
+  affix_class: [mag, in_oblig, maka, pag_gerund]
+  source: audit-corpus
+
 - citation: bati
   pos: VERB
   gloss: greet
