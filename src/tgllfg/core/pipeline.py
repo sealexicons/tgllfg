@@ -362,6 +362,47 @@ def parse_text_with_fragments(
         if split_result is not None and split_result.parses:
             return split_result
 
+    # === Phase 10.J.post-8.5.5.1: lalo-na't post-matrix SubordClause split ===
+    #
+    # Same split-and-glue pattern as the fronted-SubordClause-comma split
+    # (post-7) but for the post-matrix direction — the discourse-emphasis
+    # marker ``lalo na 't`` introduces a reason-clause adjunct AFTER the
+    # matrix S. Detected by the ``, lalo na 't `` separator in the text.
+    #
+    # Pre-half parses as ``S`` (the matrix); post-half parses as ``S``
+    # (the lalo-na't body). The result is synthesized as
+    # ``S → S COMMA SubordClause(lalo na 't S)`` where SubordClause's
+    # f-structure shares the post-S's identity (per the chart rule's
+    # ``(↑) = ↓4``) overlaid with ``SUBORD_TYPE='REAS'`` and
+    # ``EMPHASIS='ESPECIALLY'``; the SubordClause joins the matrix-S's
+    # ADJUNCT set.
+    #
+    # **Motivation** (PAMILYA/sent-14): the chart-level lalo-na't rule
+    # (subordination.py) composes with the existing
+    # ``S → S COMMA SubordClause`` matrix-attachment rule across many
+    # matrix-S forest configurations when the matrix carries internal
+    # `at`-coord N (``ang lolo at lola``). The cross-product blows past
+    # the 5000-tree iteration cap (sent-16 §6.2 cap-raise forbidden).
+    # The pipeline-level split bypasses the cross-product entirely: each
+    # half parses against its own chart with the lalo-na't construction
+    # accounted for at glue time.
+    if (", lalo na't " in text or ", lalo na 't " in text
+            or ", lalo na at " in text or ",lalo na't " in text
+            or ", lalo na ’t " in text or ", lalo na·t " in text
+            or ", lalo na•t " in text):
+        if "lalo_nat" not in splits_applied:
+            split_result = _try_lalo_nat_split(
+                text,
+                n_best=n_best,
+                chart_state_cap=chart_state_cap,
+                max_candidates=max_candidates,
+                max_tree_iterations=max_tree_iterations,
+                precheck_defining=precheck_defining,
+                splits_applied=splits_applied,
+            )
+            if split_result is not None and split_result.parses:
+                return split_result
+
     forest = parse_with_annotations(
         lex_items, grammar,
         chart_state_cap=chart_state_cap,
@@ -1414,6 +1455,391 @@ def _glue_ay_fronted(
 # wh-fronting, tag-Q, yes/no-Q, Phase 5n.B Commit 7 Alt-Q) are
 # skipped — the grammar-rule lift is the canonical analysis; the
 # post-pass only fills the gap for in-situ wh.
+
+
+# === Phase 10.J.post-8.5.5.1: lalo-na't post-matrix split ============
+#
+# Pipeline-level synthesis for ``S, lalo na 't S`` — the discourse-
+# emphasis reason-clause adjunct. The matrix ``lalo na 't S`` chart
+# rule (subordination.py) composes with ``S → S COMMA SubordClause``
+# matrix-attachment across many matrix-S forest configurations
+# when the matrix carries internal ``at``-coord N (PAMILYA/sent-14:
+# ``ang lolo at lola``). The cross-product overflows the 5000-tree
+# iteration cap (sent-16 §6.2 cap-raise forbidden).
+#
+# This split bypasses the cross-product: pre-comma half parses as
+# ``S`` (matrix), post-marker half parses as ``S`` (the lalo-na't
+# body), and the result is synthesized as ``S → S COMMA
+# SubordClause(lalo na 't S)`` with the SubordClause carrying
+# ``SUBORD_TYPE='REAS'`` and ``EMPHASIS='ESPECIALLY'`` overlay on
+# the post-S f-structure.
+
+
+_LALO_NAT_SEPARATORS = (
+    ", lalo na't ",
+    ", lalo na 't ",
+    ", lalo na at ",
+    ",lalo na't ",
+    ",lalo na 't ",
+    ", lalo na ’t ",        # right single quotation mark
+    ", lalo na·t ",         # middle dot
+    ", lalo na•t ",         # bullet
+)
+
+
+def _try_lalo_nat_split(
+    text: str,
+    *,
+    n_best: int,
+    chart_state_cap: int | None,
+    max_candidates: int | None,
+    max_tree_iterations: int | None,
+    precheck_defining: bool,
+    splits_applied: frozenset[str] = frozenset(),
+) -> ParseResult | None:
+    """Split ``S, lalo na 't S`` on the separator and synthesize the
+    matrix ``S → S COMMA SubordClause(lalo na 't S)`` parse.
+
+    Returns ``None`` when no separator is found, when either half
+    fails to parse, or when the synthesized f-structure fails
+    well-formedness.
+    """
+    sep_idx = -1
+    sep_len = 0
+    for sep in _LALO_NAT_SEPARATORS:
+        idx = text.find(sep)
+        if idx >= 0 and (sep_idx < 0 or idx < sep_idx):
+            sep_idx = idx
+            sep_len = len(sep)
+    if sep_idx < 0:
+        return None
+    pre_text = text[:sep_idx].strip()
+    post_text = text[sep_idx + sep_len:].strip()
+    if not pre_text or not post_text:
+        return None
+    pre_text = _normalize_terminal_punct(pre_text)
+    post_text = _normalize_terminal_punct(post_text)
+
+    pre_parses = _parse_segment_as(
+        pre_text,
+        start_symbol="S",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"lalo_nat"}),
+    )
+    if not pre_parses:
+        # Fallback: the pre-half itself may have a bare-comma 2-way
+        # SUBJ-coord (PAMILYA/sent-14 shape: ``<pred> ang X, ang Y``
+        # where the SUBJ is two ang-NPs separated by a bare comma).
+        # Try a deeper SUBJ-bare-comma synthesis before giving up.
+        fallback_parses = _try_subj_bare_comma_np_coord(
+            pre_text,
+            n_best=n_best,
+            chart_state_cap=chart_state_cap,
+            max_candidates=max_candidates,
+            max_tree_iterations=max_tree_iterations,
+            precheck_defining=precheck_defining,
+            splits_applied=splits_applied | frozenset({"lalo_nat"}),
+        )
+        if not fallback_parses:
+            return None
+        pre_parses = fallback_parses
+    post_parses = _parse_segment_as(
+        post_text,
+        start_symbol="S",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"lalo_nat"}),
+    )
+    if not post_parses:
+        return None
+
+    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    for pre_parse in pre_parses:
+        for post_parse in post_parses:
+            g = _glue_lalo_nat(pre_parse, post_parse)
+            if g is not None:
+                glued.append(g)
+                if len(glued) >= n_best:
+                    break
+        if len(glued) >= n_best:
+            break
+    if not glued:
+        return None
+    return ParseResult(parses=glued, fragments=[])
+
+
+# Right-edge separators between two case-marker-led NPs. Used only by
+# ``_try_subj_bare_comma_np_coord`` to detect the bare-comma 2-way
+# SUBJ-coord shape in PAMILYA/sent-14's pre-lalo-na't half.
+_SUBJ_BARE_COMMA_SEPS = (
+    (", ang ", "ang"),
+    (", si ", "si"),
+    (", sina ", "sina"),
+    (", ng ", "ng"),
+    (", sa ", "sa"),
+    (", ang mga ", "ang"),
+    (", si mga ", "si"),
+)
+
+
+def _try_subj_bare_comma_np_coord(
+    text: str,
+    *,
+    n_best: int,
+    chart_state_cap: int | None,
+    max_candidates: int | None,
+    max_tree_iterations: int | None,
+    precheck_defining: bool,
+    splits_applied: frozenset[str],
+) -> list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] | None:
+    """Deeper SUBJ-bare-comma synthesis: detect ``<pred-text> <ang-NP1>,
+    <ang-NP2>`` and synthesize a matrix S where the SUBJ is a coord-NP
+    holding NP1 and NP2 as CONJUNCTS.
+
+    Scope: invoked only by ``_try_lalo_nat_split`` for the pre-half
+    when direct S parsing fails. The bare-comma 2-way pattern is not
+    attested in waves 1-5 outside the PAMILYA/sent-14 lalo-na't
+    context, so we keep this synthesis tightly scoped to that fast
+    path rather than generalizing to all S-level parses.
+
+    **Future corpus pressure to watch**: if attested exemplars of
+    standalone ``<pred> ang X, ang Y.`` (bare-comma 2-way without
+    a following discourse continuation like ``lalo na't``) emerge in
+    future audit waves, the decision point is whether to widen this
+    function's activation gate (e.g., trigger from a top-level
+    pipeline check on ``, ang ``/``, si `` followed by sentence-final
+    punctuation) or revisit a chart rule with cleaner gates. The
+    standalone shape currently ZPFs by design.
+
+    Strategy: find the rightmost ``, <case-marker> `` separator in the
+    text; split into pre (matrix-pred + first NP) and post (second NP);
+    parse pre as ``S`` (with a single NP SUBJ) and post as ``NP[CASE=X]``
+    where X matches the second NP's case marker; synthesize the matrix
+    S by adding the post NP to the pre SUBJ's CONJUNCTS set.
+
+    Returns a list of parses (potentially empty) or ``None`` when no
+    separator is found.
+    """
+    # Find the rightmost separator (so the split picks the last
+    # comma-NP boundary, leaving the first NP and its modifiers in
+    # the matrix-S pre-half).
+    best_idx = -1
+    best_sep = ""
+    best_case_marker = ""
+    for sep, case_marker in _SUBJ_BARE_COMMA_SEPS:
+        idx = text.rfind(sep)
+        if idx > best_idx:
+            best_idx = idx
+            best_sep = sep
+            best_case_marker = case_marker
+    if best_idx < 0 or not best_sep:
+        return None
+    pre_text = text[:best_idx].strip()
+    # Reattach the case marker to the post text (it's part of the
+    # separator we found; the start of the second NP includes it).
+    post_text = best_sep.lstrip(", ") + text[best_idx + len(best_sep):].strip()
+    post_text = post_text.strip()
+    if not pre_text or not post_text:
+        return None
+    pre_text_norm = _normalize_terminal_punct(pre_text)
+    post_text_norm = _normalize_terminal_punct(post_text)
+
+    case_map = {
+        "ang": "NOM",
+        "si": "NOM",
+        "sina": "NOM",
+        "ng": "GEN",
+        "sa": "DAT",
+    }
+    np_case = case_map.get(best_case_marker, "NOM")
+
+    pre_parses = _parse_segment_as(
+        pre_text_norm,
+        start_symbol="S",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"subj_bare_comma"}),
+    )
+    if not pre_parses:
+        return None
+    post_parses = _parse_segment_as(
+        post_text_norm,
+        start_symbol=f"NP[CASE={np_case}]",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"subj_bare_comma"}),
+    )
+    if not post_parses:
+        return None
+
+    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    for pre_parse in pre_parses:
+        for post_parse in post_parses:
+            g = _glue_subj_bare_comma(pre_parse, post_parse, case=np_case)
+            if g is not None:
+                glued.append(g)
+                if len(glued) >= n_best:
+                    break
+        if len(glued) >= n_best:
+            break
+    return glued or None
+
+
+def _glue_subj_bare_comma(
+    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    *,
+    case: str,
+) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    """Synthesize a matrix S whose SUBJ is a coord-NP holding the
+    pre-half's existing SUBJ and the post-half NP as CONJUNCTS.
+
+    The matrix S c-structure shares the pre-half's c-tree with the
+    SUBJ NP replaced by a synthetic ``NP[CASE=case, COORD=AND]`` whose
+    children are the original SUBJ NP + ``PUNCT[COMMA]`` + the new NP.
+    """
+    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
+    post_ctree, post_fs, post_a, post_diags = post_parse
+    pre_subj = pre_fs.feats.get("SUBJ")
+    if pre_subj is None or not isinstance(pre_subj, FStructure):
+        return None
+    # Build the coord SUBJ f-structure (CONJUNCTS = {pre_subj, post_fs}).
+    coord_subj = FStructure(feats={
+        "CASE": case,
+        "COORD": "AND",
+        "NUM": "PL",
+        "CONJUNCTS": frozenset({pre_subj, post_fs}),
+    })
+    # Replace pre_fs.SUBJ with coord_subj. (Don't restore on WF
+    # failure — the pre_parse was a candidate snapshot; the caller
+    # discards on None return.)
+    prev_subj = pre_fs.feats.get("SUBJ")
+    pre_fs.feats["SUBJ"] = coord_subj
+    # c-structure: replace the SUBJ NP in pre_ctree with a synthetic
+    # coord-NP node. We don't bother locating the exact SUBJ position;
+    # instead, wrap the post NP at the top level as a sibling. The
+    # f-structure carries the canonical analysis; the c-tree's
+    # visualization is approximate (downstream consumers read the
+    # f-structure).
+    comma_leaf = CNode(
+        label="PUNCT[PUNCT_CLASS=COMMA]", children=[], equations=[],
+    )
+    coord_np_ctree = CNode(
+        label=f"NP[CASE={case},COORD=AND]",
+        children=[pre_ctree, comma_leaf, post_ctree],
+        equations=[],
+    )
+    matrix_ctree = CNode(
+        label="S",
+        children=[coord_np_ctree],
+        equations=[],
+    )
+    _, wf_diags = lfg_well_formed(pre_fs, matrix_ctree)
+    if any(d.is_blocking() for d in wf_diags):
+        # Restore SUBJ; subsequent post_parse candidates may glue.
+        if prev_subj is None:
+            del pre_fs.feats["SUBJ"]
+        else:
+            pre_fs.feats["SUBJ"] = prev_subj
+        return None
+    diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
+    return matrix_ctree, pre_fs, post_a, diagnostics
+
+
+def _glue_lalo_nat(
+    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    """Synthesize ``S → S COMMA SubordClause(lalo na 't S)`` mirroring
+    the chart rules: matrix-attachment ``(↑) = ↓1, ↓3 ∈ (↑ ADJUNCT)``
+    + SubordClause builder ``(↑) = ↓4, (↑ SUBORD_TYPE) = 'REAS',
+    (↑ EMPHASIS) = 'ESPECIALLY'``.
+
+    Returns ``None`` if the assembled f-structure fails the
+    well-formedness check.
+    """
+    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
+    post_ctree, post_fs, post_a, post_diags = post_parse
+    # SubordClause f-structure shares identity with the post-comma S
+    # (chart rule's ``(↑) = ↓4``); add the SUBORD_TYPE + EMPHASIS
+    # overlay so downstream consumers can distinguish this from a
+    # bare reason clause.
+    pre_emphasis = post_fs.feats.get("EMPHASIS")
+    pre_subord_type = post_fs.feats.get("SUBORD_TYPE")
+    post_fs.feats["SUBORD_TYPE"] = "REAS"
+    post_fs.feats["EMPHASIS"] = "ESPECIALLY"
+    # Matrix f-structure shares identity with the pre-comma S
+    # (chart rule's ``(↑) = ↓1``); add the SubordClause f-structure
+    # to ADJUNCT (``↓3 ∈ (↑ ADJUNCT)``).
+    existing_adj = pre_fs.feats.get("ADJUNCT")
+    if existing_adj is None:
+        new_adj: frozenset[FStructure] = frozenset({post_fs})
+    elif isinstance(existing_adj, frozenset):
+        new_adj = existing_adj | {post_fs}
+    else:  # pragma: no cover — ADJUNCT is set-valued
+        # Restore overlay before returning
+        if pre_emphasis is None:
+            post_fs.feats.pop("EMPHASIS", None)
+        else:
+            post_fs.feats["EMPHASIS"] = pre_emphasis
+        if pre_subord_type is None:
+            post_fs.feats.pop("SUBORD_TYPE", None)
+        else:
+            post_fs.feats["SUBORD_TYPE"] = pre_subord_type
+        return None
+    pre_fs.feats["ADJUNCT"] = new_adj
+    # c-structure: S → S COMMA SubordClause(lalo na 't S)
+    lalo_leaf = CNode(
+        label="PART[LEMMA=lalo]", children=[], equations=[],
+    )
+    na_leaf = CNode(label="PART[LINK=NA]", children=[], equations=[])
+    at_leaf = CNode(label="PART[COORD=AND]", children=[], equations=[])
+    subord_ctree = CNode(
+        label="SubordClause",
+        children=[lalo_leaf, na_leaf, at_leaf, post_ctree],
+        equations=[],
+    )
+    comma_leaf = CNode(
+        label="PUNCT[PUNCT_CLASS=COMMA]", children=[], equations=[],
+    )
+    matrix_ctree = CNode(
+        label="S",
+        children=[pre_ctree, comma_leaf, subord_ctree],
+        equations=[],
+    )
+    _lift_in_situ_q_type(pre_fs)
+    _, wf_diags = lfg_well_formed(pre_fs, matrix_ctree)
+    if any(d.is_blocking() for d in wf_diags):
+        # Restore so subsequent candidates don't see our writes.
+        if existing_adj is None:
+            del pre_fs.feats["ADJUNCT"]
+        else:
+            pre_fs.feats["ADJUNCT"] = existing_adj
+        if pre_emphasis is None:
+            post_fs.feats.pop("EMPHASIS", None)
+        else:
+            post_fs.feats["EMPHASIS"] = pre_emphasis
+        if pre_subord_type is None:
+            post_fs.feats.pop("SUBORD_TYPE", None)
+        else:
+            post_fs.feats["SUBORD_TYPE"] = pre_subord_type
+        return None
+    diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
+    return matrix_ctree, pre_fs, post_a, diagnostics
+
 
 def _lift_in_situ_q_type(matrix: FStructure) -> None:
     """Phase 5n.B Commit 8 (§18 L50): write ``Q_TYPE='WH'`` onto a

@@ -1974,6 +1974,49 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 10.J.post-8.5.5.1: KA_PRED N + DAT-NP locative + NOM SUBJ -
+    #
+    # ``Kasama sa pag-aalala ng pamilya ang lolo, ang ama, ...``
+    #     "Included in the family's concern are the grandfather, the
+    #     father, ..." (PAMILYA/sent-14 matrix shape).
+    # ``Kasama sa larong-pampalakasan ang basketbol.``
+    #     "Included in the sports event is basketball."
+    #
+    # The DAT-PP companion to the existing N + NP[GEN] + NP[NOM] rule
+    # immediately above. Where the GEN-companion rule reads the
+    # GEN-NP as the *party* one is with (``kasama ng aso ang pusa``
+    # "the cat is together with the dog"), the DAT-LOC variant reads
+    # the DAT-NP as the *thing one is included in* (``kasama sa
+    # pag-aalala ang X`` "X is included in the concern").
+    #
+    # Gated tightly to ``KA_PRED = c true`` on the N daughter to
+    # restrict firing to the ka-N companion nominals (``kasama`` /
+    # ``kasabay`` / ``katabi``). Without this gate the rule would
+    # fire on any N + DAT-NP + NOM-NP sequence, badly over-generating
+    # against the broader clause patterns (locative-PP modifiers
+    # already attach productively at S level).
+    #
+    # The DAT-NP binds to ``LOC`` (locative role) rather than ``POSS``
+    # (used by the GEN variant) — semantically distinct: the GEN-NP
+    # names a co-participant, the DAT-NP names a containing event/
+    # state/locus.
+    #
+    # Reference: R&G 1981 §7.1 (nominal predication, locative
+    # complement variant); R&G 1981 PAMILYA essay (sent-14).
+    rules.append(Rule(
+        "S",
+        ["N", "NP[CASE=DAT]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'BE-N <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ N_LEMMA) = ↓1 LEMMA",
+            "(↑ LOC) = ↓2",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 KA_PRED) =c true",
+            "¬ (↓1 WH)",
+        ],
+    ))
+
 
     # --- Phase 8.R: impersonal clock-time predication --------------
     #

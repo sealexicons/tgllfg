@@ -117,6 +117,26 @@ def register_rules(rules: list[Rule]) -> None:
 
     # (Phase 10.J.post-1 binary comma+at coord moved to pipeline-level
     # synthesis — see _try_comma_at_np_split in core/pipeline.py)
+    #
+    # (Phase 10.J.post-8.5.5.1 chart-level bare-comma 2-way NP-coord
+    # was prototyped but dropped: an attributed-exemplar scan found
+    # ZERO standalone ``<pred> ang X, ang Y`` bare-comma 2-way
+    # attestations across waves 1-5; the only attested case is
+    # PAMILYA/sent-14's ``<pred> NP1, NP2, lalo na't S`` (always with
+    # discourse continuation). A general chart rule would require
+    # corpus-tuned gates ``¬ (↓3 COORD)`` etc. that have no clear
+    # linguistic anchor outside that specific shape. Moved to
+    # pipeline-level synthesis in core/pipeline.py — see
+    # ``_try_lalo_nat_split`` and its SUBJ-bare-comma fallback.)
+    #
+    # **Future corpus pressure to watch**: if attested exemplars of
+    # standalone ``<pred> ang X, ang Y.`` (bare-comma 2-way without
+    # any discourse continuation) emerge in future audit waves, the
+    # decision point would be (a) extend the pipeline-level synthesis
+    # to recognize end-of-sentence as a discourse-continuation
+    # surrogate, or (b) revisit a chart rule with cleaner gates. The
+    # current corpus scan (post-8.5.5.1 development, 6036-sent
+    # baseline) leaves the construction unattested.
 
 
     # --- Phase 10.J.post-8.5.2: V-at-V coord under ang headless-RC -----
