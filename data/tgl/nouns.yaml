@@ -2027,6 +2027,17 @@
   gloss: necklace
   source: audit-corpus
 
+# Phase 10.J.post-7.7: ``kusina`` NOUN ("kitchen"). Standard
+# Spanish-loan household-room noun (cf. ``kuwarto`` "room",
+# ``banyo`` "bathroom"). Surprising omission — added on the
+# post-7.7 constructed locative exemplar
+# ``Nasa kusina ang pagkain: kanin, gulay at isda.``.
+- citation: kusina
+  pos: NOUN
+  gloss: kitchen
+  source: audit-corpus
+  loan: SPANISH
+
 - citation: kuya
   pos: NOUN
   gloss: older brother, term of address for older male
