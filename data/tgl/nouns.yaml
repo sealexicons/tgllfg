@@ -2954,6 +2954,18 @@
   gloss: eldest child
   source: audit-corpus
 
+# Phase 10.J.post-8.5.6: ``pangangailangan`` (need / necessity)
+# lexicalized abstract NOUN from ``kailangan`` (ADJ "needed"). The
+# pang- + reduplicated-stem nominalization is non-productive on most
+# roots (each surface is lex'd independently when attested) — adding
+# this entry as a standalone ROOT rather than via paradigm cell.
+# Audit-pinned by PAMILYA/sent-11 ``sa pangangailangan ng pamilya``.
+- citation: pangangailangan
+  pos: NOUN
+  gloss: need, necessity, requirement
+  feats: {PANG_DERIVED: true, SEM_CLASS: ABSTRACT}
+  source: audit-corpus
+
 - citation: pangharang
   pos: NOUN
   gloss: instrument for blocking / blockade

@@ -1201,6 +1201,30 @@
   transitivity: TR
   affix_class: [um, mag, in_oblig, an_oblig, i_oblig, maka, pa_in, magpa, ika, pa_an, mag_an, magsi, magpa_an, v_casual_redup]
 
+# Phase 10.J.post-8.5.6: VERB-flip of the existing ADJ ``kasya``
+# (adjectives.yaml). Restricted to the transitive ``pag_in_ov``
+# paradigm (``pinagkakasya`` "stretches X to fit") — PAMILYA/sent-11's
+# managing-to-fit reading. Separate ROOT entry from the ADJ following
+# the same dual-POS convention as ``ganda`` / ``pagod``.
+#
+# **`mag-` AV not opted-in**: the intransitive ``magkasya`` /
+# ``nagkasya`` "to fit / fits" is a distinct argument frame (1-arg,
+# pera as the SUBJ that fits) from the transitive ``pinagkakasya``
+# (2-arg, agent stretches theme). The `mag-` cell would generate
+# AV forms with a TR PRED template ``KASYA <SUBJ, OBJ>`` that fail
+# the completeness check on intransitive surfaces (e.g.,
+# ``Nagkasya ang pera.``). Opting into `mag-` would need either
+# AV_ABSOL=true (semantically wrong — there's no implicit OBJ in
+# the intransitive reading) or a second ROOT entry with
+# transitivity=INTR. Deferred until audit pressure surfaces the
+# AV intransitive form.
+- citation: kasya
+  pos: VERB
+  gloss: stretch X to fit, make X suffice (transitive)
+  transitivity: TR
+  affix_class: [pag_in_ov]
+  source: audit-corpus
+
 - citation: kalog
   pos: VERB
   gloss: rattle, shake
