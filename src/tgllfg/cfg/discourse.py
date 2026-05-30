@@ -250,7 +250,16 @@ def register_rules(rules: list[Rule]) -> None:
     # distinct ``PP[PREP_TYPE=RANGE]`` (4-daughter rule in
     # nominal.py), so the SOURCE branch (3-daughter ``PREP NP[DAT]``)
     # never competes.
-    for prep_type in ("REASON", "SOURCE"):
+    #
+    # Phase 10.J.post-7.5 adds GOAL (``tungo sa X``). Same shape
+    # (``PP[PREP_TYPE=X] PUNCT[COMMA] S``) — fronted PP becomes
+    # matrix TOPIC + ADJ-set member. ``tungo`` is polysemous: NOUN
+    # ("destination, direction") + PREP[PREP_TYPE=GOAL]; the
+    # disambiguation lives at the PP-build site (extraction.py's
+    # generic ``PP[PREP_TYPE=GOAL] → PREP[PREP_TYPE=GOAL]
+    # NP[CASE=DAT]`` — the GOAL PP requires a sa-NP complement,
+    # which the bare-NOUN reading can't satisfy).
+    for prep_type in ("REASON", "SOURCE", "GOAL"):
         rules.append(Rule(
             "S",
             [f"PP[PREP_TYPE={prep_type}]", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
