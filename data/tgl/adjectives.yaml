@@ -120,6 +120,20 @@
   gloss: kind, well-behaved
   affix_class: [ma_adj]
 
+# Phase 10.J.post-8.5.1: ``baluktot`` ADJ — "crooked, bent". Used
+# as the bare predicative form (``Baluktot ang kahoy.`` "The wood
+# is crooked.") so ``affix_class: []`` (no ``ma_adj`` prefix-
+# deriving class — that would suppress the bare-root index per
+# the analyzer.py:553 rule). Base for the CV-CV reduplication
+# ``balubaluktot`` "very crooked / crookedly" (PAG-AARAL/sent-8);
+# the redup paradigm cell extension is scoped to a later
+# post-8.5.N. Parallel to ``tama`` ADJ (also ``affix_class: []``).
+- citation: baluktot
+  pos: ADJ
+  gloss: crooked, bent
+  affix_class: []
+  source: audit-corpus
+
 - citation: bango
   pos: ADJ
   gloss: fragrant
@@ -344,6 +358,19 @@
   gloss: thick
   affix_class: [ma_adj]
 
+# Phase 10.J.post-8.5.1: ``kapisan`` ADJ — "together, co-resident,
+# co-living". Used predicatively as in PAMILYA/sent-16
+# ``Kung minsa'y kapisan din ang wala pang asawang kapatid...``
+# "Sometimes the unmarried sibling is also living together (with
+# the family)." Adding directly as ADJ rather than deriving from
+# ``pisan`` ROOT + ka- prefix (the ka- relational-noun cell is
+# not in the paradigm engine; would require a new cell-family).
+- citation: kapisan
+  pos: ADJ
+  gloss: together, co-resident, co-living
+  affix_class: []
+  source: audit-corpus
+
 - citation: kapus
   pos: ADJ
   gloss: lacking, insufficient; in short supply
@@ -364,6 +391,17 @@
 - citation: katulad
   pos: ADJ
   gloss: similar, alike (typically used with sa-OBL "similar to X")
+  affix_class: []
+  source: audit-corpus
+
+# Phase 10.J.post-8.5.1: ``kasya`` ADJ — "sufficient, fitting,
+# enough". Used predicatively (``Kasya na ang pera.`` "The money
+# is enough"). The verbal `magkasya` family + the OV intensive
+# ``pinagkakasya`` would derive from a parallel VERB entry —
+# scoped to a later post-8.5.N (paradigm-extension sub-PR).
+- citation: kasya
+  pos: ADJ
+  gloss: sufficient, fitting, enough
   affix_class: []
   source: audit-corpus
 
