@@ -622,6 +622,16 @@ def register_rules(rules: list[Rule]) -> None:
                 f"(↑ COORD) = '{coord}'",
                 "(↑ NUM) = 'PL'" if coord == "AND" else "(↑ NUM) = ↓1 NUM",
                 f"(↓2 COORD) =c '{coord}'",
+                # Phase 10.J.post-7.7: reject already-coordinated N
+                # daughters. Without these gates the post-7.7 bare-
+                # comma wrap's N[COORD=AND] output could form the
+                # first/last conjunct of a binary ``N at N`` coord,
+                # producing nested-coord ambiguity (e.g., PANAHON
+                # sent-9's 6-N enumeration could bracket as
+                # ``(mangga, bayabas, santol, abokado, melon)
+                # at pakwan``).
+                "¬ (↓1 COORD)",
+                "¬ (↓3 COORD)",
             ],
         ))
 
@@ -727,6 +737,13 @@ def register_rules(rules: list[Rule]) -> None:
     # 1981 PANAHON essay (sent-22).
 
     # N_LONG_LIST base: exactly 2 Ns separated by 1 comma.
+    # Phase 10.J.post-7.7 added ``¬ (↓ COORD)`` gates on each N
+    # daughter to reject pre-coordinated Ns from joining the list —
+    # the post-7.7 bare-comma wrap `N[COORD=AND] → N_LONG_LIST_3PLUS`
+    # produces N[COORD=AND], and without these gates the chart found
+    # spurious recursive bracketings on at-wrapped enumerations
+    # (PANAHON sent-9's 6-N ``mangga, bayabas, santol, abokado, melon
+    # at pakwan``).
     rules.append(Rule(
         "N_LONG_LIST",
         [
@@ -737,6 +754,8 @@ def register_rules(rules: list[Rule]) -> None:
         [
             "↓1 ∈ (↑ CONJUNCTS)",
             "↓3 ∈ (↑ CONJUNCTS)",
+            "¬ (↓1 COORD)",
+            "¬ (↓3 COORD)",
         ],
     ))
     # N_LONG_LIST recursive: list + comma + N, accumulating via
@@ -751,6 +770,7 @@ def register_rules(rules: list[Rule]) -> None:
         [
             "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
             "↓3 ∈ (↑ CONJUNCTS)",
+            "¬ (↓3 COORD)",
         ],
     ))
     # 3+-conjunct wrap (non-Oxford form): list + at + N.
@@ -784,6 +804,100 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ COORD) = 'AND'",
             "(↑ NUM) = 'PL'",
             "(↓3 COORD) =c 'AND'",
+        ],
+    ))
+
+    # --- Phase 10.J.post-7.7: bare-comma N coord (no final ``at``) -------
+    #
+    # ``mangga, bayabas, santol`` (3-item) / ``mangga, bayabas, santol,
+    # melon, pakwan`` (5-item) — bare-comma N enumeration with no
+    # final ``at`` coordinator. Attested in colon-list constructions
+    # (``Ang inaani ay mga prutas: mangga, bayabas, santol.``) and
+    # in informal modern Filipino written practice. Pre-7.7 these
+    # only parsed via the at-wrapped variants above; bare-comma
+    # enumerations 0-parsed.
+    #
+    # The new infrastructure mirrors the existing ``N_LONG_LIST`` /
+    # at-wrap pattern but uses a parallel ``N_LONG_LIST_3PLUS``
+    # accumulator with an EXPLICIT 3-N base (no recursive 2-N step).
+    # This prevents the bare-comma wrap from over-firing on 2-N
+    # comma sequences (``X, Y`` without ``at`` is degenerate as a
+    # complete coord in modern Tagalog — it would over-generate
+    # chart-state on every internal-comma context).
+    #
+    # Architecture:
+    #
+    #   N_LONG_LIST_3PLUS → N COMMA N COMMA N        (base: exactly 3)
+    #   N_LONG_LIST_3PLUS → N_LONG_LIST_3PLUS COMMA N (recursive: +1)
+    #
+    #   N[COORD=AND] → N_LONG_LIST_3PLUS             (bare-comma wrap)
+    #
+    # The wrap fires on lists of 3+ Ns; with the case-marker → NP
+    # rule (``NP[CASE=X] → CASE-MARKER N``) it composes into a
+    # full NP[CASE=X, COORD=AND] when an ``ang`` / ``ng`` / ``sa``
+    # leads the list. Without a case marker, the bare N[COORD=AND]
+    # serves the colon-split's ``N`` post-colon category
+    # (pipeline._POST_COLON_CATEGORIES) for appositive enumeration
+    # like ``... prutas: mangga, bayabas, santol.``.
+    #
+    # Reference: S&O 1972 §6.7 (multi-conjunct enumeration); modern
+    # journalistic / casual practice.
+
+    # N_LONG_LIST_3PLUS base: exactly 3 Ns separated by 2 commas.
+    # Each N daughter rejects ``COORD`` via ``¬ (↓ COORD)`` — the
+    # N daughters must be uncoordinated bare Ns, not already-
+    # coordinated ``N[COORD=AND]`` outputs from this same rule.
+    # Without these gates the chart finds spurious bracketings on
+    # longer at-wrapped enumerations (e.g., PANAHON sent-9's 6-N
+    # ``mangga, bayabas, santol, abokado, melon at pakwan``) where
+    # sub-3-N lists could wrap to N[COORD=AND] and then participate
+    # as N daughters in another LONG_LIST step.
+    rules.append(Rule(
+        "N_LONG_LIST_3PLUS",
+        [
+            "N",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "N",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "N",
+        ],
+        [
+            "↓1 ∈ (↑ CONJUNCTS)",
+            "↓3 ∈ (↑ CONJUNCTS)",
+            "↓5 ∈ (↑ CONJUNCTS)",
+            "¬ (↓1 COORD)",
+            "¬ (↓3 COORD)",
+            "¬ (↓5 COORD)",
+        ],
+    ))
+    # N_LONG_LIST_3PLUS recursive: list + comma + N, accumulating
+    # via targeted CONJUNCTS sharing. Same ``¬ (↓3 COORD)`` gate
+    # on the appended N daughter.
+    rules.append(Rule(
+        "N_LONG_LIST_3PLUS",
+        [
+            "N_LONG_LIST_3PLUS",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "N",
+        ],
+        [
+            "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
+            "↓3 ∈ (↑ CONJUNCTS)",
+            "¬ (↓3 COORD)",
+        ],
+    ))
+    # Bare-comma wrap: list alone produces the matrix N[COORD=AND].
+    # No final ``at`` daughter — distinguishes from the Oxford /
+    # non-Oxford wraps above.
+    rules.append(Rule(
+        "N[COORD=AND]",
+        [
+            "N_LONG_LIST_3PLUS",
+        ],
+        [
+            "(↑ CONJUNCTS) = (↓1 CONJUNCTS)",
+            "(↑ COORD) = 'AND'",
+            "(↑ NUM) = 'PL'",
         ],
     ))
 
