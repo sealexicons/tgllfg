@@ -259,7 +259,16 @@ def register_rules(rules: list[Rule]) -> None:
     # generic ``PP[PREP_TYPE=GOAL] → PREP[PREP_TYPE=GOAL]
     # NP[CASE=DAT]`` — the GOAL PP requires a sa-NP complement,
     # which the bare-NOUN reading can't satisfy).
-    for prep_type in ("REASON", "SOURCE", "GOAL"):
+    #
+    # Phase 10.J.post-7.6 adds TOPIC (``tungkol sa X``). Same shape
+    # — fronted PP becomes matrix TOPIC + ADJ-set member.
+    # ``tungkol`` is unambiguously PREP[PREP_TYPE=TOPIC] (no
+    # competing NOUN or other-POS reading). Closes constructions
+    # like ``Tungkol sa oras, iba ang kamalayan ng mga Pilipino.``
+    # (the fronted counterpart of PANAHON sent-39's clause-final
+    # ``... tungkol sa oras.`` which was the original c12-TOPIC
+    # closure target).
+    for prep_type in ("REASON", "SOURCE", "GOAL", "TOPIC"):
         rules.append(Rule(
             "S",
             [f"PP[PREP_TYPE={prep_type}]", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
