@@ -1,0 +1,105 @@
+{"_comment": "Tagalog N-N hyphenated compound roster. Source: reviewer 2026-05-30 guidance (Phase 10.J.post-8.5.7). Each entry carries: surface (canonical hyphenated form), joined (analyzer-lookup form post merge_hyphen_compounds), tier (1=strongly lexicalized non-compositional; 2=conventionalized but transparent; 3=productive — handle via grammar rule, NOT lex), gloss, attested_in (waves 1-5 if audit-attested, else null), in_lex (true if already in tgllfg nouns.yaml as of this entry). Reviewer estimates the final tgllfg lex inventory at ~25-40 Tier-1+2 compounds; Tier-3 productively-generated forms should NOT have lex entries. See memory: reference_tagalog_nn_compound_tiers."}
+{"surface": "bahay-bata", "joined": "bahaybata", "tier": 1, "gloss": "uterus", "attested_in": null, "in_lex": false}
+{"surface": "bahay-kubo", "joined": "bahaykubo", "tier": 1, "gloss": "nipa hut", "attested_in": null, "in_lex": false}
+{"surface": "bahay-pukyutan", "joined": "bahaypukyutan", "tier": 2, "gloss": "beehive", "attested_in": null, "in_lex": false}
+{"surface": "bahay-kalapati", "joined": "bahaykalapati", "tier": 2, "gloss": "dovecote", "attested_in": null, "in_lex": false}
+{"surface": "bahay-ampunan", "joined": "bahayampunan", "tier": 2, "gloss": "orphanage", "attested_in": null, "in_lex": false}
+{"surface": "balik-bayan", "joined": "balikbayan", "tier": 1, "gloss": "returning expatriate / overseas Filipino returning home", "attested_in": null, "in_lex": false}
+{"surface": "balik-eskuwela", "joined": "balikeskuwela", "tier": 3, "gloss": "return to school (modern journalistic)", "attested_in": null, "in_lex": false}
+{"surface": "balik-trabaho", "joined": "baliktrabaho", "tier": 3, "gloss": "return to work (modern journalistic)", "attested_in": null, "in_lex": false}
+{"surface": "balik-probinsiya", "joined": "balikprobinsiya", "tier": 3, "gloss": "return to province (modern journalistic)", "attested_in": null, "in_lex": false}
+{"surface": "balik-loob", "joined": "balikloob", "tier": 1, "gloss": "return to allegiance/faith", "attested_in": null, "in_lex": false}
+{"surface": "halamang-singaw", "joined": "halamangsingaw", "tier": 1, "gloss": "fungus", "attested_in": null, "in_lex": false}
+{"surface": "halamang-dagat", "joined": "halamangdagat", "tier": 2, "gloss": "seaweed", "attested_in": null, "in_lex": false}
+{"surface": "halamang-gamot", "joined": "halamanggamot", "tier": 2, "gloss": "medicinal plant", "attested_in": null, "in_lex": false}
+{"surface": "halamang-ugat", "joined": "halamangugat", "tier": 2, "gloss": "root crop", "attested_in": null, "in_lex": false}
+{"surface": "punong-kahoy", "joined": "punongkahoy", "tier": 2, "gloss": "tree", "attested_in": null, "in_lex": false}
+{"surface": "punong-guro", "joined": "punongguro", "tier": 1, "gloss": "school principal", "attested_in": null, "in_lex": false}
+{"surface": "punong-lungsod", "joined": "punonglungsod", "tier": 2, "gloss": "city mayor", "attested_in": null, "in_lex": false}
+{"surface": "punong-himpilan", "joined": "punonghimpilan", "tier": 2, "gloss": "headquarters", "attested_in": null, "in_lex": false}
+{"surface": "punong-bayan", "joined": "punongbayan", "tier": 2, "gloss": "municipal mayor", "attested_in": null, "in_lex": false}
+{"surface": "punong-abala", "joined": "punongabala", "tier": 2, "gloss": "organizer", "attested_in": null, "in_lex": false}
+{"surface": "anak-araw", "joined": "anakaraw", "tier": 1, "gloss": "sunflower", "attested_in": null, "in_lex": false}
+{"surface": "anak-dalita", "joined": "anakdalita", "tier": 1, "gloss": "impoverished person", "attested_in": null, "in_lex": false}
+{"surface": "anak-pawis", "joined": "anakpawis", "tier": 1, "gloss": "laborer / working class", "attested_in": null, "in_lex": false}
+{"surface": "anak-bukid", "joined": "anakbukid", "tier": 1, "gloss": "farmer", "attested_in": null, "in_lex": false}
+{"surface": "anak-dagat", "joined": "anakdagat", "tier": 2, "gloss": "sailor", "attested_in": null, "in_lex": false}
+{"surface": "anak-araw-araw", "joined": "anakarawaraw", "tier": 2, "gloss": "day laborer", "attested_in": null, "in_lex": false}
+{"surface": "ibong-dagat", "joined": "ibongdagat", "tier": 3, "gloss": "seabird (productive ibong-X)", "attested_in": null, "in_lex": false}
+{"surface": "ibong-maya", "joined": "ibongmaya", "tier": 1, "gloss": "sparrow (lexicalized species name)", "attested_in": null, "in_lex": false}
+{"surface": "ibong-raptor", "joined": "ibongraptor", "tier": 3, "gloss": "raptor (productive ibong-X)", "attested_in": null, "in_lex": false}
+{"surface": "isdang-tabang", "joined": "isdangtabang", "tier": 3, "gloss": "freshwater fish (productive isdang-X)", "attested_in": null, "in_lex": false}
+{"surface": "isdang-dagat", "joined": "isdangdagat", "tier": 3, "gloss": "marine fish (productive isdang-X)", "attested_in": null, "in_lex": false}
+{"surface": "isdang-bato", "joined": "isdangbato", "tier": 3, "gloss": "rockfish (productive isdang-X)", "attested_in": null, "in_lex": false}
+{"surface": "isdang-hito", "joined": "isdanghito", "tier": 3, "gloss": "catfish (productive isdang-X)", "attested_in": null, "in_lex": false}
+{"surface": "isdang-lapad", "joined": "isdanglapad", "tier": 3, "gloss": "flatfish (productive isdang-X)", "attested_in": null, "in_lex": false}
+{"surface": "kabayong-dagat", "joined": "kabayongdagat", "tier": 1, "gloss": "seahorse (lexicalized species name)", "attested_in": null, "in_lex": false}
+{"surface": "pusang-gubat", "joined": "pusanggubat", "tier": 3, "gloss": "wildcat (productive pusang-X)", "attested_in": null, "in_lex": false}
+{"surface": "asong-gubat", "joined": "asonggubat", "tier": 3, "gloss": "wild dog (productive asong-X)", "attested_in": null, "in_lex": false}
+{"surface": "manok-dagat", "joined": "manokdagat", "tier": 3, "gloss": "seabird species (productive manok-X)", "attested_in": null, "in_lex": false}
+{"surface": "manok-bukid", "joined": "manokbukid", "tier": 3, "gloss": "junglefowl (productive manok-X)", "attested_in": null, "in_lex": false}
+{"surface": "tandang-panabong", "joined": "tandangpanabong", "tier": 2, "gloss": "fighting cock", "attested_in": null, "in_lex": false}
+{"surface": "bahay-kainan", "joined": "bahaykainan", "tier": 2, "gloss": "eatery", "attested_in": null, "in_lex": false}
+{"surface": "bahay-pahingahan", "joined": "bahaypahingahan", "tier": 2, "gloss": "rest house", "attested_in": null, "in_lex": false}
+{"surface": "bahay-dalanginan", "joined": "bahaydalanginan", "tier": 2, "gloss": "chapel", "attested_in": null, "in_lex": false}
+{"surface": "bahay-kalakalan", "joined": "bahaykalakalan", "tier": 2, "gloss": "trading house", "attested_in": null, "in_lex": false}
+{"surface": "bahay-aliwan", "joined": "bahayaliwan", "tier": 2, "gloss": "entertainment venue", "attested_in": null, "in_lex": false}
+{"surface": "bahay-inuman", "joined": "bahayinuman", "tier": 2, "gloss": "tavern", "attested_in": null, "in_lex": false}
+{"surface": "bahay-tuluyan", "joined": "bahaytuluyan", "tier": 2, "gloss": "shelter", "attested_in": null, "in_lex": false}
+{"surface": "bahay-aralan", "joined": "bahayaralan", "tier": 2, "gloss": "schoolhouse", "attested_in": null, "in_lex": false}
+{"surface": "bahay-kultura", "joined": "bahaykultura", "tier": 2, "gloss": "cultural center", "attested_in": null, "in_lex": false}
+{"surface": "bahay-kasaysayan", "joined": "bahaykasaysayan", "tier": 2, "gloss": "historical house", "attested_in": null, "in_lex": false}
+{"surface": "tubig-ulan", "joined": "tubigulan", "tier": 3, "gloss": "rainwater (productive tubig-X)", "attested_in": null, "in_lex": false}
+{"surface": "tubig-dagat", "joined": "tubigdagat", "tier": 3, "gloss": "seawater (productive tubig-X)", "attested_in": null, "in_lex": false}
+{"surface": "tubig-bukal", "joined": "tubigbukal", "tier": 3, "gloss": "spring water (productive tubig-X)", "attested_in": null, "in_lex": false}
+{"surface": "tubig-poso", "joined": "tubigposo", "tier": 3, "gloss": "well water (productive tubig-X)", "attested_in": null, "in_lex": false}
+{"surface": "tubig-baha", "joined": "tubigbaha", "tier": 3, "gloss": "floodwater (productive tubig-X)", "attested_in": null, "in_lex": false}
+{"surface": "tubig-ilog", "joined": "tubigilog", "tier": 3, "gloss": "river water (productive tubig-X)", "attested_in": null, "in_lex": false}
+{"surface": "tubig-lawa", "joined": "tubiglawa", "tier": 3, "gloss": "lake water (productive tubig-X)", "attested_in": null, "in_lex": false}
+{"surface": "tubig-gripo", "joined": "tubiggripo", "tier": 3, "gloss": "tap water (productive tubig-X)", "attested_in": null, "in_lex": false}
+{"surface": "lupaing-bayan", "joined": "lupaingbayan", "tier": 2, "gloss": "public land", "attested_in": null, "in_lex": false}
+{"surface": "lupang-sakahan", "joined": "lupangsakahan", "tier": 2, "gloss": "farmland", "attested_in": null, "in_lex": false}
+{"surface": "lupang-gubat", "joined": "lupanggubat", "tier": 3, "gloss": "forest land (productive lupang-X)", "attested_in": null, "in_lex": false}
+{"surface": "lupang-bayan", "joined": "lupangbayan", "tier": 2, "gloss": "state land", "attested_in": null, "in_lex": false}
+{"surface": "lupang-tubig", "joined": "lupangtubig", "tier": 3, "gloss": "wetland (productive lupang-X)", "attested_in": null, "in_lex": false}
+{"surface": "lupang-bukid", "joined": "lupangbukid", "tier": 3, "gloss": "agricultural land (productive lupang-X)", "attested_in": null, "in_lex": false}
+{"surface": "bayang-silangan", "joined": "bayangsilangan", "tier": 3, "gloss": "eastern nation (productive bayang-X)", "attested_in": null, "in_lex": false}
+{"surface": "bayang-api", "joined": "bayangapi", "tier": 2, "gloss": "oppressed nation", "attested_in": null, "in_lex": false}
+{"surface": "bayang-pinagmulan", "joined": "bayangpinagmulan", "tier": 3, "gloss": "homeland (productive bayang-X)", "attested_in": null, "in_lex": false}
+{"surface": "bayang-sinilangan", "joined": "bayangsinilangan", "tier": 3, "gloss": "birthplace (productive bayang-X)", "attested_in": null, "in_lex": false}
+{"surface": "bayang-katutubo", "joined": "bayangkatutubo", "tier": 3, "gloss": "indigenous homeland (productive bayang-X)", "attested_in": null, "in_lex": false}
+{"surface": "bayang-bayan", "joined": "bayangbayan", "tier": 2, "gloss": "commonwealth", "attested_in": null, "in_lex": false}
+{"surface": "wikang-bayan", "joined": "wikangbayan", "tier": 2, "gloss": "national language", "attested_in": null, "in_lex": false}
+{"surface": "wikang-katutubo", "joined": "wikangkatutubo", "tier": 3, "gloss": "indigenous language (productive wikang-X)", "attested_in": null, "in_lex": false}
+{"surface": "wikang-pambansa", "joined": "wikangpambansa", "tier": 2, "gloss": "national language", "attested_in": null, "in_lex": false}
+{"surface": "wikang-senyas", "joined": "wikangsenyas", "tier": 2, "gloss": "sign language", "attested_in": null, "in_lex": false}
+{"surface": "wikang-ugat", "joined": "wikangugat", "tier": 3, "gloss": "root language (productive wikang-X)", "attested_in": null, "in_lex": false}
+{"surface": "wikang-dayuhan", "joined": "wikangdayuhan", "tier": 3, "gloss": "foreign language (productive wikang-X)", "attested_in": null, "in_lex": false}
+{"surface": "taong-bayan", "joined": "taongbayan", "tier": 1, "gloss": "the populace, the people", "attested_in": null, "in_lex": false}
+{"surface": "taong-gubat", "joined": "taonggubat", "tier": 2, "gloss": "forest dweller", "attested_in": null, "in_lex": false}
+{"surface": "taong-dagat", "joined": "taongdagat", "tier": 3, "gloss": "sea people (productive taong-X)", "attested_in": null, "in_lex": false}
+{"surface": "taong-labas", "joined": "taonglabas", "tier": 1, "gloss": "outsider", "attested_in": null, "in_lex": false}
+{"surface": "taong-simbahan", "joined": "taongsimbahan", "tier": 3, "gloss": "church person (productive taong-X)", "attested_in": null, "in_lex": false}
+{"surface": "taong-bukid", "joined": "taongbukid", "tier": 3, "gloss": "rural person (productive taong-X)", "attested_in": null, "in_lex": false}
+{"surface": "taong-kalye", "joined": "taongkalye", "tier": 3, "gloss": "street person (productive taong-X)", "attested_in": null, "in_lex": false}
+{"surface": "taong-grasa", "joined": "taonggrasa", "tier": 1, "gloss": "homeless street person", "attested_in": null, "in_lex": false}
+{"surface": "taong-bahay", "joined": "taongbahay", "tier": 3, "gloss": "household member (productive taong-X)", "attested_in": null, "in_lex": false}
+{"surface": "taong-gulang", "joined": "taonggulang", "tier": 1, "gloss": "years of age (idiomatic)", "attested_in": null, "in_lex": false}
+{"surface": "pusod-dagat", "joined": "pusoddagat", "tier": 1, "gloss": "open sea (idiomatic 'navel-of-sea')", "attested_in": null, "in_lex": false}
+{"surface": "pusod-bayan", "joined": "pusodbayan", "tier": 1, "gloss": "town center", "attested_in": null, "in_lex": false}
+{"surface": "puso-bato", "joined": "pusobato", "tier": 1, "gloss": "stone-hearted person (idiomatic)", "attested_in": null, "in_lex": false}
+{"surface": "puso-saging", "joined": "pusosaging", "tier": 1, "gloss": "banana blossom (lexicalized)", "attested_in": null, "in_lex": false}
+{"surface": "dulo-bayan", "joined": "dulobayan", "tier": 3, "gloss": "edge of town (productive dulo-X)", "attested_in": null, "in_lex": false}
+{"surface": "dulo-daungan", "joined": "dulodaungan", "tier": 3, "gloss": "end of pier (productive dulo-X)", "attested_in": null, "in_lex": false}
+{"surface": "gitna-bayan", "joined": "gitnabayan", "tier": 3, "gloss": "town center (productive gitna-X)", "attested_in": null, "in_lex": false}
+{"surface": "bukang-liwayway", "joined": "bukangliwayway", "tier": 1, "gloss": "dawn (lexicalized)", "attested_in": null, "in_lex": false}
+{"surface": "takipsilim-araw", "joined": "takipsilimaraw", "tier": 1, "gloss": "twilight", "attested_in": null, "in_lex": false}
+{"surface": "silid-aklatan", "joined": "silidaklatan", "tier": 2, "gloss": "library", "attested_in": null, "in_lex": false}
+{"surface": "silid-aralan", "joined": "silidaralan", "tier": 2, "gloss": "classroom", "attested_in": null, "in_lex": false}
+{"surface": "silid-kainan", "joined": "silidkainan", "tier": 3, "gloss": "dining room (productive silid-X)", "attested_in": null, "in_lex": false}
+{"surface": "silid-tulugan", "joined": "silidtulugan", "tier": 3, "gloss": "bedroom (productive silid-X)", "attested_in": null, "in_lex": false}
+{"surface": "silid-pahingahan", "joined": "silidpahingahan", "tier": 3, "gloss": "lounge (productive silid-X)", "attested_in": null, "in_lex": false}
+{"surface": "tabing-dagat", "joined": "tabingdagat", "tier": 2, "gloss": "seashore, beach", "attested_in": "wave2-rg-intermediate (3 hits: sent-708, sent-863, sent-...)", "in_lex": true}
+{"surface": "salin-lahi", "joined": "salinlahi", "tier": 1, "gloss": "generation, lineage", "attested_in": "wave1-exemplars (PAMILYA/sent-17)", "in_lex": true}
+{"surface": "hanap-buhay", "joined": "hanapbuhay", "tier": 1, "gloss": "livelihood", "attested_in": "wave1-exemplars (PAMILYA/sent-18)", "in_lex": true}
+{"surface": "kamag-anak", "joined": "kamaganak", "tier": 1, "gloss": "relative, kinsman", "attested_in": "wave2-rg-intermediate (sent-1808) + wave3-so1972 (sent-118)", "in_lex": true}

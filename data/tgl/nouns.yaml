@@ -1317,6 +1317,20 @@
   pos: NOUN
   gloss: wind
 
+# Phase 10.J.post-8.5.7: lexicalized NOUN-NOUN compound. The canonical
+# spelling is hyphenated ``hanap-buhay`` (hanap "search" + buhay "life"
+# = "livelihood"). The joined form ``hanapbuhay`` is the surface the
+# analyzer looks up after ``merge_hyphen_compounds`` collapses
+# ``hanap``, ``-``, ``buhay``. Audit-pinned by PAMILYA/sent-18 (with
+# the OCR-residual ``pahahanap-buhay`` likely a corrupted
+# ``paghahanap-buhay``; the lexicalized compound form is what's
+# canonical).
+- citation: hanapbuhay
+  pos: NOUN
+  gloss: livelihood (lexicalized hanap + buhay compound)
+  feats: {LEMMA: hanapbuhay, SEM_CLASS: ABSTRACT}
+  source: audit-corpus
+
 - citation: hapdi
   pos: NOUN
   gloss: sting, sharp pain; smarting sensation
@@ -1698,6 +1712,20 @@
 - citation: kamalayan
   pos: NOUN
   gloss: awareness, consciousness
+  source: audit-corpus
+
+# Phase 10.J.post-8.5.7: lexicalized NOUN-NOUN compound. The canonical
+# spelling is hyphenated ``kamag-anak`` (ka- + mag-anak — "co-family
+# member" = "relative, kinsman"). Tier 1 lexicalized kin term — the
+# semantics ("relative") is non-compositional beyond the parts and the
+# compound is a fixed lexical unit. The joined form ``kamaganak`` is
+# the surface the analyzer looks up after ``merge_hyphen_compounds``
+# collapses ``kamag``, ``-``, ``anak``. Attested across wave-2 rg-int
+# + wave-3 so1972.
+- citation: kamaganak
+  pos: NOUN
+  gloss: relative, kinsman (lexicalized ka + mag-anak compound)
+  feats: {LEMMA: kamaganak, KIN_TYPE: GENERIC, HUMAN: true}
   source: audit-corpus
 
 - citation: kamatis
@@ -3511,6 +3539,19 @@
   gloss: translation, transfer, generation
   source: audit-corpus
 
+# Phase 10.J.post-8.5.7: lexicalized NOUN-NOUN compound. The canonical
+# spelling is hyphenated ``salin-lahi`` (salin + lahi "generation");
+# the joined form ``salinlahi`` is the surface the analyzer looks up
+# after ``merge_hyphen_compounds`` collapses ``salin``, ``-``, ``lahi``.
+# Lexicalized — semantics ("generation, lineage") is non-compositional
+# beyond the parts. Audit-pinned by PAMILYA/sent-17 ``tatlong salin-
+# lahi ang nakatira sa iisang bahay``.
+- citation: salinlahi
+  pos: NOUN
+  gloss: generation, lineage (lexicalized salin + lahi compound)
+  feats: {LEMMA: salinlahi, SEM_CLASS: ABSTRACT}
+  source: audit-corpus
+
 - citation: salapi
   pos: NOUN
   gloss: money, currency
@@ -3758,6 +3799,19 @@
 - citation: tabi
   pos: NOUN
   gloss: side, edge
+  source: audit-corpus
+
+# Phase 10.J.post-8.5.7: lexicalized NOUN-NOUN compound. The canonical
+# spelling is hyphenated ``tabing-dagat`` (tabi + linker -ng + dagat
+# = "seashore, beach"). The joined form ``tabingdagat`` is the surface
+# the analyzer looks up after ``merge_hyphen_compounds`` collapses
+# ``tabing`` (the -ng-suffixed tabi), ``-``, ``dagat``. Audit-attested
+# across wave-2 rg-int (3 hits: page-104/sent-708 ``Pumunta sila sa
+# tabing-dagat.``, etc.).
+- citation: tabingdagat
+  pos: NOUN
+  gloss: seashore, beach (lexicalized tabi+ng+dagat compound)
+  feats: {LEMMA: tabingdagat, SEM_CLASS: PLACE}
   source: audit-corpus
 
 # Phase 10.G lexicalized redup residue — courtesy formula "tabi-tabi po"

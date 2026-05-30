@@ -200,13 +200,16 @@ class TestPhase9bOutOfScope:
         # surprise — flip to TestPhase9bClosedIn9b
         assert len(parse_text(s, n_best=2)) == 0
 
-    def test_kamag_anak_oov(self) -> None:
+    def test_kamag_anak_closed_in_post_8_5_7(self) -> None:
         """page-238/sent (R&G Intermediate) ``Kamag-anak siya ng
-        mga Santos.`` — santos is now indexed, but ``kamag-anak``
-        ("relative") remains OOV. Phase 9.C common-noun batch."""
+        mga Santos.`` — closed by Phase 10.J.post-8.5.7 (lexicalized
+        ``kamaganak`` Tier 1 N-N compound NOUN; the
+        ``merge_hyphen_compounds`` pre-pass collapses ``kamag-anak``
+        to ``kamaganak`` for analyzer lookup). Was an out-of-scope
+        ``kamag-anak`` OOV gap in Phase 9b."""
         from tgllfg.core.pipeline import parse_text
         s = "Kamag-anak siya ng mga Santos."
-        assert len(parse_text(s, n_best=2)) == 0
+        assert len(parse_text(s, n_best=2)) >= 1
 
 
 class TestPhase9bSurnameAsSantosOnly:

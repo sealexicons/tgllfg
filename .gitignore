@@ -61,6 +61,7 @@ data/tgl/references/
 # `scripts/harvest_exemplars.py parse`).
 data/tgl/exemplars/*
 !data/tgl/exemplars/unattributed*.*
+!data/tgl/exemplars/compounds-*.jsonl
 data/tgl/exemplars/*-parse-results.jsonl
 
 # Per-project plan files (live alongside the repo for convenience but
