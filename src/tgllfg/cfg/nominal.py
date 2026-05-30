@@ -1086,15 +1086,20 @@ def register_rules(rules: list[Rule]) -> None:
     # and ``sa``). This contrasts with N + ADJ modification which
     # does require a linker (``ang **magandang** panahon``).
     #
-    # **PRED existential gates** on both daughters (``(↓1 PRED)`` /
-    # ``(↓2 PRED)``) restrict the rule to N-projected NPs on both
-    # head and modifier. PRON-projected NPs (``siya`` / ``ka`` /
-    # bare DAT wh-PRON ``kanino``) carry no ``PRED`` on the lex
-    # entry — their NP-projection f-structure is featureless for
-    # ``PRED``. The gates block the over-generation
-    # ``[PRON + bare-DAT-PRON]`` (e.g., ``*ka kanino`` as NP) that
-    # would otherwise spawn from rule application onto pronominal
-    # daughters where the construction is ungrammatical.
+    # **PRED existential gate on head only** (``(↓1 PRED)``)
+    # restricts the rule to N-projected head NPs. PRON-projected
+    # NPs (``siya`` / ``ka`` / bare DAT wh-PRON ``kanino``) carry
+    # no ``PRED`` on the lex entry — their NP-projection
+    # f-structure is featureless for ``PRED``. The head gate
+    # blocks the over-generation ``[PRON + bare-DAT-PRON]`` (e.g.,
+    # ``*ka kanino`` as NP) — ↓1=ka has no PRED so the rule
+    # doesn't fire. The **modifier gate ``(↓2 PRED)`` was dropped
+    # in Phase 10.J.post-8.3** (2026-05-30) to admit
+    # PRON-projected DAT modifiers (``ang aklat sa kanya``) — a
+    # legitimate Tagalog construction that was incorrectly blocked
+    # alongside the ``*ka kanino`` case. The head gate alone
+    # preserves the blocking effect: PRON-head ↓1 fails `(↓1
+    # PRED)` regardless of what ↓2 is.
     #
     # Ambiguity note: this rule introduces PP-attachment
     # ambiguity with existing clause-level DAT-NP attachments
@@ -1115,7 +1120,6 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑) = ↓1",
                 "↓2 ∈ (↑ ADJUNCT)",
                 "(↓1 PRED)",
-                "(↓2 PRED)",
             ],
         ))
 
