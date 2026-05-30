@@ -2140,6 +2140,30 @@
   transitivity: TR
   affix_class: [um, mag, i_oblig, an_oblig, maka]
 
+# Phase 10.J.post-8.5.4: ``samasama`` VERB — the reduplicated /
+# intensive form of ``sama`` meaning "gather together / assemble
+# / be all together". Adding as a separate ROOT entry (rather
+# than deriving from ``sama`` via a new CV-X paradigm cell)
+# because the reduplicated form has its own lex semantics
+# distinct from the bare ``sama`` "accompany / go with". The
+# ``pag_gerund`` opt-in admits BOTH:
+#
+#   pag + samasama          → pagsamasama       (no cv-redup)
+#   pag + cv_redup + samasama → pagsasamasama   (with cv-redup —
+#                                                PAG-AARAL/sent-5
+#                                                target)
+#
+# Closes PAG-AARAL/sent-5 (``Ayaw nilang mapintasan ang maling
+# pagbigkas o maling pagsasamasama ng salita.``) when paired with
+# post-8.5.1's ``pagbigkas`` (bigkas + pag_gerund) and
+# post-8.5.2's ``mapintasan`` (pintas + ma_an).
+- citation: samasama
+  pos: VERB
+  gloss: gather together, assemble (intensive/reduplicated form of sama)
+  transitivity: INTR
+  affix_class: [mag, pag_gerund]
+  source: audit-corpus
+
 - citation: sanla
   pos: VERB
   gloss: pawn, pledge as security
