@@ -69,6 +69,18 @@ _VOWELS = "aeiouAEIOU"
 # (``•Juan``) uses of the same glyphs.
 _APOSTROPHE_LIKE = ("'", "•", "·")
 
+# Phase 10.J.post-8.4: explicit map of <host> norm → canonical
+# <host>ng full form for the apostrophe-variant collapse path in
+# :func:`split_apostrophe_t`. Used only when ``<host>t`` is not a
+# known surface; small explicit registry rather than a generic
+# ``<host>ng`` lookup because the productive ``-ng`` linker /
+# particle suffix is too widely-distributed for the lookup alone
+# (``na't`` → ``na + at`` is the productive reading, NOT ``na't`` →
+# ``nang``). Currently a single entry; add forms as they attest.
+_T_NG_VARIANTS = {
+    "hangga": "hanggang",  # "until/as long as"
+}
+
 
 def split_apostrophe_t(tokens: list[Token]) -> list[Token]:
     """Merge the post-vowel bound clitic ``'t`` into a synthetic
@@ -104,6 +116,14 @@ def split_apostrophe_t(tokens: list[Token]) -> list[Token]:
     # single ``sapagkat`` token rather than ``sapagka`` + ``at``.
     # The ``sapagka + at`` reading would be semantically nonsense
     # ("because and"); the joined form is the canonical lex entry.
+    #
+    # Phase 10.J.post-8.4 extends the c6 collapse with a second
+    # known-surface lookup: ``Xng`` (the ``-ng`` restore). When
+    # ``Xt`` is not lex but ``Xng`` is, the apostrophe represents
+    # the dropped ``ng`` of a fixed conjunctive adverb. Attested:
+    # ``hangga't`` (= ``hanggang`` "until/as long as") — `hanggat`
+    # is not lex, but `hanggang` is. The default ``hangga at``
+    # reading is semantically wrong ("as long as AND").
     from ..morph.analyzer import _get_default
     analyzer = _get_default()
     out: list[Token] = []
@@ -118,14 +138,28 @@ def split_apostrophe_t(tokens: list[Token]) -> list[Token]:
             and host.surface
             and host.surface[-1] in _VOWELS
         ):
-            joined = host.surface + "t"
-            if analyzer.is_known_surface(joined.lower()):
+            joined_t = host.surface + "t"
+            if analyzer.is_known_surface(joined_t.lower()):
                 # Joined ``Xt`` is a known lex entry (e.g. ``sapagkat``).
                 # Emit single token with surface = joined form, spanning
                 # the original X + ' + t positions.
                 out.append(Token(
-                    surface=joined,
-                    norm=joined.lower(),
+                    surface=joined_t,
+                    norm=joined_t.lower(),
+                    start=host.start,
+                    end=tokens[i + 2].end,
+                ))
+                i += 3
+                continue
+            if host.norm in _T_NG_VARIANTS:
+                # post-8.4: ``<host>'t`` is an orthographic variant of
+                # the ``<host>ng`` canonical (currently only
+                # ``hangga't`` → ``hanggang``). Emit single token.
+                canonical = _T_NG_VARIANTS[host.norm]
+                preserved_case = host.surface + canonical[len(host.norm):]
+                out.append(Token(
+                    surface=preserved_case,
+                    norm=canonical,
                     start=host.start,
                     end=tokens[i + 2].end,
                 ))
@@ -172,7 +206,17 @@ def split_apostrophe_y(tokens: list[Token]) -> list[Token]:
     Mirrors :func:`split_apostrophe_t` (Phase 5k Commit 2) in
     shape — both merge a ``[X, ', <C>]`` triple into a synthetic
     function-word token when X is vowel-final.
+
+    Phase 10.J.post-8.4: also attempt an ``-n`` restore on the
+    host. The fixed adverbs ``kadalasan`` "usually", ``minsan``
+    "sometimes", ``karaniwan`` "ordinarily" are conventionally
+    written with a dropped ``-n`` before the ``'y`` clitic
+    (``Kadalasa'y``, ``minsa'y``, ``Karaniwa'y``). When the bare
+    host ``<X>`` is unknown but ``<X>n`` is a known surface, emit
+    ``<X>n`` instead of ``<X>`` followed by the synthetic ``ay``.
     """
+    from ..morph.analyzer import _get_default
+    analyzer = _get_default()
     out: list[Token] = []
     i = 0
     n = len(tokens)
@@ -185,9 +229,23 @@ def split_apostrophe_y(tokens: list[Token]) -> list[Token]:
             and host.surface
             and host.surface[-1] in _VOWELS
         ):
-            out.append(host)
             ap_start = tokens[i + 1].start
             y_end = tokens[i + 2].end
+            joined_n = host.surface + "n"
+            if (
+                not analyzer.is_known_surface(host.norm)
+                and analyzer.is_known_surface(joined_n.lower())
+            ):
+                # Restore the truncated ``-n`` so the analyzer hits
+                # the canonical adverb (Kadalasan / minsan / karaniwan).
+                # Span covers the original host position; the synthetic
+                # ``ay`` covers the ``'y`` glyph positions.
+                out.append(Token(
+                    surface=joined_n, norm=joined_n.lower(),
+                    start=host.start, end=host.end,
+                ))
+            else:
+                out.append(host)
             out.append(Token(
                 surface="ay", norm="ay",
                 start=ap_start, end=y_end,

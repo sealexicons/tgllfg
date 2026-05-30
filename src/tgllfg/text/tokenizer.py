@@ -31,6 +31,13 @@ paradigm cell) or aren't Tagalog at all (English compounds).
 The ``norm`` field of the rejoined token strips the internal
 hyphen so the analyzer's surface index (which keys on
 ``naguusap`` / ``pagaaral`` / ``magaral`` without hyphens) finds it.
+
+Apostrophe-clitic contractions (``Maria't`` → ``Maria at``,
+``rito'y`` → ``rito ay``, ``Kahi't`` → ``Kahit``, ``hangga't`` →
+``hanggang``, ``Kadalasa'y`` → ``Kadalasan`` + ``ay``) are
+handled by the dedicated pre-passes :func:`split_apostrophe_t`
+and :func:`split_apostrophe_y` in :mod:`tgllfg.text.clitics`
+(running after :func:`tokenize` in the pipeline).
 """
 
 import re
