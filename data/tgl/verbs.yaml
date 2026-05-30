@@ -1201,7 +1201,20 @@
   pos: VERB
   gloss: know; recognize
   transitivity: TR
-  affix_class: [mag, in_oblig, an_oblig, maka]
+  # Phase 10.J.post-8.1: ``ma`` admits the ma-NVOL paradigm so
+  # ``nakilala`` (the canonical PFV form in
+  # ``Nakilala ko siya.`` "I recognized him" — recognition is
+  # inherently potentive in Tagalog: an unwilled cognitive act)
+  # surfaces. Without ``ma`` the lex generated only
+  # ``magkilala`` (SOC AV) and ``kinikilala`` (OV IPFV), so the
+  # natural ``nakilala ko siya`` ZPF'd across waves 2-5
+  # (rg-intermediate sent-126; so1972 sent-786/1076; zamar2023
+  # page-54/sent-2). ``AV_ABSOL: true`` licenses bare V[AV]+NP
+  # nom-only forms in absolutive AV context (`Nakikilala ako.`
+  # "I am being recognized"). Parallel to ``maneho`` (post-7.5),
+  # ``kuwento`` (post-7.6), ``sagot`` (post-7.1).
+  affix_class: [mag, ma, in_oblig, an_oblig, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: kilos
   pos: VERB
@@ -2204,7 +2217,17 @@
   pos: VERB
   gloss: follow, obey
   transitivity: TR
+  # Phase 10.J.post-8.1: ``AV_ABSOL: true`` licenses bare
+  # V[AV]+NP[CASE=NOM] forms — ``Sumunod ka sa iyong magulang.``
+  # "Obey your parent" (wave-2 ramos1971 sent-160) has only an
+  # NOM-pivot ``ka`` + a sa-OBL goal/directional; the OBJ
+  # (what's being followed) is unspecified in the absolutive AV
+  # reading. Without AV_ABSOL the AV-PFV ``sumunod`` only fires
+  # with an overt OBJ that the surface lacks. Parallel to
+  # ``maneho`` (post-7.5), ``kuwento`` (post-7.6), ``sagot``
+  # (post-7.1).
   affix_class: [um, in_oblig, an_oblig, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: sunog
   pos: VERB
