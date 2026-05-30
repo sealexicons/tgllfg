@@ -1113,6 +1113,57 @@
     - {op: suffix, value: an}
   notes: "pagbibintangan, paglalaruan (CTPL — cv-redup + pag- prefix + -an suffix; no -in- infix)"
 
+# --- pag-X-in- OV (no -an): distribute/share/stretch class -------------
+#
+# Phase 10.J.post-8.5.6: a specialized OV (theme-pivot) form for mag-
+# class verbs of distribution / sharing / stretching where the theme
+# being apportioned takes the NOM pivot, but the morphology uses `pag-`
+# + `-in-` infix (no final `-an` suffix that the canonical `pag_an` DV
+# class uses). The `pinagkakasya` family.
+#
+#   kasya  "fit / suffice"
+#     PFV   pinagkasya       ← pag- + X + -in- infix
+#     IPFV  pinagkakasya     ← cv_redup + pag- + X + -in- infix
+#     CTPL  pagkakasya       ← cv_redup + pag- + X (no -in- in irrealis)
+#
+# Same morphological recipe as the existing ``pag_an`` LV cells (lines
+# 1082-1113 above) but without the final ``-an`` suffix. Per the
+# reviewer 2026-05-30 productivity-not-attestation principle, the cell
+# is structurally productive; only `kasya` opts in today (`pinagkakasya`
+# in PAMILYA/sent-11). Other potential members (verbs of stretching /
+# managing-to-fit / apportioning) would opt in via `affix_class:
+# [pag_in_lv]` when audit pressure surfaces them.
+- voice: OV
+  aspect: PFV
+  mood: IND
+  transitivity: TR
+  affix_class: pag_in_ov
+  operations:
+    - {op: prefix, value: "pag"}
+    - {op: infix, value: in}
+  notes: pinagkasya (LV PFV — pag- + X + -in- infix; no -an)
+
+- voice: OV
+  aspect: IPFV
+  mood: IND
+  transitivity: TR
+  affix_class: pag_in_ov
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pag"}
+    - {op: infix, value: in}
+  notes: pinagkakasya (LV IPFV)
+
+- voice: OV
+  aspect: CTPL
+  mood: IND
+  transitivity: TR
+  affix_class: pag_in_ov
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "pag"}
+  notes: pagkakasya (LV CTPL — no -in- in irrealis)
+
 # --- ma-...-an LF-NVOL: non-volitional locative voice (Phase 9.O B3.B) ---
 #
 # 8.I pin closure: ``malimutan`` ("be-able-to-forget") and other
