@@ -2285,6 +2285,89 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 10.J.post-8.5.8: productive N-N compound (Tier 3) -------
+    #
+    # ``tubig-dagat``         "sea water"             (productive)
+    # ``bahay-kainan``        "eatery"                (semi-productive)
+    # ``silid-tulugan``       "bedroom"               (productive silid-X)
+    # ``tubig-ulan``          "rainwater"             (productive tubig-X)
+    # ``wikang-katutubo``     "indigenous language"   (with -ng linker)
+    # ``lupang-sakahan``      "farmland"              (with -ng linker)
+    # ``taong-simbahan``      "church person"         (with -ng linker)
+    #
+    # The reviewer 2026-05-30 N-N compound Tier framework recommends
+    # productive compounds (Tier 3) be parsed compositionally via a
+    # grammar rule with MOD semantics, NOT lex'd individually. The
+    # lex inventory of Tier-1+2 lexicalized compounds is ~25-40 total
+    # (e.g., post-8.5.7's salinlahi / tabingdagat / hanapbuhay /
+    # kamaganak); Tier 3 covers an open-ended productive family.
+    #
+    # Pre-pass token streams (after tokenize → split_linker_ng →
+    # merge_hyphen_compounds):
+    #
+    # * `tubig-dagat`        → 3 tokens: `tubig`, `-`, `dagat`
+    # * `bahay-kainan`       → 3 tokens: `bahay`, `-`, `kainan`
+    # * `wikang-katutubo`    → 4 tokens: `wika`, `-ng`, `-`, `katutubo`
+    # * `lupang-sakahan`     → 4 tokens: `lupa`, `-ng`, `-`, `sakahan`
+    # * `taong-simbahan`     → 4 tokens: `tao`, `-ng`, `-`, `simbahan`
+    #
+    # Two rule shapes cover both:
+    #
+    # (a) bare `N PUNCT[HYPHEN] N` — head + hyphen + modifier
+    # (b) `N PART[LINK=NG] PUNCT[HYPHEN] N` — head + -ng linker +
+    #     hyphen + modifier (when head ends in a vowel and bears the
+    #     orthographic -ng linker before the hyphenated modifier)
+    #
+    # **F-structure**: matrix is the LEFT N (the head); the RIGHT N
+    # joins the matrix's `N-MOD` set (reusing the post-6.1 N-MOD
+    # slot for compositional MOD semantics). Per reviewer guidance,
+    # the matrix PRED is NOT collapsed into a single `SEAWATER` atom;
+    # instead, the head's LEMMA stays on the matrix and the modifier
+    # is recoverable from `N-MOD` (mirroring `bahay na bato` →
+    # bahay.LEMMA + bato as N-MOD).
+    #
+    # **Gates**: `¬ (↓N N_RC)` on the modifier daughter (same as
+    # post-6.1) — blocks composition where the modifier is itself an
+    # RC-wrapped N. The hyphenated form is a fixed lexical-unit
+    # compound; an RC inside it would be ungrammatical.
+    #
+    # **Lexicalized compounds preserved**: when the joined form IS
+    # in the lex (e.g., `tabingdagat`, `salinlahi`, `kamaganak`), the
+    # existing `merge_hyphen_compounds` pre-pass collapses to the
+    # single token before parsing, so this productive rule doesn't
+    # fire — the lex entry wins, preserving the non-compositional
+    # PRED for Tier-1 compounds.
+    #
+    # **Disambiguation with arithmetic `-`**: the `-` between two
+    # NOUNs surfaces as `PUNCT[PUNCT_CLASS=HYPHEN]` here. The
+    # alternative reading `PART[OP=MINUS]` (arithmetic minus) is
+    # NOT consumed by these rules (different category). The chart
+    # picks per rule context.
+    #
+    # Reference: reviewer 2026-05-30 Tier framework
+    # (memory: reference_tagalog_nn_compound_tiers); S&O 1972 §6
+    # (N-N compounding); R&G 1981 (hyphenated compound forms).
+    rules.append(Rule(
+        "N",
+        ["N", "PUNCT[PUNCT_CLASS=HYPHEN]", "N"],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ N-MOD)",
+            "¬ (↓3 N_RC)",
+        ],
+    ))
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "N",
+            ["N", f"PART[LINK={link}]", "PUNCT[PUNCT_CLASS=HYPHEN]", "N"],
+            [
+                "(↑) = ↓1",
+                "↓4 ∈ (↑ N-MOD)",
+                "¬ (↓4 N_RC)",
+            ],
+        ))
+
+
     # --- Phase 5h Commit 3: comparative ``mas`` ADJ-wrapper -----
     #
     # ``Mas matalino siya.`` "She is more intelligent."
