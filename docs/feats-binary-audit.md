@@ -36,7 +36,7 @@ inspection: comment text containing capitalized words followed by
 
 Subsequent phases extended the inventory: 9.O.3 (+1), 9.O.4 (+1),
 9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1), 9.X.c49 (+1),
-9.X.post-2 (+1), 10.E.1 (+1), 10.G (+1) → 65 total.
+9.X.post-2 (+1), 10.E.1 (+1), 10.G (+1), 10.J.post-8.5.2 (+1) → 66 total.
 Each extension is documented inline below.
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
@@ -61,6 +61,7 @@ negative.
 | `DEPICTIVE` | secondary predicate is depictive-licensed |
 | `DIGIT_FORM` | NUM surfaces as digit form (`1` vs `isa`) |
 | `DISCOURSE_EMPH` | discourse-emphasis marker |
+| `DISPOSITION` | dispositional / habitual ADJ (`mahiyain`, `matakutin`) — Phase 10.J.post-8.5.2 |
 | `DISTRIB` | NUM/Q is distributive (`tig-`) |
 | `DISTRIB_POSS` | distributive possessive (`kanya-kanya`) |
 | `DUAL` | dual marker (`pareho`, `dalawa`) |

@@ -256,6 +256,48 @@
     rule-match time. PREDICATIVE=YES rides intrinsically via the
     ADJ indexer.
 
+# === Phase 10.J.post-8.5.2: ma-X-in disposition cell ====================
+#
+# Dispositional / habitual / character-quality ADJ derivation from
+# emotive / psych roots: ``ma-`` + ROOT + ``-in``. Output is an ADJ
+# describing a person's disposition or tendency to manifest the
+# root quality. Examples:
+#
+#   hiya  → mahiyain   "shy-tempered, easily-embarrassed"
+#   takot → matakutin  "fearful, easily-frightened"
+#   selos → maselosin  "jealous-tempered"
+#   tampo → matampuhin "easily-offended"
+#   awa   → maawain    "compassionate"
+#   gulat → magulatin  "easily-startled"
+#
+# Distinct from the ``ma_adj`` cell (which produces scalar ``ma-X``
+# without the ``-in`` suffix — ``mahiya``, ``matakot``, ``maselos``).
+# The ``-in`` disposition is per-root opt-in; not all emotive roots
+# admit it (informant-gated; reference: S&O 1972 §3.13 dispositional
+# adjectives).
+#
+# Operation order: prefix ``ma`` first, then suffix ``in``. V+V hiatus
+# on the suffix boundary (vowel-final root + vowel-initial suffix)
+# defaults to ``-h-`` epenthesis (S&O 1972 §4.21); opted-in roots
+# carrying ``sandhi_flags: [no_h_epenthesis]`` produce the direct-
+# concatenated variant (``mahiyain``, not ``mahiyahin``).
+#
+# PAG-AARAL/sent-3 closure target: ``Ang nahihirapan ay mga taong
+# mahiyain at mahina ang loob.`` "Those who find it hard are shy-
+# tempered, faint-hearted people."
+- affix_class: ma_X_in
+  operations:
+    - {op: prefix, value: "ma"}
+    - {op: suffix, value: in}
+  feats: {DISPOSITION: true, PREDICATIVE: true}
+  notes: |
+    ma-X-in disposition ADJ from emotive/psych root: ``mahiyain``
+    (shy-tempered), ``matakutin`` (fearful), ``maselosin`` (jealous-
+    tempered), ``maawain`` (compassionate). Per-root opt-in via
+    ``affix_class: [ma_X_in]``. V+V hiatus uses ``-h-`` epenthesis
+    by default; vowel-final roots that should produce direct-
+    concatenated forms opt into ``sandhi_flags: [no_h_epenthesis]``.
+
 # === Phase 5h: bare-citation indexer for non-productive ADJ roots ======
 #
 # Phase 5h Commit 2 adds three lexicalised, non-productive ADJ
