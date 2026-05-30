@@ -40,6 +40,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "DEPICTIVE",
         "DIGIT_FORM",
         "DISCOURSE_EMPH",
+        "DISPOSITION",
         "DISTRIB",
         "DISTRIB_POSS",
         "DUAL",

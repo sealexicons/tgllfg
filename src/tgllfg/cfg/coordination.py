@@ -119,6 +119,63 @@ def register_rules(rules: list[Rule]) -> None:
     # synthesis — see _try_comma_at_np_split in core/pipeline.py)
 
 
+    # --- Phase 10.J.post-8.5.2: V-at-V coord under ang headless-RC -----
+    #
+    # ``Siya ang nasusunod at nagpapasya para sa pamilya.``
+    #     "She is the one followed and (the one who) decides for the family."
+    #     (PAMILYA/sent-7)
+    # ``Siya ang kumakain at uminom.``  "She is the one eating and drinking."
+    # ``Ang nasusunod at nagpapasya``   "the one followed and deciding"
+    #
+    # The existing headless-RC wrap ``NP[CASE=X] → DET[CASE=X] S_GAP``
+    # (extraction.py:1697) admits a single S_GAP body — typically a bare
+    # ``V[VOICE=AV]`` (extraction.py:65-69). For multi-V coordination
+    # under a single ``ang`` (the pseudo-cleft / equational headless-NP
+    # construction), we need ``S_GAP`` to itself support coord:
+    #
+    #     S_GAP → S_GAP PART[COORD=AND] S_GAP
+    #     S_GAP → S_GAP PART[COORD=OR]  S_GAP
+    #
+    # Each conjunct is a SUBJ-gapped clause; the matrix headless-RC
+    # wrap binds the matrix NP to ``S_GAP REL-PRO``. By unifying both
+    # conjuncts' REL-PRO with the matrix REL-PRO, both V daughters
+    # share their SUBJ pivot with the matrix NP (the canonical
+    # "single referent who does V1 and V2" reading).
+    #
+    # Mirrors the NP-coord pattern above (CONJUNCTS set, ``COORD``
+    # advertised on the LHS, ``=c`` constraint on the conjunction
+    # daughter). The OR variant covers ``ang nasusunod o nagpapasya``
+    # "the one followed or deciding" — same SUBJ-sharing semantics.
+    #
+    # Anti-deferral closure (Phase 10.J.post-8.5.2 in-PR): the
+    # `Nasusunod ang batas.`-style standalone gap was a structural
+    # symptom; the actual wave-1 yield is PAMILYA/sent-7 once paired
+    # with ``pasya`` ``AV_ABSOL=true`` and ``sunod`` ``ma`` cell.
+    for coord in ("AND", "OR"):
+        # Bare S_GAP LHS so the existing headless-RC wrap
+        # (NP[CASE=X] → DET[CASE=X] S_GAP) admits the coord output
+        # without itself needing a COORD-aware variant. The matrix
+        # inherits f-structure from the first conjunct (matches the
+        # Phase 5g manner-style ADJ+LK+S rule's pattern). Both
+        # conjuncts share the matrix's SUBJ — when the headless-RC
+        # wrap later binds matrix SUBJ to the head NP, both V
+        # daughters see it as their pivot.
+        rules.append(Rule(
+            "S_GAP",
+            [
+                "S_GAP",
+                f"PART[COORD={coord}]",
+                "S_GAP",
+            ],
+            [
+                "(↑) = ↓1",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                "(↓3 SUBJ) = (↑ SUBJ)",
+                f"(↓2 COORD) =c '{coord}'",
+            ],
+        ))
+
+
     # --- Phase 5k Commit 4 + Phase 5n.A Commit 20: 3-flat coord ---
     #
     # Two surface variants per case × two coord values, twelve rules

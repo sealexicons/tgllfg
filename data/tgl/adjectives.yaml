@@ -275,7 +275,15 @@
 - citation: hiya
   pos: ADJ
   gloss: shy, ashamed
-  affix_class: [ma_adj]
+  # Phase 10.J.post-8.5.2: ``ma_X_in`` admits the dispositional
+  # form ``mahiyain`` "shy-tempered, easily-embarrassed" via the
+  # new ma-X-in cell in ``adj_paradigms.yaml``. The
+  # ``no_h_epenthesis`` flag prevents the default S&O 1972 §4.21
+  # ``-h-`` insertion on the V+V hiatus between ``hiya`` (a-final)
+  # and the ``-in`` suffix — produces ``mahiyain`` not the
+  # ``-h-``-glued ``*mahiyahin``. PAG-AARAL/sent-3 closure target.
+  affix_class: [ma_adj, ma_X_in]
+  sandhi_flags: [no_h_epenthesis]
 
 - citation: huli
   pos: ADJ
