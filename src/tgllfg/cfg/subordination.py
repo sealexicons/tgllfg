@@ -251,6 +251,48 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 10.J.post-8.5.5: Kahit-ADJ-comma-S concessive ----------
+    #
+    # ``Kahi't balubaluktot, pinipilit nilang magsalita.``
+    #     "Even crookedly, they force themselves to speak."
+    #     (R&G 1981 PAG-AARAL/sent-8)
+    # ``Kahit malaki, kumain siya.``
+    #     "Even though big, he ate."
+    #
+    # The existing SubordClause builder `PART[CONC] S` requires a
+    # FULL inner S with overt SUBJ — `Kahit malaki ka, kumain ka.`
+    # parses. The PRO-pivot variant `Kahit ADJ, S` (where the ADJ
+    # subject is discourse-recoverable from the matrix clause) is a
+    # productive concessive idiom. This rule admits it directly:
+    # bare predicative ADJ inside the concessive clause + comma +
+    # matrix S.
+    #
+    # Matrix inherits f-structure from the main clause (`(↑) = ↓4`);
+    # the ADJ joins the matrix ADJUNCT set (semantically concessive
+    # — "even-X-ly"). PART[LEMMA=kahit] gates this to the specific
+    # particle (bagaman / bagamat are too formal for the comma-bare
+    # variant; they take full inner S).
+    #
+    # Closes PAG-AARAL/sent-8 (paired with the PRO-NOM-pivot
+    # TRANS-control rule in control.py).
+    for link_part_lemma in ("kahit",):
+        rules.append(Rule(
+            "S",
+            [
+                f"PART[LEMMA={link_part_lemma}]",
+                "ADJ[PREDICATIVE]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                "S",
+            ],
+            [
+                "(↑) = ↓4",
+                "↓2 ∈ (↑ ADJUNCT)",
+                "(↓1 COMP_TYPE) =c 'CONC'",
+                "(↓2 PREDICATIVE) =c true",
+                "(↓3 PUNCT_CLASS) =c 'COMMA'",
+            ],
+        ))
+
     # === Phase 5l Commit 6: temporal SubordClause builders =============
     # — bago "before" / pagkatapos "after"
     #

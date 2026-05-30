@@ -473,6 +473,10 @@
 - citation: bata
   pos: NOUN
   gloss: child
+  # Phase 10.J.post-8.5.5: opts into ``naka_cv_compar`` for the
+  # comparative ADJ ``nakababata`` "younger" (NOUN→ADJ POS-flip
+  # via the new naka- + CV-redup + ROOT cell). PAMILYA/sent-14.
+  affix_class: [naka_cv_compar]
 
 - citation: batis
   pos: NOUN

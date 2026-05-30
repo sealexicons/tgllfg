@@ -54,6 +54,7 @@ from .paradigms import (
 )
 from .sandhi import (
     attach_suffix,
+    cv2_reduplicate,
     cv_reduplicate,
     kani_reduplicate,
     d_to_r_intervocalic,
@@ -109,7 +110,7 @@ _PLACEHOLDER_LETTER_RE = re.compile(r"^[abcxyzABCXYZ]$")
 # bare citation indexed as ADJ (``pula`` / ``puti`` with ``[adj_redup]``);
 # ``[ma_adj, adj_redup]`` (e.g. ``ganda``) does not — its bare form is the
 # NOUN "beauty".
-_ADDITIVE_ADJ_AFFIX_CLASSES = frozenset({"adj_redup"})
+_ADDITIVE_ADJ_AFFIX_CLASSES = frozenset({"adj_redup", "adj_cv2_redup"})
 
 
 def generate_form(root: Root, cell: ParadigmCell) -> str:
@@ -198,6 +199,13 @@ def _apply(
 ) -> str:
     if op.op == "cv_redup":
         return cv_reduplicate(base, cluster_redup="cluster_redup" in flags)
+    if op.op == "cv2_redup":
+        # Phase 10.J.post-8.5.5: first-2-syllable redup
+        # (``baluktot`` → ``balubaluktot``). Per-root opt-in via
+        # ``affix_class: [adj_cv2_redup]`` (or any other cell
+        # naming this op); gated to attested marked-intensive
+        # ADJ stems. See :func:`cv2_reduplicate`.
+        return cv2_reduplicate(base)
     if op.op == "kani_redup":
         # Phase 5n.C.3 Commit 5 (§18 L31): distributive-possessive
         # redup for 3rd-person DAT pronouns. ``kanya`` (2-syl) →

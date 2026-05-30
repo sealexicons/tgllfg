@@ -36,7 +36,8 @@ inspection: comment text containing capitalized words followed by
 
 Subsequent phases extended the inventory: 9.O.3 (+1), 9.O.4 (+1),
 9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1), 9.X.c49 (+1),
-9.X.post-2 (+1), 10.E.1 (+1), 10.G (+1), 10.J.post-8.5.2 (+1) → 66 total.
+9.X.post-2 (+1), 10.E.1 (+1), 10.G (+1), 10.J.post-8.5.2 (+1),
+10.J.post-8.5.5 (+1) → 67 total.
 Each extension is documented inline below.
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
@@ -51,6 +52,7 @@ negative.
 | `CARDINAL` | NUM is a cardinal numeral |
 | `CF` | clause is counterfactual (subj of `sakali` / `kahit pa`) |
 | `CLOCK_MARKER` | PART is the clock-time hour marker (`alas`) |
+| `COLLABORATIVE` | ADV is collaborative-manner (`tulung-tulong`) — Phase 10.J.post-8.5.5 |
 | `COMPARATIVE` | ADJ is comparative-marked (`mas`) |
 | `COPULA` | V is a copular verb (`maging` / `naging`; gates `V[COPULA] N/ADJ NP[NOM]` clause rule, Phase 9.X.post-2) |
 | `CORREL` | particle is correlative (`pa` / `pa-rin` paired use) |

@@ -124,14 +124,18 @@
 # as the bare predicative form (``Baluktot ang kahoy.`` "The wood
 # is crooked.") so ``affix_class: []`` (no ``ma_adj`` prefix-
 # deriving class — that would suppress the bare-root index per
-# the analyzer.py:553 rule). Base for the CV-CV reduplication
-# ``balubaluktot`` "very crooked / crookedly" (PAG-AARAL/sent-8);
-# the redup paradigm cell extension is scoped to a later
-# post-8.5.N. Parallel to ``tama`` ADJ (also ``affix_class: []``).
+# the analyzer.py:553 rule).
+#
+# Phase 10.J.post-8.5.5: opts into ``adj_cv2_redup`` so the
+# first-2-syllable redup ``balubaluktot`` "very crooked /
+# crookedly" derives via the NEW paradigm cell + ``cv2_redup``
+# op. Closes PAG-AARAL/sent-8 (``Kahi't balubaluktot, pinipilit
+# nilang magsalita.``). Per-root opt-in keeps the marked
+# first-2-syl redup gated to attested stems.
 - citation: baluktot
   pos: ADJ
   gloss: crooked, bent
-  affix_class: []
+  affix_class: [adj_cv2_redup]
   source: audit-corpus
 
 - citation: bango

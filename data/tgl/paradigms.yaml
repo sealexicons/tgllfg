@@ -1669,6 +1669,51 @@
   operations:
     - {op: prefix, value: "pinaka"}
   feats: {COMP_DEGREE: SUPERLATIVE, PREDICATIVE: true}
+
+# --- Phase 10.J.post-8.5.5: naka_cv_compar (NOUN→ADJ comparative) -------
+#
+# The ``naka-`` + CV-redup + ROOT pattern derives a comparative /
+# stative-attributive ADJ from a NOUN (or ADJ) base, encoding a
+# "being-X-er" or "X-tending" semantics. Productive family in
+# modern Tagalog:
+#
+#   bata  (NOUN "child/young")  → nakababata   "younger"
+#   tanda (NOUN "old age")      → nakatatanda  "older"
+#   buti  (NOUN "goodness")     → nakabubuti   "is better / healing"
+#   higit (PART "more")         → nakahihigit  "surpasses / is superior"
+#   pagod (NOUN "fatigue")      → nakapapagod  "is tiring"
+#
+# Operation order: ``cv_redup`` first (produces ``babata`` from
+# ``bata``), then ``prefix ka`` (``kababata``), then ``prefix na``
+# (``nakababata``). The ``ka`` is the relational prefix in this
+# derivation; ``na`` is the realis prefix. Together they form the
+# fixed ``naka-`` morpheme orthographically.
+#
+# COMP_DEGREE=COMPARATIVE is the f-structure marking (Phase 5h
+# comparison axis); PREDICATIVE=true admits the ADJ as a clause
+# predicate (the Phase 5g predicative-ADJ-S rule consumes it).
+#
+# Per-root opt-in via ``affix_class: [naka_cv_compar]`` on the
+# base NOUN. Currently `bata` opts in; future audit pressure
+# may attest `tanda`, `buti`, etc.
+#
+# References: S&O 1972 §5 (comparative derivation); R&G 1981
+# PAMILYA/sent-14 ``...lalo na't ang mga ito'y nakababata.``
+# Closes PAMILYA/sent-14 (paired with post-8.4 `'y` clitic +
+# post-8.5.2 V[NVOL]-LK-S rule context).
+- base_pos: NOUN
+  pos: ADJ
+  affix_class: naka_cv_compar
+  operations:
+    - {op: cv_redup}
+    - {op: prefix, value: "ka"}
+    - {op: prefix, value: "na"}
+  feats: {COMP_DEGREE: COMPARATIVE, REDUP: FULL, PREDICATIVE: true}
+  notes: |
+    naka_cv_compar — naka- + CV-redup + ROOT comparative ADJ from
+    NOUN/ADJ base. bata → nakababata "younger"; tanda →
+    nakatatanda "older"; buti → nakabubuti "better"; pagod →
+    nakapapagod "tiring". Per-root opt-in.
   notes: "pinaka_adj_from_n — NOUN→ADJ superlative: puno (n. head) → pinakapuno (adj. principal/most important)"
 
 # --- Phase 8.L Commit 3: kasing_n_eq (NOUN→ADJ equative) ----------------
@@ -2006,6 +2051,51 @@
   feats: {ADV_TYPE: LOCATION, REDUP: FULL, REDUP_SEM: DISTR}
   lemma_redup_hyphen: true
   notes: place_redup_distr — bahay/pinto/bayan/bundok/bukid → bahay-bahay etc. (Phase 10.B distributive-locative redup)
+
+# --- Phase 10.J.post-8.5.5: v_collab_redup (VERB/NOUN → collaborative ADV) ---
+# Productive full reduplication of action-N / VERB roots into the
+# collaborative / cooperative-manner adverb class
+# ("together / collaboratively"): ``tulong`` → ``tulung-tulong``
+# "in mutual help, collaboratively" (with o→u raising on the
+# first copy via ``redup_o_raise``); ``sama`` → ``sama-sama``
+# "all together" (already covered by the post-8.5.4 ``samasama``
+# VERB lex entry, but routes through the same redup family
+# semantically).
+#
+# Operations: ``[redup_root]`` — single op, same shape as the
+# Phase 10.A ``time_redup_freq`` and Phase 10.B ``place_redup_distr``
+# cells. The first copy is ``root.citation`` (possibly o→u
+# raised); the second copy is ``root.citation`` appended.
+#
+# POS-flip: ``base_pos: VERB, pos: ADV``. The VERB root keeps its
+# bare verbal-paradigm analyses (handled by the regular verb
+# indexing); this cell adds a parallel ADV reading routed via
+# the particles index. ADV_TYPE=MANNER distinguishes from FREQ
+# (Phase 10.A) and LOCATION (Phase 10.B); COLLABORATIVE=true
+# tags the cooperative-manner reading.
+#
+# ``lemma_redup_hyphen: true`` (Phase 10.A pattern) opts the
+# cell into canonical-hyphenated LEMMA construction:
+# ``tulungtulong`` carries LEMMA ``tulung-tulong``.
+#
+# Per-root opt-in via ``affix_class: [v_collab_redup]`` in
+# verbs.yaml. Initial opt-ins: ``tulong`` (with ``redup_o_raise``
+# sandhi for ``tulung-`` first copy). Add more roots as audit
+# pressure surfaces.
+#
+# References: S&O 1972 §40.5-§40.7 (manner adverb redup family);
+# R&B 1986 ch.4 (productive reduplication); informant 2026-05-25
+# (collaborative-manner attestations).
+- base_pos: VERB
+  pos: ADV
+  voice: ''
+  aspect: ''
+  affix_class: v_collab_redup
+  operations:
+    - {op: redup_root}
+  feats: {ADV_TYPE: MANNER, COLLABORATIVE: true, REDUP: FULL, REDUP_SEM: COLLAB}
+  lemma_redup_hyphen: true
+  notes: v_collab_redup — tulong → tulung-tulong (collaborative-manner redup; Phase 10.J.post-8.5.5)
 
 # --- Phase 10.C: num_redup_distr (NUM → distributive-count ADV) ---------
 # Productive bare reduplication of cardinal-NUM roots into the
