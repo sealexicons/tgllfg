@@ -999,6 +999,7 @@ _FRONTED_PP_LEMMA_TYPES: dict[str, str] = {
     "dahilan": "REASON",
     "mula": "SOURCE",
     "tungo": "GOAL",
+    "tungkol": "TOPIC",
 }
 
 
