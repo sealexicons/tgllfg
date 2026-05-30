@@ -256,8 +256,8 @@ def parse_text_with_fragments(
     # === Phase 10.J.post-2: fronted-PP-comma split fast path ===============
     #
     # Same split-and-glue pattern as the colon-split above, but for
-    # the chart's 9.X.c13 ``S → PP[PREP_TYPE=REASON] PUNCT[COMMA] S``
-    # fronted-Dahil-PP construction. The pre-comma PP and post-comma
+    # the chart's 9.X.c13 ``S → PP[PREP_TYPE=X] PUNCT[COMMA] S``
+    # fronted-PP construction. The pre-comma PP and post-comma
     # matrix S are parsed independently against the chart, then the
     # matrix S is synthesized from the two halves. This bypasses the
     # ``(PP_internal_alts × matrix_S_alts)`` cross-product that the
@@ -268,12 +268,13 @@ def parse_text_with_fragments(
     # canonical parse sat past cap 5000).
     #
     # Activation gates: the input must (1) start with a token whose
-    # lex entry advertises ``PREP_TYPE=REASON`` (``Dahil``) and
-    # (2) contain a sentence-internal comma. The pre-comma half is
-    # parsed against ``PP[PREP_TYPE=REASON]`` (chart-side feat from
-    # the post-2 LHS refactor); the post-comma half against ``S``.
-    # If either fails the split is dropped and the chart attempt
-    # runs as fallback.
+    # lex entry advertises a PREP_TYPE that is a key in
+    # ``_FRONTED_PP_LEMMA_TYPES`` (``dahil`` / ``dahilan`` → REASON;
+    # ``mula`` → SOURCE — see post-7.4) and (2) contain a
+    # sentence-internal comma. The pre-comma half is parsed against
+    # ``PP[PREP_TYPE=<type>]`` (chart-side feat from the post-2 LHS
+    # refactor); the post-comma half against ``S``. If either fails
+    # the split is dropped and the chart attempt runs as fallback.
     if "," in text and "fronted_pp_comma" not in splits_applied:
         split_result = _try_fronted_pp_comma_split(
             text,
@@ -914,16 +915,18 @@ def _try_fronted_pp_comma_split(
     when either half fails to parse, or when the synthesized
     f-structure fails well-formedness.
     """
-    # Activation: input must start with a known REASON-PREP lemma.
-    # We restrict to attested fronted-REASON-PP heads (currently
-    # ``Dahil``) — a broader trigger (any PREP head) would over-
-    # activate on sentences where the leading PREP isn't actually
-    # being fronted (e.g., a clause-internal PP).
+    # Activation: input must start with a known fronted-PP-head lemma.
+    # We restrict to attested fronted-PP heads (``dahil``/``dahilan``
+    # → REASON; ``mula`` → SOURCE; see ``_FRONTED_PP_LEMMA_TYPES``) —
+    # a broader trigger (any PREP head) would over-activate on
+    # sentences where the leading PREP isn't actually being fronted
+    # (e.g., a clause-internal PP).
     stripped = text.lstrip()
     if not stripped:
         return None
     first_word = stripped.split(None, 1)[0]
-    if first_word.casefold() not in _REASON_PREP_LEMMAS:
+    prep_type = _FRONTED_PP_LEMMA_TYPES.get(first_word.casefold())
+    if prep_type is None:
         return None
     # Find the leftmost top-level comma — we don't try to handle
     # nested fronted PPs (would need to track quotes / parens etc.).
@@ -939,7 +942,7 @@ def _try_fronted_pp_comma_split(
 
     pre_parses = _parse_segment_as(
         pre_text,
-        start_symbol="PP[PREP_TYPE=REASON]",
+        start_symbol=f"PP[PREP_TYPE={prep_type}]",
         n_best=n_best,
         chart_state_cap=chart_state_cap,
         max_candidates=max_candidates,
@@ -980,7 +983,22 @@ def _try_fronted_pp_comma_split(
 # Phase 10.J.post-7.2: ``dahilan`` is the nominal-form variant of
 # ``dahil`` — both head REASON-PPs (``dahilan sa ulan``, ``dahil sa
 # ulan``) and route through the same fronted-PP-comma split.
-_REASON_PREP_LEMMAS: frozenset[str] = frozenset({"dahil", "dahilan"})
+#
+# Phase 10.J.post-7.4 generalises to a per-lemma → PREP_TYPE mapping
+# so the same split-and-glue path handles SOURCE-PPs (``mula sa X``).
+# The lemma's PREP_TYPE is used both to gate activation and to choose
+# the pre-half start-symbol (``PP[PREP_TYPE=<type>]``). Adding a new
+# fronted-PP head means adding one row here plus including the
+# PREP_TYPE in the discourse.py c13 ``S → PP[PREP_TYPE=X] PUNCT[COMMA]
+# S`` rule loop. Lemma overlap with ``_FRONTED_SUBORD_HEADS`` (e.g.,
+# ``mula`` heads both ``mula sa NP`` PPs and ``mula nang S``
+# SubordClauses) is benign — the PP-comma split runs first and falls
+# through when the pre-half can't parse as a PP.
+_FRONTED_PP_LEMMA_TYPES: dict[str, str] = {
+    "dahil": "REASON",
+    "dahilan": "REASON",
+    "mula": "SOURCE",
+}
 
 
 # === Phase 10.J.post-7: fronted-SubordClause-comma split ===============
@@ -988,10 +1006,12 @@ _REASON_PREP_LEMMAS: frozenset[str] = frozenset({"dahil", "dahilan"})
 # Subordinating heads attested in the audit corpus as sentence-initial
 # with an internal comma. Each fronts a SubordClause that joins the
 # matrix's ADJUNCT set via subordination.py's ``S → SubordClause
-# PUNCT[COMMA] S`` rule. `dahil` is the only head shared with
-# `_REASON_PREP_LEMMAS` — when the pre-half parses as PP[REASON],
-# the PP path wins (called first); the SubordClause path catches
-# `dahil + S-clause` (no `sa`, no NP) as a non-PP variant.
+# PUNCT[COMMA] S`` rule. ``dahil`` and ``mula`` overlap with
+# ``_FRONTED_PP_LEMMA_TYPES`` (post-7.4 generalisation of the
+# post-2 ``_REASON_PREP_LEMMAS``) — when the pre-half parses as
+# ``PP[PREP_TYPE=X]``, the PP path wins (called first); the
+# SubordClause path catches non-PP variants (``dahil + S-clause``
+# without ``sa``; ``mula nang + S-clause``).
 _FRONTED_SUBORD_HEADS: frozenset[str] = frozenset({
     "dahil",
     "palibhasa",       # Phase 10.J.post-7.1
