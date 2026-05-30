@@ -191,7 +191,17 @@
   pos: VERB
   gloss: start a quarrel with; quarrel
   transitivity: TR
+  # Phase 10.J.post-8.2: ``AV_ABSOL: true`` — ``Nag-away sila.``
+  # "They quarreled" is canonical Tagalog with no overt OBJ (the
+  # disputants are the SUBJ; what they quarreled over is left
+  # implicit, often surfacing as a dahil-PP). Audit-corpus reach:
+  # wave-2 rg-intermediate sent-1762 ``Nag-away sina Marina at
+  # Ester dahil sa tsismis.`` "Marina and Ester quarreled because
+  # of gossip" (closes with the paired ``tsismis`` NOUN below).
+  # Parallel to ``maneho`` / ``kuwento`` / ``sagot`` / ``sunod``
+  # / ``kilala`` in the AV_ABSOL family.
   affix_class: [um, mag, in_oblig, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: awit
   pos: VERB
@@ -964,7 +974,16 @@
   pos: VERB
   gloss: undress, take off (clothes)
   transitivity: TR
+  # Phase 10.J.post-8.2: ``AV_ABSOL: true`` — ``Naghubad siya.``
+  # "He undressed" is canonical with no overt OBJ (the clothes
+  # being-removed are pragmatically implicit when the action
+  # itself is the focus). Audit-corpus reach: wave-2 ramos1971
+  # sent-88 ``Naghubad siya dahil sa init.`` "He undressed
+  # because of the heat" — the bare-AV reading is the natural
+  # one for self-directed action of undressing. Parallel to
+  # ``maneho`` / ``kuwento`` / ``sunod`` / ``kilala`` / ``away``.
   affix_class: [mag, in_oblig, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: hudyat
   pos: VERB
