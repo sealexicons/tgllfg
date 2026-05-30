@@ -17,14 +17,17 @@ class TestForestBudgetOptIn:
     def test_ss_pp_rules_carry_budget(self) -> None:
         # The seven recursive ``S → S PP`` adjunct-attachment rules
         # (TIME_FRAME / EXCEPTIVE / BENEFICIARY / TOPIC / GOAL / REASON /
-        # SOURCE) opt into a per-span emission budget (Phase 10.I). Guards
-        # against an eighth S→S PP rule being added without considering
-        # the fan-out budget. REASON was added by Phase 10.J.post-7.2
-        # (lifting the Phase 9.X.c12 REASON deferral); SOURCE was added
-        # by Phase 10.J.post-7.4 (lifting the c12 SOURCE deferral — the
-        # posited Wackernagel/range risk is structurally distinct from
-        # the 3-daughter SOURCE PP). See the loop comment in
-        # cfg/discourse.py.
+        # SOURCE) opt into a per-span emission budget (Phase 10.I).
+        # Guards against an eighth S→S PP rule being added without
+        # considering the fan-out budget. REASON was added by Phase
+        # 10.J.post-7.2 (lifting the Phase 9.X.c12 REASON deferral);
+        # SOURCE was added by Phase 10.J.post-7.4 (lifting the c12
+        # SOURCE deferral — the posited Wackernagel/range risk is
+        # structurally distinct from the 3-daughter SOURCE PP). GOAL
+        # was already in the loop pre-post-7.5 (added 9.X.c29);
+        # post-7.5 added the corresponding fronted-PP-comma chart
+        # rule (cfg/discourse.py c13 loop) without changing the c12
+        # S→S PP count.
         g = Grammar.load_default()
         ss_pp = [r for r in g.rules if r.lhs == "S" and r.rhs == ["S", "PP"]]
         assert len(ss_pp) == 7
