@@ -1257,7 +1257,34 @@
   pos: VERB
   gloss: tell a story
   transitivity: TR
+  # Phase 10.J.post-7.6: ``AV_ABSOL: true`` licenses the
+  # absolutive AV reading ``Nagkuwento sila.`` "They told stories
+  # [unspecified content]" + the ADJ-LINK-V[INF] control construction
+  # ``Masaya silang magkuwento.`` "They (are) happy to tell stories"
+  # without an overt OBJ. Parallel to AV_ABSOL on ``luto`` /
+  # ``trabaho`` / ``maneho`` (post-7.5) for verbs whose AV reading
+  # freely drops a generic / discourse-recoverable OBJ.
   affix_class: [mag, in_oblig, an_oblig, maka, v_casual_redup]
+  feats: {AV_ABSOL: true}
+
+# Phase 10.J.post-7.6: ``kwento`` is the modern colloquial spelling
+# variant of ``kuwento`` (``kuw-`` → ``kw-`` cluster simplification —
+# tagalog.com lists both forms; R&G 1981 examples use both
+# orthographies). Routes the variant's paradigm-derived surfaces
+# (``nagkwento`` / ``magkwento`` / ``nagkukwento`` / ``kwentuhin`` /
+# ``ikwento`` / etc.) back to the canonical ``kuwento`` lemma via
+# the LEMMA feat — the f-structure carries ``LEMMA: kuwento`` on
+# every form, so downstream consumers (LMT validation, PRED
+# templates) see a single canonical lemma regardless of which
+# spelling surfaced. Same TR + same affix_class + same AV_ABSOL
+# so the variant inherits the full paradigm parallel to the
+# canonical.
+- citation: kwento
+  pos: VERB
+  gloss: tell a story (colloquial spelling of kuwento)
+  transitivity: TR
+  affix_class: [mag, in_oblig, an_oblig, maka, v_casual_redup]
+  feats: {AV_ABSOL: true, LEMMA: kuwento}
 
 - citation: laba
   pos: VERB

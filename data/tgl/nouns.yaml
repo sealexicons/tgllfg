@@ -2618,6 +2618,16 @@
   pos: NOUN
   gloss: tooth
 
+# Phase 10.J.post-7.6: ``nayon`` NOUN ("village, hamlet, rural
+# settlement"). Standard Filipino narrative noun (S&O 1972 / R&G
+# 1981 village + town descriptions). Pairs with festival-context
+# constructions like ``pasalamat ng nayon`` "the village's
+# gratitude".
+- citation: nayon
+  pos: NOUN
+  gloss: village, hamlet, rural settlement
+  source: audit-corpus
+
 - citation: nina
   pos: NOUN
   gloss: Nina
@@ -2986,6 +2996,16 @@
   pos: NOUN
   gloss: party
   loan: ENGLISH
+
+# Phase 10.J.post-7.6: ``pasalamat`` NOUN ("gratitude, thanks,
+# thanksgiving"). Standard Filipino abstract noun
+# (cf. ``salamat`` "thanks" + ``pa-`` nominalizer). Common in
+# pista/festival narratives ("malaki ang pasalamat ng nayon"
+# = "great is the village's gratitude").
+- citation: pasalamat
+  pos: NOUN
+  gloss: gratitude, thanks, thanksgiving
+  source: audit-corpus
 
 - citation: pasaporte
   pos: NOUN
