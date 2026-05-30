@@ -1295,6 +1295,78 @@
     - {op: prefix, value: "mag"}
   notes: magpapakain
 
+# --- magka- accidental / occurrence / acquisition (Phase 10.J.post-10) ---
+#
+# The ``magka-`` prefix marks non-volitional / accidental /
+# occurrence / acquisition semantics distinct from the standard
+# ``ma-`` NVOL family. Examples:
+#
+#   magkamali  "make a mistake (accidentally / inadvertently)"  ← mali
+#   magkasakit "become sick / fall ill"                         ← sakit
+#   magkasala  "commit a sin / be at fault"                     ← sala
+#   magkaroon  "have / come to have / possess"                  ← roon
+#
+# Structure: ``mag-`` AV + ``ka-`` (occurrence/become) + ROOT.
+# The operation order parallels ``magpa-`` (mag- + pa- + ROOT):
+# the ``ka`` prefix is applied first, then cv_redup operates on
+# the resulting ``ka+ROOT`` base (producing ``ka+ka+ROOT`` in
+# IPFV / irrealis-CTPL), then the ``nag-`` / ``mag-`` AV prefix.
+# The bare CTPL cell (no cv_redup) produces the ``magkamali`` /
+# ``magkasakit`` infinitive surface used in control complements
+# and other irrealis contexts where the matrix carries aspect.
+#
+# MOOD=NVOL marks the non-volitional reading. ``magka-`` admits
+# productive lex opt-in via ``affix_class: [magka]``.
+
+- voice: AV
+  aspect: PFV
+  mood: NVOL
+  transitivity: ''
+  affix_class: magka
+  operations:
+    - {op: prefix, value: "ka"}
+    - {op: prefix, value: "nag"}
+  notes: nagkamali, nagkasakit (magka- NVOL realis PFV)
+
+- voice: AV
+  aspect: IPFV
+  mood: NVOL
+  transitivity: ''
+  affix_class: magka
+  operations:
+    - {op: prefix, value: "ka"}
+    - {op: cv_redup}
+    - {op: prefix, value: "nag"}
+  notes: |
+    nagkakamali, nagkakasakit (cv-redup of ka+ROOT yielding
+    ka+ka+ROOT, then nag- prefix)
+
+- voice: AV
+  aspect: CTPL
+  mood: NVOL
+  transitivity: ''
+  affix_class: magka
+  operations:
+    - {op: prefix, value: "ka"}
+    - {op: cv_redup}
+    - {op: prefix, value: "mag"}
+  notes: magkakamali, magkakasakit (irrealis CTPL with cv-redup)
+
+- voice: AV
+  aspect: CTPL
+  mood: NVOL
+  transitivity: ''
+  affix_class: magka
+  operations:
+    - {op: prefix, value: "ka"}
+    - {op: prefix, value: "mag"}
+  notes: |
+    magkamali, magkasakit (bare CTPL without cv-redup — INF
+    surface used in control complements ``Hindi siya nahihiyang
+    magkamali.``, bago-clauses, modal-XCOMPs, hortative-LF
+    contexts; parallel to the bare OV ``kainin`` cell from
+    Phase 5n.A Commit 14 and the bare ma_an ``malimutan`` cell)
+
 # --- mag-...-an reciprocal / social (Phase 5e Commit 12) ----------------
 #
 # Schachter & Otanes 1972 §5.27 documents the ``mag-...-an`` pattern

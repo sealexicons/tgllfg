@@ -566,6 +566,19 @@
 - surface: baka
   pos: VERB
   feats: {CTRL_CLASS: RAISING}
+# Phase 10.J.post-10: second ``baka`` entry as RAISING_BARE
+# (parallel to ``parang`` / ``tila`` below). Both ``Bakang
+# umuulan.`` (with ``-ng`` linker — the canonical RAISING path
+# tested by test_bakang_one_parse) AND ``Baka umuulan.`` (bare —
+# the productive idiom in transcribed speech) are attested. The
+# bare reading was missing pre-PR — no chart rule completed on
+# ``Baka V`` because the only RAISING analysis required the
+# linker. Adding the RAISING_BARE variant admits the bare form
+# while preserving the linker-bound reading and all existing
+# baka raising tests.
+- surface: baka
+  pos: VERB
+  feats: {CTRL_CLASS: RAISING_BARE}
 
 # Phase 5d Commit 1: additional evidential raising verbs. These
 # syntactically pattern with mukha / baka but differ in linker

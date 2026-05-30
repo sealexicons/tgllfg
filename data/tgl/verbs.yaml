@@ -504,9 +504,23 @@
 
 - citation: dali
   pos: VERB
-  gloss: hurry, do quickly
+  gloss: hurry, do quickly; LV-NVOL "find easy / be easy for"
   transitivity: INTR
-  affix_class: [mag, maka]
+  # Phase 10.J.post-10: ``ma_an`` admits the LV-NVOL DV paradigm
+  # so ``nadadalian`` ("the one who finds it easy / for whom it
+  # is easy") closes — IPFV ``na-CV-X-an`` cell from the existing
+  # Phase 5e ma_an cells. The locative/recipient pivot is the
+  # experiencer of the easiness. Parallel to ``nalimutan``
+  # (forget) and the broader ma_an NVOL DV family. PANAHON
+  # wave-1 sent-7 ``Ang nadadalian ay ang hindi nahihiyang
+  # magkamali.`` target. The ``no_h_epenthesis`` flag flips the
+  # default S&O 1972 §4.21 ``-h-`` insertion on V+V hiatus to
+  # direct concatenation: ``dali`` + ``an`` → ``dalian`` (not
+  # ``dalihan``), matching R&G 1981 PANAHON sent-7's
+  # ``nadadalian`` spelling. Parallel to ``luto`` /
+  # ``trabaho`` / ``mali`` which carry the same flag.
+  affix_class: [mag, maka, ma_an]
+  sandhi_flags: [no_h_epenthesis]
 
 - citation: dama
   pos: VERB
@@ -957,6 +971,20 @@
   feats: {AV_ABSOL: true}
   affix_class: [mag, ma, ma_an, maka]
   source: audit-corpus
+
+- citation: hiya
+  pos: VERB
+  gloss: be shy / ashamed / embarrassed (ma- NVOL AV)
+  transitivity: INTR
+  # Phase 10.J.post-10: VERB entry for ``hiya`` (the ADJ entry
+  # in ``adjectives.yaml`` admits scalar / equative readings;
+  # this entry admits the verbal NVOL family ``nahiya`` /
+  # ``nahihiya`` / ``mahihiya``). The verbal sense is the
+  # canonical Tagalog ma- NVOL family — emotion / psychological-
+  # state verbs (be ashamed, be shy, be embarrassed). PANAHON
+  # wave-1 sent-7 ``Ang nadadalian ay ang hindi nahihiyang
+  # magkamali.`` target — ``nahihiya`` is the IPFV NVOL form.
+  affix_class: [ma]
 
 - citation: hiwa
   pos: VERB
@@ -1598,9 +1626,18 @@
 
 - citation: mali
   pos: VERB
-  gloss: be wrong, err
+  gloss: be wrong, err; accidental "magkamali" make a mistake
   transitivity: INTR
-  affix_class: [mag, maka]
+  # Phase 10.J.post-10: ``magka`` admits the accidental /
+  # inadvertent / occurrence family — mag- + ka- + ROOT.
+  # Closes PANAHON wave-1 sent-7 ``Ang nadadalian ay ang hindi
+  # nahihiyang magkamali.`` — ``magkamali`` is the AV CTPL bare
+  # INF used in the V-LK-V[INF] control complement of
+  # ``nahihiya-ng``. The magka- family includes ``magkasakit``
+  # (become sick), ``magkasala`` (sin), ``magkaroon`` (have),
+  # where ``ka-`` marks the non-volitional / accidental
+  # occurrence semantics.
+  affix_class: [mag, maka, magka]
 
 - citation: maneho
   pos: VERB
