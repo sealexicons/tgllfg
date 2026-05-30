@@ -73,6 +73,34 @@ from .sandhi import (
 # / Devanagari digits, which the corpus doesn't use).
 _DIGIT_RE = re.compile(r"^[0-9]+$")
 
+# Phase 10.J.post-8.2: ``A``/``B``/``C`` and ``X``/``Y``/``Z``
+# (and their lowercase counterparts) are the most common
+# pedagogical / abstract placeholders. R&G 1981 Intermediate
+# uses ``A`` / ``B`` as anonymous dialogue-speaker labels (150+
+# / 142+ occurrences in wave-2 rg-intermediate); math / logic /
+# abstract-example contexts use X / Y / Z (and occasionally C)
+# as variable placeholders; corpus convention may use either
+# uppercase or lowercase (e.g., enumerated-list labels ``a.`` /
+# ``b.`` / ``c.``, math variables ``x`` / ``y`` / ``z``). The
+# grammar treats them as bare proper nouns — they compose as
+# ``N`` via the standard ``NP[CASE=X] → DET[CASE=X] N`` rule
+# once recognised, but they're **not** PERSON (could substitute
+# for a thing, an event, etc.) and lex'ing each individually is
+# awkward. This analyzer fallback emits a bare-``NOUN`` analysis
+# with only the LEMMA feat — no SUBCLASS commitment — so the
+# chart can compose them structurally without the morph layer
+# claiming false semantics. **Restricted set** A/B/C + X/Y/Z
+# (case-insensitive — 12 surfaces total) is the minimum needed
+# for current audit-corpus reach + the canonical math-variable
+# convention; explicitly excludes ``G`` (a Tagalog honorific
+# abbreviation ``Ginoong`` / "Mr.", e.g., ``G. Santos`` in
+# Phase 9b — handled by ``_UNK``-drop + structural composition,
+# NOT placeholder semantics) and other letters that have
+# specific uses (e.g., ``Y`` minute-operator pre-existing PART
+# entry, preserved alongside via additive emission). Extend the
+# regex on demand if the corpus surfaces new patterns.
+_PLACEHOLDER_LETTER_RE = re.compile(r"^[abcxyzABCXYZ]$")
+
 # Phase 10.E.1: ADJ affix classes that are ADDITIVE — the bare citation
 # stays a standalone adjective surface alongside the derived forms.
 # Contrast the prefix-deriving classes (``ma_adj`` → ``maganda``;
@@ -307,6 +335,23 @@ class Analyzer:
             out.extend(self._index.adjectives[n])
         if n in self._index.nouns:
             out.extend(self._index.nouns[n])
+        if _PLACEHOLDER_LETTER_RE.match(token.surface):
+            # Placeholder letter (R&G "Speaker A" / math X/Y/Z,
+            # uppercase or lowercase). Emit a bare NOUN with only
+            # LEMMA — no SUBCLASS, so it doesn't claim PERSON /
+            # PLACE / etc. **Additive**: this analysis is appended
+            # even when other analyses exist (e.g., ``Y`` has a
+            # specific ``PART[MINUTE_OP=Y]`` time-formatting use);
+            # the chart picks whichever composes. Matches both
+            # cases (regex includes uppercase + lowercase) so
+            # ``a`` / ``A`` both surface as placeholders. ``n`` is
+            # lower-cased; ``token.surface`` preserves the original
+            # casing if downstream consumers care.
+            out.append(MorphAnalysis(
+                lemma=n,
+                pos="NOUN",
+                feats={"LEMMA": n},
+            ))
         if not out:
             out.append(MorphAnalysis(lemma=n, pos="_UNK", feats={}))
         return out

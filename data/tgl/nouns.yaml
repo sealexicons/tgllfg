@@ -2362,6 +2362,12 @@
   gloss: Maria
   subclass: [PERSON, FEMALE]
 
+- citation: marina
+  pos: NOUN
+  gloss: Marina
+  subclass: [PERSON, FEMALE]
+  source: audit-corpus
+
 - citation: mario
   pos: NOUN
   gloss: Mario
@@ -3981,6 +3987,15 @@
   pos: NOUN
   gloss: chop suey (Filipino-Chinese mixed vegetable dish)
   source: audit-corpus
+
+- citation: tsismis
+  pos: NOUN
+  # Phase 10.J.post-8.2: common Tagalog noun "gossip, rumor" —
+  # surfaced by wave-2 rg-intermediate sent-1762 ``Nag-away
+  # sina Marina at Ester dahil sa tsismis.`` "Marina and Ester
+  # quarreled because of gossip". Originally Sp. ``chismes``.
+  gloss: gossip, rumor
+  loan: SPANISH
 
 - citation: tsokolate
   pos: NOUN

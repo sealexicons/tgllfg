@@ -34,6 +34,26 @@
 - surface: ni
   pos: ADP
   feats: {CASE: GEN, MARKER: NI, HUMAN: true}
+# Phase 10.J.post-8.2: plural personal-name case markers (sina /
+# nina / kina) — the productive PERS-PL series, parallel to the
+# singular si / ni / kay. ``sina Maria at Ester`` "Maria and
+# Ester" admits via the existing ``NP[CASE=NOM] → DET[CASE=NOM]
+# N`` rule once ``sina`` is lex'd as DET[NOM, HUMAN=true,
+# NUM=PL]; the N daughter is built by the existing
+# ``N → N PART[at] N`` proper-noun coord. Audit-corpus reach:
+# wave-2 rg-intermediate sent-1762 ``Nag-away sina Marina at
+# Ester dahil sa tsismis.`` "Marina and Ester quarreled because
+# of gossip" (closes paired with `away` AV_ABSOL + `tsismis`
+# NOUN this PR). Surprising omission pre-this-PR — all 3 markers
+# were ``_UNK``; ``sina X`` / ``nina X`` / ``kina X`` patterns
+# are basic Tagalog and surface throughout natural prose. R&G
+# 1981 §3.2; S&O 1972 §3.1.
+- surface: sina
+  pos: DET
+  feats: {CASE: NOM, MARKER: SINA, HUMAN: true, NUM: PL}
+- surface: nina
+  pos: ADP
+  feats: {CASE: GEN, MARKER: NINA, HUMAN: true, NUM: PL}
 # Phase 8.V: focus-negation ``ni`` "not even" (S&O 1972 §7.20 — "Ni X
 # ay hindi Y" focus-negation). Distinct morpheme from the GEN proper-
 # name marker ``ni`` above. The two readings disambiguate at clause
@@ -46,6 +66,13 @@
 - surface: kay
   pos: ADP
   feats: {CASE: DAT, MARKER: KAY, HUMAN: true}
+# Phase 10.J.post-8.2: ``kina`` — plural-DAT PERS marker,
+# parallel to ``sina`` / ``nina`` above. ``Pumunta siya kina
+# Maria.`` "He went to Maria and her group". Same rationale as
+# sina / nina — productive PERS-PL series.
+- surface: kina
+  pos: ADP
+  feats: {CASE: DAT, MARKER: KINA, HUMAN: true, NUM: PL}
 
 # === Demonstratives ======================================================
 # Three deixis values × three cases. ``DEM: YES`` marks every entry
