@@ -1127,11 +1127,40 @@
 # ``malimutan`` used in `Bago ko malimutan ito.` — analogous to
 # Phase 5n.A's bare OV `kainin` cell (no redup, used in hortative
 # / non-finite contexts).
+#
+# Phase 10.J.post-7.4: ``transitivity`` gate dropped + ``feats:
+# {TR: TR}`` override on the four cells. The original
+# ``transitivity: TR`` gate was redundant with the explicit ``ma_an``
+# opt-in in each root's ``affix_class`` list (current opt-ins:
+# ``limot`` / ``intindi`` / ``alis`` / ``alala`` — all TR). Dropping
+# the gate admits ``tuto`` (INTR-AV) as well: its AV reading is
+# intransitive (the learner is SUBJ; nothing else), but its LV/DV-NVOL
+# reading is transitive (the source/topic is pivot, the learner is
+# OBJ-AGENT).
+#
+# The ``feats: {TR: TR}`` per-cell override is needed because the
+# analyzer projects ``root.transitivity`` onto every generated form
+# at MorphAnalysis-build time (analyzer.py: ``if root.transitivity:
+# feats["TR"] = root.transitivity``). Without the override, tuto's
+# AV-INTR transitivity would leak onto the DV-NVOL ``natutunan``
+# form, and the chart's NOM-pivot + GEN-agent DV-NVOL frame
+# (cfg/clause.py NVOL DV rules) — which expects TR=TR — would
+# reject the form. The cell-level override is the per-cell
+# transitivity assertion: every ma-...-an LV/DV-NVOL form is
+# transitive in its frame, regardless of the root's native AV
+# transitivity. Cell.feats win over root-projected feats
+# (analyzer.py: cell.feats loop runs after the
+# root.transitivity projection).
+#
+# References for ``tuto``'s dual-transitivity profile: S&O 1972
+# §5.27 (NVOL paradigms); Handbok of Tagalog Verbs (Bayot 1973)
+# §VIII (``natutuhan`` / ``natutunan``).
 - voice: DV
   aspect: PFV
   mood: NVOL
-  transitivity: TR
+  transitivity: ''
   affix_class: ma_an
+  feats: {TR: TR}
   operations:
     - {op: prefix, value: "na"}
     - {op: suffix, value: an}
@@ -1140,8 +1169,9 @@
 - voice: DV
   aspect: IPFV
   mood: NVOL
-  transitivity: TR
+  transitivity: ''
   affix_class: ma_an
+  feats: {TR: TR}
   operations:
     - {op: cv_redup}
     - {op: prefix, value: "na"}
@@ -1151,8 +1181,9 @@
 - voice: DV
   aspect: CTPL
   mood: NVOL
-  transitivity: TR
+  transitivity: ''
   affix_class: ma_an
+  feats: {TR: TR}
   operations:
     - {op: cv_redup}
     - {op: prefix, value: "ma"}
@@ -1162,8 +1193,9 @@
 - voice: DV
   aspect: CTPL
   mood: NVOL
-  transitivity: TR
+  transitivity: ''
   affix_class: ma_an
+  feats: {TR: TR}
   operations:
     - {op: prefix, value: "ma"}
     - {op: suffix, value: an}

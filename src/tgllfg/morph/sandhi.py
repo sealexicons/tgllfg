@@ -180,9 +180,10 @@ def attach_suffix(
     a_deletion: bool = False,
     no_o_raise: bool = False,
     no_h_epenthesis: bool = False,
+    n_epenthesis: bool = False,
 ) -> str:
     """Append ``suffix`` to ``base`` with vowel-hiatus repair plus
-    Phase 2C / 9.X.pre-4 extensions.
+    Phase 2C / 9.X.pre-4 / 10.J.post-7.4 extensions.
 
     Always:
 
@@ -212,9 +213,33 @@ def attach_suffix(
     ``-in`` suffix only; the gate was lifted to support audit-
     attested DV forms.
 
-    The two deletion flags are mutually independent — set one or
-    neither, not both. ``high_vowel_deletion`` and ``a_deletion``
-    apply to disjoint stem classes (i/u-final vs a-final).
+    Per-root opt-in via ``no_h_epenthesis=True``: the h-epenthesis
+    step is skipped, so vowel-final stems concatenate directly with
+    vowel-initial suffixes. ``luto + -in → lutuin`` rather than
+    the (rarer) ``lutuhin``. R&C 1990 §15 documents the no-h
+    pattern for native vowel-final stems whose final vowel underlies
+    a glottal stop in the citation form (the engine treats this as
+    a per-root lex choice — the orthography masks the glottal).
+
+    Per-root opt-in via ``n_epenthesis=True`` (Phase 10.J.post-7.4):
+    the h-epenthesis step is replaced with /n/-epenthesis.
+    ``tuto + -an → tutunan`` rather than the (older) ``tutuhan``.
+    Variant production: when paired with the ``also_n_epenthesis``
+    sandhi flag on a Root (consumed in :mod:`~tgllfg.morph.analyzer`),
+    BOTH the default ``-h-`` and the ``-n-`` variants are generated
+    so analyzer-time surface lookup accepts either. Handbok of
+    Tagalog Verbs (Bayot 1973) §VIII documents ``natutuhan /
+    natutunan`` as competing variants in the LV/DV-NVOL paradigm
+    of ``tuto``; Zamar 2023 §13.4 lists the ``-n-`` form as the
+    modern principal surface.
+
+    The deletion / epenthesis-override flags are mutually
+    independent — ``high_vowel_deletion`` and ``a_deletion`` apply
+    to disjoint stem classes (i/u-final vs a-final);
+    ``no_h_epenthesis`` and ``n_epenthesis`` are alternative
+    overrides of the h-epenthesis default (if both are set,
+    ``n_epenthesis`` wins because it's the more specific lex
+    choice).
 
     Schachter & Otanes 1972 §4.21 documents both the formal
     h-epenthesis pattern and the colloquial deletion variants; the
@@ -229,6 +254,8 @@ def attach_suffix(
             return base[:-1] + "h" + suffix
         if a_deletion and base[-1].lower() == "a":
             return base[:-1] + suffix
+        if n_epenthesis:
+            return base + "n" + suffix
         if no_h_epenthesis:
             return base + suffix
         return base + "h" + suffix

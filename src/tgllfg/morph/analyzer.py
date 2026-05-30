@@ -127,17 +127,42 @@ def _generate_form_variants(root: Root, cell: ParadigmCell) -> list[str]:
     usage"). Generate both so analyzer-time surface lookup accepts
     either.
 
-    For roots without ``cluster_redup``, or for cells without a
-    ``cv_redup`` operation, returns the single canonical variant.
+    Phase 10.J.post-7.4: when the root carries ``also_n_epenthesis``
+    and the cell has a vowel-initial suffix operation, both the
+    default ``-h-`` variant AND the ``-n-`` variant are generated
+    so the analyzer accepts either. ``tuto`` in the ma-...-an
+    NVOL DV paradigm: ``natutuhan`` (S&O 1972 §4.21 formal) and
+    ``natutunan`` (Zamar 2023 §13.4 modern principal) are both
+    listed in Handbok of Tagalog Verbs (Bayot 1973) §VIII.
+
+    For roots without these variant flags, or for cells whose
+    operations don't activate the variant alternation, returns the
+    single canonical variant.
     """
     flags = set(root.sandhi_flags)
     primary = _generate_one(root, cell, flags)
-    if "cluster_redup" not in flags:
-        return [primary]
-    if not any(op.op == "cv_redup" for op in cell.operations):
-        return [primary]
-    alt = _generate_one(root, cell, flags - {"cluster_redup"})
-    return [primary] if alt == primary else [primary, alt]
+    variants: list[str] = [primary]
+
+    if "cluster_redup" in flags and any(
+        op.op == "cv_redup" for op in cell.operations
+    ):
+        alt = _generate_one(root, cell, flags - {"cluster_redup"})
+        if alt != primary and alt not in variants:
+            variants.append(alt)
+
+    if "also_n_epenthesis" in flags and any(
+        op.op == "suffix" for op in cell.operations
+    ):
+        # The default form uses the engine's h-epenthesis (because
+        # ``n_epenthesis`` isn't a sandhi flag on this root path —
+        # ``also_n_epenthesis`` is the *variant-generation* flag,
+        # not the per-suffix-call override). Generate the -n- variant
+        # by toggling on the ``n_epenthesis`` per-call flag.
+        alt = _generate_one(root, cell, flags | {"n_epenthesis"})
+        if alt != primary and alt not in variants:
+            variants.append(alt)
+
+    return variants
 
 
 def _apply(
@@ -202,6 +227,7 @@ def _apply(
             a_deletion="a_deletion" in flags,
             no_o_raise="no_o_raise" in flags,
             no_h_epenthesis="no_h_epenthesis" in flags,
+            n_epenthesis="n_epenthesis" in flags,
         )
     if op.op == "prefix":
         return op.value + base
@@ -890,11 +916,14 @@ class Analyzer:
                 pos="VERB",
                 feats=feats,
             )
-            # Phase 10.J.post-7.1: ``surfaces`` is the list of
-            # variants from ``_generate_form_variants`` — single
-            # entry by default, two entries when ``cluster_redup``
-            # is set on a ``cv_redup`` cell (both cluster-preserved
-            # and cluster-stripped variants are indexed).
+            # Phase 10.J.post-7.1 / post-7.4: ``surfaces`` is the list
+            # of variants from ``_generate_form_variants`` — single
+            # entry by default, two entries when ``cluster_redup`` is
+            # set on a ``cv_redup`` cell (both cluster-preserved and
+            # cluster-stripped variants indexed), or when
+            # ``also_n_epenthesis`` is set on a vowel-initial-suffix
+            # cell (both ``-h-`` and ``-n-`` epenthesis variants
+            # indexed — ``natutuhan`` / ``natutunan``).
             for surface in (s.lower() for s in surfaces):
                 self._index.verb_forms.setdefault(surface, []).append(analysis)
             # Use the primary (cluster-preserved when applicable)
