@@ -90,7 +90,10 @@
   pos: VERB
   gloss: remember; worry (contemporary 4-syllable spelling of `alaala`)
   transitivity: TR
-  affix_class: [um, mag, ma, in_oblig, maka]
+  # Phase 10.J.post-8.5.5.1: opt into pag_gerund for ``pag-aalala``
+  # / ``pagaalala`` "the worrying / the concern" (PAMILYA/sent-14
+  # ``sa pag-aalala ng pamilya``).
+  affix_class: [um, mag, ma, in_oblig, maka, pag_gerund]
   feats: {LEMMA: alaala, AV_ABSOL: true}
 
 - citation: alis

@@ -540,6 +540,68 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 10.J.post-8.5.5.1: `lalo na't S` reason-emphasis ----------
+    #
+    # ``Lalo na't ang mga ito'y nakababata.``
+    #     "Especially because those (ones) are younger." (PAMILYA/sent-14
+    #     reason-emphasis adjunct).
+    # ``Maganda siya, lalo na't bata pa.``
+    #     "She's beautiful, especially because she's still young."
+    # ``Mahirap mag-aral, lalo na't walang aklat.``
+    #     "It's hard to study, especially because (you) have no book."
+    #
+    # ``lalo na't`` is the reason-emphasis discourse marker — etymologically
+    # ``lalo na`` "especially" (intensifier + ALREADY-aspect → fixed-phrase
+    # emphatic) + ``'t`` (post-vowel bound clitic, contraction of ``at``
+    # "and"). Tokenizer pre-pass `split_apostrophe_t` (Phase 5k Commit 2)
+    # normalizes ``na't`` to ``na`` + ``at`` so the chart sees three
+    # adjacent particles before the body S.
+    #
+    # The 9.X.c20 clitic-placement disambiguator forces ``na`` after
+    # ``lalo`` to LINK=NA (not the ALREADY clitic) — see
+    # ``clitics/placement.py:799-815``. The rule below matches that
+    # post-disambiguator c-structure shape.
+    #
+    # Compositionally parallel to the ``dahil`` reason-subordinator
+    # rule above (Phase 5l Commit 9) but with a tri-particle head
+    # (``lalo na 't``) instead of the single particle ``dahil``. The
+    # body S projects fully (``(↑) = ↓4``); the matrix carries
+    # SUBORD_TYPE='REAS' so the existing
+    # ``S → S PUNCT[COMMA] SubordClause`` matrix-attachment rule
+    # (subordination.py:218) lifts it as an ADJUNCT member.
+    #
+    # An additional EMPHASIS='ESPECIALLY' feat distinguishes this
+    # reading from the bare ``dahil`` reason — useful for downstream
+    # discourse-pragmatic analysis (the marker frames the reason as
+    # contrastively-emphasized "especially because" rather than the
+    # neutral "because").
+    #
+    # Reference: S&O 1972 §6 (emphatic discourse markers with ``lalo
+    # na``); R&G 1981 PAMILYA essay (sent-14); modern written practice.
+    rules.append(Rule(
+        "SubordClause",
+        [
+            "PART[LEMMA=lalo]",
+            "PART[LINK=NA]",
+            "PART[COORD=AND]",
+            "S",
+        ],
+        [
+            "(↑) = ↓4",
+            "(↑ SUBORD_TYPE) = 'REAS'",
+            "(↑ EMPHASIS) = 'ESPECIALLY'",
+            "(↓2 LINK) =c 'NA'",
+            "(↓3 COORD) =c 'AND'",
+        ],
+        # budget=10 throttles per-span emission to keep solve-time
+        # forest under the 5000-tree iteration cap when this rule
+        # composes with the existing S → S COMMA SubordClause
+        # attachment over matrix-S configurations with internal
+        # at-coord daughters (PAMILYA/sent-14 has both: `ang lolo
+        # at lola` internal N-coord under each conjunct).
+        budget=10,
+    ))
+
     # --- 9.X.c15: compound ``dahil sa + clause`` subordinator ---------
     #
     # ``Dahil sa tuyo ang lupa ay makapal ang alikabok.``
