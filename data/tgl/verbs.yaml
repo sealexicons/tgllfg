@@ -1281,8 +1281,18 @@
   # nom-only forms in absolutive AV context (`Nakikilala ako.`
   # "I am being recognized"). Parallel to ``maneho`` (post-7.5),
   # ``kuwento`` (post-7.6), ``sagot`` (post-7.1).
+  #
+  # Phase 10.J.post-8.5.3: ``also_n_epenthesis`` generates BOTH
+  # the default ``-h-`` epenthesis ``kilalahin`` AND the
+  # ``-n-`` epenthesis ``kilalanin`` variants for V+V hiatus at
+  # the suffix boundary. Modern Tagalog admits both spellings
+  # (parallel to ``tuto`` ``natutuhan``/``natutunan`` from
+  # post-7.4). Defensive additive — audit-absent at present, but
+  # the n-form is the more modern principal surface per Zamar
+  # 2023 §13.4 conventions.
   affix_class: [mag, ma, in_oblig, an_oblig, maka]
   feats: {AV_ABSOL: true}
+  sandhi_flags: [also_n_epenthesis]
 
 - citation: kilos
   pos: VERB
@@ -2321,8 +2331,18 @@
   # surfaces (post-8 survey Cluster A item). Parallel to other
   # canonical TR verbs with NVOL passive-like uses
   # (``natutulog``, ``naaalala``).
+  #
+  # Phase 10.J.post-8.5.3: ``medial_vowel_syncope`` produces the
+  # canonical ``sundin`` / ``sundan`` (not ``sunudin`` /
+  # ``sunudan``) for the OV-CTPL / DV-CTPL bare cells. The
+  # final-syllable ``o`` deletes before a V-initial suffix
+  # (``sunod + -in → sundin``; ``sunod + -an → sundan``). S&O
+  # 1972 §4.21 documents the syncope as a per-root lex choice.
+  # Closes wave-2 ramos1971 sent-159 (``Sundin natin ang ating
+  # guro.``) + rg-intermediate sent-1346 (``Sundin mo sila.``).
   affix_class: [um, in_oblig, an_oblig, ma, maka]
   feats: {AV_ABSOL: true}
+  sandhi_flags: [medial_vowel_syncope]
 
 - citation: sunog
   pos: VERB

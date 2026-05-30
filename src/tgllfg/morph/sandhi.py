@@ -181,6 +181,7 @@ def attach_suffix(
     no_o_raise: bool = False,
     no_h_epenthesis: bool = False,
     n_epenthesis: bool = False,
+    medial_vowel_syncope: bool = False,
 ) -> str:
     """Append ``suffix`` to ``base`` with vowel-hiatus repair plus
     Phase 2C / 9.X.pre-4 / 10.J.post-7.4 extensions.
@@ -233,13 +234,29 @@ def attach_suffix(
     of ``tuto``; Zamar 2023 §13.4 lists the ``-n-`` form as the
     modern principal surface.
 
+    Per-root opt-in via ``medial_vowel_syncope=True`` (Phase
+    10.J.post-8.5.3): when the stem ends in CVC (final consonant +
+    final-syllable vowel + onset consonant of the final syllable),
+    the final-syllable vowel deletes before a vowel-initial suffix.
+    ``sunod + -in → sundin`` (drops the ``o`` in ``-od``);
+    ``sunod + -an → sundan``; ``bukas + -in → buksin``;
+    ``bukas + -an → buksan``. The deletion produces a final
+    consonant cluster (``-nd``, ``-ks``) that the suffix attaches
+    to directly without V+V hiatus repair. S&O 1972 §4.21
+    documents the syncope as a per-root lex choice — common in
+    stems where the final-syllable vowel is non-historical
+    (``sunod`` < ``*sunud``; ``bukas`` < older ``*bukás``). Not all
+    CVC-final stems syncopate — opt-in per root.
+
     The deletion / epenthesis-override flags are mutually
     independent — ``high_vowel_deletion`` and ``a_deletion`` apply
     to disjoint stem classes (i/u-final vs a-final);
     ``no_h_epenthesis`` and ``n_epenthesis`` are alternative
     overrides of the h-epenthesis default (if both are set,
     ``n_epenthesis`` wins because it's the more specific lex
-    choice).
+    choice). ``medial_vowel_syncope`` applies to C-final stems and
+    runs after ``raise_final_o``; the resulting C-final base
+    bypasses the V+V hiatus branch entirely.
 
     Schachter & Otanes 1972 §4.21 documents both the formal
     h-epenthesis pattern and the colloquial deletion variants; the
@@ -249,6 +266,20 @@ def attach_suffix(
         return base
     if not no_o_raise:
         base = raise_final_o(base)
+    if (
+        medial_vowel_syncope
+        and len(base) >= 3
+        and not is_vowel(base[-1])
+        and is_vowel(base[-2])
+        and not is_vowel(base[-3])
+        and is_vowel(suffix[0])
+    ):
+        # CVC-final stem + V-initial suffix → drop the penultimate
+        # vowel (``sunud → sund``, ``bukas → buks``). The
+        # ``is_vowel(base[-3])`` False guard restricts to true CVC
+        # endings — would over-fire on VVC endings (``baon``) where
+        # there's no medial vowel to syncopate.
+        base = base[:-2] + base[-1]
     if base and is_vowel(base[-1]) and is_vowel(suffix[0]):
         if high_vowel_deletion and base[-1].lower() in "iu":
             return base[:-1] + "h" + suffix

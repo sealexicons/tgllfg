@@ -256,6 +256,7 @@ def _apply(
             no_o_raise="no_o_raise" in flags,
             no_h_epenthesis="no_h_epenthesis" in flags,
             n_epenthesis="n_epenthesis" in flags,
+            medial_vowel_syncope="medial_vowel_syncope" in flags,
         )
     if op.op == "prefix":
         return op.value + base
