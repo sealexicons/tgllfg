@@ -238,15 +238,28 @@ def register_rules(rules: list[Rule]) -> None:
     # (one rule per value), so the chart's prediction at this
     # position predicts only the REASON variant — pruning the
     # spurious chart states the un-gated rule produced.
-    rules.append(Rule(
-        "S",
-        ["PP[PREP_TYPE=REASON]", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
-        [
-            "(↑) = ↓3",
-            "(↑ TOPIC) = ↓1",
-            "↓1 ∈ (↑ ADJ)",
-        ],
-    ))
+    #
+    # Phase 10.J.post-7.4 extends the loop to include SOURCE
+    # (``mula sa X``). The fronted-PP-comma rule shape is identical
+    # across PREP_TYPEs (TOPIC binding + ADJ-set membership); only
+    # the chart-time daughter gate differs. SOURCE-fronted
+    # constructions like ``Mula sa Maynila, naglakbay kami sa Cebu.``
+    # (R&G 1981 §7.7-style sentence-fronted adjunct PP) close on this
+    # extension. The phantom Wackernagel/range risk noted in 9.X.c13
+    # was reassessed: bare ``mula X hanggang Y`` builds a structurally
+    # distinct ``PP[PREP_TYPE=RANGE]`` (4-daughter rule in
+    # nominal.py), so the SOURCE branch (3-daughter ``PREP NP[DAT]``)
+    # never competes.
+    for prep_type in ("REASON", "SOURCE"):
+        rules.append(Rule(
+            "S",
+            [f"PP[PREP_TYPE={prep_type}]", "PUNCT[PUNCT_CLASS=COMMA]", "S"],
+            [
+                "(↑) = ↓3",
+                "(↑ TOPIC) = ↓1",
+                "↓1 ∈ (↑ ADJ)",
+            ],
+        ))
 
     # --- 9.X.c12: clause-final BENEFICIARY + TOPIC PPs ---------------
     #
@@ -264,12 +277,17 @@ def register_rules(rules: list[Rule]) -> None:
     # used for EXCEPTIVE.
     #
     # The SOURCE (``mula sa``) and REASON (``dahil sa``) PREP_TYPEs
-    # are NOT lifted here. SOURCE has Wackernagel interaction risk
-    # (mula-sa-NP can also appear in range expressions like ``mula
-    # X hanggang Y``); REASON (``dahil sa``) admits both PP and
-    # subordinate-clause complements and the disambiguation is
-    # construction-class work. Both remain restricted to ay-
-    # fronting position pending audit-driven justification.
+    # were originally NOT lifted here. SOURCE had a posited
+    # Wackernagel interaction risk (``mula-sa-NP`` can also appear in
+    # range expressions like ``mula X hanggang Y``); REASON
+    # (``dahil sa``) admitted both PP and subordinate-clause
+    # complements and the disambiguation was construction-class work.
+    # Both restrictions have since been lifted (REASON in post-7.2,
+    # SOURCE in post-7.4) — the c12 chart rule predicts the
+    # ``S [S PP]`` daughter sequence only after a complete S, and
+    # the SOURCE PP[PREP_TYPE=SOURCE] daughter requires the
+    # 3-daughter ``PREP NP[DAT]`` shape (not the 4-daughter
+    # ``PP[PREP_TYPE=RANGE]``), so no chart-time ambiguity remains.
     #
     # Reference: R&G 1981 §7.6 (clause-final adjunct PPs); R&G 1981
     # PANAHON essay (sent-32 + sent-39 tail).
@@ -291,7 +309,18 @@ def register_rules(rules: list[Rule]) -> None:
     # adding REASON to this loop is safe. Closes ``Hindi kami
     # nakapasok sa eskwela dahilan sa ulan.`` (post-7.2 dahilan-4-postv)
     # and the parallel ``dahil sa ulan`` clause-final exemplar.
-    for prep_type in ("BENEFICIARY", "TOPIC", "GOAL", "REASON"):
+    #
+    # Phase 10.J.post-7.4 lifts the c12 deferral on SOURCE
+    # (``mula sa``). The originally-posited Wackernagel risk
+    # (``mula X hanggang Y`` range expressions) is structurally
+    # distinct: bare ``mula X hanggang Y`` parses as
+    # ``PP[PREP_TYPE=RANGE]`` (4-daughter ``PREP N PART N`` rule
+    # in nominal.py), not as ``PP[PREP_TYPE=SOURCE]`` (3-daughter
+    # ``PREP NP[CASE=DAT]``). The chart's PREP_TYPE LHS
+    # advertisement (post-2) ensures the two PP variants are
+    # disambiguated at chart time — no cross-product blow-up. Closes
+    # ``Naglakbay kami sa Cebu mula sa Maynila.`` (post-7.4 mula-sa-4-postv).
+    for prep_type in ("BENEFICIARY", "TOPIC", "GOAL", "REASON", "SOURCE"):
         rules.append(Rule(
             "S",
             ["S", "PP"],

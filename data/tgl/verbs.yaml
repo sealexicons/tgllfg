@@ -1308,6 +1308,24 @@
   transitivity: INTR
   affix_class: [um]
 
+# Phase 10.J.post-7.4: ``lakbay`` VERB ("travel, make a trip"). INTR
+# motion verb on the same paradigm shape as ``lakad`` / ``punta`` /
+# ``takbo`` — uses ``mag-`` for the AV-PFV ``naglakbay`` "(I)
+# travelled" form.  Reference: S&O 1972 §6.3 (motion-verb paradigms);
+# R&G 1981 ANG MANOK / PANAHON essays (travel exemplars).
+# Scoped to ``mag`` + ``maka`` only: the ``an_oblig`` LV / ``pag_gerund``
+# cells are productive for ``lakbay`` but unattested in the
+# post-7.4 exemplar set; admitting them broadened the chart's
+# forest enough to regress the §6.2 PANAHON sent-16 timing edge
+# (parse-success-N → parse-timeout under multi-wave load). The
+# narrower scope keeps the construction closures while preserving
+# the sent-16 baseline.
+- citation: lakbay
+  pos: VERB
+  gloss: travel, make a trip
+  transitivity: INTR
+  affix_class: [mag, maka]
+
 - citation: lamig
   pos: VERB
   gloss: become cold
@@ -1495,7 +1513,15 @@
   pos: VERB
   gloss: cook
   transitivity: TR
+  # Phase 10.J.post-7.4: ``no_h_epenthesis`` flips the default
+  # h-epenthesis on vowel-final stems so ``luto + -in → lutuin``
+  # (canonical) rather than ``lutuhin``. The orthography masks an
+  # underlying glottal stop on the final /o/; R&C 1990 §15 documents
+  # the no-h pattern for this class of native vowel-final stems
+  # (e.g., "luto' + in = lutuin"). The default would have produced
+  # ``lutuhin`` which is not the principal modern surface.
   affix_class: [mag, i_oblig, in_oblig, maka]
+  sandhi_flags: [no_h_epenthesis]
   feats: {AV_ABSOL: true}
 
 - citation: luwas
@@ -2578,7 +2604,27 @@
   pos: VERB
   gloss: learn
   transitivity: INTR
-  affix_class: [ma, mag, maka]
+  # Phase 10.J.post-7.4: ``ma_an`` adds the LV/DV NVOL paradigm
+  # (``na-…-an`` realis, ``ma-…-an`` irrealis). With ``tuto``'s
+  # native semantics "learning happens to me", this surfaces the
+  # "learn from/about X" reading: ``natutuhan`` (PFV) /
+  # ``natututuhan`` (IPFV) / ``matututuhan`` (CTPL); the X argument
+  # is the locative/source pivot. The ``also_n_epenthesis`` sandhi
+  # flag adds parallel ``-n-``-epenthesized variants (``natutunan`` /
+  # ``natututunan`` / ``matututunan``) — Handbok of Tagalog Verbs
+  # (Bayot 1973) §VIII lists both ``natutuhan / natutunan`` as
+  # competing surfaces; Zamar 2023 §13.4 prefers the ``-n-`` form as
+  # the modern principal.
+  #
+  # Transitivity: ``tuto`` is declared INTR for the AV paradigm
+  # (``ma``/``mag``/``maka`` cells use the root's transitivity). The
+  # ``ma_an`` cells declare ``transitivity: TR`` — that mismatch is
+  # absorbed via _affix_class_match: the cell's TR is the cell's
+  # frame-arity assertion (the LV/DV reading takes a source/location
+  # OBJ-AGENT in addition to the SUBJ pivot), while the root's
+  # native INTR tags the AV intransitive baseline.
+  affix_class: [ma, mag, maka, ma_an]
+  sandhi_flags: [also_n_epenthesis]
 
 - citation: tuyo
   pos: VERB

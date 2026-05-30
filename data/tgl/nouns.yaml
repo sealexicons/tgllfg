@@ -763,6 +763,16 @@
   subclass: [PERSON, FEMALE]
   source: audit-corpus
 
+# Phase 10.J.post-7.4: ``Cebu`` PLACE-NOUN. Filipino city in the
+# central Visayas — appears in S&O- and R&G-style travel-narrative
+# exemplars (``mula sa Maynila ... sa Cebu``). Parallel to the
+# existing ``maynila`` / ``baguio`` PLACE entries.
+- citation: cebu
+  pos: NOUN
+  gloss: Cebu (Philippine city in the central Visayas)
+  subclass: [PLACE]
+  source: audit-corpus
+
 - citation: cruz
   pos: NOUN
   gloss: Cruz (surname)
@@ -2853,6 +2863,16 @@
   pos: NOUN
   gloss: weather, time, season
   feats: {SEM_CLASS: TIME}
+  source: audit-corpus
+
+# Phase 10.J.post-7.4: ``panauhin`` NOUN ("guest, visitor"). Common
+# narrative noun in S&O / R&G travel + village scenes (``Dumating
+# ang panauhin.`` = "The guest arrived."). Standalone NOUN with no
+# verbal companion — VERB sense ``maging panauhin`` is periphrastic
+# via the maging-copula path (Phase 10.J.post-7.3).
+- citation: panauhin
+  pos: NOUN
+  gloss: guest, visitor
   source: audit-corpus
 
 - citation: pananampalataya
