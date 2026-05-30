@@ -1263,6 +1263,16 @@
   pos: NOUN
   gloss: stairs, ladder
 
+# Phase 10.J.post-7.5: ``hangganan`` NOUN ("border, boundary,
+# frontier"). Standard Filipino noun (S&O 1972 §6 — sentential
+# adjuncts; R&G 1981 PANAHON / travel narratives). Pairs with
+# ``tungo sa hangganan`` GOAL-PP and clause-final
+# ``hanggang sa hangganan`` locative paraphrase.
+- citation: hangganan
+  pos: NOUN
+  gloss: border, boundary, frontier
+  source: audit-corpus
+
 - citation: halaga
   pos: NOUN
   gloss: value, worth; price

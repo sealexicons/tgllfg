@@ -1547,7 +1547,16 @@
   pos: VERB
   gloss: drive
   transitivity: TR
+  # Phase 10.J.post-7.5: ``AV_ABSOL: true`` licenses the AV-INTR
+  # reading ``Nagmaneho si Pedro.`` "Pedro drove [a vehicle,
+  # implicit]" — pragmatically natural Filipino motion-verb usage
+  # where the implicit OBJ is the canonically-driven vehicle. Same
+  # mechanism applied to ``luto`` / ``trabaho`` / ``hirap`` / etc.
+  # in prior phases for verbs whose AV reading freely drops a
+  # generic / pragmatically-recovered OBJ. Reference: S&O 1972
+  # §6.3 (motion-verb usage); R&G 1981 (driving/travel contexts).
   affix_class: [mag, in_oblig, maka]
+  feats: {AV_ABSOL: true}
 
 - citation: mano
   pos: VERB
