@@ -200,6 +200,21 @@
     CTRL_CLASS: RAISING
   intrinsic: RAISING
 
+# Phase 10.J.post-10: second ``baka`` lex entry binding to the
+# RAISING_BARE morph variant (added to particles.yaml in the same
+# sub-PR). Identical PRED template; the morph-side dual entry
+# admits both ``Bakang umuulan.`` (RAISING with linker) and
+# ``Baka umuulan.`` (RAISING_BARE without linker — the productive
+# idiom in transcribed speech).
+- lemma: baka
+  pred: "MIGHT <XCOMP> SUBJ"
+  a_structure: [COMPLEMENT]
+  gf_defaults:
+    COMPLEMENT: XCOMP
+  morph_constraints:
+    CTRL_CLASS: RAISING_BARE
+  intrinsic: RAISING
+
 - lemma: parang
   pred: "SEEMS-LIKE <XCOMP> SUBJ"
   a_structure: [COMPLEMENT]

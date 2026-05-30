@@ -2950,6 +2950,59 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 10.J.post-10: V[NVOL] + LK + S psych-control fronting ----
+    #
+    # ``Nahihiyang magsabi si Juan.``
+    #     "Juan is ashamed to speak."
+    # ``Nahihiyang magsabi ang asawa ni Juan.``
+    #     "Juan's spouse is ashamed to speak."
+    # ``Bakit nahihiyang magsabi ang asawa ni A?``
+    #     "Why is A's spouse ashamed to speak?"   (wave-2 rg-int sent-968)
+    # ``Hindi nahihiyang kumain si Juan.``
+    #     "Juan is not ashamed to eat."
+    #
+    # Parallel to the ADJ + LK + S manner-style rule directly above
+    # (Phase 5g Commit 5): admits a V[VOICE=AV, MOOD=NVOL] psych
+    # predicate fronted before the bound linker and an inner S.
+    # The matrix S inherits the inner S's f-structure (PRED, SUBJ
+    # from the inner clause); the V[NVOL] joins the matrix ADJUNCT
+    # set semantically as a psych-modifier ("ashamedly", "fearfully",
+    # "happily" — the NVOL emotion gives the manner of the inner
+    # action).
+    #
+    # The Phase 5j PSYCH chart rule (control.py line 402-415)
+    # handles the alternative ``[V[CTRL_CLASS=PSYCH] NP[CASE=GEN]
+    # PART S_XCOMP]`` pattern with GEN-experiencer + S_XCOMP — used
+    # for the closed-class pseudo-verbs gusto/ayaw/kaya. The
+    # productive ma-NVOL psych family (``nahihiya``, ``natutuwa``,
+    # ``nasisiya``, ``naaalala``, etc.) is paradigmatically derived
+    # from ma_adj-class roots and doesn't carry CTRL_CLASS=PSYCH —
+    # so the existing rule doesn't fire on them. This new rule
+    # closes the productive case.
+    #
+    # ADJUNCT analysis (rather than XCOMP control) is the same
+    # approach the parallel ADJ rule takes for ``gustong kumain si
+    # Juan`` — semantically imprecise but structurally productive.
+    # A proper XCOMP control with SUBJ-sharing would require
+    # extending the ma-NVOL paradigm cell with an XCOMP-ready PRED
+    # template, which is a broader refactor (post-8.5 candidate).
+    #
+    # Closes the wave-2 rg-intermediate ``Bakit nahihiyang magsabi
+    # ang asawa ni A?`` (lex-completion exposed gap; pre-post-10 the
+    # sentence accidentally parsed via ``_UNK``-drop on the
+    # unrecognised ``nahihiyang``).
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            ["V[VOICE=AV, MOOD=NVOL]", f"PART[LINK={link}]", "S"],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ)",
+                "(↓1 SUBJ) = (↓3 SUBJ)",
+            ],
+        ))
+
+
     # --- Phase 9.X.c50: V + nang-manner-ADJ + SUBJ (pre-SUBJ manner-adv) ----
     #
     # ``Gumigising nang maaga ang mga Pilipino.``
