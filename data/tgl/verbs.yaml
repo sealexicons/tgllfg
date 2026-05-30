@@ -2766,7 +2766,15 @@
   pos: VERB
   gloss: help
   transitivity: TR
-  affix_class: [um, mag, an_oblig, maka, pag_gerund]
+  # Phase 10.J.post-8.5.5: opts into ``v_collab_redup`` for the
+  # collaborative-manner ADV ``tulung-tulong`` "collaboratively /
+  # in mutual help" (VERB→ADV POS-flip via the new
+  # ``v_collab_redup`` cell). ``redup_o_raise`` raises the
+  # first-copy stem-final /o/ to /u/ (``tulong`` → ``tulung-``)
+  # per S&O 1972 §4.21, parallel to ``taon`` → ``taun-taon``
+  # (Phase 10.A) and ``libo`` → ``libu-libo`` (Phase 10.D).
+  affix_class: [um, mag, an_oblig, maka, pag_gerund, v_collab_redup]
+  sandhi_flags: [redup_o_raise]
 
 - citation: tuloy
   pos: VERB

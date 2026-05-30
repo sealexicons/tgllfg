@@ -71,10 +71,12 @@ def test_binary_feats_count_matches_audit() -> None:
     Phase 10.E.1 adds ``EXCLAM`` → 64. Phase 10.G adds
     ``LEXICALIZED`` → 65. Phase 10.J.post-8.5.2 adds
     ``DISPOSITION`` → 66 (ma-X-in dispositional ADJ cell).
+    Phase 10.J.post-8.5.5 adds ``COLLABORATIVE`` → 67
+    (v_collab_redup cell — tulong → tulung-tulong).
     Drift means update both the doc and this assertion together."""
-    assert len(BINARY_FEATS) == 66, (
+    assert len(BINARY_FEATS) == 67, (
         f"BINARY_FEATS has {len(BINARY_FEATS)} entries; "
-        f"docs/feats-binary-audit.md says 66. "
+        f"docs/feats-binary-audit.md says 67. "
         f"Update both together if the audit changes."
     )
 

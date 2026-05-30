@@ -30,6 +30,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "CARDINAL",
         "CF",
         "CLOCK_MARKER",
+        "COLLABORATIVE",
         "COMPARATIVE",
         "COPULA",
         "CORREL",

@@ -304,6 +304,59 @@ def cv_reduplicate(base: str, *, cluster_redup: bool = False) -> str:
     return first_cv(base, cluster_redup=cluster_redup) + base
 
 
+def first_cvcv(s: str) -> str:
+    """Return the first CVCV (first two syllables) of ``s``.
+
+    ``baluktot`` → ``balu``; ``mahaba`` → ``maha``; ``matalino``
+    → ``mata``. The chunk used by Phase 10.J.post-8.5.5
+    :func:`cv2_reduplicate` for first-2-syllable reduplication
+    (the marked first-foot redup pattern attested in R&G 1981
+    PAG-AARAL/sent-8 ``balubaluktot``).
+
+    Walks C{0,n} onset + V (the first CV), then C{0,n} second-
+    onset + V (the second CV), and returns the slice up to the
+    second V (inclusive). Vowel-initial bases get just the
+    first V + second-onset + V (``alis`` → ``ali``).
+    Single-syllable bases return the full base.
+    """
+    if not s:
+        return ""
+    # Step 1: skip leading consonants to find first vowel.
+    i = 0
+    if not is_vowel(s[0]):
+        if s[:2].lower() == "ng":
+            i = 2
+        else:
+            i = 1
+    while i < len(s) and not is_vowel(s[i]):
+        i += 1
+    if i >= len(s):
+        return s  # all consonants — degenerate
+    # Step 2: advance past first vowel; skip consonants to second vowel.
+    j = i + 1
+    while j < len(s) and not is_vowel(s[j]):
+        j += 1
+    if j >= len(s):
+        return s  # only one vowel — return full base
+    return s[: j + 1]
+
+
+def cv2_reduplicate(base: str) -> str:
+    """Prepend the first two syllables of ``base`` to itself.
+
+    Phase 10.J.post-8.5.5: ``baluktot`` → ``balu`` + ``baluktot``
+    = ``balubaluktot``. Different from :func:`cv_reduplicate`
+    (single CV — ``baluktot`` → ``babaluktot``) — the cv2 variant
+    is the first-foot / first-2-syllable redup attested as a
+    marked intensive in R&G 1981 PAG-AARAL/sent-8. Reviewer
+    2026-05-25 rules full-redup (``matalinotalino``) as the
+    canonical modern form, so this pattern is per-root opt-in
+    via ``affix_class: [adj_cv2_redup]`` — gated to attested
+    stems.
+    """
+    return first_cvcv(base) + base
+
+
 def kani_reduplicate(base: str) -> str:
     """Distributive-possessive reduplication for DAT pronouns.
 

@@ -920,6 +920,48 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
             ),
         ))
+        # Phase 10.J.post-8.5.5: PRO-NOM-pivot TRANS control.
+        #
+        # ``Pinipilit nilang magsalita.``
+        #     "They are being forced to speak."
+        # ``Pinipilit kong kumain.``  "I am being forced to eat."
+        # ``Pinilit ng nanay nilang kumain.`` (with GEN-AGENT only,
+        # NOM-pivot recovered from discourse PRO).
+        #
+        # The full transitive-control rules above (GEN-NOM and
+        # NOM-GEN orders) require BOTH the GEN-AGENT and the
+        # NOM-pivot to be overt. The PRO-NOM-pivot variant has
+        # only the GEN-AGENT overt + the pivot (the forcee /
+        # orderee) recovered from discourse. Productive idiom in
+        # narrative / passive-like uses where the forcee is
+        # backgrounded or generic. R&G 1981 PAG-AARAL/sent-8
+        # ``Kahi't balubaluktot, pinipilit nilang magsalita.``
+        # "Even crookedly [spoken], they force themselves to
+        # speak" — the speakers/forcees are recoverable from the
+        # discourse (they = those speaking the crooked language).
+        #
+        # Matrix SUBJ is synthesized as PRO (no overt NOM-pivot);
+        # OBJ-AGENT is the overt GEN-NP; XCOMP is the embedded
+        # S_XCOMP. The standard control binding
+        # ``(↑ SUBJ) = (↑ XCOMP REL-PRO)`` shares the matrix SUBJ
+        # with the embedded clause's SUBJ-gap. Mirrors the PSYCH
+        # GEN-experiencer rule (line 402-415 above) but with the
+        # TRANS-class typed slots (OBJ-AGENT for the GEN).
+        rules.append(Rule(
+            "S",
+            [
+                "V[CTRL_CLASS=TRANS]",
+                "NP[CASE=GEN]",
+                f"PART[LINK={link}]",
+                "S_XCOMP",
+            ],
+            _eqs(
+                "(↑ OBJ-AGENT) = ↓2",
+                "(↑ XCOMP) = ↓4",
+                "(↑ SUBJ PRED) = 'PRO'",
+                "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+            ),
+        ))
 
     # Phase 5c §7.6 follow-on (Commit 5): raising verbs.
     # ``Mukhang kumakain ang bata`` "the child seems to be

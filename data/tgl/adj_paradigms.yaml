@@ -298,6 +298,40 @@
     by default; vowel-final roots that should produce direct-
     concatenated forms opt into ``sandhi_flags: [no_h_epenthesis]``.
 
+# === Phase 10.J.post-8.5.5: adj_cv2_redup (ADJ first-2-syllable redup) ===
+#
+# The first-2-syllable redup (CV-CV reduplication of the first
+# foot) is a MARKED intensive on ADJ stems. Distinct from the
+# canonical full-redup (reviewer 2026-05-25 ruling: ``matalino →
+# matalinotalino``, NOT ``matalitalino``). The first-2-syl variant
+# is attested as a stylistic intensive in older / formal Tagalog
+# texts:
+#
+#   baluktot → balubaluktot   "very crooked / crookedly"
+#                              (R&G 1981 PAG-AARAL/sent-8)
+#   matalino → matamatalino   (marked variant; full-redup preferred)
+#
+# Operation: ``cv2_redup`` — prepend the first 2 syllables (= the
+# first CVCV, typically 4 chars) of the ROOT before the ROOT.
+# Different from ``cv_redup`` (single CV — e.g., ``babaluktot``)
+# and from ``redup_root`` (full-root — ``baluktotbaluktot``).
+#
+# REDUP=FULL + REDUP_SEM=INTENS retrofit (Phase 10.B convention).
+# Output is PREDICATIVE ADJ so the Phase 5g predicative-ADJ-S
+# rule consumes it.
+#
+# Per-root opt-in keeps this marked pattern gated to attested
+# stems. Currently `baluktot` opts in.
+- affix_class: adj_cv2_redup
+  operations:
+    - {op: cv2_redup}
+  feats: {REDUP: FULL, REDUP_SEM: INTENS, PREDICATIVE: true}
+  notes: |
+    adj_cv2_redup — first-2-syllable redup ADJ (baluktot →
+    balubaluktot, marked intensive per R&G 1981 PAG-AARAL/sent-8).
+    Per-root opt-in via ``affix_class: [adj_cv2_redup]``. Distinct
+    from ``adj_redup`` (full X-X redup, canonical per reviewer).
+
 # === Phase 5h: bare-citation indexer for non-productive ADJ roots ======
 #
 # Phase 5h Commit 2 adds three lexicalised, non-productive ADJ
