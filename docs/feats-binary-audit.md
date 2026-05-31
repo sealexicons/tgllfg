@@ -37,7 +37,7 @@ inspection: comment text containing capitalized words followed by
 Subsequent phases extended the inventory: 9.O.3 (+1), 9.O.4 (+1),
 9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1), 9.X.c49 (+1),
 9.X.post-2 (+1), 10.E.1 (+1), 10.G (+1), 10.J.post-8.5.2 (+1),
-10.J.post-8.5.5 (+1) → 67 total.
+10.J.post-8.5.5 (+1), 10.J.post-12.2 (+2), 10.K.2 (+1) → 70 total.
 Each extension is documented inline below.
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
@@ -49,6 +49,7 @@ negative.
 | --- | --- |
 | `APPROX` | NP is an approximator (e.g., `mga`) |
 | `ASK_CLASS` | verb is in the "ask"-class for indirect Q complementizer |
+| `AV_ABSOL` | AV verb appears in absolutive (Phase 9.O.4) |
 | `CARDINAL` | NUM is a cardinal numeral |
 | `CF` | clause is counterfactual (subj of `sakali` / `kahit pa`) |
 | `CLOCK_MARKER` | PART is the clock-time hour marker (`alas`) |
@@ -72,6 +73,7 @@ negative.
 | `EQUATIVE` | ADJ is equative (`kasingganda`) |
 | `EXCLAM` | `ang`-exclamative predication (`Ang ganda-ganda mo!`) — Phase 10.E.1 |
 | `EXISTENTIAL` | clause is existential (`may`, `mayroon`) |
+| `EXIST_NEG_PREMOD` | matrix marker on the post-12.2 negative-existential pre-N modifier rule (Phase 10.J.post-12.2) |
 | `EXTRACTED` | NP-of-extraction marker |
 | `FOCUS_NEG` | Ni-focus-negation construction marker (Phase 8.V) |
 | `FRAGMENT_HOST` | clause licenses NP-fragment answers |
@@ -93,18 +95,22 @@ negative.
 | `MIRATIVE` | particle is mirative |
 | `MODAL` | clause carries a modal head |
 | `MODAL_STANDALONE` | modal is non-complement-taking standalone |
+| `NAMAN` | non-clitic `naman` chart-symbol gate for the topic-contrast NP-attachment rule (Phase 10.K commit 2) |
+| `N_CORE` | base-N marker; c-structure anti-reapply on the post-12.2 modifier rule (Phase 10.J.post-12.2) |
 | `N_RC` | N is an N-level-RC head (Phase 6.G; tag for the simple-NP-rule disambiguation) |
 | `NEG_TAG` | clause is a negative tag-Q |
 | `ORDINAL` | NUM is ordinal (`pang-`) |
 | `ORTHOGRAPHIC_TERMINATOR` | sentence-final punctuation |
 | `PANG_DERIVED` | NOUN is `pang-` derived |
 | `PLURAL_MARKER` | particle is plural marker (`mga`) |
+| `POLITE_MARKER` | clause-level marker on the polite-register lift (Phase 9.O.5) |
 | `PREDICATIVE` | ADJ is in predicative position |
 | `QUESTION` | particle is a question marker (`ba`) |
 | `RECP` | verb is reciprocal |
 | `RESULTATIVE` | ADJ is resultative |
 | `SAY_CLASS` | verb is in the "say"-class |
 | `SEQUENCE` | clause is in a temporal sequence |
+| `STATIVE_PRED` | predicate is stative / non-actor-changing (Phase 9.O.3) |
 | `SYMBOLIC` | particle is symbolic (mathematical operator) |
 | `UNCERTAIN` | particle carries uncertainty (`siguro`, `marahil`) |
 | `UNIV` | universal Q (`bawat`, `lahat`) |

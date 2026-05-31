@@ -1745,11 +1745,24 @@ def register_rules(rules: list[Rule]) -> None:
     # has no MEASURE feature. ``¬ (↓3 MEASURE)`` blocks chained
     # measures (parallel to the cardinal rule's
     # ``¬ (↓4 CARDINAL_VALUE)``).
+    #
+    # Phase 10.K commit 2: ↓1 is gated to ``N[N_CORE]`` (base NOUN,
+    # not a compound). Without this, the N-N compound rule
+    # (``N → N PART[LINK] N`` with ``(↑) = ↓1``) can left-chain
+    # ``dosena -ng dosena`` and propagate ↓1's MEASURE feat up to
+    # the compound output via share. The outer measure-N rule then
+    # accepts the compound as ↓1 (MEASURE=true via share) with
+    # ↓3=itlog (no MEASURE) — the ↓3 gate doesn't catch it.
+    # Restricting ↓1 to ``N[N_CORE]`` blocks the leak: compound
+    # outputs are plain ``N`` (not ``N[N_CORE]``), so the chained
+    # form never enters the measure-N rule. Surfaced when commit 2's
+    # NAMAN chart-symbol gating pruned junk c-trees that previously
+    # consumed iter_trees-cap budget for the chained-measure parse.
     for link in ("NA", "NG"):
         rules.append(Rule(
             "N",
             [
-                "N",
+                "N[N_CORE]",
                 f"PART[LINK={link}]",
                 "N",
             ],
@@ -3157,10 +3170,9 @@ def register_rules(rules: list[Rule]) -> None:
     # marker that scopes over the matrix proposition via its
     # attachment to the topic NP.
     #
-    #   NP[CASE=X] → NP[CASE=X] PART[LEMMA=naman]
+    #   NP[CASE=X] → NP[CASE=X] PART[NAMAN=true]
     #     (↑) = ↓1                head NP supplies CASE / PRED / etc.
     #     ↓2 ∈ (↑ ADJUNCT)       naman joins ADJUNCT set
-    #     (↓2 LEMMA) =c 'naman'   lemma gate (excludes other PARTs)
     #
     # Disambiguation: the existing CLITIC_CLASS=2P ``naman`` entry
     # (post-V Wackernagel reading) is morphologically distinct —
@@ -3168,16 +3180,31 @@ def register_rules(rules: list[Rule]) -> None:
     # non-clitic entry when ``naman`` follows a NOUN, and that's
     # the entry this rule consumes.
     #
+    # Phase 10.K commit 2: the daughter pattern was ``PART`` with
+    # a ``(↓2 LEMMA) =c 'naman'`` constraining gate. The lemma
+    # gate evaluated at solve time, so the chart still enumerated
+    # the rule with EVERY PART (din, ho, na, ba, pa, …) as ↓2 —
+    # producing a fan-out of doomed c-trees for every NP-adjacent
+    # particle in the sentence. PAMILYA/sent-16 (``Kapisan din
+    # ang wala pang asawang kapatid ng ama o ina.``) hit this:
+    # 20000+ failing c-trees with ``din`` filling the NAMAN slot,
+    # pushing the canonical S → S PART(din) absorption past the
+    # 5000-tree iteration cap. The chart-symbol form
+    # ``PART[NAMAN=true]`` gates at chart time — the rule only
+    # matches the non-clitic ``naman`` lex entry (which carries
+    # ``NAMAN: true``), so other PARTs never enter the cartesian
+    # product. The ``(↓2 LEMMA) =c 'naman'`` constraining equation
+    # becomes redundant and is dropped.
+    #
     # Reference: R&G 1981 §7.3 (topic-contrast naman); R&G 1981
     # PANAHON essay (sent-23).
     for case in ("NOM", "GEN", "DAT"):
         rules.append(Rule(
             f"NP[CASE={case}]",
-            [f"NP[CASE={case}]", "PART"],
+            [f"NP[CASE={case}]", "PART[NAMAN=true]"],
             [
                 "(↑) = ↓1",
                 "↓2 ∈ (↑ ADJUNCT)",
-                "(↓2 LEMMA) =c 'naman'",
             ],
         ))
 

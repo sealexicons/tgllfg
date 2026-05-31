@@ -1736,7 +1736,7 @@
 # the absorption rule's =c constraint rejects it.
 - surface: naman
   pos: PART
-  feats: {ADV: ALSO, LEMMA: naman}
+  feats: {ADV: ALSO, LEMMA: naman, NAMAN: true}
 - surface: naman
   pos: PART
   feats: {ADV: ALSO, LEMMA: naman}

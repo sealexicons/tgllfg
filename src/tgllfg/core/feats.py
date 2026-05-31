@@ -71,6 +71,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "MIRATIVE",
         "MODAL",
         "MODAL_STANDALONE",
+        "NAMAN",
         "EXIST_NEG_PREMOD",
         "N_CORE",
         "N_RC",
