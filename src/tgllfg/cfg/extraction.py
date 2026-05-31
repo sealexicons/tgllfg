@@ -487,13 +487,15 @@ def register_rules(rules: list[Rule]) -> None:
     # ``nominal.py`` can add ``¬ (↓N EXIST_NEG_PREMOD)`` guards if
     # duplicate-path issues surface in future audit runs.
     for link in ("NA", "NG"):
-        # Pre-N modifier: S[EXIST,NEG] + LINK + N
+        # Pre-N modifier: S[EXIST,NEG] + LINK + N[N_CORE]
+        # Daughter ↓3 gated on ``N[N_CORE]`` to prevent
+        # self-recursion (post-12.2 reviewer-revised guidance).
         rules.append(Rule(
             "N",
             [
                 "S[CLAUSE_TYPE=EXISTENTIAL, POLARITY=NEG]",
                 f"PART[LINK={link}]",
-                "N",
+                "N[N_CORE]",
             ],
             [
                 "(↑) = ↓3",
@@ -502,11 +504,11 @@ def register_rules(rules: list[Rule]) -> None:
                 "¬ (↓3 N_RC)",
             ],
         ))
-        # Post-N modifier: N + LINK + S[EXIST,NEG]
+        # Post-N modifier: N[N_CORE] + LINK + S[EXIST,NEG]
         rules.append(Rule(
             "N",
             [
-                "N",
+                "N[N_CORE]",
                 f"PART[LINK={link}]",
                 "S[CLAUSE_TYPE=EXISTENTIAL, POLARITY=NEG]",
             ],

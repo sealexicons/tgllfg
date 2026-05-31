@@ -47,11 +47,20 @@ def _ctree_labels(node: CNode) -> list[str]:
     return out
 
 
+def _bare_cat(label: str) -> str:
+    """Strip category-feat suffix ``[...]`` from a chart-symbol label.
+    Phase 10.J.post-12.2: the base ``N → NOUN`` rule now projects as
+    ``N[N_CORE]`` to enable c-structure-level anti-reapply gating on
+    modifier rules. Tests that match against bare ``N`` labels need to
+    treat ``N[N_CORE]`` and ``N`` (modifier-derived) interchangeably."""
+    return label.split("[", 1)[0]
+
+
 def _adj_modified_n(node: CNode) -> CNode | None:
     """Find an ``N`` node whose immediate children include an ``ADJ``
     daughter (either pre-N or post-N order)."""
-    if node.label == "N":
-        labels = [c.label for c in node.children]
+    if _bare_cat(node.label) == "N":
+        labels = [_bare_cat(c.label) for c in node.children]
         if "ADJ" in labels and "PART" in labels and "N" in labels:
             return node
     for c in node.children:
@@ -81,7 +90,7 @@ class TestPreNVowelFinalAdj:
         n = _adj_modified_n(ctree)
         assert n is not None
         # The N has ADJ + PART + N as immediate children (pre-N order).
-        assert [c.label for c in n.children] == ["ADJ", "PART", "N"]
+        assert [_bare_cat(c.label) for c in n.children] == ["ADJ", "PART", "N"]
 
     def test_obj_position(self) -> None:
         # ``Kumain ng magandang isda ang bata.`` — fish in OBJ.
@@ -89,7 +98,7 @@ class TestPreNVowelFinalAdj:
         assert ctree is not None
         n = _adj_modified_n(ctree)
         assert n is not None
-        assert [c.label for c in n.children] == ["ADJ", "PART", "N"]
+        assert [_bare_cat(c.label) for c in n.children] == ["ADJ", "PART", "N"]
 
     def test_dat_position(self) -> None:
         # ``Pumunta ako sa magandang bahay.`` "I went to a beautiful house."
@@ -97,7 +106,7 @@ class TestPreNVowelFinalAdj:
         assert ctree is not None
         n = _adj_modified_n(ctree)
         assert n is not None
-        assert [c.label for c in n.children] == ["ADJ", "PART", "N"]
+        assert [_bare_cat(c.label) for c in n.children] == ["ADJ", "PART", "N"]
 
 
 class TestPreNConsonantFinalAdj:
@@ -109,21 +118,21 @@ class TestPreNConsonantFinalAdj:
         assert ctree is not None
         n = _adj_modified_n(ctree)
         assert n is not None
-        assert [c.label for c in n.children] == ["ADJ", "PART", "N"]
+        assert [_bare_cat(c.label) for c in n.children] == ["ADJ", "PART", "N"]
 
     def test_obj_position(self) -> None:
         ctree = _parse_or_none("Kumain ang aso ng mabilis na isda.")
         assert ctree is not None
         n = _adj_modified_n(ctree)
         assert n is not None
-        assert [c.label for c in n.children] == ["ADJ", "PART", "N"]
+        assert [_bare_cat(c.label) for c in n.children] == ["ADJ", "PART", "N"]
 
     def test_dat_position(self) -> None:
         ctree = _parse_or_none("Pumunta ang bata sa mabilis na aso.")
         assert ctree is not None
         n = _adj_modified_n(ctree)
         assert n is not None
-        assert [c.label for c in n.children] == ["ADJ", "PART", "N"]
+        assert [_bare_cat(c.label) for c in n.children] == ["ADJ", "PART", "N"]
 
 
 # === Post-N ADJ modifier ==================================================
@@ -140,14 +149,14 @@ class TestPostNVowelFinalN:
         # Find the N with [N PART ADJ] daughter sequence.
         n = _adj_modified_n(ctree)
         assert n is not None
-        assert [c.label for c in n.children] == ["N", "PART", "ADJ"]
+        assert [_bare_cat(c.label) for c in n.children] == ["N", "PART", "ADJ"]
 
     def test_obj_position(self) -> None:
         ctree = _parse_or_none("Kumain ang aso ng isdang maganda.")
         assert ctree is not None
         n = _adj_modified_n(ctree)
         assert n is not None
-        assert [c.label for c in n.children] == ["N", "PART", "ADJ"]
+        assert [_bare_cat(c.label) for c in n.children] == ["N", "PART", "ADJ"]
 
 
 class TestPostNConsonantFinalN:
@@ -159,7 +168,7 @@ class TestPostNConsonantFinalN:
         assert ctree is not None
         n = _adj_modified_n(ctree)
         assert n is not None
-        assert [c.label for c in n.children] == ["N", "PART", "ADJ"]
+        assert [_bare_cat(c.label) for c in n.children] == ["N", "PART", "ADJ"]
 
 
 # === Multi-modifier composition (right-recursion in pre-N rules) =========
@@ -180,11 +189,11 @@ class TestMultiModifier:
         # inner N also has ADJ + PART + N (= recursion).
         outer = _adj_modified_n(ctree)
         assert outer is not None
-        outer_labels = [c.label for c in outer.children]
+        outer_labels = [_bare_cat(c.label) for c in outer.children]
         assert outer_labels == ["ADJ", "PART", "N"]
         inner = outer.children[2]  # the rightmost N
         # inner should itself be adj-modified
-        inner_labels = [c.label for c in inner.children]
+        inner_labels = [_bare_cat(c.label) for c in inner.children]
         assert inner_labels == ["ADJ", "PART", "N"]
 
     def test_three_pre_n_modifiers(self) -> None:
@@ -197,12 +206,14 @@ class TestMultiModifier:
         # Walk the spine of ADJ-modified Ns and count.
         depth = 0
         cur = _adj_modified_n(ctree)
-        while cur is not None and [c.label for c in cur.children] == [
-            "ADJ", "PART", "N",
-        ]:
+        while cur is not None and [
+            _bare_cat(c.label) for c in cur.children
+        ] == ["ADJ", "PART", "N"]:
             depth += 1
             cur = cur.children[2]
-            if [c.label for c in cur.children] != ["ADJ", "PART", "N"]:
+            if [
+                _bare_cat(c.label) for c in cur.children
+            ] != ["ADJ", "PART", "N"]:
                 break
         assert depth == 3, f"expected 3 nested adj-modifiers; got {depth}"
 

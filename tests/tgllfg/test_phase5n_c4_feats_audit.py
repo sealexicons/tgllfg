@@ -77,10 +77,14 @@ def test_binary_feats_count_matches_audit() -> None:
     (negative-existential pre-N modifier rule output marker —
     structural anti-duplication tag for the wala/wala-pa-modifier
     chart path).
+    Phase 10.J.post-12.2 (reviewer-revised follow-up) adds
+    ``N_CORE`` → 69 (chart-symbol metadata for base/lex N's —
+    enables c-structure-level anti-reapply on modifier rules per
+    reviewer prescription).
     Drift means update both the doc and this assertion together."""
-    assert len(BINARY_FEATS) == 68, (
+    assert len(BINARY_FEATS) == 69, (
         f"BINARY_FEATS has {len(BINARY_FEATS)} entries; "
-        f"docs/feats-binary-audit.md says 68. "
+        f"docs/feats-binary-audit.md says 69. "
         f"Update both together if the audit changes."
     )
 
