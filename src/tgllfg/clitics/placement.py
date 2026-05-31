@@ -267,6 +267,122 @@ def _is_post_discourse_head_din(
     )
 
 
+def _is_existential_head(cands: list[MorphAnalysis]) -> bool:
+    """True if ``cands`` carries an existential-head reading
+    (``wala`` / ``may`` / ``mayroon``). PART entries with
+    ``EXISTENTIAL=True``. Phase 10.J.post-12.2.
+
+    Used by ``_is_post_existential_pa`` (narrow adjacency
+    preservation, Layer 2 per user 2026-05-31 direction): the
+    existential head opens its own embedded clitic domain inside
+    an NP; the aspect-clitic ``pa`` should not be hoisted into
+    the matrix Wackernagel cluster when it belongs to that
+    domain. Currently scoped narrowly to the NP-internal modifier
+    context (``DET ... wala pa -ng N -ng N``); the broader
+    domain-aware refactor (existential as inner anchor in
+    ``_enclosing_anchor_for_clitic``) is parked for a future PR if
+    the narrow guard proves insufficient. See trace in
+    ``tmp/trace_placement_walapa.py`` for the diagnosis."""
+    return any(
+        ma.pos == "PART" and ma.feats.get("EXISTENTIAL") is True
+        for ma in cands
+    )
+
+
+def _looks_like_existential_nominal_complement(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if positions ``i+1`` (LINK=NG, in either PART or ADP form)
+    and ``i+2`` (an N/NOUN/ADJ token) form the existential's nominal
+    complement after a ``pa`` at position ``i``.
+
+    The pattern ``pa LINK[NG] N`` is the signature of an embedded
+    existential modifier ``wala pa -ng N`` inside an NP. Standalone
+    ``Wala pang asawa.`` also matches this shape; the gate's caller
+    further checks the existential head at ``i-1`` for the trigger.
+    Phase 10.J.post-12.2."""
+    if i + 2 >= len(analyses):
+        return False
+    next_cands = analyses[i + 1]
+    next2_cands = analyses[i + 2]
+    has_link_ng = any(
+        (ma.pos == "PART" and ma.feats.get("LINK") == "NG")
+        or (ma.pos == "ADP" and ma.feats.get("MARKER") == "NG")
+        for ma in next_cands
+    )
+    if not has_link_ng:
+        return False
+    has_nominal = any(
+        ma.pos in ("N", "NOUN", "ADJ")
+        for ma in next2_cands
+    )
+    return has_nominal
+
+
+def _is_post_existential_pa(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is the ASPECT-clitic ``pa``
+    immediately preceded by an existential head (``wala`` / ``may``
+    / ``mayroon``) that is itself embedded inside an NP (preceded
+    somewhere upstream by a DET/CASE-marker), and followed by an
+    existential nominal complement (LINK[NG] + N).
+
+    Phase 10.J.post-12.2 — Layer 2 of the user 2026-05-31 fix for
+    PAMILYA/sent-16 (``Kapisan din ang wala pang asawang kapatid ng
+    ama o ina.``). The trace in ``tmp/trace_placement_walapa.py``
+    shows the placement engine hoists ``pa`` into the matrix
+    Wackernagel cluster alongside ``din``, because the verbless
+    matrix anchor short-circuits ``_enclosing_anchor_for_clitic``
+    (line 587-588): "if matrix anchor is not VERB, return matrix
+    anchor". Result: ``pa`` ends up at clause-end, separated from
+    its existential anchor ``wala`` by 4+ intervening tokens.
+
+    The deeper architectural fix (Layer 1) is to teach
+    ``_enclosing_anchor_for_clitic`` that existential heads are
+    inner-clause anchors even under a verbless matrix. The narrow
+    adjacency guard here is the implementation bridge: keep ``pa``
+    adjacent to its existential head when (a) the existential is
+    embedded inside an NP — there's a DET (``ang`` / ``ng`` / ``sa``)
+    upstream of the existential head, indicating NP-internal context
+    — AND (b) the nominal-complement shape follows. The DET-precedes
+    check distinguishes the EMBEDDED modifier (``ang wala pang
+    asawa-ng kapatid``) from the STANDALONE existential (``Wala pang
+    asawa.``), which must NOT be touched (its old path — pa moves
+    to clause-end + outer-S clitic-absorb — still works).
+
+    The construction-preserving exception is analogous to the
+    existing narrowly-scoped exceptions: post-wh-PRON ``man``,
+    post-gayon/ganon ``din``, post-N possessive pronouns, etc."""
+    if i == 0:
+        return False
+    if not any(
+        ma.pos == "PART"
+        and ma.feats.get("ASPECT_PART") == "STILL"
+        and ma.feats.get("is_clitic") is True
+        for ma in analyses[i]
+    ):
+        return False
+    if not _is_existential_head(analyses[i - 1]):
+        return False
+    if not _looks_like_existential_nominal_complement(analyses, i):
+        return False
+    # Distinguish standalone from embedded: an embedded existential
+    # has a DET (``ang`` / ``ng`` / ``sa``) somewhere upstream of
+    # the existential head. Standalone clauses don't.
+    for j in range(i - 2, -1, -1):
+        if any(ma.pos == "DET" for ma in analyses[j]):
+            return True
+        # CASE-marker ``ng`` (ADP[CASE=GEN]) before the existential
+        # also signals embedded context (``ang X ng wala pang ...``).
+        if any(
+            ma.pos == "ADP" and ma.feats.get("CASE") == "GEN"
+            for ma in analyses[j]
+        ):
+            return True
+    return False
+
+
 def _is_post_noun_pron(
     analyses: list[list[MorphAnalysis]], i: int
 ) -> bool:
@@ -555,7 +671,8 @@ def _enclosing_anchor_for_clitic(
     matrix_anchor: int,
 ) -> int:
     """Return the anchor index that ``analyses[i]`` (a clitic) belongs
-    to in a SAY-class indirect-speech construction.
+    to in a SAY-class indirect-speech construction or NP-embedded
+    existential.
 
     Phase 9.W: when a ``na``-linker (``PART[LINK=NA]`` after
     disambiguation, with no remaining clitic reading) occurs
@@ -564,26 +681,60 @@ def _enclosing_anchor_for_clitic(
     clause's V (the next VERB after the ``na``-linker), not the
     matrix anchor.
 
-    The "no remaining clitic reading" gate matters: if both readings
-    survive the disambiguator (the default-both-readings fallthrough
-    in :func:`disambiguate_homophone_clitics`), the placement pass
-    still wants to treat ``na`` as the aspectual ``ALREADY`` clitic
-    and move it to clause-final — counting it as a clause boundary
-    here would break verbless-anchor cases like ``Maganda na ka ba.``
+    Phase 10.F: complementizers (``PART`` with ``COMP_TYPE`` feat —
+    ``kung`` / ``kapag`` / ``na`` / ...) also open an embedded
+    clause.
 
-    Inner-clause anchoring only applies when the matrix anchor is a
-    VERB. Verbless N/ADJ-anchor matrices use the NOUN/ADJ token as
-    anchor, and any ``na``-linker after the anchor is an NP-internal
-    or NP-modifying linker (``Bata na ka.`` = N + linker + PRON), not
-    a clause boundary.
+    Phase 10.J.post-12.2 (Layer 1, per user 2026-05-31): existential
+    heads (``wala`` / ``may`` / ``mayroon`` — ``PART[EXISTENTIAL]``)
+    open an embedded existential clause inside an NP modifier. The
+    existential becomes the inner anchor for its aspect-clitic
+    (``pa``), even when the matrix anchor is verbless (e.g., an
+    ADJ-class predicate like ``Kapisan``). The pre-Phase-10.J.post-12.2
+    short-circuit ("if matrix anchor is not VERB, return matrix anchor")
+    was too strong: it hoisted embedded existential clitics into the
+    matrix Wackernagel cluster, breaking ``Kapisan din ang wala pang
+    asawang kapatid.`` (see ``tmp/trace_placement_walapa.py``).
+
+    The "no remaining clitic reading" gate (Phase 9.W) matters: if
+    both readings survive the disambiguator (the default-both-readings
+    fallthrough in :func:`disambiguate_homophone_clitics`), the
+    placement pass still wants to treat ``na`` as the aspectual
+    ``ALREADY`` clitic and move it to clause-final — counting it as
+    a clause boundary here would break verbless-anchor cases like
+    ``Maganda na ka ba.``
+
+    The existential-as-inner-anchor branch is GATED: it only fires
+    when the existential head is followed immediately by a LINK[NG]
+    + N pattern (the existential's nominal complement) AND the
+    candidate clitic ``pa`` sits between them. This narrow scoping
+    matches the ``wala pa -ng N`` modifier construction without
+    affecting verbless-anchor cases like ``Bata na ka.`` (no
+    existential head in the path).
 
     Returns the matrix anchor if no inner-clause boundary is crossed,
     or the inner anchor if one is. If an inner-clause boundary is
-    crossed but no inner V exists (shouldn't happen with a proper
-    SAY-class na-S source), returns the matrix anchor as fallback.
+    crossed but no inner V/existential exists (shouldn't happen with
+    a proper SAY-class na-S source), returns the matrix anchor as
+    fallback.
     """
     if i <= matrix_anchor:
         return matrix_anchor
+
+    # Phase 10.J.post-12.2 Layer 1: existential-head inner anchor.
+    # Even when the matrix anchor is verbless, an existential head
+    # embedded inside an NP (DET upstream) opens an embedded
+    # existential domain for its aspect-clitic ``pa``. The same
+    # narrow EMBEDDED-context scope as ``_is_post_existential_pa``
+    # ensures we don't disturb standalone existential clauses
+    # (``Wala pang asawa.``) where ``pa`` correctly anchors to the
+    # matrix.
+    if (
+        i > 0
+        and _is_post_existential_pa(analyses, i)
+    ):
+        return i - 1
+
     if not _is_verb_token(analyses[matrix_anchor]):
         return matrix_anchor
     last_boundary = -1
@@ -1146,6 +1297,16 @@ def reorder_clitics(
         # ``gayon din`` / ``ganon din``. Keep adjacent so the Phase
         # 5m C11 grammar rule can fire.
         and not _is_post_discourse_head_din(analyses, i)
+        # Phase 10.J.post-12.2: ``pa`` immediately after an
+        # existential head (``wala`` / ``may`` / ``mayroon``) when
+        # followed by an existential nominal complement (LINK[NG] +
+        # N) belongs to the embedded existential's clitic domain,
+        # not the matrix Wackernagel cluster. The verbless-anchor
+        # short-circuit in ``_enclosing_anchor_for_clitic`` would
+        # otherwise hoist ``pa`` into the matrix cluster, separating
+        # it from its existential anchor. See ``_is_post_existential_pa``
+        # docstring for the deeper architectural rationale.
+        and not _is_post_existential_pa(analyses, i)
     ]
     if not pron_indices and not adv_indices:
         return analyses

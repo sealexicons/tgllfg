@@ -406,6 +406,74 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # === Phase 10.J.post-12.2: negative-existential pre-N modifier RC ===
+    #
+    # ``ang walang asawang kapatid``        "the sibling with no spouse"
+    # ``ang wala pang asawang kapatid``     "the sibling with no spouse yet"
+    #                                        (PAMILYA/sent-16)
+    # ``ang batang walang kapatid``         "the child with no sibling"
+    #
+    # Two-layer fix per user 2026-05-31:
+    #
+    # **Layer A (this rule)** — admit a negative-existential S
+    # (``walang X`` / ``wala pang X``) as a pre-N modifier via the
+    # linker. The matrix N is the head; the existential clause
+    # joins matrix ADJUNCT.
+    #
+    # **Layer B (clitics/placement.py)** — the
+    # ``_is_post_existential_pa`` adjacency gate keeps ``pa``
+    # adjacent to its existential anchor ``wala`` (so the inner-S
+    # rule at clause.py:4421 can compose ``wala pang asawa``).
+    # Also: ``_enclosing_anchor_for_clitic`` Layer-1 fix recognises
+    # existential heads as inner anchors even under verbless matrix
+    # (so ``pa`` inside a complex sentence anchors to ``wala``, not
+    # to a verbless matrix ADJ-predicate like ``Kapisan``).
+    #
+    # **Structural anti-duplication via ``EXIST_NEG_PREMOD`` marker:**
+    #
+    # 1. Matrix output tagged ``(↑ EXIST_NEG_PREMOD) = true``.
+    # 2. Rule won't reapply on an already-marked N
+    #    (``¬ (↓3 EXIST_NEG_PREMOD)`` on the head daughter) — blocks
+    #    nested premod stacking.
+    # 3. Rule won't compete with the existing post-N N-level RC path
+    #    (``¬ (↓3 N_RC)`` — mirrors the existing pattern).
+    #
+    # The duplicate-path-suppression-by-marker is the user's
+    # documented alternative to ``Rule.budget``: "guards document
+    # chart pathology; budgets hide it."
+    for link in ("NA", "NG"):
+        # Pre-N modifier: S[EXIST,NEG] + LINK + N
+        rules.append(Rule(
+            "N",
+            [
+                "S[CLAUSE_TYPE=EXISTENTIAL, POLARITY=NEG]",
+                f"PART[LINK={link}]",
+                "N",
+            ],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ)",
+                "(↓3 EXIST_NEG_PREMOD) = true",
+                "¬ (↓3 N_RC)",
+            ],
+        ))
+        # Post-N modifier: N + LINK + S[EXIST,NEG]
+        rules.append(Rule(
+            "N",
+            [
+                "N",
+                f"PART[LINK={link}]",
+                "S[CLAUSE_TYPE=EXISTENTIAL, POLARITY=NEG]",
+            ],
+            [
+                "(↑) = ↓1",
+                "↓3 ∈ (↑ ADJ)",
+                "(↓1 EXIST_NEG_PREMOD) = true",
+                "¬ (↓1 N_RC)",
+            ],
+        ))
+
+
     # === Phase 9.X.c52: V-OV/DV/IV bare pre-N participial modifier =====
     #
     # ``tinatawag na monsoon`` "(what is) called monsoon" (PANAHON

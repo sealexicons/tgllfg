@@ -73,10 +73,14 @@ def test_binary_feats_count_matches_audit() -> None:
     ``DISPOSITION`` → 66 (ma-X-in dispositional ADJ cell).
     Phase 10.J.post-8.5.5 adds ``COLLABORATIVE`` → 67
     (v_collab_redup cell — tulong → tulung-tulong).
+    Phase 10.J.post-12.2 adds ``EXIST_NEG_PREMOD`` → 68
+    (negative-existential pre-N modifier rule output marker —
+    structural anti-duplication tag for the wala/wala-pa-modifier
+    chart path).
     Drift means update both the doc and this assertion together."""
-    assert len(BINARY_FEATS) == 67, (
+    assert len(BINARY_FEATS) == 68, (
         f"BINARY_FEATS has {len(BINARY_FEATS)} entries; "
-        f"docs/feats-binary-audit.md says 67. "
+        f"docs/feats-binary-audit.md says 68. "
         f"Update both together if the audit changes."
     )
 

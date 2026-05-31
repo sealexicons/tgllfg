@@ -81,7 +81,13 @@ class TestWalangCTreeShape:
         ]
         assert len(ex_parses) >= 1
         ctree, _fs, _astr, _diags = ex_parses[0]
-        assert ctree.label == "S"
+        # Phase 10.J.post-12.2: existential-NEG S rules now project
+        # with category-feats ``S[CLAUSE_TYPE=EXISTENTIAL, POLARITY=NEG]``
+        # to enable chart-level gating of the post-12.2 N-modifier
+        # rule (avoiding forest-density blow-up on positive-existential
+        # PANAHON sentences). The cnode label thus starts with ``S[``
+        # rather than bare ``S``. Accept either for forward compatibility.
+        assert ctree.label == "S" or ctree.label.startswith("S[")
         assert len(ctree.children) == 3, (
             f"expected 3 immediate daughters for linker variant; "
             f"got {[c.label for c in ctree.children]}"
