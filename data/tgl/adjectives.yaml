@@ -858,6 +858,17 @@
   loan: SPANISH
   affix_class: []
 
+# Phase 10.J.post-12.1: ``kumpleto`` ADJ — "complete, whole, full"
+# (Spanish-loan ``completo``). Wave-1 PAMILYA/sent-17 attestation
+# (``Kapag ganitong kumpleto ang pamilya'y tatlong salin-lahi ...``)
+# + general modern-Tagalog usage. Bare predicative ADJ.
+- citation: kumpleto
+  pos: ADJ
+  gloss: complete, whole, full
+  source: audit-corpus
+  loan: SPANISH
+  affix_class: []
+
 - citation: totoo
   pos: ADJ
   gloss: true, real, genuine

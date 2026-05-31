@@ -613,6 +613,42 @@ def register_rules(rules: list[Rule]) -> None:
             ))
 
 
+    # --- Phase 10.J.post-12.1: manner-DEM pre-ADJ modifier ``ganitong ADJ`` --
+    #
+    # ``ganitong kumpleto``    "this complete / complete to this extent"
+    #                          (PAMILYA/sent-17:
+    #                          ``Kapag ganitong kumpleto ang pamilya'y ...``)
+    # ``ganong maganda``       "that beautiful"
+    # ``gayong magaling``      "that skilled"
+    #
+    # Parallel to the post-9.X.c28 manner-DEM + N rule above — same
+    # ``ganito`` / ``ganon`` / ``gayon`` family (PROX / MED / DIST) but
+    # modifying an ADJ rather than an N. The DEM scopes over the
+    # quality, signalling degree-of-quality "to this extent / to that
+    # extent". The matrix ADJ inherits PRED + LEMMA + PREDICATIVE from
+    # the head ADJ (↓3); the manner-DEM rides as a DEM-modifier in
+    # ADJUNCT.
+    #
+    # Closes the pre-half of PAMILYA/sent-17's Kapag-fronted SubordClause
+    # (``Kapag ganitong kumpleto ang pamilya'y``) which then composes
+    # with the post-8.4 `'y`/apostrophe-ay clitic + base ADJ-pred rule.
+    for lemma in ("ganito", "ganon", "gayon"):
+        for link in ("NA", "NG"):
+            rules.append(Rule(
+                "ADJ[PREDICATIVE]",
+                [
+                    "PART",
+                    f"PART[LINK={link}]",
+                    "ADJ[PREDICATIVE]",
+                ],
+                [
+                    "(↑) = ↓3",
+                    "↓1 ∈ (↑ ADJUNCT)",
+                    f"(↓1 LEMMA) =c '{lemma}'",
+                ],
+            ))
+
+
     # --- Phase 9.X.c24: NUM range expression ``Mula X hanggang Y`` ---
     #
     # ``Mula sampu hanggang dalawampung bagyo``  "from ten to
