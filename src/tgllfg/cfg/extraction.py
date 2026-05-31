@@ -406,6 +406,121 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # === Phase 10.J.post-12.2: negative-existential pre-N modifier RC ===
+    #
+    # ``ang walang asawang kapatid``        "the sibling with no spouse"
+    # ``ang wala pang asawang kapatid``     "the sibling with no spouse yet"
+    #                                        (PAMILYA/sent-16)
+    # ``ang batang walang kapatid``         "the child with no sibling"
+    #
+    # Two-layer fix per user 2026-05-31:
+    #
+    # **Layer A (this rule)** — admit a negative-existential S
+    # (``walang X`` / ``wala pang X``) as a pre-N modifier via the
+    # linker. The matrix N is the head; the existential clause
+    # joins matrix ADJUNCT.
+    #
+    # **Layer B (clitics/placement.py)** — the
+    # ``_is_post_existential_pa`` adjacency gate keeps ``pa``
+    # adjacent to its existential anchor ``wala`` (so the inner-S
+    # rule at clause.py:4421 can compose ``wala pang asawa``).
+    # Also: ``_enclosing_anchor_for_clitic`` Layer-1 fix recognises
+    # existential heads as inner anchors even under verbless matrix
+    # (so ``pa`` inside a complex sentence anchors to ``wala``, not
+    # to a verbless matrix ADJ-predicate like ``Kapisan``).
+    #
+    # **Marker via ``EXIST_NEG_PREMOD``:**
+    #
+    # 1. Matrix output tagged ``(↑ EXIST_NEG_PREMOD) = true``
+    #    documents "this output N has already taken the modifier".
+    # 2. Rule won't compete with the existing post-N N-level RC
+    #    path (``¬ (↓3 N_RC)`` — mirrors the existing pattern).
+    #
+    # **No self-guard** (post-12.2 reviewer-revised guidance,
+    # 2026-05-31): the original reviewer suggestion of
+    # ``¬ (↓3 EXIST_NEG_PREMOD)`` self-guard on the same rule is
+    # unsatisfiable in this framework. The equations are
+    # simultaneous constraints, not ordered operations — SET +
+    # GUARD on the same f-structure (with ``(↑) = ↓3`` sharing)
+    # contradict. The correct anti-reapply pattern is either:
+    # (a) **cross-rule guarding** (the N_RC pattern: SET on rule
+    # A, GUARD on rule B); or (b) **structural restriction** at
+    # the chart-symbol / category level, not f-structure
+    # negation. If repeated N-level wrapping becomes a real
+    # forest-density issue, the right move is to gate ↓3 by a
+    # category-feat like ``N[BASE]`` or ``N[CORE]``, not a
+    # self-referential f-structure negation. The current marker
+    # SET stays for forward extensibility — downstream NP-shell
+    # consumers in ``nominal.py`` can add cross-rule guards if
+    # duplicate-path issues surface in future audit runs.
+    # Framework constraint on anti-reapply guards (post-12.2
+    # reviewer feedback):
+    #
+    # The N_RC pattern (post-N RC rule above + nominal.py
+    # ``¬ (↓2 N_RC)`` guards on the simple-NP rule) SET marker on
+    # rule A and GUARD on rule B (different rules consuming N).
+    # That works because SET and GUARD are on different
+    # f-structures.
+    #
+    # A self-guard pattern (SET + GUARD on the SAME rule, same
+    # daughter, same f-structure) is contradictory in this
+    # framework: equations are a concurrent constraint system,
+    # not sequential evaluation. The reviewer's prescribed
+    # ``¬ (↓3 EXIST_NEG_PREMOD)`` + ``(↑ EXIST_NEG_PREMOD) = true``
+    # both reference the SAME structure (via ``(↑) = ↓3``
+    # sharing), so unification fails: structure both has and
+    # doesn't have the feat.
+    #
+    # Empirically tested 2026-05-31: with both SET-on-↑ and
+    # SET-on-↓3, adding the ``¬ (↓3 EXIST_NEG_PREMOD)`` self-guard
+    # breaks ALL embedded-modifier parses. Removing the self-guard
+    # leaves the SET marker functional (downstream consumers can
+    # read it) but doesn't gate against self-recursion at the
+    # rule level.
+    #
+    # Nested existential modifiers (``wala pang X-ng wala pang
+    # Y-ng N``) are rare in the audit corpus; the broad-S
+    # PANAHON regression that motivated the marker is solved by
+    # the chart-level category-feat gating on the daughter pattern
+    # ``S[CLAUSE_TYPE=EXISTENTIAL, POLARITY=NEG]``. The marker
+    # SET stays for forward extensibility — NP-shell consumers in
+    # ``nominal.py`` can add ``¬ (↓N EXIST_NEG_PREMOD)`` guards if
+    # duplicate-path issues surface in future audit runs.
+    for link in ("NA", "NG"):
+        # Pre-N modifier: S[EXIST,NEG] + LINK + N[N_CORE]
+        # Daughter ↓3 gated on ``N[N_CORE]`` to prevent
+        # self-recursion (post-12.2 reviewer-revised guidance).
+        rules.append(Rule(
+            "N",
+            [
+                "S[CLAUSE_TYPE=EXISTENTIAL, POLARITY=NEG]",
+                f"PART[LINK={link}]",
+                "N[N_CORE]",
+            ],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJ)",
+                "(↑ EXIST_NEG_PREMOD) = true",
+                "¬ (↓3 N_RC)",
+            ],
+        ))
+        # Post-N modifier: N[N_CORE] + LINK + S[EXIST,NEG]
+        rules.append(Rule(
+            "N",
+            [
+                "N[N_CORE]",
+                f"PART[LINK={link}]",
+                "S[CLAUSE_TYPE=EXISTENTIAL, POLARITY=NEG]",
+            ],
+            [
+                "(↑) = ↓1",
+                "↓3 ∈ (↑ ADJ)",
+                "(↑ EXIST_NEG_PREMOD) = true",
+                "¬ (↓1 N_RC)",
+            ],
+        ))
+
+
     # === Phase 9.X.c52: V-OV/DV/IV bare pre-N participial modifier =====
     #
     # ``tinatawag na monsoon`` "(what is) called monsoon" (PANAHON

@@ -4417,7 +4417,7 @@ def register_rules(rules: list[Rule]) -> None:
     # Linker variant for ``wala`` + bound ``-ng`` + N (the canonical
     # negative-existential surface ``Walang aklat`` etc.).
     rules.append(Rule(
-        "S",
+        "S[CLAUSE_TYPE=EXISTENTIAL, POLARITY=NEG]",
         ["PART[EXISTENTIAL, POLARITY=NEG]", "PART[LINK=NG]", "N"],
         [
             "(↑ PRED) = 'EXIST <SUBJ>'",
@@ -4427,6 +4427,49 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 EXISTENTIAL) =c true",
             "(↓1 POLARITY) =c 'NEG'",
             "(↓2 LINK) =c 'NG'",
+        ],
+    ))
+
+    # --- Phase 10.J.post-12.2: ``wala pa -ng N`` adjacent existential ----
+    #
+    # ``wala pang asawa``  "still no spouse / no spouse yet"
+    #                       (PAMILYA/sent-16, embedded inside NP)
+    #
+    # When the post-12.2 ``_is_post_existential_pa`` placement gate
+    # keeps ``pa`` adjacent to its existential anchor ``wala`` (only
+    # in NP-embedded modifier contexts — see clitics/placement.py),
+    # the standard 3-daughter existential-S rule above can't compose
+    # because ``pa`` sits between ``wala`` and the LINK + N theme.
+    # This 4-daughter variant admits ``[wala, pa, -ng, N]`` directly,
+    # with ``pa`` as an ADJ aspect-particle. Same f-structure shape as
+    # the 3-daughter rule (PRED, SUBJ, CLAUSE_TYPE, POLARITY all set
+    # identically) so downstream consumers (including the post-12.2
+    # ``N → S[EXIST,NEG] LINK N`` modifier rule in extraction.py) see
+    # the same projection.
+    #
+    # Standalone ``Wala pang asawa.`` (no embedded NP context) keeps
+    # the pre-12.2 path: the placement gate doesn't fire (no DET
+    # upstream); ``pa`` moves to clause-end; the 3-daughter rule
+    # composes ``walang asawa``; outer-S clitic absorption adds
+    # ``pa`` as ADJ.
+    rules.append(Rule(
+        "S[CLAUSE_TYPE=EXISTENTIAL, POLARITY=NEG]",
+        [
+            "PART[EXISTENTIAL, POLARITY=NEG]",
+            "PART[ASPECT_PART=STILL]",
+            "PART[LINK=NG]",
+            "N",
+        ],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓4",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "↓2 ∈ (↑ ADJ)",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 ASPECT_PART) =c 'STILL'",
+            "(↓3 LINK) =c 'NG'",
         ],
     ))
 

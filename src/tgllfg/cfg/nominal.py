@@ -1773,20 +1773,21 @@ def register_rules(rules: list[Rule]) -> None:
     # at the N-projection and propagate to the NP via the
     # NP → DET/ADP N rule's per-feature pass-through below.
     rules.append(Rule(
-        "N",
+        # Phase 10.J.post-12.2 (reviewer-revised follow-up,
+        # 2026-05-31): tag the canonical base-N projection with
+        # ``N_CORE=true`` at the chart-symbol (category-feat)
+        # level. Modifier rules that wrap N (e.g., the post-12.2
+        # negative-existential pre-N modifier in extraction.py)
+        # can gate their head daughter ↓N on ``N[N_CORE]`` to
+        # prevent self-recursion: the modifier rule's OUTPUT
+        # projects as plain ``N`` (no N_CORE), so reapplication
+        # of the same modifier rule on an already-modified N
+        # fails the chart-level category-pattern match. This is
+        # the "c-structure / type-shape" anti-reapply pattern
+        # the reviewer prescribed.
+        "N[N_CORE]",
         ["NOUN"],
         [
-            # Phase 5f Commit 12: share N's f-structure with the
-            # NOUN lex token entirely (was: only PRED + LEMMA
-            # projected). This propagates SEM_CLASS / TIME_VALUE
-            # / etc. up to N so downstream rules can constrain on
-            # them — the minute-composition rule needs
-            # ``(↓1 SEM_CLASS) =c 'TIME'`` on the head N. PRED is
-            # set explicitly because the lex equations don't
-            # provide one for nouns (only the lex-entry-derived
-            # PRED is set when a LexicalEntry exists, which is
-            # rare for nouns in the seed lex). LEMMA percolates
-            # automatically via the shared structure.
             "(↑) = ↓1",
             "(↑ PRED) = 'NOUN(↑ FORM)'",
         ],
