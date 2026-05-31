@@ -126,14 +126,19 @@ class TestAntiRegression:
     + V-frame paths preserved."""
 
     def test_pron_head_pron_modifier_still_blocked(self) -> None:
-        """``Mahaba siya sa kanya.`` — PRON-head + sa-PRON-modifier
-        as NP-internal coord must still ZPF. The head ``siya`` is
-        PRON-projected (no PRED), so the ``(↓1 PRED)`` gate fails
-        regardless of ↓2."""
+        """``Mahaba siya sa kanya.`` — the NP-internal coord analysis
+        (PRON-head + sa-PRON-modifier as a SINGLE NP) must still be
+        blocked by the post-8.3 ``(↓1 PRED)`` gate. Post-11 added a
+        matrix ``S → ADJ[PREDICATIVE] NP[CASE=NOM] NP[CASE=DAT]``
+        rule, so this surface now parses as ``[Mahaba [siya] [sa
+        kanya]]`` (matrix DAT-adjunct, the canonical Tagalog
+        analysis) — the NP-internal mis-analysis remains blocked.
+        Asserts exactly one parse via the matrix path."""
         parses = parse_text("Mahaba siya sa kanya.", n_best=2)
-        assert len(parses) == 0, (
-            "PRON-head + sa-PRON-modifier (NP-internal) must remain "
-            "blocked — only the modifier gate was dropped"
+        assert len(parses) == 1, (
+            "Post-11 matrix ADJ-pred + NOM + DAT rule expected to "
+            "produce exactly one parse; NP-internal PRON-head + "
+            "PRON-modifier mis-analysis must still be blocked"
         )
 
     def test_sa_n_modifier_still_works(self) -> None:
