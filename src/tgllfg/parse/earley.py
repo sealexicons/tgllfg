@@ -113,6 +113,7 @@ class PackedForest:
         chart: list[dict[tuple[int, int, int], StateInfo]] | None = None,
         sentence_length: int = 0,
         precheck_defining: bool = False,
+        reorder_roots: bool = False,
     ) -> None:
         self.roots: list[StateInfo] = list(roots)
         self.size_cap: int | None = size_cap
@@ -126,6 +127,16 @@ class PackedForest:
         # blocking monotone defining-equation clash (parse-set
         # preserving — see :func:`tgllfg.fstruct.precheck_defining_subtree`).
         self.precheck_defining: bool = precheck_defining
+        # Phase 10.K: opt-in root-priority sort in :meth:`iter_trees`.
+        # When ``True``, ``self.roots`` is sorted by ``_root_priority``
+        # before iter_trees walks them — clitic-absorption rules
+        # (``S → S PART[CLITIC_CLASS=2P]``) come first so their c-trees
+        # are reached within the cap when both they and a non-absorption
+        # root (``S → ADJ NP``) span the same surface. Default ``False``
+        # preserves byte-identical behavior; the pipeline turns it on
+        # by default. Reordering is stable when priorities tie, so a
+        # single-root forest is unaffected.
+        self.reorder_roots: bool = reorder_roots
 
     def best_k(self, k: int) -> list[CNode]:
         out: list[CNode] = []
@@ -137,7 +148,12 @@ class PackedForest:
 
     def iter_trees(self) -> Iterator[CNode]:
         emitted = 0
-        for root in self.roots:
+        roots = (
+            sorted(self.roots, key=_root_priority)
+            if self.reorder_roots
+            else self.roots
+        )
+        for root in roots:
             for cnode in _iter_cnodes(
                 root, precheck_defining=self.precheck_defining,
             ):
@@ -208,6 +224,7 @@ def parse_with_annotations(
     forest_size_cap: int | None = None,
     chart_state_cap: int | None = None,
     precheck_defining: bool = False,
+    reorder_roots: bool = False,
     start_symbol: str | None = None,
 ) -> PackedForest:
     """Parse the input lexical lattice against the grammar, returning a
@@ -227,6 +244,14 @@ def parse_with_annotations(
     enter the cartesian product. The default is off → byte-identical
     behavior. See :func:`tgllfg.fstruct.precheck_defining_subtree`.
 
+    ``reorder_roots`` (Phase 10.K, default ``False``) opts into the
+    root-priority sort in :meth:`PackedForest.iter_trees`. When ``True``,
+    roots whose RHS ends with ``PART[CLITIC_CLASS=2P]`` (clitic
+    absorption) come first so their c-trees are reached within the
+    iteration cap when a sibling root produces many doomed c-trees.
+    Default off preserves byte-identical behavior. See
+    :func:`_root_priority`.
+
     ``start_symbol`` (Phase 10.J.post-1, default ``None``) overrides
     the grammar's default start symbol (``grammar.start``, typically
     ``S``) for chart seeding and root filtering. The pipeline-level
@@ -241,6 +266,7 @@ def parse_with_annotations(
         forest_size_cap=forest_size_cap,
         chart_state_cap=chart_state_cap,
         precheck_defining=precheck_defining,
+        reorder_roots=reorder_roots,
         start_symbol=start_symbol,
     ).run()
 
@@ -256,12 +282,14 @@ class _Earley:
         forest_size_cap: int | None,
         chart_state_cap: int | None = None,
         precheck_defining: bool = False,
+        reorder_roots: bool = False,
         start_symbol: str | None = None,
     ) -> None:
         self.tokens = tokens
         self.grammar = grammar
         self.cap = forest_size_cap
         self.precheck_defining = precheck_defining
+        self.reorder_roots = reorder_roots
         # Phase 10.J.post-1: optional override of the start symbol.
         # When ``None`` we fall back to ``grammar.start`` (the canonical
         # ``S``); the colon-split pipeline fallback passes
@@ -327,6 +355,7 @@ class _Earley:
             chart=self._chart,
             sentence_length=n,
             precheck_defining=self.precheck_defining,
+            reorder_roots=self.reorder_roots,
         )
 
     def _step(self, col: int, state: StateInfo) -> None:
@@ -423,6 +452,41 @@ class _Earley:
         self._state_count += 1
         self._agenda.append((col, state))
         return state
+
+
+# === Root priority (Phase 10.K) ============================================
+
+def _root_priority(root: StateInfo) -> int:
+    """Stable sort key for ``PackedForest.roots`` — lower wins.
+
+    Phase 10.K: when the chart produces multiple root-S states for one
+    surface (clitic absorption vs. clitic-internal mis-attachment), the
+    canonical reading wraps the matrix with a clitic-absorption rule
+    (``S → S PART[CLITIC_CLASS=2P]``). Without root reordering,
+    ``iter_trees`` walks ``self.roots`` in chart-arrival order; if a
+    sibling root (e.g., ``S → ADJ NP``) emits many doomed c-trees first,
+    the canonical never reaches the iteration cap. The trigger case is
+    PAMILYA/sent-16 (``Kapisan din ang wala pang asawang kapatid ng
+    ama o ina.``): both ``S → ADJ NP[CASE=NOM]`` (the chart's "din
+    inside the NP" mis-analysis path) and ``S → S PART`` (the canonical
+    din absorption) span ``(0, 11)``, but the former produces 20000+
+    failing c-trees before iter_trees reaches the latter.
+
+    Heuristic: a root whose RHS ends in ``PART[CLITIC_CLASS=2P]`` wraps
+    a clitic onto an inner S — give it priority 0. Other roots get
+    priority 1. Sort is stable, so single-root forests and forests
+    where all roots have the same priority are unaffected (equal keys
+    keep chart-arrival order)."""
+    rhs = root.rule.rhs
+    if not rhs:
+        return 1
+    last = rhs[-1]
+    if last.category != "PART":
+        return 1
+    for k, v in last.features:
+        if k == "CLITIC_CLASS" and v == "2P":
+            return 0
+    return 1
 
 
 # === Tree extraction ======================================================

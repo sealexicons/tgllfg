@@ -407,6 +407,7 @@ def parse_text_with_fragments(
         lex_items, grammar,
         chart_state_cap=chart_state_cap,
         precheck_defining=precheck_defining,
+        reorder_roots=True,
     )
 
     # Walk candidate trees, collect well-formed ones, then rank.
@@ -663,6 +664,7 @@ def _parse_segment_as(
         lex_items, grammar,
         chart_state_cap=chart_state_cap,
         precheck_defining=precheck_defining,
+        reorder_roots=True,
         start_symbol=start_symbol,
     )
 
