@@ -532,28 +532,33 @@ def register_rules(rules: list[Rule]) -> None:
     # parents still match because the matcher takes
     # ``expected=PART`` as feature-empty.
     #
+    # Phase 10.K commit 4: chart-symbol gating on multi-PART discourse
+    # markers. The original bare-PART daughters let every PART + PART
+    # pair fire these rules, then rejected at solve via the LEMMA
+    # constraining gates. Sentences with many PART positions
+    # (PAMILYA/sent-16 et al.) accumulated ~7 advances per chart state
+    # per variant — multiplied across 4 variants of this rule shape
+    # for cross-product fan-out. The ``PART[LEMMA=<word>]`` patterns
+    # gate at chart construction.
+    #
     # gayon din → DISCOURSE=LIKEWISE
     rules.append(Rule(
         "PART[DISCOURSE_POS=SENTENCE_INITIAL]",
-        ["PART", "PART"],
+        ["PART[LEMMA=gayon]", "PART[LEMMA=din]"],
         [
             "(↑ DISCOURSE) = 'LIKEWISE'",
             "(↑ DISCOURSE_POS) = 'SENTENCE_INITIAL'",
             "(↑ LEMMA) = 'gayon_din'",
-            "(↓1 LEMMA) =c 'gayon'",
-            "(↓2 LEMMA) =c 'din'",
         ],
     ))
     # ganon din → DISCOURSE=LIKEWISE (colloquial variant)
     rules.append(Rule(
         "PART[DISCOURSE_POS=SENTENCE_INITIAL]",
-        ["PART", "PART"],
+        ["PART[LEMMA=ganon]", "PART[LEMMA=din]"],
         [
             "(↑ DISCOURSE) = 'LIKEWISE'",
             "(↑ DISCOURSE_POS) = 'SENTENCE_INITIAL'",
             "(↑ LEMMA) = 'ganon_din'",
-            "(↓1 LEMMA) =c 'ganon'",
-            "(↓2 LEMMA) =c 'din'",
         ],
     ))
     # bukod dito → DISCOURSE=ALSO (mixed PART + ADP daughters).
@@ -569,12 +574,11 @@ def register_rules(rules: list[Rule]) -> None:
     # and silently fail to match).
     rules.append(Rule(
         "PART[DISCOURSE_POS=SENTENCE_INITIAL]",
-        ["PART", "ADP[CASE=DAT, DEIXIS=PROX, DEM]"],
+        ["PART[LEMMA=bukod]", "ADP[CASE=DAT, DEIXIS=PROX, DEM]"],
         [
             "(↑ DISCOURSE) = 'ALSO'",
             "(↑ DISCOURSE_POS) = 'SENTENCE_INITIAL'",
             "(↑ LEMMA) = 'bukod_dito'",
-            "(↓1 LEMMA) =c 'bukod'",
         ],
     ))
 
@@ -609,13 +613,11 @@ def register_rules(rules: list[Rule]) -> None:
     # verified via GT 2026-05-29 for post-7.3 constructed exemplars.
     rules.append(Rule(
         "PART[DISCOURSE_POS=SENTENCE_INITIAL]",
-        ["PART", "PART"],
+        ["PART[LEMMA=alalaong]", "PART[LEMMA=baga]"],
         [
             "(↑ DISCOURSE) = 'REFORM'",
             "(↑ DISCOURSE_POS) = 'SENTENCE_INITIAL'",
             "(↑ LEMMA) = 'alalaong_baga'",
-            "(↓1 LEMMA) =c 'alalaong'",
-            "(↓2 LEMMA) =c 'baga'",
         ],
     ))
 
@@ -766,17 +768,23 @@ def register_rules(rules: list[Rule]) -> None:
     # feed the clause-initial frame-setting rules above that gate on
     # ADV_TYPE=TIME. FREQ_VALUE=SOMETIMES is preserved as a sub-feat
     # for downstream consumers.
+    # Phase 10.K commit 4: chart-symbol gating on both daughters —
+    # ``PART[LEMMA=kung]`` (with COMP_TYPE=COND in the lex) and
+    # ``ADV[LEMMA=minsan]`` (with ADV_TYPE=FREQUENCY in the lex).
+    # The original bare-PART + bare-ADV daughters let every PART + ADV
+    # pair fire this rule, then rejected at solve via 4 LEMMA / TYPE
+    # constraining gates. For sentences with many PART positions,
+    # this rule's solve-time fan-out compounded with the
+    # ``S → AdvP PART[LINK=AY] S`` and ``SubordClause → PART S``
+    # consumers — each accumulated ~8 advances at the PAMILYA/sent-16
+    # full-span chart states. Chart-symbol gating prunes the source.
     rules.append(Rule(
         "ADV",
-        ["PART", "ADV"],
+        ["PART[LEMMA=kung]", "ADV[LEMMA=minsan]"],
         [
             "(↑ ADV_TYPE) = 'TIME'",
             "(↑ FREQ_VALUE) = 'SOMETIMES'",
             "(↑ LEMMA) = 'kung_minsan'",
-            "(↓1 LEMMA) =c 'kung'",
-            "(↓1 COMP_TYPE) =c 'COND'",
-            "(↓2 LEMMA) =c 'minsan'",
-            "(↓2 ADV_TYPE) =c 'FREQUENCY'",
         ],
     ))
 

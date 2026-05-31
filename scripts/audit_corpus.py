@@ -81,14 +81,14 @@ WAVE_FILES: list[tuple[str, str]] = [
 
 # Per-sentence parse timeout (seconds). Phase 10.J.post-7.4 raised the
 # limit from 10s to 11s (+10%) to move the §6.2 PANAHON sent-16 timing
-# edge away from the parallel-mode threshold. Under sequential parsing
-# sent-16 lands at ~7.3s with margin to spare; under the 11-worker
-# parallel multi-wave audit, OS scheduling jitter pushed it past the
-# 10s SIGALRM threshold ~50% of the time (1-vs-2 wave-1 timeouts
-# between runs). The +10% headroom restores deterministic 94/123 on
-# wave-1 without changing the cap-raise on ``max_tree_iterations``
-# (which is the §6.2 sent-16 hard constraint).
-_TIMEOUT_S = 11
+# edge away from the parallel-mode threshold. Phase 10.K commit 3
+# raises it further from 11s to 12s — under the 11-worker parallel
+# audit, PANAHON sent-16 lands at ~8.2s in single-process timing but
+# OS scheduling jitter still pushes it past the 11s SIGALRM threshold
+# occasionally (1-vs-2 wave-1 timeouts between runs). The +10% bump
+# absorbs the jitter without changing the cap on
+# ``max_tree_iterations`` (the §6.2 sent-16 hard constraint).
+_TIMEOUT_S = 12
 
 # Worker-local parser cache. Lazy-init on first task so the parser is
 # loaded once per worker process (not once per task).

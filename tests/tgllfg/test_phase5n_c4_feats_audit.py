@@ -81,10 +81,16 @@ def test_binary_feats_count_matches_audit() -> None:
     ``N_CORE`` → 69 (chart-symbol metadata for base/lex N's —
     enables c-structure-level anti-reapply on modifier rules per
     reviewer prescription).
+    Phase 10.K (commit 2) adds ``NAMAN`` → 70 (chart-symbol
+    feat on the non-clitic ``naman`` lex entry — converts the
+    9.X.c21 NAMAN-attachment rule's ``(↓2 LEMMA) =c 'naman'``
+    constraining gate into a chart-time daughter pattern
+    ``PART[NAMAN=true]``, pruning the spurious chart enumerations
+    where any PART filled the rule's daughter slot).
     Drift means update both the doc and this assertion together."""
-    assert len(BINARY_FEATS) == 69, (
+    assert len(BINARY_FEATS) == 70, (
         f"BINARY_FEATS has {len(BINARY_FEATS)} entries; "
-        f"docs/feats-binary-audit.md says 69. "
+        f"docs/feats-binary-audit.md says 70. "
         f"Update both together if the audit changes."
     )
 
