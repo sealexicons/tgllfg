@@ -179,16 +179,18 @@ def register_rules(rules: list[Rule]) -> None:
     # parallel rule covers the S_GAP (RC body) case so the same
     # construction works in relative-clause position.
     #
-    # Mirrors the S-level rule equation-for-equation.
-    rules.append(Rule(
-        "S_GAP",
-        ["S_GAP", "PP"],
-        _eqs(
-            "(↑) = ↓1",
-            "↓2 ∈ (↑ ADJUNCT)",
-            "(↓2 TIME_FRAME)",
-        ),
-    ))
+    # Mirrors the S-level rule equation-for-equation, including
+    # the Phase 10.K.post-1 commit 2 chart-symbol gating on
+    # ``PP[TIME_FRAME=X]`` (per-value).
+    for tf_val in ("PERIODIC", "PAST"):
+        rules.append(Rule(
+            "S_GAP",
+            ["S_GAP", f"PP[TIME_FRAME={tf_val}]"],
+            _eqs(
+                "(↑) = ↓1",
+                "↓2 ∈ (↑ ADJUNCT)",
+            ),
+        ))
 
 
     # === 9.X.c43: headless RC with mga plural marker ===============
@@ -2102,6 +2104,79 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↓2 REL-PRO PRED) = 'PRO'",
                 f"(↓2 REL-PRO CASE) = '{case}'",
                 "(↓2 REL-PRO) =c (↓2 SUBJ)",
+            ],
+        ))
+
+
+    # --- Phase 10.K.post-1: NEG-existential headless RC ---------------
+    #
+    # ``ang walang asawa``                "the spouse-less one"
+    # ``ang walang asawa ng kapatid``     "the spouse-less one of the
+    #                                      sibling"
+    # ``ang wala pa ng asawa ng kapatid ng ama o ina ``
+    #     "the [yet]-spouse-less one [among] the siblings of the father
+    #     or mother" (R&G 1981 PANAHON sent-16)
+    #
+    # Tagalog uses the negative-existential HAVE construction as a
+    # headless RC: ``ang walang N`` = "the one without N". The implicit
+    # head is the experiencer / POSSESSOR of the absent thing.
+    # Structurally a ``DET + S_GAP_EXIST_NEG`` where the gapped argument
+    # is the POSSESSOR slot of the existential clause (in contrast to
+    # the canonical headless RC where the gap is SUBJ).
+    #
+    # The S_GAP_EXIST_NEG body mirrors the Phase 5j Commit 5c clausal
+    # rule (``S → PART[EXISTENTIAL, POLARITY=NEG] PART[LINK=NG] N
+    # NP[CASE=NOM]``) but with the NOM-NP (the experiencer/possessor)
+    # raised to the matrix implicit head. ``(↑ SUBJ POSSESSOR) =
+    # (↑ REL-PRO)`` advertises the gap; the headless-NP consumer
+    # below constrains REL-PRO ≡ SUBJ POSSESSOR (parallel to the
+    # canonical headless RC's ``=c SUBJ``).
+    #
+    # GEN-NP modifier composition (e.g., ``ang walang asawa ng kapatid``)
+    # is handled by the existing ``NP[CASE=X] → NP[CASE=X]
+    # NP[CASE=GEN]`` possessor rule in ``nominal.py:1087``; no special
+    # treatment needed.
+    #
+    # The ``pa`` clitic in ``wala pa ng asawa`` is absorbed by the
+    # Wackernagel 2P-cluster reorder (``reorder_clitics``) before chart
+    # construction — it lands at the end of the input and is consumed
+    # by the standard ``S → S PART[CLITIC_CLASS=2P]`` absorption.
+    #
+    # Reference: S&O 1972 §11.5 (existential HAVE/HAVE-NOT
+    # construction); R&G 1981 §6.4 (headless NP); R&G 1981 PANAHON
+    # sent-16.
+    rules.append(Rule(
+        "S_GAP_EXIST_NEG",
+        ["PART[EXISTENTIAL, POLARITY=NEG]", "PART[LINK=NG]", "N"],
+        [
+            "(↑ PRED) = 'EXIST <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ SUBJ POSSESSOR) = (↑ REL-PRO)",
+            "(↑ CLAUSE_TYPE) = 'EXISTENTIAL'",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ HAVE) = true",
+            "(↓1 EXISTENTIAL) =c true",
+            "(↓1 POLARITY) =c 'NEG'",
+            "(↓2 LINK) =c 'NG'",
+        ],
+    ))
+    for case in ("NOM", "GEN", "DAT"):
+        head_cat = (
+            f"DET[CASE={case}, DEM=false]"
+            if case == "NOM"
+            else f"ADP[CASE={case}, DEM=false]"
+        )
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [head_cat, "S_GAP_EXIST_NEG"],
+            [
+                "(↑ PRED) = 'PRO'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ MARKER) = ↓1 MARKER",
+                "↓2 ∈ (↑ ADJ)",
+                "(↓2 REL-PRO PRED) = 'PRO'",
+                f"(↓2 REL-PRO CASE) = '{case}'",
+                "(↓2 REL-PRO) =c (↓2 SUBJ POSSESSOR)",
             ],
         ))
 
