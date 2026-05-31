@@ -179,16 +179,18 @@ def register_rules(rules: list[Rule]) -> None:
     # parallel rule covers the S_GAP (RC body) case so the same
     # construction works in relative-clause position.
     #
-    # Mirrors the S-level rule equation-for-equation.
-    rules.append(Rule(
-        "S_GAP",
-        ["S_GAP", "PP"],
-        _eqs(
-            "(↑) = ↓1",
-            "↓2 ∈ (↑ ADJUNCT)",
-            "(↓2 TIME_FRAME)",
-        ),
-    ))
+    # Mirrors the S-level rule equation-for-equation, including
+    # the Phase 10.K.post-1 commit 2 chart-symbol gating on
+    # ``PP[TIME_FRAME=X]`` (per-value).
+    for tf_val in ("PERIODIC", "PAST"):
+        rules.append(Rule(
+            "S_GAP",
+            ["S_GAP", f"PP[TIME_FRAME={tf_val}]"],
+            _eqs(
+                "(↑) = ↓1",
+                "↓2 ∈ (↑ ADJUNCT)",
+            ),
+        ))
 
 
     # === 9.X.c43: headless RC with mga plural marker ===============

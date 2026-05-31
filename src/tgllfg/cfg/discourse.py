@@ -64,23 +64,43 @@ def register_rules(rules: list[Rule]) -> None:
     # Four SEM_CLASS variants (DAY / TIME / MONTH / SEASON)
     # gate the rule to genuinely temporal NOUNs only —
     # ``*tuwing bata`` ("every child"?) doesn't compose because
-    # ``bata`` has no SEM_CLASS. The constraining equations
-    # ``(↓1 TIME_FRAME)`` (existential — PART has TIME_FRAME)
-    # and ``(↓2 SEM_CLASS) =c '<X>'`` enforce both. The SEASON
-    # variant was added in Phase 5f Commit 14 (Group G) to cover
-    # ``tuwing tagulan`` "every rainy season" and ``noong
-    # taginit`` "during the dry season".
-    for sem_class in ("DAY", "TIME", "MONTH", "SEASON"):
-        rules.append(Rule(
-            "PP",
-            ["PART", "N"],
-            [
-                "(↑) = ↓1",
-                "(↑ OBJ) = ↓2",
-                "(↓1 TIME_FRAME)",
-                f"(↓2 SEM_CLASS) =c '{sem_class}'",
-            ],
-        ))
+    # ``bata`` has no SEM_CLASS. The SEASON variant was added in
+    # Phase 5f Commit 14 (Group G) to cover ``tuwing tagulan``
+    # "every rainy season" and ``noong taginit`` "during the dry
+    # season".
+    #
+    # Phase 10.K.post-1 commit 2: LHS lifted to ``PP[TIME_FRAME=X]``
+    # and PART daughter gated on ``PART[TIME_FRAME=X]`` (per-value).
+    # The pre-Phase-10.K.post-1 form used bare ``PP`` LHS + bare
+    # ``[PART, N]`` daughter pattern with existential ``(↓1
+    # TIME_FRAME)`` constraining gate at solve time. Under that
+    # pattern the chart fired this rule for ANY ``PART, N`` adjacency
+    # — including spurious ones like ``o ina`` (PART[COORD=OR] +
+    # NOUN) — producing doomed chart states rejected at solve. The
+    # downstream ``S → S PP`` and ``S_GAP → S_GAP PP`` consumers
+    # then picked up those spurious PPs at every applicable matrix
+    # span, cascading fan-out across the chart (PAMILYA/sent-16
+    # spike data: ~1400 spurious matrix-S c-trees at (0,15) plus
+    # ~800 at (3,15) before the canonical landed). The chart-symbol
+    # gating prunes these at chart construction time.
+    #
+    # The constraining ``(↓1 TIME_FRAME)`` existential is removed
+    # (now chart-time via the LHS-feat advertisement); the SEM_CLASS
+    # gate stays as a solve-time constraining equation (gating it at
+    # chart time would require ``N[SEM_CLASS=X]`` propagation rules
+    # for DAY / MONTH / SEASON which don't yet exist — deferred to
+    # a follow-on commit if forest density still needs trimming).
+    for tf_val in ("PERIODIC", "PAST"):
+        for sem_class in ("DAY", "TIME", "MONTH", "SEASON"):
+            rules.append(Rule(
+                f"PP[TIME_FRAME={tf_val}]",
+                [f"PART[TIME_FRAME={tf_val}]", "N"],
+                [
+                    "(↑) = ↓1",
+                    "(↑ OBJ) = ↓2",
+                    f"(↓2 SEM_CLASS) =c '{sem_class}'",
+                ],
+            ))
 
     # --- Phase 5f closing deferral: year expression PP -----------
     #
@@ -93,40 +113,58 @@ def register_rules(rules: list[Rule]) -> None:
     # parseable but isn't the natural register and isn't exercised
     # by the seed corpus). The CARDINAL_VALUE lifts to ``YEAR`` on
     # the matrix PP. (Phase 5f closing deferral, 2026-05-04.)
-    rules.append(Rule(
-        "PP",
-        ["PART", "NUM[CARDINAL]"],
-        [
-            "(↑) = ↓1",
-            "(↑ YEAR) = ↓2 CARDINAL_VALUE",
-            "(↓1 TIME_FRAME)",
-            "(↓2 DIGIT_FORM) =c true",
-        ],
-    ))
+    #
+    # Phase 10.K.post-1 commit 2: LHS + PART daughter lifted to
+    # ``PP[TIME_FRAME=X]`` / ``PART[TIME_FRAME=X]`` (per-value) for
+    # the same reason as the SEM_CLASS variants directly above —
+    # chart-symbol gating so the rule only fires when PART carries
+    # a TIME_FRAME value at chart time.
+    for tf_val in ("PERIODIC", "PAST"):
+        rules.append(Rule(
+            f"PP[TIME_FRAME={tf_val}]",
+            [f"PART[TIME_FRAME={tf_val}]", "NUM[CARDINAL]"],
+            [
+                "(↑) = ↓1",
+                "(↑ YEAR) = ↓2 CARDINAL_VALUE",
+                "(↓2 DIGIT_FORM) =c true",
+            ],
+        ))
 
     # Clause-final temporal-frame PP attachment:
     # ``Pumunta ako tuwing Lunes.`` "I went every Monday."
     # ``Pumunta kami noong Pebrero.`` "We went in February."
     #
     # Closes part of the Phase 5e Commit 3 deferral on bare PP
-    # placement — scoped to TIME_FRAME PPs only via the
-    # existential constraint ``(↓2 TIME_FRAME)``. The
+    # placement — scoped to TIME_FRAME PPs only. The
     # ``para sa X`` / ``tungkol sa X`` / ``mula sa X`` /
     # ``dahil sa X`` PPs (Phase 5e Commit 3 PREP entries) don't
     # have TIME_FRAME, so this rule doesn't fire on them — they
     # remain restricted to ay-fronting position. (Same scoped-
     # lift pattern as Phase 5f Commit 5's
     # ``S → S AdvP[FREQUENCY]``.)
-    rules.append(Rule(
-        "S",
-        ["S", "PP"],
-        [
-            "(↑) = ↓1",
-            "↓2 ∈ (↑ ADJUNCT)",
-            "(↓2 TIME_FRAME)",
-        ],
-        budget=_SS_PP_BUDGET,
-    ))
+    #
+    # Phase 10.K.post-1 commit 2: PP daughter lifted to
+    # ``PP[TIME_FRAME=X]`` (per-value), matching the TIME_FRAME PP
+    # rule's lifted LHS directly above. The pre-lift form used a
+    # bare ``PP`` daughter with the solve-time existential
+    # ``(↓2 TIME_FRAME)`` gate; under that pattern the chart
+    # predicted this rule for ANY PP completion (including the
+    # generic PREP+NP[DAT] PPs and spurious PPs generated by the
+    # pre-lift TIME_FRAME PP rule firing on `o N` etc.), inflating
+    # matrix-S fan-out across every applicable span. The lifted
+    # daughter pattern admits only PPs whose chart-symbol carries
+    # ``TIME_FRAME=X`` — the lifted TIME_FRAME PP rule's output —
+    # at chart prediction time.
+    for tf_val in ("PERIODIC", "PAST"):
+        rules.append(Rule(
+            "S",
+            ["S", f"PP[TIME_FRAME={tf_val}]"],
+            [
+                "(↑) = ↓1",
+                "↓2 ∈ (↑ ADJUNCT)",
+            ],
+            budget=_SS_PP_BUDGET,
+        ))
 
     # --- Phase 9.X.c51: clause-final bare time-N adjunct ---
     #
@@ -189,13 +227,19 @@ def register_rules(rules: list[Rule]) -> None:
     # that admits clause-final attachment because the exception
     # semantically modifies the matrix proposition (parallel to
     # temporal-frame PPs).
+    #
+    # Phase 10.K.post-1 commit 2: PP daughter lifted to
+    # ``PP[PREP_TYPE=EXCEPTIVE]``, matching the
+    # ``PP[PREP_TYPE=EXCEPTIVE]`` LHS advertised by the generic
+    # PREP+NP[DAT] PP rule (extraction.py:1948, Phase 10.J.post-2).
+    # The pre-lift solve-time ``(↓2 PREP_TYPE) =c 'EXCEPTIVE'`` gate
+    # is now expressed at chart-time via the daughter pattern.
     rules.append(Rule(
         "S",
-        ["S", "PP"],
+        ["S", "PP[PREP_TYPE=EXCEPTIVE]"],
         [
             "(↑) = ↓1",
             "↓2 ∈ (↑ ADJUNCT)",
-            "(↓2 PREP_TYPE) =c 'EXCEPTIVE'",
         ],
         budget=_SS_PP_BUDGET,
     ))
@@ -338,14 +382,24 @@ def register_rules(rules: list[Rule]) -> None:
     # advertisement (post-2) ensures the two PP variants are
     # disambiguated at chart time — no cross-product blow-up. Closes
     # ``Naglakbay kami sa Cebu mula sa Maynila.`` (post-7.4 mula-sa-4-postv).
+    #
+    # Phase 10.K.post-1 commit 2: PP daughter lifted to
+    # ``PP[PREP_TYPE=X]``, matching the per-PREP_TYPE LHS the generic
+    # PP rule already advertises (extraction.py:1948, post-7's
+    # PREP_TYPE LHS-advertisement loop). The pre-lift solve-time
+    # ``(↓2 PREP_TYPE) =c 'X'`` gate now lives at chart time on the
+    # daughter pattern — each S→S PP rule predicts only its own
+    # PREP_TYPE variant at chart construction, eliminating the
+    # cross-PREP_TYPE chart-state expansion that was visible in the
+    # PAMILYA/sent-16 fan-out spike (5 loop variants × every PP at
+    # every applicable matrix span).
     for prep_type in ("BENEFICIARY", "TOPIC", "GOAL", "REASON", "SOURCE"):
         rules.append(Rule(
             "S",
-            ["S", "PP"],
+            ["S", f"PP[PREP_TYPE={prep_type}]"],
             [
                 "(↑) = ↓1",
                 "↓2 ∈ (↑ ADJUNCT)",
-                f"(↓2 PREP_TYPE) =c '{prep_type}'",
             ],
             budget=_SS_PP_BUDGET,
         ))
