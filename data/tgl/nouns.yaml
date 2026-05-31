@@ -1331,6 +1331,22 @@
   feats: {LEMMA: hanapbuhay, SEM_CLASS: ABSTRACT}
   source: audit-corpus
 
+# Phase 10.J.post-11: ``gawain`` — "task / chore / work / assignment".
+# Deverbal noun from ``gawa`` "do / make" via the ``-in`` suffix
+# specialised here as instrument / result noun (semantically narrowed
+# from the productive "thing-to-be-V-ed" pattern; ``gawin`` is the
+# OV-CTPL verbal form, while ``gawain`` is the lexicalized abstract
+# noun). Surfaces in wave-1 PAMILYA/sent-18 (``Tulung-tulong sila sa
+# mga gawain ...``) and the wave-3 so1972 corpus. Tier-1 lexicalized
+# abstract noun per the post-8.5.7 convention — not derivable via
+# existing ``in_oblig`` paradigm cells (which produce verbal CTPL
+# ``gawin``, not deverbal noun ``gawain``).
+- citation: gawain
+  pos: NOUN
+  gloss: task, chore, work, assignment (deverbal from gawa)
+  feats: {LEMMA: gawain, SEM_CLASS: ABSTRACT}
+  source: audit-corpus
+
 - citation: hapdi
   pos: NOUN
   gloss: sting, sharp pain; smarting sensation
@@ -2122,6 +2138,38 @@
 - citation: lalaki
   pos: NOUN
   gloss: man
+
+# Phase 10.J.post-11: ``lalake`` orthographic variant of ``lalaki``.
+# Common spelling in older texts including Kroeger 1991 (wave-4
+# attestations at page-21/ex-13a-d). Variant points at canonical
+# ``lalaki`` via LEMMA per the [[feedback_orthographic_variants]]
+# convention (don't duplicate LexicalEntries — single LEMMA, two
+# orthographic surfaces).
+- citation: lalake
+  pos: NOUN
+  gloss: man (orthographic variant of lalaki)
+  feats: {LEMMA: lalaki}
+  source: audit-corpus
+
+# Phase 10.J.post-11: ``Intsik`` NOUN — ethnonym "Chinese (person);
+# of-Chinese-descent". Standard in colloquial Tagalog (often
+# capitalized when referring to an individual; lowercase as
+# attributive). Wave-4 kroeger1991 page-31/ex-5a attestation
+# (``Matatalino ang mga bata ng Intsik.``).
+- citation: Intsik
+  pos: NOUN
+  gloss: Chinese (person, ethnonym)
+  feats: {LEMMA: Intsik, SUBCLASS: PERSON}
+  source: audit-corpus
+
+# Phase 10.J.post-11: ``internet`` NOUN — English loanword,
+# universal in modern Tagalog usage. Wave-5 zamar2023 page-30/sent-7
+# attestation (``Binili ko iyan sa internet.``).
+- citation: internet
+  pos: NOUN
+  gloss: internet (English loanword)
+  feats: {LEMMA: internet}
+  source: audit-corpus
 
 # Phase 10.J.post-8.5.1: ``lahi`` NOUN — "race, lineage,
 # ethnicity, generation". Used in ``salin-lahi`` compound "passing

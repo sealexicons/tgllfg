@@ -834,7 +834,13 @@
   pos: VERB
   gloss: search for
   transitivity: TR
-  affix_class: [um, mag, in_oblig, an_oblig, maka]
+  # Phase 10.J.post-11: pag_gerund opt-in produces ``paghahanap``
+  # (with CV-redup) and ``paghanap`` (without). Required for wave-1
+  # PAMILYA/sent-18 ``...sa mga gawain at sa paghahanap-buhay.``
+  # which has the pag-CV-gerund of hanap embedded in the
+  # ``paghahanap-buhay`` N-N compound (productively composes with
+  # ``buhay`` via the post-8.5.8 N-N compound rule).
+  affix_class: [um, mag, in_oblig, an_oblig, maka, pag_gerund]
 
 - citation: handa
   pos: VERB

@@ -1262,6 +1262,58 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 10.J.post-11: ADJ-pred + NOM-SUBJ + DAT-NP adjunct ---------
+    #
+    # ``Masaya ako sa Maynila.``                  "I'm happy in Manila."
+    # ``Maganda siya sa Maynila.``                "She's beautiful in Manila."
+    # ``Mahilig siya sa adobo.``                  "She's fond of adobo."
+    # ``Tulung-tulong sila sa mga gawain.``       "They collaborate on chores."
+    #                                              (PAMILYA/sent-18 component)
+    #
+    # Companion to the bare ``ADJ[PREDICATIVE] NP[CASE=NOM]`` rule above
+    # — same shape, plus a DAT-NP slot for the locative / oblique
+    # adjunct (or sub-categorized OBL argument for relational ADJs like
+    # ``mahilig``). Parallels the Phase 4 §7.7 / §7.9 V-AV companion at
+    # line 87 (``V[VOICE=AV] NP[CASE=NOM] NP[CASE=DAT]`` with
+    # ``↓3 ∈ (↑ ADJUNCT)``).
+    #
+    # **Why the gap exposes only with pronoun subjects**: when SUBJ is
+    # an ``ang``-NP, the DAT ``sa``-PP attaches inside the NP as a
+    # sa-PP-as-N-modifier (Phase 4 §7.7), so ``Masaya ang lalaki sa
+    # Maynila.`` parses as ``[ADJ [ang lalaki sa Maynila]]`` (the man
+    # in-Maynila is happy) under the existing rule. Pronouns can't
+    # carry the sa-PP modifier so the construction surfaces as a
+    # matrix-S-with-adjunct shape, requiring this rule.
+    #
+    # Spurious-ambiguity note: when SUBJ is an ``ang``-NP, the
+    # construction has both readings — NP-internal modifier and
+    # matrix adjunct. Both are licit analyses (the surface is
+    # genuinely ambiguous between "the man-in-Manila is happy" and
+    # "the man is happy in-Manila"); a downstream ranker / discourse
+    # context picks. No category-feat gate is added to suppress the
+    # matrix-adjunct reading on ang-NP subjects — both are needed.
+    #
+    # All feat-lifts (INTENS / DISTRIB / KASING_N / REDUP_SEM) mirror
+    # the bare rule so reduplicated-intensive and equative readings
+    # continue to surface at clause level.
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE]", "NP[CASE=NOM]", "NP[CASE=DAT]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "↓3 ∈ (↑ ADJUNCT)",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+            "(↑ INTENS) = ↓1 INTENS",
+            "(↑ DISTRIB) = ↓1 DISTRIB",
+            "(↑ KASING_N) = ↓1 KASING_N",
+            "(↑ REDUP_SEM) = ↓1 REDUP_SEM",
+        ],
+    ))
+
+
     # --- Phase 10.E.1: ang-exclamative predication (Ang ganda mo!) -------
     #
     # ``Ang ganda-ganda mo naman!``  "You're so beautiful!"  (rg-int
@@ -1545,6 +1597,31 @@ def register_rules(rules: list[Rule]) -> None:
         [
             "(↑ PRED) = 'ADV <SUBJ>'",
             "(↑ SUBJ) = ↓2",
+            "(↑ ADV_LEMMA) = ↓1 LEMMA",
+            "(↑ ADV_TYPE) = ↓1 ADV_TYPE",
+            "(↑ PREDICATIVE) = true",
+        ],
+    ))
+
+    # --- Phase 10.J.post-11: ADV-pred + NOM-SUBJ + DAT-NP adjunct ---------
+    #
+    # ``Tulung-tulong sila sa mga gawain.``         (PAMILYA/sent-18 component)
+    # ``Sama-sama sila sa bahay.``                  "They're together at home."
+    #
+    # Companion to the bare ADV-pred + NOM rule above, parallel in
+    # shape to the post-11 ADJ-pred + NOM + DAT rule. Admits a
+    # DAT-NP adjunct after the SUBJ. Required for collaborative-
+    # manner ADV-as-predicate constructions (Phase 10.J.post-8.5.5's
+    # ``v_collab_redup`` cell — ``tulungtulong`` is POS=ADV, not
+    # ADJ, so the ADJ-pred + DAT rule doesn't admit it; needs a
+    # parallel ADV-pred + DAT companion).
+    rules.append(Rule(
+        "S",
+        ["ADV", "NP[CASE=NOM]", "NP[CASE=DAT]"],
+        [
+            "(↑ PRED) = 'ADV <SUBJ>'",
+            "(↑ SUBJ) = ↓2",
+            "↓3 ∈ (↑ ADJUNCT)",
             "(↑ ADV_LEMMA) = ↓1 LEMMA",
             "(↑ ADV_TYPE) = ↓1 ADV_TYPE",
             "(↑ PREDICATIVE) = true",
