@@ -5116,22 +5116,44 @@ def register_rules(rules: list[Rule]) -> None:
     # (po / ho / opo / oho) on top.
     #
     # ``FRAGMENT_HOST=YES`` is set in the lex (``data/tgl/nouns.yaml``
-    # — currently only ``salamat`` qualifies) so the rule does NOT
-    # admit arbitrary noun fragments (``Aklat.`` does not parse as
-    # a one-word S — the constraint gates it out). Future fragment-
-    # host nouns (greetings, exclamations) can opt in via the same
-    # lex feat without grammar changes.
+    # — currently ``salamat`` / ``kumusta`` / ``tabitabi`` qualify) so
+    # the rule does NOT admit arbitrary noun fragments (``Aklat.``
+    # does not parse as a one-word S — the constraint gates it out).
+    # Future fragment-host nouns (greetings, exclamations) can opt in
+    # via the same lex feat without grammar changes.
     #
     # Companion deferral L97 (standalone ``Oo.`` / ``Hindi.`` answer
     # clauses) closes in Phase 5n.B Commit 17 — that path uses new
     # ``PRON[INTERJ, ANSWER=...]`` lex entries plus an
     # ``S_ANSWER`` rule, distinct from this NOUN-host path.
+    #
+    # Phase 10.K commit 3: the daughter pattern was bare ``N`` with
+    # a ``(↑ FRAGMENT_HOST) =c true`` constraining gate on the matrix.
+    # The gate evaluated at solve time, so the chart still enumerated
+    # the rule with EVERY single-token N (``aklat``, ``bata``, ``ama``,
+    # ``ina``, …) — producing root-S candidates for any bare noun,
+    # which downstream rules like ``S → S PART[COORD=OR] S`` then
+    # composed onto, fanning out the forest. PAMILYA/sent-16
+    # (``Kapisan din ang wala pang asawang kapatid ng ama o ina.``)
+    # hit this: ``ina`` at end-of-sentence got promoted to S via this
+    # rule, enabling the spurious ``[long_S] o [ina-as-S]`` coord
+    # parse.
+    #
+    # The chart-symbol form bypasses the ``N`` projection and matches
+    # the ``NOUN`` lex token directly with the ``FRAGMENT_HOST=true``
+    # feat (which lives on the morph analysis, not the N chart-symbol
+    # output of the base ``N[N_CORE] → NOUN`` rule). Daughter
+    # ``NOUN[FRAGMENT_HOST=true]`` gates at chart time — only nouns
+    # whose lex entry carries the feat (``salamat`` / ``kumusta`` /
+    # ``tabitabi``) enter the rule. ``(↑ FRAGMENT_HOST) =c true``
+    # becomes redundant and is dropped. C-tree shape changes from
+    # ``S → N → N[N_CORE] → NOUN`` to ``S → NOUN`` — both yield the
+    # same f-structure via ``(↑) = ↓1`` sharing.
     rules.append(Rule(
         "S",
-        ["N"],
+        ["NOUN[FRAGMENT_HOST=true]"],
         [
             "(↑) = ↓1",
-            "(↑ FRAGMENT_HOST) =c true",
             "(↑ CLAUSE_TYPE) = 'FRAGMENT'",
         ],
     ))
