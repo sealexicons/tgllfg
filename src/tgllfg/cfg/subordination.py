@@ -129,16 +129,18 @@ def register_rules(rules: list[Rule]) -> None:
     # has perfective force); SUBORD_TYPE = TEMP_WHEN (re-tagging
     # for downstream attachment) but admits via the existing
     # COND-attachment rules (since LEMMA=pag is COMP_TYPE=COND).
+    # Phase 10.K commit 4: daughter ↓2 lifted to ``N[SEM_CLASS=TIME]``.
+    # The Phase 10.F comment that said "bare ``N`` carries no lexical
+    # SEM_CLASS on its category pattern" is no longer true — the
+    # commit 4 propagation rule in cfg/nominal.py adds
+    # ``N[SEM_CLASS=TIME] → NOUN[SEM_CLASS=TIME]`` so the chart-symbol
+    # output carries the feat. The ``(↓2 SEM_CLASS) =c 'TIME'``
+    # solve-time gate becomes redundant and is dropped.
     rules.append(Rule(
         "SubordClause",
         [
             "PART[COMP_TYPE=COND]",
-            # Phase 10.F: bare ``N`` (not the dead c-structure bracket
-            # ``N[SEM_CLASS=TIME]`` — ``N`` is a projection non-terminal
-            # via ``N → NOUN`` and carries no lexical SEM_CLASS on its
-            # category pattern). The TIME gate is the constraining
-            # equation ``(↓2 SEM_CLASS) =c 'TIME'`` below.
-            "N",
+            "N[SEM_CLASS=TIME]",
             "PART[ASPECT_PART=ALREADY]",
         ],
         [
@@ -148,7 +150,6 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ TIME-N) = ↓2",
             "(↓1 COMP_TYPE) =c 'COND'",
             "(↓1 LEMMA) =c 'pag'",
-            "(↓2 SEM_CLASS) =c 'TIME'",
             "(↓3 ASPECT_PART) =c 'ALREADY'",
         ],
     ))

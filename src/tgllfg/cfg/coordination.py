@@ -742,14 +742,21 @@ def register_rules(rules: list[Rule]) -> None:
     # (non-leading conjuncts).
     #
     # Reference: R&G 1981 PANAHON essay (sent-22).
+    # Phase 10.K commit 4: ↓1 chart-symbol gated to
+    # ``PART[PLURAL_MARKER=true]``. The original bare ``PART`` daughter
+    # let the rule fire on every PART + N pair (every linker, every
+    # discourse particle, every coord conjunction), then the
+    # ``(↓1 PLURAL_MARKER) =c true`` solve-time gate rejected non-mga
+    # candidates. Chart-symbol gating prunes the fan-out at chart
+    # construction — only ``mga`` (the sole ``PLURAL_MARKER=true`` PART
+    # in the lex) enters the rule.
     rules.append(Rule(
         "N",
-        ["PART", "N"],
+        ["PART[PLURAL_MARKER=true]", "N"],
         [
             "(↑) = ↓2",
             "(↑ NUM) = 'PL'",
             "(↑ MGA_INTERNAL) = true",
-            "(↓1 PLURAL_MARKER) =c true",
         ],
     ))
 
@@ -1275,39 +1282,43 @@ def register_rules(rules: list[Rule]) -> None:
     # graph-constraint matcher; the ``(↑ COORD) = 'OR'`` defining
     # equation below is redundant under that matcher but kept for
     # explicitness.
+    # Phase 10.K commit 4: daughters gated to PART[LEMMA=<word>] —
+    # chart-time gating replaces the original solve-time LEMMA
+    # constraining gates. The bare-PART daughters previously
+    # let every PART + PART pair in the input fire these rules,
+    # producing doomed candidates rejected at solve. For sentences
+    # with many PART positions (e.g., PAMILYA/sent-16's
+    # ``Kung minsa'y kapisan din ang wala pa ng asawa ng kapatid ng
+    # ama o ina .``), the fan-out compounded across the 6+ multi-PART
+    # rule variants — each contributing ~7 advances at the longest
+    # spans. The chart-symbol gating prunes these at chart time.
     rules.append(Rule(
         "PART[COORD=OR]",
-        ["PART", "PART"],
+        ["PART[LEMMA=o]", "PART[LEMMA=kaya]"],
         [
             "(↑ COORD) = 'OR'",
             "(↑ UNCERTAIN) = true",
             "(↑ LEMMA) = 'o_kaya'",
-            "(↓1 LEMMA) =c 'o'",
-            "(↓2 LEMMA) =c 'kaya'",
         ],
     ))
     # ``at saka`` — conjunctive sequence
     rules.append(Rule(
         "PART[COORD=AND]",
-        ["PART", "PART"],
+        ["PART[LEMMA=at]", "PART[LEMMA=saka]"],
         [
             "(↑ COORD) = 'AND'",
             "(↑ SEQUENCE) = true",
             "(↑ LEMMA) = 'at_saka'",
-            "(↓1 LEMMA) =c 'at'",
-            "(↓2 LEMMA) =c 'saka'",
         ],
     ))
     # ``at nang`` — conjunctive consequence
     rules.append(Rule(
         "PART[COORD=AND]",
-        ["PART", "PART"],
+        ["PART[LEMMA=at]", "PART[LEMMA=nang]"],
         [
             "(↑ COORD) = 'AND'",
             "(↑ RESULT) = 'YES'",
             "(↑ LEMMA) = 'at_nang'",
-            "(↓1 LEMMA) =c 'at'",
-            "(↓2 LEMMA) =c 'nang'",
         ],
     ))
 

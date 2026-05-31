@@ -226,38 +226,45 @@ def register_rules(rules: list[Rule]) -> None:
     # NUMs like ``sampu`` only the approximator path fires (this
     # rule's ↓3 expects N, not NUM). Ambiguity for time Ns is
     # accepted; the readings are genuinely distinct.
+    # Phase 10.K commit 4: ↓2 chart-symbol gated to
+    # ``PART[PLURAL_MARKER=true]``. The original bare ``PART`` daughter
+    # let the rule fire on every DET/ADP + PART + N triple (every
+    # linker, discourse particle, coord conjunction in PART
+    # position), then the ``(↓2 PLURAL_MARKER) =c true`` solve-time
+    # gate rejected non-mga candidates. Chart-symbol gating prunes
+    # the fan-out at chart construction — only ``mga`` (the sole
+    # ``PLURAL_MARKER=true`` PART in the lex) enters the rule.
+    # This was the single biggest contributor to PAMILYA/sent-16
+    # chart density (~10-13 advances per chart state at long spans).
     rules.append(Rule(
         "NP[CASE=NOM]",
-        ["DET[CASE=NOM]", "PART", "N"],
+        ["DET[CASE=NOM]", "PART[PLURAL_MARKER=true]", "N"],
         [
             "(↑) = ↓1",
             "(↑) = ↓3",
             "(↑ NUM) = 'PL'",
-            "(↓2 PLURAL_MARKER) =c true",
             "¬ (↓3 N_RC)",
             "¬ (↓3 CARDINAL_VALUE)",
         ],
     ))
     rules.append(Rule(
         "NP[CASE=GEN]",
-        ["ADP[CASE=GEN]", "PART", "N"],
+        ["ADP[CASE=GEN]", "PART[PLURAL_MARKER=true]", "N"],
         [
             "(↑) = ↓1",
             "(↑) = ↓3",
             "(↑ NUM) = 'PL'",
-            "(↓2 PLURAL_MARKER) =c true",
             "¬ (↓3 N_RC)",
             "¬ (↓3 CARDINAL_VALUE)",
         ],
     ))
     rules.append(Rule(
         "NP[CASE=DAT]",
-        ["ADP[CASE=DAT]", "PART", "N"],
+        ["ADP[CASE=DAT]", "PART[PLURAL_MARKER=true]", "N"],
         [
             "(↑) = ↓1",
             "(↑) = ↓3",
             "(↑ NUM) = 'PL'",
-            "(↓2 PLURAL_MARKER) =c true",
             "¬ (↓3 N_RC)",
             "¬ (↓3 CARDINAL_VALUE)",
         ],
@@ -1867,7 +1874,7 @@ def register_rules(rules: list[Rule]) -> None:
     # NP-from-N rules into NP[CASE=DAT] without further
     # grammar additions.
     #
-    # The constraining equations enforce:
+    # The constraining equations enforced:
     #   (↓1 PLURAL_MARKER) =c true   — particle is mga
     #   (↓2 SEM_CLASS) =c 'TIME'      — head is clock-time
     #
@@ -1876,14 +1883,50 @@ def register_rules(rules: list[Rule]) -> None:
     # approximation (``mga sampu`` "around ten") was deferred
     # in Commit 13 and is lifted by the parallel NUM rule
     # below in Phase 5f Commit 16 (Group H1 item 2).
+    #
+    # Phase 10.K commit 4: both daughters lifted to chart-symbol
+    # gates — ``PART[PLURAL_MARKER=true]`` matches only ``mga``,
+    # ``N[SEM_CLASS=TIME]`` matches the time-class N (compound or
+    # single via the propagation rule). The original solve-time
+    # gates were redundant once the chart-symbol patterns existed
+    # and are dropped.
     rules.append(Rule(
-        "N",
-        ["PART", "N"],
+        "N[SEM_CLASS=TIME]",
+        ["PART[PLURAL_MARKER=true]", "N[SEM_CLASS=TIME]"],
         [
             "(↑) = ↓2",
             "(↑ APPROX) = true",
-            "(↓1 PLURAL_MARKER) =c true",
-            "(↓2 SEM_CLASS) =c 'TIME'",
+        ],
+    ))
+
+
+    # --- Phase 10.K commit 4: NOUN→N[SEM_CLASS=TIME] propagation ----
+    #
+    # The base ``N[N_CORE] → NOUN`` rule fires on every NOUN token,
+    # producing a chart-symbol ``N[N_CORE]`` that drops the lex's
+    # SEM_CLASS feat (it survives in the f-structure via ``(↑) = ↓1``
+    # sharing, but the chart-symbol doesn't carry it). This rule
+    # adds a parallel propagation path for time NOUNs (``alasotso``,
+    # ``umaga``, ``hapon``, ``tanghali``, …), producing
+    # ``N[SEM_CLASS=TIME]`` so downstream chart-symbol gates
+    # (BE-TIME's ``N[SEM_CLASS=TIME]`` daughter, minute-composition's
+    # ``N[SEM_CLASS=TIME]`` head daughter, mga-time approximation
+    # ↓2) can match without falling back to solve-time
+    # ``(↓1 SEM_CLASS) =c 'TIME'`` gates.
+    #
+    # Coexistence with the generic base rule (which still fires on
+    # the same token) is by design — the generic ``N[N_CORE]``
+    # output feeds non-time consumers (NP wrappers, generic
+    # modifiers), the specific ``N[SEM_CLASS=TIME]`` output feeds
+    # time-specific consumers. ~20 time NOUNs in the lex are
+    # duplicated; non-time NOUNs (the vast majority) are unaffected
+    # because this rule only matches ``NOUN[SEM_CLASS=TIME]``.
+    rules.append(Rule(
+        "N[SEM_CLASS=TIME]",
+        ["NOUN[SEM_CLASS=TIME]"],
+        [
+            "(↑) = ↓1",
+            "(↑ PRED) = 'NOUN(↑ FORM)'",
         ],
     ))
 
@@ -2064,8 +2107,21 @@ def register_rules(rules: list[Rule]) -> None:
     #   LEMMA      = 'alas' (carries through for downstream
     #                identification; the canonical surface form is
     #                the multi-token compound)
+    #
+    # Phase 10.K commit 4: LHS lifted from ``N`` to
+    # ``N[SEM_CLASS=TIME]`` so the chart-symbol output carries the
+    # feat. Downstream consumers (the Phase 8.R bare-N predication
+    # rule in cfg/clause.py — ``S → N[SEM_CLASS=TIME]`` after this
+    # commit, formerly ``S → N`` with constraining gate; NP wrappers
+    # ``sa alas singko``; the Phase 5f Commit 12 minute-composition;
+    # the Phase 5f Commit 14 ``mga`` approximation) continue to match
+    # via the non-conflict matcher (candidate has more feats than
+    # the bare-``N`` patterns demand). The lift converts the
+    # downstream BE-TIME rule's ``(↓1 SEM_CLASS) =c 'TIME'``
+    # solve-time gate into a chart-time daughter pattern, pruning
+    # the chart fan-out where every plain N was fed into ``S → N``.
     rules.append(Rule(
-        "N",
+        "N[SEM_CLASS=TIME]",
         ["PART[CLOCK_MARKER=true]", "NUM[CARDINAL]"],
         [
             "(↑ SEM_CLASS) = 'TIME'",
@@ -2075,8 +2131,9 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓2 CARDINAL) =c true",
         ],
     ))
+    # Hyphenated variant — same LHS lift to ``N[SEM_CLASS=TIME]``.
     rules.append(Rule(
-        "N",
+        "N[SEM_CLASS=TIME]",
         [
             "PART[CLOCK_MARKER=true]",
             "PUNCT[PUNCT_CLASS=HYPHEN]",
@@ -2126,33 +2183,45 @@ def register_rules(rules: list[Rule]) -> None:
     #   (↓2 MINUTE_OP) =c '<OP>'      — middle PART is y or menos
     #   (↓3 CARDINAL) =c true OR     — third daughter is right type
     #   (↓3 SEM_CLASS) =c 'FRACTION'
+    # Phase 10.K commit 4: LHS lifted to ``N[SEM_CLASS=TIME]`` and
+    # daughter ↓1 lifted to ``N[SEM_CLASS=TIME]`` so the chart-symbol
+    # feat propagates through the minute-composition chain. Removed
+    # the redundant ``(↓1 SEM_CLASS) =c 'TIME'`` constraining gate.
+    # The chain feeds the BE-TIME bare-N predication rule's
+    # ``N[SEM_CLASS=TIME]`` daughter pattern in cfg/clause.py, so the
+    # whole clock-time path is chart-time gated end-to-end.
+    #
+    # Source of ``N[SEM_CLASS=TIME]`` ↓1: either the Phase 8.R
+    # ``alas + NUM`` compound rule (lifted to ``N[SEM_CLASS=TIME]``
+    # above), or the new single-token propagation rule
+    # ``N[SEM_CLASS=TIME] → NOUN[SEM_CLASS=TIME]`` added below.
     for op in ("Y", "MENOS"):
         # Cardinal-minute version: ``alasotso y singko``
         rules.append(Rule(
-            "N",
-            ["N", "PART", "NUM[CARDINAL]"],
+            "N[SEM_CLASS=TIME]",
+            ["N[SEM_CLASS=TIME]", "PART", "NUM[CARDINAL]"],
             [
                 "(↑) = ↓1",
                 "(↑ MINUTE_VALUE) = ↓3 CARDINAL_VALUE",
                 f"(↑ MINUTE_OP) = '{op}'",
-                "(↓1 SEM_CLASS) =c 'TIME'",
                 f"(↓2 MINUTE_OP) =c '{op}'",
                 "(↓3 CARDINAL) =c true",
             ],
         ))
         # Fractional-minute version: ``alasotso y medya``
         rules.append(Rule(
-            "N",
-            ["N", "PART", "N"],
+            "N[SEM_CLASS=TIME]",
+            ["N[SEM_CLASS=TIME]", "PART", "N"],
             [
                 "(↑) = ↓1",
                 "(↑ MINUTE_FRACTION) = ↓3 LEMMA",
                 f"(↑ MINUTE_OP) = '{op}'",
-                "(↓1 SEM_CLASS) =c 'TIME'",
                 f"(↓2 MINUTE_OP) =c '{op}'",
                 "(↓3 SEM_CLASS) =c 'FRACTION'",
             ],
         ))
+
+
 
     # --- Phase 5f closing deferral: day-of-month form (Mayo 5) ----
     #

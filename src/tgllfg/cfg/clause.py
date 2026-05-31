@@ -2128,14 +2128,38 @@ def register_rules(rules: list[Rule]) -> None:
     #   PRED        = 'BE-TIME'
     #   TIME_VALUE  = the clock-time N's TIME_VALUE
     #   PREDICATIVE = true
+    #
+    # Phase 10.K commit 4: chart-symbol gating via two rule variants
+    # replaces the previous solve-time ``(↓1 SEM_CLASS) =c 'TIME'``
+    # constraining gate. The old form's bare ``N`` daughter matched
+    # every N in the input, producing a doomed ``S → N`` candidate
+    # for every plain noun — fan-out that was visible as PAMILYA/
+    # sent-16's spurious ``S → S PART[COORD=OR] S`` root path (``ina``
+    # as second-S). Variant (a) consumes the compound clock-time N
+    # built by the Phase 8.R ``alas + NUM`` rule (LHS lifted to
+    # ``N[SEM_CLASS=TIME]`` in this commit). Variant (b) consumes a
+    # single ``NOUN`` lex token whose morph analysis carries
+    # ``SEM_CLASS=TIME`` (``umaga``, ``hapon``, ``tanghali``, etc.)
+    # — bypasses the ``N`` projection because the base
+    # ``N[N_CORE] → NOUN`` rule doesn't propagate SEM_CLASS to its
+    # chart-symbol output.
     rules.append(Rule(
         "S",
-        ["N"],
+        ["N[SEM_CLASS=TIME]"],
         [
             "(↑ PRED) = 'BE-TIME'",
             "(↑ TIME_VALUE) = ↓1 TIME_VALUE",
             "(↑ PREDICATIVE) = true",
-            "(↓1 SEM_CLASS) =c 'TIME'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["NOUN[SEM_CLASS=TIME]"],
+        [
+            "(↑) = ↓1",
+            "(↑ PRED) = 'BE-TIME'",
+            "(↑ TIME_VALUE) = ↓1 TIME_VALUE",
+            "(↑ PREDICATIVE) = true",
         ],
     ))
 
