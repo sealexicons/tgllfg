@@ -429,18 +429,63 @@ def register_rules(rules: list[Rule]) -> None:
     # (so ``pa`` inside a complex sentence anchors to ``wala``, not
     # to a verbless matrix ADJ-predicate like ``Kapisan``).
     #
-    # **Structural anti-duplication via ``EXIST_NEG_PREMOD`` marker:**
+    # **Marker via ``EXIST_NEG_PREMOD``:**
     #
-    # 1. Matrix output tagged ``(↑ EXIST_NEG_PREMOD) = true``.
-    # 2. Rule won't reapply on an already-marked N
-    #    (``¬ (↓3 EXIST_NEG_PREMOD)`` on the head daughter) — blocks
-    #    nested premod stacking.
-    # 3. Rule won't compete with the existing post-N N-level RC path
-    #    (``¬ (↓3 N_RC)`` — mirrors the existing pattern).
+    # 1. Matrix output tagged ``(↑ EXIST_NEG_PREMOD) = true``
+    #    documents "this output N has already taken the modifier".
+    # 2. Rule won't compete with the existing post-N N-level RC
+    #    path (``¬ (↓3 N_RC)`` — mirrors the existing pattern).
     #
-    # The duplicate-path-suppression-by-marker is the user's
-    # documented alternative to ``Rule.budget``: "guards document
-    # chart pathology; budgets hide it."
+    # **No self-guard** (post-12.2 reviewer-revised guidance,
+    # 2026-05-31): the original reviewer suggestion of
+    # ``¬ (↓3 EXIST_NEG_PREMOD)`` self-guard on the same rule is
+    # unsatisfiable in this framework. The equations are
+    # simultaneous constraints, not ordered operations — SET +
+    # GUARD on the same f-structure (with ``(↑) = ↓3`` sharing)
+    # contradict. The correct anti-reapply pattern is either:
+    # (a) **cross-rule guarding** (the N_RC pattern: SET on rule
+    # A, GUARD on rule B); or (b) **structural restriction** at
+    # the chart-symbol / category level, not f-structure
+    # negation. If repeated N-level wrapping becomes a real
+    # forest-density issue, the right move is to gate ↓3 by a
+    # category-feat like ``N[BASE]`` or ``N[CORE]``, not a
+    # self-referential f-structure negation. The current marker
+    # SET stays for forward extensibility — downstream NP-shell
+    # consumers in ``nominal.py`` can add cross-rule guards if
+    # duplicate-path issues surface in future audit runs.
+    # Framework constraint on anti-reapply guards (post-12.2
+    # reviewer feedback):
+    #
+    # The N_RC pattern (post-N RC rule above + nominal.py
+    # ``¬ (↓2 N_RC)`` guards on the simple-NP rule) SET marker on
+    # rule A and GUARD on rule B (different rules consuming N).
+    # That works because SET and GUARD are on different
+    # f-structures.
+    #
+    # A self-guard pattern (SET + GUARD on the SAME rule, same
+    # daughter, same f-structure) is contradictory in this
+    # framework: equations are a concurrent constraint system,
+    # not sequential evaluation. The reviewer's prescribed
+    # ``¬ (↓3 EXIST_NEG_PREMOD)`` + ``(↑ EXIST_NEG_PREMOD) = true``
+    # both reference the SAME structure (via ``(↑) = ↓3``
+    # sharing), so unification fails: structure both has and
+    # doesn't have the feat.
+    #
+    # Empirically tested 2026-05-31: with both SET-on-↑ and
+    # SET-on-↓3, adding the ``¬ (↓3 EXIST_NEG_PREMOD)`` self-guard
+    # breaks ALL embedded-modifier parses. Removing the self-guard
+    # leaves the SET marker functional (downstream consumers can
+    # read it) but doesn't gate against self-recursion at the
+    # rule level.
+    #
+    # Nested existential modifiers (``wala pang X-ng wala pang
+    # Y-ng N``) are rare in the audit corpus; the broad-S
+    # PANAHON regression that motivated the marker is solved by
+    # the chart-level category-feat gating on the daughter pattern
+    # ``S[CLAUSE_TYPE=EXISTENTIAL, POLARITY=NEG]``. The marker
+    # SET stays for forward extensibility — NP-shell consumers in
+    # ``nominal.py`` can add ``¬ (↓N EXIST_NEG_PREMOD)`` guards if
+    # duplicate-path issues surface in future audit runs.
     for link in ("NA", "NG"):
         # Pre-N modifier: S[EXIST,NEG] + LINK + N
         rules.append(Rule(
@@ -453,7 +498,7 @@ def register_rules(rules: list[Rule]) -> None:
             [
                 "(↑) = ↓3",
                 "↓1 ∈ (↑ ADJ)",
-                "(↓3 EXIST_NEG_PREMOD) = true",
+                "(↑ EXIST_NEG_PREMOD) = true",
                 "¬ (↓3 N_RC)",
             ],
         ))
@@ -468,7 +513,7 @@ def register_rules(rules: list[Rule]) -> None:
             [
                 "(↑) = ↓1",
                 "↓3 ∈ (↑ ADJ)",
-                "(↓1 EXIST_NEG_PREMOD) = true",
+                "(↑ EXIST_NEG_PREMOD) = true",
                 "¬ (↓1 N_RC)",
             ],
         ))
