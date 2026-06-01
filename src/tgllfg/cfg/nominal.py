@@ -656,6 +656,51 @@ def register_rules(rules: list[Rule]) -> None:
             ))
 
 
+    # --- Phase 10.J.post-12.4: FREQUENCY-ADV + LINK + ADJ-pred ----------
+    #
+    # ``laging huli``         "always late"
+    #                         (PANAHON/sent-41 post-em-dash half:
+    #                         ``ang ibig sabihin ay laging huli``)
+    # ``laging maganda``      "always beautiful"
+    # ``palaging tama``       "always correct"
+    # ``madalas na tamad``    "often lazy"
+    # ``minsang masaya``      "sometimes happy"
+    #
+    # Parallel to the post-12.1 manner-DEM + ADJ rule above — a
+    # frequency-class ADV with bound ``-ng`` / ``na`` linker
+    # pre-modifies an ADJ-pred. The matrix ADJ[PREDICATIVE]
+    # inherits its head's PRED + LEMMA + PREDICATIVE via
+    # ``(↑) = ↓3`` so the downstream Phase 5g ADJ-pred S rule
+    # (``S → ADJ[PREDICATIVE] NP[CASE=NOM]``) and the Phase 4 §7.4
+    # ay-fronting S-GAP rule both admit the modified ADJ-pred
+    # without further changes.
+    #
+    # Frequency ADVs are lexed as ``ADV[ADV_TYPE=FREQUENCY]`` in
+    # particles.yaml (``lagi`` / ``palagi`` / ``madalas`` / ``minsan``
+    # + the superlative ``pinakamadalas`` / ``pinakaminsan`` variants
+    # from Phase 5n.B Commit 4). After ``split_linker_ng``, ``laging``
+    # becomes ``lagi + -ng``.
+    #
+    # Closes the post-em-dash half of PANAHON/sent-41 (paired with the
+    # Commit 1 em-dash split and Commit 3 multiword merger for
+    # ``ang ibig sabihin``). Standalone audit reach: ay-fronted +
+    # FREQ-modified ADJ-pred clauses (``Si Maria ay laging masaya.``)
+    # plus bare ADJ-pred shapes in any audit position.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "ADJ[PREDICATIVE]",
+            [
+                "ADV[ADV_TYPE=FREQUENCY]",
+                f"PART[LINK={link}]",
+                "ADJ[PREDICATIVE]",
+            ],
+            [
+                "(↑) = ↓3",
+                "↓1 ∈ (↑ ADJUNCT)",
+            ],
+        ))
+
+
     # --- Phase 9.X.c24: NUM range expression ``Mula X hanggang Y`` ---
     #
     # ``Mula sampu hanggang dalawampung bagyo``  "from ten to

@@ -41,6 +41,7 @@ from ..morph import analyze_tokens
 from ..parse import parse_with_annotations
 from ..text import (
     merge_hyphen_compounds,
+    merge_multiword_compounds,
     normalize_parens,
     split_apostrophe_t,
     split_apostrophe_y,
@@ -212,6 +213,14 @@ def parse_text_with_fragments(
     # canonical join (``kani`` + ``kaniya`` = ``kanikaniya``) finds
     # a hit in the analyzer index.
     toks = split_linker_ng(toks)
+    # Phase 10.J.post-12.4: collapse fixed multi-word expressions
+    # (``oras Pilipino`` "Filipino time"; ``ibig sabihin`` "meaning")
+    # into a single token whose joined norm matches a multi-word
+    # citation in nouns.yaml. Runs after the linker pre-pass (so
+    # vowel-final left tokens carry no surplus ``-ng`` token that
+    # would block the bigram match) and before the hyphen-compound
+    # merger.
+    toks = merge_multiword_compounds(toks)
     # Phase 5f closing deferral: collapse canonical hyphenated
     # compounds (``tag-init`` → ``taginit``, ``daan-daan`` →
     # ``daandaan``, etc.) into single tokens that match the
@@ -250,6 +259,51 @@ def parse_text_with_fragments(
     # colon shapes the split doesn't handle.
     if ":" in text and "colon" not in splits_applied:
         split_result = _try_colon_split(
+            text,
+            n_best=n_best,
+            chart_state_cap=chart_state_cap,
+            max_candidates=max_candidates,
+            max_tree_iterations=max_tree_iterations,
+            precheck_defining=precheck_defining,
+            splits_applied=splits_applied,
+        )
+        if split_result is not None and split_result.parses:
+            return split_result
+
+    # === Phase 10.J.post-12.4: single-em-dash split fast path ==============
+    #
+    # Single em-dash (`--`, double hyphen-minus in plain text) followed
+    # by a continuation clause / appositive functions like a colon —
+    # introduces an apposition or consequence. Per user note 2026-05-31:
+    # ``EM DASH may appear singularly with subsequent text before a
+    # FULL STOP or SEMICOLON ... functions similarly to a COLON or
+    # introduces an apposition.``
+    #
+    # The pre-em-dash half parses as ``S``, the post half as one of
+    # :data:`_POST_EMDASH_CATEGORIES` — mirroring the colon-split's
+    # three appositive shapes (S / N / NP[NOM]). The matrix is glued
+    # via the same APP set-membership pattern as the chart-level
+    # 9.X.c25 em-dash rule in ``cfg/discourse.py:878``.
+    #
+    # **Single vs paired discrimination**: paired em-dashes (``X -- Y --
+    # Z``) encode parenthetical / apposition where ``Y`` is the
+    # insertion in ``X Z`` — a different semantic that this split
+    # cannot handle and must defer to a different mechanism. The
+    # activation gate :func:`_looks_single_emdash` requires exactly one
+    # ``-{2,}`` run in the input; paired patterns fall through to the
+    # chart (where the existing em-dash rules also don't handle paired
+    # uses — both single and paired cases are unattested or OCR-noise
+    # in the audit corpus).
+    #
+    # **Post-half linker strip**: when the post-em-dash content begins
+    # with the relativizer / complementizer ``na`` (PANAHON sent-41's
+    # ``-- na ang ibig sabihin ay laging huli``), the bare-S parse of
+    # the post-half fails (no chart rule admits ``na + S → S``). The
+    # retry strips a leading ``na ``/``Na `` and re-attempts as S —
+    # equivalent to treating ``na`` as a soft RC/CP boundary that the
+    # em-dash apposition subsumes.
+    if _looks_single_emdash(text) and "emdash" not in splits_applied:
+        split_result = _try_emdash_split(
             text,
             n_best=n_best,
             chart_state_cap=chart_state_cap,
@@ -527,6 +581,68 @@ def _normalize_terminal_punct(text: str) -> str:
     return text + "."
 
 
+# === Phase 10.J.post-12.4: em-dash split helpers =========================
+
+_POST_EMDASH_CATEGORIES: tuple[str, ...] = (
+    "S",
+    "N",
+    "NP[CASE=NOM]",
+)
+
+
+def _looks_single_emdash(text: str) -> bool:
+    """Detect a single em-dash boundary (one ``-{2,}`` run, flanked by
+    non-empty content on both sides). Returns ``False`` for paired
+    em-dashes (``X -- Y -- Z``, parenthetical / apposition — different
+    semantic) and for em-dashes at sentence boundaries.
+    """
+    import re
+    runs = list(re.finditer(r"-{2,}", text))
+    if len(runs) != 1:
+        return False
+    m = runs[0]
+    pre = text[: m.start()].strip()
+    post = text[m.end():].strip()
+    return bool(pre) and bool(post)
+
+
+def _split_on_emdash(text: str) -> tuple[str, str] | None:
+    """Find the sole ``--`` (or longer hyphen run) and return
+    ``(pre, post)`` with the em-dash itself dropped.
+
+    Returns ``None`` when there isn't exactly one em-dash boundary
+    flanked by content. Mirrors :func:`_split_on_colon` for the colon
+    split path.
+    """
+    import re
+    m = re.search(r"\s*-{2,}\s*", text)
+    if m is None or m.start() == 0 or m.end() == len(text):
+        return None
+    pre = text[: m.start()].strip()
+    post = text[m.end():].strip()
+    if not pre or not post:
+        return None
+    return pre, post
+
+
+def _strip_post_emdash_linker(text: str) -> str:
+    """Strip a leading ``na ``/``Na `` relativizer/complementizer from
+    the post-em-dash segment for the bare-S retry path.
+
+    PANAHON/sent-41's post half ``na ang ibig sabihin ay laging huli``
+    can't parse as a bare S (no chart rule admits ``PART[LINK=NA] +
+    S → S``); stripping the linker yields ``ang ibig sabihin ay laging
+    huli`` which is a canonical ay-fronted S. The em-dash apposition
+    semantically subsumes the linker — the post-dash content
+    elaborates the matrix concept just as a relative clause would.
+    """
+    s = text.lstrip()
+    for prefix in ("na ", "Na "):
+        if s.startswith(prefix):
+            return s[len(prefix):]
+    return text
+
+
 def _try_colon_split(
     text: str,
     *,
@@ -769,6 +885,147 @@ def _glue_colon_appositive(
     _, wf_diags = lfg_well_formed(pre_fs, matrix_ctree)
     if any(d.is_blocking() for d in wf_diags):
         # Restore APP so subsequent glue attempts don't see our write.
+        if existing_app is None:
+            del pre_fs.feats["APP"]
+        else:
+            pre_fs.feats["APP"] = existing_app
+        return None
+    diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
+    return matrix_ctree, pre_fs, pre_a, diagnostics
+
+
+def _try_emdash_split(
+    text: str,
+    *,
+    n_best: int,
+    chart_state_cap: int | None,
+    max_candidates: int | None,
+    max_tree_iterations: int | None,
+    precheck_defining: bool,
+    splits_applied: frozenset[str] = frozenset(),
+) -> ParseResult | None:
+    """Parse the pre-em-dash half as ``S`` and the post half as one of
+    :data:`_POST_EMDASH_CATEGORIES`, then synthesize a matrix ``S
+    → S PUNCT[DASH] X`` whose APP set carries the post constituent.
+
+    Returns ``None`` when the split isn't applicable, when the
+    pre-half doesn't yield an ``S`` parse, or when no post-category
+    succeeds (even after the leading ``na``-linker retry). Otherwise
+    returns a :class:`ParseResult` with one or more glued parses
+    (pre n-best × post categories that succeeded).
+
+    Mirrors :func:`_try_colon_split` end-to-end; the differences are
+    (a) em-dash boundary discrimination via :func:`_looks_single_emdash`
+    (paired em-dashes deferred), and (b) the leading-``na``-linker retry
+    on the post-half (sent-41 ``-- na ang ibig sabihin ...``).
+    """
+    halves = _split_on_emdash(text)
+    if halves is None:
+        return None
+    pre_text, post_text = halves
+    pre_text = _normalize_terminal_punct(pre_text)
+    post_text = _normalize_terminal_punct(post_text)
+
+    pre_parses = _parse_segment_as(
+        pre_text,
+        start_symbol="S",
+        n_best=n_best,
+        chart_state_cap=chart_state_cap,
+        max_candidates=max_candidates,
+        max_tree_iterations=max_tree_iterations,
+        precheck_defining=precheck_defining,
+        splits_applied=splits_applied | frozenset({"emdash"}),
+    )
+    if not pre_parses:
+        return None
+
+    # Try the post half against each category in order — first match wins.
+    post_parses: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    for category in _POST_EMDASH_CATEGORIES:
+        post_parses = _parse_segment_as(
+            post_text,
+            start_symbol=category,
+            n_best=n_best,
+            chart_state_cap=chart_state_cap,
+            max_candidates=max_candidates,
+            max_tree_iterations=max_tree_iterations,
+            precheck_defining=precheck_defining,
+            splits_applied=splits_applied | frozenset({"emdash"}),
+        )
+        if post_parses:
+            break
+
+    # Retry with leading-linker strip if the post-half didn't parse.
+    if not post_parses:
+        stripped = _strip_post_emdash_linker(post_text)
+        if stripped != post_text:
+            for category in _POST_EMDASH_CATEGORIES:
+                post_parses = _parse_segment_as(
+                    stripped,
+                    start_symbol=category,
+                    n_best=n_best,
+                    chart_state_cap=chart_state_cap,
+                    max_candidates=max_candidates,
+                    max_tree_iterations=max_tree_iterations,
+                    precheck_defining=precheck_defining,
+                    splits_applied=splits_applied | frozenset({"emdash"}),
+                )
+                if post_parses:
+                    break
+
+    if not post_parses:
+        return None
+
+    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    for pre_parse in pre_parses:
+        for post_parse in post_parses:
+            g = _glue_emdash_appositive(pre_parse, post_parse)
+            if g is not None:
+                glued.append(g)
+                if len(glued) >= n_best:
+                    break
+        if len(glued) >= n_best:
+            break
+
+    if not glued:
+        return None
+    return ParseResult(parses=glued, fragments=[])
+
+
+def _glue_emdash_appositive(
+    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    """Synthesize the matrix ``S → S PUNCT[DASH] X`` parse from two
+    independently-parsed halves. Mirrors :func:`_glue_colon_appositive`
+    with the punct class set to DASH.
+
+    Returns ``None`` when the synthesized f-structure fails the same
+    well-formedness check the chart-level em-dash rule would have run.
+    """
+    pre_ctree, pre_fs, pre_a, pre_diags = pre_parse
+    post_ctree, post_fs, _post_a, post_diags = post_parse
+    dash_leaf = CNode(
+        label="PUNCT[PUNCT_CLASS=DASH]",
+        children=[],
+        equations=[],
+    )
+    matrix_ctree = CNode(
+        label="S",
+        children=[pre_ctree, dash_leaf, post_ctree],
+        equations=[],
+    )
+    existing_app = pre_fs.feats.get("APP")
+    if existing_app is None:
+        new_app: frozenset[FStructure] = frozenset({post_fs})
+    elif isinstance(existing_app, frozenset):
+        new_app = existing_app | {post_fs}
+    else:  # pragma: no cover — APP is set-valued in every grammar path
+        return None
+    pre_fs.feats["APP"] = new_app
+    _lift_in_situ_q_type(pre_fs)
+    _, wf_diags = lfg_well_formed(pre_fs, matrix_ctree)
+    if any(d.is_blocking() for d in wf_diags):
         if existing_app is None:
             del pre_fs.feats["APP"]
         else:

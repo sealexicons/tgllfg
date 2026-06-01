@@ -31,6 +31,73 @@ this layer (productive ``tag-`` / ``tig-`` / ``card_redup`` /
 from ..core.common import Token
 
 
+# Phase 10.J.post-12.4 — multi-word fixed expressions (MWEs) recognized
+# as a single token after tokenization. Each entry is the lowercased
+# bigram of norms; the merged token's surface preserves the original
+# whitespace-separated form and its norm becomes the same joined-with-
+# space lowercased string (which matches the analyzer's index key for
+# multi-word citations in nouns.yaml).
+#
+# Per user dialog 2026-05-31 (linguistic guidance):
+#
+# * ``oras Pilipino``  — lexicalized MWE for "Filipino time" (idiomatic
+#   for habitual lateness). Non-compositional; ``oras Amerikano`` /
+#   ``oras Hapones`` are not parallel cultural concepts. Treated as a
+#   NOUN MWE (analogous to English ``red tape``, ``brain drain``).
+#
+# * ``ibig sabihin`` — productive verbal/light-verb expression "mean,
+#   signify". The form admits clitic interpolation in productive use
+#   (``ang ibig kong sabihin`` "what I mean"), but every audit-attested
+#   surface is contiguous (PANAHON/sent-41 + wave2-rg-int sent-446 +
+#   sent-1256). The contiguous form is registered as a NOUN MWE so it
+#   composes with the headless-DP construction ``ang + N → NP[NOM]``;
+#   the productive non-contiguous form is future work (STATIVE-VERB
+#   + OV-INF complement infrastructure not yet implemented).
+_MULTIWORD_NORMS: set[str] = {
+    "oras pilipino",
+    "ibig sabihin",
+}
+
+
+def merge_multiword_compounds(tokens: list[Token]) -> list[Token]:
+    """Collapse bigrams of (token[i], token[i+1]) whose lowercased
+    space-joined norms match a registered :data:`_MULTIWORD_NORMS`
+    entry into a single token.
+
+    The merged token preserves the original whitespace-separated
+    surface form (so ``oras Pilipino`` doesn't lose the capitalization
+    or word boundary) and uses the joined-with-space lowercased form
+    as its norm. The analyzer's noun-citation index is keyed on
+    ``citation.lower()`` (see :meth:`tgllfg.morph.analyzer.Analyzer._build_index`),
+    so a NOUN lex entry with citation ``oras Pilipino`` is found
+    directly by the joined norm.
+
+    Sentence-internal merges only — leading / trailing whitespace
+    around the matched pair is implicit (each token's ``start``/``end``
+    bounds are preserved, with the merged token spanning ``a.start``
+    to ``b.end``).
+    """
+    out: list[Token] = []
+    i = 0
+    n = len(tokens)
+    while i < n - 1:
+        joined_norm = f"{tokens[i].norm} {tokens[i + 1].norm}"
+        if joined_norm in _MULTIWORD_NORMS:
+            out.append(Token(
+                surface=f"{tokens[i].surface} {tokens[i + 1].surface}",
+                norm=joined_norm,
+                start=tokens[i].start,
+                end=tokens[i + 1].end,
+            ))
+            i += 2
+            continue
+        out.append(tokens[i])
+        i += 1
+    if i < n:
+        out.append(tokens[i])
+    return out
+
+
 def merge_hyphen_compounds(tokens: list[Token]) -> list[Token]:
     """Collapse ``X``, ``-``, ``Y`` token triples into a single
     ``XY`` token when both flanking tokens are alphabetic and the

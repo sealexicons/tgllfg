@@ -2171,6 +2171,54 @@
   feats: {LEMMA: internet}
   source: audit-corpus
 
+# Phase 10.J.post-12.4: ``oras Pilipino`` MWE NOUN — idiomatic
+# "Filipino time" referring to the culturally recognized concept of
+# habitual lateness. Per user dialog 2026-05-31 (linguistic analysis):
+# the phrase is **strongly lexicalized**, non-compositional, and the
+# modifier ``Pilipino`` is not freely substitutable (``oras Amerikano``
+# / ``oras Hapones`` / ``oras Pranses`` do not denote parallel
+# cultural concepts). Analogous to English fixed NPs like
+# ``red tape`` / ``brain drain``.
+#
+# Recognized via the :func:`tgllfg.text.merge_multiword_compounds`
+# pre-pass (``_MULTIWORD_NORMS`` set in ``text/multiword.py``); the
+# merged single token's lowercased norm ``oras pilipino`` matches the
+# citation index here. PANAHON/sent-41 attestation:
+# ``Kaya nga may sinasabing oras Pilipino -- na ang ibig sabihin ay
+# laging huli.``
+- citation: oras Pilipino
+  pos: NOUN
+  gloss: Filipino time (idiomatic, habitual lateness)
+  feats: {LEMMA: oras Pilipino, SUBCLASS: ABSTRACT}
+  source: audit-corpus
+
+# Phase 10.J.post-12.4: ``ibig sabihin`` MWE NOUN — deverbal
+# "meaning" from the productive ``ibig`` STATIVE-VERB + OV-INF
+# complement construction. Per user dialog 2026-05-31: this is
+# **not** a fixed compound — the underlying construction is
+# productive and admits clitic interpolation (``ang ibig kong
+# sabihin`` "what I mean"), so the user's preference is "I would
+# not add ang ibig sabihin as a fixed lexical unit. I might
+# optionally add ibig sabihin as a recognized multi-word predicate."
+#
+# This entry registers the **contiguous** form ``ibig sabihin``
+# as a multi-word NOUN MWE to close the audit-attested surfaces:
+# PANAHON/sent-41 ``ang ibig sabihin ay laging huli``;
+# wave2-rg-int page-61/prose/sent-446 ``Ano ang ibig sabihin ng 'ang
+# lungkot ng panahon?'``; wave2-rg-int page-181/prose/sent-1256
+# ``Ano ang ibig sabihin ng mga salawikain?``. All three audit
+# usages are contiguous. The non-contiguous productive form (with
+# clitic interpolation) is future work — would require a STATIVE-VERB
+# + OV-INF complement chart construction, not yet implemented.
+#
+# Wraps to ``NP[CASE=NOM]`` via the existing ``DET[CASE=NOM] + N
+# → NP`` headless-DP construction (no special chart rule needed).
+- citation: ibig sabihin
+  pos: NOUN
+  gloss: meaning, sense (deverbal MWE — productive ibig+OV-INF construction)
+  feats: {LEMMA: ibig sabihin}
+  source: audit-corpus
+
 # Phase 10.J.post-8.5.1: ``lahi`` NOUN — "race, lineage,
 # ethnicity, generation". Used in ``salin-lahi`` compound "passing
 # of generations" (PAMILYA/sent-17). Also free-standing.
