@@ -575,6 +575,25 @@
   gloss: tired
   affix_class: []
 
+# Phase 10.J.post-12.5: ``samasama`` ADJ — predicative "all
+# together / collectively" (PAMILYA/sent-15 `Kadalasa'y sama-sama
+# sa isang bahay ang lolo at lola, ang ama at ina at ang mga
+# anak.` "Usually the grandparents, parents, and children live
+# together in one house"). Polysemy partner with the Phase
+# 10.J.post-8.5.4 ``samasama`` VERB entry in verbs.yaml (which
+# yields the inflected gerund forms ``pagsamasama`` /
+# ``pagsasamasama``; PAG-AARAL/sent-5 closure). Bare ``sama-
+# sama`` surface tokenizes through ``merge_hyphen_compounds`` into
+# the joined-form ``samasama`` token; with this ADJ entry the
+# bare token gains a predicative-ADJ reading admitted by the
+# Phase 5g ``S → ADJ[PREDICATIVE] NP[CASE=NOM]`` clause rule
+# (and its DAT-PP-adjunct companion from Phase 10.J.post-11).
+- citation: samasama
+  pos: ADJ
+  gloss: together, all together (collective predicate; reduplicated form)
+  affix_class: []
+  source: audit-corpus
+
 - citation: panay
   pos: ADJ
   gloss: constant, continuous, all-the-time
