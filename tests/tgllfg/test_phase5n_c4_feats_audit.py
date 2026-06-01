@@ -88,9 +88,9 @@ def test_binary_feats_count_matches_audit() -> None:
     ``PART[NAMAN=true]``, pruning the spurious chart enumerations
     where any PART filled the rule's daughter slot).
     Drift means update both the doc and this assertion together."""
-    assert len(BINARY_FEATS) == 70, (
+    assert len(BINARY_FEATS) == 72, (
         f"BINARY_FEATS has {len(BINARY_FEATS)} entries; "
-        f"docs/feats-binary-audit.md says 70. "
+        f"docs/feats-binary-audit.md says 72. "
         f"Update both together if the audit changes."
     )
 
