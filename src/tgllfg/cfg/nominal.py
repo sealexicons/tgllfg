@@ -3441,3 +3441,39 @@ def register_rules(rules: list[Rule]) -> None:
                 "(↑ MAGISA) = true",
             ],
         ))
+
+    # === Phase 10.J.post-12.6: quoted-N mention rule ==============
+    #
+    # Admits a single-N mention quote — e.g., ``tinatawag na
+    # 'monsoon'`` "what is called 'monsoon'" (PANAHON sent-28),
+    # ``ang "classroom"`` "the 'classroom'" (R&G Conv sent-40),
+    # ``ang "party"`` (R&G Conv sent-182).
+    #
+    # The opener and closer share the same ``QUOT_TYPE`` (SINGLE
+    # or DOUBLE) — one rule per type pairs the lex's ASCII-disabled
+    # / curly-only PART entries (see
+    # ``data/tgl/particles.yaml`` Phase 10.J.post-12.6 block, and
+    # the :func:`tgllfg.text.quotes.normalize_quoted_spans` pre-pass
+    # that converts ASCII pairs to curly).
+    #
+    # F-structure: the inner N projects to the matrix (``(↑) = ↓2``);
+    # the matrix carries ``QUOTED=true`` orthographically and
+    # ``MENTION=true`` semantically (the single-token-inner case
+    # is the canonical metalinguistic-mention pattern). Future
+    # work may relax MENTION for scare-quote / emphasis uses by
+    # consulting matrix predicate semantics.
+    for quot_type in ("SINGLE", "DOUBLE"):
+        rules.append(Rule(
+            "N",
+            [
+                f"PART[QUOT_ROLE=OPEN, QUOT_TYPE={quot_type}]",
+                "N",
+                f"PART[QUOT_ROLE=CLOSE, QUOT_TYPE={quot_type}]",
+            ],
+            [
+                "(↑) = ↓2",
+                "(↑ QUOTED) = true",
+                "(↑ MENTION) = true",
+                f"(↑ QUOT_TYPE) = '{quot_type}'",
+            ],
+        ))
