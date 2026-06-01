@@ -1438,6 +1438,60 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 10.J.post-12.3: wh-PRON + LK + N (selectional Q-NP) -
+    #
+    # ``Anong uri kayo?``        "What kind are you?"
+    # ``Anong uring mag-aaral kayo?``  "What kind of student are you?"
+    # ``Sinong tao kayo?``       "Who/which person are you?"
+    # ``Anong sasakyan ito?``    "What vehicle is this?"
+    #
+    # Sibling of the Phase 5i Commit 6 ``aling``-style wh-Q+N rule
+    # above. ``aling`` (and ``magkano`` / ``ilan``-WH / ``alin``)
+    # are Q[VAGUE, WH] particle heads; the wh-pronouns ``ano`` /
+    # ``sino`` / ``alin`` carry the same wh semantics but are
+    # lexed as PRON[WH, CASE=NOM] in pronouns.yaml. With the bound
+    # ``-ng`` linker the wh-PRON forms a selectional Q-NP
+    # equivalent to ``aling``: ``anong + N`` "what (kind of) N" /
+    # ``sinong + N`` "who/which N". After ``split_linker_ng``,
+    # ``Anong`` becomes ``ano + -ng``, mirroring ``aling`` →
+    # ``alin + -ng``.
+    #
+    # The output ``N[WH=true]`` feeds the Phase 5i Commit 6 wh-N
+    # cleft rule in cfg/clause.py (``S[Q_TYPE=WH] → N[WH]
+    # NP[CASE=NOM]``) so ``Anong uri kayo?`` parses as the same
+    # cleft shape as ``Aling tao kayo?``: wh-N pivot + NP[NOM]
+    # SUBJ (with the 2P pronoun ``kayo`` wrapping to NP[CASE=NOM]
+    # via the existing Phase 4 PRON-NP shells).
+    #
+    # No VAGUE lift (wh-PRONs aren't VAGUE-marked, unlike ``alin``
+    # / ``ilan`` Q-heads); ``¬ (↓3 VAGUE)`` blocks a wh-PRON +
+    # vague-N composition (``Anong ilan ...``) which would be
+    # an unattested doubly-quantified construction.
+    #
+    # Reference: S&O 1972 §6, R&B 1986 — wh-PRON-as-Q-head is the
+    # productive selectional construction for "what kind of N" /
+    # "which N" / "whose N" in Tagalog. The PAG-AARAL/sent-13
+    # surface (R&G 1981 Intermediate) attests the construction in
+    # the audit corpus.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "N[WH=true]",
+            [
+                "PRON[WH=true, CASE=NOM]",
+                f"PART[LINK={link}]",
+                "N",
+            ],
+            [
+                "(↑ PRED) = ↓3 PRED",
+                "(↑ LEMMA) = ↓3 LEMMA",
+                "(↑ WH) = true",
+                "(↑ WH_LEMMA) = ↓1 LEMMA",
+                "¬ (↓3 VAGUE)",
+                "(↓1 WH) =c true",
+            ],
+        ))
+
+
     # --- Phase 5f Commit 20: universal `bawat` / `kada`
     # NP-internal modifier (Group H2 item 6) ---------------------
     #
