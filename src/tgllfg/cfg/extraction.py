@@ -776,6 +776,139 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 10.J.post-12.7 commit 2: ADJ-pred + DAT-NP / PP residue ---
+    #
+    # ``Ang trabaho ay madali sa marami.``
+    #     "The work is easy for many."
+    # ``Ang trabaho ay mahirap sa akin.``
+    #     "The work is hard for me."
+    # ``Ang pag-aaral ay madali sa ilang tao.``
+    #     "The study is easy for some people."
+    #
+    # Two new ``S_GAP_PREDADJ`` shapes capturing the predicate-residue
+    # of an ay-fronted clause whose comment side is a predicative ADJ
+    # with a DAT-NP / PP adjunct (locative / oblique). Companions to
+    # the Phase 5g matrix-S rules at clause.py:1299 / 1338
+    # (``S → ADJ[PRED] NP[NOM] NP[DAT]`` and variants) — those handle
+    # the non-fronted form; ay-fronting promotes the NOM-SUBJ to topic
+    # and leaves the post-ay residue as ``ADJ + DAT/PP``.
+    #
+    # PAG-AARAL/sent-1 (the immediate trigger):
+    # ``Ang pag-aaral ng isang wika ay madali sa ilang tao at
+    #   napakahirap para sa iba.``
+    # — coordinated residue ``[madali sa ilang tao] at [napakahirap
+    # para sa iba]``. The first conjunct is ADJ + DAT-NP; the second
+    # is ADJ + PP (``para sa iba`` is a BENEFICIARY-PP). Both shapes
+    # are needed so the coord rule below (commit 3) can compose them.
+    #
+    # Spurious-ambiguity note for the PP variant: the existing
+    # ``S → S PP`` (discourse.py:399) already admits
+    # ``Ang trabaho ay mahirap para sa akin.`` by attaching ``para sa
+    # akin`` to the matrix S as an ADJUNCT. The new S_GAP_PREDADJ + PP
+    # rule below adds a competing parse path where the PP attaches
+    # inside the residue. Both readings are licit (S-level ADJUNCT vs
+    # ADJ-internal complement); ranking sorts them with the canonical
+    # S-level reading on top.
+    rules.append(Rule(
+        "S_GAP_PREDADJ",
+        ["ADJ[PREDICATIVE]", "NP[CASE=DAT]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+            "↓2 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+    rules.append(Rule(
+        "S_GAP_PREDADJ",
+        ["ADJ[PREDICATIVE]", "PP"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+            "↓2 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+
+
+    # --- Phase 10.J.post-12.7 commit 3: S_GAP_PREDADJ coord ----------
+    #
+    # ``Ang pag-aaral ng isang wika ay madali sa ilang tao at
+    #   napakahirap para sa iba.``
+    #     "The study of one language is easy for some people and very
+    #      difficult for others." (PAG-AARAL/sent-1)
+    #
+    # Coordinated predicate residue inside the ay-construction: two
+    # ``ADJ + DAT/PP`` predicates joined by ``at`` / ``o``. The
+    # existing Phase 6.C ADJ-coord rule (coordination.py:1069)
+    # ``ADJ[PRED, COORD=X] → ADJ[PRED] PART[COORD=X] ADJ[PRED]``
+    # handles the **bare**-ADJ residue case (``Ang trabaho ay madali
+    # at mahirap.``) because each conjunct is a bare ADJ — but it
+    # doesn't admit ADJ-conjuncts that carry their own DAT-NP / PP
+    # adjuncts (the post-11 ADJ-pred + DAT shape lives at the S
+    # level, not the ADJ level).
+    #
+    # This rule operates one level up: each conjunct is itself an
+    # ``S_GAP_PREDADJ`` (so the bare-ADJ commit-2 shapes admit
+    # ``madali sa ilang tao`` and ``napakahirap para sa iba`` as
+    # individual S_GAP_PREDADJs), and the coord rule joins them at
+    # the residue level.
+    #
+    # F-structure shape:
+    #
+    #   COORD       — 'AND' or 'OR'
+    #   CONJUNCTS   — {↓1, ↓3} (each is a complete S_GAP_PREDADJ
+    #                 fstruct with its own PRED / ADJ_LEMMA /
+    #                 ADJUNCT)
+    #   SUBJ        — shared across conjuncts (= ↓1 SUBJ = ↓3 SUBJ)
+    #                 via structure-sharing; the outer ay-rule then
+    #                 binds this shared SUBJ to the topic NP via
+    #                 REL-PRO
+    #   PREDICATIVE — true (lifted from daughters)
+    #
+    # The REL-PRO propagation is symmetric: ``(↑ REL-PRO) = ↓1 REL-PRO
+    # = ↓3 REL-PRO`` so both conjuncts share the matrix REL-PRO. The
+    # outer ay-rule's ``(↓3 REL-PRO) = ↓1`` (binding to topic) and
+    # ``(↓3 REL-PRO) =c (↓3 SUBJ)`` constraint propagate downward.
+    #
+    # Each conjunct's bare-ADJ S_GAP_PREDADJ rule already sets
+    # ``(↑ SUBJ) = (↑ REL-PRO)``, so the SUBJ=REL-PRO equality is
+    # established at the conjunct level. The matrix coord rule above
+    # unifies SUBJs across conjuncts; the ay-rule's constraint
+    # checks the matrix SUBJ=REL-PRO equality and succeeds.
+    for coord in ("AND", "OR"):
+        rules.append(Rule(
+            "S_GAP_PREDADJ",
+            [
+                "S_GAP_PREDADJ",
+                f"PART[COORD={coord}]",
+                "S_GAP_PREDADJ",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                f"(↑ COORD) = '{coord}'",
+                "(↑ PREDICATIVE) = true",
+                "(↓1 PREDICATIVE) =c true",
+                "(↓3 PREDICATIVE) =c true",
+                f"(↓2 COORD) =c '{coord}'",
+                # SUBJ + REL-PRO share: each conjunct's SUBJ/REL-PRO
+                # is unified with the matrix's. The outer ay-rule
+                # binds matrix REL-PRO to the topic; this propagates
+                # downward to each conjunct, satisfying their
+                # ``(↑ SUBJ) = (↑ REL-PRO)`` requirements.
+                "(↑ SUBJ) = ↓1 SUBJ",
+                "(↑ SUBJ) = ↓3 SUBJ",
+                "(↑ REL-PRO) = ↓1 REL-PRO",
+                "(↑ REL-PRO) = ↓3 REL-PRO",
+            ],
+        ))
+
+
     # --- Phase 5d Commit 5: non-pivot ay-fronting gap-categories ---
     #
     # Phase 4 §7.4 admitted only SUBJ-pivot ay-fronting via

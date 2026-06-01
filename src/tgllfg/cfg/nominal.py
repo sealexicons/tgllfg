@@ -181,6 +181,44 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 10.J.post-12.7 commit 4: ``iba`` (Q[QUANT=OTHER]) as bare NP ---
+    #
+    # ``Ang iba ay maganda.``       "The others are beautiful."
+    # ``Para sa iba.``               "For others."
+    # ``... napakahirap para sa iba.``
+    #     (PAG-AARAL/sent-1 second-conjunct PP-complement)
+    #
+    # ``iba`` ("other") is the sole entry with ``QUANT=OTHER`` in
+    # particles.yaml. Unlike the VAGUE-Q family handled by the rule
+    # above (``marami`` / ``kaunti`` / ``ilan`` / ``karamihan``),
+    # ``iba`` participates in the GEN-NP partitive
+    # (``iba ng X`` = "some of the X"), so it deliberately lacks the
+    # ``VAGUE`` feat. Its bare-NP use (``the others``, no partitive)
+    # is a separate route that needs its own rule.
+    #
+    # NOM and DAT cases only — GEN case is reserved for the partitive
+    # construction (nominal.py:1393 area).
+    #
+    # ``(↑ PRED) = 'PRO'`` synthesises an implicit head referent
+    # parallel to the VAGUE-Q rule above and the standalone-DEM rules
+    # (nominal.py:358 area). The ``(↓2 QUANT) =c 'OTHER'`` constraining
+    # equation belt-and-braces — the chart-symbol pattern already
+    # filters to ``Q[QUANT=OTHER]``, but the explicit constraint
+    # protects against future Q entries adopting the same surface.
+    for case, marker in (("NOM", "DET[CASE=NOM]"),
+                          ("DAT", "ADP[CASE=DAT]")):
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [marker, "Q[QUANT=OTHER]"],
+            [
+                "(↑) = ↓1",
+                "(↑) = ↓2",
+                "(↑ PRED) = 'PRO'",
+                "(↓2 QUANT) =c 'OTHER'",
+            ],
+        ))
+
+
     # --- Phase 7a.A: NP-internal ``mga`` plural marker -----------
     #
     # Closes §18.1.1 #11 (``mga`` plural marker on regular nouns).
@@ -920,8 +958,65 @@ def register_rules(rules: list[Rule]) -> None:
     # aklat``), the lifts create empty f-nodes at ``NP.APPROX`` /
     # ``NP.DISTRIB``; downstream consumers checking the value as
     # ``is True`` skip the empty case naturally.
+    # Phase 10.J.post-12.7 commit 1: split the rule into measure-N vs
+    # non-measure-N head variants. The original single rule used
+    # path-to-path defining equations ``(↑ MEASURE) = ↓4 MEASURE`` and
+    # ``(↑ MEASURE_HEAD) = ↓4 MEASURE_HEAD`` to lift the head-N's
+    # measure markers onto the matrix NP. The unifier's defining-eq
+    # semantics (``_resolve_for_write`` on both sides) creates the
+    # destination path even when the source path is undefined — so
+    # **every** cardinal-modified NP came out with an empty ``MEASURE``
+    # f-struct on its matrix, even for non-measure heads like ``bata``
+    # / ``wika``. The downstream NP-possessive guard
+    # (``¬ (↓2 MEASURE)``, nominal.py:1133) is a value-blind
+    # negative-existential, so it fired on **any** cardinal-modified
+    # GEN-NP — blocking ``ng isang bata`` / ``ng isang wika`` from
+    # composing as a possessor (the PAG-AARAL/sent-1 ZPF).
+    #
+    # The split replaces the path-to-path propagation with two
+    # variants per (case, link):
+    #
+    # * **Measure-N variant** (``(↓4 MEASURE) =c true``): a constraining
+    #   equation gates the rule on the head N having ``MEASURE=true``,
+    #   then a defining equation sets ``(↑ MEASURE) = 'true'`` (atom-
+    #   set, no spurious LHS-only path). ``(↑ MEASURE_HEAD) = ↓4
+    #   MEASURE_HEAD`` propagates the measure-head lemma; since the
+    #   gate guarantees ↓4's MEASURE-true status, the measure-N rule
+    #   (nominal.py:1867) also guarantees ↓4 has ``MEASURE_HEAD``, so
+    #   no spurious propagation.
+    # * **Non-measure-N variant** (``¬ (↓4 MEASURE)``): a negative
+    #   existential gates the rule on the head N having no MEASURE
+    #   feat. No MEASURE / MEASURE_HEAD propagation — clean.
+    #
+    # Both variants share the rest of the rule body (PRED / LEMMA /
+    # NUM / CARDINAL_VALUE / APPROX / DISTRIB propagation and the
+    # ``¬ (↓4 CARDINAL_VALUE)`` + ``(↓2 CARDINAL) =c true`` guards).
+    #
+    # Total rule count: 12 (was 6). At chart-construction time both
+    # variants enumerate; at solve time only one survives its MEASURE
+    # gate. The chart cost roughly doubles for cardinal-NP spans, but
+    # the spurious-path bug is gone.
+    _common_eqs = [
+        "(↑) = ↓1",
+        "(↑ PRED) = ↓4 PRED",
+        "(↑ LEMMA) = ↓4 LEMMA",
+        "(↑ NUM) = ↓2 NUM",
+        "(↑ CARDINAL_VALUE) = ↓2 CARDINAL_VALUE",
+        "(↑ APPROX) = ↓2 APPROX",
+        "(↑ DISTRIB) = ↓2 DISTRIB",
+        "¬ (↓4 CARDINAL_VALUE)",
+        # Constraining: enforce the daughter is actually
+        # CARDINAL=YES, not just any NUM. Without this,
+        # ORDINAL=YES NUMs (Phase 5f Commit 7) match by
+        # non-conflict (no shared CARDINAL key) and
+        # produce empty CARDINAL_VALUE fstructs on the
+        # matrix NP. Same fix-pattern as Commit 6's
+        # PART[DECIMAL_SEP] constraint.
+        "(↓2 CARDINAL) =c true",
+    ]
     for case, marker in _cardinal_case_marker.items():
         for link in ("NA", "NG"):
+            # Measure-N head variant: lifts MEASURE/MEASURE_HEAD.
             rules.append(Rule(
                 f"NP[CASE={case}]",
                 [
@@ -930,34 +1025,23 @@ def register_rules(rules: list[Rule]) -> None:
                     f"PART[LINK={link}]",
                     "N",
                 ],
-                [
-                    "(↑) = ↓1",
-                    "(↑ PRED) = ↓4 PRED",
-                    "(↑ LEMMA) = ↓4 LEMMA",
-                    "(↑ NUM) = ↓2 NUM",
-                    "(↑ CARDINAL_VALUE) = ↓2 CARDINAL_VALUE",
-                    "(↑ APPROX) = ↓2 APPROX",
-                    "(↑ DISTRIB) = ↓2 DISTRIB",
-                    # Phase 9.X.post-3: lift MEASURE from the head N
-                    # so cardinal-modified measure-NPs surface as
-                    # MEASURE=true at the NP level. The downstream
-                    # NP-possessive guard (``¬ (↓2 MEASURE)``) uses
-                    # this to block ``ang manok ng isang tasang
-                    # palay`` from compiling as a possessive — its
-                    # absence was a major forest-density contributor
-                    # to ANG MANOK sent-29's 0-parse state under the
-                    # default ``max_tree_iterations=5000`` cap.
-                    "(↑ MEASURE) = ↓4 MEASURE",
+                _common_eqs + [
+                    "(↓4 MEASURE) =c true",
+                    "(↑ MEASURE) = true",
                     "(↑ MEASURE_HEAD) = ↓4 MEASURE_HEAD",
-                    "¬ (↓4 CARDINAL_VALUE)",
-                    # Constraining: enforce the daughter is actually
-                    # CARDINAL=YES, not just any NUM. Without this,
-                    # ORDINAL=YES NUMs (Phase 5f Commit 7) match by
-                    # non-conflict (no shared CARDINAL key) and
-                    # produce empty CARDINAL_VALUE fstructs on the
-                    # matrix NP. Same fix-pattern as Commit 6's
-                    # PART[DECIMAL_SEP] constraint.
-                    "(↓2 CARDINAL) =c true",
+                ],
+            ))
+            # Non-measure-N head variant: no MEASURE propagation.
+            rules.append(Rule(
+                f"NP[CASE={case}]",
+                [
+                    marker,
+                    "NUM[CARDINAL]",
+                    f"PART[LINK={link}]",
+                    "N",
+                ],
+                _common_eqs + [
+                    "¬ (↓4 MEASURE)",
                 ],
             ))
     # An N-level companion rule for bare cardinal-N use
