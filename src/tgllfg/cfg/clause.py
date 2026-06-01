@@ -1314,6 +1314,46 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # --- Phase 10.J.post-12.5: ADJ-pred + DAT-adjunct + NOM-SUBJ ---
+    #
+    # ``Sama-sama sa isang bahay ang lolo at lola.``
+    #     "The grandfather and grandmother are together in one house."
+    # ``Mabait sa bahay ang bata.``         "The child is kind at home."
+    # ``Pagod sa trabaho ang lalaki.``       "The man is tired from work."
+    #
+    # Free-word-order companion to the post-11 ADJ-pred + NOM + DAT
+    # rule directly above — admits the **pre-SUBJ DAT-adjunct** order
+    # parallel to the Phase 8.V V-DAT-NOM rule at clause.py:99. CASE
+    # markers fully distinguish the two NPs (NOM=ang/si, DAT=sa/kay)
+    # so no spurious ambiguity arises against the canonical
+    # ADJ + NOM + DAT ordering.
+    #
+    # Required for the PAMILYA/sent-15 ADJ-pred surface:
+    # ``Kadalasa'y sama-sama sa isang bahay ang lolo at lola, ang
+    #   ama at ina at ang mga anak.``
+    # — `sa isang bahay` (DAT-LOC) precedes the 3-NP NOM coord
+    # subject. Without this rule the surface had no S-rule admitting
+    # ADJ-pred + DAT + NOM order (the existing rule only handled
+    # ADJ + NOM + DAT).
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE]", "NP[CASE=DAT]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+            "¬ (↓1 COMP_DEGREE)",
+            "(↑ INTENS) = ↓1 INTENS",
+            "(↑ DISTRIB) = ↓1 DISTRIB",
+            "(↑ KASING_N) = ↓1 KASING_N",
+            "(↑ REDUP_SEM) = ↓1 REDUP_SEM",
+        ],
+    ))
+
+
     # --- Phase 10.E.1: ang-exclamative predication (Ang ganda mo!) -------
     #
     # ``Ang ganda-ganda mo naman!``  "You're so beautiful!"  (rg-int
@@ -1622,6 +1662,32 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ PRED) = 'ADV <SUBJ>'",
             "(↑ SUBJ) = ↓2",
             "↓3 ∈ (↑ ADJUNCT)",
+            "(↑ ADV_LEMMA) = ↓1 LEMMA",
+            "(↑ ADV_TYPE) = ↓1 ADV_TYPE",
+            "(↑ PREDICATIVE) = true",
+        ],
+    ))
+
+    # --- Phase 10.J.post-12.5: ADV-pred + DAT-adjunct + NOM-SUBJ ----
+    #
+    # Free-word-order companion to the post-11 ADV-pred + NOM + DAT
+    # rule directly above — admits the pre-SUBJ DAT-adjunct order
+    # for ADV-pred constructions parallel to the ADJ-pred sibling at
+    # post-12.5 (clause.py around the post-11 ADJ-pred + NOM + DAT
+    # rule). Same shape: matrix carries ADV-PRED, ADV-LEMMA, ADV-TYPE
+    # via shares from ↓1; SUBJ binds to ↓3 (the NOM-NP); ↓2 (the
+    # DAT-NP) joins ADJUNCT.
+    #
+    # Audit reach: collaborative-manner ADV-as-predicate
+    # (``tulungtulong``, ``sama-sama``-style ADVs) with pre-SUBJ
+    # locative / beneficiary DAT-adjuncts.
+    rules.append(Rule(
+        "S",
+        ["ADV", "NP[CASE=DAT]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'ADV <SUBJ>'",
+            "(↑ SUBJ) = ↓3",
+            "↓2 ∈ (↑ ADJUNCT)",
             "(↑ ADV_LEMMA) = ↓1 LEMMA",
             "(↑ ADV_TYPE) = ↓1 ADV_TYPE",
             "(↑ PREDICATIVE) = true",
