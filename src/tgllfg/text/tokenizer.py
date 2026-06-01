@@ -66,6 +66,62 @@ _WORD = re.compile(
     re.IGNORECASE,
 )
 
+# Phase 10.J.post-12.3 — parenthetical-normalization regexes.
+# Match a paren-bracketed region (no nesting; ``[^()]*``); capture
+# the inner content for the dispatch below.
+_PAREN_REGION = re.compile(r"\s*\(\s*([^()]*?)\s*\)\s*")
+# A single-word inner: alphanumeric run, optionally hyphenated.
+# Used to discriminate pedagogical single-word glosses (drop both
+# delimiters AND content) from multi-word parentheticals (keep
+# content). See :func:`normalize_parens`.
+_SINGLE_WORD = re.compile(r"\w[\w-]*")
+
+
+def normalize_parens(text: str) -> str:
+    """Pre-tokenize pass — normalize parenthetical glosses.
+
+    Parenthetical regions in the audit-corpus reference works
+    (R&G 1981 Intermediate, R&C 1990, S&O 1972, etc.) come in
+    three flavors:
+
+    1. **Single-word in-line gloss** — e.g.,
+       ``mag-aaral (estudyante)`` (R&G 1981 Intermediate
+       PAG-AARAL/sent-13). Parens enclose a synonym (often an
+       English / Spanish-loan equivalent) as a translator's gloss.
+       Metalinguistic; not part of the syntactic structure. The
+       pass drops the parens AND the contents.
+
+    2. **Sentence-wrap** — e.g., ``(Kaibigan ko siya.)`` (R&G 1981
+       Conversational page-13/prose/sent-1), ``(Nagkita sa daan
+       ang magkaibigan.)`` (R&G 1981 Intermediate page-13). Parens
+       wrap an entire example sentence as a presentation device.
+       The pass drops the parens, keeps the content.
+
+    3. **Morpheme-decomposition notation** — e.g., ``(mang+bili)``
+       (R&C 1990 Ch5 Exercise/sent-155). Parens enclose linguistic-
+       analysis notation. Content preserved (parens stripped); the
+       inner notation typically doesn't parse, but no regression
+       from the bare-text baseline.
+
+    Discrimination: a paren region whose inner content matches
+    a single word (``\\w[\\w-]*``) is treated as case 1 and
+    stripped entirely; all other contents are preserved (parens
+    stripped, content kept).
+
+    The pass is whitespace-folding: any run of whitespace around a
+    paren region collapses to a single space, and a global
+    final collapse removes any extra spaces introduced by the
+    substitution.
+    """
+    def _replace(m: re.Match[str]) -> str:
+        inner = m.group(1)
+        if _SINGLE_WORD.fullmatch(inner):
+            return " "
+        return f" {inner} "
+
+    out = _PAREN_REGION.sub(_replace, text)
+    return re.sub(r"\s+", " ", out).strip()
+
 
 def tokenize(s: str) -> list[Token]:
     out: list[Token] = []

@@ -41,6 +41,7 @@ from ..morph import analyze_tokens
 from ..parse import parse_with_annotations
 from ..text import (
     merge_hyphen_compounds,
+    normalize_parens,
     split_apostrophe_t,
     split_apostrophe_y,
     split_enclitics,
@@ -176,6 +177,13 @@ def parse_text_with_fragments(
     non-root completed states from the Earley chart, each with its
     partial f-structure and the diagnostics that prevented promotion.
     """
+    # Phase 10.J.post-12.3: strip pedagogical-gloss parens
+    # (``mag-aaral (estudyante)`` → ``mag-aaral``) and the paren
+    # delimiters around sentence-wrap parentheticals
+    # (``(Kaibigan ko siya.)`` → ``Kaibigan ko siya.``). See
+    # :func:`tgllfg.text.tokenizer.normalize_parens` for the
+    # single-word-gloss vs multi-word discrimination.
+    text = normalize_parens(text)
     toks = tokenize(text)
     # Phase 5k Commit 2: merge the post-vowel bound clitic ``'t`` (=
     # contracted ``at`` "and") into a synthetic ``at`` token so it
