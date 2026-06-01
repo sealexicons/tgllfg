@@ -1098,11 +1098,46 @@ def disambiguate_homophone_clitics(
                 and any(ma.pos in ("NOUN", "N") for ma in prev_prev)
                 and _next_content_is_verb(analyses, i)
             )
+            # Phase 10.J.post-12.6: V[non-AV] + ``na`` + N participial
+            # ("called X" / "what is harvested as X"). The Phase 9.X.c52
+            # rule ``N → V[VOICE=OV|DV|IV] PART N`` admits this
+            # construction (PANAHON sent-28's ``tinatawag na 'monsoon'``,
+            # sent-41's ``sinasabing oras Pilipino`` — though sent-41
+            # uses the bound ``-ng`` linker), but the disambiguator's
+            # default VERB-prev branch was stripping the linker reading
+            # of free-standing ``na``, leaving only the ALREADY clitic
+            # — :func:`reorder_clitics` then hoisted ``na`` to clause-
+            # final and broke c52's adjacent V-PART-N pattern.
+            #
+            # Narrow gates:
+            #   * V must be non-AV (OV / DV / IV). AV verbs followed by
+            #     ``na N`` are still resolved to the ALREADY reading
+            #     (existing behavior). For c52 the V is always non-AV
+            #     (the construction is a passive participle).
+            #   * Right context must be linker-admitting (NOUN / N /
+            #     ADJ / VERB) per
+            #     :func:`_na_right_context_is_linker_target` — the same
+            #     check used by the ADJ + na + X branch above.
+            #
+            # Strips the ALREADY-clitic reading so :func:`reorder_clitics`
+            # leaves ``na`` in place. The AV vs non-AV gate avoids
+            # touching the dominant AV-V + ``na`` clause-clitic case
+            # (``Kumain na siya.``).
+            is_non_av_v_lk_n_participial = (
+                "VERB" in prev_pos
+                and any(
+                    ma.pos == "VERB"
+                    and ma.feats.get("VOICE") in ("OV", "DV", "IV")
+                    for ma in analyses[i - 1]
+                )
+                and _na_right_context_is_linker_target(analyses, i)
+            )
             if (
                 is_ctrl_verb
                 or is_ctrl_pron_seq
                 or is_say_class_pron_seq
                 or is_post_noun_pron_with_v_following
+                or is_non_av_v_lk_n_participial
             ):
                 out.append([
                     ma for ma in cands if ma.feats.get("is_clitic") is not True
@@ -1197,6 +1232,22 @@ def _na_right_context_is_linker_target(
         # the heuristic robust against trailing punctuation in tests.
         if poss == {"PART"} and all(
             (ma.lemma in (".", "?", "!", ",")) for ma in cands
+        ):
+            look += 1
+            continue
+        # Phase 10.J.post-12.6: skip a quote-opener PART so the
+        # linker-admitting target lookup reaches the quoted inner N.
+        # ``tinatawag na 'monsoon'`` (PANAHON sent-28) — the
+        # :func:`normalize_quoted_spans` pre-pass converts the ASCII
+        # pair to curly, and the curly opener is a PART[QUOT_ROLE=OPEN]
+        # immediately right of ``na``. Without this skip, the check
+        # sees a PART and returns False — :func:`reorder_clitics`
+        # then moves ``na`` to clause-final, severing the c52
+        # participial. Treats the quote-bracket as orthographic
+        # (analogous to the terminator-skip above).
+        if any(
+            ma.pos == "PART" and ma.feats.get("QUOT_ROLE") == "OPEN"
+            for ma in cands
         ):
             look += 1
             continue
