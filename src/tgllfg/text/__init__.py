@@ -10,10 +10,11 @@ from .clitics import (
     split_linker_ng,
 )
 from .multiword import merge_hyphen_compounds
-from .tokenizer import tokenize
+from .tokenizer import normalize_parens, tokenize
 
 __all__ = [
     "merge_hyphen_compounds",
+    "normalize_parens",
     "split_apostrophe_t",
     "split_apostrophe_y",
     "split_enclitics",
