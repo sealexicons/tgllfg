@@ -2429,3 +2429,40 @@
 - surface: kakanin
   pos: VERB
   feats: {VOICE: OV, ASPECT: CTPL, MOOD: IND, TR: TR, APPL: NONE, CAUS: NONE, CTRL_CLASS: NONE, LEMMA: kain}
+
+
+# === Phase 10.J.post-12.6: quotation-bracket particles ====================
+# Curly quote characters as PART entries so balanced curly quote
+# pairs admit via chart rules. Coverage strategy:
+#
+#   * Curly variants ONLY (U+2018 / U+2019 / U+201C / U+201D) are
+#     lex'd here. They're surface-unambiguous: U+2018 / U+201C always
+#     open, U+2019 / U+201D always close. One lex entry per character.
+#
+#   * ASCII `'` (U+0027) and `"` (U+0022) are surface-ambiguous (the
+#     same character serves open + close) AND collide with stray
+#     apostrophes (e.g., abbreviation prefixes ``'yon`` / ``'kako``)
+#     that currently rely on the ``_strip_non_content`` _UNK-strip
+#     path. The pipeline's :func:`tgllfg.text.quotes.normalize_quoted_spans`
+#     pre-pass converts ASCII pairs to curly only when they form a
+#     properly balanced span (and aren't part of clitic ``'t`` /
+#     ``'y`` contractions). Stray ASCII apostrophes stay ASCII →
+#     analyze as ``_UNK`` → strip → preserves prior behavior.
+#
+# All entries carry the `QUOTED` binary feat (orthographic bracket
+# marker), `QUOT_ROLE` (OPEN/CLOSE), and `QUOT_TYPE` (SINGLE/DOUBLE).
+# Chart rules consume via `PART[QUOT_ROLE=OPEN, QUOT_TYPE=X]` and
+# `PART[QUOT_ROLE=CLOSE, QUOT_TYPE=X]` for X ∈ {SINGLE, DOUBLE} so
+# the bracket-type unifies between opener and closer.
+- surface: "‘"  # left single quotation mark (curly)
+  pos: PART
+  feats: {QUOTED: true, QUOT_ROLE: OPEN, QUOT_TYPE: SINGLE}
+- surface: "’"  # right single quotation mark (curly)
+  pos: PART
+  feats: {QUOTED: true, QUOT_ROLE: CLOSE, QUOT_TYPE: SINGLE}
+- surface: "“"  # left double quotation mark (curly)
+  pos: PART
+  feats: {QUOTED: true, QUOT_ROLE: OPEN, QUOT_TYPE: DOUBLE}
+- surface: "”"  # right double quotation mark (curly)
+  pos: PART
+  feats: {QUOTED: true, QUOT_ROLE: CLOSE, QUOT_TYPE: DOUBLE}

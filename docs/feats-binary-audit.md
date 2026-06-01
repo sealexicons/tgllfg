@@ -37,8 +37,9 @@ inspection: comment text containing capitalized words followed by
 Subsequent phases extended the inventory: 9.O.3 (+1), 9.O.4 (+1),
 9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1), 9.X.c49 (+1),
 9.X.post-2 (+1), 10.E.1 (+1), 10.G (+1), 10.J.post-8.5.2 (+1),
-10.J.post-8.5.5 (+1), 10.J.post-12.2 (+2), 10.K.2 (+1) → 70 total.
-Each extension is documented inline below.
+10.J.post-8.5.5 (+1), 10.J.post-12.2 (+2), 10.K.2 (+1),
+10.J.post-12.6 (+2) → 72 total. Each extension is documented inline
+below.
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
 Python `True`/`False`. Grammar rule patterns use the `[X]` shorthand
@@ -91,6 +92,7 @@ negative.
 | `LOC_EXISTENTIAL` | locative existential reading |
 | `MAGISA` | "alone" emphatic predicate |
 | `MEASURE` | NP is a measure phrase |
+| `MENTION` | quoted span is a metalinguistic mention (mention-vs-use distinction; pairs with `QUOTED` — Phase 10.J.post-12.6) |
 | `MGA_INTERNAL` | N is marked by `mga` via the N-level rule (9.X.c11; simple-NP-rule disambiguation tag) |
 | `MIRATIVE` | particle is mirative |
 | `MODAL` | clause carries a modal head |
@@ -106,6 +108,7 @@ negative.
 | `POLITE_MARKER` | clause-level marker on the polite-register lift (Phase 9.O.5) |
 | `PREDICATIVE` | ADJ is in predicative position |
 | `QUESTION` | particle is a question marker (`ba`) |
+| `QUOTED` | element surfaces inside balanced quote brackets (single or double, ASCII or curly) — orthographic; pairs with `MENTION` for semantic mention-vs-use (Phase 10.J.post-12.6) |
 | `RECP` | verb is reciprocal |
 | `RESULTATIVE` | ADJ is resultative |
 | `SAY_CLASS` | verb is in the "say"-class |
@@ -135,6 +138,8 @@ feats and preserves any quoted `"YES"` occurrences as enum strings.
 | `MOOD` | `IND`, `IMP`, `SUB`, `SOC` | grammatical mood |
 | `VOICE` | `AV`, `OV`, `DV`, `IV`, `BV`, `LV` | LFG voice / LMT applicative |
 | `CARDINAL_VALUE` | `"1"` / `"2"` / ... | numeric string payload |
+| `QUOT_ROLE` | `OPEN`, `CLOSE` | enum tag on quote-bracket particles (Phase 10.J.post-12.6); paired with `QUOT_TYPE` to disambiguate ASCII `'`/`"` openers vs closers |
+| `QUOT_TYPE` | `SINGLE`, `DOUBLE` | enum tag on tokens / f-structures derived from a quoted span (Phase 10.J.post-12.6); orthographic only |
 | `REGISTER` | `POLITE`, `COLLOQUIAL_POLITE`, `LITERARY` | register tag |
 
 **Note A — `INDEF`:** `YES` here is a generic-indefinite *enum tag*,

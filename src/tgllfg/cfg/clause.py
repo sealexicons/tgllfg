@@ -5798,3 +5798,35 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 INTERJ) =c true",
         ],
     ))
+
+    # === Phase 10.J.post-12.6: direct-speech quoted S =============
+    #
+    # Admits a balanced quoted clause as a stand-alone S — e.g.,
+    # ``"Hindi tayo aalis."``, ``"Ano ang ginagawa mo araw-araw?"``
+    # (R&G Conv sent-467), ``Leader: "Ituro mo ang ulo."`` (R&G
+    # Conv sent-203 — the inner-quoted speech is licit S on its own).
+    #
+    # The :func:`tgllfg.text.quotes.normalize_quoted_spans` pre-pass
+    # converts ASCII pairs to curly only when the inner contains a
+    # sentence-terminator, so this rule only fires on direct-speech-
+    # shaped spans (mention / scare-quote stay outside the S
+    # category — they admit via the parallel N-mention rule in
+    # ``cfg/nominal.py``).
+    #
+    # F-structure: the inner S projects (``(↑) = ↓2``); ``QUOTED``
+    # carries through orthographically. ``MENTION`` is NOT set —
+    # direct speech is use, not mention.
+    for quot_type in ("SINGLE", "DOUBLE"):
+        rules.append(Rule(
+            "S",
+            [
+                f"PART[QUOT_ROLE=OPEN, QUOT_TYPE={quot_type}]",
+                "S",
+                f"PART[QUOT_ROLE=CLOSE, QUOT_TYPE={quot_type}]",
+            ],
+            [
+                "(↑) = ↓2",
+                "(↑ QUOTED) = true",
+                f"(↑ QUOT_TYPE) = '{quot_type}'",
+            ],
+        ))

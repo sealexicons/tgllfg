@@ -43,6 +43,7 @@ from ..text import (
     merge_hyphen_compounds,
     merge_multiword_compounds,
     normalize_parens,
+    normalize_quoted_spans,
     split_apostrophe_t,
     split_apostrophe_y,
     split_enclitics,
@@ -178,6 +179,18 @@ def parse_text_with_fragments(
     non-root completed states from the Earley chart, each with its
     partial f-structure and the diagnostics that prevented promotion.
     """
+    # Phase 10.J.post-12.6: convert balanced ASCII quote pairs to
+    # curly variants so the chart's quotation rules consume them.
+    # See :func:`tgllfg.text.quotes.normalize_quoted_spans` for the
+    # clitic-protection and inner-content classification rules
+    # (mention / direct-speech / opaque). Stray ASCII apostrophes
+    # (abbreviation prefixes like ``'yon`` and unbalanced singletons)
+    # stay ASCII so the existing ``_strip_non_content`` ``_UNK``-strip
+    # path preserves their parse coverage. Runs before
+    # :func:`normalize_parens` so quote-bracket positions are
+    # established before paren-gloss stripping; the two pre-passes
+    # are independent (no paren-quote nesting in audited corpora).
+    text = normalize_quoted_spans(text)
     # Phase 10.J.post-12.3: strip pedagogical-gloss parens
     # (``mag-aaral (estudyante)`` → ``mag-aaral``) and the paren
     # delimiters around sentence-wrap parentheticals
