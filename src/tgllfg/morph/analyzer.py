@@ -777,6 +777,15 @@ class Analyzer:
                 self._index.nouns.setdefault(surface, []).append(analysis)
             elif out_pos == "ADJ":
                 self._index.adjectives.setdefault(surface, []).append(analysis)
+            elif out_pos == "VERB":
+                # Phase 10.J.post-12.12: NOUN → VERB POS-flip cells
+                # (the new ``makipag_n`` AV-INTERACTION cell whose
+                # base is a derived ka-N noun: ``kaibigan`` →
+                # ``makipagkaibigan``; ``kasundo`` → ``makipagkasundo``).
+                # Routes the derived surface into the verb_forms index
+                # so the analyzer's lookup finds it alongside standard
+                # paradigm-generated verb forms.
+                self._index.verb_forms.setdefault(surface, []).append(analysis)
             elif out_pos == "NUM":
                 # Phase 5n.C.3 Commit 3: derived NUM surfaces are
                 # indexed into the particles table — this is where
