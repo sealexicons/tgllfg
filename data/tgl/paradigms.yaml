@@ -651,6 +651,39 @@
     - {op: prefix, value: "ma"}
   notes: matutulog, mauupo (ma- non-volitional irrealis)
 
+# Phase 10.J.post-12.13: bare ``ma-`` AV NVOL SOC cell — ``ma-`` prefix
+# on bare root (no CV-redup). Parallel to the ``mag`` SOC bare cell
+# above (line 101) and the ``maka`` SOC bare cell (line 327). MOOD=SOC
+# tags the "infinitive" / bare-form usage: modal-XCOMP and tough-/
+# equi-complement positions where the matrix carries aspect/mood
+# semantics (``Madali matuto si Maria.`` "It's easy for Maria to
+# learn."; ``Mahilig matuto si Maria.`` "Maria is fond of learning.").
+#
+# **Opt-in affix-class** (``ma_inf``): NOT broadened to all
+# ``affix_class: [ma]`` roots because many ``ma``-VERB roots are
+# *homonymous* with ``ma_adj``-derived ADJ surfaces. ``ma + init``
+# would surface as a VERB ``mainit`` (from this cell) and an ADJ
+# ``mainit`` (from ma_adj) — the ADJ reading is dominant and the
+# extra VERB parse spawns unwanted ambiguity. Explicit opt-in keeps
+# the bare-INF available only on VERB roots where the tough/equi
+# usage is attested (no productive ADJ counterpart) and where the
+# ``mainit``-style ambiguity is sterile.
+#
+# Surfaces: ``matulog`` (ma + tulog "to sleep"), ``maupo`` (ma + upo
+# "to sit down"), ``matuto`` (ma + tuto "to learn").
+# Closes the ``Madali matuto`` / ``Mahilig V-INF`` family of tough/
+# equi-control surfaces — PAG-AARAL/sent-10 wave-1 target plus
+# wave-2 rc1990 sent-166 (``Madali -ng matuto si Torcila.``).
+- voice: AV
+  aspect: CTPL
+  mood: SOC
+  transitivity: ''
+  affix_class: ma_inf
+  feats: {MOOD: SOC}
+  operations:
+    - {op: prefix, value: "ma"}
+  notes: matulog, maupo, matuto (bare ma- NVOL INF for tough/equi-control)
+
 # Phase 9.X.pre-4.7: pag- gerund nominalization. Two cells per
 # opted-in VERB root, both with ``base_pos: VERB`` and
 # ``pos: NOUN`` (POS-flip output to the nouns index via

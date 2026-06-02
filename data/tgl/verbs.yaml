@@ -2881,7 +2881,13 @@
   # frame-arity assertion (the LV/DV reading takes a source/location
   # OBJ-AGENT in addition to the SUBJ pivot), while the root's
   # native INTR tags the AV intransitive baseline.
-  affix_class: [ma, mag, maka, ma_an]
+  #
+  # Phase 10.J.post-12.13: ``ma_inf`` opt-in licenses the bare
+  # ``matuto`` INF/SOC surface for tough/equi-control complement
+  # positions (``Madali matuto.`` / ``Mahilig matuto si X.``). The
+  # ma- + cv_redup paradigm gives ``matututo`` (CTPL NVOL); the bare
+  # cell adds ``matuto`` without redup for the INF reading.
+  affix_class: [ma, mag, maka, ma_an, ma_inf]
   sandhi_flags: [also_n_epenthesis]
 
 - citation: tuyo
