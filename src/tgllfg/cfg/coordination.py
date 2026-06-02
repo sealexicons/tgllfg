@@ -271,6 +271,73 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 10.J.post-12.11: S_XCOMP coord (binary + 3-conjunct) -----
+    #
+    # ``Sa kabilang dako ay tungkulin niyang pakainin, bigyan ng
+    #   matitirhan at pag-aralin ang mga miyembro ng kanyang pamilya.``
+    #     (PAMILYA/sent-8 — V-V-V coord embedded under the N-predicate
+    #     control wrap added in cfg/clause.py)
+    # ``Tungkulin niyang aralin at pag-aralin si Pedro.`` "His duty is
+    #     to teach Pedro and (cause to) study him." (constructed binary)
+    #
+    # Parallel to the Phase 10.J.post-8.5.2 S_GAP coord rule above:
+    # each conjunct is an S_XCOMP (control complement); the coord
+    # joins them at the S_XCOMP level so the matrix N-predicate-control
+    # wrap can lift the coord output as a single XCOMP. Two shapes:
+    #
+    # Binary (``V1 at V2``): ``S_XCOMP → S_XCOMP PART[COORD=Y] S_XCOMP``
+    # 3-conjunct non-Oxford (``V1, V2 at V3``):
+    #     ``S_XCOMP → S_XCOMP PUNCT[COMMA] S_XCOMP PART[COORD=Y] S_XCOMP``
+    #
+    # CONJUNCTS / COORD propagation mirrors the NP-coord pattern at
+    # lines 79-115. Each conjunct's REL-PRO unifies with the matrix
+    # REL-PRO so the outer control wrap's `(↑ SUBJ) = (↑ XCOMP REL-PRO)`
+    # binding propagates through coord to each conjunct — every V in
+    # the coord shares its actor-gap with the matrix SUBJ.
+    #
+    # 3-conjunct Oxford (``V1, V2, at V3``) deferred — no audit-corpus
+    # attestation. The non-Oxford form is what PAMILYA/sent-8 uses.
+    for coord in ("AND", "OR"):
+        # Binary S_XCOMP coord
+        rules.append(Rule(
+            "S_XCOMP",
+            [
+                "S_XCOMP",
+                f"PART[COORD={coord}]",
+                "S_XCOMP",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                f"(↑ COORD) = '{coord}'",
+                f"(↓2 COORD) =c '{coord}'",
+                "(↑ REL-PRO) = ↓1 REL-PRO",
+                "(↑ REL-PRO) = ↓3 REL-PRO",
+            ],
+        ))
+        # 3-conjunct non-Oxford (V1, V2 at V3)
+        rules.append(Rule(
+            "S_XCOMP",
+            [
+                "S_XCOMP",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                "S_XCOMP",
+                f"PART[COORD={coord}]",
+                "S_XCOMP",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                "↓5 ∈ (↑ CONJUNCTS)",
+                f"(↑ COORD) = '{coord}'",
+                f"(↓4 COORD) =c '{coord}'",
+                "(↑ REL-PRO) = ↓1 REL-PRO",
+                "(↑ REL-PRO) = ↓3 REL-PRO",
+                "(↑ REL-PRO) = ↓5 REL-PRO",
+            ],
+        ))
+
+
     # --- Phase 5k Commit 4 + Phase 5n.A Commit 20: 3-flat coord ---
     #
     # Two surface variants per case × two coord values, twelve rules
