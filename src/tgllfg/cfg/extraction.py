@@ -2091,6 +2091,60 @@ def register_rules(rules: list[Rule]) -> None:
             ),
         ))
 
+    # --- Phase 10.J.post-12.10: bilang N (bare-N role complement) -----
+    #
+    # ``Sa lahat ng oras ay pangunahin sa kanya ang kanyang tungkulin
+    #   bilang kasapi ng isang pamilya.``
+    #     "At all times his primary [duty] is his role as a member of
+    #      a family."  (PAMILYA/sent-4)
+    # ``Kahit na mahirap ang trabaho bilang katulong, tiniis ito ni
+    #   Emily.``
+    #     "Even though the work as a helper is difficult, Emily endured
+    #      it."  (wave5 zamar2023 page-184/sent-3)
+    #
+    # ``bilang`` (PREP[PREP_TYPE=ROLE]) is one of two essive / role
+    # PREPs in S&O 1972 §6.7 (the other is ``tulad``, similative).
+    # Unlike the spatial / case-marked PREPs (BENEFICIARY / TOPIC /
+    # SOURCE / REASON / GOAL — all sa-NP complement), ``bilang`` takes
+    # a bare-N predicative complement that names a role:
+    #
+    #     bilang kasapi             "as a member"
+    #     bilang katulong           "as a helper"
+    #     bilang ama                "as a father"
+    #     bilang kasapi ng pamilya  "as a member of a family"
+    #                               (N + GEN-NP possessor)
+    #
+    # Two daughter shapes:
+    # * ``PREP[ROLE] N`` — bare-N role (``bilang kasapi``)
+    # * ``PREP[ROLE] N NP[CASE=GEN]`` — role + possessor (``bilang
+    #   kasapi ng pamilya``). The bare-N + GEN-NP combo doesn't admit
+    #   at the chart N level (the existing N+GEN-NP composition lives
+    #   at NP[CASE=X] level after a case-marker — see nominal.py:1218
+    #   ``NP[CASE=X] → NP[CASE=X] NP[CASE=GEN]``) — and ``bilang`` takes
+    #   a marker-less complement, so we encode the bilang-internal
+    #   possessor structure directly as a 3-daughter PP variant.
+    #
+    # The matrix-attachment side (``S → S PP[PREP_TYPE=ROLE]``) is
+    # registered in cfg/discourse.py alongside the other clause-final
+    # PP loops.
+    rules.append(Rule(
+        "PP[PREP_TYPE=ROLE]",
+        ["PREP[PREP_TYPE=ROLE]", "N"],
+        _eqs(
+            "(↑) = ↓1",
+            "(↑ OBJ) = ↓2",
+        ),
+    ))
+    rules.append(Rule(
+        "PP[PREP_TYPE=ROLE]",
+        ["PREP[PREP_TYPE=ROLE]", "N", "NP[CASE=GEN]"],
+        _eqs(
+            "(↑) = ↓1",
+            "(↑ OBJ) = ↓2",
+            "(↓2 POSS) = ↓3",
+        ),
+    ))
+
     # ay-fronting an AdvP. The fronted phrase is BOTH the matrix
     # TOPIC and a member of the matrix's ADJ set (sentential
     # adjunct semantics). The inner clause is a complete S
