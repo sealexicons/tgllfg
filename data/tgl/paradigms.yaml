@@ -1061,6 +1061,60 @@
     - {op: suffix, value: in}
   notes: "papakainin, papabasahin (CTPL prefix-redup variant — pa- prefix + cv-redup + -in suffix)"
 
+# Phase 10.J.post-12.11: bare pa-OV-CTPL/SOC cell — root + pa- prefix +
+# -in suffix (no CV-redup, no realis infix), MOOD=SOC. Parallel to the
+# Phase 5n.A Commit 14 in_oblig SOC bare cell (line 378 above): used as
+# the pa- OV counterpart for hortative / imperative / modal-XCOMP /
+# N-predicate-control positions where the matrix carries aspect/mood
+# semantics and the embedded V appears in its bare OV-CTPL form.
+#
+# Closes PAMILYA/sent-8 (R&G 1981 wave-1, Phase 10.J.post-12.11):
+# ``Sa kabilang dako ay tungkulin niyang pakainin ... ang mga miyembro
+# ng kanyang pamilya.`` — ``pakainin`` is the bare pa-OV-CTPL form
+# embedded under the N-predicate ``tungkulin`` (its duty) via the
+# N-predicate-control wrap.
+#
+# Surfaces: pakainin (pa + kain + in), pabilhin (pa + bili + in),
+# pabasahin (pa + basa + in).
+- voice: OV
+  aspect: CTPL
+  mood: SOC
+  transitivity: TR
+  affix_class: pa_in
+  feats: {CAUS: DIRECT, MOOD: SOC}
+  operations:
+    - {op: prefix, value: "pa"}
+    - {op: suffix, value: in}
+  notes: "pakainin, pabilhin (bare pa-OV + -in for SOC modal-XCOMP / N-pred control)"
+
+# --- pag-...-in OV-CAUS (CAUS=DIRECT, OV) -------------------------------
+#
+# Phase 10.J.post-12.11: parallel to pa_in but with the pag- prefix
+# instead of pa-. Generates the causative-OV form ``pag-aralin`` (= pag +
+# aral + -in suffix, no CV-redup, MOOD=SOC). Used for the bare-CTPL form
+# embedded under N-predicate-control wraps and modal-XCOMP positions —
+# the matrix carries aspect/mood, the embedded V appears bare.
+#
+# Closes PAMILYA/sent-8 (R&G 1981 wave-1) third V-conjunct ``pag-aralin
+# ang mga miyembro``: ``pag-aralin`` "make/teach (to) study" governs
+# the NOM-pivot ``ang mga miyembro``.
+#
+# The hyphen in ``pag-aralin`` is orthographic — the tokenizer treats
+# ``pag-aralin`` as a single token. The paradigm engine concatenates
+# ``pag`` + ``aral`` + ``in`` → ``pagaralin`` (no hyphen at the analyzer
+# layer); the tokenizer's hyphen-stripping pre-pass aligns the surface
+# ``pag-aralin`` to the analyzer's ``pagaralin``.
+- voice: OV
+  aspect: CTPL
+  mood: SOC
+  transitivity: TR
+  affix_class: pag_in
+  feats: {CAUS: DIRECT, MOOD: SOC}
+  operations:
+    - {op: prefix, value: "pag"}
+    - {op: suffix, value: in}
+  notes: "pag-aralin (bare pag-OV + -in for SOC modal-XCOMP / N-pred control)"
+
 # --- pag-...-an LF circumfix for mag-class verbs (DV) -------------------
 #
 # Phase 8.B: closes the 8.A follow-on for ``pinagbintangan``-style
