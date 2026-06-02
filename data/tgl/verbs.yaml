@@ -206,7 +206,9 @@
   # of gossip" (closes with the paired ``tsismis`` NOUN below).
   # Parallel to ``maneho`` / ``kuwento`` / ``sagot`` / ``sunod``
   # / ``kilala`` in the AV_ABSOL family.
-  affix_class: [um, mag, in_oblig, maka]
+  # Phase 10.J.post-12.12: ``makipag`` opt-in admits AV-INTERACTION
+  # ``makipag-away`` "fight with X" (S&O 1972 §5.27).
+  affix_class: [um, mag, in_oblig, maka, makipag]
   feats: {AV_ABSOL: true}
 
 - citation: awit
@@ -1347,7 +1349,10 @@
   pos: VERB
   gloss: see, meet
   transitivity: TR
-  affix_class: [um, mag, ma, in_oblig, maka]
+  # Phase 10.J.post-12.12: ``makipag`` opt-in admits the AV-INTERACTION
+  # form ``makipagkita`` "meet with X" (S&O 1972 §5.27); audit-attested
+  # in wave-2 rg-intermediate.
+  affix_class: [um, mag, ma, in_oblig, maka, makipag]
   feats: {AV_ABSOL: true}
 
 - citation: kitil
@@ -1508,7 +1513,9 @@
   pos: VERB
   gloss: play with, trifle with
   transitivity: TR
-  affix_class: [mag, an_oblig, pag_an, maka]
+  # Phase 10.J.post-12.12: ``makipag`` opt-in admits AV-INTERACTION
+  # ``makipaglaro`` "play with X" (S&O 1972 §5.27).
+  affix_class: [mag, an_oblig, pag_an, maka, makipag]
   feats: {AV_ABSOL: true}
 
 - citation: latag
@@ -2499,7 +2506,10 @@
   pos: VERB
   gloss: meet, encounter
   transitivity: INTR
-  affix_class: [um, mag, an_oblig, maka]
+  # Phase 10.J.post-12.12: ``makipag`` opt-in admits AV-INTERACTION
+  # ``makipagtagpo`` / ``nakikipagtagpo`` "meet with X" (S&O 1972
+  # §5.27); audit-attested IPFV form in wave-2 rg-intermediate.
+  affix_class: [um, mag, an_oblig, maka, makipag]
 
 - citation: tahan
   pos: VERB
@@ -2553,9 +2563,13 @@
 
 - citation: talo
   pos: VERB
-  gloss: be defeated; defeat (mang- AV)
+  gloss: be defeated; defeat (mang- AV); argue (makipagtalo)
   transitivity: INTR
-  affix_class: [mang, ma, maka]
+  # Phase 10.J.post-12.12: ``makipag`` opt-in admits AV-INTERACTION
+  # ``makipagtalo`` / ``nakipagtalo`` / ``nakikipagtalo`` "argue with X"
+  # (S&O 1972 §5.27; Zamar 2023 paradigm-table attested across all
+  # 4 aspect/mood combinations).
+  affix_class: [mang, ma, maka, makipag]
 
 - citation: talon
   pos: VERB
@@ -2660,7 +2674,9 @@
   pos: VERB
   gloss: call
   transitivity: TR
-  affix_class: [um, in_oblig, an_oblig, maka, magpa_an]
+  # Phase 10.J.post-12.12: ``makipag`` opt-in admits AV-INTERACTION
+  # ``makipag-tawag`` "call (each other) with X" (S&O 1972 §5.27).
+  affix_class: [um, in_oblig, an_oblig, maka, magpa_an, makipag]
   # Phase 9.X.c52: AV_ABSOL admits the OV-absolutive S_GAP path for
   # the headless-RC and pre-N participial uses — ``ang tinatawag na
   # monsoon`` "what is called monsoon" (PANAHON sent-28); ``ang
@@ -2954,7 +2970,10 @@
   pos: VERB
   gloss: talk, converse
   transitivity: TR
-  affix_class: [mag, in_oblig, an_oblig, maka]
+  # Phase 10.J.post-12.12: ``makipag`` opt-in admits AV-INTERACTION
+  # ``makipag-usap`` "talk with X" (S&O 1972 §5.27, the canonical
+  # example).
+  affix_class: [mag, in_oblig, an_oblig, maka, makipag]
 
 - citation: usbong
   pos: VERB
