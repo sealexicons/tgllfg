@@ -393,7 +393,14 @@ def register_rules(rules: list[Rule]) -> None:
     # cross-PREP_TYPE chart-state expansion that was visible in the
     # PAMILYA/sent-16 fan-out spike (5 loop variants × every PP at
     # every applicable matrix span).
-    for prep_type in ("BENEFICIARY", "TOPIC", "GOAL", "REASON", "SOURCE"):
+    # Phase 10.J.post-12.10: ROLE added to the clause-final PP-adjunct
+    # loop. Admits ``bilang N`` PPs as matrix ADJUNCT — for predicative-
+    # role modifiers attaching after the matrix predicate. Closes
+    # PAMILYA/sent-4's ``... tungkulin bilang kasapi ng isang pamilya.``
+    # and zamar2023 page-184/sent-3's ``... trabaho bilang katulong, ...``
+    # (the latter via the existing fronted-comma-Kahit-S structure).
+    for prep_type in ("BENEFICIARY", "TOPIC", "GOAL", "REASON", "SOURCE",
+                       "ROLE"):
         rules.append(Rule(
             "S",
             ["S", f"PP[PREP_TYPE={prep_type}]"],
