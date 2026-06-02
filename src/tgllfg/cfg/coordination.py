@@ -115,6 +115,81 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # --- Phase 10.J.post-12.8: NP-coord with discourse marker + comma ---
+    #
+    # ``Sa panahon ding ito dinaraos ang mga piyesta at siyempre pa,
+    #   ang Mahal na Araw para sa mga Kristiyano.``
+    #     "At this very time the fiestas are held, and of course also,
+    #      the Holy Week for the Christians." (PANAHON/sent-10)
+    #
+    # Variant of the Phase 5k Commit 3 NP-coord rule that admits a
+    # sentence-initial discourse marker + comma between the coordinator
+    # and the second conjunct: ``NP at DISC, NP`` for ``at`` / ``o``.
+    #
+    # The discourse marker (``siyempre`` / ``samakatuwid`` / ``gayon din``
+    # / ``alalaong baga`` / etc.) is the same chart-level
+    # ``PART[DISCOURSE_POS=SENTENCE_INITIAL]`` symbol used by Phase 5m
+    # C4's ``S → PART[DISCOURSE_POS=SENTENCE_INITIAL] S`` and Phase
+    # 9.V.4b's comma variant. Lex-listed single-word PARTs (siyempre,
+    # samakatuwid, ...) and rule-built multi-word PARTs (gayon din,
+    # bukod dito, una sa lahat, alalaong baga) both feed this slot.
+    #
+    # The ``pa`` clitic in ``siyempre pa,`` is handled by
+    # ``reorder_clitics``: as a 2P clitic with no anchor in the
+    # narrow-adjacency exception list, it hoists to clause-final
+    # before chart construction, leaving ``at siyempre , NP`` at the
+    # chart's input. The discourse marker stays in coord-medial
+    # position because ``DISCOURSE_POS=SENTENCE_INITIAL`` is treated
+    # by the placement engine as a non-clitic anchor (see
+    # ``_is_sentence_initial_particle``).
+    #
+    # Each conjunct goes into ``CONJUNCTS`` (set-valued) per the
+    # Phase 5k matrix-pattern; the discourse PART lands in
+    # ``ADJUNCT`` (set-valued) of the matrix, paralleling the
+    # Phase 5m C4 rule's ``↓1 ∈ (↑ ADJUNCT)`` treatment of the
+    # sentence-initial PART.
+    for case in _NP_CASES:
+        # Additive (at) variant
+        rules.append(Rule(
+            f"NP[CASE={case}, COORD=AND]",
+            [
+                f"NP[CASE={case}]",
+                "PART[COORD=AND]",
+                "PART[DISCOURSE_POS=SENTENCE_INITIAL]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓5 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ ADJUNCT)",
+                "(↑ COORD) = 'AND'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ NUM) = 'PL'",
+                "(↓2 COORD) =c 'AND'",
+            ],
+        ))
+        # Disjunctive (o) variant
+        rules.append(Rule(
+            f"NP[CASE={case}, COORD=OR]",
+            [
+                f"NP[CASE={case}]",
+                "PART[COORD=OR]",
+                "PART[DISCOURSE_POS=SENTENCE_INITIAL]",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                f"NP[CASE={case}]",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓5 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ ADJUNCT)",
+                "(↑ COORD) = 'OR'",
+                f"(↑ CASE) = '{case}'",
+                "(↑ NUM) = ↓1 NUM",
+                "(↓2 COORD) =c 'OR'",
+            ],
+        ))
+
     # (Phase 10.J.post-1 binary comma+at coord moved to pipeline-level
     # synthesis — see _try_comma_at_np_split in core/pipeline.py)
     #
