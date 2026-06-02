@@ -118,21 +118,23 @@ class TestOovProbeRealOov:
         assert "kunin" in oov_lower
 
     def test_real_ng_ending_oov_still_reported(self) -> None:
-        # ``kabilang`` ("on the other side, the other one" — bare
-        # ``kabila`` is the locative-like NOUN root) is a real lex
-        # gap that happens to end in -ng. Since its stem ``kabila``
-        # is not a known surface either, the ``split_linker_ng``
-        # splitter doesn't fire (the rule only decomposes -ng-glued
-        # forms when the stem is a known surface), and the morph
-        # analyzer reports the full ``kabilang`` form as _UNK.
+        # ``maling`` is a real lex gap that happens to end in -ng.
+        # The stem ``mali`` is a VERB root (V) in the lex, but
+        # ``maling`` doesn't compose via the existing -ng linker
+        # split (the splitter recognises ``mali`` as a surface but
+        # ``maling`` as an adverbial / adjectival form doesn't
+        # productively derive from the VERB paradigm). The morph
+        # analyzer therefore reports the full ``maling`` form as
+        # _UNK.
         # (Originally pinned on ``tulong``; closed-in-9.C and
         # repinned on ``tanong``; ``tanong`` closed-in-9.D and
         # repinned on ``huling``; ``huli`` ADJ added in 9.X.c1
-        # closes the splitter for ``huling`` and the pin advances
-        # to ``kabilang``.)
-        oov = oov_probe("Sa kabilang dako ay tungkulin niya.")
+        # closes the splitter for ``huling``; pin advanced to
+        # ``kabilang``; ``kabila`` ADJ added in 10.J.post-12.11
+        # closes ``kabilang`` and the pin advances to ``maling``.)
+        oov = oov_probe("Ang pagbilang ni Carla nang maling iktinagaltt ng customer.")
         oov_lower = {tok.lower() for tok in oov}
-        assert "kabilang" in oov_lower
+        assert "maling" in oov_lower
 
 
 class TestOovProbeEdgeCases:
