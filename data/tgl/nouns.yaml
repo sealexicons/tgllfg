@@ -1949,6 +1949,11 @@
   gloss: truth, reality
   source: audit-corpus
 
+- citation: katulong
+  pos: NOUN
+  gloss: helper, servant, assistant (lexicalized ka- + tulong "help")
+  source: audit-corpus
+
 - citation: katungkulan
   pos: NOUN
   gloss: post, office (position)
