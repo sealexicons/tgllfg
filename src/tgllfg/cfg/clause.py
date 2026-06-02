@@ -3213,6 +3213,51 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 10.J.post-12.9: V[NVOL] + V[CTPL] SUBJ-drop control ------
+    #
+    # ``Ayaw nilang magbukas ng bibig dahil natatakot magkamali.``
+    #     "They don't want to open their mouth because they are afraid
+    #      they will make a mistake."   (PAG-AARAL/sent-4)
+    # ``Hindi nakakatulog nahihiyang magkamali.``
+    #     "Can't sleep, afraid of making a mistake." (constructed parallel)
+    #
+    # SUBJ-drop variant of the Phase 10.J.post-10 V[NVOL] + LK + S
+    # psych-control rule (clause.py:3204). When the surface form is
+    # bare V[NVOL] + V[CTPL] (no overt SUBJ-PRON and no linker), the
+    # construction is licit in subordinate / discourse-anchored
+    # contexts where the matrix clause supplies the anaphoric
+    # controller for the implicit SUBJ-PRO.
+    #
+    # In PAG-AARAL/sent-4 the matrix `Ayaw nilang magbukas ng bibig`
+    # provides the GEN actor `nila` as anaphoric controller; the
+    # SubordClause `dahil natatakot magkamali` consumes the V+V
+    # shape and the discourse-pragmatic resolution links inner
+    # SUBJ-PRO to matrix `nila`.
+    #
+    # Structurally parallel to the post-10 linker variant:
+    # * Matrix V[NVOL] joins ADJ (semantic manner-of-attitude)
+    # * Inner V[CTPL] supplies the matrix PRED via `(↑) = ↓2`
+    # * Both Vs structure-share SUBJ via `(↓1 SUBJ) = (↓2 SUBJ)`
+    # * Matrix SUBJ PRED synthesized as 'PRO' for anaphoric binding
+    #
+    # The CTPL aspect constraint on the inner V is the key narrow
+    # gate: contemplated (= infinitive-like in this context) aspect
+    # marks the inner V as a candidate complement-V, not as a
+    # separate matrix predicate. This prevents over-generation
+    # against post-V coordinate-V sequences (which carry IPFV /
+    # PFV aspect on the second V) and other non-control bigrams.
+    rules.append(Rule(
+        "S",
+        ["V[VOICE=AV, MOOD=NVOL]", "V[VOICE=AV, ASPECT=CTPL]"],
+        [
+            "(↑) = ↓2",
+            "↓1 ∈ (↑ ADJ)",
+            "(↓1 SUBJ) = (↓2 SUBJ)",
+            "(↑ SUBJ PRED) = 'PRO'",
+        ],
+    ))
+
+
     # --- Phase 9.X.c50: V + nang-manner-ADJ + SUBJ (pre-SUBJ manner-adv) ----
     #
     # ``Gumigising nang maaga ang mga Pilipino.``
