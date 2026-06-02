@@ -1635,6 +1635,10 @@
 - citation: kaibigan
   pos: NOUN
   gloss: friend
+  # Phase 10.J.post-12.12: ``makipag_n`` opt-in admits AV-INTERACTION
+  # ``makipagkaibigan`` "befriend X" (S&O 1972 §5.27); audit-attested
+  # in wave-1 PAG-AARAL/sent-11.
+  affix_class: [makipag_n]
 
 - citation: kailangan
   pos: NOUN
@@ -1918,6 +1922,15 @@
   pos: NOUN
   gloss: happiness, joy; satisfaction
   source: audit-corpus
+
+- citation: kasundo
+  pos: NOUN
+  gloss: companion-in-fetching; agreement-mate (derived ka-N from sundo VERB)
+  source: audit-corpus
+  # Phase 10.J.post-12.12: ``makipag_n`` opt-in admits AV-INTERACTION
+  # ``makipagkasundo`` "agree with X" (S&O 1972 §5.27); audit-attested
+  # in wave-2 rc1990.
+  affix_class: [makipag_n]
 
 - citation: kastila
   pos: NOUN

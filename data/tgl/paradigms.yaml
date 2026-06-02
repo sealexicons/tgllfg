@@ -1527,6 +1527,112 @@
     - {op: prefix, value: "mag"}
   notes: magkakainan, magbibigayan
 
+# --- makipag-...: AV-INTERACTION productive prefix (Phase 10.J.post-12.12) ---
+#
+# S&O 1972 §5.27. Productive lexical derivation creating AV verbs
+# meaning "engage in X with someone" / "participate in a mutually-
+# directed activity". Distinct from the ``mag-...-an`` true
+# reciprocal voice above (RECP=true, "do X to each other"):
+#
+#   makipag-:   VOICE=AV, INTERACTION=true   (lex derivation;
+#                                             event is social/mutual
+#                                             but NOT a voice op)
+#   mag-...-an: VOICE=AV, RECP=true          (true reciprocal voice;
+#                                             A acts on B + B on A)
+#
+# Reviewer (2026-06-02): "makipag- is a productive lexical
+# derivation that creates a verb meaning roughly 'engage in X with
+# someone' or 'participate in a mutually directed activity'. There
+# is overlap, but neither derives from the other, and many verbs
+# allow only one of the two." Diagnostic:
+#
+#   makipag-      "interact with"     → makipag-usap, makipaglaro,
+#                                       makipagkaibigan
+#   mag-...-an    "do X to each other" → magsulatan, magtawagan,
+#                                       magbatian, magyakapan
+#
+# The reviewer cites highly-productive modern coinages
+# (``makipag-chat`` / ``makipag-text`` / ``makipag-zoom``)
+# attesting the open productivity — accordingly modeled as a
+# paradigm class, not enumerated surface entries.
+#
+# Two cells: bare V-root attachment + NOUN-citation attachment.
+# Both produce VOICE=AV, ASPECT=CTPL, INTERACTION=true, TR=INTR.
+# The actor (NOM) is the participant entering the interaction;
+# the partner is a DAT-adjunct (``makipagkaibigan sa X`` "befriend X").
+# Per-root opt-in via ``affix_class: [..., makipag]`` (V-roots) or
+# ``affix_class: [..., makipag_n]`` (N-citations). Two cells because
+# audit-attested forms include both bare-V bases (``kita``, ``laro``,
+# ``usap``, ``away``, ``tawag``) and derived ka-N bases
+# (``kaibigan`` from ``ibig`` ROOT; ``kasundo`` from ``sundo`` ROOT)
+# — the latter wouldn't compose via a single bare-V paradigm
+# because the ``ka-`` prefix has already lexicalized into the NOUN
+# citation.
+#
+# Aspect cells: bare INF/CTPL (``makipag-``), PFV (``nakipag-``),
+# IPFV (``nakikipag-`` with cv-redup on the ``ki`` syllable —
+# modeled as a fixed prefix rather than a separate ``cv_redup`` op).
+# CTPL-with-redup (``makikipag-``) deferred — no audit attestation.
+- voice: AV
+  aspect: CTPL
+  transitivity: ''
+  affix_class: makipag
+  feats: {INTERACTION: true, TR: INTR}
+  operations:
+    - {op: prefix, value: "makipag"}
+  notes: makipagkita, makipaglaro, makipag-usap, makipag-away (AV-INTERACTION CTPL from V root)
+
+- voice: AV
+  aspect: PFV
+  transitivity: ''
+  affix_class: makipag
+  feats: {INTERACTION: true, TR: INTR}
+  operations:
+    - {op: prefix, value: "nakipag"}
+  notes: nakipagkita, nakipaglaro, nakipag-usap, nakipag-away (AV-INTERACTION PFV from V root)
+
+- voice: AV
+  aspect: IPFV
+  transitivity: ''
+  affix_class: makipag
+  feats: {INTERACTION: true, TR: INTR}
+  operations:
+    - {op: prefix, value: "nakikipag"}
+  notes: nakikipag-usap, nakikipagtagpo (AV-INTERACTION IPFV; audit-attested in wave-2 rc1990 + rg-intermediate)
+
+# NOUN-base cells: VOICE / ASPECT appear in ``feats`` only (NOT as
+# top-level fields). The ``_index_paradigm_via_base_pos`` path uses
+# ``feats`` directly; the top-level ``voice/aspect`` fields are
+# reserved for VERB-base cells (per the ``test_phase5n_c3_base_pos``
+# invariant: non-empty top-level ``voice`` requires
+# ``base_pos == "VERB"``).
+- base_pos: NOUN
+  pos: VERB
+  transitivity: ''
+  affix_class: makipag_n
+  feats: {VOICE: AV, ASPECT: CTPL, INTERACTION: true, TR: INTR}
+  operations:
+    - {op: prefix, value: "makipag"}
+  notes: makipagkaibigan, makipagkasundo (AV-INTERACTION CTPL from derived ka-N noun)
+
+- base_pos: NOUN
+  pos: VERB
+  transitivity: ''
+  affix_class: makipag_n
+  feats: {VOICE: AV, ASPECT: PFV, INTERACTION: true, TR: INTR}
+  operations:
+    - {op: prefix, value: "nakipag"}
+  notes: nakipagkaibigan, nakipagkasundo (AV-INTERACTION PFV from derived ka-N noun)
+
+- base_pos: NOUN
+  pos: VERB
+  transitivity: ''
+  affix_class: makipag_n
+  feats: {VOICE: AV, ASPECT: IPFV, INTERACTION: true, TR: INTR}
+  operations:
+    - {op: prefix, value: "nakikipag"}
+  notes: nakikipagkaibigan, nakikipagkasundo (AV-INTERACTION IPFV from derived ka-N noun; audit-attested in wave-2 rg-intermediate)
+
 # --- magpa-...-an reciprocal-distributive causative (Phase 7a.B) -------
 #
 # Closes §18.1.1 item 2 (magpa-...-an half). The circumfix combines

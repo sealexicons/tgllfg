@@ -170,6 +170,56 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
+    # === Phase 10.J.post-12.12: pre-V DAT-PRON actor in OV-RC ==========
+    #
+    # ``Dahil gusto nilang makipagkaibigan sa mga mamamayan ng bayang
+    #   kanilang binibisita, nagsasalita sila sa salitang banyaga.``
+    #     (PAG-AARAL/sent-11 — wave-1 target)
+    #
+    # The RC body ``kanilang binibisita`` is the pre-V DAT-PRON actor
+    # construction in OV (S&O 1972 §5): when the actor is preposed
+    # before the V in OV-RC, the GEN-pronoun's DAT-fronted possessor
+    # form (``kanya`` / ``kanila`` / ``akin`` / ``amin`` / ``atin`` /
+    # ``inyo``) appears with linker -ng before V. Functions as the
+    # OBJ-AGENT of the V (the actor in OV-CAUS=NONE).
+    #
+    # Structure:
+    #   S_GAP → NP[CASE=DAT] PART[LINK=NG/NA] V[VOICE=OV, CAUS=NONE]
+    #     (↑) = ↓3
+    #     (↑ OBJ-AGENT) = ↓1
+    #     (↑ SUBJ) = (↑ REL-PRO)
+    #
+    # Restricted to DAT-PRON via `(↓1 PRED) =c 'PRO'` — generic
+    # DAT-NPs (locative `sa bahay`) shouldn't function as pre-V
+    # actors (they'd be ADJUNCTs at S level, not RC actors). The
+    # DAT-PRON gate keeps the rule narrow to the documented S&O
+    # preposed-possessor-actor pattern.
+    #
+    # Companion to the post-V GEN-actor OV-RC rule (Phase 4 §7.6
+    # non-AV S_XCOMP at control.py:94, which the existing
+    # ``N → N PART[LINK] S_GAP`` headed-RC wrap consumes via
+    # the matrix N as REL-PRO binder). This rule adds the pre-V
+    # variant so ``ang bayang kanilang binibisita`` ("the country
+    # they're visiting") composes with REL-PRO bound to ``bayan``.
+    #
+    # Voice variants: OV-CAUS=NONE only initially — DV / IV could
+    # take the same pre-V actor pattern but no audit-corpus
+    # attestations yet; deferred.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S_GAP",
+            [
+                "NP[CASE=DAT]",
+                f"PART[LINK={link}]",
+                "V[VOICE=OV, CAUS=NONE]",
+            ],
+            _eqs(
+                "(↑ OBJ-AGENT) = ↓1",
+                "(↑ SUBJ) = (↑ REL-PRO)",
+            ),
+        ))
+
+
     # === 9.X.c46: clause-final TIME_FRAME PP at S_GAP level ========
     #
     # ``ang palay na itinanim noong Hunyo`` — once the bare IV

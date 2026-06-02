@@ -84,6 +84,7 @@ negative.
 | `HUMAN` | NP/PRON is human-class |
 | `IMPERSONAL` | predicate licenses bare-S with synth PRO SUBJ (weather `umulan`; atmospheric ADJs `mainit`; 9.X.c49) |
 | `INTENSIFIER` | particle is an intensifier (`talagang`) |
+| `INTERACTION` | verb is a `makipag-` social/participation derivation (S&O 1972 §5.27; "engage in / interact with"; *distinct* from `RECP` true reciprocal `mag-...-an` "do X to each other" — Phase 10.J.post-12.12) |
 | `INTERJ` | element is an interjection |
 | `KA_PRED` | N is a ka-N companion-predicate (`kasama` / `kasabay`; 9.X.c19; gates ka-N S_GAP rule) |
 | `KASING_N` | ADJ surface derives from a NOUN via `kasing-` (Phase 8.L) |
@@ -109,7 +110,7 @@ negative.
 | `PREDICATIVE` | ADJ is in predicative position |
 | `QUESTION` | particle is a question marker (`ba`) |
 | `QUOTED` | element surfaces inside balanced quote brackets (single or double, ASCII or curly) — orthographic; pairs with `MENTION` for semantic mention-vs-use (Phase 10.J.post-12.6) |
-| `RECP` | verb is reciprocal |
+| `RECP` | verb is true reciprocal `mag-...-an` voice ("do X to each other"; *distinct* from `INTERACTION` `makipag-` "engage in / interact with") |
 | `RESULTATIVE` | ADJ is resultative |
 | `SAY_CLASS` | verb is in the "say"-class |
 | `SEQUENCE` | clause is in a temporal sequence |
