@@ -762,6 +762,33 @@ def _enclosing_anchor_for_clitic(
             ma.pos == "PART" and ma.feats.get("COMP_TYPE") is not None
             for ma in cands
         )
+        # Phase 10.J.post-12.14: a comma closes any embedded clause
+        # opened by an earlier ``na``-linker or complementizer. The
+        # post-comma material is a separate clause (an RC or
+        # SubordClause has ended at the comma); a clitic appearing
+        # after the comma belongs to the new clause, not to the V
+        # inside the just-closed embedded clause.
+        #
+        # Drives PANAHON/sent-36 closure:
+        # ``Puno pa rin ang mga patubigan sa bukid kaya pagkaani ng
+        #   palay na itinanim noong Hunyo, sisimulan na ang ikalawang
+        #   pagtatanim.``
+        # Without the reset, the embedded RC ``palay na itinanim``
+        # opens an inner clause anchored on ``itinanim``; the trailing
+        # ``na`` 2P clitic (inside the post-comma main S ``sisimulan
+        # na ang ...``) was being mis-routed to ``itinanim`` and
+        # placed inside the RC, breaking the chart's RC + comma + S
+        # structure. The reset re-routes the clitic to the matrix
+        # anchor (or whatever the post-comma context resolves to via
+        # subsequent re-opens), where it is correctly placed at
+        # clause-final via the ``S → S PART[CLITIC_CLASS=2P]`` rule.
+        is_comma = any(
+            ma.pos == "PUNCT" and ma.feats.get("PUNCT_CLASS") == "COMMA"
+            for ma in cands
+        )
+        if is_comma and last_boundary != -1:
+            last_boundary = -1
+            continue
         if is_confirmed_linker or is_complementizer:
             last_boundary = j
     if last_boundary == -1:
