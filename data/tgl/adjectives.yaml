@@ -342,6 +342,11 @@
   gloss: hot
   affix_class: [ma_adj, adj_redup]
 
+- citation: kabila
+  pos: ADJ
+  gloss: "other, opposite (attributive: `Sa kabilang dako` = on the other side; `Sa kabilang pampang` = on the other shore)"
+  affix_class: []
+
 - citation: kailangan
   pos: ADJ
   gloss: needed, required (predicate "kailangan ko X" = "I need X")

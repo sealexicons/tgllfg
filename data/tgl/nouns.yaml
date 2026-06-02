@@ -2553,6 +2553,11 @@
   pos: NOUN
   gloss: eye
 
+- citation: matitirhan
+  pos: NOUN
+  gloss: dwelling, place to live (deverbal-future of tira; ma-CV-redup-tirhan)
+  source: audit-corpus
+
 - citation: max
   pos: NOUN
   gloss: Max
