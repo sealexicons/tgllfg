@@ -21,7 +21,7 @@ import signal
 import sys
 import time
 from collections import Counter, defaultdict
-from dataclasses import asdict, dataclass, field
+from dataclasses import MISSING, dataclass, field, fields
 from pathlib import Path
 from typing import Iterator
 
@@ -66,6 +66,21 @@ class Exemplar:
     gloss_en: str | None
     marked_ungrammatical: bool
     ocr_quality: str
+    # Phase 10.J.post-12.15: curator-level skip flag for exemplars
+    # that the audit pipeline should treat as out-of-scope (not
+    # counted in totals, not gated as regressions). Distinct from
+    # ``marked_ungrammatical`` (which signals a *grammatical* fact
+    # about the source — author marked it as ungrammatical with
+    # ``*`` / ``?`` / ``(*)`` markers); ``ignore`` is a *meta-level*
+    # curator decision that the sentence's content (clichéd
+    # code-switch, non-Tagalog quotation, etc.) puts it outside the
+    # productive grammar's reach.
+    #
+    # Drives by ``_IGNORED_EXEMPLARS`` (locator → reason) applied
+    # at extract time. Both ``audit_corpus.py`` and any downstream
+    # tooling skip entries with ``ignore: true``.
+    ignore: bool = False
+    ignore_reason: str | None = None
 
 
 @dataclass
@@ -91,6 +106,88 @@ class ParseRecord:
     # to 3 decimal places). Items that hit ITEM_TIMEOUT_S are tagged
     # with bucket="parse-timeout" and ``latency_s == ITEM_TIMEOUT_S``.
     latency_s: float = 0.0
+
+
+# === Ignore-overrides registry ===========================================
+#
+# Phase 10.J.post-12.15: curator-level skip registry keyed by
+# ``(source, locator)``. At extract time each emitted ``Exemplar`` is
+# checked against this map; matches get ``ignore=True`` +
+# ``ignore_reason=<value>`` set on the dataclass. The audit pipeline
+# (``audit_corpus.py``) filters ignored entries out of its task list,
+# so they don't count toward wave totals and don't trigger regression
+# alarms.
+#
+# Distinct from ``marked_ungrammatical``:
+#   * ``marked_ungrammatical`` — *grammatical fact* from the source
+#     (sentence carries a ``*`` / ``?`` / ``(*)`` marker authored by
+#     the original linguist).
+#   * ``ignore`` — *meta-level curator decision* that the sentence's
+#     content (clichéd code-switch, non-Tagalog quotation, etc.) puts
+#     it outside the productive grammar's reach. The author may have
+#     authored it as grammatical Tagalog, but its content is
+#     idiosyncratic enough that it doesn't belong in the audit-coverage
+#     metric.
+#
+# Each ignored entry should have a short reason that explains why
+# the sentence is meta-out-of-scope. Use sparingly — the bias should
+# be toward closing exemplars structurally, not curating them out.
+_IGNORED_EXEMPLARS: dict[tuple[str, str], str] = {
+    # PAG-AARAL/sent-12 (R&G 1981) — ``Kahit a la 'ako Tarzan, ikaw
+    # Jane'.`` The quoted material is the English Tarzan/Jane cliché
+    # (with Tagalog 1sg / 2sg pronouns + English proper names) cited
+    # as a rhetorical stereotype of "broken-language" communication.
+    # The Spanish-loan ``a la`` ("in the style of") + clichéd
+    # quotation is the construction's content; it isn't productive
+    # Tagalog grammar that the parser should target.
+    ("rg81/transcriptions", "ANG PAG-AARAL NG ISANG WIKA/sent-12"):
+        "clichéd code-switch quotation (R&G stylistic citation, not "
+        "productive grammar)",
+}
+
+
+def _apply_ignore_overrides(ex: Exemplar) -> Exemplar:
+    """Set ``ignore`` + ``ignore_reason`` on ``ex`` if its
+    ``(source, locator)`` is in :data:`_IGNORED_EXEMPLARS`.
+
+    Returns ``ex`` (mutated in place if matched, unchanged otherwise).
+    Called by :func:`_write_jsonl` so every wave's emission funnels
+    through the same override path.
+    """
+    reason = _IGNORED_EXEMPLARS.get((ex.source, ex.locator))
+    if reason is not None:
+        ex.ignore = True
+        ex.ignore_reason = reason
+    return ex
+
+
+def _asdict_drop_defaults(obj) -> dict:
+    """Like :func:`dataclasses.asdict`, but drop fields whose value
+    equals the dataclass-declared default. Optional members with
+    factory defaults (e.g., ``list[str] = field(default_factory=list)``)
+    are dropped when the value equals a fresh factory call.
+
+    Phase 10.J.post-12.15 (per user 2026-06-02): emitting defaults
+    redundantly (e.g., ``"ignore": false, "ignore_reason": null`` on
+    every non-ignored record; ``"oov_tokens": [], "diag_summary": "",
+    "diag_kinds": {}, "latency_s": 0.0`` on every parse-success
+    record) bloats the JSONL files and adds noise without information.
+    Defaults are reconstructable by readers via the dataclass schema.
+
+    Required fields (no ``default`` and no ``default_factory``) are
+    always emitted.
+    """
+    out: dict = {}
+    for f in fields(obj):
+        value = getattr(obj, f.name)
+        if f.default is not MISSING:
+            if value == f.default:
+                continue
+        elif f.default_factory is not MISSING:  # type: ignore[misc]
+            if value == f.default_factory():  # type: ignore[misc]
+                continue
+        out[f.name] = value
+    return out
 
 
 # === Orthography normalization ===========================================
@@ -1592,7 +1689,16 @@ def _write_jsonl(path: Path, items: Iterator) -> int:
     n = 0
     with path.open("w", encoding="utf-8") as fh:
         for item in items:
-            fh.write(json.dumps(asdict(item), ensure_ascii=False) + "\n")
+            # Phase 10.J.post-12.15: apply ignore-overrides registry
+            # to Exemplar items before serialization (no-op for non-
+            # Exemplar items like VerbEntry from rb86).
+            if isinstance(item, Exemplar):
+                item = _apply_ignore_overrides(item)
+            fh.write(
+                json.dumps(
+                    _asdict_drop_defaults(item), ensure_ascii=False,
+                ) + "\n"
+            )
             n += 1
     return n
 
@@ -1890,7 +1996,11 @@ def _parse_one(
                 diag_kinds=dict(diag_kinds),
                 latency_s=round(latency, 3),
             )
-            out_fh.write(json.dumps(asdict(rec), ensure_ascii=False) + "\n")
+            out_fh.write(
+                json.dumps(
+                    _asdict_drop_defaults(rec), ensure_ascii=False,
+                ) + "\n"
+            )
             out_fh.flush()
             bucket_counts[bucket] += 1
             n += 1
