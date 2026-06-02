@@ -168,6 +168,13 @@ def _load_tasks(
                     continue
                 if ex.get("marked_ungrammatical"):
                     continue
+                # Phase 10.J.post-12.15: curator-level skip flag.
+                # Ignored exemplars don't count toward wave totals
+                # and don't gate as regressions. See
+                # ``scripts/harvest_exemplars.py:_IGNORED_EXEMPLARS``
+                # for the registry and rationale.
+                if ex.get("ignore"):
+                    continue
                 text = (
                     ex.get("text_normalized")
                     or ex.get("text")
