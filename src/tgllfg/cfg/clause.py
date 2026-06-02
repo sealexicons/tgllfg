@@ -2117,6 +2117,60 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 10.J.post-12.11: N-predicate control wrap ----------------
+    #
+    # ``Sa kabilang dako ay tungkulin niyang pakainin, bigyan ng
+    #   matitirhan at pag-aralin ang mga miyembro ng kanyang pamilya.``
+    #     "On the other hand, his duty is to feed, provide a dwelling
+    #      for, and educate the members of his family." (PAMILYA/sent-8)
+    # ``Tungkulin niyang aralin si Pedro.`` "His duty is to teach Pedro."
+    # ``Plano niyang umalis.``               "His plan is to leave."
+    # ``Hangad niyang matapos.``             "His wish is to finish."
+    #
+    # N-predicate counterpart to the Phase 4 §7.6 PSYCH control wrap
+    # (cfg/control.py:401) — where PSYCH takes ``V[CTRL_CLASS=PSYCH]``
+    # as the matrix head, this rule takes a generic ``N`` as the
+    # matrix head. Same daughter shape otherwise:
+    #
+    #     S → N NP[CASE=GEN] PART[LINK] S_XCOMP
+    #
+    # The GEN-NP daughter is the matrix SUBJ (the experiencer /
+    # possessor of the predicate noun). The PART[LINK=NA/NG] is the
+    # standard linker bridging the matrix-clitic-GEN to the embedded
+    # complement. The S_XCOMP body is the control complement; its
+    # SUBJ (for AV) or OBJ-AGENT (for OV/DV/IV) gap is bound to the
+    # matrix SUBJ via the standard `(↑ SUBJ) = (↑ XCOMP REL-PRO)`
+    # equation.
+    #
+    # ``(↑ PRED) = 'BE-N <SUBJ, XCOMP>'`` synthesizes the LFG predicate
+    # frame from the N predicate. ``N_LEMMA`` exposes the predicate-N
+    # lemma for downstream consumers (parallel to the bare N+GEN+NOM
+    # rule above). ``¬ (↓1 WH)`` mirrors the bare-N rule's guard.
+    #
+    # The construction is productive across abstract / role / plan /
+    # desire N predicates (``tungkulin`` "duty" / ``plano`` "plan" /
+    # ``hangad`` "wish" / ``layunin`` "goal" / ``gawain`` "task"). No
+    # explicit lemma whitelist — the structural shape disambiguates
+    # against ordinary equational clauses (those take NOM-NP, not
+    # PART[LINK]+S_XCOMP).
+    #
+    # Reference: S&O 1972 §7.6 (nominal-predicate control); R&G 1981
+    # PAMILYA essay sent-8.
+    for link in ("NA", "NG"):
+        rules.append(Rule(
+            "S",
+            ["N", "NP[CASE=GEN]", f"PART[LINK={link}]", "S_XCOMP"],
+            [
+                "(↑ PRED) = 'BE-N <SUBJ, XCOMP>'",
+                "(↑ N_LEMMA) = ↓1 LEMMA",
+                "(↑ SUBJ) = ↓2",
+                "(↑ XCOMP) = ↓4",
+                "(↑ SUBJ) = (↑ XCOMP REL-PRO)",
+                "(↑ PREDICATIVE) = true",
+                "¬ (↓1 WH)",
+            ],
+        ))
+
     # --- Phase 10.J.post-8.5.5.1: KA_PRED N + DAT-NP locative + NOM SUBJ -
     #
     # ``Kasama sa pag-aalala ng pamilya ang lolo, ang ama, ...``
