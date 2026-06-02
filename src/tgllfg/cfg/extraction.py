@@ -220,6 +220,77 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # === Phase 10.J.post-12.13: personal ADJ-pred + V-INF S_GAP (RC) ===
+    #
+    # ``ang mga taong mahilig makipagkaibigan``
+    #     "the people who are fond of making friends"
+    #     (PAG-AARAL/sent-10 inner RC — wave-1 target)
+    # ``ang taong mahilig magtanim``     "the person who is fond of planting"
+    # ``ang taong madali matuto``        "the person who learns easily"
+    #
+    # RC companion to the matrix personal ADJ-pred + V-INF rule in
+    # cfg/clause.py (Phase 10.J.post-12.13). Where the matrix rule
+    # admits ``ADJ V[INF] NP[CASE=NOM]`` with the NOM-NP as
+    # experiencer SUBJ, this gapped variant admits ``ADJ V[INF]``
+    # with the relativized head binding SUBJ via REL-PRO (subject
+    # control still passes the gap into the XCOMP V's SUBJ).
+    #
+    # F-structure shape: matrix PRED is ``ADJ <SUBJ, XCOMP>``,
+    # SUBJ = REL-PRO (filled by relativized head via the existing
+    # ``N → N PART[LINK] S_GAP`` headed-RC wrap), XCOMP = V with
+    # XCOMP SUBJ controlled by matrix SUBJ.
+    #
+    # Three shapes mirror the matrix tough rules:
+    #
+    #   1. Bare V (V-INTR or V-TR with AV_ABSOL):
+    #      ``taong mahilig matuto``
+    #   2. V + GEN-OBJ:
+    #      ``taong mahilig magtanim ng bulaklak``
+    #   3. V + DAT-PP (locative / sa-OBL):
+    #      ``taong mahilig pumunta sa Maynila``
+    rules.append(Rule(
+        "S_GAP",
+        ["ADJ[PREDICATIVE]", "V[VOICE=AV]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ, XCOMP>'",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ XCOMP) = ↓2",
+            "(↑ XCOMP SUBJ) = (↑ SUBJ)",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+        ],
+    ))
+    rules.append(Rule(
+        "S_GAP",
+        ["ADJ[PREDICATIVE]", "V[VOICE=AV]", "NP[CASE=GEN]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ, XCOMP>'",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ XCOMP) = ↓2",
+            "(↑ XCOMP SUBJ) = (↑ SUBJ)",
+            "(↑ XCOMP OBJ) = ↓3",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+        ],
+    ))
+    rules.append(Rule(
+        "S_GAP",
+        ["ADJ[PREDICATIVE]", "V[VOICE=AV]", "NP[CASE=DAT]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ, XCOMP>'",
+            "(↑ SUBJ) = (↑ REL-PRO)",
+            "(↑ XCOMP) = ↓2",
+            "(↑ XCOMP SUBJ) = (↑ SUBJ)",
+            "↓3 ∈ (↑ XCOMP ADJUNCT)",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+        ],
+    ))
+
+
     # === 9.X.c46: clause-final TIME_FRAME PP at S_GAP level ========
     #
     # ``ang palay na itinanim noong Hunyo`` — once the bare IV

@@ -1566,6 +1566,83 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 10.J.post-12.13: personal ADJ-pred + V-INF + NOM-SUBJ -----
+    #
+    # ``Mahilig magtanim ng mga bulaklak ang tiya ko.``
+    #     "My aunt is fond of planting flowers." (Zamar 2023 wave-5)
+    # ``Mahilig matuto si Maria.``
+    #     "Maria is fond of learning."
+    # ``Madali matuto si Torcila.``  (rc1990 wave-2 sent-166 canonical)
+    #     "It's easy for Torcila to learn."
+    #
+    # Personal-experiencer companion to the impersonal-tough rule above
+    # (``S → ADJ[PREDICATIVE] V[VOICE=AV]``). Where the impersonal rule
+    # treats the V-INF as matrix SUBJ with PRO inside (``Mahirap
+    # kumilos.`` "It's hard to move."), this personal variant treats
+    # the ang-NP as matrix experiencer SUBJ and the V-INF as XCOMP
+    # with subject-control. PRED is the 2-place ADJ-frame
+    # ``ADJ <SUBJ, XCOMP>``.
+    #
+    # ADJs covered (Tagalog ADJ-experiencer paradigm):
+    # ``mahilig`` (fond), ``madali`` (easy), ``mahirap`` (hard),
+    # ``masarap`` (delicious / delightful), ``magaling`` (good at),
+    # ``mabigat`` (heavy / burdensome) — all admit personal experiencer
+    # plus tough/equi V-complement.
+    #
+    # The PREDICATIVE=true constraint on ↓1 is the existing gate that
+    # licenses ADJ-predicate clause rules across the grammar.
+    #
+    # Three shapes mirror the impersonal-tough rule:
+    #
+    #   1. Bare V (V-INTR or V-TR with AV_ABSOL):
+    #      ``Mahilig matuto si Maria.``
+    #   2. V + GEN-OBJ:
+    #      ``Mahilig magtanim ng bulaklak ang tiya ko.``
+    #   3. V + DAT-PP (locative / sa-OBL):
+    #      ``Mahilig pumunta sa Maynila si Maria.``
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE]", "V[VOICE=AV]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ, XCOMP>'",
+            "(↑ SUBJ) = ↓3",
+            "(↑ XCOMP) = ↓2",
+            "(↑ XCOMP SUBJ) = (↑ SUBJ)",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE]", "V[VOICE=AV]", "NP[CASE=GEN]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ, XCOMP>'",
+            "(↑ SUBJ) = ↓4",
+            "(↑ XCOMP) = ↓2",
+            "(↑ XCOMP SUBJ) = (↑ SUBJ)",
+            "(↑ XCOMP OBJ) = ↓3",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        ["ADJ[PREDICATIVE]", "V[VOICE=AV]", "NP[CASE=DAT]", "NP[CASE=NOM]"],
+        [
+            "(↑ PRED) = 'ADJ <SUBJ, XCOMP>'",
+            "(↑ SUBJ) = ↓4",
+            "(↑ XCOMP) = ↓2",
+            "(↑ XCOMP SUBJ) = (↑ SUBJ)",
+            "↓3 ∈ (↑ XCOMP ADJUNCT)",
+            "(↑ ADJ_LEMMA) = ↓1 LEMMA",
+            "(↑ PREDICATIVE) = true",
+            "(↓1 PREDICATIVE) =c true",
+        ],
+    ))
+
+
     # --- Phase 9.X.c48: Mangyari'y impersonal-evidential -------------
     #
     # ``Mangyari'y mahirap talagang kumilos kapag nasa tuktok ang araw.``
