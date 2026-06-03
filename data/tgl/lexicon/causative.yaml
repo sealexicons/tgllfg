@@ -232,3 +232,22 @@
     CAUS: INDIRECT
     CTRL_CLASS: INTRANS
   intrinsic: AV_CAUS_INDIRECT
+
+# Phase 10.X.pre-1: aral — study, learn / cause-to-study (= teach).
+# Parallel to kain → CAUSE-EAT and basa → CAUSE-READ above.
+# The pag_in paradigm cell (Phase 10.J.post-12.11) produces
+# ``pag-aralin`` "teach (X)" / "make (X) study" used in PAMILYA/
+# sent-8's third V-conjunct: ``pag-aralin ang mga miyembro``.
+# Only the 2-arg OV shape is added here; other shapes (3-arg OV,
+# DV, AV biclausal magpa-aral) can be added when audit-corpus
+# pressure surfaces them.
+- lemma: aral
+  voice: OV
+  pred: "CAUSE-STUDY <SUBJ, OBJ-CAUSER>"
+  a_structure: [CAUSER, CAUSEE]
+  gf_defaults:
+    CAUSEE: SUBJ
+    CAUSER: OBJ-CAUSER
+  morph_constraints:
+    CAUS: DIRECT
+  intrinsic: OV_CAUS_DIRECT
