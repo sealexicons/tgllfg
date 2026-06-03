@@ -49,7 +49,9 @@ from tgllfg.fstruct import (
     FGraph,
     NodeId,
     PathElement,
+    PlusAltFeature,
     PlusFeature,
+    StarAltFeature,
     StarFeature,
     Up,
     resolve_regex_for_read,
@@ -226,6 +228,133 @@ class TestAltFeature:
         assert endpoints == [comp]
 
 
+class TestStarAltFeature:
+    """Phase 10.L: Kleene-on-alternation ``{F | G}*``.
+
+    Symmetric to ``StarFeature`` but iterates over any of the
+    alternative names rather than a single label. Canonical use is
+    K&Z 1989 eq. 39's English-topicalization body
+    ``(↑ {COMP | XCOMP}* (GF-COMP))`` — threads through mixed
+    complement chains.
+    """
+
+    def test_star_alt_zero_iterations_returns_base(self) -> None:
+        """``{COMP | XCOMP}*`` against an unset node returns just the
+        base — same zero-iteration semantics as ``StarFeature``."""
+        g = FGraph()
+        n = g.fresh()
+        endpoints, err = resolve_regex_for_read(
+            g, n, (StarAltFeature(("COMP", "XCOMP")),),
+        )
+        assert err is None
+        assert endpoints == [n]
+
+    def test_star_alt_mixed_chain_enumerates_all_depths(self) -> None:
+        """``{COMP | XCOMP}*`` against a mixed ``COMP.XCOMP.COMP`` chain
+        enumerates every intermediate node — depth 0..3."""
+        g = FGraph()
+        root = g.fresh()
+        d1, _ = g.resolve_path(root, ("COMP",))
+        d2, _ = g.resolve_path(root, ("COMP", "XCOMP"))
+        d3, _ = g.resolve_path(root, ("COMP", "XCOMP", "COMP"))
+        assert d1 is not None and d2 is not None and d3 is not None
+        endpoints, err = resolve_regex_for_read(
+            g, root, (StarAltFeature(("COMP", "XCOMP")),),
+        )
+        assert err is None
+        # All 4 nodes enumerated in depth order (minimality).
+        assert endpoints == [root, d1, d2, d3]
+
+    def test_star_alt_then_subj(self) -> None:
+        """K&Z eq. 39 (English topicalization) — canonical form
+        ``(↑ {COMP | XCOMP}* SUBJ)``: zero or more COMP/XCOMP steps,
+        then SUBJ.
+
+        Build a mixed-chain f-graph where SUBJ appears at depths 0
+        and 3 (after COMP.XCOMP.COMP); resolver enumerates both."""
+        g = FGraph()
+        root = g.fresh()
+        s_shallow, _ = g.resolve_path(root, ("SUBJ",))
+        s_deep, _ = g.resolve_path(
+            root, ("COMP", "XCOMP", "COMP", "SUBJ"),
+        )
+        assert s_shallow is not None and s_deep is not None
+        endpoints, err = resolve_regex_for_read(
+            g, root,
+            (StarAltFeature(("COMP", "XCOMP")), Feature("SUBJ")),
+        )
+        assert err is None
+        # Shallow SUBJ (depth 1) precedes deep SUBJ (depth 4).
+        assert endpoints == [s_shallow, s_deep]
+
+    def test_star_alt_skips_non_alt_features(self) -> None:
+        """The Kleene loop only consumes labels in the alternation.
+        A ``COMP.OBJ.COMP`` chain doesn't reach depth 3 with body
+        ``{COMP | XCOMP}*`` — OBJ blocks traversal at depth 2."""
+        g = FGraph()
+        root = g.fresh()
+        d1, _ = g.resolve_path(root, ("COMP",))
+        d2, _ = g.resolve_path(root, ("COMP", "OBJ"))
+        d3, _ = g.resolve_path(root, ("COMP", "OBJ", "COMP"))
+        assert d1 is not None and d2 is not None and d3 is not None
+        endpoints, err = resolve_regex_for_read(
+            g, root, (StarAltFeature(("COMP", "XCOMP")),),
+        )
+        assert err is None
+        # Only root + d1 reached (chain stops at COMP.OBJ).
+        assert endpoints == [root, d1]
+
+
+class TestPlusAltFeature:
+    """Phase 10.L: ``{F | G}+`` — symmetric Kleene-plus on alternation.
+
+    Requires at least one iteration; excludes the base node from the
+    endpoint set (unlike ``StarAltFeature``).
+    """
+
+    def test_plus_alt_zero_iterations_returns_empty(self) -> None:
+        g = FGraph()
+        n = g.fresh()
+        endpoints, err = resolve_regex_for_read(
+            g, n, (PlusAltFeature(("COMP", "XCOMP")),),
+        )
+        assert err is None
+        # Base excluded — Plus requires ≥1 iteration.
+        assert endpoints == []
+
+    def test_plus_alt_excludes_base_includes_chain(self) -> None:
+        g = FGraph()
+        root = g.fresh()
+        d1, _ = g.resolve_path(root, ("COMP",))
+        d2, _ = g.resolve_path(root, ("COMP", "XCOMP"))
+        d3, _ = g.resolve_path(root, ("COMP", "XCOMP", "COMP"))
+        assert d1 is not None and d2 is not None and d3 is not None
+        endpoints, err = resolve_regex_for_read(
+            g, root, (PlusAltFeature(("COMP", "XCOMP")),),
+        )
+        assert err is None
+        # Depths 1, 2, 3 — base excluded.
+        assert endpoints == [d1, d2, d3]
+
+    def test_plus_alt_then_subj(self) -> None:
+        """``{COMP | XCOMP}+ SUBJ``: deep SUBJ reached; shallow SUBJ
+        (zero body iterations) NOT reached because Plus requires ≥1."""
+        g = FGraph()
+        root = g.fresh()
+        s_shallow, _ = g.resolve_path(root, ("SUBJ",))
+        s_deep, _ = g.resolve_path(
+            root, ("COMP", "XCOMP", "SUBJ"),
+        )
+        assert s_shallow is not None and s_deep is not None
+        endpoints, err = resolve_regex_for_read(
+            g, root,
+            (PlusAltFeature(("COMP", "XCOMP")), Feature("SUBJ")),
+        )
+        assert err is None
+        # Only the deep SUBJ — shallow SUBJ excluded by Plus's ≥1 rule.
+        assert endpoints == [s_deep]
+
+
 class TestReentrancyAndDedup:
     def test_reentrant_subgraph_dedups_endpoints(self) -> None:
         """Two regex paths reaching the same canonical node return
@@ -345,13 +474,14 @@ class TestKZ1989Fixtures:
         assert obj in endpoints
 
     def test_eq39_topic_equals_comp_xcomp_star_gf(self) -> None:
-        """K&Z eq. 39 (English topicalization) approximated:
-        ``(↑ TOPIC) = (↑ {COMP, XCOMP}* SUBJ)`` (using SUBJ instead
-        of the K&Z ``GF-COMP`` complement, which is out of scope per
-        ``docs/fu-evaluation.md`` §3).
+        """K&Z eq. 39 (English topicalization) approximated with the
+        single-step alternation form ``{COMP | XCOMP} SUBJ``.
 
-        Mixed COMP / XCOMP chain; the body should enumerate SUBJ at
-        each chain depth where SUBJ exists.
+        Retained as a contrast against the canonical Kleene-on-
+        alternation form ``{COMP | XCOMP}* SUBJ`` exercised in
+        :meth:`test_eq39_topic_equals_comp_xcomp_star_gf_kleene`
+        (Phase 10.L). The single-step form reaches only depth-1
+        SUBJ; the Kleene form reaches SUBJ at every chain depth.
         """
         g = FGraph()
         f0 = g.fresh()
@@ -364,16 +494,41 @@ class TestKZ1989Fixtures:
             (AltFeature(("COMP", "XCOMP")), Feature("SUBJ")),
         )
         assert err is None
-        # Note: this is `{COMP|XCOMP} SUBJ` — exactly one body step.
-        # Only `s_deep` is unreachable here (needs `*`). With the
-        # plus-or-star version, both s0 and s_deep would be reached.
-        # We test the singleton-step here; the full `{COMP|XCOMP}* SUBJ`
-        # case is the same machinery and is exercised in
-        # `test_alt_then_concat`.
-        # The first body step reaches f0.COMP and f0.XCOMP; only
-        # f0.COMP.SUBJ would be a depth-1 endpoint, which we did not
-        # build. So no SUBJ via single body step.
+        # Single body step reaches f0.COMP and f0.XCOMP; only their
+        # immediate SUBJ children would be depth-1 endpoints. Neither
+        # is built here, so no SUBJ via the single-step form.
         assert endpoints == []
+
+    def test_eq39_topic_equals_comp_xcomp_star_gf_kleene(self) -> None:
+        """K&Z eq. 39 (English topicalization) — **canonical form**.
+
+        ``(↑ TOPIC) = (↑ {COMP | XCOMP}* SUBJ)`` (Phase 10.L
+        upgrade — pre-10.L this fixture approximated with single-step
+        ``{COMP, XCOMP} SUBJ``). The body threads through any mixture
+        of COMP and XCOMP at any depth, then selects SUBJ.
+
+        Build mixed-chain f-graph where SUBJ appears at depths 1 (via
+        XCOMP), 3 (via COMP.XCOMP.COMP), and shallow at depth 1
+        (direct SUBJ off the matrix). All three are enumerated by the
+        Kleene-on-alternation body.
+        """
+        g = FGraph()
+        f0 = g.fresh()
+        # f0.SUBJ — direct (depth 1)
+        s0, _ = g.resolve_path(f0, ("SUBJ",))
+        # f0.COMP.XCOMP.COMP.SUBJ — deeply embedded (depth 4)
+        s_deep, _ = g.resolve_path(
+            f0, ("COMP", "XCOMP", "COMP", "SUBJ"),
+        )
+        assert s0 is not None and s_deep is not None
+        endpoints, err = resolve_regex_for_read(
+            g, f0,
+            (StarAltFeature(("COMP", "XCOMP")), Feature("SUBJ")),
+        )
+        assert err is None
+        # Both endpoints enumerated; shallow SUBJ (depth 1) precedes
+        # deep SUBJ (depth 4) per K&Z 1989 §3 minimality ordering.
+        assert endpoints == [s0, s_deep]
 
 
 # === C3 — constraining-eq integration ======================================

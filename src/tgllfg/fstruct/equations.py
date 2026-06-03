@@ -150,7 +150,41 @@ class AltFeature:
     off_path: tuple["Equation", ...] = ()
 
 
-type PathElement = Feature | StarFeature | PlusFeature | AltFeature
+@dataclass(frozen=True)
+class StarAltFeature:
+    """Kleene-star over alternation: ``{F1 | F2 | ...}*``.
+
+    Zero or more iterations of any of the listed feature labels. The
+    canonical use is K&Z 1989 eq. 39's English-topicalization body
+    ``(↑ {COMP | XCOMP}* (GF-COMP))`` — the path threads through any
+    mixture of COMP and XCOMP at any depth before selecting the
+    bottom function. Phase 10.L extension; ``AltFeature`` remains
+    the single-iteration form.
+    """
+    names: tuple[str, ...]
+    off_path: tuple["Equation", ...] = ()
+
+
+@dataclass(frozen=True)
+class PlusAltFeature:
+    """Kleene-plus over alternation: ``{F1 | F2 | ...}+``.
+
+    One or more iterations of any of the listed feature labels.
+    Symmetric companion to ``StarAltFeature``; mirrors the
+    ``StarFeature`` / ``PlusFeature`` pair. Phase 10.L extension.
+    """
+    names: tuple[str, ...]
+    off_path: tuple["Equation", ...] = ()
+
+
+type PathElement = (
+    Feature
+    | StarFeature
+    | PlusFeature
+    | AltFeature
+    | StarAltFeature
+    | PlusAltFeature
+)
 
 
 # === AST: designators and values ===========================================
@@ -434,7 +468,17 @@ class _Parser:
                 self._consume("PIPE")
                 names.append(self._consume("IDENT").text)
             self._consume("RBRACE")
-            elem = AltFeature(names=tuple(names))
+            # Phase 10.L: ``{F | G}*`` / ``{F | G}+`` — Kleene over
+            # alternation (K&Z 1989 eq. 38 / 39 canonical body form).
+            nxt = self._peek()
+            if nxt.kind == "STAR":
+                self._consume("STAR")
+                elem = StarAltFeature(names=tuple(names))
+            elif nxt.kind == "PLUS":
+                self._consume("PLUS")
+                elem = PlusAltFeature(names=tuple(names))
+            else:
+                elem = AltFeature(names=tuple(names))
         else:
             name = self._consume("IDENT").text
             nxt = self._peek()
@@ -483,6 +527,10 @@ def _attach_off_path(
         return PlusFeature(name=elem.name, off_path=constraints)
     if isinstance(elem, AltFeature):
         return AltFeature(names=elem.names, off_path=constraints)
+    if isinstance(elem, StarAltFeature):
+        return StarAltFeature(names=elem.names, off_path=constraints)
+    if isinstance(elem, PlusAltFeature):
+        return PlusAltFeature(names=elem.names, off_path=constraints)
     raise TypeError(f"unknown path element type: {type(elem).__name__}")
 
 
@@ -517,6 +565,10 @@ def _unparse_path_element(e: PathElement) -> str:
         core = f"{e.name}*"
     elif isinstance(e, PlusFeature):
         core = f"{e.name}+"
+    elif isinstance(e, StarAltFeature):
+        core = "{" + " | ".join(e.names) + "}*"
+    elif isinstance(e, PlusAltFeature):
+        core = "{" + " | ".join(e.names) + "}+"
     else:
         core = "{" + " | ".join(e.names) + "}"
     if e.off_path:
@@ -564,7 +616,8 @@ __all__ = [
     # Bases
     "Up", "Down", "Right", "Base",
     # Path elements
-    "Feature", "StarFeature", "PlusFeature", "AltFeature", "PathElement",
+    "Feature", "StarFeature", "PlusFeature", "AltFeature",
+    "StarAltFeature", "PlusAltFeature", "PathElement",
     # Designators and values
     "Designator", "Atom", "Value",
     # Equations
