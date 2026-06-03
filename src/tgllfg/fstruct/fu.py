@@ -44,7 +44,9 @@ from .equations import (
     Equation,
     Feature,
     PathElement,
+    PlusAltFeature,
     PlusFeature,
+    StarAltFeature,
     StarFeature,
 )
 from .graph import ComplexValue, Diagnostic, FGraph, NodeId
@@ -94,7 +96,7 @@ def _compile(path: tuple[PathElement, ...]) -> _NFA:
     Construction is compositional in the style of Thompson 1968
     (state-count-optimized — each element introduces a small fixed
     sub-graph rather than the canonical four-states-per-element
-    Thompson shape). The four AST node kinds compile as:
+    Thompson shape). The six AST node kinds compile as:
 
     * ``Feature(F)``: single labeled transition ``cur --F--> next``.
     * ``StarFeature(F)``: self-loop on ``cur`` consuming ``F`` +
@@ -104,6 +106,14 @@ def _compile(path: tuple[PathElement, ...]) -> _NFA:
       self-loop on ``mid`` + ε-transition ``mid --ε--> next``.
     * ``AltFeature((F, G, ...))``: parallel labeled transitions
       ``cur --Fi--> next`` for each name.
+    * ``StarAltFeature((F, G, ...))`` (Phase 10.L): parallel
+      self-loops on ``cur`` consuming each name + ε-transition
+      ``cur --ε--> next``. Zero or more iterations of any name
+      in the alternation are reachable.
+    * ``PlusAltFeature((F, G, ...))`` (Phase 10.L): parallel
+      ``cur --Fi--> mid`` transitions (at least one consumed) +
+      parallel self-loops on ``mid`` + ε-transition
+      ``mid --ε--> next``.
 
     Each labeled transition carries the originating element's
     ``off_path`` constraints (an empty tuple if the element has
@@ -147,6 +157,26 @@ def _compile(path: tuple[PathElement, ...]) -> _NFA:
             nxt = new_state()
             for name in elem.names:
                 out[cur].append((name, nxt, elem.off_path))
+            cur = nxt
+        elif isinstance(elem, StarAltFeature):
+            nxt = new_state()
+            # Parallel self-loops: any name consumes one step.
+            for name in elem.names:
+                out[cur].append((name, cur, elem.off_path))
+            # ε-transition for the zero-iteration case (no off-path).
+            out[cur].append((None, nxt, ()))
+            cur = nxt
+        elif isinstance(elem, PlusAltFeature):
+            mid = new_state()
+            nxt = new_state()
+            # cur --Fi--> mid for each name (≥1 consumed).
+            for name in elem.names:
+                out[cur].append((name, mid, elem.off_path))
+            # mid --Fi--> mid for each name (additional iterations).
+            for name in elem.names:
+                out[mid].append((name, mid, elem.off_path))
+            # mid --ε--> nxt (accept after ≥1; no off-path).
+            out[mid].append((None, nxt, ()))
             cur = nxt
         else:
             raise AssertionError(
