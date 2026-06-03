@@ -854,6 +854,43 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # --- Phase 10.J.post-12.16: comma-joined OR-pair N-coord -----------
+    #
+    # ``ama o anak, pamangkin o apo``
+    #     "father or son, niece/nephew or grandchild"  (PAMILYA/sent-2)
+    # ``ama o anak, pamangkin o apo, lolo o lola``     (extensible)
+    #
+    # Tagalog admits a comma-asyndetic join of two (or more) binary
+    # OR-coord NPs as a single coord constituent — naming a series of
+    # alternative-pair options. Per the user's bracketing of
+    # PAMILYA/sent-2: ``[ama o anak, pamangkin o apo]`` is treated as
+    # one constituent role-coord.
+    #
+    # The narrow constraint ``N[COORD=OR]`` on BOTH daughters
+    # distinguishes this from the wider N_LONG_LIST 3+ pattern (bare-N
+    # listing with no OR sub-coords); this rule fires only when both
+    # sides are pre-formed OR pairs joined by comma.
+    #
+    # The two pairs go into the matrix CONJUNCTS as nested coord-
+    # f-structures (preserving the inner OR pairings); a downstream
+    # consumer can flatten if needed.
+    rules.append(Rule(
+        "N[COORD=OR]",
+        [
+            "N[COORD=OR]",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "N[COORD=OR]",
+        ],
+        [
+            "↓1 ∈ (↑ CONJUNCTS)",
+            "↓3 ∈ (↑ CONJUNCTS)",
+            "(↑ COORD) = 'OR'",
+            "(↑ NUM) = 'PL'",
+            "(↓1 COORD) =c 'OR'",
+            "(↓3 COORD) =c 'OR'",
+        ],
+    ))
+
     # --- 9.X.c11: N-level mga marker for coord contexts ----------------
     #
     # ``ng bahay, gusali at mga tanim`` "of houses, buildings and
