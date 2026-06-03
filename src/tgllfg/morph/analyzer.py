@@ -191,6 +191,26 @@ def _generate_form_variants(root: Root, cell: ParadigmCell) -> list[str]:
         if alt != primary and alt not in variants:
             variants.append(alt)
 
+    # Phase 10.X.pre-1: when the root carries ``also_medial_vowel_
+    # syncope`` and the cell has a vowel-initial suffix operation,
+    # both the no-syncope variant AND the syncope variant are
+    # generated so the analyzer accepts either. ``bigay`` in the
+    # an-...-an / -in paradigm: ``binigayan`` (no syncope, formal)
+    # and ``binigyan`` (syncope, modern principal) are both attested.
+    # Same pattern as ``also_n_epenthesis`` above — the flag is the
+    # *variant-generation* flag, not the per-suffix-call override.
+    # See S&O 1972 §4.21 for medial-vowel-syncope as a per-root lex
+    # choice; Zamar 2023 §13.4 lists the syncope form as modern
+    # principal for several CVC-final roots.
+    if "also_medial_vowel_syncope" in flags and any(
+        op.op == "suffix" for op in cell.operations
+    ):
+        alt = _generate_one(
+            root, cell, flags | {"medial_vowel_syncope"},
+        )
+        if alt != primary and alt not in variants:
+            variants.append(alt)
+
     return variants
 
 
