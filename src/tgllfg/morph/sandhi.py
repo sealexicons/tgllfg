@@ -248,6 +248,16 @@ def attach_suffix(
     (``sunod`` < ``*sunud``; ``bukas`` < older ``*bukás``). Not all
     CVC-final stems syncopate — opt-in per root.
 
+    Variant production: when paired with the
+    ``also_medial_vowel_syncope`` sandhi flag on a Root (consumed
+    in :mod:`~tgllfg.morph.analyzer`), BOTH the no-syncope and the
+    syncope variants are generated so analyzer-time surface lookup
+    accepts either. ``bigay`` in the ``-an`` paradigm:
+    ``binigayan`` (no syncope, formal) and ``binigyan`` (syncope,
+    modern principal) are both attested per Zamar 2023 §13.4.
+    Phase 10.X.pre-1 added this variant-generation flag to mirror
+    ``also_n_epenthesis``.
+
     The deletion / epenthesis-override flags are mutually
     independent — ``high_vowel_deletion`` and ``a_deletion`` apply
     to disjoint stem classes (i/u-final vs a-final);

@@ -349,6 +349,14 @@
 - citation: bigay
   pos: VERB
   gloss: give
+  # Phase 10.X.pre-1: also_medial_vowel_syncope generates BOTH the
+  # no-syncope variant (``binigayan``, formal) and the syncope variant
+  # (``binigyan``, modern principal) for vowel-initial suffix cells.
+  # S&O 1972 §4.21 documents the syncope as a per-root lex choice;
+  # Zamar 2023 §13.4 lists the syncope form as the modern principal.
+  # Closes the DV-with-syncope sub-blocker of PAMILYA/sent-8: ``bigyan
+  # ng matitirhan`` (the DV CTPL-SOC form with syncope).
+  sandhi_flags: [also_medial_vowel_syncope]
   transitivity: TR
   affix_class: [mag, an_oblig, i_oblig, maka]
 
