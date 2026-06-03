@@ -100,6 +100,15 @@ DiagKind = Literal[
     "type-mismatch",
     "occurs-check",
     "constraint-failed",
+    # Phase 10.M: transient marker for FU defining-eq "no endpoint"
+    # failures. ``_pass_defining`` intercepts this kind and queues the
+    # equation for a fixpoint re-pass after the rest of the defining
+    # pass completes (parent-first evaluation may have fired the FU eq
+    # before sibling/body eqs created the regex-path target). Survivors
+    # of the re-pass get upgraded to ``constraint-failed`` and emitted.
+    # NOT in ``NON_BLOCKING_KINDS`` — if it ever leaks past the intercept
+    # it still blocks the parse, matching pre-10.M behavior.
+    "fu-no-endpoint",
     "existential-failed",
     "neg-existential-failed",
     "neg-equation-failed",
