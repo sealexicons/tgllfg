@@ -82,6 +82,7 @@ negative.
 | `GAPPING` | matrix carries a gapping conjunction |
 | `HAVE` | possessive predicate marker |
 | `HUMAN` | NP/PRON is human-class |
+| `IDIOM_NEG_INDEF` | NP is the ``wh + pa + man`` idiomatic NEG_INDEF surface (``ano pa man`` "whatever"; ``sino pa man`` "whoever"); marker stays on the matrix NP (no INDEF binding, so NP-coord composes cleanly) — Phase 10.J.post-12.16 |
 | `IMPERSONAL` | predicate licenses bare-S with synth PRO SUBJ (weather `umulan`; atmospheric ADJs `mainit`; 9.X.c49) |
 | `INTENSIFIER` | particle is an intensifier (`talagang`) |
 | `INTERACTION` | verb is a `makipag-` social/participation derivation (S&O 1972 §5.27; "engage in / interact with"; *distinct* from `RECP` true reciprocal `mag-...-an` "do X to each other" — Phase 10.J.post-12.12) |
