@@ -57,6 +57,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "GAPPING",
         "HAVE",
         "HUMAN",
+        "IDIOM_NEG_INDEF",
         "IMPERSONAL",
         "INTENSIFIER",
         "INTERACTION",

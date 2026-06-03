@@ -2401,6 +2401,29 @@
 - surface: naging
   pos: VERB
   feats: {COPULA: true, ASPECT: PFV, LEMMA: maging}
+# Phase 10.J.post-12.16: ``natili`` / ``manatili`` family STAY/REMAIN
+# copular surfaces. Parallel to maging/naging (BECOME) — same syntactic
+# frame ``V[COPULA] + SUBJ + predicative-XCOMP``, different semantic
+# anchor (REMAIN vs BECOME). Discrete-surface lex (the COPULA reading
+# coexists with the standard `ma`-paradigm AV-INTR reading from
+# ``verbs.yaml`` `natili` for sentences like
+# ``Nananatili siya sa pamilya.`` "She remains in the family").
+#
+# Closes PAMILYA/sent-2 (``... nananatili siyang ama o anak ...``):
+#   ``Nananatili siyang ama.``    "She remains a father."
+#   ``Nananatili kaming pamilya.`` "We remain a family."
+- surface: manatili
+  pos: VERB
+  feats: {COPULA: true, ASPECT: CTPL, MOOD: SOC, LEMMA: manatili}
+- surface: nanatili
+  pos: VERB
+  feats: {COPULA: true, ASPECT: PFV, LEMMA: manatili}
+- surface: nananatili
+  pos: VERB
+  feats: {COPULA: true, ASPECT: IPFV, LEMMA: manatili}
+- surface: mananatili
+  pos: VERB
+  feats: {COPULA: true, ASPECT: CTPL, LEMMA: manatili}
 
 - surface: makita
   pos: VERB

@@ -3357,6 +3357,138 @@ def register_rules(rules: list[Rule]) -> None:
             "(↑ INDEF) = 'NEG_INDEF'",
         ],
     ))
+    # Phase 10.J.post-12.16: per-CASE parameterized companion to the
+    # bare-LHS ``wh + man`` rule above. Same precedent as the kahit-WH
+    # IndefPRON pattern (lines 3249-3261) — the bare LHS doesn't admit
+    # the produced PRON into a CASE-required NP-coord slot (e.g.,
+    # ``doktor o ano man`` predicate-N coord). The case-parameterized
+    # variant advertises CASE on the LHS so the existing
+    # ``NP[CASE=X] → PRON[CASE=X]`` projection picks up the produced
+    # PRON.
+    for case in ("NOM", "GEN", "DAT"):
+        rules.append(Rule(
+            f"PRON[INDEF=NEG_INDEF, CASE={case}]",
+            [f"PRON[CASE={case}]", "PART"],
+            [
+                "(↑) = ↓1",
+                "(↓1 WH) =c true",
+                f"(↓1 CASE) =c '{case}'",
+                "(↓2 ADV) =c 'EVEN'",
+                "(↓2 LEMMA) =c 'man'",
+                "(↑ INDEF) = 'NEG_INDEF'",
+            ],
+        ))
+
+    # Phase 10.J.post-12.16: extended ``WH-PRON pa man`` 3-token NEG_INDEF
+    # form. ``ano pa man`` (= "whatever else / no matter what") and
+    # ``sino pa man`` ("whoever else / no matter who") interpose the
+    # ``pa`` (STILL / yet) 2P-clitic between the wh-PRON and the ``man``
+    # particle. The disambiguator/reorder normally moves ``pa`` to
+    # clause-final as a 2P clitic, but the fixed idiom keeps it
+    # adjacent to its wh-PRON host (gated via
+    # ``_is_pa_between_wh_pron_and_man`` in clitics/placement.py).
+    # This rule admits the 3-token surface directly.
+    #
+    # PAMILYA/sent-2 instantiates this:
+    #   ``... siyentipiko o ano pa man, ...``
+    #     "... scientist or whatever, ..."
+    #
+    # Two sibling rule shapes mirror the kahit-WH IndefPRON pattern
+    # above:
+    #   1. Bare PRON LHS — for downstream consumers that match a bare
+    #      PRON daughter (e.g., the Phase 5j C9 negative-existential
+    #      rule consuming ``walang ano pa man``).
+    #   2. Per-CASE parameterized LHS — for NP-coord and NP-projection
+    #      contexts where the daughter category requires a CASE-
+    #      advertising PRON (e.g., ``doktor o ano pa man`` in
+    #      PAMILYA/sent-2's S1 inner clause).
+    #
+    # The ``pa`` daughter joins the matrix ADJUNCT set as the
+    # discourse-emphatic component of the idiom.
+    rules.append(Rule(
+        "PRON[INDEF=NEG_INDEF]",
+        ["PRON", "PART", "PART"],
+        [
+            "(↑) = ↓1",
+            "(↓1 WH) =c true",
+            "(↓2 ASPECT_PART) =c 'STILL'",
+            "(↓3 ADV) =c 'EVEN'",
+            "(↓3 LEMMA) =c 'man'",
+            "(↑ INDEF) = 'NEG_INDEF'",
+            "↓2 ∈ (↑ ADJUNCT)",
+        ],
+    ))
+    for case in ("NOM", "GEN", "DAT"):
+        rules.append(Rule(
+            f"PRON[INDEF=NEG_INDEF, CASE={case}]",
+            [f"PRON[CASE={case}]", "PART", "PART"],
+            [
+                "(↑) = ↓1",
+                "(↓1 WH) =c true",
+                f"(↓1 CASE) =c '{case}'",
+                "(↓2 ASPECT_PART) =c 'STILL'",
+                "(↓3 ADV) =c 'EVEN'",
+                "(↓3 LEMMA) =c 'man'",
+                "(↑ INDEF) = 'NEG_INDEF'",
+                "↓2 ∈ (↑ ADJUNCT)",
+            ],
+        ))
+    # Phase 10.J.post-12.16: direct ``NP[CASE=X]`` + ``N`` projection
+    # of the ``wh + pa + man`` idiom, bypassing the
+    # ``PRON[INDEF=NEG_INDEF] → NP[CASE=X]`` chain.
+    #
+    # Without these, coord slots (``N → N PART[COORD=OR] N``,
+    # ``NP[CASE=NOM] → NP[NOM] PART[OR] NP[NOM]``) don't admit
+    # ``ano pa man`` as a conjunct: the standard PRON-projection lifts
+    # ``INDEF=NEG_INDEF`` onto the matrix NP/N, which then conflicts
+    # with the sibling spurious ``kahit + WH`` IndefPRON path's
+    # ``INDEF=YES`` binding at the same span. The direct NP/N rules
+    # emit a matrix node with no INDEF binding (only ``PRED='PRO'`` +
+    # the idiom marker ``IDIOM_NEG_INDEF=true``), so coord can fire
+    # cleanly.
+    #
+    # PAMILYA/sent-2 instantiates this in S1's inner coord:
+    #   ``... siyentipiko o ano pa man, ...``
+    #     (``ano pa man`` as the 4th conjunct of an N-COORD-OR)
+    #
+    # The idiom marker rides on the matrix NP/N via
+    # ``IDIOM_NEG_INDEF`` so downstream consumers can detect the
+    # "whatever / anything" semantics without an INDEF clash.
+    for case in ("NOM", "GEN", "DAT"):
+        rules.append(Rule(
+            f"NP[CASE={case}]",
+            [f"PRON[CASE={case}]", "PART", "PART"],
+            [
+                f"(↑ CASE) = '{case}'",
+                "(↑ PRED) = 'PRO'",
+                "(↑ IDIOM_NEG_INDEF) = true",
+                "(↓1 WH) =c true",
+                f"(↓1 CASE) =c '{case}'",
+                "(↓2 ASPECT_PART) =c 'STILL'",
+                "(↓3 ADV) =c 'EVEN'",
+                "(↓3 LEMMA) =c 'man'",
+                "↓2 ∈ (↑ ADJUNCT)",
+                "↓3 ∈ (↑ ADJUNCT)",
+            ],
+        ))
+    # N-projection sibling — for N-level coord slots
+    # (``N[COORD=OR] → N PART[OR] N`` and ``N_LONG_LIST`` accumulators).
+    # Same idiom marker, no INDEF.
+    rules.append(Rule(
+        "N",
+        ["PRON[CASE=NOM]", "PART", "PART"],
+        [
+            "(↑ PRED) = 'PRO'",
+            "(↑ IDIOM_NEG_INDEF) = true",
+            "(↓1 WH) =c true",
+            "(↓1 CASE) =c 'NOM'",
+            "(↓2 ASPECT_PART) =c 'STILL'",
+            "(↓3 ADV) =c 'EVEN'",
+            "(↓3 LEMMA) =c 'man'",
+            "↓2 ∈ (↑ ADJUNCT)",
+            "↓3 ∈ (↑ ADJUNCT)",
+        ],
+    ))
 
     # === Phase 5m Commit 7: emphatic ``mismo`` post-N attachment =====
     #

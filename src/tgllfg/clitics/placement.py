@@ -210,7 +210,8 @@ def _is_post_wh_pron_man(
     analyses: list[list[MorphAnalysis]], i: int
 ) -> bool:
     """True if ``analyses[i]`` is the EVEN-particle ``man``
-    immediately preceded by a wh-PRON.
+    immediately preceded by a wh-PRON, OR by ``pa`` (STILL-clitic)
+    that is itself immediately preceded by a wh-PRON.
 
     Phase 5n.B Commit 22 (§18 L46 + L102): the productive
     negative-indefinite construction ``wh + man`` (``ano man``,
@@ -222,7 +223,20 @@ def _is_post_wh_pron_man(
     adjacency. Suppressing the move here keeps ``ano man`` /
     ``sino man`` parseable; the lexicalized contracted forms
     (``anuman`` / ``sinuman``) are unaffected (single tokens,
-    no placement question)."""
+    no placement question).
+
+    Phase 10.J.post-12.16: extended to accept the 3-token
+    idiom ``wh + pa + man`` (``ano pa man`` "whatever else /
+    no matter what", ``sino pa man`` "whoever else"). The
+    ``pa`` (STILL) 2P-clitic sits between the wh-PRON and
+    ``man``; both must stay adjacent for the new 3-daughter
+    indef-builder rule (``PRON[INDEF=NEG_INDEF] → PRON PART
+    PART`` in cfg/nominal.py) to fire. PAMILYA/sent-2's
+    ``... siyentipiko o ano pa man, ...`` instantiates this.
+    Companion helper :func:`_is_pa_between_wh_pron_and_man`
+    handles the ``pa`` position (skip the reorder of ``pa``
+    when it sits inside the ``wh + pa + man`` idiom).
+    """
     if i == 0:
         return False
     if not any(
@@ -231,8 +245,61 @@ def _is_post_wh_pron_man(
     ):
         return False
     prev = analyses[i - 1]
-    return any(
+    if any(
         ma.pos == "PRON" and ma.feats.get("WH") is True for ma in prev
+    ):
+        return True
+    # Phase 10.J.post-12.16: accept ``wh + pa + man`` 3-token form.
+    # ``man`` preceded by ``pa`` (STILL) that is itself preceded by
+    # a wh-PRON.
+    if i >= 2 and any(
+        ma.pos == "PART" and ma.feats.get("ASPECT_PART") == "STILL"
+        for ma in prev
+    ):
+        prev_prev = analyses[i - 2]
+        return any(
+            ma.pos == "PRON" and ma.feats.get("WH") is True
+            for ma in prev_prev
+        )
+    return False
+
+
+def _is_pa_between_wh_pron_and_man(
+    analyses: list[list[MorphAnalysis]], i: int
+) -> bool:
+    """True if ``analyses[i]`` is the STILL-particle ``pa``
+    immediately preceded by a wh-PRON AND immediately followed
+    by the EVEN-particle ``man``.
+
+    Phase 10.J.post-12.16: companion to
+    :func:`_is_post_wh_pron_man` for the ``wh + pa + man``
+    3-token idiom (``ano pa man`` "whatever else", ``sino pa
+    man`` "whoever else"). Both ``pa`` and ``man`` are 2P
+    clitics that would otherwise be moved to clause-final by
+    the standard Wackernagel placement, breaking the fixed
+    idiom's adjacency. Suppressing both moves keeps the
+    3-daughter ``PRON[INDEF=NEG_INDEF] → PRON PART PART``
+    indef-builder rule (cfg/nominal.py) firing intact.
+
+    Drives PAMILYA/sent-2's ``... siyentipiko o ano pa man, ...``
+    surface.
+    """
+    if i == 0 or i + 1 >= len(analyses):
+        return False
+    if not any(
+        ma.pos == "PART" and ma.feats.get("ASPECT_PART") == "STILL"
+        for ma in analyses[i]
+    ):
+        return False
+    prev = analyses[i - 1]
+    if not any(
+        ma.pos == "PRON" and ma.feats.get("WH") is True for ma in prev
+    ):
+        return False
+    nxt = analyses[i + 1]
+    return any(
+        ma.pos == "PART" and ma.feats.get("LEMMA") == "man"
+        for ma in nxt
     )
 
 
@@ -1369,7 +1436,18 @@ def reorder_clitics(
         # forms the productive negative-indef builder (``ano man``,
         # ``sino man``). Keep adjacent to the wh-PRON so the
         # ``PRON → PRON PART[man,ADV=EVEN]`` rule can fire.
+        # Phase 10.J.post-12.16: extended to also cover ``wh + pa
+        # + man`` 3-token idiom (``ano pa man``) — ``man`` stays
+        # adjacent even when ``pa`` sits between it and the
+        # wh-PRON; the companion ``pa`` skip below keeps ``pa``
+        # in place too.
         and not _is_post_wh_pron_man(analyses, i)
+        # Phase 10.J.post-12.16: ``pa`` between a wh-PRON and
+        # ``man`` belongs to the ``wh + pa + man`` 3-token idiom
+        # (PAMILYA/sent-2's ``ano pa man``). Without this skip,
+        # ``pa`` is hoisted to clause-final and the 3-daughter
+        # indef-builder rule's adjacency is broken.
+        and not _is_pa_between_wh_pron_and_man(analyses, i)
         # Phase 5n.B Commit 23: ``din`` immediately after ``gayon``
         # or ``ganon`` forms the multi-word discourse connective
         # ``gayon din`` / ``ganon din``. Keep adjacent so the Phase

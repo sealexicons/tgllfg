@@ -1759,6 +1759,31 @@
   transitivity: TR
   affix_class: [mag, in_oblig, an_oblig, maka]
 
+- citation: natili
+  pos: VERB
+  gloss: remain, stay
+  # Phase 10.J.post-12.16: ``natili`` is the citation/root for the
+  # ``manatili`` (INF) "to remain" family. Realises through the
+  # standard ``ma`` AV NVOL paradigm:
+  #   PFV NVOL:  na + natili        → nanatili    (PR S&O 1972 §5.27)
+  #   IPFV NVOL: na + cv(na)natili  → nananatili
+  #   CTPL NVOL: ma + cv(na)natili  → mananatili
+  # plus the ``ma_inf`` SOC bare-INF cell (Phase 10.J.post-12.13):
+  #   CTPL SOC:  ma + natili        → manatili    (bare INF for
+  #                                                tough/equi-control,
+  #                                                modal-XCOMP positions)
+  #
+  # Lexicalized; no productive ``mag-`` / ``maka-`` cells (S&O treats
+  # ``manatili`` as the standard citation form alongside its semantic
+  # cohort ``mabuhay`` / ``manirahan`` — all ma-NVOL stative-residential
+  # verbs).
+  #
+  # Closes PAMILYA/sent-2 token [14] OOV (``nananatili``); reaches
+  # broader native usage where ``manatili`` / ``nananatili`` /
+  # ``mananatili`` surface as the canonical "remain" predicate.
+  transitivity: INTR
+  affix_class: [ma, ma_inf]
+
 - citation: nganga
   pos: VERB
   gloss: open the mouth, gape
