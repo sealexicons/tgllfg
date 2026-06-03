@@ -15,9 +15,11 @@ from tgllfg.fstruct import (
     NegEquation,
     NegExistentialConstraint,
     ParseError,
+    PlusAltFeature,
     PlusFeature,
     Right,
     SetMembership,
+    StarAltFeature,
     StarFeature,
     Up,
     parse_equation,
@@ -172,6 +174,48 @@ def test_alt_feature_three_way():
     assert eq.rhs == Designator(Up(), (AltFeature(("SUBJ", "OBJ", "OBL")),))
 
 
+# === Phase 10.L: Kleene over alternation ===================================
+#
+# ``{F | G}*`` / ``{F | G}+`` — K&Z 1989 eq. 38 / 39 canonical body form.
+# Symmetric to the ``F*`` / ``F+`` single-name Kleene; the body iterates
+# over any of the alternative names rather than a single label.
+
+def test_star_alt_feature_two_way():
+    eq = parse_equation("(↑ TOPIC) = (↑ {COMP | XCOMP}* SUBJ)")
+    assert isinstance(eq, DefiningEquation)
+    assert eq.rhs == Designator(
+        Up(), (StarAltFeature(("COMP", "XCOMP")), Feature("SUBJ"))
+    )
+
+
+def test_star_alt_feature_three_way():
+    eq = parse_equation("(↑) = (↑ {COMP | XCOMP | ADJ}*)")
+    assert isinstance(eq, DefiningEquation)
+    assert eq.rhs == Designator(
+        Up(), (StarAltFeature(("COMP", "XCOMP", "ADJ")),)
+    )
+
+
+def test_plus_alt_feature_two_way():
+    eq = parse_equation("(↑ REL-PRO) =c (↑ {COMP | XCOMP}+ SUBJ)")
+    assert isinstance(eq, ConstrainingEquation)
+    assert eq.rhs == Designator(
+        Up(), (PlusAltFeature(("COMP", "XCOMP")), Feature("SUBJ"))
+    )
+
+
+def test_star_alt_concat_with_literal():
+    # Mixed path: literal step, then Kleene-on-alternation, then literal.
+    eq = parse_equation("(↑ COMP {XCOMP | OBJ}* SUBJ)")
+    assert isinstance(eq, ExistentialConstraint)
+    path = eq.designator.path
+    assert path == (
+        Feature("COMP"),
+        StarAltFeature(("XCOMP", "OBJ")),
+        Feature("SUBJ"),
+    )
+
+
 # === Off-path constraints ==================================================
 
 def test_off_path_simple():
@@ -208,6 +252,35 @@ def test_off_path_on_simple_feature():
     feat = eq.designator.path[0]
     assert isinstance(feat, Feature)
     assert feat.off_path != ()
+
+
+def test_off_path_on_star_alt_feature():
+    # Phase 10.L: off-path constraints on a Kleene-over-alternation
+    # body attach to the wrapper, applied uniformly to every labeled
+    # transition emitted by the FSA compile.
+    eq = parse_equation(
+        "(↑ {COMP | XCOMP}*<(→ TENSE) =c 'PAST'> SUBJ)"
+    )
+    assert isinstance(eq, ExistentialConstraint)
+    star_alt = eq.designator.path[0]
+    assert isinstance(star_alt, StarAltFeature)
+    assert star_alt.names == ("COMP", "XCOMP")
+    assert star_alt.off_path == (
+        ConstrainingEquation(
+            lhs=Designator(Right(), (Feature("TENSE"),)),
+            rhs=Atom("PAST"),
+        ),
+    )
+
+
+def test_off_path_on_plus_alt_feature():
+    eq = parse_equation(
+        "(↑ {COMP | XCOMP}+<(→ FIN) =c '+'>)"
+    )
+    assert isinstance(eq, ExistentialConstraint)
+    plus_alt = eq.designator.path[0]
+    assert isinstance(plus_alt, PlusAltFeature)
+    assert len(plus_alt.off_path) == 1
 
 
 # === Strings drawn from the existing grammar / earley demo =================
@@ -261,6 +334,10 @@ ROUND_TRIP_CASES = [
     "(↑) = (↑ XCOMP+)",
     "(↑) = (↑ {SUBJ | OBJ})",
     "(↑ XCOMP*<(→ TENSE) =c 'PAST'> SUBJ)",
+    # Phase 10.L Kleene-on-alternation:
+    "(↑ TOPIC) = (↑ {COMP | XCOMP}* SUBJ)",
+    "(↑ REL-PRO) =c (↑ {COMP | XCOMP}+ SUBJ)",
+    "(↑ {COMP | XCOMP}*<(→ TENSE) =c 'PAST'> SUBJ)",
 ]
 
 
