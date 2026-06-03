@@ -63,6 +63,7 @@ from .equations import (
     Equation,
     ExistentialConstraint,
     Feature,
+    InsideOut,
     NegEquation,
     NegExistentialConstraint,
     ParseError,
@@ -391,10 +392,11 @@ def _pass_constraining(
 # === Designator resolution =================================================
 
 def _resolve_base(
-    base: Up | Down | Right,
+    base: Up | Down | Right | InsideOut,
     up: NodeId,
     children: list[NodeId],
     *,
+    graph: FGraph,
     right: NodeId | None = None,
 ) -> tuple[NodeId | None, Diagnostic | None]:
     """Resolve a base metavariable to a NodeId.
@@ -404,6 +406,17 @@ def _resolve_base(
     regex-path traversal (Phase 6.B C4). Outside an off-path
     context, ``right`` is ``None`` and ``→`` surfaces an
     ``unsupported`` diagnostic.
+
+    Phase 10.N: ``InsideOut`` bases resolve through ``graph``'s
+    reverse-lookup ``parents_via`` — recursively resolves the inner
+    designator to a target node ``T``, then finds the (canonical
+    root) parent ``N`` such that ``N``'s :class:`ComplexValue` has
+    the named feat pointing at ``T``. The prototype returns the
+    **first** parent in deterministic insertion order; multiple
+    parents are possible when ``T`` is structure-shared
+    (e.g., a SUBJ shared between matrix and XCOMP via functional
+    control). K&Z 1989 §3 minimality on inside-out is documented
+    as future work.
     """
     if isinstance(base, Up):
         return up, None
@@ -427,6 +440,37 @@ def _resolve_base(
             "unsupported",
             "→ outside an off-path constraint",
         )
+    if isinstance(base, InsideOut):
+        # Phase 10.N: inside-out base ``(FEAT INNER)``.
+        #
+        # Resolve ``inner`` to the target node ``T`` (recursive — the
+        # inner designator may itself contain inside-out, outside-in
+        # path, or a plain metavariable base). Then reverse-lookup
+        # parent nodes whose ComplexValue has ``base.feat → T``.
+        inner_node, err = _resolve_for_read(
+            graph, base.inner, up, children, right=right,
+        )
+        if err is not None:
+            return None, err
+        if inner_node is None:
+            return None, Diagnostic(
+                "inside-out-no-parent",
+                f"inside-out ({base.feat} …): inner designator "
+                f"{unparse(ExistentialConstraint(base.inner))} resolved "
+                f"to no node",
+            )
+        parents = graph.parents_via(inner_node, base.feat)
+        if not parents:
+            return None, Diagnostic(
+                "inside-out-no-parent",
+                f"inside-out ({base.feat} …): no parent f-structure "
+                f"has {base.feat!s} pointing at the inner target",
+            )
+        # Prototype: return the FIRST parent in insertion order.
+        # Multiple parents are possible (structure-shared targets via
+        # functional control); minimality-based selection is parked
+        # for future work pending corpus pressure.
+        return parents[0], None
     return None, Diagnostic(
         "unsupported",
         f"unknown designator base: {type(base).__name__}",
@@ -465,7 +509,9 @@ def _resolve_for_write(
 ) -> tuple[NodeId | None, Diagnostic | None]:
     """Resolve the designator with get-or-create semantics. Used for
     the lhs of defining equations and both sides of set membership."""
-    base_node, err = _resolve_base(designator.base, up, children, right=right)
+    base_node, err = _resolve_base(
+        designator.base, up, children, graph=graph, right=right,
+    )
     if err is not None:
         return None, err
     feats, err = _path_features(designator)
@@ -487,7 +533,9 @@ def _resolve_for_read(
     """Resolve the designator without creating intermediate nodes.
     Returns (None, None) when the path is not defined; that is not an
     error in itself, just absence."""
-    base_node, err = _resolve_base(designator.base, up, children, right=right)
+    base_node, err = _resolve_base(
+        designator.base, up, children, graph=graph, right=right,
+    )
     if err is not None:
         return None, err
     feats, err = _path_features(designator)
@@ -531,7 +579,7 @@ def _eval_defining_eq(
 
     if rhs_has_regex:
         base_node, err = _resolve_base(
-            eq.rhs.base, up, children, right=right,
+            eq.rhs.base, up, children, graph=graph, right=right,
         )
         if err is not None:
             return err
@@ -639,7 +687,7 @@ def _eval_constraining_eq(
 
     if rhs_has_regex:
         base_node, err = _resolve_base(
-            eq.rhs.base, up, children, right=right,
+            eq.rhs.base, up, children, graph=graph, right=right,
         )
         if err is not None:
             return err
