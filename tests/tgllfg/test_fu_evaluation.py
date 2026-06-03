@@ -919,6 +919,190 @@ class TestBindingEqWithFU:
         assert "atom-mismatch" in kinds
 
 
+# === Phase 10.M — deferred FU defining-equation re-pass ====================
+
+class TestFuDefiningDeferredRepass:
+    """Phase 10.M: defining-equations with FU on the RHS that fire
+    before their regex-path target is built get **queued** rather than
+    failing immediately. After the full defining pass walks the c-tree,
+    :func:`_repass_deferred_fu` retries each queued equation against
+    the post-pass-1 graph; successful retries may unblock cascaded
+    deferrals via fixpoint iteration.
+
+    Pre-10.M, the legacy behavior was to fail with
+    ``constraint-failed`` at fire-time — forcing the canonical K&Z
+    eq. 39 binding form to be rewritten as a constraining ``=c``
+    equation (Phase 6.D L47 workaround). 10.M unlocks the canonical
+    defining form; the ``=c`` form continues to work unchanged.
+    """
+
+    def test_sibling_after_fu_binding_succeeds_via_repass(self) -> None:
+        """FU binding fires first; the regex-path target equation
+        appears LATER in the same c-node's equation list. Pre-10.M
+        this failed with ``constraint-failed``; post-10.M the
+        re-pass catches the no-endpoint, retries after the sibling
+        builds the target, and binds successfully."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = (↑ COMP* OBJ)",  # fires first; no target yet
+                "(↑ COMP OBJ) = 'X'",          # built later; same c-node
+                "(↑ TOPIC) =c 'X'",            # confirms binding succeeded
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"deferred re-pass should resolve sibling-built target; "
+            f"got blocking: {_blocking(result)}"
+        )
+
+    def test_child_builds_target_succeeds_via_repass(self) -> None:
+        """FU binding on the parent fires before the parent-first walk
+        descends into a child whose equation creates the regex-path
+        target. The re-pass picks up the post-walk graph and binds."""
+        child = CNode(
+            label="CHILD",
+            equations=["(↑ COMP OBJ) = 'X'"],
+        )
+        parent = CNode(
+            label="PARENT",
+            equations=[
+                "(↑) = ↓1",                    # parent's f-struct = child's
+                "(↑ TOPIC) = (↑ COMP* OBJ)",  # fires before child runs
+                "(↑ TOPIC) =c 'X'",
+            ],
+            children=[child],
+        )
+        result = solve(parent)
+        assert _blocking(result) == [], (
+            f"deferred re-pass should resolve child-built target; "
+            f"got blocking: {_blocking(result)}"
+        )
+
+    def test_cascade_fixpoint_resolves_chained_deferrals(self) -> None:
+        """Two FU bindings where the SECOND depends on the FIRST's
+        successful binding to materialize its target. Fixpoint
+        iteration catches the cascade — pass 1 of the re-pass loop
+        resolves binding A; pass 2 then resolves binding B against
+        the now-extended graph."""
+        n = CNode(
+            label="N",
+            equations=[
+                # B fires first, depends on A's reentrancy.
+                "(↑ B-LINK) = (↑ COMP* X-VIA-A)",
+                # A fires next, materializes COMP.X-VIA-A via reentrancy.
+                "(↑ A-LINK) = (↑ COMP* X)",
+                # Target equations come last.
+                "(↑ COMP X) = 'shared'",
+                "(↑ COMP X-VIA-A) = 'shared'",
+                "(↑ A-LINK) =c 'shared'",
+                "(↑ B-LINK) =c 'shared'",
+            ],
+        )
+        result = solve(n)
+        assert _blocking(result) == [], (
+            f"cascade fixpoint should resolve A then B; "
+            f"got blocking: {_blocking(result)}"
+        )
+
+    def test_genuine_no_endpoint_fails_after_repass(self) -> None:
+        """When NO equation anywhere in the tree builds the regex-path
+        target, the re-pass exhausts and the survivor emits a legacy
+        ``constraint-failed`` diagnostic — same end-state as pre-10.M
+        for genuinely unsatisfiable FU defining-equations."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ TOPIC) = (↑ COMP* OBJ)",  # no OBJ defined anywhere
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
+        # The transient marker should NOT leak — the re-pass converts
+        # survivors to the legacy kind.
+        assert "fu-no-endpoint" not in kinds
+
+    def test_retry_atom_clash_surfaces_legitimately(self) -> None:
+        """On retry, the previously-missing endpoint exists but
+        unify fails with an atom clash. The retry's
+        ``atom-mismatch`` diagnostic surfaces correctly (it's not
+        ``fu-no-endpoint``, so it doesn't re-defer)."""
+        n = CNode(
+            label="N",
+            equations=[
+                # Binding fires first (TOPIC pre-set to 'X', endpoint
+                # will be 'Y' when COMP.OBJ is built).
+                "(↑ TOPIC) = 'X'",
+                "(↑ TOPIC) = (↑ COMP* OBJ)",  # deferred; endpoint not yet
+                "(↑ COMP OBJ) = 'Y'",          # creates endpoint with 'Y'
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "atom-mismatch" in kinds
+
+    def test_kz_eq39_binding_form_canonical(self) -> None:
+        """K&Z 1989 §3 eq. 39 canonical relativization binding form:
+        ``(↓3 REL-PRO) = (↓3 XCOMP* SUBJ)``.
+
+        Phase 6.D L47 worked around the pre-10.M deferral by rewriting
+        this as a constraining ``=c`` equation. 10.M restores the
+        canonical defining form: REL-PRO at the wrap-rule level (↓3)
+        binds to the SUBJ reached by XCOMP* from the same node, even
+        when the body equation that populates ↓3's SUBJ fires after
+        the FU equation in the wrap rule's equation list.
+
+        This is the most important fixture in 10.M — it demonstrates
+        the precise construction that motivated the deferral.
+        """
+        # Simulate the wrap-rule's c-node: equations on the parent,
+        # and a single child (↓1, the matrix S body) that creates the
+        # SUBJ via standard body equations. The wrap rule's REL-PRO
+        # binding fires before child descent.
+        body_child = CNode(
+            label="S_XCOMP",
+            equations=[
+                "(↑ SUBJ) = 'antecedent'",  # the relativized argument
+            ],
+        )
+        wrap = CNode(
+            label="N_REL_WRAP",
+            equations=[
+                "(↑) = ↓1",  # wrap node's f-struct = body's
+                # Canonical K&Z eq. 39 binding form:
+                "(↓1 REL-PRO) = (↓1 XCOMP* SUBJ)",
+                "(↓1 REL-PRO) =c 'antecedent'",
+            ],
+            children=[body_child],
+        )
+        result = solve(wrap)
+        assert _blocking(result) == [], (
+            f"K&Z eq. 39 canonical binding form should resolve via "
+            f"re-pass; got blocking: {_blocking(result)}"
+        )
+
+    def test_no_repass_overhead_when_path_exists_at_fire_time(self) -> None:
+        """Sanity: when the regex-path target IS built before the FU
+        binding fires (today's working pattern), no deferral happens
+        and the result is identical to pre-10.M behavior. Order
+        matters for confirming the queue stays empty in the common
+        case — there's no ``constraint-failed`` and no
+        ``fu-no-endpoint`` diagnostic surfacing."""
+        n = CNode(
+            label="N",
+            equations=[
+                "(↑ COMP OBJ) = 'X'",          # built first
+                "(↑ TOPIC) = (↑ COMP* OBJ)",  # binds immediately
+                "(↑ TOPIC) =c 'X'",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" not in kinds
+        assert "fu-no-endpoint" not in kinds
+
+
 # === C6 — K&Z 1989 §3 fixture parametrizations =============================
 
 class TestKZFixturesParametrized:

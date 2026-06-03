@@ -95,6 +95,25 @@ class SolveResult:
     diagnostics: list[Diagnostic] = field(default_factory=list)
 
 
+# Phase 10.M: Deferred FU defining-equation queue entry.
+#
+# When a defining-equation with FU-regex RHS fires during the
+# parent-first walk, the regex-path target may not exist yet (the
+# sibling/body equations that build it haven't run). The FU resolver
+# returns no endpoint, and the legacy behavior was to fail the parse
+# with ``constraint-failed``. 10.M instead queues such failures with
+# enough context to re-evaluate them after the full defining pass
+# completes — each retry sees the post-pass-1 graph, where missing
+# path targets may now be populated.
+@dataclass(frozen=True)
+class _DeferredFuDef:
+    up: NodeId
+    children: tuple[NodeId, ...]
+    eq: DefiningEquation
+    eq_str: str
+    cnode_label: str
+
+
 def build_f_structure(root: CNode) -> FStructure:
     """Solve and return the projected f-structure (legacy API)."""
     return solve(root).fstructure
@@ -111,7 +130,11 @@ def solve(root: CNode) -> SolveResult:
 
     _assign_ids(root, graph, nid_for)
     _parse_equations(root, parsed_for, diagnostics)
-    _pass_defining(root, graph, nid_for, parsed_for, diagnostics)
+    deferred_fu: list[_DeferredFuDef] = []
+    _pass_defining(root, graph, nid_for, parsed_for, diagnostics, deferred_fu)
+    # Phase 10.M: re-pass deferred FU defining-equations to fixpoint.
+    # No-op when the queue is empty (the common case).
+    _repass_deferred_fu(deferred_fu, graph, diagnostics)
     _pass_constraining(root, graph, nid_for, parsed_for, diagnostics)
 
     fstr = _project(graph, nid_for[id(root)])
@@ -181,7 +204,15 @@ def precheck_defining_subtree(
     diagnostics: list[Diagnostic] = []
     _assign_ids(root, graph, nid_for)
     _parse_equations(root, parsed_for, diagnostics)
-    _pass_defining(root, graph, nid_for, parsed_for, diagnostics)
+    # Phase 10.M: precheck doesn't care about FU defer/re-pass; pass an
+    # empty queue and discard it. ``fu-no-endpoint`` is not in
+    # ``_MONOTONE_DEF_CLASH_KINDS``, so an FU defining-eq failing in
+    # subtree isolation never inadvertently prunes a viable subtree —
+    # the full ``solve`` will retry it in the containing tree.
+    _deferred_fu_scratch: list[_DeferredFuDef] = []
+    _pass_defining(
+        root, graph, nid_for, parsed_for, diagnostics, _deferred_fu_scratch,
+    )
     result = any(d.kind in _MONOTONE_DEF_CLASH_KINDS for d in diagnostics)
     if cache is not None:
         cache[id(root)] = result
@@ -224,6 +255,7 @@ def _pass_defining(
     nid_for: dict[int, NodeId],
     parsed_for: dict[int, list[tuple[str, Equation | None]]],
     diagnostics: list[Diagnostic],
+    deferred_fu: list[_DeferredFuDef],
 ) -> None:
     up = nid_for[id(c)]
     children = [nid_for[id(ch)] for ch in c.children]
@@ -237,9 +269,92 @@ def _pass_defining(
         else:
             continue
         if d is not None:
-            diagnostics.append(replace(d, equation=eq_str, cnode_label=c.label))
+            if d.kind == "fu-no-endpoint":
+                # Phase 10.M: defer — the regex-path target may be
+                # built by sibling/descendant equations later in the
+                # defining pass. Captured for re-pass after the full
+                # tree walk completes. The kind is only emitted by
+                # ``_eval_defining_eq``'s FU branch, so the equation
+                # is necessarily a ``DefiningEquation``.
+                assert isinstance(eq, DefiningEquation)
+                deferred_fu.append(_DeferredFuDef(
+                    up=up,
+                    children=tuple(children),
+                    eq=eq,
+                    eq_str=eq_str,
+                    cnode_label=c.label or "",
+                ))
+            else:
+                diagnostics.append(
+                    replace(d, equation=eq_str, cnode_label=c.label),
+                )
     for ch in c.children:
-        _pass_defining(ch, graph, nid_for, parsed_for, diagnostics)
+        _pass_defining(ch, graph, nid_for, parsed_for, diagnostics, deferred_fu)
+
+
+def _repass_deferred_fu(
+    queue: list[_DeferredFuDef],
+    graph: FGraph,
+    diagnostics: list[Diagnostic],
+) -> None:
+    """Phase 10.M: re-evaluate deferred FU defining-equations to fixpoint.
+
+    A defining-equation with FU on the RHS may fire before the
+    sibling / descendant defining-equations that build its regex-path
+    target — the parent-first walk in :func:`_pass_defining` doesn't
+    delay them. The FU resolver returns no endpoint, the equation is
+    captured into ``queue`` instead of emitted, and this re-pass
+    retries each captured item against the post-pass-1 graph.
+
+    Each retry that succeeds may extend the graph further (the LHS
+    unifies with the canonical endpoint, creating reentrancy), which
+    can unblock other still-deferred items. The loop iterates until
+    no progress is made in a single pass, then survivors emit a
+    legacy ``constraint-failed`` diagnostic — same end-state as
+    pre-10.M for genuinely unsatisfiable FU defining-equations.
+
+    The bounded retry guard (``len(queue) + 2``) protects against
+    weird non-monotonic interactions; in practice each successful
+    retry strictly removes an item from the queue, so convergence is
+    fast.
+    """
+    if not queue:
+        return
+    max_iters = len(queue) + 2
+    for _ in range(max_iters):
+        progress = False
+        remaining: list[_DeferredFuDef] = []
+        for item in queue:
+            d = _eval_defining_eq(
+                graph, item.up, list(item.children), item.eq,
+            )
+            if d is None:
+                progress = True
+            elif d.kind == "fu-no-endpoint":
+                remaining.append(item)
+            else:
+                # The retry produced a non-FU-no-endpoint diagnostic
+                # (e.g., unify clash on the now-existing endpoint).
+                # Emit immediately and treat as progress so the loop
+                # doesn't spin on it.
+                diagnostics.append(replace(
+                    d, equation=item.eq_str, cnode_label=item.cnode_label,
+                ))
+                progress = True
+        queue[:] = remaining
+        if not queue or not progress:
+            break
+    for item in queue:
+        # Surviving items: emit the legacy ``constraint-failed``
+        # diagnostic, matching pre-10.M behavior for genuinely
+        # unsatisfiable FU defining-equations.
+        diagnostics.append(Diagnostic(
+            "constraint-failed",
+            f"FU binding equation has no endpoint after deferred "
+            f"re-pass: {unparse(item.eq)}",
+            equation=item.eq_str,
+            cnode_label=item.cnode_label,
+        ))
 
 
 def _pass_constraining(
@@ -437,8 +552,13 @@ def _eval_defining_eq(
         if err is not None:
             return err
         if not endpoints:
+            # Phase 10.M: tag with the transient ``fu-no-endpoint`` kind
+            # so ``_pass_defining`` can defer (regex-path target may be
+            # built by sibling / descendant equations later in pass 1).
+            # Survivors of the re-pass loop get this upgraded to
+            # ``constraint-failed`` (legacy kind) and emitted.
             return Diagnostic(
-                "constraint-failed",
+                "fu-no-endpoint",
                 f"FU binding equation has no endpoint: {unparse(eq)}",
             )
         # K&Z 1989 §3 minimality: endpoints come back shortest-first.
