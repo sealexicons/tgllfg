@@ -338,6 +338,188 @@ def register_rules(rules: list[Rule]) -> None:
         ))
 
 
+    # --- Phase 10.X: shared-NOM V-V-V coord under control --------------
+    #
+    # ``Sa kabilang dako ay tungkulin niyang pakainin, bigyan ng
+    #   matitirhan at pag-aralin ang mga miyembro ng kanyang pamilya.``
+    #     (PAMILYA/sent-8 — closes the last wave-1 ZPF)
+    # ``Tungkulin niyang aralin at pag-aralin si Pedro.`` (binary)
+    #
+    # The Phase 10.J.post-12.11 S_XCOMP coord rules above chain
+    # ``REL-PRO`` across conjuncts so the matrix-actor gap propagates
+    # through coord. But each conjunct is a complete ``S_XCOMP`` —
+    # every non-AV ``S_XCOMP`` rule in :mod:`tgllfg.cfg.control`
+    # bundles an ``NP[CASE=NOM]`` pivot daughter inside the body. So
+    # the post-12.11 path only fires when each V-conjunct carries its
+    # OWN overt NOM-pivot (``... pakainin si Maria at pag-aralin si
+    # Pedro``). PAMILYA/sent-8 has a SHARED ``ang mga miyembro``
+    # NOM-NP at the right edge — none of the conjuncts have their own.
+    #
+    # **Architecture** (mirrors the S_XCOMP coord cadence above but
+    # at a bare-V level + pivot-adding wrap):
+    #
+    #   S_XCOMP_BARE         — bare V variants without an internal
+    #                          NOM-pivot daughter; REL-PRO routes to
+    #                          the typed actor slot per voice.
+    #   S_XCOMP_BARE_COORD   — binary + 3-conjunct coord of the bare
+    #                          variants; SUBJ + REL-PRO chained
+    #                          across conjuncts via explicit
+    #                          ``(↑ FEAT) = ↓N FEAT`` equations.
+    #   S_XCOMP              — pivot wrap ``S_XCOMP →
+    #                          S_XCOMP_BARE_COORD NP[CASE=NOM]``:
+    #                          binds the shared NOM-pivot as
+    #                          matrix ``SUBJ``; the coord's chained
+    #                          ``(↑ SUBJ) = ↓N SUBJ`` equations
+    #                          then unify that pivot with every
+    #                          conjunct's ``SUBJ``.
+    #
+    # The pivot wrap distinguishes by requiring ``S_XCOMP_BARE_COORD``
+    # (the coord non-terminal) — a single ``S_XCOMP_BARE`` does NOT
+    # match, so we don't introduce a spurious second path for the
+    # canonical single-V case (still handled by the
+    # :mod:`tgllfg.cfg.control` rules).
+    #
+    # **FU/Kleene consideration** (10.L–10.N U-bucket extensions):
+    # An attractive alternative per-conjunct equation would be the
+    # inside-out designator ``(↑ SUBJ) = ((CONJUNCTS ↑) SUBJ)`` — each
+    # conjunct independently asks "what is the SUBJ of the parent
+    # whose CONJUNCTS contains me?". This requires
+    # :meth:`FGraph.parents_via` to handle set-valued features
+    # (current impl is direct-edge only). Flagged as candidate for
+    # Phase 11.A audit / consumer-opt-in; the explicit equations
+    # below are pragmatic and well-understood.
+    #
+    # **Scope**: bare-V variants covering the OV (CAUS=DIRECT + NONE)
+    # and DV voices — sufficient for PAMILYA/sent-8 and the canonical
+    # 2-arg / 3-arg shapes. AV bare-V coord without a NOM-pivot is
+    # already handled by the existing post-12.11 path (each AV S_XCOMP
+    # rule already admits bare V without NOM-NP). pa-DV / IV variants
+    # added when audit-corpus pressure surfaces them.
+    #
+    # Reference: R&G 1981 PAMILYA essay (sent-8); LFG analysis follows
+    # the canonical SUBJ-sharing pattern for headless V-V coord
+    # (Bresnan 2001 §6).
+
+    # === S_XCOMP_BARE — bare-V variants without a NOM-pivot daughter ===
+    #
+    # Each rule mirrors a control.py S_XCOMP rule but DROPS the
+    # ``NP[CASE=NOM]`` daughter. The typed-actor binding to ``REL-PRO``
+    # stays identical (OV+CAUS=DIRECT → OBJ-CAUSER; OV+CAUS=NONE →
+    # OBJ-AGENT; DV → OBJ-AGENT). ``SUBJ`` is not set here — the
+    # coord rule and pivot wrap supply it.
+    #
+    # OV+CAUS=DIRECT — bare (pakainin / pag-aralin)
+    rules.append(Rule(
+        "S_XCOMP_BARE",
+        ["V[VOICE=OV, CAUS=DIRECT]"],
+        ["(↑ OBJ-CAUSER) = (↑ REL-PRO)"],
+    ))
+    # OV+CAUS=DIRECT with GEN-OBJ-PATIENT
+    rules.append(Rule(
+        "S_XCOMP_BARE",
+        ["V[VOICE=OV, CAUS=DIRECT]", "NP[CASE=GEN]"],
+        [
+            "(↑ OBJ-PATIENT) = ↓2",
+            "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+        ],
+    ))
+    # OV+CAUS=NONE — bare (aralin)
+    rules.append(Rule(
+        "S_XCOMP_BARE",
+        ["V[VOICE=OV, CAUS=NONE]"],
+        ["(↑ OBJ-AGENT) = (↑ REL-PRO)"],
+    ))
+    # OV+CAUS=NONE with GEN-OBJ-PATIENT
+    rules.append(Rule(
+        "S_XCOMP_BARE",
+        ["V[VOICE=OV, CAUS=NONE]", "NP[CASE=GEN]"],
+        [
+            "(↑ OBJ-PATIENT) = ↓2",
+            "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+        ],
+    ))
+    # DV — bare
+    rules.append(Rule(
+        "S_XCOMP_BARE",
+        ["V[VOICE=DV]"],
+        ["(↑ OBJ-AGENT) = (↑ REL-PRO)"],
+    ))
+    # DV with GEN-OBJ-PATIENT (bigyan ng matitirhan)
+    rules.append(Rule(
+        "S_XCOMP_BARE",
+        ["V[VOICE=DV]", "NP[CASE=GEN]"],
+        [
+            "(↑ OBJ-PATIENT) = ↓2",
+            "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+        ],
+    ))
+
+    # === S_XCOMP_BARE_COORD — coord of bare-V conjuncts ===
+    #
+    # Chains both ``REL-PRO`` (the typed-actor gap, like the
+    # post-12.11 S_XCOMP coord) AND ``SUBJ`` (the shared NOM-pivot
+    # slot, which the wrap below binds to the actual ``NP[CASE=NOM]``).
+    for coord in ("AND", "OR"):
+        # Binary
+        rules.append(Rule(
+            "S_XCOMP_BARE_COORD",
+            [
+                "S_XCOMP_BARE",
+                f"PART[COORD={coord}]",
+                "S_XCOMP_BARE",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                f"(↑ COORD) = '{coord}'",
+                f"(↓2 COORD) =c '{coord}'",
+                "(↑ REL-PRO) = ↓1 REL-PRO",
+                "(↑ REL-PRO) = ↓3 REL-PRO",
+                "(↑ SUBJ) = ↓1 SUBJ",
+                "(↑ SUBJ) = ↓3 SUBJ",
+            ],
+        ))
+        # 3-conjunct non-Oxford
+        rules.append(Rule(
+            "S_XCOMP_BARE_COORD",
+            [
+                "S_XCOMP_BARE",
+                "PUNCT[PUNCT_CLASS=COMMA]",
+                "S_XCOMP_BARE",
+                f"PART[COORD={coord}]",
+                "S_XCOMP_BARE",
+            ],
+            [
+                "↓1 ∈ (↑ CONJUNCTS)",
+                "↓3 ∈ (↑ CONJUNCTS)",
+                "↓5 ∈ (↑ CONJUNCTS)",
+                f"(↑ COORD) = '{coord}'",
+                f"(↓4 COORD) =c '{coord}'",
+                "(↑ REL-PRO) = ↓1 REL-PRO",
+                "(↑ REL-PRO) = ↓3 REL-PRO",
+                "(↑ REL-PRO) = ↓5 REL-PRO",
+                "(↑ SUBJ) = ↓1 SUBJ",
+                "(↑ SUBJ) = ↓3 SUBJ",
+                "(↑ SUBJ) = ↓5 SUBJ",
+            ],
+        ))
+
+    # === Pivot wrap: S_XCOMP from S_XCOMP_BARE_COORD + shared NOM-NP ===
+    #
+    # ``(↑) = ↓1`` inherits CONJUNCTS / COORD / REL-PRO / chained
+    # SUBJ-slots from the coord. ``(↑ SUBJ) = ↓2`` binds the
+    # shared NOM-pivot — every chained ``↓N SUBJ`` slot then
+    # unifies with this pivot.
+    rules.append(Rule(
+        "S_XCOMP",
+        ["S_XCOMP_BARE_COORD", "NP[CASE=NOM]"],
+        [
+            "(↑) = ↓1",
+            "(↑ SUBJ) = ↓2",
+        ],
+    ))
+
+
     # --- Phase 5k Commit 4 + Phase 5n.A Commit 20: 3-flat coord ---
     #
     # Two surface variants per case × two coord values, twelve rules
