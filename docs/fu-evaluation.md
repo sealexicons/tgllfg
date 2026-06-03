@@ -116,11 +116,23 @@ following path elements (the equation grammar accepts them today;
 | Kleene star | `F*` | `StarFeature(name="F")` |
 | Kleene plus | `F+` | `PlusFeature(name="F")` |
 | Alternation | `{F \| G}` | `AltFeature(names=("F","G"))` |
+| Kleene-on-alternation star (Phase 10.L) | `{F \| G}*` | `StarAltFeature(names=("F","G"))` |
+| Kleene-on-alternation plus (Phase 10.L) | `{F \| G}+` | `PlusAltFeature(names=("F","G"))` |
 
 A regex-path is a concatenation of these elements:
 `(↑ F G* {H | I} J)` parses to a `Designator` with
 `path = (Feature("F"), StarFeature("G"), AltFeature(("H","I")), Feature("J"))`.
 Every element optionally carries off-path constraints (§6).
+
+K&Z 1989 eq. 39's canonical English-topicalization body
+`(↑ TOPIC) = (↑ {COMP | XCOMP}* (GF-COMP))` now parses through to
+a `StarAltFeature(names=("COMP","XCOMP"))` element followed by the
+bottom (the set-complement bottom `(GF-COMP)` remains out of scope
+— see below). The Phase 6.B K&Z fixtures
+(`tests/tgllfg/test_fu_evaluation.py::TestKZ1989Fixtures`) now carry
+a `test_eq39_topic_equals_comp_xcomp_star_gf_kleene` companion
+exercising the canonical body; the single-step approximation is
+retained as a contrast.
 
 **Out of scope for 6.B:**
 
@@ -132,15 +144,6 @@ Every element optionally carries off-path constraints (§6).
   The unifier would have to invent intermediate nodes for the
   unbounded `COMP*` traversal — semantically ill-defined in
   standard LFG. See §5.
-- **Kleene applied to alternation** (`{F | G}*` / `{F | G}+`).
-  The equation grammar treats `AltFeature` as a single
-  `PathElement` and doesn't compose it with `*` / `+`. K&Z 1989
-  eqs. 38 / 39 use this construction in their body alternations
-  (e.g., `{COMP, XCOMP}*`); the Phase 6.B K&Z fixtures
-  (`tests/tgllfg/test_fu_evaluation.py::TestKZFixturesParametrized`)
-  approximate with single-feature bodies (`COMP*` / `XCOMP*`).
-  AST extension is well-scoped but not motivated by any current
-  Tagalog construction. See `tgllfg-out-of-scope.md` §18.1.3.
 
 ## 4. Evaluation algorithm
 
@@ -155,6 +158,12 @@ Compile the regex-path AST into a finite-state automaton:
   least one `F` consumed before the FSA can advance.
 - **`AltFeature(F | G | ...)`** → branching transitions, one
   per name.
+- **`StarAltFeature(F | G | ...)`** (Phase 10.L) → like `Star`
+  but with parallel self-loops, one per name in the alternation.
+  Same ε-transition handles the zero-iteration case.
+- **`PlusAltFeature(F | G | ...)`** (Phase 10.L) → like `Plus`
+  but with parallel `cur --Fi--> mid` transitions on entry and
+  parallel `mid --Fi--> mid` self-loops, one per name.
 - **Concatenation** → standard FSA concatenation.
 
 The FSA is small (typically 2-5 states per path element). It is
@@ -380,10 +389,13 @@ includes both COMP and XCOMP. In Tagalog:
   the matrix (functional control).
 
 For Phase 6.D the canonical relativization body is `XCOMP*`. The
-broader `{COMP, XCOMP}*` body is corpus-blocked pending real
+broader `{COMP | XCOMP}*` body is corpus-blocked pending real
 data — we have not yet seen a Tagalog sentence requiring
 cross-COMP relativization that isn't structurally ambiguous with
-indirect speech.
+indirect speech. Phase 10.L lifted the engine limitation (the
+AST + FSA now compile `StarAltFeature(("COMP","XCOMP"))`); chart
+rules can opt in to the broader body when audit-corpus pressure
+surfaces the need.
 
 ### 7.3 Sarili binding (6.F)
 
@@ -509,8 +521,11 @@ plus the Phase 6 plan §7.
 - K&Z eq. 38 (Icelandic adjunct island): demonstrate the body's
   filtering effect — paths through ADJ are blocked. (Not a
   Tagalog construction; sanity check of the FSA mechanism.)
-- K&Z eq. 39 (English topicalization): the `{COMP, XCOMP}*` body
-  pattern. (Sanity check.)
+- K&Z eq. 39 (English topicalization): the `{COMP | XCOMP}* SUBJ`
+  body pattern — exercised via ``StarAltFeature(("COMP","XCOMP"))``
+  (Phase 10.L); both the pre-10.L single-step approximation and
+  the canonical Kleene form are kept as parallel fixtures to make
+  the distinction explicit.
 
 Tagalog integration tests land in 6.D (L47 LDD relativization),
 6.E (L93 kung-S DP), 6.F (L104 sarili). 6.B's tests use synthetic
