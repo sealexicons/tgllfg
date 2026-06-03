@@ -2090,6 +2090,77 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 10.J.post-12.16: V[COPULA] + PRON[NOM] + LK + N --------
+    #
+    # ``Nananatili siyang ama.``      "She remains a father."
+    # ``Naging siyang doktor.``        "She became a doctor."
+    # ``Naging siyang manunulat.``     "She became a writer."
+    #     (PAMILYA/sent-2 — wave-1 target structure)
+    #
+    # Companion to the post-7.3 ``V[COPULA] PRON[CASE=NOM] ADJ[PRED]``
+    # rule directly above (Wackernagel-reordered V + PRON + ADJ).
+    # When the predicative XCOMP is an N (not an ADJ), Tagalog
+    # requires a linker (``-ng`` / ``na``) between the SUBJ-PRON and
+    # the N-pred — the canonical V-N-NP rule's N-NP-NOM form lacks
+    # that linker because the NOM-NP follows the N-pred directly,
+    # not vice versa.
+    #
+    # Drives PAMILYA/sent-2 closure: the S2 sub-clause
+    # ``nananatili siyang ama o anak, pamangkin o apo sa loob ng
+    # kanyang pamilya`` instantiates this rule's ``N``-pred slot with
+    # the existing N-coord rules building the 4-NP role-COORD; the
+    # DAT-PP locative ``sa loob ng kanyang pamilya`` attaches via the
+    # standard S-PP adjunct loop.
+    #
+    # F-structure mirrors the post-7.3 ADJ-pred rule's shape with
+    # ``N_LEMMA`` (not ``ADJ_LEMMA``) and the ``¬ (↓4 WH)`` guard
+    # matching the canonical V[COPULA] N NP[NOM] rule (line 2013).
+    for link in ("NG", "NA"):
+        rules.append(Rule(
+            "S",
+            [
+                "V[COPULA]",
+                "PRON[CASE=NOM]",
+                f"PART[LINK={link}]",
+                "N",
+            ],
+            [
+                "(↑ PRED) = 'BECOME-N <SUBJ>'",
+                "(↑ SUBJ) = ↓2",
+                "(↑ N_LEMMA) = ↓4 LEMMA",
+                "(↑ PREDICATIVE) = true",
+                "(↑ COPULA) = true",
+                "(↑ ASPECT) = ↓1 ASPECT",
+                "(↓1 COPULA) =c true",
+                "¬ (↓4 WH)",
+            ],
+        ))
+        # +DAT locative-adjunct variant: ``Nananatili siyang ama sa
+        # loob ng kanyang pamilya.`` "She remains a father within her
+        # family." (PAMILYA/sent-2 — the DAT-PP locative names the
+        # role-defining context).
+        rules.append(Rule(
+            "S",
+            [
+                "V[COPULA]",
+                "PRON[CASE=NOM]",
+                f"PART[LINK={link}]",
+                "N",
+                "NP[CASE=DAT]",
+            ],
+            [
+                "(↑ PRED) = 'BECOME-N <SUBJ>'",
+                "(↑ SUBJ) = ↓2",
+                "(↑ N_LEMMA) = ↓4 LEMMA",
+                "↓5 ∈ (↑ ADJUNCT)",
+                "(↑ PREDICATIVE) = true",
+                "(↑ COPULA) = true",
+                "(↑ ASPECT) = ↓1 ASPECT",
+                "(↓1 COPULA) =c true",
+                "¬ (↓4 WH)",
+            ],
+        ))
+
     # --- 9.X.c19: ka-N companion S_GAP for RC bodies --------------
     #
     # ``Ang ulan na kasama nito ay nagpapabaha.`` "The rain that
