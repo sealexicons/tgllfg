@@ -266,6 +266,64 @@ The "write" is the unification link, not new structure. This is
 why binding-with-regex is safe (and supported) but defining-with-
 regex-on-LHS is not.
 
+### 5.2.1 Deferred re-pass for FU binding equations (Phase 10.M)
+
+Defining-equations with FU on the RHS evaluate during pass 1
+(the **defining pass**), which walks the c-tree parent-first.
+This means an FU binding equation on a parent c-node may fire
+**before** the sibling or descendant equations that build the
+regex-path target. The resolver returns no endpoint and, pre-10.M,
+the equation failed with `constraint-failed`.
+
+Phase 6.D L47 worked around this by rewriting the canonical K&Z
+1989 §3 eq. 39 binding form
+`(↓3 REL-PRO) = (↓3 XCOMP* SUBJ)` as a constraining equation
+`(↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)` — which evaluates in pass 2
+after the entire defining pass has built the f-structure. The
+combination of (a) the body's `(↑ SUBJ) = (↑ REL-PRO)` defining
+equation creating the reentrancy + (b) the wrap rule's `=c` FU
+equation verifying that the reentrancy holds along an XCOMP* path
+delivers the same semantic outcome, but not the canonical K&Z form.
+
+Phase 10.M lifts the limitation. The orchestrator's defining pass:
+
+1. When an FU binding equation reports no endpoint, the resolver
+   tags the diagnostic with the transient kind `fu-no-endpoint`
+   (rather than `constraint-failed`).
+2. `_pass_defining` intercepts `fu-no-endpoint` diagnostics and
+   **queues** the equation with its context (`up`, `children`,
+   parsed equation, source string, c-node label) instead of
+   appending the diagnostic to the global list.
+3. After the full c-tree walk completes, `_repass_deferred_fu`
+   iterates a bounded fixpoint loop:
+   - Each pass re-evaluates every queued equation against the
+     post-pass-1 graph.
+   - A successful retry drops the equation from the queue (and
+     may extend the graph, unblocking other queued items).
+   - A retry that produces a non-`fu-no-endpoint` diagnostic
+     (e.g., an `atom-mismatch` from `graph.unify`) emits
+     immediately — that failure is genuine, not a path-build
+     order artifact.
+   - The loop terminates when no progress is made in a pass or
+     when the queue is empty.
+4. Survivors of the re-pass emit a legacy `constraint-failed`
+   diagnostic with a "no endpoint after deferred re-pass" message —
+   matching pre-10.M behavior for genuinely unsatisfiable
+   FU defining equations.
+
+The mechanism is **additive**: FU bindings that already worked
+under pass-1 order continue to fire at their original site (the
+queue stays empty in the common case). The re-pass only activates
+when an FU binding genuinely depended on a not-yet-built path.
+
+The `=c` constraining form remains the recommended idiom when the
+binding is semantically a verification (the path's existence is the
+constraint). The canonical defining `=` form is now available when
+the binding **creates the reentrancy** (e.g., inside-out binding
+for `sarili`, cross-clausal non-control extraction, or other
+constructions where the FU equation must *establish* the link
+rather than verify it).
+
 ### 5.3 Defining with regex on LHS (out of scope)
 
 ```text
@@ -631,7 +689,8 @@ no performance regression or correctness issues.
 **Phase 7+ unifier extensions** parked during Phase 6
 (documented in ``tgllfg-out-of-scope.md`` §18.1.3):
 
-- FU deferred defining-equation evaluation (from 6.D).
+- ~~FU deferred defining-equation evaluation~~ — closed by
+  Phase 10.M via the re-pass mechanism described in §5.2.1.
 - FU inside-out designators (from 6.F).
 - FU resolver-side cyclic-endpoint pruning (from 6.F).
 - ``{F | G}*`` Kleene on alternation (from 6.B C6).
