@@ -12,6 +12,7 @@ from tgllfg.fstruct import (
     Down,
     ExistentialConstraint,
     Feature,
+    InsideOut,
     NegEquation,
     NegExistentialConstraint,
     ParseError,
@@ -283,6 +284,93 @@ def test_off_path_on_plus_alt_feature():
     assert len(plus_alt.off_path) == 1
 
 
+# === Phase 10.N: inside-out designators ====================================
+#
+# Dalrymple 2001 ch. 14 / 15 inside-out path designators. The surface form
+# ``(FEAT INNER_DESIGNATOR)`` means "find the f-structure F such that
+# F[FEAT] = INNER" — the resolver traverses upward in the f-graph via
+# the new ``FGraph.parents_via`` reverse-lookup.
+
+def test_inside_out_bare():
+    """Bare ``(SUBJ ↑)`` — top-level inside-out designator with no
+    outside-in path. Inner designator is the ↑ metavariable."""
+    eq = parse_equation("(SUBJ ↑) = 'X'")
+    assert isinstance(eq, DefiningEquation)
+    assert eq.lhs == Designator(
+        InsideOut(feat="SUBJ", inner=Designator(Up(), ())),
+        (),
+    )
+
+
+def test_inside_out_with_outside_in_path():
+    """``((SUBJ ↑) GF)`` — inside-out base, then outside-in step."""
+    eq = parse_equation("((SUBJ ↑) GF) = 'X'")
+    assert isinstance(eq, DefiningEquation)
+    assert eq.lhs == Designator(
+        InsideOut(feat="SUBJ", inner=Designator(Up(), ())),
+        (Feature("GF"),),
+    )
+
+
+def test_inside_out_with_multi_step_outside_in_path():
+    """Inside-out followed by 3-step outside-in path —
+    ``((SUBJ ↑) F G H)``."""
+    eq = parse_equation("((SUBJ ↑) F G H)")
+    assert isinstance(eq, ExistentialConstraint)
+    assert eq.designator == Designator(
+        InsideOut(feat="SUBJ", inner=Designator(Up(), ())),
+        (Feature("F"), Feature("G"), Feature("H")),
+    )
+
+
+def test_inside_out_inner_has_outside_in_path():
+    """``(SUBJ (↑ COMP))`` — inside-out where inner has outside-in
+    path. Resolves: first ↑ COMP reaches the COMP node; then
+    inside-out finds N such that N[SUBJ] = that COMP node."""
+    eq = parse_equation("(SUBJ (↑ COMP)) = 'X'")
+    assert isinstance(eq, DefiningEquation)
+    inner = Designator(Up(), (Feature("COMP"),))
+    assert eq.lhs == Designator(
+        InsideOut(feat="SUBJ", inner=inner),
+        (),
+    )
+
+
+def test_inside_out_nested():
+    """``(SUBJ (XCOMP ↑))`` — nested inside-out. Inner is itself an
+    inside-out designator: find F such that F[XCOMP] = ↑; then find
+    N such that N[SUBJ] = F."""
+    eq = parse_equation("(SUBJ (XCOMP ↑)) = 'X'")
+    assert isinstance(eq, DefiningEquation)
+    inner_iout = Designator(
+        InsideOut(feat="XCOMP", inner=Designator(Up(), ())),
+        (),
+    )
+    assert eq.lhs == Designator(
+        InsideOut(feat="SUBJ", inner=inner_iout),
+        (),
+    )
+
+
+def test_inside_out_on_constraining_eq():
+    """``((SUBJ ↑) GF) =c 'X'`` — inside-out designator on the LHS
+    of a constraining equation."""
+    eq = parse_equation("((SUBJ ↑) GF) =c 'X'")
+    assert isinstance(eq, ConstrainingEquation)
+    assert eq.lhs.base == InsideOut(
+        feat="SUBJ", inner=Designator(Up(), ()),
+    )
+
+
+def test_inside_out_existential():
+    """Standalone inside-out designator as existential constraint."""
+    eq = parse_equation("(SUBJ ↑)")
+    assert isinstance(eq, ExistentialConstraint)
+    assert eq.designator.base == InsideOut(
+        feat="SUBJ", inner=Designator(Up(), ()),
+    )
+
+
 # === Strings drawn from the existing grammar / earley demo =================
 
 EXISTING_EQUATIONS = [
@@ -338,6 +426,12 @@ ROUND_TRIP_CASES = [
     "(↑ TOPIC) = (↑ {COMP | XCOMP}* SUBJ)",
     "(↑ REL-PRO) =c (↑ {COMP | XCOMP}+ SUBJ)",
     "(↑ {COMP | XCOMP}*<(→ TENSE) =c 'PAST'> SUBJ)",
+    # Phase 10.N inside-out designators:
+    "(SUBJ ↑) = 'X'",
+    "((SUBJ ↑) GF) =c 'X'",
+    "((SUBJ ↑) F G H)",
+    "(SUBJ (↑ COMP)) = 'X'",
+    "(SUBJ (XCOMP ↑)) = 'X'",
 ]
 
 
