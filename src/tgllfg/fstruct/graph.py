@@ -109,6 +109,15 @@ DiagKind = Literal[
     # NOT in ``NON_BLOCKING_KINDS`` — if it ever leaks past the intercept
     # it still blocks the parse, matching pre-10.M behavior.
     "fu-no-endpoint",
+    # Phase 10.N: inside-out designator resolution found no parent
+    # f-structure with the named feat pointing at the inner target.
+    # Dalrymple 2001 ch. 14 / 15 inside-out base ``(FEAT INNER)``
+    # resolves to a parent node via ``FGraph.parents_via``; when no
+    # parent exists, the resolver returns this diagnostic. NOT in
+    # ``NON_BLOCKING_KINDS`` — a failed inside-out resolution blocks
+    # the parse (matches the legacy ``constraint-failed`` semantics
+    # for binding-related failures).
+    "inside-out-no-parent",
     "existential-failed",
     "neg-existential-failed",
     "neg-equation-failed",
@@ -685,6 +694,49 @@ class FGraph:
     def equiv(self, a: NodeId, b: NodeId) -> bool:
         """True if `a` and `b` belong to the same equivalence class."""
         return self.find(a) == self.find(b)
+
+    def parents_via(self, target: NodeId, feat: str) -> list[NodeId]:
+        """Phase 10.N: reverse-lookup for inside-out designators.
+
+        Return the canonical roots of all nodes whose
+        :class:`ComplexValue` has ``feat → target`` (modulo canonical
+        equivalence). Deterministic insertion order — iteration over
+        ``self._store`` follows CPython dict insertion order.
+
+        O(N) scan over the live store — sufficient for a prototype
+        (typical sentence f-graphs have ≤50 ComplexValue nodes); a
+        materialized reverse index can replace this if corpus pressure
+        on inside-out designators surfaces.
+
+        Inside-out designators (Dalrymple 2001 ch. 14 / 15;
+        ``(FEAT INNER)``-style surface form) need to traverse "upward"
+        in the f-graph from a known child node to its containing
+        f-structure. The graph stores attrs top-down only — the reverse
+        direction is a scan.
+
+        Multiple parents are possible when the target node is
+        structure-shared across f-structures (e.g., a SUBJ shared
+        between matrix and XCOMP via functional control); the prototype
+        returns all of them in insertion order, and the resolver picks
+        the first for the canonical inside-out result. K&Z 1989 §3
+        minimality on inside-out resolution is documented as future
+        work — gated on corpus pressure.
+        """
+        target_root = self.find(target)
+        seen: set[NodeId] = set()
+        result: list[NodeId] = []
+        for n, v in self._store.items():
+            if not isinstance(v, ComplexValue):
+                continue
+            child = v.attrs.get(feat)
+            if child is None:
+                continue
+            if self.find(child) == target_root:
+                n_root = self.find(n)
+                if n_root not in seen:
+                    seen.add(n_root)
+                    result.append(n_root)
+        return result
 
 
 __all__ = [

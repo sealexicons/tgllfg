@@ -113,7 +113,40 @@ class Right:
     the f-structure reached by the current path step."""
 
 
-type Base = Up | Down | Right
+@dataclass(frozen=True)
+class InsideOut:
+    """Inside-out base (Phase 10.N): ``(FEAT INNER)``.
+
+    Dalrymple 2001 ch. 14 / 15 inside-out designator. Resolves the
+    ``inner`` designator first to a node ``T``, then finds a node
+    ``N`` such that ``N``'s :class:`ComplexValue` has ``feat → T``.
+    The result is ``N`` — the f-structure that has ``T`` as its
+    ``feat``. This is the "upward" traversal needed for non-local
+    binding (e.g., sarili's antecedent search from inside an XCOMP)
+    and for unbounded scope (e.g., ``(((GF ↑) GF) ↑)`` chains).
+
+    The prototype (10.N) returns the **first** canonical parent in
+    deterministic insertion order; the FGraph reverse-lookup
+    ``parents_via`` may return multiple candidates when the target
+    is structure-shared (e.g., a SUBJ shared between matrix and
+    XCOMP via functional control). K&Z 1989 §3 minimality on
+    inside-out is documented as future work; corpus pressure is
+    the gate.
+
+    Surface forms:
+
+    * Bare: ``(SUBJ ↑)`` — find the f-structure that has ↑ as SUBJ.
+    * Outside-in after inside-out:
+      ``((SUBJ ↑) GF)`` — that f-structure's GF.
+    * Nested inside-out: ``(SUBJ (XCOMP ↑))`` — find F such that
+      F has G as its SUBJ, where G is the f-structure having ↑ as
+      its XCOMP.
+    """
+    feat: str
+    inner: "Designator"
+
+
+type Base = Up | Down | Right | InsideOut
 
 
 # === AST: path elements ====================================================
@@ -416,6 +449,23 @@ class _Parser:
     def _parse_designator(self) -> Designator:
         t = self._peek()
         if t.kind == "LPAREN":
+            # Phase 10.N: disambiguate paren'd designator vs bare
+            # inside-out designator by peeking past the LPAREN.
+            # ``(↑ ...)`` / ``(↓ ...)`` / ``(→ ...)`` / ``((...) ...)``
+            # are standard paren'd designators; ``(IDENT ...)`` is a
+            # bare inside-out designator ``(FEAT INNER_DESIGNATOR)``
+            # with no outer path. The nested form ``((SUBJ ↑) GF)``
+            # parses as a standard paren'd designator whose
+            # _parse_base handles the inner LPAREN.
+            nxt = self._peek(1)
+            if nxt.kind == "IDENT":
+                # Bare inside-out: ``(FEAT INNER)`` with no outer path.
+                self._consume("LPAREN")
+                feat = self._consume("IDENT").text
+                inner = self._parse_designator()
+                self._consume("RPAREN")
+                return Designator(InsideOut(feat=feat, inner=inner), ())
+            # Standard paren'd designator: ``(BASE PATH...)``.
             self._consume("LPAREN")
             base = self._parse_base()
             path = self._parse_path()
@@ -429,6 +479,16 @@ class _Parser:
 
     def _parse_base(self) -> Base:
         t = self._peek()
+        if t.kind == "LPAREN":
+            # Phase 10.N: nested inside-out base — ``(FEAT INNER)``
+            # used as the base inside an outer paren'd designator
+            # (e.g., ``((SUBJ ↑) GF)`` — outer paren has the
+            # inside-out base + the outside-in path ``GF``).
+            self._consume("LPAREN")
+            feat = self._consume("IDENT").text
+            inner = self._parse_designator()
+            self._consume("RPAREN")
+            return InsideOut(feat=feat, inner=inner)
         if t.kind == "UP":
             self._consume("UP")
             return Up()
@@ -445,7 +505,11 @@ class _Parser:
                     raise self._error(f"↓ index must be ≥ 1, got {idx}", nxt)
                 return Down(idx=idx)
             return Down(idx=None)
-        raise self._error(f"expected ↑, ↓, or →; got {t.kind} ({t.text!r})", t)
+        raise self._error(
+            f"expected ↑, ↓, →, or inside-out '(FEAT INNER)'; "
+            f"got {t.kind} ({t.text!r})",
+            t,
+        )
 
     def _parse_path(self) -> list[PathElement]:
         elements: list[PathElement] = []
@@ -555,6 +619,12 @@ def _unparse_base(b: Base) -> str:
         return "↑"
     if isinstance(b, Right):
         return "→"
+    if isinstance(b, InsideOut):
+        # Inside-out base: ``(FEAT INNER)``. The inner Designator
+        # already renders with its own surrounding parens; we emit
+        # the surface form ``(FEAT INNER)`` where INNER is the inner
+        # unparsed designator. Round-trip property holds.
+        return f"({b.feat} {_unparse_designator(b.inner)})"
     return "↓" if b.idx is None else f"↓{b.idx}"
 
 
@@ -580,6 +650,10 @@ def _unparse_path_element(e: PathElement) -> str:
 def _unparse_designator(d: Designator) -> str:
     base = _unparse_base(d.base)
     if not d.path:
+        # Inside-out bases already render with their own surrounding
+        # parens; an outer paren wrap would produce ``((FEAT INNER))``.
+        if isinstance(d.base, InsideOut):
+            return base
         return f"({base})"
     return "(" + base + " " + " ".join(_unparse_path_element(e) for e in d.path) + ")"
 
@@ -614,7 +688,7 @@ def unparse(eq: Equation) -> str:
 
 __all__ = [
     # Bases
-    "Up", "Down", "Right", "Base",
+    "Up", "Down", "Right", "InsideOut", "Base",
     # Path elements
     "Feature", "StarFeature", "PlusFeature", "AltFeature",
     "StarAltFeature", "PlusAltFeature", "PathElement",

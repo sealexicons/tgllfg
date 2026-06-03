@@ -488,6 +488,63 @@ argument slot via an FU binding. The Phase 6.E design (§5.5)
 will calibrate the specific equation shape against R&B 1986 §6
 free-relative examples.
 
+### 7.4.1 Inside-out designators (Phase 10.N)
+
+Dalrymple 2001 ch. 14 / 15 inside-out designators
+`(FEAT INNER_DESIGNATOR)` are now supported by the equation
+grammar (parser + AST) and the resolver (`_resolve_base` +
+`FGraph.parents_via` reverse-lookup). The surface form means
+"find the node N such that N has the inner-resolved target as its
+FEAT".
+
+Surface examples:
+
+```text
+(SUBJ ↑)          ; find the f-structure that has ↑ as its SUBJ
+((SUBJ ↑) GF)     ; that f-structure's GF
+(SUBJ (XCOMP ↑))  ; nested: find F with F.XCOMP = ↑; then find N
+                  ; with N.SUBJ = F
+```
+
+Motivating use case (Dalrymple 2001 §14): non-local binding for
+reflexives — `sarili`'s antecedent in cross-clausal contexts
+where the binder is **outside** the embedded clause and the
+embedded c-node's ↑ doesn't see it directly. The Phase 6.F L104
+binding rules placed all binding equations on matrix S rules
+(where ↑ is the matrix and the binder is directly accessible);
+cross-clausal sarili was pinned at `TestCrossClausalDeferred` in
+`tests/tgllfg/test_phase5m_reflexive_sarili.py`.
+
+The 10.N prototype delivers the engine extension; chart consumers
+opt in when corpus pressure surfaces a Tagalog construction
+needing the canonical inside-out form. The Phase 6.F matrix-rule
+pattern remains the recommended idiom when binding is local.
+
+**Reverse-lookup implementation** (FGraph.parents_via):
+
+```text
+parents_via(target, feat) -> [canonical_root]
+```
+
+O(N) scan over the live store, iterating in deterministic
+insertion order. Sufficient for a prototype; a materialized
+reverse index can replace this if corpus pressure on inside-out
+designators surfaces (typical sentence f-graphs have ≤50
+ComplexValue nodes, so scan cost is negligible).
+
+**Multiple parents**: when the inner target is structure-shared
+across f-structures (e.g., a SUBJ shared between matrix and
+XCOMP via functional control), `parents_via` returns all of
+them. The resolver picks the **first** parent in deterministic
+insertion order. K&Z 1989 §3 minimality on inside-out resolution
+is documented as future work — gated on corpus pressure.
+
+**Failure mode**: when no parent has the named feat pointing at
+the inner target, the resolver returns a diagnostic with kind
+`inside-out-no-parent`. The kind is not in `NON_BLOCKING_KINDS` —
+inside-out failures block the parse with the same semantics as
+`constraint-failed` for binding-related failures.
+
 ### 7.5 Source citations
 
 - **Schachter & Otanes 1972** ch. 5 (voice system).
@@ -691,6 +748,8 @@ no performance regression or correctness issues.
 
 - ~~FU deferred defining-equation evaluation~~ — closed by
   Phase 10.M via the re-pass mechanism described in §5.2.1.
-- FU inside-out designators (from 6.F).
+- ~~FU inside-out designators~~ — closed by Phase 10.N via the
+  ``FGraph.parents_via`` reverse-lookup + ``InsideOut`` base
+  resolution described in §7.4.1.
 - FU resolver-side cyclic-endpoint pruning (from 6.F).
 - ``{F | G}*`` Kleene on alternation (from 6.B C6).
