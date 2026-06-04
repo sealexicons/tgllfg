@@ -405,14 +405,31 @@ def register_rules(rules: list[Rule]) -> None:
     # Each rule mirrors a control.py S_XCOMP rule but DROPS the
     # ``NP[CASE=NOM]`` daughter. The typed-actor binding to ``REL-PRO``
     # stays identical (OV+CAUS=DIRECT → OBJ-CAUSER; OV+CAUS=NONE →
-    # OBJ-AGENT; DV → OBJ-AGENT). ``SUBJ`` is not set here — the
-    # coord rule and pivot wrap supply it.
+    # OBJ-AGENT; DV → OBJ-AGENT).
+    #
+    # Phase 11.B.4.chart: each rule additionally carries the
+    # **inside-out designator** ``(↑ REL-PRO) = ((CONJUNCTS ↑) REL-PRO)``
+    # and ``(↑ SUBJ) = ((CONJUNCTS ↑) SUBJ)``. S_XCOMP_BARE is consumed
+    # ONLY by the S_XCOMP_BARE_COORD rules below — there is no
+    # standalone use — so the inside-out always resolves (via the
+    # set-valued ``parents_via`` from Phase 11.B.4.eng, PR #207) to the
+    # parent COORD's REL-PRO and SUBJ. The COORD rule's REL-PRO comes
+    # from the matrix control wrap (``(↑ SUBJ) = (↑ XCOMP REL-PRO)``
+    # in clause.py); its SUBJ comes from the pivot wrap below
+    # (``(↑ SUBJ) = ↓2`` on the NOM-NP). Each conjunct's slots unify
+    # with the COORD's via the inside-out, giving the same
+    # all-share-with-parent semantics as the prior explicit
+    # ``(↑ FEAT) = ↓N FEAT`` chains on the COORD rule.
     #
     # OV+CAUS=DIRECT — bare (pakainin / pag-aralin)
     rules.append(Rule(
         "S_XCOMP_BARE",
         ["V[VOICE=OV, CAUS=DIRECT]"],
-        ["(↑ OBJ-CAUSER) = (↑ REL-PRO)"],
+        [
+            "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            "(↑ REL-PRO) = ((CONJUNCTS ↑) REL-PRO)",
+            "(↑ SUBJ) = ((CONJUNCTS ↑) SUBJ)",
+        ],
     ))
     # OV+CAUS=DIRECT with GEN-OBJ-PATIENT
     rules.append(Rule(
@@ -421,13 +438,19 @@ def register_rules(rules: list[Rule]) -> None:
         [
             "(↑ OBJ-PATIENT) = ↓2",
             "(↑ OBJ-CAUSER) = (↑ REL-PRO)",
+            "(↑ REL-PRO) = ((CONJUNCTS ↑) REL-PRO)",
+            "(↑ SUBJ) = ((CONJUNCTS ↑) SUBJ)",
         ],
     ))
     # OV+CAUS=NONE — bare (aralin)
     rules.append(Rule(
         "S_XCOMP_BARE",
         ["V[VOICE=OV, CAUS=NONE]"],
-        ["(↑ OBJ-AGENT) = (↑ REL-PRO)"],
+        [
+            "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            "(↑ REL-PRO) = ((CONJUNCTS ↑) REL-PRO)",
+            "(↑ SUBJ) = ((CONJUNCTS ↑) SUBJ)",
+        ],
     ))
     # OV+CAUS=NONE with GEN-OBJ-PATIENT
     rules.append(Rule(
@@ -436,13 +459,19 @@ def register_rules(rules: list[Rule]) -> None:
         [
             "(↑ OBJ-PATIENT) = ↓2",
             "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            "(↑ REL-PRO) = ((CONJUNCTS ↑) REL-PRO)",
+            "(↑ SUBJ) = ((CONJUNCTS ↑) SUBJ)",
         ],
     ))
     # DV — bare
     rules.append(Rule(
         "S_XCOMP_BARE",
         ["V[VOICE=DV]"],
-        ["(↑ OBJ-AGENT) = (↑ REL-PRO)"],
+        [
+            "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            "(↑ REL-PRO) = ((CONJUNCTS ↑) REL-PRO)",
+            "(↑ SUBJ) = ((CONJUNCTS ↑) SUBJ)",
+        ],
     ))
     # DV with GEN-OBJ-PATIENT (bigyan ng matitirhan)
     rules.append(Rule(
@@ -451,14 +480,17 @@ def register_rules(rules: list[Rule]) -> None:
         [
             "(↑ OBJ-PATIENT) = ↓2",
             "(↑ OBJ-AGENT) = (↑ REL-PRO)",
+            "(↑ REL-PRO) = ((CONJUNCTS ↑) REL-PRO)",
+            "(↑ SUBJ) = ((CONJUNCTS ↑) SUBJ)",
         ],
     ))
 
     # === S_XCOMP_BARE_COORD — coord of bare-V conjuncts ===
     #
-    # Chains both ``REL-PRO`` (the typed-actor gap, like the
-    # post-12.11 S_XCOMP coord) AND ``SUBJ`` (the shared NOM-pivot
-    # slot, which the wrap below binds to the actual ``NP[CASE=NOM]``).
+    # Phase 11.B.4.chart: per-conjunct ``REL-PRO`` and ``SUBJ`` chains
+    # removed; each S_XCOMP_BARE conjunct now binds its own slots
+    # via the body-level inside-out designators above. The COORD rule
+    # only needs the set-membership declarations + COORD overlay.
     for coord in ("AND", "OR"):
         # Binary
         rules.append(Rule(
@@ -473,10 +505,6 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓3 ∈ (↑ CONJUNCTS)",
                 f"(↑ COORD) = '{coord}'",
                 f"(↓2 COORD) =c '{coord}'",
-                "(↑ REL-PRO) = ↓1 REL-PRO",
-                "(↑ REL-PRO) = ↓3 REL-PRO",
-                "(↑ SUBJ) = ↓1 SUBJ",
-                "(↑ SUBJ) = ↓3 SUBJ",
             ],
         ))
         # 3-conjunct non-Oxford
@@ -495,12 +523,6 @@ def register_rules(rules: list[Rule]) -> None:
                 "↓5 ∈ (↑ CONJUNCTS)",
                 f"(↑ COORD) = '{coord}'",
                 f"(↓4 COORD) =c '{coord}'",
-                "(↑ REL-PRO) = ↓1 REL-PRO",
-                "(↑ REL-PRO) = ↓3 REL-PRO",
-                "(↑ REL-PRO) = ↓5 REL-PRO",
-                "(↑ SUBJ) = ↓1 SUBJ",
-                "(↑ SUBJ) = ↓3 SUBJ",
-                "(↑ SUBJ) = ↓5 SUBJ",
             ],
         ))
 

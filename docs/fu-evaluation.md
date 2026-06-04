@@ -610,6 +610,37 @@ Appendix C is the per-instance classification of all 46 PRO
 equations across cfg/ that established the 32/10/4 distribution.
 Net rule-count delta: 0 (in-place equation swap).
 
+**Phase 11.B.4.chart — third set-valued chart consumer (2026-06-04).**
+The S_XCOMP_BARE_COORD per-conjunct cross-binding fan-out in
+`cfg/coordination.py:412-505` migrates from per-COORD-rule
+`(↑ FEAT) = ↓N FEAT` chains (2-4 conjuncts × 2 feats = 4-8
+chained equations per coord rule) to body-level inside-out on
+each of the 6 S_XCOMP_BARE rules:
+
+```python
+"(↑ REL-PRO) = ((CONJUNCTS ↑) REL-PRO)",
+"(↑ SUBJ) = ((CONJUNCTS ↑) SUBJ)",
+```
+
+The 4 S_XCOMP_BARE_COORD rules (binary + 3-conjunct × AND/OR)
+keep only the set-membership declarations + COORD overlay; the
+chain equations are removed entirely. Net equation delta: -16
+across the coord-rules-and-bodies pair. Closes Candidate D
+(coordination CONJUNCTS inside-out) in
+`docs/fu-extension-audit.md` §2.4. Behavioral delta: 0 (probe
+parity confirmed on PAMILYA/sent-8 and binary variants — all
+conjuncts still share the same SUBJ-id and REL-PRO-id).
+
+**Architectural finding**: body-level inside-out requires a
+**coord-only daughter non-terminal**. S_XCOMP_BARE qualifies
+(consumed only by S_XCOMP_BARE_COORD); the S_XCOMP family
+(coordination.py:302-338) does NOT, because S_XCOMP has many
+standalone consumers in `control.py`. Placing a body-level
+inside-out on S_XCOMP would block every standalone parse via
+`inside-out-no-parent`. Families 1+2 stay with the explicit
+chain pattern; only families 3+4 migrate. The audit's "all four
+collapse" projection was over-stated.
+
 ### 7.5 Source citations
 
 - **Schachter & Otanes 1972** ch. 5 (voice system).
