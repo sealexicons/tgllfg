@@ -2136,6 +2136,141 @@ surfaced.
   surfacing previously-deferred test cases as newly-passing
   parametrize entries.
 
+### Phase 10 retrospective (closure)
+
+**Status**: Phase 10 closes 2026-06-03. The phase opened
+2026-05-21 with PR #123 (Phase 10.A) and closes with this
+documentation sub-PR (Phase 10.final) after the
+2026-06-03 Phase 10.final.pre-1 native-informant lex add
+(PR #202, `db1eaa2`).
+
+#### Buckets — final scope
+
+Phase 10 had four planned buckets per `.claude/plans/tgllfg-phase-10.md`:
+
+- **Bucket R** — Full reduplication taxonomy (10.A–10.H,
+  plus E-subbuckets and post-1 fixes). Closed with the
+  Reviewer typology + closure audit (10.H), with the curse-
+  root reversal landing in 10.final.pre-1.
+- **Bucket F** — Forest-density chart engineering
+  (10.I, 10.J, 10.J.post-1 … post-12.16, 10.K, 10.K.post-1).
+  Closed all wave-1 ZPFs across the PANAHON, PAMILYA,
+  ANG-MANOK, and PAG-AARAL clusters.
+- **Bucket U** — §18.1.3 FU unifier extensions
+  (10.L K-on-A, 10.M deferred defining-eq re-pass, 10.N
+  inside-out designators). Three engine-only prototypes
+  shipped without chart consumers; canonical K&Z fixtures
+  upgraded.
+- **Bucket Z** — Zamar 2023 wave-5 harvest (10.Z) +
+  post-harvest cleanup (10.Z.post-N). 5th corpus source +
+  2nd native-PDF; 500-record wave-5 baseline.
+
+Plus three closure sub-PRs:
+
+- **10.X.pre-1 + 10.X** — closed the last wave-1 ZPF
+  (PAMILYA/sent-8) via shared-NOM V-V-V coord; wave-1 hit
+  122/122 = 100%.
+- **10.Y** — orthography-aware prefix-vowel hyphenation
+  (closes the 10.E.6 deferral; ships the `alit` "quarrel"
+  VERB).
+- **10.Z.post-N** — Zamar extractor alt-form pre-split
+  (closes the deferred 10.Z post-harvest cleanup gate).
+- **10.final.pre-1** — curse-root `mura` informant-driven
+  lex add + Huwag-imperative paradigm fills (closes the
+  Phase 5e Commit 25 deferral + reverses the 10.H.post-1
+  curse-VERB retraction).
+- **10.final** — this closure documentation.
+
+#### Audit headline
+
+The 9-wave audit cumulative parse rate moved as follows
+across Phase 10:
+
+| Snapshot | XWAVE | % | Source |
+| --- | ---: | ---: | --- |
+| Phase 9.Z end (2026-05-22) | 1872/6071 | 30.83% | post-10.J infra |
+| 10.K end (2026-05-30) | 1876/6071 | 30.91% | chart-side fan-out reduction |
+| 10.K.post-1 end (2026-05-31) | 1880/6071 | 30.96% | PP-rule symbol gating |
+| 10.J.post-12.3 end (2026-06-01) | 1893/6071 | 31.18% | wh-PRON Q-NP + normalize_parens |
+| 10.J.post-12.16 end (2026-06-02) | 1931/6071 | 31.81% | PAMILYA/sent-2 5-layer infra |
+| 10.X end (2026-06-02) | 1937/6071 | 31.91% | PAMILYA/sent-8 (last wave-1 ZPF) |
+| 10.Y end (2026-06-03) | 1937/6071 | 31.91% | orthography refactor (0 net audit) |
+| 10.Z.post-N end (2026-06-03) | 1938/6073 | 31.91% | extractor alt-split (+1, +2 records) |
+| **10.final.pre-1 end (2026-06-03)** | **1943/6073** | **31.99%** | curse-mura + companion fills (+5) |
+
+Wave-1 exemplars: **122/122 = 100%** (achieved 10.X). The
+wave-1 baseline corpus is a hand-curated 122-sentence set from
+R&G 1981 Conversational; closing the last ZPF (PAMILYA/sent-8)
+is the most consequential Phase 10 outcome — every sentence in
+the wave-1 set now parses end-to-end.
+
+Other-wave per-bucket finals:
+
+| Wave | Phase 10 close | Phase 9 close (Δ) |
+| --- | ---: | ---: |
+| wave1-exemplars | 122/122 (100.00%) | 88/123 (71.5%) → +34 closures |
+| wave2-ramos1971 | 78/209 (37.32%) | 73/209 (34.9%) → +5 |
+| wave2-rc1990 | 220/1022 (21.53%) | 108/500 (21.6%) → corpus extended; per-record rate roughly preserved |
+| wave2-rg-intermediate | 493/1919 (25.69%) | 110/500 (22.0%) → +383 closures on full corpus (corpus expanded) |
+| wave3-rg-conversational | 333/666 (50.00%) | 236/500 (47.2%) → +97 |
+| wave3-so1972 | 321/1265 (25.38%) | 124/500 (24.8%) → +197 closures on full corpus |
+| wave4-kroeger1991 | 62/215 (28.84%) | 44/201 (21.9%) → +18 |
+| wave5-zamar2023 | 159/500 (31.80%) | (new in Phase 10) |
+| unattributed-constructions | 155/155 (100.00%) | (matched the 10.E.5 corpus, 100% throughout Phase 10) |
+
+The naturalistic ≥80% milestone target (per Phase 9 plan §7.10)
+remains aspirational on a per-corpus basis; the realistic
+near-term targets are wave3-rg-conversational (currently 50.00%)
+and wave1-exemplars (100% achieved). The 80% target was set when
+the only baseline corpus was wave-1 (~7% Phase 7-close); the
+expanded corpora (waves 2-5, ~6000 sentences) raise the bar
+substantially. Phase 11 inherits the residual non-wave-1 gap.
+
+#### Closed deferrals from Phase 5+ named at Phase 10 close
+
+- **10.E.6 deferral** — `mag-alit` ≠ `magalit` orthography
+  refactor for the `alit` "quarrel" VERB — closed by
+  Phase 10.Y per-family policy in `prefix_policy.py`.
+- **Phase 5e Commit 25 deferral** — `Huwag kang VERB` and
+  related control-style negated-imperative shapes — closed
+  by Phase 10.final.pre-1's three new chart rules in
+  `cfg/negation.py`.
+- **10.H.post-1 absence-of-evidence retraction** of curse-VERB
+  `mura` — reversed by Phase 10.final.pre-1 under 2026-06-03
+  multi-speaker informant evidence; the 10.H.post-1 scalar-ADJ
+  analysis stands unchanged.
+- **§18.1.2 Phase 6-dependent inventory** — all 8 items closed
+  in Phase 6.C–6.I (carried forward into Phase 10 as the
+  unifier substrate for the U-bucket prototypes).
+- **§18.1.1 corpus-deferred inventory** — all 11 items closed
+  in Phase 7a (the Phase 10 reduplication work built on top).
+
+#### Carried forward to Phase 11
+
+See `.claude/plans/tgllfg-phase-11.md` (the per-phase plan-of-
+record) for the Phase 11 scope. Headline items the Phase 10
+work surfaced and explicitly parked:
+
+- **Bare `Huwag + V[VOICE=AV]`** (e.g. `Huwag kumain.`,
+  `Huwag manigarilyo.`) — needs PRO SUBJ injection for the
+  V's a-structure completeness check. Documented in the
+  `cfg/negation.py` block-comment.
+- **U-bucket chart consumers** — the Phase 10.L / 10.M / 10.N
+  unifier extensions shipped as engine-only prototypes; chart
+  consumers opt in when corpus pressure surfaces a Tagalog
+  construction that motivates the canonical form.
+- **`v_iter_redup` for curse-VERB `mura`** — gated on audit-
+  corpus attestation of `mura-mura` curse-iter forms (the
+  10.H.post-1 ITER reading on the redup adjective has been
+  preserved as REDUP_SEM=None scalar-moderate).
+- **Naturalistic ≥80% on the broader wave-2/3/5 corpora** —
+  the existing 25–50% range needs construction-class
+  engineering well beyond the wave-1 chart filling Phase 10
+  delivered.
+- **`10.final.post-1`** is dropped from the ledger (the
+  conditional curse-NOUN `mura` it gated is now shipped
+  in-phase via 10.final.pre-1).
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
