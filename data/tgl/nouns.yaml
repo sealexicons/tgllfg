@@ -2397,12 +2397,12 @@
   pos: NOUN
   gloss: the possible / possibility
 
-# Tokenizer-normalized from canonical orthographic ``mag-asawa``
-# (hyphens after ``mag-``/``pag-``/``nag-`` before vowel onsets are
-# stripped by the tokenizer pre-pass; same convention as
-# ``pagaalaga`` / ``pagiyak``).
+# Phase 10.Y: citation canonicalized to the hyphenated form
+# ``mag-asawa`` (the canonical orthography). The existing
+# 9.X.c31 lex-citation dual-indexing path (analyzer.py line 568)
+# adds the hyphen-stripped key ``magasawa`` for legacy back-compat.
 
-- citation: magasawa
+- citation: mag-asawa
   pos: NOUN
   gloss: married couple
   source: audit-corpus
@@ -2894,12 +2894,12 @@
   source: audit-corpus
   loan: SPANISH
 
-- citation: pagaalaga
+- citation: pag-aalaga
   pos: NOUN
   gloss: caretaking, nurturing
   source: audit-corpus
 
-- citation: pagiyak
+- citation: pag-iyak
   pos: NOUN
   gloss: crying
   source: audit-corpus

@@ -46,18 +46,25 @@ from tgllfg.text.tokenizer import tokenize
 # ---- Tokenizer rejoin behavior -----------------------------------
 
 class TestTokenizerPrefixVowelRejoin:
+    """Phase 10.Y updates the ``norm`` semantics for CC-final prefix +
+    vowel-initial stem matches: the hyphen is now PRESERVED in the
+    norm (to align with the new hyphenated canonical surface keys
+    emitted by the analyzer's ``prefix`` op). CV-final prefix cases
+    (``ma-aga`` etc.) continue to strip the hyphen, since the
+    analyzer index keys those forms hyphenless (``maaga``)."""
 
     @pytest.mark.parametrize("text,expected_surface,expected_norm", [
-        # mag- / nag- / pag- + vowel-initial stem
-        ("Nag-uusap",     "Nag-uusap",     "naguusap"),
-        ("nag-uusap",     "nag-uusap",     "naguusap"),
-        ("pag-aaral",     "pag-aaral",     "pagaaral"),
-        ("mag-aral",      "mag-aral",      "magaral"),
-        ("mag-isa",       "mag-isa",       "magisa"),
-        # Longest-first: pakikipag before pag
-        ("pakikipag-usap", "pakikipag-usap", "pakikipagusap"),
-        # Other Tagalog prefixes (vowel-initial stems only)
-        ("paki-abot",     "paki-abot",     "pakiabot"),
+        # mag- / nag- / pag- + vowel-initial stem (CC-final → hyphen preserved)
+        ("Nag-uusap",     "Nag-uusap",     "nag-uusap"),
+        ("nag-uusap",     "nag-uusap",     "nag-uusap"),
+        ("pag-aaral",     "pag-aaral",     "pag-aaral"),
+        ("mag-aral",      "mag-aral",      "mag-aral"),
+        ("mag-isa",       "mag-isa",       "mag-isa"),
+        # Longest-first: pakikipag before pag (CC-final → preserved)
+        ("pakikipag-usap", "pakikipag-usap", "pakikipag-usap"),
+        # paki- (dual-keyed family; CC-final → hyphen preserved in norm)
+        ("paki-abot",     "paki-abot",     "paki-abot"),
+        # ma- (CV-final → hyphen still stripped; analyzer keys ``maaga``)
         ("ma-aga",        "ma-aga",        "maaga"),
     ])
     def test_rejoin_when_vowel_initial_stem(
@@ -134,9 +141,10 @@ class TestAuditCorpusReachability:
     level."""
 
     @pytest.mark.parametrize("text,surface,norm", [
-        ("Nag-uusap ang dalaga.",       "Nag-uusap", "naguusap"),
-        ("Ang pag-aaral ng wika.",      "pag-aaral", "pagaaral"),
-        ("Mag-aral ka.",                "Mag-aral",  "magaral"),
+        # Phase 10.Y: norm now preserves the hyphen for CC-final + V
+        ("Nag-uusap ang dalaga.",       "Nag-uusap", "nag-uusap"),
+        ("Ang pag-aaral ng wika.",      "pag-aaral", "pag-aaral"),
+        ("Mag-aral ka.",                "Mag-aral",  "mag-aral"),
     ])
     def test_audit_form_tokenizes_correctly(
         self, text: str, surface: str, norm: str,

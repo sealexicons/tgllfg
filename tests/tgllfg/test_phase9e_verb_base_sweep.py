@@ -132,8 +132,8 @@ class TestSurfaceUnblocking:
     @pytest.mark.parametrize("surface", [
         # alok V — um-AV-PFV/CTPL/IPFV
         "umalok", "umaalok", "aalok",
-        # alok V — mag-AV-PFV/CTPL/IPFV
-        "nagalok", "nagaalok", "magalok",
+        # alok V — mag-AV-PFV/CTPL/IPFV (Phase 10.Y: vowel-init mag/nag hyphenated)
+        "nag-alok", "nag-aalok", "mag-alok",
         # hiwa V — um-AV-PFV; in-OV-PFV
         "humiwa", "hiniwa",
         # kilala V — mag/in/an family

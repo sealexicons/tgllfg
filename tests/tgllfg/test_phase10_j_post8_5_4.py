@@ -119,11 +119,11 @@ class TestAntiRegression:
         assert analyzer.is_known_surface("sumama")
 
     def test_existing_pag_gerund_preserved(self) -> None:
-        """Pre-post-8.5.4 pag-gerund surfaces unchanged
-        (``pagaaral``, ``pagbigkas`` continue to fire — note
-        ``pagaaral`` is the canonical hyphen-merged index form;
-        the surface ``pag-aaral`` reaches the same analysis via
-        the tokenizer's special-case prefix handling)."""
+        """Pre-post-8.5.4 pag-gerund surfaces unchanged. Phase 10.Y
+        flipped the vowel-initial pag- gerund canonical from
+        ``pagaaral`` to ``pag-aaral`` (mag/nag/pag family is
+        hyphenated-only — no back-compat key). Consonant-initial
+        ``pagbigkas`` is unchanged (no hyphen)."""
         analyzer = _get_default()
         assert analyzer.is_known_surface("pagbigkas")
-        assert analyzer.is_known_surface("pagaaral")
+        assert analyzer.is_known_surface("pag-aaral")

@@ -100,23 +100,31 @@ class TestKasamaSaMatrixLoc:
 
 
 class TestAlalaPagGerund:
-    """``alala`` opts into ``pag_gerund``: ``pagaalala`` / ``pag-aalala``
-    canonical nominalization."""
+    """``alala`` opts into ``pag_gerund``: ``pag-aalala`` is the
+    canonical nominalization. Phase 10.Y flipped the canonical from
+    hyphenless ``pagaalala`` to hyphenated ``pag-aalala`` (mag/nag/pag
+    family is hyphenated-only, no back-compat hyphenless key)."""
 
     def test_pagaalala_in_dat_pp(self) -> None:
-        """``sa pag-aalala ng pamilya`` — the hyphenated written
-        form is tokenizer-normalized to ``pagaalala`` via the
-        hyphen-merge pre-pass."""
+        """``sa pag-aalala ng pamilya`` — canonical hyphenated form."""
         parses = parse_text(
             "Kasama sa pag-aalala ng pamilya ang ina.", n_best=1,
         )
         assert len(parses) >= 1
 
-    def test_pagaalala_unhyphenated(self) -> None:
+    def test_pagaalala_hyphenated_only(self) -> None:
+        """Phase 10.Y: pag-/mag-/nag- + vowel-init is hyphenated-only
+        (no back-compat). The unhyphenated input ``pagaalala`` no
+        longer resolves; the canonical hyphenated form must be used."""
+        # Hyphenated form parses.
         parses = parse_text(
-            "Kasama sa pagaalala ng pamilya ang ina.", n_best=1,
+            "Kasama sa pag-aalala ng pamilya ang ina.", n_best=1,
         )
         assert len(parses) >= 1
+        # Unhyphenated form is now OOV for the pag-gerund analysis.
+        from tgllfg.morph.analyzer import Analyzer
+        analyzer = Analyzer.from_default()
+        assert not analyzer.is_known_surface("pagaalala")
 
 
 class TestSubjBareCommaPipelineSynthesis:

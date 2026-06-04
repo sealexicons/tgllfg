@@ -4440,7 +4440,7 @@
 # 20/21/22/23/24 constructions that didn't get corpus coverage in their
 # own commits. Reaches ~52 phase5n entries total (alongside the 36 from
 # Commits 25/26/28). Per plan-of-record §3.6 Commit 31.
-- text: Pumunta siyang magisa.
+- text: Pumunta siyang mag-isa.
   construction: 'phase5n: L60 mag-isa adverb (depictive PRON+linker+ADV[MAGISA])'
   expected: parse
 - text: Nakatira ang lalaki.
