@@ -1766,6 +1766,107 @@ and the 10.E.6 close-out reviewer note.
 
 9968 → 10064 tests (+96).
 
+### Phase 10.Z.post-N Zamar extractor alt-form pre-split (audit-corpus close-out)
+
+**Status**: shipped 2026-06-03. Closes the deferred 10.Z post-harvest
+cleanup gate (plan §4.5.3) — the 2026-05-25 programmatic review of
+the freshly-harvested `wave5-zamar2023.jsonl` reported zero artifacts
+across four flag categories (paren residue / digit notation /
+English near-miss / shape-edge), but the user-review gate was
+deferred to just before 10.final. A pre-10.final spot-check of all
+498 wave-5 records surfaced two records whose `text_raw` carried a
+literal `/` separator inherited from the source's
+*alternative-form* presentation convention, missed by all four
+prior categories because both halves were sentence-shape +
+Tagalog-shape:
+
+- `page-67/sent-1`:
+  `Kaaalis lang ng aking nanay./Kakaalis lang ng aking nanay.`
+  (aspect-pair — recent-perfective vs imperfective-contemplated).
+- `page-193/sent-3`: `Tama ka./ Tama po kayo.` (politeness-pair —
+  informal `ka` vs formal `po kayo`).
+
+#### Root cause
+
+`_ZAMAR_TERMINAL_RE = re.compile(r"^(.*?[.?!])(?:\s.*)?$")`
+truncates a segment at the first terminal punctuation **only if
+followed by whitespace** (the optional `(?:\s.*)?` group consumes
+an English-gloss tail joined by a single space). The alt-form
+convention writes `./` with no preceding whitespace, defeating
+the truncate — the whole joined string passes through every
+shared filter as a single "sentence."
+
+#### Fix
+
+New `_ZAMAR_ALT_SPLIT_RE = re.compile(r"(?<=[.?!])/\s?")`
+pre-splits each column-gap-delimited segment on
+terminal-punctuation + `/` (optional trailing space) **before**
+calling `_zamar_clean_segment`. Each half becomes its own
+exemplar; the shared sentence-shape / Tagalog-shape filters
+then run normally per half.
+
+#### Outcome — wave-5 deltas
+
+- `page-67`: 1 joined-alt record → 2 clean halves (`Kaaalis lang
+  ng aking nanay.` + `Kakaalis lang ng aking nanay.`), each
+  parses or doesn't parse on its own merits.
+- `page-67` *additional* find: a multi-line alt-pair on source
+  line 2489 (`Kabibili ko ng bagong telepono pero may problema
+  na agad ito./Kakabili ↵ ko ng bagong telepono pero may
+  problema na agad ito.`) was previously **dropped entirely**
+  because the first physical line ended in `Kakabili` (no
+  terminal punctuation, failing the sentence-shape filter) and
+  the second physical line started lowercase (failing
+  capitalize-start). The new pre-split chops at `./` and
+  salvages the first clean half (`Kabibili ko ng bagong
+  telepono pero may problema na agad ito.`) — net +1 record
+  vs the pre-fix state.
+- `page-193`: 1 joined-alt record → 1 clean half (`Tama po
+  kayo.`); the 2-token `Tama ka.` half is dropped by the
+  shared `_looks_like_tagalog` 3-token floor. Net zero record
+  count, cleaner content.
+
+| Wave | Pre | Post | Δ closures | Δ records |
+| --- | ---: | ---: | ---: | ---: |
+| wave1-exemplars | 122/122 | 122/122 | 0 | 0 |
+| wave2-ramos1971 | 78/209 | 78/209 | 0 | 0 |
+| wave2-rc1990 | 220/1022 | 220/1022 | 0 | 0 |
+| wave2-rg-intermediate | 491/1919 | 491/1919 | 0 | 0 |
+| wave3-rg-conversational | 332/666 | 332/666 | 0 | 0 |
+| wave3-so1972 | 321/1265 | 321/1265 | 0 | 0 |
+| wave4-kroeger1991 | 61/215 | 61/215 | 0 | 0 |
+| **wave5-zamar2023** | **157/498** | **158/500** | **+1** | **+2** |
+| unattributed-constructions | 155/155 | 155/155 | 0 | 0 |
+| **XWAVE** | **1937/6071** | **1938/6073** | **+1** | **+2** |
+
+Strict improvement: +1 closure, +2 records, 0 regressions in any
+other wave. The single new closure comes from one of the three
+new clean wave-5 records.
+
+#### Cross-source survey (15 `[.?!]/[a-zA-Z]` lines)
+
+The new regex matches across the entire Zamar source, but only
+the four already-identified Tagalog cases yield record-count
+changes; the remaining 11 occurrences are English column glosses
+(`Wow!/Oh my!`, `Hello./How are you?`, `Pedro walks fast./Pedro
+is a fast walker.`, etc.) that already get filtered out by
+`_looks_like_tagalog`, or 1-2 token Tagalog interjections
+(`Sus!/Diyos ko!`, `Halikayo!/Halina kayo.`) that fail the
+3-token floor on both halves. No regression on any of the 11.
+
+#### Tests
+
+`tests/tgllfg/test_phase10_z_zamar_extractor.py` extended with a
+new `TestZamarAltSplit` class (10 cases): regex sanity across
+the three terminal characters (`.?!`); no-split on non-terminal
+slashes (the shared phonemic-`/slash/` reject handles those
+separately) and on letter-`/`-letter (the `aspect/mood` style
+glosses); aspect-pair yields two clean exemplars; politeness-pair
+drops the 2-token half (existing 3-token floor); single-clause
+lines unchanged. Total extractor suite 23 → 33 cases.
+
+10064 → 10074 tests (+10).
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
