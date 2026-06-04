@@ -207,3 +207,224 @@ class TestNPCoordInsidePurp:
         inner_subj = purp.feats.get("SUBJ")
         assert inner_subj is not None
         assert inner_subj.feats.get("COORD") == "AND"
+
+
+# === Phase 11.B.3 — bare-V purposive PRO inside-out binding ============
+
+
+class TestPurposivePROBinding:
+    """Phase 11.B.3 c2: closes Candidate E in
+    ``docs/fu-extension-audit.md`` §2.5. The bare-V purposive
+    variants (subordination.py:458-501) replaced the prior
+    ``(↑ SUBJ PRED) = 'PRO'`` placeholder with the inside-out
+    binding ``(↑ SUBJ) = ((ADJUNCT ↑) SUBJ)``. The SubordClause's
+    SUBJ is now structurally identified with the matrix SUBJ
+    (functional control via the Dalrymple 2001 §11 idiom).
+
+    Uses the set-valued ``parents_via`` extension (Phase 11.B.4.eng,
+    PR #207) since matrix attachment puts the SubordClause in the
+    matrix's ADJUNCT set.
+
+    Covers all four sub-rules:
+
+    * (a) bare-V INTR (``para makatapos``)
+    * (b) V-TR with no overt OBJ (``para magluto``, OBJ stays PRO
+          — Class-1 absorbed patient)
+    * (c) V-TR + GEN-NP OBJ (``para makatapos ng trabaho``)
+    * (d) V + DAT-NP adjunct (``para makakain sa kanya``)
+
+    Plus all three matrix-attachment shapes (post-matrix-no-comma,
+    pre-matrix-with-comma, post-matrix-with-comma)."""
+
+    def _purp(self, sent: str):
+        parses = parse_text(sent)
+        assert len(parses) >= 1, f"no parse for {sent!r}"
+        _ct, fs, _astr, _diags = parses[0]
+        purp = _adjunct_with_subord_type(fs, "PURP")
+        assert purp is not None, f"no PURP adjunct in {sent!r}"
+        return fs, purp
+
+    def test_purp_bare_V_INTR_pron_subject(self) -> None:
+        # Variant (a): PART + V[INTR]; matrix SUBJ is PRON `ako`.
+        fs, purp = self._purp("Kumain ako para makatapos.")
+        matrix_subj = fs.feats.get("SUBJ")
+        purp_subj = purp.feats.get("SUBJ")
+        assert matrix_subj is not None and purp_subj is not None
+        # Inside-out binding: SAME f-structure (identity check).
+        assert id(matrix_subj) == id(purp_subj)
+        # No PRED='PRO' placeholder anymore.
+        assert purp_subj.feats.get("PRED") != "PRO"
+        # Matrix SUBJ features percolate to purp SUBJ.
+        assert matrix_subj.feats.get("CASE") == purp_subj.feats.get("CASE")
+
+    def test_purp_V_TR_no_overt_obj(self) -> None:
+        # Variant (b): PART + V[TR]; matrix SUBJ is PRON `ako`.
+        # OBJ stays PRED='PRO' (Class-1 absorbed patient).
+        fs, purp = self._purp("Kumain ako para magluto.")
+        matrix_subj = fs.feats.get("SUBJ")
+        purp_subj = purp.feats.get("SUBJ")
+        assert id(matrix_subj) == id(purp_subj)
+        # OBJ slot intentionally still PRO (no overt object).
+        purp_obj = purp.feats.get("OBJ")
+        assert purp_obj is not None
+        assert purp_obj.feats.get("PRED") == "PRO"
+
+    def test_purp_V_TR_with_gen_obj(self) -> None:
+        # Variant (c): PART + V + GEN-NP; matrix SUBJ is PRON `ako`.
+        fs, purp = self._purp("Kumain ako para makatapos ng trabaho.")
+        matrix_subj = fs.feats.get("SUBJ")
+        purp_subj = purp.feats.get("SUBJ")
+        assert id(matrix_subj) == id(purp_subj)
+        # OBJ now bound to overt GEN-NP, not PRO.
+        purp_obj = purp.feats.get("OBJ")
+        assert purp_obj is not None
+        assert purp_obj.feats.get("LEMMA") == "trabaho"
+
+    def test_purp_named_subj_post_matrix(self) -> None:
+        # Variant (a) with NAME subject: matrix SUBJ has LEMMA='juan'.
+        fs, purp = self._purp("Pumunta si Juan para makatapos.")
+        matrix_subj = fs.feats.get("SUBJ")
+        purp_subj = purp.feats.get("SUBJ")
+        assert id(matrix_subj) == id(purp_subj)
+        # Both share LEMMA from matrix.
+        assert matrix_subj.feats.get("LEMMA") == "juan"
+        assert purp_subj.feats.get("LEMMA") == "juan"
+
+    def test_purp_pre_matrix_with_comma(self) -> None:
+        # Pre-matrix attachment via the comma rule — still resolves
+        # because matrix ADJUNCT contains the SubordClause regardless
+        # of c-structure surface order.
+        fs, purp = self._purp("Para makatapos, kumain ako.")
+        matrix_subj = fs.feats.get("SUBJ")
+        purp_subj = purp.feats.get("SUBJ")
+        assert id(matrix_subj) == id(purp_subj)
+
+    def test_purp_upang_formal_variant(self) -> None:
+        # ``upang`` (REGISTER=FORMAL) shares the same purposive
+        # builder and inherits the inside-out binding.
+        fs, purp = self._purp("Kumain ako upang makatapos.")
+        matrix_subj = fs.feats.get("SUBJ")
+        purp_subj = purp.feats.get("SUBJ")
+        assert id(matrix_subj) == id(purp_subj)
+
+
+# === Phase 11.B.3 — extended verification on unattested grammatical
+#                    Class-3 edge cases =================================
+
+
+class TestPurposivePROBindingEdgeCases:
+    """Phase 11.B.3 c2 extended verification. The base
+    ``TestPurposivePROBinding`` class covers attested forms from the
+    Phase 9.X.c50 introduction; this class adds **unattested but
+    grammatical** Class-3 edge cases to exercise the inside-out
+    binding under feature-rich matrix SUBJs (coordinated, 3SG pron,
+    negation-wrapped).
+
+    These cases are not present in the audit corpus but are licit
+    Tagalog per S&O 1972 §6.6. They verify the binding's robustness
+    under matrix features that did not appear in the original
+    fixture set."""
+
+    def _purp(self, sent: str):
+        parses = parse_text(sent)
+        assert len(parses) >= 1, f"no parse for {sent!r}"
+        _ct, fs, _astr, _diags = parses[0]
+        purp = _adjunct_with_subord_type(fs, "PURP")
+        assert purp is not None, f"no PURP adjunct in {sent!r}"
+        return fs, purp
+
+    def test_purp_coord_np_matrix_subj(self) -> None:
+        # Unattested: matrix SUBJ is a NP-COORD ``si Juan at si
+        # Maria``. The inside-out binding must propagate the COORD
+        # f-structure to the purposive's SUBJ — both should report
+        # COORD='AND' and share the same CONJUNCTS set.
+        fs, purp = self._purp(
+            "Kumain si Juan at si Maria para makatapos."
+        )
+        matrix_subj = fs.feats.get("SUBJ")
+        purp_subj = purp.feats.get("SUBJ")
+        assert id(matrix_subj) == id(purp_subj)
+        # COORD feature propagates through the binding.
+        assert matrix_subj.feats.get("COORD") == "AND"
+        assert purp_subj.feats.get("COORD") == "AND"
+
+    def test_purp_3sg_pron_matrix_subj(self) -> None:
+        # Unattested in the original corpus: 3SG clitic pronoun
+        # ``siya`` as matrix SUBJ. Verifies the binding works for
+        # non-1SG pronouns (the original fixture used ``ako``).
+        fs, purp = self._purp("Kumain siya para makatapos.")
+        matrix_subj = fs.feats.get("SUBJ")
+        purp_subj = purp.feats.get("SUBJ")
+        assert id(matrix_subj) == id(purp_subj)
+        # Clitic features propagate.
+        assert matrix_subj.feats.get("is_clitic") == purp_subj.feats.get(
+            "is_clitic"
+        )
+
+    def test_purp_neg_wrapped_matrix(self) -> None:
+        # Unattested: matrix S is wrapped by the Phase 4 §7.2
+        # ``S → PART[NEG] S`` hindi-rule. The purposive attachment
+        # fires on the OUTER S (post-NEG-wrap), so ``(ADJUNCT ↑)``
+        # finds the wrapped matrix. The binding must still resolve
+        # to the matrix SUBJ regardless of NEG layering.
+        fs, purp = self._purp("Hindi kumain si Juan para makatapos.")
+        matrix_subj = fs.feats.get("SUBJ")
+        purp_subj = purp.feats.get("SUBJ")
+        assert id(matrix_subj) == id(purp_subj)
+        # NEG polarity sits on the matrix, not the purposive.
+        assert fs.feats.get("POLARITY") == "NEG"
+        assert purp.feats.get("POLARITY") != "NEG"
+
+
+# === Phase 11.B.3 — Class-2 scope-verification negative tests ==========
+
+
+class TestUnflippedClass2PreservedAsPRO:
+    """Phase 11.B.3 c2 scope verification. The per-instance audit
+    in ``docs/fu-extension-audit.md`` Appendix C identifies 10
+    Class-2 (anaphoric / discourse-bound) PRO sites that are
+    INTENTIONALLY NOT flipped to inside-out binding — the rule
+    comments explicitly select anaphoric resolution to avoid
+    feature-clash hazards (e.g., the canonical
+    ``clause.py:5292`` Wala-RC CASE-conflict avoidance).
+
+    These tests anchor the scope decision by asserting that
+    Class-2 sites still produce ``PRED='PRO'`` on the relevant
+    SUBJ slot. A regression here would mean the 11.B.3 change
+    inadvertently broadened beyond Class-3."""
+
+    def test_class2_tough_construction_inner_subj_stays_pro(self) -> None:
+        # clause.py:1514 (tough): ``Mahirap kumain.`` — the V-INF
+        # ``kumain`` is matrix SUBJ; its inner SUBJ is the absorbed
+        # PRO (generic "for anyone to eat"). The rule's
+        # ``(↓2 SUBJ PRED) = 'PRO'`` equation must keep firing.
+        parses = parse_text("Mahirap kumain.")
+        _ct, fs, _astr, _diags = parses[0]
+        matrix_subj = fs.feats.get("SUBJ")
+        assert matrix_subj is not None
+        inner_subj = matrix_subj.feats.get("SUBJ")
+        assert inner_subj is not None
+        assert inner_subj.feats.get("PRED") == "PRO"
+
+    def test_class2_tough_with_gen_obj_inner_subj_stays_pro(self) -> None:
+        # clause.py:1527 (tough + GEN-OBJ): ``Mahirap kumain ng aso.``
+        # Same as above but the V-INF takes an overt OBJ.
+        parses = parse_text("Mahirap kumain ng aso.")
+        _ct, fs, _astr, _diags = parses[0]
+        matrix_subj = fs.feats.get("SUBJ")
+        inner_subj = matrix_subj.feats.get("SUBJ")
+        assert inner_subj is not None
+        assert inner_subj.feats.get("PRED") == "PRO"
+
+    def test_class2_wala_rc_matrix_subj_stays_pro(self) -> None:
+        # clause.py:5292 (Wala-RC): ``Wala siyang kinakausap.`` —
+        # "She has no one to talk to." The matrix SUBJ is the
+        # negated entity (the missing one); the comment at
+        # clause.py:5263-5265 is explicit about anaphoric
+        # resolution to avoid spurious NOM-vs-GEN CASE conflict
+        # between the possessor (``siya``) and the actor.
+        parses = parse_text("Wala siyang kinakausap.")
+        _ct, fs, _astr, _diags = parses[0]
+        matrix_subj = fs.feats.get("SUBJ")
+        assert matrix_subj is not None
+        assert matrix_subj.feats.get("PRED") == "PRO"

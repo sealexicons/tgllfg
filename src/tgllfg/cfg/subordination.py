@@ -444,24 +444,38 @@ def register_rules(rules: list[Rule]) -> None:
     #   (c) ``para + V[NVOL] + DAT-NP``  — V with sa-PP adjunct
     #
     # LFG analysis: the SubordClause f-structure has the bare V's
-    # PRED and a synthesized ``SUBJ PRED = 'PRO'`` placeholder. The
-    # control relation between matrix and purposive SUBJ is
-    # established at the f-graph by future inside-out designators
-    # (Phase 7+); for now the PRO is a discourse-bound placeholder.
+    # PRED; the SUBJ slot is bound by inside-out designator to the
+    # matrix SUBJ (functional control).
+    #
+    # Phase 11.B.3 c2: replaced the prior ``(↑ SUBJ PRED) = 'PRO'``
+    # placeholder with ``(↑ SUBJ) = ((ADJUNCT ↑) SUBJ)`` — the
+    # SubordClause becomes a member of the matrix's ADJUNCT set
+    # (subordination.py:169 ``S → S SubordClause`` and siblings),
+    # so ``parents_via(ADJUNCT, ↑)`` resolves to the matrix S and
+    # ``.SUBJ`` resolves to the matrix SUBJ. Uses set-valued
+    # ``parents_via`` from Phase 11.B.4.eng (PR #207). Deferred
+    # 10.M re-pass handles the matrix-not-yet-attached case at
+    # SubordClause build time.
     #
     # Variant (b) binds the GEN-NP to the V's OBJ via ``(↓2 OBJ) =
     # ↓3`` (same pattern as the Phase 4 V-TR-OBJ rules); variant (c)
     # rides the DAT-NP into V's ADJUNCT.
     #
+    # The variant (a-TR) preserves ``(↑ OBJ PRED) = 'PRO'`` (Class-1
+    # impersonal — the absorbed patient has no structural binder).
+    # See ``docs/fu-extension-audit.md`` Appendix C for the full
+    # 46-instance PRO classification.
+    #
     # Reference: Schachter & Otanes 1972 §6.6 (purposive ``para`` /
-    # ``upang`` with control reading); R&G 1981 PANAHON sent-16.
+    # ``upang`` with control reading); R&G 1981 PANAHON sent-16;
+    # Dalrymple 2001 §11 (functional control via inside-out).
     for mood in ("SOC", "NVOL"):
         rules.append(Rule(
             "SubordClause",
             ["PART[COMP_TYPE=PURP]", f"V[VOICE=AV, MOOD={mood}, TR=INTR]"],
             [
                 "(↑) = ↓2",
-                "(↑ SUBJ PRED) = 'PRO'",
+                "(↑ SUBJ) = ((ADJUNCT ↑) SUBJ)",
                 "(↑ SUBORD_TYPE) = 'PURP'",
                 "(↓1 COMP_TYPE) =c 'PURP'",
             ],
@@ -471,7 +485,7 @@ def register_rules(rules: list[Rule]) -> None:
             ["PART[COMP_TYPE=PURP]", f"V[VOICE=AV, MOOD={mood}, TR=TR]"],
             [
                 "(↑) = ↓2",
-                "(↑ SUBJ PRED) = 'PRO'",
+                "(↑ SUBJ) = ((ADJUNCT ↑) SUBJ)",
                 "(↑ OBJ PRED) = 'PRO'",
                 "(↑ SUBORD_TYPE) = 'PURP'",
                 "(↓1 COMP_TYPE) =c 'PURP'",
@@ -482,7 +496,7 @@ def register_rules(rules: list[Rule]) -> None:
             ["PART[COMP_TYPE=PURP]", f"V[VOICE=AV, MOOD={mood}]", "NP[CASE=GEN]"],
             [
                 "(↑) = ↓2",
-                "(↑ SUBJ PRED) = 'PRO'",
+                "(↑ SUBJ) = ((ADJUNCT ↑) SUBJ)",
                 "(↑ OBJ) = ↓3",
                 "(↑ SUBORD_TYPE) = 'PURP'",
                 "(↓1 COMP_TYPE) =c 'PURP'",
@@ -493,7 +507,7 @@ def register_rules(rules: list[Rule]) -> None:
             ["PART[COMP_TYPE=PURP]", f"V[VOICE=AV, MOOD={mood}]", "NP[CASE=DAT]"],
             [
                 "(↑) = ↓2",
-                "(↑ SUBJ PRED) = 'PRO'",
+                "(↑ SUBJ) = ((ADJUNCT ↑) SUBJ)",
                 "↓3 ∈ (↑ ADJUNCT)",
                 "(↑ SUBORD_TYPE) = 'PURP'",
                 "(↓1 COMP_TYPE) =c 'PURP'",
