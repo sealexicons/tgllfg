@@ -2515,7 +2515,7 @@ def register_rules(rules: list[Rule]) -> None:
     # constraining equation is generalized to a K&Z 1989 §3
     # eq. 39 FU path
     #
-    #     (↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)
+    #     (↓3 REL-PRO) = (↓3 XCOMP* SUBJ)
     #
     # which navigates the gap via zero-or-more XCOMP traversals.
     # Body: ``XCOMP*`` (control chains); bottom: ``SUBJ``
@@ -2524,30 +2524,53 @@ def register_rules(rules: list[Rule]) -> None:
     # Tagalog COMP-internal SUBJs aren't reachable under the
     # SUBJ-only restriction, so widening would overgenerate.
     #
-    # **Constraining-form realization of the LFG binding.** The
-    # design appendix C1 envisioned a defining-form equation
-    # (``= (↓3 XCOMP* SUBJ)``), but our two-pass orchestration
-    # evaluates defining-equations parent-first — at the time
-    # the wrap rule fires, the S_GAP body's
-    # ``(↑ SUBJ) = (↑ REL-PRO)`` hasn't run yet, so ↓3.SUBJ
-    # doesn't exist and a defining FU resolves to no endpoint.
-    # The K&Z 1989 binding is therefore realized as the
-    # combination of (a) the S_GAP body's defining equation
-    # creating the SUBJ=REL-PRO reentrancy, plus (b) this
-    # constraining FU equation verifying that the reentrancy
-    # holds along an XCOMP* path. Equivalent K&Z semantics; the
-    # deferred-defining-FU mechanism would be a Phase 7+
-    # unifier extension.
+    # **Defining-form realization (Phase 11.B.1, 2026-06-04).**
+    # The canonical K&Z 1989 §3 eq. 39 binding uses defining
+    # ``=`` (the FU equation **creates** the REL-PRO ≡ SUBJ
+    # reentrancy along the regex path). Phase 6.D originally
+    # shipped this as a constraining ``=c`` workaround because
+    # the two-pass evaluator processed defining-equations
+    # parent-first — at the time the wrap rule fired, the
+    # S_GAP body's ``(↑ SUBJ) = (↑ REL-PRO)`` had not yet run,
+    # so ``↓3.SUBJ`` didn't exist and a defining-form FU
+    # resolved to no endpoint. The K&Z binding semantics was
+    # preserved by the combination of (a) the S_GAP body's
+    # defining equation creating the SUBJ=REL-PRO reentrancy
+    # plus (b) the wrap's constraining FU equation verifying
+    # the reentrancy along the XCOMP* path.
     #
-    # The change is **vacuous at depth 1** (S_GAP body already
-    # binds SUBJ=REL-PRO via the body's own
-    # ``(↑ SUBJ) = (↑ REL-PRO)`` equation; the constraining FU
-    # equation's zero-iteration endpoint reaches the same
-    # f-node and the check passes). The FU form is
-    # load-bearing under the new S_XCOMP-bodied wrap below,
-    # which admits cross-clausal RCs at depths 2+ — the FU
-    # path enumerates SUBJ at every level of the XCOMP chain
-    # and verifies REL-PRO ≡ at-least-one of them.
+    # Phase 10.M (PR #196) added the **deferred re-pass**
+    # mechanism in ``fstruct/unify.py`` — an FU defining
+    # equation that reports ``fu-no-endpoint`` at fire-time is
+    # queued, and ``_repass_deferred_fu`` retries it after the
+    # full defining pass completes. This swap (Phase 11.B.1) is
+    # the first chart consumer of the re-pass machinery; see
+    # ``docs/fu-evaluation.md`` §5.2.1 and ``docs/fu-extension-
+    # audit.md`` §2.1 (Candidate A). All ``S_GAP`` body
+    # variants (AV / OV-NVOL / OV-AV_ABSOL / IV impersonal /
+    # DAT-PRON-actor — see lines 52-220 above) bind
+    # ``(↑ SUBJ) = (↑ REL-PRO)`` in the body itself, so the
+    # wrap's FU equation is **vacuous at depth 1** under both
+    # forms: the body-built SUBJ ≡ REL-PRO reentrancy makes
+    # the XCOMP*-zero-iteration endpoint match REL-PRO before
+    # either ``=`` or ``=c`` evaluates. The swap is therefore
+    # semantic-equivalent for S_GAP and the behavioral /
+    # f-structure output is unchanged. What changes is the
+    # surface match to K&Z 1989 §3 eq. 39 and the conceptual
+    # role of this equation — from *verifier* of a body-built
+    # reentrancy to *linker* that creates the reentrancy
+    # itself.
+    #
+    # **S_XCOMP wrap (below)** migrates to the same defining
+    # form via the **gap-category split** (Phase 11.B.1
+    # Option 3 per 2026-06-04 user direction): the L47 RC
+    # S_XCOMP wrap consumes ``S_XCOMP[SUBJ_GAP=true]`` (SUBJ-gap variant)
+    # instead of the generic ``S_XCOMP``. The SUBJ-only
+    # restriction (Kroeger 1993) is encoded at the c-structure
+    # level — non-AV S_XCOMP rules (control complements with
+    # OBJ-AGENT-gap) are no longer eligible as RC bodies. See
+    # the inline comment block on the S_XCOMP wrap below and
+    # ``cfg/control.py:38-130`` for the split rationale.
     #
     # Six wrap rules (3 head cases × 2 linker variants) — the
     # head NP's case percolates to the matrix; both linkers (NA
@@ -2563,7 +2586,7 @@ def register_rules(rules: list[Rule]) -> None:
                     "↓3 ∈ (↑ ADJ)",
                     "(↓3 REL-PRO PRED) = (↓1 PRED)",
                     "(↓3 REL-PRO CASE) = (↓1 CASE)",
-                    "(↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)",
+                    "(↓3 REL-PRO) = (↓3 XCOMP* SUBJ)",
                 ],
             ))
 
@@ -2583,32 +2606,61 @@ def register_rules(rules: list[Rule]) -> None:
     # wrap rule is the outer composer that puts an ``S_XCOMP``
     # body alongside the head NP.
     #
-    # The FU constraining equation is identical to the S_GAP
-    # wrap above — ``(↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)`` — but
-    # here it does real work: ``↓3`` is the S_XCOMP daughter
+    # The FU defining equation is identical to the S_GAP wrap
+    # above — ``(↓3 REL-PRO) = (↓3 XCOMP* SUBJ)`` — but here
+    # it does real work: ``↓3`` is the S_XCOMP[SUBJ_GAP=true] daughter
     # (depth 0 of the chain), and the XCOMP* enumeration
     # reaches the SUBJ at any depth. K&Z 1989 §3 minimality
     # selects endpoints shortest-first; under per-depth control
     # threading every SUBJ along the chain is the same f-node,
-    # so the depth-0 endpoint satisfies the check.
+    # so the depth-0 endpoint links REL-PRO to the bottom-of-
+    # chain SUBJ.
     #
-    # Design rationale + scope boundaries: ``docs/analysis-
-    # choices.md`` "Phase 6.D Commit 1: L47 long-distance
-    # relativization via FU — design". See also the
-    # constraining-form-realization note on the S_GAP wrap
-    # above for why this isn't a defining-form binding.
+    # **Phase 11.B.1 — gap-category split (2026-06-04).** The
+    # daughter changes from the original generic ``S_XCOMP`` to
+    # the new SUBJ-gap-restricted ``S_XCOMP[SUBJ_GAP=true]`` category (see
+    # ``cfg/control.py:38-130``). Pre-11.B.1, the L47 RC wrap
+    # consumed any ``S_XCOMP``, including non-AV control bodies
+    # (e.g., ``V[OV] NP[NOM]`` at ``control.py:94``) whose
+    # REL-PRO is bound to ``OBJ-AGENT``, not ``SUBJ``. Those
+    # bodies are legitimate as control complements (under a
+    # matrix control verb that supplies the controller binding)
+    # but *not* as standalone RC bodies — Kroeger 1993
+    # SUBJ-only relativization forbids OBJ-AGENT-relativization.
+    # The Phase 6.D ``=c (↓3 XCOMP* SUBJ)`` constraining form
+    # accidentally compensated by requiring REL-PRO ≡ depth-0
+    # SUBJ at evaluation time (which non-AV bodies couldn't
+    # satisfy because their depth-0 SUBJ was the overt NOM
+    # pivot, not REL-PRO).
+    #
+    # The 11.B.1 split encodes Kroeger 1993's restriction at
+    # the c-structure level: only SUBJ-gap S_XCOMP rules use
+    # the new ``S_XCOMP[SUBJ_GAP=true]`` LHS, and the L47 RC wrap consumes
+    # only ``S_XCOMP[SUBJ_GAP=true]``. Non-AV S_XCOMP rules remain
+    # available as control-complement bodies (consumed by
+    # matrix control wraps via the existing ``S_XCOMP``
+    # daughter spec) but are no longer eligible as L47 RC
+    # bodies. With the SUBJ-only restriction now grammar-
+    # encoded, the wrap's FU equation switches to the
+    # canonical K&Z 1989 §3 eq. 39 defining ``=`` form
+    # (consuming the Phase 10.M deferred re-pass mechanism).
+    #
+    # Cross-reference: ``docs/fu-extension-audit.md`` §2.1
+    # (Candidate A); ``docs/analysis-choices.md`` "Phase 6.D
+    # Commit 1: L47 long-distance relativization via FU —
+    # design" and the post-11.B.1 callout below it.
     for case in ("NOM", "GEN", "DAT"):
         np_cat = f"NP[CASE={case}]"
         for link in ("NA", "NG"):
             rules.append(Rule(
                 np_cat,
-                [np_cat, f"PART[LINK={link}]", "S_XCOMP"],
+                [np_cat, f"PART[LINK={link}]", "S_XCOMP[SUBJ_GAP=true]"],
                 [
                     "(↑) = ↓1",
                     "↓3 ∈ (↑ ADJ)",
                     "(↓3 REL-PRO PRED) = (↓1 PRED)",
                     "(↓3 REL-PRO CASE) = (↓1 CASE)",
-                    "(↓3 REL-PRO) =c (↓3 XCOMP* SUBJ)",
+                    "(↓3 REL-PRO) = (↓3 XCOMP* SUBJ)",
                 ],
             ))
 

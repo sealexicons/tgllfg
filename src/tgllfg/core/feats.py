@@ -92,6 +92,7 @@ BINARY_FEATS: frozenset[str] = frozenset(
         "SAY_CLASS",
         "SEQUENCE",
         "STATIVE_PRED",
+        "SUBJ_GAP",
         "SYMBOLIC",
         "UNCERTAIN",
         "UNIV",
