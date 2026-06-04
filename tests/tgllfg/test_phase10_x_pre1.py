@@ -105,19 +105,22 @@ class TestBigayBonusClosures:
 
 class TestAralCauseStudy:
     """Phase 10.X.pre-1 C2: ``aral``'s 2-arg OV CAUSE-STUDY lex
-    entry (parallel to ``kain`` CAUSE-EAT) lets ``pag-aralin`` /
-    ``pagaralin`` parse as a causative under control verbs.
+    entry (parallel to ``kain`` CAUSE-EAT) lets ``pag-aralin``
+    parse as a causative under control verbs.
 
     The standalone imperative ``Pag-aralin ang X.`` (no matrix
     control) does NOT close with just C2 — that path needs an
     imperative chart rule that fires on OV CAUS=DIRECT (separate
     work, not in 10.X.pre-1 scope).
+
+    Phase 10.Y: the unhyphenated ``pagaralin`` variant no longer
+    resolves; the canonical form is hyphenated ``pag-aralin``
+    (mag/nag/pag family is hyphenated-only).
     """
 
     @pytest.mark.parametrize("sent", [
         # Under N-pred control (Tungkulin niyang ...)
         "Tungkulin niyang pag-aralin ang mga bata.",
-        "Tungkulin niyang pagaralin ang mga bata.",
         # Under PSYCH control (Gusto niyang ...)
         "Gusto niyang pag-aralin ang mga bata.",
         # With a NOM-NP with PP-modifier (sent-8 sub-shape)

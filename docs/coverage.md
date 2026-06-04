@@ -1648,6 +1648,124 @@ The structural fix doesn't pay back:
 
 No code changes shipped from post-5.
 
+### Phase 10.Y orthography-aware prefix-vowel hyphenation (R-bucket residual)
+
+**Status**: shipped 2026-06-03. Closes the **10.E.6 deferral** —
+the previously-blocked `alit` "quarrel" VERB now ships, disambiguated
+from `galit` "anger" by orthography. Aligns the engine's output, the
+tokenizer's `norm` semantics, and several lex citation surfaces with
+the canonical Tagalog convention: a closed-syllable prefix
+(`mag-` / `nag-` / `pag-` / `maka-` / `naka-` / `paki-` and their
+derivatives) emits an orthographic hyphen against a vowel-initial
+root (`mag-aral`, `nag-uusap`, `naka-upo`), not the pre-10.Y
+plain-concatenated form (`magaral`, `naguusap`, `nakaupo`).
+
+#### Per-family policy
+
+New `src/tgllfg/morph/prefix_policy.py` is the single source of
+truth. The closed CC-final prefix set splits into two buckets:
+
+- **`HYPHENATED_ONLY_PREFIXES`** (8 strings):
+  `mag` / `nag` / `pag` / `magpa` / `nagpa` / `magsi` / `nagsi` /
+  `pakikipag`. Engine emits the hyphenated surface as the **only**
+  canonical key; no back-compat hyphenless key. This is the
+  disambiguation lever: `mag-alit` (new `alit` VERB) and `magalit`
+  (`ma` + `galit` ADJ-predicative) now live under DISTINCT index
+  slots.
+- **`DUAL_KEYED_PREFIXES`** (11 strings):
+  `maka` / `naka` / `paki` / `paka` / `mapa` / `napa` /
+  `makipag` / `nakipag` / `magka` / `nagka` / `pagka`. Engine
+  emits hyphenated canonical AND retains a hyphen-stripped
+  back-compat key (references mixed: K91 prefers `nakaupo`;
+  S&O 1972 mixes both).
+- **CV-final prefixes** (`ma` / `na` / `pa` / `ka` / `i` / `si`):
+  out of scope. Tagalog never hyphenates these (`mainit`,
+  `paaralan` are universal).
+
+Index size 7577 → 7815 (+238 entries, 3.1% growth) — less than
+the +5.6% originally estimated because `mag`/`nag`/`pag` swaps
+are one-for-one (existing hyphenless key → new hyphenated key,
+zero delta).
+
+#### Three layers aligned
+
+1. **Engine output** — `prefix` op in `analyzer.py` emits
+   `value + "-" + base` when `should_hyphenate(value, base)`
+   returns True (CC-final prefix + vowel-init base).
+2. **Tokenizer norm** — preserves the internal hyphen for
+   CC-final-prefix + vowel-stem tokens (`mag-aral` → `mag-aral`,
+   not `magaral`); CV-final unchanged (`ma-aga` → `maaga`).
+3. **Multiword pre-pass** — `merge_hyphen_compounds` extended
+   with a `_split_cc_prefix` fallback that tries a hyphen-inserted
+   variant when the bare `x + y` join doesn't hit the index
+   (`Nagarte-arte` triple → `Nag-artearte` matches the new
+   canonical key, recovering the inflected-moderative path).
+
+#### Lex citation canonicalizations
+
+Four hand-authored lex entries whose hyphenless citation was a
+pre-10.Y tokenizer-norm-strip convenience flipped to the canonical
+hyphenated form:
+
+- `magisa` → `mag-isa` (`data/tgl/particles.yaml`, ADV)
+- `magasawa` → `mag-asawa` (`data/tgl/nouns.yaml`, NOUN
+  "married couple")
+- `pagaalaga` → `pag-aalaga` (`data/tgl/nouns.yaml`, NOUN
+  "caretaking")
+- `pagiyak` → `pag-iyak` (`data/tgl/nouns.yaml`, NOUN "crying")
+
+The Phase 9.X.c31 NOUN-citation hyphen-strip dual-key path
+composes cleanly here: it adds hyphenless back-compat aliases for
+each hyphenated citation regardless of the per-family policy at
+the paradigm-output level (the two mechanisms target different
+scopes — citation load vs paradigm output — and compose without
+conflict).
+
+#### `alit` VERB ships
+
+New `alit` VERB entry in `data/tgl/verbs.yaml` (mag-class, INTR,
+"quarrel, dispute, be in conflict"). The reciprocal/symmetric
+mag-V class admits a single GEN co-argument or a plural NOM
+pivot; the canonical `Nag-alit sila.` "They quarreled." takes
+plural NOM and no overt OBJ. References: S&O 1972 §3.10 (mag-V
+symmetric / reciprocal class), K&Z 1989 §2.4 (reciprocal voice),
+and the 10.E.6 close-out reviewer note.
+
+#### Empirical scope and audit outcome
+
+- 61 vowel-initial VERB roots / 426 total (14%).
+- 28 paradigm cells use `op: prefix` with CC-final values.
+- 159 hyphenated `prefix-V` tokens in audit corpus (all
+  pre-existing canonical-good; previously worked only via
+  tokenizer norm-strip; now work via canonical match).
+- 16 hyphenless-input surfaces in audit needed dual-keying.
+  All 16 ride the `DUAL_KEYED_PREFIXES` back-compat path; 0
+  regression on this family.
+- **Audit: 0 net deltas across all 9 waves + unattributed**
+  (XWAVE 1937/6071 unchanged). Single regression `Magipit ka
+  ng buhok.` (Ramos 1971 dictionary entry-ipit/sent-94) was
+  OCR-fixed locally in the gitignored .txt + .jsonl, matching
+  the entry's own `/mag-/` morphological notation (the
+  hyphenless example sentence was a typesetting artifact).
+
+#### Tests
+
+- `tests/tgllfg/test_phase10_y_prefix_vowel_hyphenation.py`
+  (new, 82 cases): policy-module sanity (disjoint families,
+  union = CC_FINAL_PREFIXES, predicate truth-table);
+  hyphenated-only family canonical surface + OOV-on-hyphenless;
+  dual-keyed family both-keys-present; CV unchanged; tokenizer
+  norm preserve/strip discrimination; multiword pre-pass
+  hyphen-aware fallback; alit/galit disambiguation sentry;
+  end-to-end parse smoke.
+- `tests/tgllfg/test_phase10_y_alit_smoke.py` (new, 14 cases):
+  `alit` VERB indexed under canonical hyphenated surfaces only;
+  hyphenless `nagalit` / `magalit` resolve to `galit` only;
+  end-to-end parses for `Nag-alit sila.` etc.; `galit` clauses
+  unchanged.
+
+9968 → 10064 tests (+96).
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —

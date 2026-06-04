@@ -93,8 +93,9 @@ def test_existing_root_optin_redup(surface: str, sem: str) -> None:
         ("gumalagala", "gala", "PFV", "CASUAL"),
         ("umuboubo", "ubo", "PFV", "ITER"),
         ("nagreklamoreklamo", "reklamo", "PFV", "ITER"),
-        ("nagartearte", "arte", "PFV", "ITER"),
-        ("nagaartearte", "arte", "IPFV", "ITER"),
+        # Phase 10.Y: vowel-initial root → hyphenated prefix
+        ("nag-artearte", "arte", "PFV", "ITER"),
+        ("nag-aartearte", "arte", "IPFV", "ITER"),
     ],
 )
 def test_new_root_inflected_moderative(

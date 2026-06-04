@@ -43,6 +43,7 @@ and :func:`split_apostrophe_y` in :mod:`tgllfg.text.clitics`
 import re
 
 from ..core.common import Token
+from ..morph.prefix_policy import CC_FINAL_PREFIXES
 
 # Tagalog verbal / derivational prefixes that conventionally attach
 # to vowel-initial stems with an orthographic hyphen. Listed longest-
@@ -75,6 +76,22 @@ _PAREN_REGION = re.compile(r"\s*\(\s*([^()]*?)\s*\)\s*")
 # delimiters AND content) from multi-word parentheticals (keep
 # content). See :func:`normalize_parens`.
 _SINGLE_WORD = re.compile(r"\w[\w-]*")
+
+# Phase 10.Y: CC-final-prefix-V tokens preserve their internal hyphen
+# in the ``norm`` (instead of stripping it). This aligns the tokenizer
+# norm with the new canonical surface keys emitted by
+# :mod:`tgllfg.morph.analyzer`'s ``prefix`` op (``mag-aral`` /
+# ``nag-uusap`` / ``naka-upo``) rather than the pre-10.Y hyphenless
+# index keys (``magaral`` / ``naguusap`` / ``nakaupo``). CV-final
+# prefix tokens (``ma-aga`` etc.) and compound nouns still strip the
+# hyphen so their hyphenless analyzer keys (``maaga`` / ``tabingdagat``)
+# continue to match. The CC_FINAL_PREFIXES set is the single source
+# of truth shared with the analyzer (see
+# :mod:`tgllfg.morph.prefix_policy`).
+_CC_FINAL_PFX_RE = re.compile(
+    rf"^({'|'.join(sorted(CC_FINAL_PREFIXES, key=len, reverse=True))})-[aeiou]\w*$",
+    re.IGNORECASE,
+)
 
 
 def normalize_parens(text: str) -> str:
@@ -129,14 +146,26 @@ def tokenize(s: str) -> list[Token]:
         t = m.group(0)
         # Strip INTERNAL hyphens from the norm (so the analyzer's
         # surface index, keyed on hyphen-free forms, finds tokens
-        # like ``Nag-uusap`` via norm ``naguusap``). Bare hyphens
+        # like ``ma-aga`` via norm ``maaga``). Bare hyphens
         # (length-1 ``-`` tokens) keep their norm as ``-`` so the
         # punctuation / arithmetic-minus path still sees them.
         # All-hyphen runs (``--`` / ``---``; the em-dash surrogate
         # added 9.X.c25) preserve their literal norm so the PUNCT
         # lex entry for ``--`` can match.
+        #
+        # Phase 10.Y exception: CC-final-prefix + vowel-initial-stem
+        # tokens (``mag-aral`` / ``nag-uusap`` / ``naka-upo`` /
+        # ``paki-abot``) PRESERVE the hyphen in the norm to match
+        # the new hyphenated canonical surface keys emitted by the
+        # analyzer's ``prefix`` op. The pre-10.Y norm-strip path
+        # still applies to CV-final-prefix tokens (``ma-aga`` →
+        # ``maaga``) and compound nouns (``tabing-dagat`` →
+        # ``tabingdagat``).
         if len(t) > 1 and "-" in t and t != "-" * len(t):
-            norm = t.lower().replace("-", "")
+            if _CC_FINAL_PFX_RE.match(t):
+                norm = t.lower()
+            else:
+                norm = t.lower().replace("-", "")
         else:
             norm = t.lower()
         out.append(Token(surface=t, norm=norm, start=m.start(), end=m.end()))

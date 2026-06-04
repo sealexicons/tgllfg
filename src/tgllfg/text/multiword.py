@@ -29,6 +29,7 @@ this layer (productive ``tag-`` / ``tig-`` / ``card_redup`` /
 """
 
 from ..core.common import Token
+from ..morph.prefix_policy import is_vowel_initial
 
 
 # Phase 10.J.post-12.4 — multi-word fixed expressions (MWEs) recognized
@@ -98,6 +99,29 @@ def merge_multiword_compounds(tokens: list[Token]) -> list[Token]:
     return out
 
 
+def _split_cc_prefix(text: str) -> tuple[str, str] | None:
+    """Phase 10.Y helper. If ``text`` is a hyphenless CC-final-prefix +
+    vowel-initial-stem form (``nagarte`` = ``nag`` + ``arte``;
+    ``nakaupo`` = ``naka`` + ``upo``), return the ``(prefix, base)``
+    split. Otherwise return ``None``. Used by
+    :func:`merge_hyphen_compounds` to try a hyphen-inserted variant
+    of an unrecognized hyphenless join when the analyzer's surface
+    index keys the form hyphenated. The closed
+    :data:`tgllfg.morph.prefix_policy.CC_FINAL_PREFIXES` set is
+    iterated longest-first to avoid ambiguous splits (``nakipag``
+    before ``nak`` etc.).
+    """
+    from ..morph.prefix_policy import CC_FINAL_PREFIXES
+    for prefix in sorted(CC_FINAL_PREFIXES, key=len, reverse=True):
+        if (
+            text.startswith(prefix)
+            and len(text) > len(prefix)
+            and is_vowel_initial(text[len(prefix):])
+        ):
+            return prefix, text[len(prefix):]
+    return None
+
+
 def merge_hyphen_compounds(tokens: list[Token]) -> list[Token]:
     """Collapse ``X``, ``-``, ``Y`` token triples into a single
     ``XY`` token when both flanking tokens are alphabetic and the
@@ -144,6 +168,36 @@ def merge_hyphen_compounds(tokens: list[Token]) -> list[Token]:
                 ))
                 i += 3
                 continue
+            # Phase 10.Y: when ``x`` is itself a CC-final-prefix + vowel-
+            # initial-stem form (``Nagarte`` = ``nag`` + ``arte``), the
+            # analyzer index now keys the inflected-moderative output
+            # under the hyphenated canonical form (``nag-artearte``,
+            # not ``nagartearte``). The hyphenless ``joined`` above
+            # doesn't hit; try the hyphen-inserted variant too. The
+            # hyphen-insertion split is unambiguous because
+            # :data:`CC_FINAL_PREFIXES` is a closed set and the regex
+            # matches longest-first.
+            prefix_split = _split_cc_prefix(x.surface.lower())
+            if prefix_split is not None:
+                prefix, base = prefix_split
+                joined_with_hyphen = f"{prefix}-{base}{y.surface.lower()}"
+                if analyzer.is_known_surface(joined_with_hyphen):
+                    # Preserve x.surface's original casing on the
+                    # emitted surface (mirrors the bare-join path's
+                    # ``surface=joined`` convention).
+                    cased_x_prefix = x.surface[: len(prefix)]
+                    cased_x_base = x.surface[len(prefix):]
+                    emitted_surface = (
+                        f"{cased_x_prefix}-{cased_x_base}{y.surface}"
+                    )
+                    out.append(Token(
+                        surface=emitted_surface,
+                        norm=joined_with_hyphen,
+                        start=x.start,
+                        end=y.end,
+                    ))
+                    i += 3
+                    continue
             # Bound -ng linker carve-out: ``kani-kaniyang`` →
             # ``kanikaniya`` + synthetic ``-ng`` linker token.
             if y.surface.lower().endswith("ng") and len(y.surface) > 2:

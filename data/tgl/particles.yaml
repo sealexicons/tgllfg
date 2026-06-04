@@ -2068,16 +2068,20 @@
 
 # === Phase 5n.A Commit 5: mag-isa "alone" manner adverb (§18 L60) ===========
 #
-# ``mag-isa`` "alone / by oneself" is a hyphenated manner adverb that
-# the default tokenizer splits on the hyphen into three tokens
-# (``mag``, ``-``, ``isa``). The lex carries the joined form
-# ``magisa`` so the Phase 5f Commit 14 ``merge_hyphen_compounds``
-# pre-pass collapses the three tokens into one ``magisa`` token; the
-# Phase 5j Commit 7 / Phase 5n.A Commit 4 LEMMA-collapse then maps the
-# analysis's ``lemma`` field to the canonical hyphenated form
-# ``mag-isa`` so the surface variant routes to a single canonical
-# entry. Same pattern as Phase 5m Commit 5's
-# ``paminsanminsan`` / ``LEMMA: paminsan-minsan``.
+# ``mag-isa`` "alone / by oneself" is a hyphenated manner adverb.
+#
+# Phase 5n.A original mechanism (now superseded by 10.Y): the
+# default tokenizer split ``mag-isa`` into three tokens, and the
+# multiword pre-pass collapsed them into one hyphenless ``magisa``
+# token; the lex carried the joined form ``magisa`` with
+# ``LEMMA: mag-isa`` to route to the canonical hyphenated form.
+#
+# Phase 10.Y: the tokenizer now preserves the hyphen in ``norm`` for
+# CC-final-prefix + vowel-initial-stem tokens (``mag-isa``), so the
+# lex surface is updated to the canonical hyphenated form
+# ``mag-isa``. The ``LEMMA`` feat continues to hold ``mag-isa``
+# (now surface=LEMMA, but kept for downstream f-struct consumers
+# that filter on LEMMA).
 #
 # The ``MAGISA: YES`` diagnostic flag is set so future grammar rules
 # can constrain on it specifically. ADV_TYPE=MANNER aligns the entry
@@ -2085,12 +2089,9 @@
 # taxonomy.
 #
 # Required for R&G "Ang Manok" simple #3 (``Nakatira siyang mag-isa
-# sa bahay.`` "He lives alone in the house"). The full integration
-# parse depends on Commit 6 (``nakatira`` resultative paradigm) and
-# Commit 7 (R&G simples #1/#3 unblock with ``mama`` lex). This
-# commit lands the lex + tokenizer piece in isolation. References:
+# sa bahay.`` "He lives alone in the house"). References:
 # S&O 1972 §3.5; R&G 1981 §6.6.
-- surface: magisa
+- surface: mag-isa
   pos: ADV
   feats: {ADV_TYPE: MANNER, MAGISA: true, LEMMA: mag-isa}
 

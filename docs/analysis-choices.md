@@ -18692,6 +18692,28 @@ Additive and per-root gated (no existing root declares the new
 `affix_class`), so no pre-existing parse changes; full-wave audit 0
 regressions.
 
+**Deferral closed in Phase 10.Y (2026-06-03).** The `alit` VERB ships
+under the new per-family policy in
+`src/tgllfg/morph/prefix_policy.py`: `mag`/`nag`/`pag` (and 5 derived
+prefixes) are now in `HYPHENATED_ONLY_PREFIXES` — they emit the
+hyphenated surface as the only canonical key, so `mag-alit` and
+`magalit` (= `ma`+`galit` ADJ-predicative) live under DISTINCT
+index slots; adding `alit` doesn't pollute the `galit` paradigm.
+The `maka`/`naka`/`paki`/`paka`/`mapa`/`napa`/`makipag`/`nakipag`/
+`magka`/`nagka`/`pagka` family is in `DUAL_KEYED_PREFIXES` —
+hyphenated canonical + hyphen-stripped back-compat key, since
+references are mixed on that family's orthography. CV-final
+prefixes (`ma`/`na`/`pa`/`ka`/`i`/`si`) stay out of scope: Tagalog
+never hyphenates these. Index growth: 7577 → 7815 (+238 entries,
+3.1%) — less than the +5.6% original estimate, because mag/nag/pag
+swaps are one-for-one (hyphenless key → hyphenated key, zero
+delta). Full-wave audit: 0 regressions / 0 closures / 0
+bucket-only shifts across all 9 waves + unattributed (one OCR fix
+on `Magipit ka ng buhok.` → `Mag-ipit ka ng buhok.`, matching the
+Ramos 1971 dictionary entry's own `/mag-/` morphological notation
+— gitignored .txt + .jsonl edit). See `docs/coverage.md` § Phase
+10.Y.
+
 ### Phase 10.G — lexicalized reduplication residue (2026-05-26)
 
 The close of the productive R-bucket leaves a residue of reduplicated

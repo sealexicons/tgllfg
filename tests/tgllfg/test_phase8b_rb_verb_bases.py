@@ -82,12 +82,12 @@ class TestPhase8bNewBasesAnalyze:
     based on the registered affix_class)."""
 
     @pytest.mark.parametrize("form,lemma", [
-        # Bucket A — 40 clean adds
-        ("nagaaksaya",     "aksaya"),
-        ("nagaalaala",     "alaala"),
-        ("nagaalaga",      "alaga"),
+        # Bucket A — 40 clean adds (Phase 10.Y: vowel-init mag/nag forms hyphenated)
+        ("nag-aaksaya",    "aksaya"),
+        ("nag-aalaala",    "alaala"),
+        ("nag-aalaga",     "alaga"),
         ("umaasa",         "asa"),
-        ("nagaaway",       "away"),
+        ("nag-aaway",      "away"),
         ("nagbabalita",    "balita"),
         ("nabuhay",        "buhay"),
         ("nagdidilig",     "dilig"),
@@ -121,7 +121,7 @@ class TestPhase8bNewBasesAnalyze:
         ("tumalon",        "talon"),
         ("tumanggap",      "tanggap"),
         ("nagturo",        "turo"),
-        ("nagumpisa",      "umpisa"),
+        ("nag-umpisa",     "umpisa"),
         # Bucket B — affix-OCR normalize
         ("lumalamig",      "lamig"),
         ("pumansin",       "pansin"),
