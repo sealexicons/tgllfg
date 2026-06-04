@@ -233,46 +233,147 @@ class TestSariliAtOVSubject:
         )
 
 
+# === Phase 11.B.2 C1 prereq: full voice_spec coverage =================
+#
+# The Phase 6.F L104 binding-rule generator at
+# ``cfg/control.py:1097-1186`` iterates over a 6-entry voice_specs
+# table — AV, OV plain (CAUS=NONE), OV causative (CAUS=DIRECT), DV
+# plain (CAUS=NONE), DV causative (CAUS=DIRECT), IV. Pre-11.B.2 the
+# regression suite pinned only AV (TestSariliAt{AV,OV}Object /
+# TestSariliAt{OV}Subject) and OV plain. The Phase 11.A audit
+# (``docs/fu-extension-audit.md`` §2.2) called out that the remaining
+# four voice_specs — OV-CAUS, DV-plain, DV-CAUS, IV — had **zero**
+# binding-rule tests, leaving the 11.B.2 24→~12 collapse exposed to
+# silent regression on the untested voices.
+#
+# This parametrized class fills that gap: both sarili-positions
+# (at-SUBJ, at-actor) for each of the four previously-untested
+# voice_specs, eight cases total. The OV-plain and AV rows are
+# already covered above; this class focuses on the gap.
+#
+# Each row asserts that **some** parse carries an ANTECEDENT feat on
+# the named reflexive GF, pointing at the named binder GF. The test
+# does NOT pin a specific parse index (multiple parses are emitted —
+# one per non-binding + binding rule).
+
+
+_VOICE_COVERAGE = [
+    # (label, sentence, sarili_gf, binder_gf)
+    # OV causative (CAUS=DIRECT, pa-OV-direct): causee=SUBJ via NOM;
+    # causer=OBJ-CAUSER via GEN. Examples use pa-kain "cause to eat".
+    ("OV-CAUS sarili-SUBJ",        "Pinakain niya ang sarili niya.",         "SUBJ",        "OBJ-CAUSER"),
+    ("OV-CAUS sarili-OBJ-CAUSER",  "Pinakain ng sarili niya si Juan.",       "OBJ-CAUSER",  "SUBJ"),
+    # DV plain (CAUS=NONE): recipient/location=SUBJ via NOM; actor=
+    # OBJ-AGENT via GEN. Examples use aral "teach" with -an PFV.
+    ("DV-plain sarili-SUBJ",       "Inaralan niya ang sarili niya.",         "SUBJ",        "OBJ-AGENT"),
+    ("DV-plain sarili-OBJ-AGENT",  "Inaralan ng sarili niya si Juan.",       "OBJ-AGENT",   "SUBJ"),
+    # DV causative (CAUS=DIRECT, pa-DV-direct, pa-X-an PFV): recipient/
+    # location=SUBJ via NOM; causer=OBJ-CAUSER via GEN. Examples use
+    # pa-kain-an "cause to eat at".
+    ("DV-CAUS sarili-SUBJ",        "Pinakainan niya ang sarili niya.",       "SUBJ",        "OBJ-CAUSER"),
+    ("DV-CAUS sarili-OBJ-CAUSER",  "Pinakainan ng sarili niya si Juan.",     "OBJ-CAUSER",  "SUBJ"),
+    # IV (CAUS=NONE): instrument=SUBJ via NOM; actor=OBJ-AGENT via GEN.
+    # Examples use ipam-bili "buy with".
+    ("IV sarili-SUBJ",             "Ipinambili niya ang sarili niya.",       "SUBJ",        "OBJ-AGENT"),
+    ("IV sarili-OBJ-AGENT",        "Ipinambili ng sarili niya ang pera.",    "OBJ-AGENT",   "SUBJ"),
+]
+
+
+class TestSariliBindingAllVoiceSpecs:
+    """Phase 11.B.2 C1 (prereq): full coverage across the binding-rule
+    generator's 6-entry voice_specs table. Closes the audit-identified
+    test-coverage gap (``docs/fu-extension-audit.md`` §2.2) on OV-CAUS,
+    DV-plain, DV-CAUS, IV — pre-11.B.2 these voices had **zero** tests
+    asserting that the matrix binding rule fires.
+
+    Each row exercises one (voice, sarili-position) combination; the
+    test asserts a parse exists where ``<sarili_gf>.ANTECEDENT`` is
+    reentrant with ``<binder_gf>``. This is the regression backstop
+    for the 11.B.2 24→~12 rule-collapse.
+    """
+
+    @pytest.mark.parametrize(
+        "label,sent,sarili_gf,binder_gf",
+        _VOICE_COVERAGE,
+        ids=[row[0] for row in _VOICE_COVERAGE],
+    )
+    def test_binding_fires_for_voice_spec(
+        self,
+        label: str,
+        sent: str,
+        sarili_gf: str,
+        binder_gf: str,
+    ) -> None:
+        parses = parse_text(sent)
+        assert parses, f"{label}: sentence failed to parse: {sent!r}"
+        bound = []
+        for _, fs, _, _ in parses:
+            sarili_node = fs.feats.get(sarili_gf)
+            if not isinstance(sarili_node, FStructure):
+                continue
+            ant = sarili_node.feats.get("ANTECEDENT")
+            if not isinstance(ant, FStructure):
+                continue
+            binder = fs.feats.get(binder_gf)
+            if isinstance(binder, FStructure) and binder.id == ant.id:
+                bound.append(fs)
+        assert bound, (
+            f"{label}: no parse has {sarili_gf}.ANTECEDENT reentrant "
+            f"with {binder_gf} for {sent!r} — the Phase 6.F L104 "
+            f"binding rule for this voice_spec did not fire"
+        )
+
+
 # === Cross-clausal binding: deferred ==================================
 
 
-class TestCrossClausalDeferred:
-    """**Deferred (Phase 7+ / corpus pressure).** Cross-clausal
-    binding — where ``sarili`` is inside an XCOMP body and the
-    binder is at the matrix level — is not handled by the Phase 6.F
-    matrix-rule binding equations. The matrix PSYCH-control rule
-    doesn't see the embedded sarili directly; binding would require
-    either:
+class TestCrossClausalProductive:
+    """Phase 11.B.2 (Candidate C in ``docs/fu-extension-audit.md``
+    §2.3): cross-clausal sarili binding fires productively. The
+    Phase 11.B.2 NP-layer inside-out binding (Candidate B; see
+    ``cfg/nominal.py`` "Phase 11.B.2 sarili anaphora binding") at
+    the embedded sarili NP uses ``((OBJ ↑) SUBJ)`` to find the
+    XCOMP f-structure that has the sarili NP as OBJ; under
+    functional control, the embedded XCOMP's SUBJ is
+    structure-shared with the matrix SUBJ, so the embedded
+    binding resolves to the matrix actor automatically.
 
-    1. **Inside-out FU designators** (e.g., ``((SUBJ ↑) GF)``-style)
-       — tgllfg's FU resolver is outside-in only. Adding inside-out
-       support is a Phase 7+ unifier extension. Or:
-    2. **Per-XCOMP binding rules** that traverse from the
-       S_XCOMP body up to the matrix's binder — voluminous, awaits
-       cross-clausal sarili surfacing in corpus.
+    **Closes** ``TestCrossClausalDeferred`` (pre-11.B.2 the test
+    asserted no binding today; the Phase 6.F matrix-rule mechanism
+    only fired on standalone clauses). The NP-layer 10.N inside-out
+    mechanism unifies cross-clausal and standalone binding under
+    one binding equation per sarili-NP-position; no XCOMP-specific
+    rules are needed.
 
-    The pinned test below confirms today's state: ``Gusto kong
-    kumain ng sarili ko.`` parses cleanly (the matrix gusto
-    PSYCH-control + embedded AV-trans with sarili at OBJ), but no
-    ANTECEDENT is set on the embedded sarili NP. The Phase 6.F C2
-    binding rule fires on standalone clauses (``Kumain ako ng
-    sarili ko.`` gets binding) but not on the embedded clause's
-    OBJ when the SUBJ is structure-shared via control."""
+    Example: ``Gusto kong kumain ng sarili ko.`` — the matrix gusto
+    PSYCH-control + embedded AV-trans with sarili at OBJ.
+    Embedded ``XCOMP.OBJ.ANTECEDENT`` resolves to matrix
+    ``SUBJ`` (the GEN-PRON ``ko``-as-clitic) via the inside-out
+    binding on the embedded sarili NP."""
 
-    def test_cross_clausal_no_binding_today(self) -> None:
+    def test_cross_clausal_binding_fires(self) -> None:
         parses = parse_text("Gusto kong kumain ng sarili ko.")
         assert parses, "cross-clausal surface should parse"
-        # No parse has binding on the embedded sarili-OBJ.
         bound = []
         for _, fs, _, _ in parses:
             xcomp = fs.feats.get("XCOMP")
-            if isinstance(xcomp, FStructure):
-                obj = xcomp.feats.get("OBJ")
-                if isinstance(obj, FStructure) and obj.feats.get("ANTECEDENT"):
-                    bound.append(fs)
-        assert not bound, (
-            "cross-clausal binding now fires — flip this test "
-            "and remove the TestCrossClausalDeferred docstring deferral"
+            if not isinstance(xcomp, FStructure):
+                continue
+            obj = xcomp.feats.get("OBJ")
+            if not isinstance(obj, FStructure):
+                continue
+            ant = obj.feats.get("ANTECEDENT")
+            if not isinstance(ant, FStructure):
+                continue
+            matrix_subj = fs.feats.get("SUBJ")
+            if isinstance(matrix_subj, FStructure) and matrix_subj.id == ant.id:
+                bound.append(fs)
+        assert bound, (
+            "cross-clausal binding did not fire — expected at least "
+            "one parse where XCOMP.OBJ.ANTECEDENT is reentrant with "
+            "the matrix SUBJ (functional-control structure-sharing "
+            "should make the inside-out ((OBJ ↑) SUBJ) on the embedded "
+            "sarili NP resolve to the matrix actor)"
         )
 
 
