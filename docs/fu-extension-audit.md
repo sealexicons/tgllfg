@@ -677,7 +677,80 @@ the §2.2 GEN-OBJ NP-layer rule which produces the same
 f-structure with broader applicability (not S_XCOMP-specific —
 any embedded sarili-OBJ position).
 
-### 2.4 Candidate D — Coordination CONJUNCTS inside-out (coordination.py)
+### 2.4 Candidate D — Coordination CONJUNCTS inside-out (coordination.py) (SHIPPED, narrowed)
+
+**Phase 11.B.4.chart shipping outcome (2026-06-04)**: shipped in
+**Phase 11.B.4.chart** (single sub-PR; c1 chart + c2 docs sweep).
+Scope landed is the **S_XCOMP_BARE_COORD pair only** (families 3 + 4
+in the table below). Families 1 + 2 (the `S_XCOMP` coord rules at
+`coordination.py:302-338`) are **NOT migrated** — implementation
+finding documented below.
+
+**What landed**: each of the 6 `S_XCOMP_BARE` rules at
+`coordination.py:412-455` gained two inside-out equations:
+
+```python
+"(↑ REL-PRO) = ((CONJUNCTS ↑) REL-PRO)",
+"(↑ SUBJ) = ((CONJUNCTS ↑) SUBJ)",
+```
+
+The corresponding `(↑ REL-PRO) = ↓N REL-PRO` and `(↑ SUBJ) = ↓N SUBJ`
+chains were removed from the 2 binary + 2 ternary
+`S_XCOMP_BARE_COORD` rules (× AND/OR = 4 rules total). Each conjunct's
+slots now bind to the parent COORD's slots via set-valued
+`parents_via` (Phase 11.B.4.eng, PR #207) rather than via
+COORD-rule chains.
+
+Net equation delta: -10 across the 4 coord rules (2-conj × 4-eq
+removed × 2 coords + 3-conj × 6-eq removed × 2 coords = 28
+removed), +12 on the 6 body rules (2 inside-out × 6 rules) =
+**-16 net equations**. Architectural simplification only — zero
+behavioral delta, as expected.
+
+**Probe parity** (`tmp/probe_s_xcomp_bare_baseline.py`,
+pre-flip vs post-flip):
+
+| Sentence | Parses | Conjuncts | SUBJ-id-share | REL-PRO-id-share |
+| --- | --- | --- | --- | --- |
+| `Tungkulin niyang aralin at pag-aralin si Pedro.` | 1 → 1 | 2 → 2 | yes → yes | yes → yes |
+| PAMILYA/sent-8 trimmed (3-conj) | 4 → 4 | 3 → 3 | yes → yes | yes → yes |
+
+All conjuncts share the same SUBJ-id and REL-PRO-id (full
+f-structure identity, not just feature-sharing), matching the
+pre-flip behavior exactly.
+
+**Implementation finding — S_XCOMP family NOT migrated**: the audit
+projected "all four collapse via body-level equations on the
+underlying S_XCOMP / S_XCOMP_BARE rule". Per-instance verification
+showed this is **only true for S_XCOMP_BARE**. The `S_XCOMP`
+non-terminal has many standalone consumers in `control.py` (every
+modal / PSYCH / TRANS / RAISING + the L47 wrap from 11.B.1), and a
+body-level inside-out on the S_XCOMP rule would fire on every
+standalone S_XCOMP and block all parses via
+`inside-out-no-parent` (the 11.B.4.eng failure mode is non-
+recoverable). The body-level inside-out only works on **coord-only
+non-terminals** — `S_XCOMP_BARE` qualifies (consumed only by the
+`S_XCOMP_BARE_COORD` rules in coordination.py); `S_XCOMP` does not.
+
+Families 1 + 2 (S_XCOMP coord at lines 302-338) therefore stay
+with the explicit `(↑ REL-PRO) = ↓N REL-PRO` chains on the COORD
+rule. The chain form remains the canonical pattern for coord rules
+whose conjunct body is shared between standalone and coord uses.
+
+**Reusable finding**: **body-level inside-out requires a
+coord-only daughter non-terminal**. If the daughter has standalone
+consumers, the inside-out blocks them. Factor out a
+`X_COORDABLE → X` wrapper if necessary — but cost-benefit is
+only positive when the equation count saved exceeds the
+non-terminal overhead.
+
+**Test-both**: 10136/10136 passed (was 10133 pre-11.B.4.chart;
++3 test-count drift, 0 regressions; existing fixtures cover the
+PAMILYA/sent-8 closure that motivated the original architecture).
+No new test fixtures added — the existing `test_phase10_x.py`
+PAMILYA/sent-8 closure tests anchor the f-structure shape, and
+probe-parity verification confirms identical SUBJ-id /
+REL-PRO-id sharing across conjuncts.
 
 **Form**: 10.N inside-out designators **+ engine extension to
 `parents_via` for set-valued features**.
@@ -1323,7 +1396,7 @@ rewritten.
 | **11.B.1** | **P0** | A: L47 `=c` → `=` swap | 10.M re-pass | 2-3 commits | none |
 | **11.B.2** | **P1** | B: Sarili 24-rule collapse + C: TestCrossClausalDeferred flip | 10.N inside-out | 4-6 commits | none |
 | **11.B.3** | **P1** | E: Purposive PRO binding + H-Class-3 subset (SHIPPED — PR pending) | 10.N inside-out | 1 sub-PR (c1 + c2 + c5) | 11.B.4.eng (PR #207, shipped) |
-| **11.B.4** | **P2** | D: Coordination CONJUNCTS inside-out | 10.N + set-valued `parents_via` | 2 sub-PRs (eng + chart) | self |
+| **11.B.4** | **P2** | D: Coordination CONJUNCTS inside-out (SHIPPED — narrowed to S_XCOMP_BARE only; S_XCOMP families 1+2 stay with explicit chains per implementation finding) | 10.N + set-valued `parents_via` | 2 sub-PRs (eng + chart) | self |
 | **11.B.5** | **P2** | §B.2: Cyclic-endpoint pruning (engine + canonical fixture) | U-bucket prototype | 2-3 commits | none |
 | **11.X** | **P2** | §3.5: Bare `Huwag + V[AV]` PRO injection (Phase 10 carry-forward) | PRO machinery design (non-FU) | 2-4 commits | none |
 | **11.final** | **P3** | Closure docs + explicit declines (§B.5 set complement, §B.6 defining-on-regex LHS) | docs-only | 1 commit | none |
