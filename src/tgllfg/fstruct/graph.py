@@ -703,10 +703,21 @@ class FGraph:
         equivalence). Deterministic insertion order — iteration over
         ``self._store`` follows CPython dict insertion order.
 
-        O(N) scan over the live store — sufficient for a prototype
-        (typical sentence f-graphs have ≤50 ComplexValue nodes); a
-        materialized reverse index can replace this if corpus pressure
-        on inside-out designators surfaces.
+        Phase 11.B.4.eng extends the scan to **set-valued feats**:
+        when ``v.attrs[feat]`` points to a :class:`SetValue`,
+        ``target`` may appear as one of its members rather than as
+        the direct edge endpoint. The extended scan checks both
+        cases — direct-edge equivalence (Phase 10.N original) and
+        set-membership (Phase 11.B.4.eng). The extension is
+        additive: existing direct-edge consumers (10.N's sarili and
+        L47-style use cases) see no behavior change. Audit doc:
+        ``docs/fu-extension-audit.md`` §B.1 (shipped Phase 11.B.4.eng).
+
+        O(N + sum-of-set-sizes) scan over the live store —
+        sufficient for prototype scale (typical sentence f-graphs
+        have ≤50 ComplexValue nodes and small ADJUNCT / CONJUNCTS
+        sets); a materialized reverse index can replace this if
+        corpus pressure on inside-out designators surfaces.
 
         Inside-out designators (Dalrymple 2001 ch. 14 / 15;
         ``(FEAT INNER)``-style surface form) need to traverse "upward"
@@ -716,9 +727,10 @@ class FGraph:
 
         Multiple parents are possible when the target node is
         structure-shared across f-structures (e.g., a SUBJ shared
-        between matrix and XCOMP via functional control); the prototype
-        returns all of them in insertion order, and the resolver picks
-        the first for the canonical inside-out result. K&Z 1989 §3
+        between matrix and XCOMP via functional control), or when the
+        target appears as a member of multiple set-valued feats; the
+        resolver returns all of them in insertion order and picks the
+        first for the canonical inside-out result. K&Z 1989 §3
         minimality on inside-out resolution is documented as future
         work — gated on corpus pressure.
         """
@@ -731,11 +743,24 @@ class FGraph:
             child = v.attrs.get(feat)
             if child is None:
                 continue
-            if self.find(child) == target_root:
-                n_root = self.find(n)
-                if n_root not in seen:
-                    seen.add(n_root)
-                    result.append(n_root)
+            child_value = self._store.get(self.find(child))
+            if isinstance(child_value, SetValue):
+                # Phase 11.B.4.eng: target may be a SetValue member.
+                # The SetValue's members are NodeIds that may not be
+                # canonical roots; canonicalize before comparison.
+                matched = any(
+                    self.find(m) == target_root
+                    for m in child_value.members
+                )
+                if not matched:
+                    continue
+            else:
+                if self.find(child) != target_root:
+                    continue
+            n_root = self.find(n)
+            if n_root not in seen:
+                seen.add(n_root)
+                result.append(n_root)
         return result
 
 

@@ -1839,3 +1839,180 @@ class TestInsideOutDesignators:
         # tested in the parser tests; here we ensure the FGraph the
         # parser builds is consumable by the resolver.
         assert _blocking(result) == []
+
+
+class TestParentsViaSetValued:
+    """Phase 11.B.4.eng: ``FGraph.parents_via`` extended to scan
+    ``SetValue`` members. Pre-11.B.4.eng the lookup only handled
+    direct-edge ``ComplexValue.attrs`` mappings; this extension lets
+    inside-out designators resolve through set-valued feats like
+    ``ADJUNCT``, ``CONJUNCTS``, ``ADJ``.
+
+    Canonical motivator (Dalrymple 2001 §15 / Phase 11.A audit
+    §B.1): set-valued binding for SubordClause-style adjuncts where
+    the matrix-as-parent relationship is mediated by set membership
+    rather than direct-edge attribute. The Phase 11.B.3 purposive
+    PRO consumer (``cfg/subordination.py``) and the Phase 11.B.4.chart
+    coordination CONJUNCTS consumer (``cfg/coordination.py``)
+    depend on this extension; the engine ships first per the
+    U-bucket cadence.
+    """
+
+    def test_inside_out_via_set_member_matches(self) -> None:
+        """``((ADJUNCT ↑) MARKER)`` placed on the CHILD: inside-out
+        finds the parent f-structure whose ADJUNCT set contains
+        ↑. Setup: ``parent.ADJUNCT = {child}``; the child's
+        ``((ADJUNCT ↑) MARKER)`` finds the parent and verifies
+        parent.MARKER exists."""
+        child = CNode(
+            label="CHILD",
+            equations=[
+                "((ADJUNCT ↑) MARKER)",  # parent.MARKER must exist
+            ],
+        )
+        parent = CNode(
+            label="PARENT",
+            equations=[
+                "↓1 ∈ (↑ ADJUNCT)",         # parent.ADJUNCT ∋ child
+                "(↑ MARKER) = 'set'",
+            ],
+            children=[child],
+        )
+        result = solve(parent)
+        assert _blocking(result) == [], (
+            f"inside-out via set-member should resolve; got "
+            f"blocking: {_blocking(result)}"
+        )
+
+    def test_inside_out_via_set_member_no_parent_fails(self) -> None:
+        """When no f-structure has the inner target in its ADJUNCT
+        set, the inside-out lookup fails with
+        ``inside-out-no-parent``."""
+        # A standalone CNode with no parent whose ADJUNCT contains it.
+        n = CNode(
+            label="N",
+            equations=[
+                # ↑ is N's f-structure; nothing has ↑ as an ADJUNCT
+                # member.
+                "((ADJUNCT ↑) MARKER)",
+            ],
+        )
+        result = solve(n)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "inside-out-no-parent" in kinds, (
+            f"expected inside-out-no-parent; got kinds: {kinds}"
+        )
+
+    def test_inside_out_via_set_member_with_outside_in_path(self) -> None:
+        """``((ADJUNCT ↑) FOO) =c 'X'`` on the CHILD: inside-out
+        finds the parent (whose ADJUNCT contains me); outside-in
+        ``FOO`` reaches an atom on the parent; constraining check
+        verifies the atom matches."""
+        child = CNode(
+            label="CHILD",
+            equations=[
+                "((ADJUNCT ↑) FOO) =c 'X'",
+            ],
+        )
+        wrap = CNode(
+            label="WRAP",
+            equations=[
+                "↓1 ∈ (↑ ADJUNCT)",
+                "(↑ FOO) = 'X'",
+            ],
+            children=[child],
+        )
+        result = solve(wrap)
+        assert _blocking(result) == [], (
+            f"inside-out via set + outside-in constraining check "
+            f"should hold; got blocking: {_blocking(result)}"
+        )
+
+    def test_inside_out_via_set_member_atom_mismatch(self) -> None:
+        """Same setup as above but the constraining check's RHS
+        doesn't match — fail with constraint-failed."""
+        child = CNode(
+            label="CHILD",
+            equations=[
+                "((ADJUNCT ↑) FOO) =c 'Y'",  # expects 'Y' but FOO = 'X'
+            ],
+        )
+        wrap = CNode(
+            label="WRAP",
+            equations=[
+                "↓1 ∈ (↑ ADJUNCT)",
+                "(↑ FOO) = 'X'",
+            ],
+            children=[child],
+        )
+        result = solve(wrap)
+        kinds = {d.kind for d in result.diagnostics}
+        assert "constraint-failed" in kinds
+
+    def test_inside_out_via_set_member_multi_parent(self) -> None:
+        """A target node that's a member of MULTIPLE set-valued feats
+        across different parents resolves to the first parent in
+        deterministic insertion order. Setup mirrors the canonical
+        Dalrymple 2001 §15 binding example where a shared adjunct
+        appears in two clauses' ADJUNCT sets.
+
+        End-to-end: build a c-tree where parent1 and parent2 both
+        have the same shared CHILD f-structure in their ADJUNCT sets;
+        the inside-out resolves cleanly without blocking. (The
+        specific parent picked is an implementation detail —
+        insertion order — and this test asserts non-blocking
+        rather than committing to which parent comes first.)
+        """
+        shared_child = CNode(
+            label="SHARED",
+            equations=[
+                "((ADJUNCT ↑) MARKER)",  # must succeed for at least one parent
+            ],
+        )
+        parent2 = CNode(
+            label="PARENT2",
+            equations=[
+                "↓1 ∈ (↑ ADJUNCT)",
+                "(↑ MARKER) = 'P2'",
+            ],
+            children=[shared_child],
+        )
+        wrap = CNode(
+            label="WRAP",
+            equations=[
+                "↓1 ∈ (↑ ADJUNCT)",       # wrap.ADJUNCT ∋ shared_child
+                "(↑ MARKER) = 'WRAP'",
+                "↓1 = (↓2 ADJUNCT_MEM)",  # also share via parent2's tree
+            ],
+            children=[shared_child, parent2],
+        )
+        result = solve(wrap)
+        assert _blocking(result) == [], (
+            f"inside-out via set with multi-parent should resolve to "
+            f"first parent without blocking; got: {_blocking(result)}"
+        )
+
+    def test_inside_out_via_set_backward_compat_direct_edge(self) -> None:
+        """Phase 10.N direct-edge inside-out continues to work after
+        the Phase 11.B.4.eng extension. Same setup as
+        TestInsideOutDesignators::test_existential_inside_out_satisfied
+        — verifies the additive nature of the extension."""
+        child = CNode(
+            label="CHILD",
+            equations=[
+                "((SUBJ ↑) MARKER)",  # parent.MARKER must exist
+            ],
+        )
+        parent = CNode(
+            label="PARENT",
+            equations=[
+                "(↑ SUBJ) = ↓1",       # parent.SUBJ = child (direct edge)
+                "(↑ MARKER) = 'set'",
+            ],
+            children=[child],
+        )
+        result = solve(parent)
+        assert _blocking(result) == [], (
+            f"direct-edge inside-out (10.N) should still resolve "
+            f"after 11.B.4.eng; got blocking: {_blocking(result)}"
+        )
