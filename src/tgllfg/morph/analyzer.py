@@ -52,6 +52,10 @@ from .paradigms import (
     ParadigmCell,
     Root,
 )
+from .prefix_policy import (
+    DUAL_KEYED_PREFIXES,
+    should_hyphenate,
+)
 from .sandhi import (
     attach_suffix,
     cv2_reduplicate,
@@ -287,12 +291,53 @@ def _apply(
             medial_vowel_syncope="medial_vowel_syncope" in flags,
         )
     if op.op == "prefix":
+        # Phase 10.Y: orthographic hyphen at the prefix-base boundary
+        # for closed-CC prefixes (``mag``/``nag``/``pag`` family +
+        # ``maka``/``naka``/``paki`` family) attaching to a vowel-
+        # initial base. ``mag`` + ``aral`` → ``mag-aral`` (not
+        # ``magaral``). CV-final prefixes (``ma``/``na``/``pa``/``ka``/
+        # ``i``/``si``) plain-concatenate as before. Policy lives in
+        # :mod:`tgllfg.morph.prefix_policy`; flipping the policy is a
+        # single-module edit.
+        if should_hyphenate(op.value, base):
+            return op.value + "-" + base
         return op.value + base
     if op.op == "nasal_substitute":
         return nasal_substitute(base)
     if op.op == "nasal_assim_prefix":
         return nasal_assim_prefix(op.value, base)
     raise ValueError(f"unknown operation: {op.op!r}")
+
+
+# === Phase 10.Y: surface-index dual-key helper ===========================
+
+def _dual_index_surface(
+    index: dict[str, list[MorphAnalysis]],
+    surface: str,
+    analysis: MorphAnalysis,
+) -> None:
+    """Index ``analysis`` under ``surface``. If the surface is a
+    hyphenated CC-final-prefix + vowel-init form whose prefix is in
+    the :data:`DUAL_KEYED_PREFIXES` family (``naka-upo`` /
+    ``paki-abot`` / ``maka-akyat``), ALSO index under the hyphen-
+    stripped form (``nakaupo`` / ``pakiabot`` / ``makaakyat``) so
+    legacy hyphenless input continues to resolve. Surfaces from the
+    :data:`HYPHENATED_ONLY_PREFIXES` family (``mag-aral`` /
+    ``nag-uusap``) index under the hyphenated key ONLY (the
+    disambiguation lever for ``alit`` "quarrel" vs ``galit``
+    "anger"). Non-hyphenated surfaces and hyphenated non-prefix-V
+    surfaces (compounds like ``tabing-dagat`` after the multi-word
+    pre-pass) index under the single key. The set membership tests
+    are constant-time frozenset lookups; the helper adds at most
+    one extra key per affected surface."""
+    index.setdefault(surface, []).append(analysis)
+    if "-" not in surface:
+        return
+    prefix = surface.split("-", 1)[0]
+    if prefix in DUAL_KEYED_PREFIXES:
+        stripped = surface.replace("-", "")
+        if stripped != surface:
+            index.setdefault(stripped, []).append(analysis)
 
 
 # === Analyzer state =======================================================
@@ -794,9 +839,9 @@ class Analyzer:
                 feats=feats,
             )
             if out_pos == "NOUN":
-                self._index.nouns.setdefault(surface, []).append(analysis)
+                _dual_index_surface(self._index.nouns, surface, analysis)
             elif out_pos == "ADJ":
-                self._index.adjectives.setdefault(surface, []).append(analysis)
+                _dual_index_surface(self._index.adjectives, surface, analysis)
             elif out_pos == "VERB":
                 # Phase 10.J.post-12.12: NOUN → VERB POS-flip cells
                 # (the new ``makipag_n`` AV-INTERACTION cell whose
@@ -805,7 +850,7 @@ class Analyzer:
                 # Routes the derived surface into the verb_forms index
                 # so the analyzer's lookup finds it alongside standard
                 # paradigm-generated verb forms.
-                self._index.verb_forms.setdefault(surface, []).append(analysis)
+                _dual_index_surface(self._index.verb_forms, surface, analysis)
             elif out_pos == "NUM":
                 # Phase 5n.C.3 Commit 3: derived NUM surfaces are
                 # indexed into the particles table — this is where
@@ -905,7 +950,9 @@ class Analyzer:
             canonical_lemma = feats.get("LEMMA", root.citation)
             if not isinstance(canonical_lemma, str):
                 canonical_lemma = root.citation
-            self._index.adjectives.setdefault(surface, []).append(
+            _dual_index_surface(
+                self._index.adjectives,
+                surface,
                 MorphAnalysis(
                     lemma=canonical_lemma,
                     pos="ADJ",
@@ -1008,7 +1055,7 @@ class Analyzer:
             # cell (both ``-h-`` and ``-n-`` epenthesis variants
             # indexed — ``natutuhan`` / ``natutunan``).
             for surface in (s.lower() for s in surfaces):
-                self._index.verb_forms.setdefault(surface, []).append(analysis)
+                _dual_index_surface(self._index.verb_forms, surface, analysis)
             # Use the primary (cluster-preserved when applicable)
             # surface as the canonical handle for the downstream
             # moderative/iterative-redup index that follows.
@@ -1040,12 +1087,12 @@ class Analyzer:
                 redup_feats = dict(feats)
                 redup_feats["REDUP"] = "FULL"
                 redup_feats["REDUP_SEM"] = redup_sem
-                self._index.verb_forms.setdefault(
-                    surface + root.citation, []
-                ).append(
+                _dual_index_surface(
+                    self._index.verb_forms,
+                    surface + root.citation,
                     MorphAnalysis(
                         lemma=canonical_lemma, pos="VERB", feats=redup_feats
-                    )
+                    ),
                 )
 
 
