@@ -593,6 +593,23 @@ the shipping outcome and the two blockers (LHS-regex `=c` not
 implemented; dual unconditional bindings clash with occurs-check)
 that ruled out the audit-proposed matrix-rule mechanism.
 
+**Phase 11.B.3 — second set-valued chart consumer (2026-06-04).**
+The purposive PRO placeholder in `cfg/subordination.py:458-501`
+migrates from 4 instances of `(↑ SUBJ PRED) = 'PRO'` to
+`(↑ SUBJ) = ((ADJUNCT ↑) SUBJ)` — the SubordClause's SUBJ slot
+unifies with the matrix's SUBJ via set-valued `parents_via` on
+`ADJUNCT` (the SubordClause becomes a member of the matrix's
+ADJUNCT set per `subordination.py:169 / :188 / :217`). Uses
+Phase 11.B.4.eng's set-valued extension; binding is established
+at the f-graph via deferred 10.M re-pass once the matrix
+attachment fires. Closes Candidate E (purposive PRO) and the
+Class-3 subset of Candidate H (broader PRO sweep) in
+`docs/fu-extension-audit.md` §2.5 / §2.8. The Class-3 subset
+turned out to be purposive-only (4 sites) — `docs/fu-extension-audit.md`
+Appendix C is the per-instance classification of all 46 PRO
+equations across cfg/ that established the 32/10/4 distribution.
+Net rule-count delta: 0 (in-place equation swap).
+
 ### 7.5 Source citations
 
 - **Schachter & Otanes 1972** ch. 5 (voice system).
