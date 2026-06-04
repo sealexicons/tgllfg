@@ -560,6 +560,24 @@ the inner target, the resolver returns a diagnostic with kind
 inside-out failures block the parse with the same semantics as
 `constraint-failed` for binding-related failures.
 
+**Phase 11.B.2 — first chart consumer (2026-06-04).** The sarili
+anaphora binding (Phase 6.F L104) migrates from 24 matrix-rule
+variants in `cfg/control.py:1097-1186` to 4 NP-layer rules in
+`cfg/nominal.py` parallel to the canonical NP-possessor rule.
+The NOM-sarili variant uses
+`(↑ ANTECEDENT) = ((SUBJ ↑) {OBJ | OBJ-AGENT | OBJ-CAUSER})`
+(combining inside-out + RHS outside-in alternation); 3 GEN-sarili
+variants use `(↑ ANTECEDENT) = ((<feat> ↑) SUBJ)` for `<feat>` ∈
+`{OBJ, OBJ-AGENT, OBJ-CAUSER}` (one per possible matrix-consumer
+feat, since the InsideOut AST node holds a single feat name). Net
+rule-count delta: -20. Closes Candidate B (24→4 collapse) and
+Candidate C (cross-clausal sarili — productively binds via
+inside-out + XCOMP functional control structure-sharing) in
+`docs/fu-extension-audit.md` §2.2 / §2.3. See those sections for
+the shipping outcome and the two blockers (LHS-regex `=c` not
+implemented; dual unconditional bindings clash with occurs-check)
+that ruled out the audit-proposed matrix-rule mechanism.
+
 ### 7.5 Source citations
 
 - **Schachter & Otanes 1972** ch. 5 (voice system).

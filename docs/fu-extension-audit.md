@@ -417,6 +417,133 @@ required**.
 - Commit 5-6: docs (`docs/fu-evaluation.md` §7.4.1 update; new
   callout about chart consumer #1); cross-references.
 
+**Phase 11.B.2 shipping outcome (2026-06-04)**. Shipped as a
+**24→4 collapse** via **NP-layer 10.N inside-out**, not as the
+audit-proposed matrix-rule 24→12 alternation collapse. Two blockers
+surfaced during the spike that made the audit's matrix-rule
+mechanism infeasible without engine work:
+
+1. **LHS regex on `=c` is silently deferred.** `unify.py:684`
+   dispatches only RHS regex through `resolve_regex_for_read`; the
+   LHS path goes through `_resolve_for_read` → `_path_features`,
+   which emits a `"deferred"` diagnostic for any regex element
+   (alternation, Kleene). `docs/fu-evaluation.md` §8.1 promised
+   "If LHS or RHS contains regex, route through
+   `_resolve_regex_for_read`" but the LHS dispatch never landed
+   (§5.1 design says LHS is "no regex; today's lookup_path path",
+   matching the actual implementation). Probe:
+   `(↑ {SUBJ | OBJ-AGENT} LEMMA) =c 'sarili'` evaluates as
+   vacuously-true (constraint silently ignored).
+2. **Dual unconditional bindings between sibling GFs trigger
+   occurs-check cycles.** Even with the LHS-regex extension,
+   emitting both `(↑ SUBJ ANTECEDENT) = (↑ OBJ)` AND
+   `(↑ OBJ ANTECEDENT) = (↑ SUBJ)` from a single rule clashes
+   with the atomic-unify occurs-check (the 2-cycle through
+   ANTECEDENT edges is detected and rejected). Verified
+   independently of the gate.
+
+The audit's matrix-rule mechanism required either an engine
+extension (LHS-regex `=c` dispatch) plus a conditional-equation
+language feature tgllfg does not have (off-path-on-binding-equation
+silent-skip semantics). Both are out of scope for an audit-driven
+opt-in. Instead, the shipped mechanism uses ONLY shipped engine
+forms (10.N inside-out + 6.B outside-in alternation).
+
+**Mechanism (as shipped).** Move binding from 24 matrix rules to
+**4 NP-layer rules** parallel to the canonical NP-possessor rule
+at `cfg/nominal.py:1216`. Tagalog reflexives always carry a
+possessor pronoun (`sarili niya`, etc.) per Schachter & Otanes
+1972 §3.5, so the POSS rule is the c-structure path through which
+every sarili NP composes. The 4 sarili-aware variants:
+
+```python
+# NOM-sarili at SUBJ (depth-1 alternation picks the existing actor
+# slot per voice — AV→OBJ, OV-plain/DV-plain/IV→OBJ-AGENT,
+# OV-CAUS/DV-CAUS→OBJ-CAUSER):
+rules.append(Rule(
+    "NP[CASE=NOM]",
+    ["NP[CASE=NOM]", "NP[CASE=GEN]"],
+    [
+        "(↑) = ↓1", "(↑ POSS) = ↓2",
+        "¬ (↑ POSS-EXTRACTED)", "¬ (↓2 MEASURE)",
+        "(↑ LEMMA) =c 'sarili'",
+        "(↑ ANTECEDENT) = ((SUBJ ↑) {OBJ | OBJ-AGENT | OBJ-CAUSER})",
+    ],
+))
+# GEN-sarili: 3 variants per possible matrix-consumer feat
+# (InsideOut AST holds a single feat name in the shipped engine).
+for feat in ("OBJ", "OBJ-AGENT", "OBJ-CAUSER"):
+    rules.append(Rule(
+        "NP[CASE=GEN]",
+        ["NP[CASE=GEN]", "NP[CASE=GEN]"],
+        [
+            "(↑) = ↓1", "(↑ POSS) = ↓2",
+            "¬ (↑ POSS-EXTRACTED)", "¬ (↓2 MEASURE)",
+            "(↑ LEMMA) =c 'sarili'",
+            f"(↑ ANTECEDENT) = (({feat} ↑) SUBJ)",
+        ],
+    ))
+```
+
+The 24 matrix rules in `cfg/control.py:1097-1186` are removed
+(only the 12 non-binding matrix transitive rules remain, handling
+the matrix GF assignments unchanged). The binding now fires at
+the reflexive NP's own f-structure via inside-out ANTECEDENT
+binding — the canonical Dalrymple 2001 §14-15 reflexive idiom.
+
+**Wrap-pattern dead-end**. The initial spike attempted a generic
+`NP[CASE=X] → NP[CASE=X]` wrap with `¬ (↑ ANTECEDENT)` re-wrap
+guard. Earley per-edge dedup prevented chart-level re-firing, but
+`_iter_cnodes` forest enumeration recursed infinitely on the
+NP→NP loop (`RecursionError`). The POSS-rule-parallel design
+(daughter pattern is NP+NP, not NP) avoids the cycle by being
+c-structurally distinct from its own LHS.
+
+**Rule-count delta (as shipped)**: -20 (24 matrix rules removed;
+4 NP-layer rules added). The audit's projected ~24→~12 became
+**~24→~4** because moving to the NP layer collapses BOTH the
+position dimension AND the NP-order dimension (NP rules don't
+depend on the matrix's NP order — the POSS-rule composition is
+order-independent). The aggressive 24→6 collapse path (audit
+§B.2 cyclic-endpoint pruning, scheduled as 11.B.5) is now moot —
+the realistic delivery exceeds it.
+
+**Behavioral delta**: simplification + **closes Candidate C as a
+side effect** (see §2.3 below). The NP-layer mechanism's
+`((OBJ ↑) SUBJ)` inside-out at an embedded sarili NP finds the
+XCOMP f-structure; under functional control, XCOMP.SUBJ is
+structure-shared with matrix.SUBJ, so the binding resolves to
+the matrix actor unambiguously. Cross-clausal sarili (e.g.,
+`Gusto kong kumain ng sarili ko.`) productively binds without
+any S_XCOMP-specific rule.
+
+**Audit corpus**: no closure delta in either direction (the
+matrix-rule and NP-layer mechanisms produce semantically
+equivalent f-structures for sarili-containing audit-corpus
+sentences). The test-coverage prereq (commit 1; 8 new cases
+across the 4 previously-untested voice_specs) verifies the
+collapse preserves all 24 binding paths.
+
+**Sub-PR shape (as shipped)**: 2 commits, not the 4-6 originally
+planned. The architectural simplification of NP-layer over
+matrix-layer compressed the work:
+
+- **Commit 1** (chart + tests): `cfg/nominal.py` adds 4 sarili
+  NP rules; `cfg/control.py` removes the 24 matrix rules and
+  the comment block (≈100 LOC); `tests/tgllfg/test_phase5m_reflexive_sarili.py`
+  adds `TestSariliBindingAllVoiceSpecs` (the 8-case voice-coverage
+  prereq) and flips `TestCrossClausalDeferred` →
+  `TestCrossClausalProductive` (the side-effect closure of
+  Candidate C).
+- **Commit 2** (docs): this §2.2 outcome + §2.3 closure note +
+  `docs/fu-evaluation.md` §7.4.1 first-chart-consumer update +
+  `docs/analysis-choices.md` Phase 6.F architectural note +
+  `.claude/plans/tgllfg-phase-11.md` §3.2 and §3.8.
+
+**Test gates**: `hatch run test-both` 10115/10115 in 174.89s
+(was 10107 pre-11.B.2; +8 voice-coverage cases, 0 regressions,
++0 net from the flipped test).
+
 ### 2.3 Candidate C — TestCrossClausalDeferred xfail flip
 
 **Form**: 10.N inside-out designators.
@@ -511,6 +638,44 @@ this candidate because the engine extension is already shipped
 and the chart-side cost is small. The per-XCOMP alternative
 remains parked as a fallback if the inside-out approach surfaces
 unexpected ambiguity.
+
+**Phase 11.B.2 shipping outcome (2026-06-04)**. Closed **as a
+side effect** of the §2.2 Candidate B NP-layer collapse, not
+via the planned S_XCOMP-rule change. The 4 NP-layer sarili
+rules use `((<feat> ↑) SUBJ)` for GEN-sarili variants and
+`((SUBJ ↑) {OBJ | OBJ-AGENT | OBJ-CAUSER})` for the NOM
+variant. When the sarili NP is embedded inside an XCOMP body
+(e.g., `Gusto kong kumain ng sarili ko.` — the embedded
+`ng sarili ko` is the XCOMP's OBJ), the GEN-OBJ variant fires
+with `((OBJ ↑) SUBJ)`:
+
+- `(OBJ ↑)` finds the f-structure F such that F.OBJ = sarili
+  NP. F is the embedded XCOMP (`kumain ng sarili ko`).
+- F.SUBJ — XCOMP's SUBJ. Under functional control (matrix
+  PSYCH-control sets `(↑ XCOMP SUBJ) = (↑ SUBJ)`), the
+  embedded SUBJ is structure-shared with the matrix SUBJ.
+  So XCOMP.SUBJ ≡ matrix.SUBJ ≡ the GEN-PRON `ko` (the
+  matrix actor).
+- Binding writes `↑.ANTECEDENT = matrix.SUBJ` — exactly the
+  desired cross-clausal binding.
+
+The Phase 6.F matrix-rule mechanism only fired on standalone
+clauses (the matrix rule literally didn't see the embedded
+sarili). The NP-layer mechanism makes this work transparently:
+the binding equation lives at the reflexive NP's own
+c-structure, so it fires regardless of how deeply the NP is
+embedded, as long as the inside-out designator can find the
+appropriate parent.
+
+**Test transition**: `TestCrossClausalDeferred` (pre-11.B.2:
+asserts no binding fires) → `TestCrossClausalProductive`
+(post-11.B.2: asserts binding fires and is reentrant with the
+matrix SUBJ). No S_XCOMP-specific rule changes were needed —
+the audit's planned binding equation `(↑ OBJ ANTECEDENT) =
+((SUBJ ↑) SUBJ)` on the embedded S_XCOMP rule is replaced by
+the §2.2 GEN-OBJ NP-layer rule which produces the same
+f-structure with broader applicability (not S_XCOMP-specific —
+any embedded sarili-OBJ position).
 
 ### 2.4 Candidate D — Coordination CONJUNCTS inside-out (coordination.py)
 

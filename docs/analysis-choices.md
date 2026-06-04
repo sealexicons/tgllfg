@@ -12939,6 +12939,96 @@ deferrals introduced beyond the cross-clausal item already
 itemized in *Out of scope* above (and the Phase 7+
 inside-out-FU / resolver-side-cyclic-pruning entries from C1).
 
+### Phase 11.B.2 architectural update (2026-06-04)
+
+The Phase 6.F 24-rule matrix-layer binding architecture is
+**superseded** by Phase 11.B.2's NP-layer 10.N inside-out
+mechanism. Closes Candidate B (24→4 rule collapse) and
+Candidate C (cross-clausal sarili) in
+``docs/fu-extension-audit.md`` §2.2 / §2.3.
+
+**What changed**. The 24 matrix-rule binding variants in
+``cfg/control.py:1097-1186`` are removed. Replaced by 4
+NP-layer rules in ``cfg/nominal.py`` parallel to the canonical
+NP-possessor rule, each gated on ``(↑ LEMMA) =c 'sarili'`` and
+carrying a 10.N inside-out binding equation:
+
+```text
+# NOM-sarili at SUBJ — outside-in alternation picks the
+# matrix's actor slot per voice:
+(↑ ANTECEDENT) = ((SUBJ ↑) {OBJ | OBJ-AGENT | OBJ-CAUSER})
+
+# GEN-sarili — 3 variants per possible inside-out feat:
+(↑ ANTECEDENT) = ((OBJ ↑) SUBJ)        # AV
+(↑ ANTECEDENT) = ((OBJ-AGENT ↑) SUBJ)  # OV-plain / DV-plain / IV
+(↑ ANTECEDENT) = ((OBJ-CAUSER ↑) SUBJ) # OV-CAUS / DV-CAUS
+```
+
+**Why architectural**. The matrix-layer mechanism placed
+binding equations on each transitive rule (24 variants) per
+voice / NP-order / sarili-position. The NP-layer mechanism
+places binding at the reflexive NP's own f-structure — the
+canonical Dalrymple 2001 §14-15 LFG reflexive idiom. Three
+properties drop out:
+
+- **Cross-clausal sarili binds automatically.** The inside-out
+  ``(OBJ ↑)`` at an embedded sarili-OBJ NP finds the XCOMP
+  f-structure; functional control makes XCOMP.SUBJ ≡ matrix.SUBJ;
+  the binding resolves to the matrix actor without any
+  S_XCOMP-specific rule. Closes the C3 cross-clausal deferral.
+- **Voice independence.** The NP-layer rule doesn't enumerate
+  voice_specs — the outside-in alternation ``{OBJ | OBJ-AGENT |
+  OBJ-CAUSER}`` lets the matrix's actual voice select the
+  appropriate binder slot.
+- **NP-order independence.** The matrix's NP-order is c-structural
+  (which daughter comes first); the NP-layer rule sees only the
+  f-structure-level inside-out relationship.
+
+**Why not the audit's matrix-rule mechanism**. The audit (§2.2)
+proposed a matrix-rule alternation gate
+``(↑ {SUBJ | obj_target} LEMMA) =c 'sarili'`` for a ~24→~12
+collapse. Two independent blockers ruled this out during the
+11.B.2 spike:
+
+1. **LHS regex on ``=c`` is silently deferred.** The FU
+   resolver in ``unify.py:684`` dispatches only RHS regex
+   through ``resolve_regex_for_read``; LHS regex hits the
+   legacy ``_path_features`` "deferred" path, making the
+   alternation gate vacuously-true. ``docs/fu-evaluation.md``
+   §8.1 promised LHS dispatch; never implemented.
+2. **Dual unconditional bindings clash with occurs-check.**
+   Emitting both ``(↑ SUBJ ANTECEDENT) = (↑ OBJ)`` AND
+   ``(↑ OBJ ANTECEDENT) = (↑ SUBJ)`` from one rule creates a
+   2-cycle through ANTECEDENT edges; atomic-unify rejects.
+   Verified independently of the gate.
+
+The NP-layer mechanism uses ONLY shipped engine forms (10.N
+inside-out + 6.B outside-in alternation) — no engine work
+needed, ~24→~4 collapse, both Candidate B and C closed.
+
+**Tests**. ``TestSariliBindingAllVoiceSpecs`` (Phase 11.B.2 C1
+prereq) adds 8 voice-coverage cases across the 4
+previously-untested voice_specs (OV-CAUS, DV-plain, DV-CAUS,
+IV) ensuring the collapse preserves all 24 binding paths.
+``TestCrossClausalDeferred`` flipped to
+``TestCrossClausalProductive`` (the cross-clausal binding now
+fires productively via inside-out + XCOMP control).
+
+**Test gates**. ``hatch run test-both`` 10115/10115 in 174.89s.
+
+**Status of original Phase 6.F deferrals**:
+
+- ~~Cross-clausal binding (inside-out FU or per-XCOMP rules)~~ —
+  closed by the NP-layer 10.N inside-out mechanism above.
+- ~~Resolver-side cyclic-endpoint pruning~~ — no longer needed
+  for the realistic collapse (audit doc §B.2 / 11.B.5 reserves
+  it as a future engine prototype, not gated on this work).
+
+Cross-references: ``docs/fu-evaluation.md`` §7.4.1 (first
+10.N chart consumer note); ``docs/fu-extension-audit.md``
+§2.2 / §2.3 shipping outcomes (canonical write-up with blocker
+analysis and the wrap-pattern dead-end).
+
 ## Phase 6.G Commit 1: L32 NP-from-N projection widening — design
 
 **Date:** 2026-05-12. **Status:** active (design commit; grammar

@@ -1236,6 +1236,102 @@ def register_rules(rules: list[Rule]) -> None:
             ],
         ))
 
+    # --- Phase 11.B.2 sarili anaphora binding via 10.N inside-out ---
+    #
+    # Closes Candidate B in ``docs/fu-extension-audit.md`` §2.2.
+    # Pre-11.B.2, sarili reflexive binding lived as 24 matrix-rule
+    # variants at ``cfg/control.py:1097-1186`` (6 voice_specs × 2
+    # NP-orders × 2 sarili-positions), each gated by
+    # ``(↑ <position> LEMMA) =c 'sarili'`` and emitting a single
+    # direct binding equation. 11.B.2 moves the binding to **4
+    # NP-level rules** using shipped 10.N inside-out designators
+    # (Dalrymple 2001 §14-15 canonical reflexive idiom) + 6.B
+    # outside-in alternation. The 24-rule block in ``cfg/control.py``
+    # is removed in the same commit. Net rule-count delta: -20.
+    #
+    # **Architectural placement** — parallel to the canonical
+    # NP-possessor rule directly above (``NP[CASE=X] →
+    # NP[CASE=X] NP[CASE=GEN]``). Tagalog reflexives always carry
+    # a possessor pronoun (``sarili niya / ko / mo / nila / ko``);
+    # the POSS rule is therefore the c-structure path through which
+    # every sarili NP composes. Adding parallel sarili-aware
+    # variants of the POSS rule injects the inside-out binding
+    # exactly where the sarili NP gets its full surface form —
+    # without per-N-composition duplication and without chart
+    # recursion (the daughter pattern is NP+NP, not NP→NP).
+    #
+    # **Why NP-layer not matrix-layer**. The audit (§2.2) proposed
+    # a matrix-rule alternation gate
+    # ``(↑ {SUBJ | obj_target} LEMMA) =c 'sarili'`` with dual
+    # binding equations per voice / NP-order rule (12 rules). Two
+    # independent blockers surfaced during the 11.B.2 spike:
+    # (1) LHS regex on ``=c`` is silently deferred in the FU
+    # resolver (``unify.py:684`` dispatches only RHS regex through
+    # ``resolve_regex_for_read``; ``docs/fu-evaluation.md`` §8.1
+    # promised LHS dispatch but it never landed), and (2) dual
+    # unconditional bindings between sibling GFs trigger
+    # occurs-check cycles through ANTECEDENT independently of
+    # the gate. The NP-layer mechanism avoids both — single
+    # binding per rule, RHS-only FU. It is also the canonical
+    # Dalrymple 2001 §14-15 reflexive idiom — bringing tgllfg's
+    # sarili analysis into alignment with the LFG literature.
+    #
+    # **Inside-out designator semantics** (10.N): ``(SUBJ ↑)``
+    # resolves to the f-structure F such that F.SUBJ = ↑.
+    # When ↑ is the sarili NP and the matrix consumes it as
+    # SUBJ, ``(SUBJ ↑)`` returns the matrix f-structure. The
+    # outside-in alternation ``{OBJ | OBJ-AGENT | OBJ-CAUSER}``
+    # then enumerates the matrix's depth-1 actor-bearing GFs —
+    # only one is set per voice (AV has OBJ; OV-plain /
+    # DV-plain / IV have OBJ-AGENT; OV-CAUS / DV-CAUS have
+    # OBJ-CAUSER), and the K&Z 1989 §3 minimality clause selects
+    # the unique existing endpoint. Result:
+    # ``(↑ ANTECEDENT) = matrix.<actor>``.
+    #
+    # For GEN-sarili (positioned as actor), the inside-out feat
+    # is voice-specific (the matrix consumes the sarili NP via
+    # OBJ / OBJ-AGENT / OBJ-CAUSER per voice). Inside-out
+    # designators take a single feat name in the shipped AST —
+    # so 3 variants ship, one per possible matrix-consumer feat.
+    # Per matrix voice, only one variant admits (the other two
+    # fail with ``inside-out-no-parent`` — see
+    # ``docs/fu-evaluation.md`` §7.4.1).
+    #
+    # **No bare-sarili coverage**. Tagalog reflexives canonically
+    # carry a possessor (``ang sarili niya``, never bare
+    # ``*ang sarili`` in argument position per Schachter & Otanes
+    # 1972 §3.5). The POSS-rule placement covers every attested
+    # sarili NP in the test corpus and the audit corpus. A bare
+    # ``sarili`` NP without POSS would not receive the binding —
+    # but no such surface needs to. If a future corpus item
+    # surfaces bare sarili, a parallel non-POSS NP-rule variant
+    # can be added.
+    rules.append(Rule(
+        "NP[CASE=NOM]",
+        ["NP[CASE=NOM]", "NP[CASE=GEN]"],
+        [
+            "(↑) = ↓1",
+            "(↑ POSS) = ↓2",
+            "¬ (↑ POSS-EXTRACTED)",
+            "¬ (↓2 MEASURE)",
+            "(↑ LEMMA) =c 'sarili'",
+            "(↑ ANTECEDENT) = ((SUBJ ↑) {OBJ | OBJ-AGENT | OBJ-CAUSER})",
+        ],
+    ))
+    for feat in ("OBJ", "OBJ-AGENT", "OBJ-CAUSER"):
+        rules.append(Rule(
+            "NP[CASE=GEN]",
+            ["NP[CASE=GEN]", "NP[CASE=GEN]"],
+            [
+                "(↑) = ↓1",
+                "(↑ POSS) = ↓2",
+                "¬ (↑ POSS-EXTRACTED)",
+                "¬ (↓2 MEASURE)",
+                "(↑ LEMMA) =c 'sarili'",
+                f"(↑ ANTECEDENT) = (({feat} ↑) SUBJ)",
+            ],
+        ))
+
     # --- 9.X.c8: NP-internal sa-PP locative/oblique modifier ---
     #
     # ``Ang panahon sa isang bansang tropiko ay kakatwa.`` "The
