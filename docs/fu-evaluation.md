@@ -541,18 +541,33 @@ pattern remains the recommended idiom when binding is local.
 parents_via(target, feat) -> [canonical_root]
 ```
 
-O(N) scan over the live store, iterating in deterministic
-insertion order. Sufficient for a prototype; a materialized
-reverse index can replace this if corpus pressure on inside-out
-designators surfaces (typical sentence f-graphs have ≤50
-ComplexValue nodes, so scan cost is negligible).
+O(N + sum-of-set-sizes) scan over the live store, iterating in
+deterministic insertion order. Sufficient for a prototype; a
+materialized reverse index can replace this if corpus pressure on
+inside-out designators surfaces (typical sentence f-graphs have
+≤50 ComplexValue nodes and small set-valued slots, so scan cost
+is negligible).
 
 **Multiple parents**: when the inner target is structure-shared
 across f-structures (e.g., a SUBJ shared between matrix and
-XCOMP via functional control), `parents_via` returns all of
-them. The resolver picks the **first** parent in deterministic
-insertion order. K&Z 1989 §3 minimality on inside-out resolution
-is documented as future work — gated on corpus pressure.
+XCOMP via functional control, or an ADJUNCT shared across
+multiple clauses), `parents_via` returns all of them. The
+resolver picks the **first** parent in deterministic insertion
+order. K&Z 1989 §3 minimality on inside-out resolution is
+documented as future work — gated on corpus pressure.
+
+**Phase 11.B.4.eng — set-valued feat extension (2026-06-04).**
+The 10.N prototype scanned `ComplexValue.attrs` direct edges
+only. Phase 11.B.4.eng extends the scan to set-valued feats:
+when `v.attrs[feat]` points to a `SetValue`, the target may be a
+member of that set rather than the direct edge endpoint. The
+extension is additive — existing direct-edge consumers (Phase
+11.B.2's sarili NP-layer rules) see no behavior change. Unblocks
+Phase 11.B.3 (purposive PRO via `((ADJ ↑) SUBJ)`) and Phase
+11.B.4.chart (coordination CONJUNCTS via
+`((CONJUNCTS ↑) SUBJ)`). Canonical fixture:
+`tests/tgllfg/test_fu_evaluation.py::TestParentsViaSetValued`.
+Audit doc: `docs/fu-extension-audit.md` §B.1 (shipped).
 
 **Failure mode**: when no parent has the named feat pointing at
 the inner target, the resolver returns a diagnostic with kind

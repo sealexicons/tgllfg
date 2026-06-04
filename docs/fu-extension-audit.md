@@ -1602,9 +1602,26 @@ capabilities. Where an extension is **required** to unblock a §3
 backlog item, it is called out; the rest are documented for
 completeness.
 
-### B.1 Set-valued `parents_via` extension (NEEDED for 11.B.3 + 11.B.4)
+### B.1 Set-valued `parents_via` extension (SHIPPED in 11.B.4.eng)
 
-**Status**: required engine prereq — not yet implemented.
+**Status**: **shipped 2026-06-04** in Phase 11.B.4.eng. The
+`FGraph.parents_via` scan was extended to descend into
+`SetValue` members when `v.attrs[feat]` points to a SetValue.
+Existing direct-edge consumers (Phase 11.B.2 sarili NP-layer
+rules) unaffected. Implementation matches the proposed shape
+below (modulo minor cleanups: per-iteration the `child_value`
+is fetched once via `self._store.get(self.find(child))` rather
+than relying on raw `child` type, since `v.attrs.get(feat)`
+returns a `NodeId`, not the `FValue` itself). Canonical fixture:
+`tests/tgllfg/test_fu_evaluation.py::TestParentsViaSetValued`
+(6 cases: set-member match / no-match / outside-in-composition
+/ atom-mismatch / multi-parent / direct-edge backward-compat).
+`docs/fu-evaluation.md` §7.4.1 updated with the set-valued
+extension note. Unblocks Phase 11.B.3 (purposive PRO) and
+Phase 11.B.4.chart (coordination CONJUNCTS).
+
+**Pre-shipping status** (preserved below for the historical
+audit record):
 
 **Current behavior** (`src/tgllfg/fstruct/graph.py:698-739`):
 
