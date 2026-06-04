@@ -777,7 +777,80 @@ maintenance burden becomes meaningful.
   Dalrymple 2001 §14 set-valued binding fixture.
 - 11.B.4.chart: chart opt-in on the bare-V coord rules.
 
-### 2.5 Candidate E — Purposive PRO placeholder (subordination.py)
+### 2.5 Candidate E — Purposive PRO placeholder (subordination.py) (SHIPPED)
+
+**Phase 11.B.3 shipping outcome (2026-06-04)**: shipped in
+**Phase 11.B.3 c2** (single commit on
+`feature/phase-11-b-3-pro-classification`, immediately preceded
+by the c1 classification appendix commit). The 4 bare-V
+purposive rules at `subordination.py:458-501` (covering
+INTR / V-TR-no-OBJ / V-TR + GEN-OBJ / V + DAT-PP across
+MOOD={SOC, NVOL}) flipped from
+`(↑ SUBJ PRED) = 'PRO'` to the inside-out binding
+`(↑ SUBJ) = ((ADJUNCT ↑) SUBJ)`. The shipping form used
+`ADJUNCT` (matching the matrix attachment rules at
+`subordination.py:169 / :188 / :217`), not the speculative
+`ADJ` from the proposal block below — the chart attaches
+SubordClause to `(↑ ADJUNCT)`, not `(↑ ADJ)`.
+
+The implementation requires the set-valued `parents_via`
+extension shipped in 11.B.4.eng (PR #207) since `ADJUNCT` is
+set-valued. Deferred 10.M re-pass handles the matrix-not-yet-
+attached state at SubordClause build time — the binding
+resolves once the matrix `S → S SubordClause` rule fires and
+the SubordClause becomes a member of the matrix's ADJUNCT set.
+
+**Test fixtures**: 3 new test classes (12 tests total) in
+`test_phase5l_purpose.py`:
+
+- **`TestPurposivePROBinding`** (6 tests, attested forms) covers
+  all 4 sub-rules and all 3 matrix-attachment shapes (post-no-comma,
+  pre-with-comma, post-with-comma), plus the `upang` formal-register
+  variant.
+- **`TestPurposivePROBindingEdgeCases`** (3 tests, unattested
+  grammatical Class-3) exercises the binding under feature-rich
+  matrix SUBJs: NP-COORD (`Kumain si Juan at si Maria para
+  makatapos.` — COORD='AND' propagates through identity),
+  3SG pron (`Kumain siya para makatapos.` — clitic features
+  propagate), NEG-wrapped (`Hindi kumain si Juan para makatapos.`
+  — binding resolves to the matrix SUBJ regardless of outer
+  hindi-wrap layering).
+- **`TestUnflippedClass2PreservedAsPRO`** (3 tests, scope
+  verification) asserts the change did NOT broaden beyond Class-3
+  by anchoring tough construction (`Mahirap kumain.` — inner
+  SUBJ stays PRO), tough+GEN-OBJ, and the canonical Class-2
+  Wala-RC (`Wala siyang kinakausap.` — explicit CASE-conflict
+  avoidance commentary at `clause.py:5263-5265`).
+
+All pre-existing purposive tests stay green (the existing
+fixtures use overt-SUBJ purposives via the canonical
+`PART[COMP_TYPE=PURP] + S` rule at `subordination.py:418`, not
+the bare-V variants that changed).
+
+**Audit-corpus parity**: the 3 unattested Class-3 fixtures also
+land in `data/tgl/exemplars/unattributed-constructions.jsonl`
+under source `unattributed/purposive-pro-inside-out` so the
+9th-wave audit corpus counts them next run. (The file is tracked
+via the `.gitignore` `!data/tgl/exemplars/unattributed*.*`
+override per the Phase 10.E.5 hand-authored corpus convention.)
+All 3 close (NEG-wrapped emits 2 parses from chart ambiguity
+with the Phase 4 §7.2 hindi-wrap; both bindings valid).
+
+**Test-both**: 10133/10133 passed (was 10121 pre-11.B.3;
++12 new fixtures, 0 regressions). No incidental closures in
+the audit corpus (the PRO placeholder was inert downstream,
+so binding it correctly produces the same observable
+behavior at all downstream consumers — exactly as the
+"simplification + correctness" framing predicted).
+
+**Class-H sweep outcome** (Appendix C): the per-instance
+classification found that the **Class-3 subset is purposive-only
+(4 sites)** — `subordination.py:464 / :474 / :485 / :496`,
+all the bare-V para/upang SUBJ slots. The §2.8 estimate of
+5-10 Class-3 instances was over-projected; tough-RC /
+extraction-with-PRO-fill cases all classify as Class-1 (genuinely
+absorbed agents with no structural binder) on per-instance
+verification. The full Class-3 sweep is complete with 11.B.3 c2.
 
 **Form**: 10.N inside-out designators.
 
@@ -1059,7 +1132,29 @@ expansions are categorical and not collapsible to FU.
 sweep itself is the deliverable; future audits can re-run the same
 greps to verify the assertion still holds.
 
-### 2.8 Candidate H — broader PRO-placeholder sweep (added 2026-06-04)
+### 2.8 Candidate H — broader PRO-placeholder sweep (SHIPPED)
+
+**Phase 11.B.3 shipping outcome (2026-06-04)**: shipped together
+with §2.5 Candidate E in **Phase 11.B.3** (single sub-PR; c1
+classification appendix + c2 inside-out rule flip). See
+**Appendix C** for the full 46-instance per-instance
+classification table.
+
+The Class-3 subset turned out to be **purposive-only (4 sites,
+all in subordination.py)** — the §2.8 estimate of 5-10 Class-3
+candidates was over-projected. Per-instance verification of the
+extraction.py and clause.py candidates showed they all classify
+as Class-1 (genuinely absorbed agents with no structural
+binder; e.g., the headless-RC implicit-head PRED='PRO' is a
+placeholder for syntactic completeness with no real referent
+to bind to). So Cand H's "broader sweep" outcome is that
+**Cand E was the entire sweep** — a clean P1 win, no follow-on
+needed.
+
+The original §2.8 framing and estimates are preserved below for
+historical reference; they correctly identified the question to
+ask, but the per-instance answer narrowed Class-3 from "5-10"
+to "exactly 4, all purposive".
 
 **Form**: 10.N inside-out designators (subset of candidates only).
 
@@ -1227,7 +1322,7 @@ rewritten.
 | --- | --- | --- | --- | --- | --- |
 | **11.B.1** | **P0** | A: L47 `=c` → `=` swap | 10.M re-pass | 2-3 commits | none |
 | **11.B.2** | **P1** | B: Sarili 24-rule collapse + C: TestCrossClausalDeferred flip | 10.N inside-out | 4-6 commits | none |
-| **11.B.3** | **P1** | E: Purposive PRO binding + H-Class-3 subset | 10.N inside-out | 4-6 commits | 11.B.4.eng |
+| **11.B.3** | **P1** | E: Purposive PRO binding + H-Class-3 subset (SHIPPED — PR pending) | 10.N inside-out | 1 sub-PR (c1 + c2 + c5) | 11.B.4.eng (PR #207, shipped) |
 | **11.B.4** | **P2** | D: Coordination CONJUNCTS inside-out | 10.N + set-valued `parents_via` | 2 sub-PRs (eng + chart) | self |
 | **11.B.5** | **P2** | §B.2: Cyclic-endpoint pruning (engine + canonical fixture) | U-bucket prototype | 2-3 commits | none |
 | **11.X** | **P2** | §3.5: Bare `Huwag + V[AV]` PRO injection (Phase 10 carry-forward) | PRO machinery design (non-FU) | 2-4 commits | none |
@@ -1938,6 +2033,124 @@ only; B.2 / B.5 / B.6 also appear in tgllfg-out-of-scope.md
 (line 61 → 11.B.5; lines 59 + 60 → 11.final explicit decline;
 line 62 → bundled into 11.B.2 spike-probe) plus §18.1.4 line 77
 → 11.X (non-FU carry-forward).
+
+## Appendix C — Per-instance PRO classification (Phase 11.B.3 c1)
+
+The §2.8 H-Class-3 sweep estimated 5-10 inside-out candidates
+across cfg/. The Phase 11.B.3 c1 per-instance audit resolves the
+exact count: **46 actual `= 'PRO'` equations** (the §2.8 grep of
+"53" included 7 docstring/comment-block lines) → **32 Class-1,
+10 Class-2, 4 Class-3**. The Class-3 subset is narrower than the
+§2.8 estimate: **only the purposive `para`/`upang` SUBJ slot
+(Candidate E) is a clean inside-out candidate**.
+
+Why the Class-3 estimate was over-projected: §2.8 anticipated
+that tough-RC / extraction-with-PRO-fill cases in extraction.py
+might surface Class-3 candidates if the relativized head were
+the canonical binder. Per-instance verification shows those
+cases (extraction.py:138 / :168 / :677 / :719) are all
+agent-absorption Class-1: the head N IS the SUBJ (via the
+existing `(↓1 SUBJ PRED) = (↓3 PRED)` binding), and the
+PRO-filled slot is OBJ-AGENT (genuinely absorbed, no structural
+referent). Similarly, the modal-as-predicate cases at
+control.py:508-509 are Class-1 impersonal (matrix has no
+embedded V or argument).
+
+### C.1 Classification table
+
+| File:line | Class | Slot | Construction | Notes |
+| --- | --- | --- | --- | --- |
+| clause.py:369 | 1 | OBJ-AGENT | OV/DV/IV impersonal (`Sinulat ang aklat`) | Agent absorbed/generic |
+| clause.py:397 | 1 | SUBJ | Weather V (`Umuulan.`) | Atmospheric subject |
+| clause.py:1131 | 1 | SUBJ | Impersonal-modal SAY (NVOL) | No overt actor |
+| clause.py:1473 | 1 | SUBJ | ADV[TIME] predicative-ADJ (`Maaga.`) | Impersonal time-pred |
+| clause.py:1514 | 2 | XCOMP SUBJ | Tough construction (`Mahirap kumain`) | Generic "for anyone"; experiencer is ADJUNCT not controller |
+| clause.py:1527 | 2 | XCOMP SUBJ | Tough + GEN-OBJ | Same as above |
+| clause.py:1540 | 2 | XCOMP SUBJ | Tough + DAT-PP | Same as above |
+| clause.py:1559 | 2 | XCOMP SUBJ | Tough + INTENSIFIER variant | Same as above |
+| clause.py:1676 | 1 | SUBJ | Mangyari'y impersonal evidential | V used impersonally |
+| clause.py:3300 | 2 | SUBJ | Pro-dropped equative (`Kasing-edad pala ni Nadette.`) | Discourse-recoverable |
+| clause.py:3458 | 2 | SUBJ | V[NVOL] + V[CTPL] SUBJ-drop | Comment explicit: "for anaphoric binding" |
+| clause.py:4516 | 1 | SUBJ | Modal+OV imperative (`Dapat gawin.`) | Comment: "matrix SUBJ = impersonal PRO" |
+| clause.py:4518 | 1 | XCOMP OBJ-AGENT | Modal+OV imperative | Agent absorbed |
+| clause.py:4531 | 1 | SUBJ | Modal+OV with GEN actor | SUBJ still impersonal |
+| clause.py:5219 | 1 | SUBJ | Negative existential (`Walang nang kumain.`) | Existentially-negated SUBJ |
+| clause.py:5238 | 1 | SUBJ | Same + DAT-OBL | Same |
+| clause.py:5292 | 2 | SUBJ | Wala-RC (`Wala siyang kinakausap.`) | Comment explicit: "discourse-recoverable... avoids CASE-conflict" |
+| control.py:508 | 1 | SUBJ | Standalone modal (`Hindi puwede.`) | No overt argument |
+| control.py:509 | 1 | XCOMP | Standalone modal | No embedded V |
+| control.py:988 | 2 | SUBJ | TRANS PRO-NOM-pivot | Forcee recoverable from discourse (PAG-AARAL/sent-8) |
+| extraction.py:138 | 1 | OBJ-AGENT | S_GAP OV/DV-NVOL impersonal | Agent absorbed |
+| extraction.py:168 | 1 | OBJ-AGENT | S_GAP IV impersonal | Same |
+| extraction.py:339 | 1 | PRED | Headless RC + mga (matrix head) | Implicit-head placeholder |
+| extraction.py:345 | 1 | REL-PRO PRED | Headless RC + mga (gap) | REL-PRO placeholder |
+| extraction.py:677 | 1 | OBJ-AGENT | Non-AV pre-N participial | Agent absorbed |
+| extraction.py:719 | 1 | SUBJ | AV-NVOL pre-N participial | Agent absorbed |
+| extraction.py:2408 | 1 | PRED | Headless RC (matrix head) | Implicit-head placeholder |
+| extraction.py:2412 | 1 | REL-PRO PRED | Headless RC (gap) | REL-PRO placeholder |
+| extraction.py:2481 | 1 | PRED | Headless NEG-existential RC (matrix head) | Implicit-head placeholder |
+| extraction.py:2485 | 1 | REL-PRO PRED | Same (gap) | REL-PRO placeholder |
+| extraction.py:2887 | 1 | PRED | Free-relative kung-S (matrix head) | Implicit-head placeholder |
+| nominal.py:178 | 1 | PRED | Bare vague-Q NP (`ng marami`) | Implicit referent |
+| nominal.py:216 | 1 | PRED | Bare `iba` NP (`Ang iba`) | Implicit referent |
+| nominal.py:345 | 1 | PRED | `mga + DEM` substantive (`ang mga ito`) | Implicit referent |
+| nominal.py:453 | 1 | PRED | Standalone DEM NOM (`Kumain iyon`) | Implicit referent |
+| nominal.py:458 | 1 | PRED | Standalone DEM GEN | Same |
+| nominal.py:463 | 1 | PRED | Standalone DEM DAT | Same |
+| nominal.py:3559 | 1 | PRED | `wh + pa + man` idiom (NP) | Implicit referent |
+| nominal.py:3577 | 1 | PRED | Same idiom (N-projection) | Same |
+| subordination.py:464 | **3** | SUBJ | **Purposive `para` INTR** | **Controlled by matrix SUBJ — Cand E** |
+| subordination.py:474 | **3** | SUBJ | **Purposive `para` TR (no overt OBJ)** | **Controlled by matrix SUBJ — Cand E** |
+| subordination.py:475 | 1 | OBJ | Same rule (OBJ slot) | OBJ absorbed/generic — sibling Class-1 |
+| subordination.py:485 | **3** | SUBJ | **Purposive `para` + GEN-NP** | **Controlled by matrix SUBJ — Cand E** |
+| subordination.py:496 | **3** | SUBJ | **Purposive `para` + DAT-NP** | **Controlled by matrix SUBJ — Cand E** |
+| subordination.py:704 | 2 | SUBJ | `SubordClause ay ADJ-pred` topic-drop | "Discourse-supplied entity from SubordClause" — not structurally clean |
+| subordination.py:717 | 2 | SUBJ | Same + NEG variant | Same |
+
+### C.2 Class summary
+
+| Class | Count | Inside-out candidate? |
+| --- | --- | --- |
+| Class 1 (impersonal) | 32 | No |
+| Class 2 (anaphoric/discourse) | 10 | Case-by-case (none flipped in 11.B.3) |
+| Class 3 (controlled) | **4** | **Yes — all purposive `para`/`upang` SUBJ** |
+| **Total** | **46** | |
+
+### C.3 11.B.3 implementation scope
+
+Phase 11.B.3 c2 flips the 4 Class-3 sites at `subordination.py:464
+/ :474 / :485 / :496` from `(↑ SUBJ PRED) = 'PRO'` to inside-out
+binding `(↑ SUBJ) = ((ADJ ↑) SUBJ)`. The PRO becomes a real
+f-structure link to the matrix SUBJ.
+
+All Class-1 and Class-2 sites stay unchanged. Class-2 promotion
+to Class-3 was considered for clause.py:1514-1559 (tough),
+clause.py:3458 (NVOL+CTPL drop), control.py:988 (TRANS PRO-NOM),
+subordination.py:704/717 (apodosis topic-drop), but each requires
+a linguistic-judgment call beyond 11.B.3 scope; the audit
+comments in those rules explicitly select anaphoric resolution
+to avoid feature-clashes (e.g., the `clause.py:5292` Wala-RC
+case-conflict avoidance is the canonical motivating example).
+
+### C.4 Why the Class-3 subset is purposive-only
+
+Purposive `para`/`upang` is the only construction in current
+cfg/ where:
+
+1. The PRO site lives inside a `SubordClause` that becomes a
+   member of the matrix's `ADJ` set (the structural binder for
+   inside-out via `(ADJ ↑)`).
+2. The reference grammars (S&O 1972 §6.6, R&G 1981 PANAHON
+   sent-16) and Kroeger 1993 confirm functional control: the
+   purposive SUBJ MUST be coreferent with the matrix SUBJ — no
+   alternative discourse antecedent is licit.
+3. No CASE-conflict or feature-mismatch hazard exists: matrix
+   SUBJ and purposive SUBJ share the same NOM/AGENT profile.
+
+The other PRO sites either lack a structural binder (Class 1),
+or carry an anaphoric reading that resists structural binding
+without re-introducing the feature-clashes their workarounds
+avoid (Class 2).
 
 ## 6. Cross-references
 
