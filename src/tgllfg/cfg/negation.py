@@ -121,9 +121,8 @@ def register_rules(rules: list[Rule]) -> None:
     #
     # The matrix-NEG style ``Huwag kumain ang bata.`` is what
     # this rule covers. The control-style ``Huwag kang kumain.``
-    # (with addressee + linker + verb) needs a different wrap
-    # rule and is deferred — see "Out-of-scope" in the
-    # ``docs/analysis-choices.md`` "Phase 5e Commit 25" entry.
+    # (with addressee + linker + verb) is closed by the new rule
+    # right below (Phase 10.final.pre-1).
     rules.append(Rule(
         "S",
         ["PART[MOOD=IMP, POLARITY=NEG]", "S"],
@@ -140,6 +139,133 @@ def register_rules(rules: list[Rule]) -> None:
             "(↓1 MOOD) =c 'IMP'",
         ],
     ))
+
+
+    # --- Phase 10.final.pre-1: huwag + addressee + linker + AV-V ---
+    #
+    # Closes the Phase 5e Commit 25 deferral noted above. The
+    # explicit-addressee negated-imperative shape
+    # ``Huwag kang magmura.`` "Don't swear." was directly
+    # provided by the 2026-06-03 native-informant panel as the
+    # canonical AV-imperative form (S&O 1972 §8 also documents
+    # the linker-fused PRON pattern, e.g., ``Huwag kang umalis.``,
+    # as the standard variant; the no-linker form ``Huwag ka
+    # kumain.`` is licit but less natural).
+    #
+    # Daughter shape (4 daughters after ``split_linker_ng`` runs
+    # in the text-prep pipeline and decomposes ``kang`` → ``ka`` +
+    # ``-ng``):
+    #
+    #   PART[MOOD=IMP, POLARITY=NEG]  PRON[CASE=NOM]  PART[LINK=NG]  V[VOICE=AV]
+    #     ↓1 = huwag                  ↓2 = addressee   ↓3 = linker    ↓4 = head V
+    #
+    # Verb percolation is from ↓4 — the AV verb provides PRED +
+    # a-structure. The addressee PRON becomes matrix SUBJ via
+    # ``(↑ SUBJ) = ↓2`` (the imperative subject IS the addressee
+    # in 2nd-person imperatives). The linker daughter carries no
+    # f-structure content. ``CLAUSE-MOOD=IMP`` + ``POLARITY=NEG``
+    # mirror the matrix-NEG rule above; ``(↓1 MOOD) =c 'IMP'``
+    # excludes ``hindi`` (which has no MOOD).
+    #
+    # AV-only restriction: Tagalog 2nd-person imperatives use the
+    # bare AV form (``um-`` or ``mag-`` INF / CTPL), not OV/DV/IV
+    # forms — the addressee-controlled SUBJ slot aligns with AV
+    # actor-pivot. OV imperatives (``Murahin mo siya.``) use a
+    # different surface shape (``mo`` for 2sg.GEN, no ``huwag``).
+    rules.append(Rule(
+        "S",
+        [
+            "PART[MOOD=IMP, POLARITY=NEG]",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "V[VOICE=AV]",
+        ],
+        [
+            "(↑) = ↓4",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ CLAUSE-MOOD) = 'IMP'",
+            "(↑ SUBJ) = ↓2",
+            "(↓1 MOOD) =c 'IMP'",
+            "(↓3 LINK) =c 'NG'",
+        ],
+    ))
+
+
+    # --- Phase 10.final.pre-1: huwag-imperative paradigm fills ---
+    #
+    # User directive 2026-06-03 (anti-deferral + add unattested
+    # constructs): close all the related huwag-imperative variants
+    # that came up while shipping the curse-`mura` paradigm + the
+    # addressee-NOM-AV rule above. Per S&O 1972 §8 these all
+    # belong to the same negated-imperative paradigm family.
+    #
+    # Variant A: huwag + addressee-NOM + linker + ADJ-predicative.
+    # ``Huwag kang malungkot.`` "Don't be sad." / ``Huwag kang
+    # masama.`` "Don't be bad." — the addressee is told not to BE
+    # a certain way. Same shape as the V[VOICE=AV] rule above but
+    # with the predicate slot filled by an ADJ[PREDICATIVE].
+    rules.append(Rule(
+        "S",
+        [
+            "PART[MOOD=IMP, POLARITY=NEG]",
+            "PRON[CASE=NOM]",
+            "PART[LINK=NG]",
+            "ADJ[PREDICATIVE]",
+        ],
+        [
+            "(↑) = ↓4",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ CLAUSE-MOOD) = 'IMP'",
+            "(↑ SUBJ) = ↓2",
+            "(↓1 MOOD) =c 'IMP'",
+            "(↓3 LINK) =c 'NG'",
+        ],
+    ))
+
+
+    # NOTE on "bare huwag + V[VOICE=AV]" (e.g. ``Huwag kumain.``):
+    # explicitly parked as future work. The bare-imperative form
+    # requires injecting a PRO SUBJ (the implicit addressee) to
+    # satisfy the V's a-structure completeness check — the canonical
+    # Tagalog imperative subject is implicit and would normally be
+    # expressed as a PRO in LFG. Canonical Tagalog generally uses
+    # the addressee-explicit form (``Huwag kang kumain.``, covered
+    # by Variant A above) or an OBJ-bearing form (``Huwag kumain
+    # ng X.``, covered via the matrix-NEG rule above when ``ng X``
+    # is the only argument and SUBJ stays unbound). Adding a PRO-
+    # SUBJ binding for the bare-V case is left for a follow-on
+    # that designs the PRO machinery carefully.
+
+
+    # Variant B: huwag + GEN-actor + linker + S (with inner V[OV]).
+    # ``Huwag mong murahin si Maria.`` "Don't curse Maria." —
+    # the negated OV imperative, parallel to the positive OV
+    # imperative ``Murahin mo siya.`` (which already parses as a
+    # standalone S). The matrix wrap supplies the GEN-actor via
+    # ``(↑ OBJ-AGENT) = ↓2`` and inherits the inner S's PRED +
+    # SUBJ (the NOM-patient already bound inside). The ``=c``
+    # voice constraint excludes AV inner (AV's actor is already
+    # the SUBJ, not an OBJ-AGENT slot — that case is handled by
+    # the NOM-addressee variant above).
+    for non_av in ("OV", "DV", "IV"):
+        rules.append(Rule(
+            "S",
+            [
+                "PART[MOOD=IMP, POLARITY=NEG]",
+                "PRON[CASE=GEN]",
+                "PART[LINK=NG]",
+                "S",
+            ],
+            [
+                "(↑) = ↓4",
+                "(↑ OBJ-AGENT) = ↓2",
+                "(↑ POLARITY) = 'NEG'",
+                "(↑ CLAUSE-MOOD) = 'IMP'",
+                "(↓1 MOOD) =c 'IMP'",
+                "(↓3 LINK) =c 'NG'",
+                f"(↓4 VOICE) =c '{non_av}'",
+            ],
+        ))
 
 
     # --- Phase 5n.C Commit 2 (§18 L78): wide-scope hindi over coord-NP ---

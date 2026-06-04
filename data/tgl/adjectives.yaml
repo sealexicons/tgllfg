@@ -120,6 +120,22 @@
   gloss: kind, well-behaved
   affix_class: [ma_adj]
 
+# Phase 10.final.pre-1: ``bawal`` modal predicate "forbidden,
+# prohibited". Modeled as a bare-predicative ADJ following the
+# Phase 10.J.post-8.5.1 ``baluktot`` precedent (no ``ma_adj``
+# class — the bare-root index path applies, and ``Bawal ang X.``
+# uses the existing predicative-ADJ + NOM-NP composition).
+# Surfaces during 10.final.pre-1 as the canonical modal-predicate
+# wrapper for the new curse-NOUN (``Bawal ang mura.``, ``Bawal
+# ang pagmumura.``) AND for any other NOM-NP prohibition like
+# ``Bawal ang manigarilyo.`` "Smoking is forbidden." Cited
+# explicitly in the original 10.final.pre-1 plan row as the
+# example sentence for the curse-NOUN sense.
+- citation: bawal
+  pos: ADJ
+  gloss: forbidden, prohibited
+  affix_class: []
+
 # Phase 10.J.post-8.5.1: ``baluktot`` ADJ — "crooked, bent". Used
 # as the bare predicative form (``Baluktot ang kahoy.`` "The wood
 # is crooked.") so ``affix_class: []`` (no ``ma_adj`` prefix-
@@ -563,6 +579,15 @@
   affix_class: []
   source: stopwords-tl
 
+# Phase 10.H.post-1: scalar ADJ ``mura`` "cheap" (the price
+# antonym of ``mahal``) and "young / tender / unripe / immature".
+# Phase 10.final.pre-1: a homophonous but semantically unrelated
+# curse-root ``mura`` ships as both NOUN (nouns.yaml — "profanity")
+# and VERB (verbs.yaml — "to curse, swear at"). POS distinguishes;
+# the ADJ ``mura-mura`` here is REDUP=FULL moderate ("rather
+# cheap") via ``adj_redup`` and does NOT compete with the curse
+# paradigm's surfaces (which all carry verbal affixation or pag-
+# gerund prefixation).
 - citation: mura
   pos: ADJ
   gloss: cheap, inexpensive (antonym of mahal); young, tender, unripe, immature
@@ -788,6 +813,20 @@
 - citation: tahimik
   pos: ADJ
   gloss: quiet, silent, peaceful
+  affix_class: []
+
+# Phase 10.final.pre-1: ``takot`` ADJ "afraid, scared". Bare-
+# predicative usage in canonical Tagalog (``Huwag kang takot.``
+# "Don't be scared.", ``Takot ang bata.`` "The child is
+# scared."). Closes the lex gap surfaced while probing the
+# Phase 10.final.pre-1 Huwag-kang-ADJ rule (Variant A). No
+# ``ma_adj`` class — bare-root index path applies, parallel to
+# the Phase 10.J.post-8.5.1 ``baluktot`` and the new ``bawal``
+# above (modal/state predicates whose bare form IS the canonical
+# surface).
+- citation: takot
+  pos: ADJ
+  gloss: afraid, scared
   affix_class: []
 
 - citation: talino

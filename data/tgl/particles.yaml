@@ -2286,6 +2286,16 @@
   pos: DET
   feats: {CASE: NOM, DEIXIS: DIST, DEM: true, LEMMA: iyon}
 
+# Phase 10.final.pre-1: parallel colloquial DEM-MED contraction.
+# ``yan`` is the colloquial / contracted form of ``iyan`` (the
+# DEM-NOM-MED demonstrative). Same elision pattern as ``yon``
+# above. Surfaces during 10.final.pre-1 work as the colloquial
+# OBJ in ``Huwag mong kainin yan.`` "Don't eat that." (the
+# canonical ``Huwag mong kainin iyan.`` parses unchanged).
+- surface: yan
+  pos: DET
+  feats: {CASE: NOM, DEIXIS: MED, DEM: true, LEMMA: iyan}
+
 # === Phase 9.X PANAHON closure — new locatives/demonstratives/discourse ==
 # Added 2026-05-19 to close PANAHON-text OOVs (rg81 transcription
 # Wave 1). Parallel structure to existing entries:

@@ -1867,6 +1867,275 @@ lines unchanged. Total extractor suite 23 → 33 cases.
 
 10064 → 10074 tests (+10).
 
+### Phase 10.final.pre-1 curse-root `mura` + parallel chart fills (informant-driven)
+
+**Status**: shipped 2026-06-03. Closes the Phase-10 plan ledger's
+conditional **10.final.pre-1** row (originally 10.final.post-1;
+renamed and reordered to **.pre-1** on 2026-06-03 so it precedes
+the 10.final closure docs). The gate was a native-informant
+confirmation of the curse-`mura` paradigm; the gate fired on
+2026-06-03 with a multi-speaker panel (Tagalog + Waray speakers,
+plus a linguist/language engineer). The expert summary attests the
+curse-root as a *separate, semantically unrelated* lexical item
+from the ADJ `mura` "cheap" — Schachter-style mura₁ (ADJ-CHEAP)
+vs mura₂ (N/V root-CURSE) — with a full productive paradigm
+(AV mag- + OV -in/-hin + pag- gerund).
+
+#### The 10.H.post-1 reversal
+
+Phase 10.H (2026-05-26) landed `mura` as a curse VERB with a
+`v_iter_redup` cell producing `mura-mura` ITER, called
+"collision-free because the scalar adjective was absent."
+Phase 10.H.post-1 (2026-05-26) retracted the curse-VERB because
+(a) all eight project references were silent on the curse sense,
+(b) the original informant reported never having met it. The
+ADJ `mura` "cheap" + "young/tender/unripe" was added as the
+replacement single-PRED scalar adjective with `adj_redup`
+(`mura-mura` REDUP=FULL underspecified — "rather cheap").
+
+The 10.final.pre-1 panel reverses that absence-of-evidence
+retraction with positive evidence: AV `magmura` / `nagmumura`
+"to swear" + OV `murahin` / `minura` / `mumurahin` "to curse
+at someone" + gerund `pagmumura` "swearing, cursing" + bare
+NOUN `mura` "profanity" are all productive in modern Tagalog.
+The 10.H.post-1 scalar-ADJ `mura` analysis is preserved
+unchanged; the new entries are POS-disambiguated homophones.
+
+#### Architecture — two unrelated roots, three lex entries
+
+The expert recommendation maps cleanly onto the existing tgllfg
+convention of POS-level lex disambiguation:
+
+| Root | POS | Entry | PRED (synthesized) | Sense |
+| ---: | ---: | --- | --- | --- |
+| mura₁ | ADJ | `adjectives.yaml` (10.H.post-1) | MURA | cheap; young/tender/unripe |
+| mura₂ | NOUN | `nouns.yaml` (10.final.pre-1) | MURA | curse word, profanity |
+| mura₂ | VERB | `verbs.yaml` (10.final.pre-1) | MURA \<SUBJ, OBJ\> | curse, swear at |
+
+PRED defaults to the lemma form under the existing tgllfg
+convention; POS-level chart filtering keeps the three entries
+cleanly separated. The ADJ's `adj_redup` `mura-mura` ("rather
+cheap") and the curse-VERB's inflected forms (`magmura` /
+`minura` etc.) occupy disjoint surface namespaces — the curse
+paradigm always carries verbal affixation or pag- gerund
+prefixation, so no spurious cross-POS ambiguity arises.
+
+The curse-VERB intentionally does NOT opt into `v_iter_redup`
+(which 10.H originally included). The bare-redup `mura-mura`
+surface is already produced by the ADJ's `adj_redup`; adding
+`v_iter_redup` on the curse-VERB would create an unwanted
+cross-POS surface collision. If audit-corpus pressure later
+surfaces a `mura-mura` curse-iter reading, it can be added
+under attestation.
+
+#### Affix-class triple `[mag, in_oblig, pag_gerund]`
+
+Generates the informant-listed surfaces from a vowel-final
+consonant-initial root (`mura` → `m + u + r + a`):
+
+| Class | Cell | Surface | Gloss |
+| --- | --- | --- | --- |
+| mag | AV PFV (`nag-` prefix) | `nagmura` | swore |
+| mag | AV IPFV (`nag-` + CV-redup) | `nagmumura` | is swearing |
+| mag | AV CTPL (`mag-` + CV-redup) | `magmumura` | will swear |
+| mag | AV INF/CTPL (`mag-` prefix) | `magmura` | to swear |
+| in_oblig | OV PFV (`-in-` infix) | `minura` | cursed |
+| in_oblig | OV IPFV (CV-redup + `-in-`) | `minumura` | is cursing |
+| in_oblig | OV CTPL (CV-redup + `-in` suffix) | `mumurahin` | will curse |
+| in_oblig | OV SOC/INF (bare + `-in` suffix) | `murahin` | curse-IMP / to curse |
+| pag_gerund | PFV gerund (`pag-` prefix) | `pagmura` | cursing (act) |
+| pag_gerund | IPFV gerund (`pag-` + CV-redup) | `pagmumura` | swearing (ongoing) |
+
+The vowel-final root takes the `-hin` allomorph of `-in` (sandhi
+applied by the analyzer); the `-in-` infix in OV PFV/IPFV cells
+sits between the initial consonant and the first vowel.
+
+#### `AV_ABSOL: true` for 1-arg AV use
+
+The informant's `Huwag kang magmura.` "Don't swear." is a 1-arg
+AV use (no overt cursee). Per the Phase 9.O B3.A `AV_ABSOL`
+pattern (and mirroring `away` "quarrel"'s entry), the curse-VERB
+carries `feats: {AV_ABSOL: true}` so its AV-INTR shape
+(`<SUBJ>`-only) synthesizes alongside the canonical AV-TR shape
+(`<SUBJ, OBJ>`). The 2-arg OV path (`Minura niya ako.` "He
+cursed me.") uses the OV pivot-as-patient pattern with the
+cursee as NOM SUBJ — also informant-attested.
+
+#### Companion lex + chart fixes — the informant constructions
+
+The informant's four example sentences exercise three constructions
+that needed parallel fills for the curse-`mura` paradigm to compose
+end-to-end. Per the anti-deferral principle, all three close in this
+sub-PR:
+
+1. **`Masama ang kanyang mga mura.`** "His/her profanities are
+   offensive." — bare NOUN curse-`mura` under `mga` pluralizer +
+   possessive linker; lex-only fix (the new NOUN entry sufficed).
+2. **`Minura niya ako.`** "He cursed me." — OV PFV with GEN
+   actor + NOM patient pivot; lex-only fix (the new VERB entry
+   with `in_oblig` cell sufficed).
+3. **`Narinig ko ang kanyang mura.`** "I heard his/her curse." —
+   the `narinig` lookup blocker was `dinig`'s pre-10.final.pre-1
+   `transitivity: INTR` (only 1-arg `<SUBJ>` synthesized; the
+   2-arg `<SUBJ, OBJ>` shape needed for GEN-perceiver +
+   NOM-perceived was missing). Fix: `dinig` flipped to
+   `transitivity: TR` + `feats: {AV_ABSOL: true}`, mirroring the
+   parallel `kita` "see" entry exactly. Same audit-attestation
+   pattern (the page-55/sent-1 closure below validates).
+4. **`Huwag kang magmura.`** "Don't swear." — the
+   linker-fused-addressee negated-imperative shape (`Huwag` +
+   PRON[NOM] + `-ng` linker + V[VOICE=AV]) was an explicit
+   Phase 5e Commit 25 deferral; the deferral comment in
+   `cfg/negation.py:122` itself names this exact sentence
+   pattern. New chart rule in `cfg/negation.py`:
+
+   ```text
+   S → PART[MOOD=IMP, POLARITY=NEG] PRON[CASE=NOM] PART[LINK=NG] V[VOICE=AV]
+     (↑) = ↓4                       # the V is the matrix head
+     (↑ POLARITY) = 'NEG'
+     (↑ CLAUSE-MOOD) = 'IMP'
+     (↑ SUBJ) = ↓2                  # addressee PRON → matrix SUBJ
+     (↓1 MOOD) =c 'IMP'             # excludes ``hindi``
+     (↓3 LINK) =c 'NG'              # the linker daughter
+   ```
+
+   AV-only restriction: Tagalog 2nd-person imperatives use the
+   bare AV form (`um-` or `mag-` INF/CTPL), not OV/DV/IV — the
+   addressee-controlled SUBJ aligns with the AV actor-pivot.
+   OV imperatives use a different surface shape (`Murahin mo
+   siya.`, with `mo` GEN and no `huwag`).
+
+#### Additional anti-deferral closures — user directive 2026-06-03
+
+After the initial commit-1 informant work landed `Narinig ko
+siya.` (dinig fix) + `Huwag kang magmura.` (Variant A), a
+broader probe found three more variants that "came up in this
+work" but didn't yet parse. Per the user's
+"add unattested constructs for potential exemplars" directive
+on the same day, all three close in-PR:
+
+- **Variant A extension — huwag + addressee-NOM + linker +
+  ADJ-predicative** (`Huwag kang malungkot.` "Don't be sad.",
+  `Huwag kang masama.`, `Huwag kang takot.`): the
+  `S → PART[IMP,NEG] PRON[NOM] PART[LINK=NG] ADJ[PREDICATIVE]`
+  parallel rule was added immediately alongside the
+  V[VOICE=AV] variant — Tagalog uses the same shape for both
+  AV-V and predicative-ADJ predicates under huwag.
+- **Variant B — huwag + GEN-actor + linker + S (inner OV-V)**
+  (`Huwag mong murahin si Maria.`, `Huwag mong kainin iyan.`,
+  the colloquial `Huwag mong kainin yan.`): the negated OV
+  imperative, parallel to the positive `Murahin mo siya.` that
+  already parses standalone. The matrix wrap binds the
+  GEN-actor PRON as the inner clause's OBJ-AGENT via
+  `(↑ OBJ-AGENT) = ↓2`; the inner S handles the V[OV] + NOM-NP
+  composition unchanged. Three sibling rules cover OV / DV / IV
+  inner-S voices.
+- **`bawal` modal predicate** (`Bawal ang mura.`,
+  `Bawal ang pagmumura.`, `Bawal ang manigarilyo.`): the lex
+  add for the "forbidden, prohibited" predicate that the
+  original 10.final.pre-1 plan row cited as the example for
+  the curse-NOUN sense. Added as a bare-predicative ADJ
+  (mirroring the Phase 10.J.post-8.5.1 `baluktot` precedent —
+  no `ma_adj` class so the bare-root index path applies).
+  Composes with the existing predicative-ADJ + NOM-NP rule.
+
+Three small companion lex adds round out the paradigm:
+
+- `takot` ADJ (bare-predicative "afraid, scared") —
+  the lex gap for `Huwag kang takot.`.
+- `sigaw` NOUN ("a shout, scream, yell") —
+  the V+N homophone for the existing VERB `sigaw` "to shout",
+  closing `Narinig ko ang sigaw.`.
+- `yan` DEM (CASE=NOM, DEIXIS=MED, LEMMA→`iyan`) —
+  colloquial contraction of `iyan`, parallel to the existing
+  `yon`→`iyon` Phase 9.J precedent.
+
+**Bare huwag + V[VOICE=AV]** (e.g. `Huwag kumain.`,
+`Huwag manigarilyo.`) is explicitly **parked as future work**.
+The bare-imperative form requires injecting a PRO SUBJ (the
+implicit addressee) to satisfy the V's a-structure
+completeness check — the canonical Tagalog imperative subject
+is implicit and would normally be expressed as a PRO in LFG.
+Canonical Tagalog generally uses the addressee-explicit form
+(`Huwag kang kumain.`, covered by Variant A above) or an
+OBJ-bearing form (`Huwag kumain ng X.`, covered via the
+matrix-NEG rule when `ng X` is the only argument and SUBJ
+stays unbound). Adding a PRO-SUBJ binding is left for a
+follow-on that designs the PRO machinery carefully. Documented
+in the `cfg/negation.py` block-comment alongside Variant B.
+
+#### Audit outcome — five closures from the combined work
+
+| Wave | Pre | Post | Δ closures | Δ records |
+| --- | ---: | ---: | ---: | ---: |
+| wave1-exemplars | 122/122 | 122/122 | 0 | 0 |
+| wave2-ramos1971 | 78/209 | 78/209 | 0 | 0 |
+| wave2-rc1990 | 220/1022 | 220/1022 | 0 | 0 |
+| **wave2-rg-intermediate** | **491/1919** | **493/1919** | **+2** | 0 |
+| **wave3-rg-conversational** | **332/666** | **333/666** | **+1** | 0 |
+| wave3-so1972 | 321/1265 | 321/1265 | 0 | 0 |
+| **wave4-kroeger1991** | **61/215** | **62/215** | **+1** | 0 |
+| **wave5-zamar2023** | **158/500** | **159/500** | **+1** | 0 |
+| unattributed-constructions | 155/155 | 155/155 | 0 | 0 |
+| **XWAVE** | **1938/6073** | **1943/6073** | **+5** | 0 |
+
+Closure attribution:
+
+- **wave2-rg-intermediate +2**:
+  `Natakot kami sa kidlat.` "We got scared by lightning."
+  (page-50/numbered/sent-369) +
+  `Natatakot siya sa tubig.` "He's afraid of water."
+  (page-119/prose/sent-817) — both via the new `takot` ADJ
+  lex entry composing alongside the existing VERB takot
+  (the `ma` non-volitional paradigm now anchors on both the
+  ADJ and the VERB readings, and the chart's coercion path
+  finds a complete parse via the ADJ).
+- **wave3-rg-conversational +1**:
+  `Huwag mong itapon ang basura sa basurahan.`
+  "Don't throw the trash in the trash can."
+  (page-80/prose/sent-353) — Variant B huwag-OV-imperative.
+- **wave4-kroeger1991 +1**:
+  `Takot sa kulog siya.` "He's afraid of thunder."
+  (page-139/ex-46a — and ex-46b is the word-order variant,
+  same lex add) — new `takot` ADJ bare-predicate + sa-PP +
+  NOM-NP composition.
+- **wave5-zamar2023 +1**:
+  `Narinig kong darating si Pedro sa Sabado.`
+  "I heard that Peter will come on Saturday."
+  (page-55/sent-1) — `narinig` + S_XCOMP complement-clause
+  construction newly licensed by the dinig TR + AV_ABSOL fix.
+
+Zero curse-`mura` closures in any wave: the curse-`mura`
+paradigm is colloquial / register-marked and the eight
+reference grammars + audit sources don't carry it (which is
+exactly why the 10.H.post-1 absence-of-evidence retraction
+occurred initially). The expert testimony, not corpus
+pressure, is the gate satisfier for the curse paradigm; the
+audit closures all come from the companion fixes the work
+surfaced.
+
+#### Test count
+
+10074 → 10107 (+33). Breakdown:
+
+- 23 new in `test_phase10_final_pre1_mura_curse.py` — 8
+  inflected VERB surfaces × voice/aspect pins + 2 gerund
+  nominalizations + 2 NOUN/ADJ sentries + 4 end-to-end
+  sentence parses + 1 ADJ regression + 2 POS-separation
+  sentries + 4 huwag-ADJ-PRED variant cases + 3 huwag-OV-
+  imperative variant cases + 1 positive OV-imperative
+  regression sentry + 3 bawal-modal cases + 3 narinig+
+  complement cases.
+- 1 updated in `test_phase10_h_post1_mura_adj_correction.py
+  ::test_curse_verb_shipped_under_10_final_pre_1` — the
+  renamed 10.H.post-1 retraction sentry, repointed to assert
+  the curse-VERB IS present under 10.final.pre-1's new
+  paradigm while preserving the 10.H.post-1 ADJ-redup
+  invariant.
+- The remaining 9 ascribed to the chart-rule additions
+  surfacing previously-deferred test cases as newly-passing
+  parametrize entries.
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
