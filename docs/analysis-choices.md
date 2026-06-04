@@ -18813,6 +18813,33 @@ intends — no longer `ITER`. Separately, the 10.E.2 linked-intensive
 the intensive the informant reports alongside `mahal na mahal` (already
 covered, `mahal` being an extant ADJ; cf. the `ma-X na ma-X` of 10.E.2).
 
+**Reversal (10.final.pre-1, 2026-06-03; PR #202).** A multi-speaker
+native-informant panel (Tagalog + Waray speakers + a linguist/language
+engineer) reversed the curse-VERB retraction with positive evidence: both
+NOUN `mura` "profanity, curse word" and VERB `mura` "to curse, swear at"
+are productive in modern Tagalog, with full AV (mag-) + OV (-in/-hin) +
+pag- gerund paradigms (`magmura` / `nagmumura` / `murahin` / `minura` /
+`mumurahin` / `pagmumura`). The expert mura₁/mura₂ analysis — ADJ `mura`
+"cheap" and N/V root `mura` "curse" as two synchronically unrelated
+homophonous roots — maps cleanly onto tgllfg's existing POS-level lex
+disambiguation. The 10.H.post-1 scalar-ADJ analysis stands unchanged
+(ADJ `mura` and ADJ `mura-mura` REDUP_SEM=None scalar-moderate preserved);
+the new curse-root entries ship as POS-disambiguated homophones in
+nouns.yaml and verbs.yaml, intentionally NOT opted into `v_iter_redup` to
+preserve disjoint surface namespaces (the curse paradigm always carries
+verbal affixation or pag- gerund prefixation, so no `mura-mura` collision
+arises with the ADJ's `adj_redup`). The reversal is a re-add, not a
+regression — both the 10.H.post-1 retraction (right under 2026-05-26
+evidence) and the 10.final.pre-1 reversal (right under 2026-06-03 positive
+evidence) are correct under their respective evidence states. The
+absence-of-evidence pattern in this case was real (8 refs silent; one
+informant who hadn't met the curse VERB); the next informant panel —
+broader, including a working linguist — provided the contradicting
+evidence. See [[project_phase10_final_pre1_progress]] for the full
+narrative + paradigm + companion-fix expansion (Phase 5e Commit 25
+`Huwag kang` deferral closed, `dinig` TR + AV_ABSOL flip, `bawal` modal
+predicate, `takot` + `sigaw` + `yan` companion lex adds).
+
 **Validation home.** The canonical forms are largely audit-absent (the
 naturalistic corpora are formal/written), so the R-bucket is
 regression-anchored by the tracked unattributed-construction corpus
@@ -18821,9 +18848,15 @@ naturalistic ≥80% metric.
 
 **Named residuals (open, out of scope here):**
 
-- **10.Y** — prefix + vowel-initial hyphenation (`nag-alit` ≠ `nagalit`)
+- ~~**10.Y** — prefix + vowel-initial hyphenation (`nag-alit` ≠ `nagalit`)
   to unlock the full `alit` "quarrel" verb; a ~436-form
-  orthography/morphology-engine change.
+  orthography/morphology-engine change.~~ **Closed in Phase 10.Y
+  (2026-06-03, PR #200, `50d2533`).** The per-family policy in new
+  `src/tgllfg/morph/prefix_policy.py` partitions the CC-final prefix set
+  into `HYPHENATED_ONLY_PREFIXES` (8) and `DUAL_KEYED_PREFIXES` (11);
+  `mag-alit` (curse-VERB-eligible) and `magalit` (`ma`+`galit`
+  ADJ-predicative) now live under distinct index slots, allowing the
+  `alit` "quarrel" VERB to ship under [[project_phase10_y_progress]].
 - **`RESULTATIVE`** — a future `REDUP_SEM` value for the damage-state
   reading (`sira-sira` "all busted up"); deferred for want of audit
   attestation (10.E.1 root-class note).
