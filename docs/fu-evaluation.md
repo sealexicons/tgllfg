@@ -324,6 +324,21 @@ for `sarili`, cross-clausal non-control extraction, or other
 constructions where the FU equation must *establish* the link
 rather than verify it).
 
+**Phase 11.B.1 — first chart consumer (2026-06-04).** The L47
+long-distance relativization wraps (`cfg/extraction.py:2566` for
+the S_GAP-bodied wrap and `:2611` for the S_XCOMP-bodied wrap)
+migrate from the Phase 6.D constraining `=c` workaround to the
+canonical K&Z 1989 §3 eq. 39 defining `=` form. The S_XCOMP wrap
+also narrows its daughter to `S_XCOMP[SUBJ_GAP=true]` — see
+`docs/fu-extension-audit.md` §2.1 for the gap-category split that
+makes the defining form safe under Kroeger 1993's SUBJ-only
+relativization restriction. Both wraps now express the binding in
+its canonical LFG form; the re-pass machinery handles the
+parent-first evaluation order transparently. Twelve chart rules
+(3 head cases × 2 linkers × 2 wrap variants) updated; +13
+audit-corpus closures across waves 1–5 (no regressions). See
+`docs/fu-extension-audit.md` §2.1 (Candidate A shipping outcome).
+
 ### 5.3 Defining with regex on LHS (out of scope)
 
 ```text

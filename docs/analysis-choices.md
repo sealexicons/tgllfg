@@ -12058,6 +12058,41 @@ reentrancy because no body equation synthesizes it. Phase 6.F
 motivating case if 6.F's binding has to cross levels not
 synthesized by per-depth body equations.
 
+**Phase 11.B.1: post-10.M canonical form (2026-06-04).** The
+``=c`` workaround documented above is replaced by the canonical
+K&Z 1989 §3 eq. 39 defining ``=`` form. Two engine / chart
+changes enabled the migration:
+
+1. **Phase 10.M (PR #196)** — ``fstruct/unify.py`` now defers
+   FU defining-equations that report ``fu-no-endpoint`` at
+   fire-time, retrying them after the full defining pass
+   completes. The S_GAP wrap's defining FU then resolves
+   directly: the body's ``(↑ SUBJ) = (↑ REL-PRO)`` reentrancy
+   is built during the c-tree walk, and the wrap's queued FU
+   binds REL-PRO ≡ depth-0 SUBJ in the re-pass. See
+   ``docs/fu-evaluation.md`` §5.2.1.
+2. **Phase 11.B.1 — gap-category feat split.** The S_XCOMP
+   wrap's defining-form migration required additionally
+   narrowing the daughter to ``S_XCOMP[SUBJ_GAP=true]``. The
+   pre-11.B.1 daughter was bare ``S_XCOMP``, which admitted
+   both AV (SUBJ-gap) and non-AV (OBJ-AGENT-gap or
+   OBJ-CAUSER-gap) S_XCOMP bodies. The ``=c`` form
+   accidentally filtered the non-AV cases by requiring
+   REL-PRO ≡ depth-0 SUBJ at evaluation time; the defining
+   ``=`` form *creates* the binding via atom-compatible
+   unification and silently accepts the over-generation.
+   The gap-category split encodes Kroeger 1993's SUBJ-only
+   restriction at the c-structure level: 15 SUBJ-gap S_XCOMP
+   rules in ``cfg/control.py`` carry the ``SUBJ_GAP=true``
+   feat on their LHS; the L47 wrap consumes only feat-tagged
+   bodies. See ``docs/fu-extension-audit.md`` §2.1 (Candidate
+   A) and ``cfg/control.py:38-130`` for the full rationale.
+
+Net effect: both L47 wraps now express the canonical K&Z
+eq. 39 form. The Phase 6.D ``=c`` workaround is closed.
+Audit-corpus delta: +13 closures across waves 1–5, zero
+regressions.
+
 ### What stays at S_XCOMP (per-depth threading preserved)
 
 The cfg/control.py S_XCOMP rules continue to thread REL-PRO
