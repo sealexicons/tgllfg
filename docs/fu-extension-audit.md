@@ -179,20 +179,126 @@ verify the f-structure is identical to the pre-swap baseline.
 
 **Priority**: **P0 — clear win, low risk**.
 
-**Sub-PR shape (probable 11.B.1)**: 2-3 commits.
+**Phase 11.B.1 shipping outcome (2026-06-04)**. The initial
+full-pair swap (both wraps) failed `test-both` with **3 regressions**,
+all OBJ-AGENT-relativization rejection cases (e.g., `Tumakbo ang
+batang kinain ang isda.` from `test_relativization_ay_phase4.py`
+and `test_coverage_phase4.py` sent-566 / sent-567). Root cause:
+the audit's "semantic-equivalent" claim was correct for `S_GAP`
+but wrong for `S_XCOMP`. The divergence is body-overload:
 
-- Commit 1: swap `=c` → `=` on both wraps; update inline comments
-  at lines 2527-2540 (the workaround-rationale block) and 2586-2599
-  (the S_XCOMP wrap's pointer back to the workaround block) to
-  reflect the post-10.M canonical form.
+- **All `S_GAP` body variants** (AV / OV-NVOL / OV-AV_ABSOL / IV /
+  DAT-PRON-actor — `cfg/extraction.py:52-220`) bind
+  `(↑ SUBJ) = (↑ REL-PRO)`. The wrap's FU equation is vacuous at
+  depth 1, and `=` / `=c` produce identical f-structures.
+- **`S_XCOMP` non-AV body rules** (`cfg/control.py:94-235`) bind
+  `(↑ OBJ-AGENT) = (↑ REL-PRO)` (or `OBJ-CAUSER` for pa-OV / pa-DV)
+  — *not* `SUBJ`. The body's local `SUBJ` is the overt NOM pivot
+  (e.g., `ang isda` in `kinain ang isda`), distinct from `REL-PRO`.
+
+The wrap's `=c (↓3 XCOMP* SUBJ)` was implicitly enforcing
+**Kroeger 1993 SUBJ-only relativization** — depth-0 `SUBJ ≢ REL-PRO`
+under non-AV bodies, so the constraint failed and the parse was
+rejected. Switching to defining `=` *creates* the binding via
+atom-compatible unification (`PRED='NOUN(↑ FORM)'`, `CASE='NOM'`
+both match), silently letting OBJ-AGENT-relativization through and
+producing an f-structure where `SUBJ ≡ OBJ-AGENT ≡ REL-PRO ≡ pivot`
+(not head).
+
+Linguistic status: the unconstrained `=` IS the correct K&Z 1989 §3
+eq. 39 form for Tagalog SUBJ-only relativization. The unsoundness is
+*structural* — `S_XCOMP` is overloaded as both control-complement
+body (legitimate non-AV consumer) and RC body (illegitimate non-AV
+consumer). The `=c` form accidentally compensated for the overload;
+it didn't fix Tagalog.
+
+**Resolution — gap-category feat split (Option 3, 2026-06-04
+per user direction).** The SUBJ-only restriction is encoded at the
+c-structure level via a new `SUBJ_GAP=true` binary feat (added to
+`BINARY_FEATS` in `core/feats.py`):
+
+- The 15 SUBJ-gap S_XCOMP rules (4 AV plain at `control.py:50-83`,
+  8 nested PSYCH / INTRANS / MODAL / TRANS at `:251-322`, and 3
+  raising at `:358-380`) carry the LHS `S_XCOMP[SUBJ_GAP=true]`.
+- The 10 non-AV S_XCOMP rules (`control.py:94-235`) keep the bare
+  `S_XCOMP` LHS.
+- The L47 RC S_XCOMP wrap (`extraction.py:2611`) consumes
+  `S_XCOMP[SUBJ_GAP=true]` and uses the canonical K&Z defining
+  `=` form.
+- All other S_XCOMP consumers (control wraps, NEG passthrough,
+  coord rules, BE-N equational) continue to consume bare
+  `S_XCOMP` — bare-daughter match semantics admits both feat
+  variants per `cfg/compile.py:matches`.
+
+No passthrough rule needed. The feat propagates via the standard
+chart-feat mechanism. Total chart-side change: 15 rule LHSs gain
+the feat, 1 wrap daughter spec narrowed, 1 BINARY_FEATS entry.
+
+**Shipped scope of 11.B.1**: full closure of Candidate A (both
+wraps migrated to defining `=`).
+
+- **S_GAP wrap** (`extraction.py:2566`): swap `=c` → `=`. Six
+  rules. Semantic-equivalent for S_GAP (all bodies bind
+  `SUBJ = REL-PRO`); the FU equation is vacuous at depth 1.
+- **S_XCOMP wrap** (`extraction.py:2611`): swap `=c` → `=` AND
+  narrow daughter to `S_XCOMP[SUBJ_GAP=true]`. Six rules.
+
+**Audit-corpus delta**: +13 closures across waves (wave-1 +2,
+wave-2 rg-intermediate +3, wave-3 conversational +1, wave-3 so1972
++1, wave-4 +3, wave-5 +3); 0 regressions across all 9 waves
+(8 source corpora + unattributed-constructions). The closures are
+indirect — the canonical K&Z defining form admits a few legitimate
+SUBJ-gap RC bodies that the `=c` form rejected via narrow path
+matching. Sub-PR ≈ engineering-driven win.
+
+**Sub-PR shape (11.B.1 as shipped)**: 3 commits.
+
+- Commit 1: swap `=c` → `=` on the S_GAP wrap (`extraction.py:2566`),
+  add `SUBJ_GAP=true` LHS feat to the 15 SUBJ-gap S_XCOMP rules
+  (`control.py:50-83`, `:251-322`, `:358-380`), narrow L47 S_XCOMP
+  wrap daughter to `S_XCOMP[SUBJ_GAP=true]` and swap its `=c` → `=`
+  (`extraction.py:2611`), register `SUBJ_GAP` in `core/feats.py`,
+  and update inline comment blocks. Also bump the BINARY_FEATS
+  count in `tests/tgllfg/test_phase5n_c4_feats_audit.py`.
 - Commit 2: update `docs/fu-evaluation.md` §5.2.1 to cite the
-  swap as the first concrete chart consumer of the re-pass
-  mechanism; update `docs/analysis-choices.md` "Phase 6.D
-  Commit 2" to note the post-10.M canonical form. Cross-reference
-  this audit doc.
-- Commit 3 (optional): regression sentinel test that exercises the
-  4-depth LDD chain via the defining form and asserts re-pass-queue
-  activation at depth 2+ (a debug-mode counter in the unifier).
+  L47 swap as the first concrete chart consumer of the re-pass
+  mechanism. Update `docs/analysis-choices.md` "Phase 6.D
+  Commit 2" / "Implementation note: constraining-form
+  realization" with the Phase 11.B.1 post-script. Update
+  `docs/feats-binary-audit.md` with the new SUBJ_GAP entry and
+  count (74→75).
+- Commit 3: update this audit doc §2.1 with the shipping
+  outcome and the gap-category feat split decision; update
+  `.claude/plans/tgllfg-phase-11.md` §3.1 / §3.8 ledger.
+
+**Five paths surveyed for the S_XCOMP migration** (only Option 3
+was implemented; the others are documented for future reference):
+
+1. **LEMMA discriminator on the wrap** (~3-line change, but with
+   silent-rejection risk on legitimate non-AV cross-clausal RCs;
+   would need a designed test set first). Add
+   `(↓3 REL-PRO LEMMA) = (↓1 LEMMA)` so the body's overt
+   SUBJ-NP clashes with the head-derived REL-PRO LEMMA.
+2. **Off-path voice gate on the FU regex** (depth ≥ 2 only;
+   doesn't help depth-1 cases). Use Phase 6.C off-path:
+   `(↓3 REL-PRO) = (↓3 XCOMP*<(→ VOICE) =c 'AV'> SUBJ)`.
+3. **Gap-category feat split** — add `SUBJ_GAP=true` LHS feat
+   to SUBJ-gap S_XCOMP rules; L47 wrap consumes
+   `S_XCOMP[SUBJ_GAP=true]`. Architecturally cleanest;
+   small refactor (15 LHS feats + 1 wrap daughter spec).
+   The defining `=` becomes safe by construction.
+   **Chosen and shipped (2026-06-04).**
+4. **New parallel category** (`S_RC_SUBJGAP`) consumed only by
+   L47. Cleaner separation but rule duplication; no payoff
+   over option 3.
+5. **Engine extension — defining-FU with provenance tracking**.
+   Extend the FU resolver to track which defining equation
+   produced each endpoint and reject defining-FU bindings whose
+   endpoint provenance contradicts the binding direction.
+   Multi-PR engine work; not needed once option 3 lifted the
+   pressure but remains a clean architectural alternative if
+   future constructions need provenance-gated binding without a
+   gap-category split.
 
 ### 2.2 Candidate B — Sarili binding 24-rule collapse (control.py)
 

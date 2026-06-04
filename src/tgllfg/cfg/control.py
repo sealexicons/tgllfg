@@ -46,19 +46,38 @@ def register_rules(rules: list[Rule]) -> None:
     # rule's ``(↑ SUBJ) = (↑ XCOMP REL-PRO)`` is unchanged; only
     # the embedded clause's REL-PRO routing differs per voice.
     #
-    # AV frames: REL-PRO routes to SUBJ.
+    # **Phase 11.B.1 — gap-category feat split (2026-06-04).**
+    # Phase 6.D added the L47 long-distance relativization wrap
+    # (``extraction.py:2600-2613``) that re-uses ``S_XCOMP`` as a
+    # cross-clausal RC body. That re-use exposed the non-AV
+    # ``S_XCOMP`` variants (where REL-PRO binds to ``OBJ-AGENT``
+    # or ``OBJ-CAUSER``, not ``SUBJ``) as potential RC bodies,
+    # violating Kroeger 1993's SUBJ-only relativization
+    # restriction. Phase 6.D's constraining ``=c (↓3 XCOMP* SUBJ)``
+    # form accidentally filtered the over-generation; Phase 11.B.1
+    # surfaces this and resolves it architecturally by adding the
+    # ``SUBJ_GAP=true`` binary feat to SUBJ-gap S_XCOMP rule LHSs.
+    # The L47 RC wrap consumes ``S_XCOMP[SUBJ_GAP=true]``;
+    # ordinary control consumers continue to consume bare
+    # ``S_XCOMP`` (which matches both feat variants per
+    # ``cfg/compile.py:matches``). Non-AV S_XCOMP variants
+    # remain available as control complements but are no longer
+    # eligible as L47 RC bodies — the SUBJ-only restriction is
+    # encoded at the c-structure level.
+    #
+    # AV frames: REL-PRO routes to SUBJ. LHS carries SUBJ_GAP=true.
     rules.append(Rule(
-        "S_XCOMP",
+        "S_XCOMP[SUBJ_GAP=true]",
         ["V[VOICE=AV]"],
         _eqs("(↑ SUBJ) = (↑ REL-PRO)"),
     ))
     rules.append(Rule(
-        "S_XCOMP",
+        "S_XCOMP[SUBJ_GAP=true]",
         ["V[VOICE=AV]", "NP[CASE=GEN]"],
         _eqs("(↑ OBJ) = ↓2", "(↑ SUBJ) = (↑ REL-PRO)"),
     ))
     rules.append(Rule(
-        "S_XCOMP",
+        "S_XCOMP[SUBJ_GAP=true]",
         ["V[VOICE=AV]", "NP[CASE=GEN]", "NP[CASE=DAT]"],
         _eqs(
             "(↑ OBJ) = ↓2",
@@ -74,7 +93,7 @@ def register_rules(rules: list[Rule]) -> None:
     # 3-daughter rule above but without the GEN-OBJ daughter; the
     # locative-PP ADJUNCT lift is structurally identical.
     rules.append(Rule(
-        "S_XCOMP",
+        "S_XCOMP[SUBJ_GAP=true]",
         ["V[VOICE=AV]", "NP[CASE=DAT]"],
         _eqs(
             "↓2 ∈ (↑ ADJUNCT)",
@@ -248,10 +267,16 @@ def register_rules(rules: list[Rule]) -> None:
     # Composing these equations across depth-N gives a single
     # f-node shared across SUBJ slots at every level — finite-
     # depth control without functional uncertainty.
+    # **Phase 11.B.1 note**: nested rules below are SUBJ-gap by
+    # their own equations (``(↑ SUBJ) = (↑ REL-PRO)``), so their
+    # LHS is ``S_XCOMP[SUBJ_GAP=true]``. Their inner ``S_XCOMP``
+    # daughter accepts any variant (SUBJ-gap or non-SUBJ-gap),
+    # since bare-daughter match-semantics admits feat-richer
+    # candidates per ``cfg/compile.py:matches``.
     for link in ("NA", "NG"):
         # PSYCH nested: V[CTRL_CLASS=PSYCH] PART S_XCOMP
         rules.append(Rule(
-            "S_XCOMP",
+            "S_XCOMP[SUBJ_GAP=true]",
             [
                 "V[CTRL_CLASS=PSYCH]",
                 f"PART[LINK={link}]",
@@ -265,7 +290,7 @@ def register_rules(rules: list[Rule]) -> None:
         ))
         # INTRANS nested: V[CTRL_CLASS=INTRANS] PART S_XCOMP
         rules.append(Rule(
-            "S_XCOMP",
+            "S_XCOMP[SUBJ_GAP=true]",
             [
                 "V[CTRL_CLASS=INTRANS]",
                 f"PART[LINK={link}]",
@@ -286,7 +311,7 @@ def register_rules(rules: list[Rule]) -> None:
         # Phase 5j Commit 7 matrix modal wrap binds the outer
         # SUBJ NP; this rule lets the inner modal-XCOMP compose.
         rules.append(Rule(
-            "S_XCOMP",
+            "S_XCOMP[SUBJ_GAP=true]",
             [
                 "V[CTRL_CLASS=MODAL]",
                 f"PART[LINK={link}]",
@@ -306,7 +331,7 @@ def register_rules(rules: list[Rule]) -> None:
         # OBJ-θ-in-grammar). The NOM-marked forcee that the
         # matrix wrap rule would supply is the gap.
         rules.append(Rule(
-            "S_XCOMP",
+            "S_XCOMP[SUBJ_GAP=true]",
             [
                 "V[CTRL_CLASS=TRANS]",
                 "NP[CASE=GEN]",
@@ -355,9 +380,11 @@ def register_rules(rules: list[Rule]) -> None:
     # = THIS.XCOMP.SUBJ = innermost-action.SUBJ. Recursing
     # through ``S_XCOMP`` lets raising chains compose under
     # control (``Gusto kong mukhang bakang kumakain``).
+    # Phase 11.B.1: raising rules below bind ``(↑ SUBJ) = (↑ REL-PRO)``
+    # directly, so they are SUBJ-gap. LHS carries ``SUBJ_GAP=true``.
     for link in ("NA", "NG"):
         rules.append(Rule(
-            "S_XCOMP",
+            "S_XCOMP[SUBJ_GAP=true]",
             [
                 "V[CTRL_CLASS=RAISING]",
                 f"PART[LINK={link}]",
@@ -370,7 +397,7 @@ def register_rules(rules: list[Rule]) -> None:
             ),
         ))
     rules.append(Rule(
-        "S_XCOMP",
+        "S_XCOMP[SUBJ_GAP=true]",
         ["V[CTRL_CLASS=RAISING_BARE]", "S_XCOMP"],
         _eqs(
             "(↑ XCOMP) = ↓2",

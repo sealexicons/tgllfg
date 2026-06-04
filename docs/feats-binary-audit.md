@@ -5,6 +5,10 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 
 # Binary feats audit (Phase 5n.C.4 Commit 2)
 
+<!-- markdownlint-disable-file MD013 -->
+<!-- table rows are intentionally long-description; wrapping
+     hurts readability for what is essentially a glossary -->
+
 This audit underpins the YES/NO → bool sentinel migration that lands
 across Phase 5n.C.4 commits C3-C8. It identifies which f-structure
 feats are *truly binary* (and therefore migration targets) versus
@@ -38,8 +42,8 @@ Subsequent phases extended the inventory: 9.O.3 (+1), 9.O.4 (+1),
 9.O.5 (+1), 9.X.c11 (+1), 9.X.c19 (+1), 9.X.c22 (+1), 9.X.c49 (+1),
 9.X.post-2 (+1), 10.E.1 (+1), 10.G (+1), 10.J.post-8.5.2 (+1),
 10.J.post-8.5.5 (+1), 10.J.post-12.2 (+2), 10.K.2 (+1),
-10.J.post-12.6 (+2) → 72 total. Each extension is documented inline
-below.
+10.J.post-12.6 (+2), 11.B.1 (+1) → 75 total. Each extension is
+documented inline below.
 
 Every entry below is migrated from string-sentinel `YES`/`NO` to
 Python `True`/`False`. Grammar rule patterns use the `[X]` shorthand
@@ -116,6 +120,7 @@ negative.
 | `SAY_CLASS` | verb is in the "say"-class |
 | `SEQUENCE` | clause is in a temporal sequence |
 | `STATIVE_PRED` | predicate is stative / non-actor-changing (Phase 9.O.3) |
+| `SUBJ_GAP` | category-level marker: SUBJ-gap variant of `S_XCOMP` (Phase 11.B.1 — gap-category split; L47 RC wrap consumes `S_XCOMP[SUBJ_GAP=true]`) |
 | `SYMBOLIC` | particle is symbolic (mathematical operator) |
 | `UNCERTAIN` | particle carries uncertainty (`siguro`, `marahil`) |
 | `UNIV` | universal Q (`bawat`, `lahat`) |
