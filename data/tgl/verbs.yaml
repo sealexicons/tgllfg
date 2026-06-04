@@ -102,6 +102,30 @@
   transitivity: INTR
   affix_class: [um, maka]
 
+# Phase 10.Y C6: ``alit`` "quarrel, dispute" — reciprocal/symmetric
+# mag- AV (``mag-alit`` "to quarrel with", PFV ``nag-alit``). The
+# 10.E.6 deferral motivation: pre-10.Y the engine plain-concatenated
+# ``nag`` + ``alit`` → ``nagalit``, which collided with ``galit``'s
+# ``ma`` + ``galit`` + ``-na-`` past ``nagalit`` "got angry". 10.Y
+# moved the ``mag``/``nag``/``pag`` family to hyphenated-only
+# canonical surfaces, so ``mag-alit`` / ``nag-alit`` are now distinct
+# index keys from ``magalit`` / ``nagalit``. The NOUN ``alit``
+# "conflict, quarrel" (data/tgl/nouns.yaml) was added in 10.E.6 with
+# the affective-redup ADJ derivation (``alit-alit`` "bickering"); the
+# VERB here completes the inventory. Symmetric/reciprocal verbs in
+# Tagalog admit a single ``ng`` co-argument or a plural NOM pivot;
+# we register as INTR — the canonical ``Nag-alit sila.`` "They
+# quarreled." takes a plural NOM and no overt OBJ. References:
+# S&O 1972 §3.10 (mag-V symmetric class), K&Z 1989 §2.4 (reciprocal
+# voice). Confirmed via the 10.E.6 close-out reviewer note (the
+# noun-primary ``alit`` was deferred precisely because the engine
+# couldn't disambiguate; that disambiguation lands here in 10.Y).
+- citation: alit
+  pos: VERB
+  gloss: quarrel, dispute, be in conflict
+  transitivity: INTR
+  affix_class: [mag, maka]
+
 - citation: almusal
   pos: VERB
   gloss: eat breakfast
