@@ -2752,6 +2752,20 @@
   pos: NOUN
   gloss: world
 
+# Phase 10.final.pre-1: curse-root mura — NOUN sense "profanity,
+# swearing". Homophonous with the ADJ ``mura`` "cheap" in
+# adjectives.yaml but a semantically unrelated root (per Schachter &
+# Otanes ADJ-only treatment + the Phase 10.final.pre-1 native-
+# informant panel: multiple Tagalog speakers, a Waray speaker, and
+# a linguist/language engineer all confirm the curse N/V root as
+# productive in modern Tagalog). POS distinguishes; PRED defaults
+# to lemma per convention. Paired with curse-VERB ``mura`` in
+# verbs.yaml. Reverses (and replaces) the 10.H.post-1 retraction
+# which was based on absence of evidence in all 8 project refs.
+- citation: mura
+  pos: NOUN
+  gloss: curse word, profanity, swearing
+
 - citation: musika
   pos: NOUN
   gloss: music
@@ -3764,6 +3778,18 @@
   gloss: onion
   source: audit-corpus
   loan: SPANISH
+
+# Phase 10.final.pre-1: ``sigaw`` NOUN "a shout, scream, yell"
+# — homophone with the existing VERB ``sigaw`` "to shout" in
+# verbs.yaml (the canonical Tagalog V+N root pattern; same shape
+# as the curse-root ``mura`` add in this sub-PR — VERB +
+# parallel NOUN sense). Surfaces in the Phase 10.final.pre-1
+# smoke as the canonical NOM-pivot perceived object for
+# ``narinig`` ("Narinig ko ang sigaw." "I heard the shout.").
+# POS distinguishes; PRED defaults to lemma per convention.
+- citation: sigaw
+  pos: NOUN
+  gloss: a shout, scream, yell
 
 - citation: siko
   pos: NOUN

@@ -648,8 +648,17 @@
 - citation: dinig
   pos: VERB
   gloss: hear
-  transitivity: INTR
+  # Phase 10.final.pre-1: TR + ``AV_ABSOL: true`` mirror of the
+  # parallel ``kita`` "see" perception VERB above. The native-
+  # informant example ``Narinig ko ang kanyang mura.`` "I heard
+  # his/her curse." is a canonical 2-arg ma- perception parse —
+  # ``ko`` GEN perceiver + ``ang kanyang mura`` NOM perceived —
+  # which couldn't compose under the previous INTR shape. The
+  # AV_ABSOL flag preserves the bare 1-arg use ("the curse was
+  # heard"). Companion to the new curse-root ``mura`` add below.
+  transitivity: TR
   affix_class: [ma, maka]
+  feats: {AV_ABSOL: true}
   sandhi_flags: [d_to_r]
 
 # Phase 10.E.4 iterative-affective redup
@@ -1778,6 +1787,41 @@
   gloss: observe, watch carefully
   transitivity: TR
   affix_class: [mag, an_oblig, maka]
+
+# Phase 10.final.pre-1: curse-root mura — VERB sense "curse,
+# swear at". Homophonous with the ADJ ``mura`` "cheap" in
+# adjectives.yaml (PRED CHEAP) but a semantically unrelated
+# root (curse-PRED). Paired with the curse-NOUN ``mura`` in
+# nouns.yaml. Reverses (and replaces) the 10.H.post-1 retraction:
+# the multi-speaker native-informant panel of 2026-06-03 (Tagalog
+# + Waray speakers + a linguist/language engineer) confirmed
+# both productive AV (mag-) and OV (-in/-hin) paradigms plus the
+# pag- IPFV nominalization ``pagmumura`` "swearing, cursing"; the
+# 10.H.post-1 retraction was based on absence-of-evidence in the
+# 8 project refs and a single informant who reported never having
+# met the curse VERB. The affix_class triple here generates the
+# user-attested surfaces:
+#   mag        -> magmura, nagmura, nagmumura, magmumura (AV)
+#   in_oblig   -> minura (PFV), minumura (IPFV), mumurahin (CTPL),
+#                 murahin (SOC/INF bare)
+#   pag_gerund -> pagmura (PFV gerund), pagmumura (IPFV gerund)
+# v_iter_redup intentionally NOT opted-in: ``mura-mura`` is
+# already produced by the ADJ's ``adj_redup`` ("rather cheap")
+# and curse-VERB iter-redup was not in the informant paradigm.
+# Can be added later under audit-corpus attestation pressure.
+- citation: mura
+  pos: VERB
+  gloss: curse, swear at
+  transitivity: TR
+  # ``AV_ABSOL: true`` (Phase 9.O B3.A pattern, mirroring the
+  # ``away`` "quarrel" entry above): the AV mag- form usable both
+  # 2-arg with explicit OBJ ("curse at someone") AND 1-arg with
+  # implicit / optional OBJ ("be swearing, use profanity") — the
+  # informant's ``Huwag kang magmura.`` "Don't swear." is a 1-arg
+  # use; the OV ``Minura niya ako.`` "He cursed me." is the 2-arg
+  # use with the cursee as SUBJ.
+  affix_class: [mag, in_oblig, pag_gerund]
+  feats: {AV_ABSOL: true}
 
 - citation: nais
   pos: VERB
