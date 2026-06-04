@@ -412,6 +412,7 @@ class TestUnflippedClass2PreservedAsPRO:
         parses = parse_text("Mahirap kumain ng aso.")
         _ct, fs, _astr, _diags = parses[0]
         matrix_subj = fs.feats.get("SUBJ")
+        assert matrix_subj is not None
         inner_subj = matrix_subj.feats.get("SUBJ")
         assert inner_subj is not None
         assert inner_subj.feats.get("PRED") == "PRO"
