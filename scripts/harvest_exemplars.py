@@ -1498,6 +1498,16 @@ _ZAMAR_FRONT_MATTER_PAGES = 28
 _ZAMAR_COLGAP_RE = re.compile(r"\s{2,}")
 _ZAMAR_TERMINAL_RE = re.compile(r"^(.*?[.?!])(?:\s.*)?$")
 _ZAMAR_PAREN_RE = re.compile(r"\s*\([^)]*\)\s*")
+# Alternative-form pre-split: Zamar separates two complete-clause
+# alternatives (aspect-pair "Kaaalis./Kakaalis.", or politeness-pair
+# "Tama ka./ Tama po kayo.") with a literal slash adjacent to a
+# terminal-punctuation mark — no preceding column gap, so
+# ``_ZAMAR_COLGAP_RE`` doesn't separate them, and no whitespace before
+# the slash, so ``_ZAMAR_TERMINAL_RE`` doesn't truncate at the first
+# clause. Split each segment on terminal-punct + slash (optional
+# trailing space) BEFORE clean-up so each alternative becomes its
+# own exemplar. 10.Z.post-N audit-corpus close-out.
+_ZAMAR_ALT_SPLIT_RE = re.compile(r"(?<=[.?!])/\s?")
 
 
 def _zamar_clean_segment(seg: str) -> str | None:
@@ -1546,24 +1556,25 @@ def _zamar_extract_from_page(
         if not line.strip():
             continue
         for seg in _ZAMAR_COLGAP_RE.split(line.strip()):
-            cleaned = _zamar_clean_segment(seg)
-            if cleaned is None:
-                continue
-            if not _is_sentence_shape(cleaned):
-                continue
-            if not _looks_like_tagalog(cleaned):
-                continue
-            sent_idx += 1
-            yield Exemplar(
-                source="zamar2023",
-                locator=f"page-{page_num}/sent-{sent_idx}",
-                text_raw=cleaned,
-                text_normalized=normalize_orthography(cleaned),
-                has_gloss=True,
-                gloss_en=None,
-                marked_ungrammatical=cleaned.startswith(("*", "?")),
-                ocr_quality="native-pdf",
-            )
+            for alt in _ZAMAR_ALT_SPLIT_RE.split(seg):
+                cleaned = _zamar_clean_segment(alt)
+                if cleaned is None:
+                    continue
+                if not _is_sentence_shape(cleaned):
+                    continue
+                if not _looks_like_tagalog(cleaned):
+                    continue
+                sent_idx += 1
+                yield Exemplar(
+                    source="zamar2023",
+                    locator=f"page-{page_num}/sent-{sent_idx}",
+                    text_raw=cleaned,
+                    text_normalized=normalize_orthography(cleaned),
+                    has_gloss=True,
+                    gloss_en=None,
+                    marked_ungrammatical=cleaned.startswith(("*", "?")),
+                    ocr_quality="native-pdf",
+                )
 
 
 # === Source 2: R&B 1986 (verb-base inventory) =============================
