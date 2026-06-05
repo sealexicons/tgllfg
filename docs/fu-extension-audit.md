@@ -1397,7 +1397,7 @@ rewritten.
 | **11.B.2** | **P1** | B: Sarili 24-rule collapse + C: TestCrossClausalDeferred flip | 10.N inside-out | 4-6 commits | none |
 | **11.B.3** | **P1** | E: Purposive PRO binding + H-Class-3 subset (SHIPPED — PR pending) | 10.N inside-out | 1 sub-PR (c1 + c2 + c5) | 11.B.4.eng (PR #207, shipped) |
 | **11.B.4** | **P2** | D: Coordination CONJUNCTS inside-out (SHIPPED — narrowed to S_XCOMP_BARE only; S_XCOMP families 1+2 stay with explicit chains per implementation finding) | 10.N + set-valued `parents_via` | 2 sub-PRs (eng + chart) | self |
-| **11.B.5** | **P2** | §B.2: Cyclic-endpoint pruning (engine + canonical fixture) | U-bucket prototype | 2-3 commits | none |
+| **11.B.5** | **P2** | §B.2: Cyclic-endpoint pruning (engine + canonical fixture) (SHIPPED) | U-bucket prototype | 2 commits | none |
 | **11.X** | **P2** | §3.5: Bare `Huwag + V[AV]` PRO injection (Phase 10 carry-forward) | PRO machinery design (non-FU) | 2-4 commits | none |
 | **11.final** | **P3** | Closure docs + explicit declines (§B.5 set complement, §B.6 defining-on-regex LHS) | docs-only | 1 commit | none |
 | (future) | — | F: `{COMP \| XCOMP}*` body | 10.L K-on-A | n/a — no consumer | n/a |
@@ -1877,7 +1877,53 @@ Dalrymple 2001 §15 set-valued binding fixture in
 **Priority**: **P1** — unblocks Candidates D + E + the
 set-valued-containing-feat subset of Candidate H Class-3.
 
-### B.2 FU resolver-side cyclic-endpoint pruning (Phase 7+ engine extension)
+### B.2 FU resolver-side cyclic-endpoint pruning (SHIPPED in 11.B.5)
+
+**Phase 11.B.5 shipping outcome (2026-06-04)**: shipped as a
+U-bucket engine prototype (engine + canonical fixture; no chart
+consumer). `src/tgllfg/fstruct/fu.py:resolve_regex_for_read` gains
+an optional `exclude_cyclic_with: NodeId | None = None` kwarg.
+When supplied, endpoints whose canonical root equals
+`graph.find(exclude_cyclic_with)` are filtered out post-dedup.
+Surviving endpoints retain their minimality-sorted order. Default
+behavior (kwarg omitted or `None`) is unchanged — strictly
+additive engine extension.
+
+`tests/tgllfg/test_fu_evaluation.py::TestCyclicEndpointPruning`
+(6 cases): pruning-off default; pruning-with-LHS excludes cyclic;
+canonicalization via `find()` (covers "or already in the
+unification chain" case); no-op when excluded node isn't in
+endpoints; minimality-order preserved; explicit `None` matches
+default.
+
+**Why moot for Candidate B aggressive collapse**: the audit
+projected `cyclic-endpoint pruning + {SUBJ | obj_target}
+alternation + inside-out` to enable aggressive Candidate B
+24→~6 collapse. Phase 11.B.2's NP-layer pivot delivered 24→4
+via the Dalrymple 2001 §14-15 canonical reflexive idiom — better
+than the projected aggressive target, and without needing
+resolver-side pruning. So the original "raises Candidate B's
+compression ratio from 2× to 4×" framing is moot; the
+compression already exceeds 4× through a different mechanism.
+
+**Why ship anyway** (per U-bucket cadence): closes
+`tgllfg-out-of-scope.md` §18.1.3 line 61 (the parked deferral
+needs a disposition); engine extension is ~20 LOC and risk-free
+(default unchanged); future constructions (reciprocals,
+multi-binder constraints) that genuinely need the alternation
+form can opt in without re-engineering the resolver.
+
+**Chart consumer status**: NONE in `unify.py` opts in yet. The
+existing `_pass_defining` call at `unify.py:596` does not pass
+`exclude_cyclic_with`; existing cyclic-defining-eq cases continue
+to fail at `graph.unify` occurs-check (the legacy behavior). When
+a future construction needs alternation-form binding, opt-in is a
+one-line addition in `unify.py`.
+
+**Test-both**: 10142/10142 passed (was 10136 pre-11.B.5; +6
+fixtures, 0 regressions).
+
+**Pre-shipping documentation** (preserved for context):
 
 **Status**: documented in `docs/fu-evaluation.md` §11 (the Phase
 7+ extensions list) and `.claude/plans/tgllfg-out-of-scope.md`
@@ -2080,7 +2126,7 @@ LFG-canonical semantics in the literature.
 | Extension | Priority | Phase 11 disposition | Sub-PR | LOC scale |
 | --- | --- | --- | --- | --- |
 | **B.1 Set-valued `parents_via`** | **P1** | **Scheduled** — unblocks Candidates D + E + H-Class-3 | **11.B.4.eng** | ~20-40 LOC |
-| **B.2 Cyclic-endpoint pruning** | **P2** | **Scheduled** — U-bucket engine + canonical fixture; enables aggressive Candidate B 24→~6 collapse | **11.B.5** | ~30-60 LOC |
+| **B.2 Cyclic-endpoint pruning** | **P2** | **SHIPPED** — U-bucket engine + 6-case canonical fixture; aggressive Candidate B 24→~6 framing moot (11.B.2 delivered 24→4 via NP-layer pivot) | **11.B.5** | ~20 LOC |
 | B.3 K&Z minimality on inside-out | P3 | Parked — no ambiguity surfaced | — | ~30-60 LOC |
 | B.4 Materialized reverse index | P3 | Parked — perf-scale-driven | — | ~50-100 LOC |
 | **B.5 Set complement** | **P4** | **Explicit decline** — v1 confirmed; no Tagalog construction needs it | **11.final** | n/a |
