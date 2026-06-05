@@ -1412,7 +1412,7 @@ rewritten.
 | **11.B.3** | **P1** | E: Purposive PRO binding + H-Class-3 subset (SHIPPED — PR pending) | 10.N inside-out | 1 sub-PR (c1 + c2 + c5) | 11.B.4.eng (PR #207, shipped) |
 | **11.B.4** | **P2** | D: Coordination CONJUNCTS inside-out (SHIPPED — narrowed to S_XCOMP_BARE only; S_XCOMP families 1+2 stay with explicit chains per implementation finding) | 10.N + set-valued `parents_via` | 2 sub-PRs (eng + chart) | self |
 | **11.B.5** | **P2** | §B.2: Cyclic-endpoint pruning (engine + canonical fixture) (SHIPPED) | U-bucket prototype | 2 commits | none |
-| **11.X** | **P2** | §3.5: Bare `Huwag + V[AV]` PRO injection (Phase 10 carry-forward) | PRO machinery design (non-FU) | 2-4 commits | none |
+| **11.X** | **P2** | §3.5: Bare `Huwag + V[AV]` PRO injection (Phase 10 carry-forward) (SHIPPED — PR pending) | PRO machinery design (non-FU) | 2 commits | none |
 | **11.final** | **P3** | Phase 11 closure docs (roadmap update, completed.md migration, retrospective) | docs-only | 1 commit | none |
 | ~~(future)~~ | ARCHIVED | ~~F: `{COMP \| XCOMP}*` body~~ — archived per Phase 11.A audit → out-of-scope §18.1.5 | 10.L K-on-A | n/a — no consumer | n/a |
 
@@ -1481,18 +1481,19 @@ for** the FU-extension consumer audit. Each is scheduled
 explicitly:
 
 - **Bare `Huwag + V[VOICE=AV]`** (e.g. `Huwag kumain.`,
-  `Huwag manigarilyo.`) — needs PRO SUBJ injection to satisfy
-  the V's a-structure completeness check. Canonical Tagalog 2nd-
-  person imperatives use the addressee-explicit form
-  (`Huwag kang kumain.` — closed by Phase 10.final.pre-1
-  Variant A) or an OBJ-bearing form (matrix-NEG rule when `ng X`
-  is the only argument). The bare-V form is sign-language /
-  prohibition-sign style (S&O 1972 §8.2). Structurally adjacent
-  to Candidate H Class-1 impersonal (the PRO has no antecedent in
-  the bare-V case; the addressee is discourse-level). **Not a
-  10.N inside-out candidate**, because there is no f-structural
-  antecedent to bind to. **Scheduled as Phase 11.X** (non-FU
-  sub-PR; see §3 backlog row).
+  `Huwag manigarilyo.`) — **SHIPPED 2026-06-04 by Phase 11.X**
+  (PR pending). 2 new chart rules in `cfg/negation.py`
+  (bare V[AV] + V[AV]+GEN-OBJ) inject `(↑ SUBJ PRED) = 'PRO'`
+  per alternative (a) impersonal-PRO choice (Class-1 pattern from
+  Appendix C). The audit-time claim that the matrix-NEG rule
+  covers `Huwag kumain ng X.` turned out to be incorrect
+  (`Kumain ng X.` doesn't parse standalone without a NOM-SUBJ),
+  so the V+GEN-OBJ variant is genuinely covered by 11.X, not by
+  inheritance. DAT/sa-OBL form (`Huwag pumunta sa Maynila.`)
+  remains a pre-existing gap (`Pumunta sa Maynila.` doesn't
+  parse standalone) — separate from 11.X scope. 5 new fixtures
+  plus 3 unattributed-corpus exemplars under
+  `unattributed/bare-huwag-pro`.
 - **`v_iter_redup` for curse-VERB `mura`** — morphology,
   not FU. Audit-attestation-gated per
   [[feedback_audit_before_scheduling]]. **Stays
