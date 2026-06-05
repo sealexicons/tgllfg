@@ -47,6 +47,10 @@ group.
 | FOCUS | Focus | Discourse function; non-governable in the LFG sense. |
 | FREE_REL | Free-relative marker | Phase 6.E — binary feat (in `BINARY_FEATS`) set by the free-relative NP wrap rules when a `kung`-headed wh-clause functions as an NP argument. §18.1.2 L93. |
 | FU | Functional Uncertainty | Kaplan & Zaenen 1989 §3 — regex-path designators on f-structures (`↑ COMP* OBJ`, `↑ XCOMP* SUBJ`). The unifier evaluates these against the live f-graph via finite-state traversal (Kaplan & Maxwell 1988). Phase 6.B implementation. |
+| inside-out designator | Reverse-lookup FU path | Dalrymple 2001 ch. 14/15 — designators of the form `(FEAT INNER)` that resolve "from the inside out": find a parent f-structure whose `FEAT` attribute equals the INNER designator's value, then continue resolving from there. Phase 10.N implementation (`fstruct/equations.py:InsideOut` AST node + `FGraph.parents_via()` reverse-lookup). Used heavily in Phase 11.B.2 sarili NP-layer rules (`((SUBJ ↑) GF)` / `((OBJ ↑) SUBJ)` etc.), Phase 11.B.3 purposive PRO binding (`((ADJUNCT ↑) SUBJ)`), and Phase 11.B.4.chart coord CONJUNCTS body-level (`((CONJUNCTS ↑) FEAT)`). |
+| InsideOut | Inside-out AST node | Phase 10.N equation AST — `(FEAT INNER)` form. Parser/unparser symmetric; resolver delegates to `FGraph.parents_via()`. Failure mode `inside-out-no-parent` is non-recoverable (not in `NON_BLOCKING_KINDS`). |
+| `parents_via` | Reverse-edge lookup | `FGraph.parents_via(target, feat)` — O(N) scan finding all parent f-structures `p` such that `p.attrs[feat]` canonicalizes to `target`. Phase 10.N introduction (direct edges); Phase 11.B.4.eng extension (`SetValue` members also matched, enabling CONJUNCTS-set inside-out for coordinated structures). |
+| cyclic-endpoint pruning | FU resolver filter | Phase 11.B.5 U-bucket prototype — optional `exclude_cyclic_with: NodeId \| None = None` kwarg on `resolve_regex_for_read`. Filters resolved endpoints whose canonical root equals `graph.find(exclude_cyclic_with)`, blocking the cyclic case (RHS endpoint same node as LHS, which would unify to a self-loop). No chart consumer opts in yet; available for future alternation-form binding constructions (reciprocals, multi-binder symmetric anaphora). |
 | GF | Grammatical Function | SUBJ, OBJ, OBL-θ, ADJ, etc. (Distinct from "Goal Focus" in S&O — disambiguated by context.) |
 | graph-constraint matcher | Strict category matcher | Phase 6.C — `cfg/compile.py:matches` requires `expected.keys() ⊆ candidate.keys()` plus value compat on shared keys. Replaces the pre-6.C "non-conflict" matcher which silently admitted shared-key-absence matches. K&Z 1989 §3 c-structure faithfulness. |
 | [±r, ±o] | Bresnan–Kanerva intrinsic features | The feature pair that drives LMT mapping. `r` = restricted (cannot be SUBJ); `o` = objective (object-like). Truth table in `docs/lmt.md`. |
@@ -179,10 +183,12 @@ group.
 
 ### Quantifier / modifier / discourse feats (Phase 5–6)
 
-F-structure attributes added across Phases 5 and 6 for quantifier
-semantics, modifier projection, and discourse / register tracking.
-Most are binary (`true` / absent) — see `core/feats.py:BINARY_FEATS`
-for the canonical list (52 entries as of Phase 6.G).
+F-structure attributes added across Phases 5–11 for quantifier
+semantics, modifier projection, discourse / register tracking,
+reduplication taxonomy (Phase 10.A–10.H), and gap-category
+restriction (Phase 11.B.1). Most are binary (`true` / absent) —
+see `core/feats.py:BINARY_FEATS` for the canonical list
+(75 entries as of Phase 11.B.1).
 
 | Abbrev | Type | Notes |
 | -------------- | ---------------- | ---------------------------------------------------------------------------------------------------- |
@@ -217,8 +223,11 @@ for the canonical list (52 entries as of Phase 6.G).
 | QUESTION | Binary | Phase 5i question-marker on `ba`; lifts to matrix `Q_TYPE=YES_NO`. |
 | RECP | Binary | Reciprocal-construction marker. |
 | REGISTER | Enum | `POLITE`, `COLLOQUIAL_POLITE`, `LITERARY` (Phase 5m politeness register), `COLLOQUIAL` (Phase 7a.E §3.6 no-linker modal + Phase 7a.F kahit-X no-ay — colloquial-register matrix marker that downstream consumers can filter on). |
+| REDUP | Enum | `FULL` (whole-base reduplication; Phase 10.A–10.E). Marks the output of full-redup paradigm cells (`adj_redup`, `card_redup`, etc.); cross-cuts with `REDUP_SEM` for productive-vs-lexicalized analysis. |
+| REDUP_SEM | Enum | `DISTR` (10.B place-redup), `FREQ` (10.A time-redup), `QUANT` (10.D card-redup), `ITER` (10.E.3 v-stem productive iter), `ATTEN` (10.E.4 atten-form), `INTENS` (10.E.1 ang-exclamative), `CASUAL` (10.E.3.post-1). Lifts to matrix f-structure via the redup cell's POS-flip path; disambiguates surface-collision cases (e.g. ADJ `mura-mura` "rather cheap" REDUP_SEM=None vs. VERB-iter `mura-mura` "cursing" REDUP_SEM=ITER post-11.Y). |
 | RESULTATIVE | Binary | Phase 5n.A `naka-` resultative stative-locative marker. |
 | SEM_CLASS | Enum | `REFLEXIVE` (`sarili`), `SEASON` (`tag-`-prefixed), `TIME` (clock), etc. Lifts to NP via Phase 6.G SHARE+SHARE. |
+| SUBJ_GAP | Binary | Phase 11.B.1 — c-structure-level gap-category restriction on S_XCOMP. Tagged on the 15 SUBJ-gap S_XCOMP rules in `cfg/control.py` (4 AV plain + 8 nested PSYCH/INTRANS/MODAL/TRANS + 3 raising); the L47 LDD RC wrap narrows its S_XCOMP daughter to `S_XCOMP[SUBJ_GAP=true]`. Encodes the Kroeger 1993 SUBJ-only relativization restriction at the c-structure level, making the L47 wrap's defining `=` form (post-10.M) safe by construction. |
 | UNIV | Binary | Phase 5m universal-quantifier marker (`kahit-X` family). |
 | VAGUE | Binary | Phase 5h vague-Q marker (`marami` / `konti` / `kakaunti`); gates predicative-Q clause rule. |
 | WH | Binary | wh-Q / wh-PRON marker. Phase 5i. |
@@ -323,7 +332,9 @@ extends the same machinery to PART (via `Particle.affix_class`).
 | UUID | Universally Unique Identifier | UUID v4 (`gen_random_uuid()` from `pgcrypto`). |
 | WF | Well-Formedness | Refers to the LFG well-formedness checks (completeness, coherence, subject condition). |
 | YAML | YAML Ain't Markup Language | |
-| BINARY_FEATS | Binary-feat allowlist | Phase 5n.C.4 — `frozenset[str]` in `src/tgllfg/core/feats.py` enumerating the 52 f-structure features whose values are strictly Boolean (`true` / `false`). Gates the compiler's `[FEAT]` shorthand and validates YAML / equation usage. Audit doc at `docs/feats-binary-audit.md`. |
+| BINARY_FEATS | Binary-feat allowlist | Phase 5n.C.4 — `frozenset[str]` in `src/tgllfg/core/feats.py` enumerating the f-structure features whose values are strictly Boolean (`true` / `false`). 75 entries as of Phase 11.B.1 (SUBJ_GAP added; 52 pre-Phase-6.G baseline). Gates the compiler's `[FEAT]` shorthand and validates YAML / equation usage. Audit doc at `docs/feats-binary-audit.md`. |
+| U-bucket | Engine-prototype cadence | Optional-kwarg-with-default-None engine extension pattern: a new keyword argument with `None` default is added to a `fstruct/` API, behavior unchanged when omitted, canonical fixture covers the new path. Five instances: 10.L (Kleene-on-alternation), 10.M (deferred defining-eq re-pass), 10.N (inside-out designators), 11.B.4.eng (set-valued `parents_via`), 11.B.5 (cyclic-endpoint pruning). All five shipped 0 audit-corpus regressions and 0 chart-level changes (no behavior change until consumer opts in) — canonical safe way to ship engine extensions ahead of chart consumers. |
+| PRO class 1/2/3 | PRO placeholder taxonomy | Phase 11.B.3 + audit doc Appendix C three-way classification of `(↑ GF PRED) = 'PRO'` equations in `cfg/*.py` (46 total instances): **Class 1 impersonal** (32 instances — genuinely absorbed agents / placeholder implicit-head referents with no real binder to point at; not actionable for inside-out promotion); **Class 2 anaphoric / discourse-bound** (10 instances — case-by-case binding to discourse antecedent; carries CASE-conflict avoidance commentary at e.g. `clause.py:5263-5265`); **Class 3 controlled** (4 instances — all purposive `para`/`upang` SUBJ slots; structural binder available, inside-out candidate). Phase 11.B.3 flipped the Class-3 subset to `(↑ SUBJ) = ((ADJUNCT ↑) SUBJ)` inside-out form; Classes 1 and 2 stayed as PRO placeholders. |
 | bool sentinel | YES/NO → Boolean migration | Phase 5n.C.4 Commits 2–8 — replaced the legacy `"YES"` / `"NO"` string sentinels for binary feats with Python `bool`. ~250 tests swept from `== "YES"` to `is True`. Legacy aliases rejected post-C8. |
 | lemma_sense | Per-sense feat row | Phase 5n.C.4 — DB-schema child table indexed by `(lemma_id, sense_index)` and joined via `LexEntry.lemma_sense_id`. Closes §18 L34 (long-standing polysemy across `kuwarto` ROOM vs. FRACTION etc.). |
 
@@ -356,7 +367,7 @@ Terms used in the Phase 8/9 audit work (rolled up into `docs/coverage.md` § "Ph
 | two-NP equational | A predicational clause whose pivot AND subject are both full NPs: `Si Juan ito.` (Si-pivot, Phase 8.Y) / `Ang lalaki ang doktor.` (ang-pivot, Phase 8.Z). PRED = `'BE-NP <SUBJ>'`. |
 | pseudo-cleft | A focus-marked clause of the form `<NP> ang <V-headed-NP>` where the V-headed NP is a headless relative ("the one who Xed"). E.g., `Ang nanay ang nagluto.` "It's the mother who cooked." / "The mother is the one who cooked." Currently zero-parsing in tgllfg (the headless RC doesn't wrap to NP[CASE=NOM]); Phase 8 follow-on. |
 | ay-fronting / ay-inverted | The Phase 4 §7.4 topicalization construction `<NP> ay <S>` where the fronted NP is the topic (and typically SUBJ). Examples: `Ako ay kumain.` (V-clause; works), `Ito ay aklat.` (N-pred; Phase 8.Y). |
-| naturalistic baseline | The clean-parse rate against unprepared reference-grammar text. As of the Phase 10 close (2026-06-03): **31.99% (1943/6073 sentences) across the 9 audit buckets** (wave-1 exemplars + waves 2-5 + unattributed constructions). Wave-1 exemplars hit 122/122 = 100% in Phase 10.X (the last wave-1 ZPF closed). The other buckets: wave2-ramos1971 78/209 (37.32%); wave2-rc1990 220/1022 (21.53%); wave2-rg-intermediate 493/1919 (25.69%); wave3-rg-conversational 333/666 (50.00%); wave3-so1972 321/1265 (25.38%); wave4-kroeger1991 62/215 (28.84%); wave5-zamar2023 159/500 (31.80%); unattributed-constructions 155/155 (100%). Trajectory: Phase 8 close ~11% → Phase 9 close (2026-05-24) 30.91% on Waves 1-4 → Phase 10.Z wave-5 harvest 30.42% on Waves 1-5 → Phase 10 close 31.99%. The curated `coverage_corpus.yaml` is at 99.7% throughout. |
+| naturalistic baseline | The clean-parse rate against unprepared reference-grammar text. As of the Phase 11 close (2026-06-04): **32.09% (1952/6082 sentences) across the 9 audit buckets** (wave-1 exemplars + waves 2-5 + unattributed constructions). Wave-1 exemplars hold at 122/122 = 100% (achieved in Phase 10.X). The other buckets, unchanged across Phase 11 (zero existing-sentence regressions or improvements; Phase 11 was engineering-driven, not closure-driven): wave2-ramos1971 78/209 (37.32%); wave2-rc1990 220/1022 (21.53%); wave2-rg-intermediate 493/1919 (25.69%); wave3-rg-conversational 333/666 (50.00%); wave3-so1972 321/1265 (25.38%); wave4-kroeger1991 62/215 (28.84%); wave5-zamar2023 159/500 (31.80%); unattributed-constructions 164/164 (100%; +9 Phase-11 additions from 11.B.3 purposive PRO + 11.X bare-Huwag + 11.Y `mura-mura` curse-iter). Trajectory: Phase 8 close ~11% → Phase 9 close (2026-05-24) 30.91% on Waves 1-4 → Phase 10.Z wave-5 harvest 30.42% on Waves 1-5 → Phase 10 close 31.99% → Phase 11 close 32.09%. The curated `coverage_corpus.yaml` is at 99.7% throughout. |
 
 ## 2. References — algorithms, processes, and analytical decisions
 

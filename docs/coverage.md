@@ -2271,6 +2271,241 @@ work surfaced and explicitly parked:
   conditional curse-NOUN `mura` it gated is now shipped
   in-phase via 10.final.pre-1).
 
+### Phase 11 retrospective (closure)
+
+**Status**: Phase 11 opens 2026-06-04 with PR #204 (Phase 11.A
+audit gate) and closes the same day with this documentation
+sub-PR (Phase 11.final). Single-session phase from audit to close
+— uncommon cadence, driven by the engineering-driven (not
+closure-driven) discipline: the FU-extension consumer audit + the
+shipped backlog all landed cleanly without requiring corpus
+attestation pressure to schedule.
+
+#### Buckets — final scope
+
+Phase 11 had a four-track plan per `.claude/plans/tgllfg-phase-11.md`,
+all shipped:
+
+- **Track A — audit gate** (11.A). `docs/fu-extension-audit.md`
+  (1681 lines) — prioritized FU-extension consumer backlog across
+  6 candidates (A: extraction L47 `=c`→`=`; B: control.py sarili
+  24-rule collapse; C: TestCrossClausalDeferred flip; D:
+  coordination CONJUNCTS inside-out; E: subordination purposive
+  PRO; F: clause.py `{COMP \| XCOMP}*` null finding) + §2.7
+  baseline-FU sweep (Candidate G null) + §2.8 broader
+  PRO-placeholder taxonomy (Candidate H, 53 instances; 3-class
+  taxonomy) + §A per-module rule-by-rule audit + §B unimplemented
+  FU engine extensions + §3.5 Phase 11 carry-forward items NOT on
+  the FU backlog. Engineering-driven discipline: audit-before-
+  scheduling per [[feedback_audit_before_scheduling]]; no new
+  candidates beyond A-H.
+- **Track B — FU chart consumers + engine extension** (11.B.1
+  through 11.B.5). Five sub-PRs covering the prioritized backlog:
+  11.B.1 (P0, extraction.py L47 `=c`→`=` swap + new `SUBJ_GAP=true`
+  c-structure-level gap-category feat); 11.B.2 (P1, sarili 24-rule
+  collapse + cross-clausal sarili NP-layer pivot delivering
+  24→4 — better than the audit-projected ~24→~12 — via the
+  canonical Dalrymple 2001 §14-15 LFG reflexive idiom); 11.B.3
+  (P1, purposive PRO inside-out via ADJUNCT-based binding + Class-3
+  PRO subset, the first set-valued chart consumer); 11.B.4.eng +
+  11.B.4.chart (P2, set-valued `parents_via` engine extension +
+  S_XCOMP_BARE_COORD body-level inside-out chart consumer);
+  11.B.5 (P2, FU resolver-side cyclic-endpoint pruning U-bucket
+  prototype). All five shipped 0 audit-corpus regressions.
+- **Track X — non-FU Phase-10 carry-forward** (11.X). Bare
+  `Huwag + V[AV]` PRO injection (S&O 1972 §8.2 sign-language /
+  prohibition-sign style). 2 new chart rules in `cfg/negation.py`
+  inject `(↑ SUBJ PRED) = 'PRO'` per Class-1 impersonal pattern;
+  closes the deferral parked in `cfg/negation.py:226-237`
+  block-comment + out-of-scope §18.1.4 line 69.
+- **Track Y — non-FU attestation-gated carry-forward** (11.Y).
+  `v_iter_redup` opt-in on curse-VERB `mura`. Attestation gate
+  satisfied same-day via informant / reviewer pass (2026-06-04)
+  confirming `mura-mura` curse-iter is common, productive
+  ITER/HABITUAL reduplication parallel to `iyak-iyak` / `tawa-tawa`.
+  Single-line `affix_class` extension on the existing curse-VERB
+  entry (the 10.final.pre-1 inline comment "Can be added later
+  under audit-corpus attestation pressure" was the
+  scheduled-work pointer); cross-POS coexistence at `muramura`
+  surface (ADJ-derived REDUP_SEM=None scalar-moderate vs.
+  VERB-iter-derived REDUP_SEM=ITER cursing) disambiguated by
+  lemma / REDUP_SEM / AV_ABSOL.
+
+Plus closure docs:
+
+- **11.final** — this closure documentation sub-PR.
+
+#### Audit headline
+
+The 9-wave audit cumulative parse rate moved as follows across
+Phase 11:
+
+| Snapshot | XWAVE | % | Source |
+| --- | ---: | ---: | --- |
+| Phase 10 close (2026-06-03) | 1943/6073 | 31.99% | 10.final.pre-1 |
+| **Phase 11 close (2026-06-04)** | **1952/6082** | **32.09%** | 9 new unattributed exemplars (11.B.3 + 11.X + 11.Y) |
+
+Per-wave **at Phase 11 close** (vs Phase 10 close): zero closure
+changes on existing sentences across all of wave1 / wave2 / wave3 /
+wave4 / wave5. The only delta is +9 NEW unattributed-corpus
+exemplars (Phase 11.B.3 + 11.X + 11.Y additions), all closing.
+Verified by `tmp/audit_bucket_diff.py` — 0 REGRESSIONS, 0
+IMPROVEMENTS, 0 SHIFTS, 9 NEW, 0 REMOVED.
+
+This is the expected outcome: Phase 11 was an
+engineering-driven (rule-consolidation, architectural-improvement)
+phase, not a closure-driven (sentence-count) phase. The audit-
+corpus parity confirms the chart rewrites preserved the same
+f-structures (just via simpler / more canonical rule sets).
+
+#### Performance
+
+Full 9-wave audit wall-clock: **84.6s → 89.6s** (+5.0s, +5.9%)
+across the Phase 11 sub-PR chain. Per-task: 13.93ms → 14.73ms
+(+0.80ms). Cumulative cost across:
+
+- 11.B.1 — c-structure feat-split adds matcher work on the 15
+  SUBJ-gap S_XCOMP rules.
+- 11.B.2 — 4 sarili-aware NP-layer rules add chart work on
+  every NP composition (offset by the 24 matrix-rule binding
+  removals — net unknown without per-rule profile).
+- 11.B.3 — 4 purposive rule body-level inside-out resolutions
+  add FU resolver work in matching matrix attachments.
+- 11.B.4.eng — set-valued `parents_via` extension adds per-node
+  set-scan work on every reverse-lookup.
+- 11.B.4.chart — 6 S_XCOMP_BARE body-level inside-out
+  resolutions add FU resolver work in CONJUNCTS-set scans.
+- 11.B.5 — engine prototype only (no chart consumer); the
+  optional `exclude_cyclic_with` kwarg adds nothing when omitted.
+- 11.X — 2 new chart rules in `cfg/negation.py` (narrow scope,
+  bare-Huwag only).
+- 11.Y — single `affix_class` extension on one root; expands
+  morph-analyzer index by one cell-application.
+
+The +5.9% is modest and not a budget violation (the per-task
+~14.7ms is well within parse latency tolerances). Not flagged
+as actionable.
+
+#### Closed deferrals from §18 named at Phase 11 close
+
+The pre-Phase-11 out-of-scope ledger (`tgllfg-out-of-scope.md`
+§18.1.3 + §18.1.4) had 6 carry-forward items routed by 11.A's
+audit. Disposition:
+
+- **§18.1.3 line 59 — FU regex-path set-complement notation
+  `(GF-COMP)`** — **archived** (§18.1.5) per 11.A audit: zero
+  Tagalog motivation across all cfg modules.
+- **§18.1.3 line 60 — FU defining-on-regex-LHS** —
+  **archived** (§18.1.5): out-of-scope per K&Z 1989 §3 design
+  (permanent; semantically ill-defined in standard LFG).
+- **§18.1.3 line 61 — FU resolver-side cyclic-endpoint
+  pruning** — **CLOSED by 11.B.5** (PR #210) as a U-bucket
+  engine prototype.
+- **§18.1.3 line 62 — per-XCOMP binding rules for cross-clausal
+  sarili** — **archived** (§18.1.5): superseded by 11.B.2
+  (PR #206) NP-layer pivot; cross-clausal sarili shipped
+  automatically as a side effect of the inside-out + XCOMP
+  functional-control structure-sharing.
+- **§18.1.4 line 69 — bare `Huwag + V[VOICE=AV]`** — **CLOSED
+  by 11.X** (PR #211) via 2 new chart rules in `cfg/negation.py`
+  injecting Class-1 impersonal PRO.
+- **§18.1.4 line 70 — `v_iter_redup` for curse-VERB `mura`** —
+  **CLOSED by 11.Y** (PR #212) via single-line `affix_class`
+  extension after informant attestation landed 2026-06-04.
+- **§18.1.4 line 71 — naturalistic ≥80% on the broader
+  wave-2/3/5 corpora** — **reclassified to §18.1.3**
+  (future-work-dependent scope-expansion; no active phase
+  claim).
+
+Plus one audit-doc candidate retired without a Phase 11 sub-PR:
+
+- **Audit doc Candidate F — `{COMP \| XCOMP}*` body collapse
+  (chart consumer of 10.L Kleene-on-alternation)** — **archived**
+  (§18.1.5): structurally absent from Tagalog (SUBJ-only
+  relativization restriction + voice-morphology-driven
+  extraction means COMP-internal SUBJs aren't reachable). The
+  10.L engine remains load-bearing as engine-correctness anchor
+  via `test_eq39_topic_equals_comp_xcomp_star_gf_kleene`.
+
+#### Reusable findings surfaced in Phase 11
+
+- **Audit pre-shipping claims need verification** (third
+  instance in this phase: 11.B.3 ADJUNCT-vs-ADJ correction;
+  11.B.4.chart S_XCOMP-vs-S_XCOMP_BARE narrowing; 11.X
+  matrix-NEG-doesn't-cover-V+GEN-OBJ correction). Always probe
+  the audit's inheritance / coverage claims before assuming
+  they hold.
+- **Comments-as-scheduled-work-pointers** (11.Y kickoff): when
+  a lex entry ships with an inline "intentionally NOT opted-in"
+  comment naming an unblocking condition, the comment IS the
+  scheduled-work pointer. Surface it during kickoff before
+  re-planning from scratch.
+- **U-bucket cadence is risk-free engine prototyping**: all 5
+  optional-kwarg-with-default-None engine prototypes (10.L
+  K-on-A, 10.M deferred re-pass, 10.N inside-out designators,
+  11.B.4.eng set-valued `parents_via`, 11.B.5 cyclic-endpoint
+  pruning) shipped with 0 audit-corpus regressions and 0
+  chart-level changes (no behavior change until consumer opts
+  in). Canonical safe way to ship engine extensions ahead of
+  chart consumers — corpus pressure can opt in later without
+  re-engineering.
+- **NP-layer mechanism over matrix-rule mechanism for anaphora**
+  (11.B.2 pivot): when chart-level matrix-rule binding is doubly
+  blocked (e.g., LHS regex on `=c` silently deferred + dual
+  unconditional bindings trigger occurs-check cycles), NP-layer
+  placement (canonical Dalrymple 2001 §14-15 LFG reflexive
+  idiom) generalizes cleanly. NP-layer binding via inside-out
+  `((SUBJ ↑) GF)` collapses both position AND NP-order
+  dimensions.
+- **Body-level inside-out requires a coord-only daughter
+  non-terminal** (11.B.4.chart finding): when a non-terminal
+  has standalone consumers (not just within COORD wrappers),
+  body-level inside-out fires on every standalone parse and
+  blocks via `inside-out-no-parent`. Factor out a
+  `X_COORDABLE → X` wrapper only when the equation count saved
+  exceeds the non-terminal overhead.
+- **Audit absence is a sample fact, not a grammaticality
+  oracle** (11.Y attestation pattern): the audit corpus
+  didn't surface `mura-mura` curse-iter across any of waves
+  1-5, but it IS productive in spoken Tagalog. Informant pass
+  is the authorized gating mechanism per
+  [[feedback_audit_before_scheduling]]; the gate can flip
+  same-day if a reviewer is available.
+- **Cross-POS coexistence at a shared surface is a valid
+  design**: disambiguate via per-source feats (lemma /
+  REDUP_SEM / AV_ABSOL) rather than blocking one path;
+  downstream consumers filter by the disambiguating feats.
+
+#### Carried forward to Phase 12+
+
+The Phase 11 audit doc (`docs/fu-extension-audit.md` §B) parked
+7 FU engine extensions beyond what shipped:
+
+- **§B.3** — FU defining-on-shape-LHS (defining-eq RHS being a
+  graph-fragment template); no Tagalog motivation found.
+- **§B.4** — FU resolver-side multi-binder constraints (for
+  symmetric anaphora); parked.
+- **§B.7** — FU multi-LHS dispatch (LHS regex resolved per
+  `unify.py:684`); not landed — promised in
+  `docs/fu-evaluation.md` §8.1 but blocked by
+  occurs-check semantics on dual unconditional bindings.
+- **§B.8** — alternative formulations of canonical FU
+  primitives; parked.
+
+Plus non-FU items:
+
+- **Naturalistic ≥80% on the broader wave-2/3/5 corpora**
+  (reclassified from §18.1.4 to §18.1.3 future-work-dependent
+  scope-expansion).
+- **NP-head possessor `mura-mura niya`** (11.Y out-of-scope —
+  requires nominalized-ITER-in-NP-head support; predicative-ADJ
+  → nominal-head coercion or separate nominal-redup cell).
+- **X-nang-X intensive-repetition** (11.Y out-of-scope — different
+  construction class entirely).
+- **Phase 7 engineering work** (web inspector, performance
+  benchmarks, observability, GitHub Actions CI, additional
+  docs) — partially complete; remaining items continue.
+
 ## Headline numbers
 
 Phase 9.X snapshot (2026-05-22, 1461-sentence curated corpus —
