@@ -226,9 +226,8 @@ class TestSanaInsideSubord:
         # but not on the matrix.
         good_parses = [
             fs for _ct, fs, _astr, _diags in parses
-            if (_adjunct_with_subord_type(fs, "COND") is not None
-                and _adjunct_with_subord_type(fs, "COND")
-                .feats.get("COUNTERFACTUAL") is True)
+            if (cond := _adjunct_with_subord_type(fs, "COND")) is not None
+            and cond.feats.get("COUNTERFACTUAL") is True
         ]
         assert len(good_parses) >= 1, (
             "expected at least one parse with COUNTERFACTUAL=YES "

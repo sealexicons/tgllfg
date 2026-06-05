@@ -1,42 +1,12 @@
-# .gitignore
+# .gitignore — monorepo top level. Cross-cutting ignores only; tree-
+# specific patterns live in tlbe/.gitignore (Python) and tlfe/.gitignore
+# (JS). No leading slash, so each pattern matches at any depth.
 
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-*.pyd
-*.dylib
-
-# Packaging / build artifacts
-build/
-dist/
-*.whl
-
-# Hatch / hatchling
-.hatch/
-.hatch-venv/
-.hatch/*
-
-# Virtualenvs commonly created by hatch or locally
-.venv/
-
-# Testing / coverage / caches
-.pytest_cache/
-.tox/
-.coverage
-.coverage.*
-htmlcov/
-.mypy_cache/
-.cache/
-
-# Environment files
+# Environment files (backend secrets / Vite env, in either tree)
 .env
 .env.*
 
-# Editor/OS files
+# Editor / OS files (appear in any directory)
 .vscode/
 .idea/
 .DS_Store
@@ -46,23 +16,10 @@ Thumbs.db
 *~
 *.bak
 *.log
+
+# Scratch dir — ignored at any depth, so tlbe/tmp/ (and any future
+# top-level or tlfe/ tmp/) are covered by this one pattern.
 tmp/
-
-# Reference works staged locally for grep / corpus mining;
-# excluded from the repo for binary-size and licensing reasons.
-tlbe/data/tgl/references/
-
-# Exemplar harvest corpus — TRACKED as of Phase 12.F (2026-06-05).
-# Promoted from gitignored to tracked: fair use applies and every
-# exemplar carries its `source` + `locator` citation, so the harvested
-# example sentences ship with the repo and CI can run the audit on a
-# fresh clone. The licensed reference PDFs themselves stay ignored
-# (references/, above). Derived / transient artifacts stay ignored —
-# all regenerable from the source corpus:
-tlbe/data/tgl/exemplars/*-parse-results.jsonl
-tlbe/data/tgl/exemplars/*.tmp
-tlbe/data/tgl/exemplars/coverage-*.md
-tlbe/data/tgl/exemplars/oov-frequency.tsv
 
 # Per-project plan files (live alongside the repo for convenience but
 # remain personal working notes, not project artifacts).

@@ -54,6 +54,8 @@ dev = [
   "testcontainers[postgres]>=4.0",
   "types-pyyaml",
   "poethepoet>=0.24",
+  "pyright>=1.1",
+  "yamllint>=1.35",
 ]
 
 # Task runner (poethepoet); run via ``uv run poe <task>`` from tlbe/.
@@ -63,6 +65,8 @@ dev = [
 [tool.poe.tasks]
 lint = "ruff check ."
 types = "mypy src/tgllfg tests"
+pyright = "pyright"
+yaml = "yamllint data/tgl"
 demo = "python -m tgllfg.examples.demo"
 test-fast = "pytest -m 'not postgres and not slow and not xslow' -n auto"
 test-slow = "pytest -m 'slow and not xslow' -n auto"
@@ -70,7 +74,7 @@ test-xslow = "pytest -m 'xslow' -n auto"
 test-postgres = "pytest -m postgres"
 
 [tool.poe.tasks.check]
-shell = "ruff check . && mypy src/tgllfg tests"
+shell = "ruff check . && mypy src/tgllfg tests && pyright && yamllint data/tgl"
 
 [tool.poe.tasks.test]
 shell = "(pytest -m postgres || [ $? = 5 ]) && pytest -m 'not postgres and not xslow' -n auto"
@@ -103,6 +107,14 @@ exclude_lines = [
 # fixtures / test helpers. Type errors that surface in those bodies are
 # expected to be addressed at the call site or via narrow inline annotations.
 check_untyped_defs = true
+
+[tool.pyright]
+# Pyright type-check config (CI gate; complements mypy). venvPath/venv
+# point at the uv-managed .venv so imports resolve whether run via
+# `uv run pyright` or `uvx pyright`.
+include = ["src/tgllfg", "tests"]
+venvPath = "."
+venv = ".venv"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

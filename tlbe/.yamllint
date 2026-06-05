@@ -1,0 +1,14 @@
+# yamllint config for the hand-maintained Tagalog lexicon YAML under
+# data/tgl/. Relaxes the rules that fight the two-line SPDX comment
+# header and the wide lexicon rows / glosses; keeps the structural
+# checks (indentation, key duplicates, trailing spaces, syntax).
+extends: default
+rules:
+  document-start: disable      # SPDX comment header precedes content
+  line-length: disable         # lexicon rows + glosses run wide
+  comments-indentation: disable
+  comments:
+    require-starting-space: true
+    min-spaces-from-content: 1
+  truthy:
+    check-keys: false          # 'yes'/'no'/'on' are data values, not bools

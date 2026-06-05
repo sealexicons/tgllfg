@@ -1,0 +1,50 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
+# Backend (tlbe) CI: static analysis + tests. Path-filtered so it only
+# runs when the backend changes. Gates run via uv + poe from tlbe/.
+name: tlbe
+
+on:
+  pull_request:
+    paths:
+      - "tlbe/**"
+      - ".github/workflows/tlbe.yml"
+  push:
+    branches-ignore: ["main"]
+    paths:
+      - "tlbe/**"
+      - ".github/workflows/tlbe.yml"
+
+defaults:
+  run:
+    working-directory: tlbe
+
+jobs:
+  static:
+    name: static (ruff + mypy + pyright + yamllint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "tlbe/uv.lock"
+      - name: Sync (locked)
+        run: uv sync --locked
+      - name: Check (ruff + mypy + pyright + yamllint)
+        run: uv run poe check
+
+  test:
+    name: test (pytest test-both)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "tlbe/uv.lock"
+      - name: Sync (locked)
+        run: uv sync --locked
+      - name: Test (test-both)
+        run: uv run poe test-both
