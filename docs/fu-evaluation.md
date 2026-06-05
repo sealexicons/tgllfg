@@ -847,5 +847,13 @@ no performance regression or correctness issues.
 - ~~FU inside-out designators~~ — closed by Phase 10.N via the
   ``FGraph.parents_via`` reverse-lookup + ``InsideOut`` base
   resolution described in §7.4.1.
-- FU resolver-side cyclic-endpoint pruning (from 6.F).
+- ~~FU resolver-side cyclic-endpoint pruning~~ — closed by Phase
+  11.B.5 via the optional ``exclude_cyclic_with`` kwarg on
+  ``resolve_regex_for_read``. Engine-only prototype; no chart
+  consumer opts in yet. The Phase 11.B.2 NP-layer sarili pivot
+  made the original aggressive-Candidate-B framing moot (24→4
+  delivered directly without resolver-side pruning), but the
+  engine extension closes ``tgllfg-out-of-scope.md`` §18.1.3
+  line 61 and is available for future alternation-form binding
+  constructions (reciprocals, multi-binder constraints).
 - ``{F | G}*`` Kleene on alternation (from 6.B C6).
