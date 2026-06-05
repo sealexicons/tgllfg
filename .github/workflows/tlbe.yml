@@ -1,20 +1,24 @@
 # Copyright (c) 2025-2026 G & R Associates LLC
 # SPDX-License-Identifier: MIT OR Apache-2.0
 
-# Backend (tlbe) CI: static analysis + tests. Path-filtered so it only
-# runs when the backend changes. Gates run via uv + poe from tlbe/.
+# Backend (tlbe) CI. Triggers on every push touching tlbe/ (all branches,
+# incl main). The `static` job (ruff/mypy/pyright/yamllint) runs always —
+# cheap early feedback. The `test` job (test-both) runs only on `main`
+# (i.e. a merge), since test-both is the pre-commit gate run locally during
+# branch work; re-running it on every feature push is redundant for a
+# solo repo. Concurrency cancels superseded runs on the same ref.
 name: tlbe
 
 on:
-  pull_request:
-    paths:
-      - "tlbe/**"
-      - ".github/workflows/tlbe.yml"
   push:
-    branches-ignore: ["main"]
     paths:
       - "tlbe/**"
       - ".github/workflows/tlbe.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:
@@ -25,8 +29,8 @@ jobs:
     name: static (ruff + mypy + pyright + yamllint)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v8.2.0 # no moving v8 major tag; node24 full pin
         with:
           enable-cache: true
           cache-dependency-glob: "tlbe/uv.lock"
@@ -37,10 +41,12 @@ jobs:
 
   test:
     name: test (pytest test-both)
+    # test-both runs only on merge to main; locally it's the pre-commit gate.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v8.2.0 # no moving v8 major tag; node24 full pin
         with:
           enable-cache: true
           cache-dependency-glob: "tlbe/uv.lock"

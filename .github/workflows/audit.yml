@@ -1,21 +1,26 @@
 # Copyright (c) 2025-2026 G & R Associates LLC
 # SPDX-License-Identifier: MIT OR Apache-2.0
 
-# CI+ audit gate: re-parses the naturalistic corpus and diffs against the
-# checked-in baseline; any regression fails the build. Wave-sharded across
-# a matrix because multiprocessing.Pool collapses to one worker on 2-core
-# GH runners -- parallelism comes from the matrix, each shard --workers 1.
-# Always-on for PRs targeting main; opt-in elsewhere via the run-ci-plus
-# label or manual dispatch.
+# CI+ audit regression gate. Runs only on merge to main (push to main
+# touching tlbe/) plus manual dispatch — the audit diff is run locally
+# during development, so this is the canonical post-merge check on a fresh
+# clone. One-wave-per-job matrix; parallelism comes from the matrix since
+# multiprocessing.Pool collapses to one worker on 2-core GH runners, so
+# each shard runs --workers 1. cancel-in-progress:false so a merge's audit
+# always completes (merges are deliberate, rarely concurrent).
 name: audit-gate
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches: [main]
     paths:
       - "tlbe/**"
       - ".github/workflows/audit.yml"
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 defaults:
   run:
@@ -24,24 +29,24 @@ defaults:
 jobs:
   audit-diff:
     name: audit diff
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.pull_request.base.ref == 'main' ||
-      contains(github.event.pull_request.labels.*.name, 'run-ci-plus')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         waves:
-          - "wave1-exemplars,wave1-rb86-verbs"
-          - "wave2-ramos1971,wave2-rc1990,wave2-rg-intermediate"
-          - "wave3-rg-conversational,wave3-so1972"
+          - "wave1-exemplars"
+          - "wave1-rb86-verbs"
+          - "wave2-ramos1971"
+          - "wave2-rc1990"
+          - "wave2-rg-intermediate"
+          - "wave3-rg-conversational"
+          - "wave3-so1972"
           - "wave4-kroeger1991"
           - "wave5-zamar2023"
           - "unattributed-constructions"
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v8.2.0 # no moving v8 major tag; node24 full pin
         with:
           enable-cache: true
           cache-dependency-glob: "tlbe/uv.lock"
