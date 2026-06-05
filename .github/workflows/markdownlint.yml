@@ -1,33 +1,33 @@
 # Copyright (c) 2025-2026 G & R Associates LLC
 # SPDX-License-Identifier: MIT OR Apache-2.0
 
-# Docs CI: markdownlint over all tracked Markdown (repo-wide -- both trees
-# + top level). Uses the same markdownlint-cli + .markdownlint.json as the
-# local convention.
+# Docs CI: markdownlint over tracked Markdown (repo-wide -- both trees +
+# top level), same markdownlint-cli + .markdownlint.json as local. Runs on
+# every push touching Markdown (all branches, incl main) -- linting is
+# cheap. Concurrency cancels superseded runs on the same ref.
 name: markdownlint
 
 on:
-  pull_request:
-    paths:
-      - "**/*.md"
-      - ".markdownlint.json"
-      - ".github/workflows/markdownlint.yml"
   push:
-    branches-ignore: ["main"]
     paths:
       - "**/*.md"
       - ".markdownlint.json"
       - ".github/workflows/markdownlint.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   markdownlint:
     name: markdownlint (tracked *.md)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          node-version: "22"
       - name: Install markdownlint-cli
         run: npm install -g markdownlint-cli
       - name: Lint tracked Markdown

@@ -1,21 +1,23 @@
 # Copyright (c) 2025-2026 G & R Associates LLC
 # SPDX-License-Identifier: MIT OR Apache-2.0
 
-# Frontend (tlfe) CI: build + lint + typecheck + test. Path-filtered to
-# tlfe/. The scaffold lands in Phase 12.D — until tlfe/package.json
-# exists, the build steps are skipped and the job stays green.
+# Frontend (tlfe) CI. Runs on every push touching tlfe/ (all branches,
+# incl main). Guarded behind a package.json check, so it's a no-op until
+# the Phase 12.D scaffold. When the real scaffold lands in 12.D, split the
+# cheap lint/typecheck (every push) from build + vitest (merge to main),
+# mirroring tlbe's static/test split. Concurrency cancels superseded runs.
 name: tlfe
 
 on:
-  pull_request:
-    paths:
-      - "tlfe/**"
-      - ".github/workflows/tlfe.yml"
   push:
-    branches-ignore: ["main"]
     paths:
       - "tlfe/**"
       - ".github/workflows/tlfe.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 defaults:
   run:
@@ -26,7 +28,7 @@ jobs:
     name: build (eslint + tsc + vite + vitest)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Detect scaffold
         id: scaffold
         run: |
@@ -36,10 +38,10 @@ jobs:
             echo "present=false" >> "$GITHUB_OUTPUT"
             echo "::notice::tlfe scaffold not present yet (Phase 12.D) -- skipping build."
           fi
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         if: steps.scaffold.outputs.present == 'true'
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
           cache-dependency-path: tlfe/package-lock.json
       - name: Install
