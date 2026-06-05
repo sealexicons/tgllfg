@@ -369,11 +369,11 @@ redesign and out of scope for an audit-driven opt-in.
 **Expected rule-count delta**: **~24 → ~12** (realistic, single-PR
 scope) or **~24 → ~6** (aggressive, multi-PR). The realistic target
 is a 2× reduction; the aggressive target is a 4× reduction. The
-aggressive collapse depends on the §B.2 cyclic-endpoint pruning
-engine extension (see `tgllfg-out-of-scope.md` §18.1.3): with
-pruning, `{SUBJ | obj_target}` alternation in the binder slot
-becomes feasible and the two binding-directions collapse into
-a single rule.
+aggressive collapse was originally projected to depend on the §B.2
+cyclic-endpoint pruning engine extension. (2026-06-04 update: 11.B.2
+delivered **~24 → ~4** via NP-layer 10.N inside-out — exceeding the
+aggressive target without needing pruning. §B.2 shipped via 11.B.5
+as a standalone U-bucket prototype with no chart consumer.)
 
 **Expected behavioral delta**: **simplification + 1 closure (the
 xfail flip in Candidate C)**. The realistic 24→12 collapse is
@@ -627,8 +627,8 @@ set. Bundling keeps the 11.B.2 sub-PR coherent.
 
 **Sub-PR shape**: bundled into 11.B.2 above (Candidate B Commit 4).
 
-**Alternative path (parked)**. Per `tgllfg-out-of-scope.md`
-§18.1.3 line 62, a parallel approach to cross-clausal sarili is
+**Alternative path (archived)**. Per `tgllfg-out-of-scope.md`
+§18.1.5 (Archived), a parallel approach to cross-clausal sarili is
 **per-XCOMP binding rules** lifted to the embedded S_XCOMP body
 with constraining traversals back to the matrix. This was the
 pre-10.N option; it is voluminous (mirrors the matrix transitive
@@ -1009,7 +1009,21 @@ handles set-valued features, both candidates D and E open at once.
 - Commit 3: docs (`docs/fu-evaluation.md` §7.4.1 update; cross-ref
   this audit doc).
 
-### 2.6 Candidate F — `{COMP | XCOMP}*` body collapse (clause.py)
+### 2.6 Candidate F — `{COMP | XCOMP}*` body collapse (clause.py) (ARCHIVED)
+
+**Phase 11 archival outcome (2026-06-04)**: archived to
+`tgllfg-out-of-scope.md` §18.1.5. The audit-time finding (no
+chart consumer in `cfg/`, no twin COMP*+XCOMP* rule pairs)
+was reinforced by all Phase 11 shipping: 11.B.1 through 11.B.5
+introduced no cross-COMP needs. The two speculative motivators
+identified below (reported topicalization, nested reported
+clauses) are not licit Tagalog constructions per S&O 1972 /
+Kroeger 1993 — Tagalog's SUBJ-only relativization restriction
+combined with voice-morphology-driven extraction means COMP-
+internal SUBJs aren't reachable. The 10.L engine extension remains load-bearing
+as engine-correctness anchor via
+`test_eq39_topic_equals_comp_xcomp_star_gf_kleene` (the canonical
+K&Z eq. 39 body fixture).
 
 **Form**: 10.L Kleene-on-alternation.
 
@@ -1399,8 +1413,8 @@ rewritten.
 | **11.B.4** | **P2** | D: Coordination CONJUNCTS inside-out (SHIPPED — narrowed to S_XCOMP_BARE only; S_XCOMP families 1+2 stay with explicit chains per implementation finding) | 10.N + set-valued `parents_via` | 2 sub-PRs (eng + chart) | self |
 | **11.B.5** | **P2** | §B.2: Cyclic-endpoint pruning (engine + canonical fixture) (SHIPPED) | U-bucket prototype | 2 commits | none |
 | **11.X** | **P2** | §3.5: Bare `Huwag + V[AV]` PRO injection (Phase 10 carry-forward) | PRO machinery design (non-FU) | 2-4 commits | none |
-| **11.final** | **P3** | Closure docs + explicit declines (§B.5 set complement, §B.6 defining-on-regex LHS) | docs-only | 1 commit | none |
-| (future) | — | F: `{COMP \| XCOMP}*` body | 10.L K-on-A | n/a — no consumer | n/a |
+| **11.final** | **P3** | Phase 11 closure docs (roadmap update, completed.md migration, retrospective) | docs-only | 1 commit | none |
+| ~~(future)~~ | ARCHIVED | ~~F: `{COMP \| XCOMP}*` body~~ — archived per Phase 11.A audit → out-of-scope §18.1.5 | 10.L K-on-A | n/a — no consumer | n/a |
 
 **Scheduling notes**:
 
@@ -1411,10 +1425,10 @@ rewritten.
   (realistic) or ~24→~6 (aggressive, gated on 11.B.5 cyclic-endpoint
   pruning). Largest single-PR win on the backlog. Prereq:
   test-coverage expansion to all 6 voice_specs. **Internal
-  decision** (out-of-scope §18.1.3 line 62): default to 10.N
+  decision** (out-of-scope §18.1.5 Archived): default to 10.N
   inside-out for cross-clausal sarili; the per-XCOMP binding-rules
-  alternative stays as a fallback only if inside-out surfaces
-  unexpected ambiguity (unlikely per 10.N validation).
+  alternative was archived after 11.B.2 NP-layer pivot delivered
+  24→4 (better than aggressive target) without needing pruning.
 - **11.B.4.eng → 11.B.3 + 11.B.4.chart**. The engine extension
   (set-valued `parents_via`) unblocks both 11.B.3 (purposive PRO
   plus H-Class-3) and 11.B.4.chart (coordination). Engine ships
@@ -1430,12 +1444,15 @@ rewritten.
   injection to satisfy completeness; design choice between
   impersonal-PRO and discourse-anchored addressee. Not on the
   FU backlog but on the Phase 11 roadmap.
-- **11.final**. Standard closure docs PLUS explicit decline
-  decisions for §B.5 (set complement: zero Tagalog need per audit)
-  and §B.6 (defining-on-regex LHS: out-of-scope per K&Z, parked
-  indefinitely). Migrating both `tgllfg-out-of-scope.md` §18.1.3
-  lines 59 + 60 from "parked" to "explicitly declined for v1".
-- **Candidate F**: no consumer; stays parked under future ideas.
+- **11.final**. Standard phase-closure docs (roadmap update,
+  completed.md migration, retrospective). Note (2026-06-04):
+  the "explicit decline decisions for §B.5 + §B.6" scope item
+  was migrated ahead-of-schedule into `tgllfg-out-of-scope.md`
+  §18.1.5 (Archived); 11.final no longer needs to do that work
+  separately.
+- **Candidate F**: ARCHIVED (2026-06-04) per Phase 11.A audit
+  and reinforced by all Phase 11 shipping; migrated to
+  `tgllfg-out-of-scope.md` §18.1.5.
 
 **Cumulative expected delta**:
 
@@ -1762,11 +1779,13 @@ truth:
 Added 2026-06-04 in response to a review note: "If your audit has
 identified other (unimplemented) FU extensions that would be
 beneficial, then note that in the audit." Phase 10.L/M/N closed the
-three named §18.1.3 deferrals from Phase 6.B/D/F. This appendix
-catalogs **further** engine extensions that surfaced (or are
-re-confirmed) during the audit. They are not chart-consumer
-candidates (which belong in §2); they are engine-side primitives or
-capabilities. Where an extension is **required** to unblock a §3
+three named pre-Phase-11 §18.1.3 deferrals from Phase 6.B/D/F (now
+all CLOSED by Phase 11 work and reflected in out-of-scope §18.1.5
+Archived or removed from §18.1.3). This appendix catalogs **further**
+engine extensions that surfaced (or are re-confirmed) during the
+audit. They are not chart-consumer candidates (which belong in §2);
+they are engine-side primitives or capabilities. Where an extension
+is **required** to unblock a §3
 backlog item, it is called out; the rest are documented for
 completeness.
 
@@ -1906,12 +1925,12 @@ resolver-side pruning. So the original "raises Candidate B's
 compression ratio from 2× to 4×" framing is moot; the
 compression already exceeds 4× through a different mechanism.
 
-**Why ship anyway** (per U-bucket cadence): closes
-`tgllfg-out-of-scope.md` §18.1.3 line 61 (the parked deferral
-needs a disposition); engine extension is ~20 LOC and risk-free
-(default unchanged); future constructions (reciprocals,
-multi-binder constraints) that genuinely need the alternation
-form can opt in without re-engineering the resolver.
+**Why ship anyway** (per U-bucket cadence): closed the
+previously-parked `tgllfg-out-of-scope.md` §18.1.3 line 61
+deferral; engine extension is ~20 LOC and risk-free (default
+unchanged); future constructions (reciprocals, multi-binder
+constraints) that genuinely need the alternation form can opt
+in without re-engineering the resolver.
 
 **Chart consumer status**: NONE in `unify.py` opts in yet. The
 existing `_pass_defining` call at `unify.py:596` does not pass
@@ -2051,14 +2070,12 @@ Kleene) without set complement.
 §2.6 confirms no Tagalog construction needs the K&Z eq. 39 body
 shape, let alone the set complement bottom).
 
-**Priority**: **P4 — scheduled as 11.final explicit decline**
-(updated 2026-06-04). Audit found zero motivation; the v1
-Tagalog grammar will not implement set-complement notation.
-Migrating `tgllfg-out-of-scope.md` §18.1.3 line 59 from
-"parked, revisit if surfaces" to "explicitly declined for v1
-per Phase 11.A audit". Re-evaluate only if wave 6+ corpus
-harvest or a future Tagalog dialect-coverage extension surfaces
-a non-XCOMP relativization construction.
+**Priority**: **P4 — ARCHIVED per Phase 11.A audit (2026-06-04)**.
+Audit found zero Tagalog motivation; the v1 grammar will not
+implement set-complement notation. Migrated to
+`tgllfg-out-of-scope.md` §18.1.5 (Archived). Re-evaluate only if
+wave 6+ corpus harvest or a future Tagalog dialect-coverage
+extension surfaces a non-XCOMP relativization construction.
 
 ### B.6 Defining-equations on regex-LHS (out of scope per §5.3)
 
@@ -2073,14 +2090,11 @@ deliberately unimplemented.
 **Audit findings on motivation**: zero. No rule expresses
 defining-on-regex; no construction would benefit.
 
-**Priority**: **P5 — scheduled as 11.final explicit decline**
-(updated 2026-06-04). Out-of-scope per K&Z 1989 design;
-fu-evaluation.md §5.3 explicitly forbids. Migrating
-`tgllfg-out-of-scope.md` §18.1.3 line 60 from
-"declined-by-design for Phase 6.B" to "explicitly declined for
-v1 — confirmed by Phase 11.A audit". This is a permanent
-out-of-scope decision absent a substantial K&Z-style design
-extension.
+**Priority**: **P5 — ARCHIVED per Phase 11.A audit (2026-06-04)**.
+Out-of-scope per K&Z 1989 design; fu-evaluation.md §5.3
+explicitly forbids. Migrated to `tgllfg-out-of-scope.md` §18.1.5
+(Archived). This is a permanent out-of-scope decision absent a
+substantial K&Z-style design extension.
 
 ### B.7 Inside-out designators with off-path constraints (speculative)
 
@@ -2129,29 +2143,28 @@ LFG-canonical semantics in the literature.
 | **B.2 Cyclic-endpoint pruning** | **P2** | **SHIPPED** — U-bucket engine + 6-case canonical fixture; aggressive Candidate B 24→~6 framing moot (11.B.2 delivered 24→4 via NP-layer pivot) | **11.B.5** | ~20 LOC |
 | B.3 K&Z minimality on inside-out | P3 | Parked — no ambiguity surfaced | — | ~30-60 LOC |
 | B.4 Materialized reverse index | P3 | Parked — perf-scale-driven | — | ~50-100 LOC |
-| **B.5 Set complement** | **P4** | **Explicit decline** — v1 confirmed; no Tagalog construction needs it | **11.final** | n/a |
-| **B.6 Defining-on-regex LHS** | **P5** | **Explicit decline** — out-of-scope per K&Z (permanent) | **11.final** | n/a |
+| **B.5 Set complement** | **P4** | **ARCHIVED** per Phase 11.A audit — v1 confirmed; no Tagalog construction needs it | **out-of-scope §18.1.5** | n/a |
+| **B.6 Defining-on-regex LHS** | **P5** | **ARCHIVED** per Phase 11.A audit — out-of-scope per K&Z (permanent) | **out-of-scope §18.1.5** | n/a |
 | B.7 Inside-out + off-path | P4 | Parked — no consumer | — | ~30 LOC |
 | B.8 Multi-target inside-out | P5 | Speculative — no consumer | — | ~10-20 LOC |
 
-**Net engine work for Phase 11**: **B.1 + B.2 scheduled**.
-B.1 is required (P1) for the consumer ladder; B.2 ships as a
-standalone U-bucket prototype (P2) enabling the aggressive
-Candidate B collapse follow-on. B.5 + B.6 receive **explicit
-decline decisions** in 11.final (migrating from "parked" to
-"declined for v1"). B.3 / B.4 / B.7 / B.8 stay parked with
-documented priorities, ready for future re-evaluation if
-corpus pressure or chart consumers surface.
+**Phase 11 outcome (2026-06-04)**: **B.1 + B.2 both SHIPPED**
+as U-bucket engine prototypes (B.1 via 11.B.4.eng PR #207; B.2
+via 11.B.5 PR #210). B.5 + B.6 **ARCHIVED** per Phase 11.A
+audit — migrated to `tgllfg-out-of-scope.md` §18.1.5 (Archived).
+B.3 / B.4 / B.7 / B.8 stay parked with documented priorities,
+ready for future re-evaluation if corpus pressure or chart
+consumers surface.
 
 The full inventory reconciles against `tgllfg-out-of-scope.md`
-§18.1.3 ("Other future work dependent" — items at lines 59 / 60
-/ 61) and `docs/fu-evaluation.md` §11 (Phase 7+ extensions list).
-B.4 / B.5 / B.6 / B.7 / B.8 are documented in fu-evaluation.md
-only; B.2 / B.5 / B.6 also appear in tgllfg-out-of-scope.md
-§18.1.3. Phase 11 scheduling closes the four §18.1.3 items
-(line 61 → 11.B.5; lines 59 + 60 → 11.final explicit decline;
-line 62 → bundled into 11.B.2 spike-probe) plus §18.1.4 line 77
-→ 11.X (non-FU carry-forward).
+§18.1.5 (Archived: B.5 + B.6) and §18.1.4 (Phase 10-surfaced
+carry-forward: bare `Huwag + V[AV]` → Phase 11.X). The
+previously-tracked §18.1.3 line items (set complement, defining-
+on-regex LHS, cyclic-endpoint pruning, per-XCOMP sarili) have all
+been resolved: line 59 → §18.1.5 (archived); line 60 → §18.1.5
+(archived); line 61 → CLOSED by 11.B.5 (removed from ledger);
+line 62 → §18.1.5 (archived, superseded by 11.B.2 NP-layer
+pivot).
 
 ## Appendix C — Per-instance PRO classification (Phase 11.B.3 c1)
 
@@ -2275,12 +2288,14 @@ avoid (Class 2).
 
 - Plan-of-record: `.claude/plans/tgllfg-phase-11.md`.
 - Out-of-scope ledger: `.claude/plans/tgllfg-out-of-scope.md`
-  §18.1.3 (FU-related Phase 7+ items: set-complement at line 59,
-  defining-on-regex-LHS at line 60, resolver-side cyclic-endpoint
-  pruning at line 61, per-XCOMP cross-clausal sarili at line 62);
-  §18.1.4 (Phase 10-surfaced, Phase 11 carry-forward: bare
-  `Huwag + V[AV]` at line 77, U-bucket chart consumers at line
-  78 — the master directive this audit operationalizes).
+  §18.1.5 (Archived: set-complement + defining-on-regex-LHS +
+  per-XCOMP cross-clausal sarili + Candidate F — all declined
+  with principled rationale by Phase 11.A audit + shipping
+  outcomes); §18.1.4 (Phase 10-surfaced carry-forward: bare
+  `Huwag + V[AV]` scheduled as 11.X). The previously-tracked
+  §18.1.3 FU-related items (lines 59/60/61/62 in the pre-Phase-11
+  ledger) have all been resolved: 61 CLOSED by 11.B.5; the rest
+  archived to §18.1.5.
 - FU contract: `docs/fu-evaluation.md` (Phase 6.B design appendix)
   §3 / §4.1 / §5.2.1 / §7.2 / §7.4.1.
 - Phase 10.L progress: [[project_phase10_l_progress]] (PR #195).
