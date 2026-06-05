@@ -53,12 +53,30 @@ def test_mura_is_predicative_scalar_adj() -> None:
 
 
 def test_mura_redup_is_full_underspecified() -> None:
-    """``mura-mura`` reaches ``REDUP=FULL`` with degree underspecified — the
-    scalar-moderate "rather cheap" the ``adj_redup`` cell intends, not ITER."""
+    """The ADJ-derived ``mura-mura`` reaches ``REDUP=FULL`` with degree
+    underspecified — the scalar-moderate "rather cheap" the ``adj_redup``
+    cell intends, not ITER. The 10.H.post-1 ADJ analysis stands.
+
+    **Phase 11.Y update (2026-06-04)**: post-11.Y the surface ``muramura``
+    also has a VERB-iter-derived ADJ entry (``v_iter_redup`` POS-flip,
+    ``lemma='mura-mura'`` carrying ``REDUP=FULL`` ``REDUP_SEM=ITER``).
+    Both entries co-exist intentionally — disambiguated by lemma /
+    ``REDUP_SEM`` / ``AV_ABSOL``. This test narrows to the ADJ-derived
+    entry (``lemma='mura'``, no ``AV_ABSOL``) to assert the original
+    invariant — the VERB-iter entry is verified separately in
+    ``tests/tgllfg/test_phase11_y_mura_curse_iter.py``."""
     entries = _get_default()._index.adjectives.get("muramura", [])
     full = [e for e in entries if e.feats.get("REDUP") == "FULL"]
     assert full, f"expected REDUP=FULL adj for muramura; got {entries!r}"
-    assert all(e.feats.get("REDUP_SEM") is None for e in full)
+    # Narrow to the ADJ-derived entry (10.H.post-1 adj_redup output).
+    adj_derived = [e for e in full if e.feats.get("LEMMA") == "mura"]
+    assert adj_derived, (
+        f"expected ADJ-derived (lemma='mura') REDUP=FULL entry; "
+        f"got {full!r}"
+    )
+    assert all(e.feats.get("REDUP_SEM") is None for e in adj_derived), (
+        f"expected ADJ-derived muramura REDUP_SEM=None; got {adj_derived!r}"
+    )
 
 
 def test_curse_verb_shipped_under_10_final_pre_1() -> None:
@@ -67,19 +85,32 @@ def test_curse_verb_shipped_under_10_final_pre_1() -> None:
     ``v_iter_redup`` which would have produced ``mura-mura`` ITER —
     the surface-collision concern with the ADJ's ``adj_redup``
     ``mura-mura`` "rather cheap" that motivated the 10.H.post-1
-    retraction in part. 10.final.pre-1 ships the curse-VERB without
+    retraction in part. 10.final.pre-1 shipped the curse-VERB without
     ``v_iter_redup`` — only ``[mag, in_oblig, pag_gerund]`` — so
     inflected curse-VERB surfaces like ``nagmura`` / ``magmura`` /
-    ``minura`` / ``murahin`` exist, but the bare-redup ``muramura``
-    surface stays ADJ-only.
+    ``minura`` / ``murahin`` exist.
 
-    This test asserts the post-10.final.pre-1 invariants:
+    **Phase 11.Y update (2026-06-04)**: ``v_iter_redup`` is now opted
+    into the curse-VERB on attestation-pressure landing (informant
+    pass confirms ``mura-mura`` curse-iter is productive parallel to
+    ``iyak-iyak`` / ``tawa-tawa``). The surface-collision is now
+    intentional — both the ADJ-derived ``REDUP_SEM=None`` reading
+    and the VERB-iter ``REDUP_SEM=ITER`` reading co-exist at
+    ``muramura``, disambiguated by lemma / ``REDUP_SEM`` / ``AV_ABSOL``.
+    Both invariants below remain true post-11.Y because they pick
+    the ADJ-derived entry specifically.
+
+    This test asserts the invariants that hold across 10.final.pre-1
+    and 11.Y:
 
     1. Inflected curse-VERB surfaces resolve to lemma=mura, POS=VERB
        (the curse-VERB IS shipped — reverses the 10.H.post-1 absence
        sentinel under native-informant evidence).
-    2. The ADJ ``mura-mura`` (``muramura``) still has REDUP_SEM=None
-       (not ITER) — the 10.H.post-1 scalar-moderate analysis stands.
+    2. The ADJ ``mura-mura`` (``muramura``) ADJ-derived entry has
+       REDUP=FULL with REDUP_SEM=None — the 10.H.post-1 scalar-
+       moderate analysis stands for the ADJ reading. (The 11.Y
+       VERB-iter coexisting entry is verified in
+       ``test_phase11_y_mura_curse_iter.py``.)
     """
     idx = _get_default()._index
     # 1. Inflected curse-VERB forms IS present (10.final.pre-1).

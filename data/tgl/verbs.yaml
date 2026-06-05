@@ -1805,10 +1805,17 @@
 #   in_oblig   -> minura (PFV), minumura (IPFV), mumurahin (CTPL),
 #                 murahin (SOC/INF bare)
 #   pag_gerund -> pagmura (PFV gerund), pagmumura (IPFV gerund)
-# v_iter_redup intentionally NOT opted-in: ``mura-mura`` is
-# already produced by the ADJ's ``adj_redup`` ("rather cheap")
-# and curse-VERB iter-redup was not in the informant paradigm.
-# Can be added later under audit-corpus attestation pressure.
+# Phase 11.Y (2026-06-04): ``v_iter_redup`` opted in on
+# attestation-pressure landing. The 10.final.pre-1 comment that
+# flagged this as "audit-corpus attestation pressure" gate was
+# satisfied by a 2026-06-04 informant / reviewer pass: ``mura-mura``
+# from curse-VERB is common, productive ITER/HABITUAL reduplication
+# (parallel to ``iyak-iyak``, ``tawa-tawa``). The surface-collision
+# with the ADJ ``adj_redup`` ``mura-mura`` "rather cheap" is now
+# intentional — both readings co-exist, distinguished by POS and
+# REDUP_SEM (ADJ has REDUP=FULL REDUP_SEM=None; VERB-iter has
+# REDUP=None REDUP_SEM=ITER per the standard 10.E.3 cell output).
+# See ``project_mura_mura_attestation`` memory.
 - citation: mura
   pos: VERB
   gloss: curse, swear at
@@ -1820,7 +1827,7 @@
   # informant's ``Huwag kang magmura.`` "Don't swear." is a 1-arg
   # use; the OV ``Minura niya ako.`` "He cursed me." is the 2-arg
   # use with the cursee as SUBJ.
-  affix_class: [mag, in_oblig, pag_gerund]
+  affix_class: [mag, in_oblig, pag_gerund, v_iter_redup]
   feats: {AV_ABSOL: true}
 
 - citation: nais
