@@ -155,3 +155,100 @@ class TestHuwagCompose:
         assert rs
         f = rs[0][1]
         assert f.feats.get("CLAUSE-MOOD") == "IMP"
+
+
+# === Phase 11.X — bare ``Huwag + V[AV]`` PRO injection ===================
+
+
+class TestHuwagBareV:
+    """Phase 11.X: bare-V negative imperative form. The bare-V
+    surface (``Huwag kumain.``) has no overt addressee — the
+    implicit addressee is synthesized as ``SUBJ.PRED='PRO'`` per
+    audit doc §3.5 alternative (a) (Class-1 impersonal pattern).
+
+    Closes the cfg/negation.py NOTE 226-237 deferral and
+    out-of-scope §18.1.4 line 69. The bare-V form is the
+    sign-language / prohibition-sign style documented in
+    S&O 1972 §8.2.
+
+    Two rule variants:
+
+    * Bare V[AV]: ``Huwag kumain.``, ``Huwag tumakbo.``
+    * V[AV] + GEN-OBJ: ``Huwag kumain ng aso.``
+    """
+
+    def test_bare_v_av_intr_pro_subj(self) -> None:
+        # AV verb with PRO addressee. SUBJ.PRED='PRO' marks the
+        # implicit addressee; POLARITY=NEG and CLAUSE-MOOD=IMP
+        # mirror the canonical huwag clause shape.
+        rs = parse_text("Huwag tumakbo.", n_best=10)
+        assert rs, "Huwag tumakbo. should parse via 11.X bare-V rule"
+        f = rs[0][1]
+        assert f.feats.get("POLARITY") == "NEG"
+        assert f.feats.get("CLAUSE-MOOD") == "IMP"
+        assert f.feats.get("PRED") == "TAKBO <SUBJ>"
+        subj = f.feats.get("SUBJ")
+        assert subj is not None
+        assert subj.feats.get("PRED") == "PRO"
+
+    def test_bare_v_av_tr_with_gen_obj(self) -> None:
+        # AV verb + GEN-OBJ. SUBJ still PRO; OBJ binds to overt
+        # GEN-NP. Two-variant 11.X rule (with-GEN-OBJ daughter).
+        rs = parse_text("Huwag kumain ng aso.", n_best=10)
+        assert rs, "Huwag kumain ng aso. should parse via 11.X V+GEN-OBJ rule"
+        f = rs[0][1]
+        assert f.feats.get("POLARITY") == "NEG"
+        assert f.feats.get("CLAUSE-MOOD") == "IMP"
+        assert f.feats.get("PRED") == "EAT <SUBJ, OBJ>"
+        subj = f.feats.get("SUBJ")
+        obj = f.feats.get("OBJ")
+        assert subj is not None and obj is not None
+        assert subj.feats.get("PRED") == "PRO"
+        assert obj.feats.get("LEMMA") == "aso"
+
+    def test_bare_v_av_kumain_no_obj(self) -> None:
+        # ``Huwag kumain.`` — TR verb used absolutively (no OBJ).
+        # AV's absolutive reading lets the OBJ slot stay absorbed
+        # at the LMT layer; SUBJ.PRED='PRO' covers completeness.
+        rs = parse_text("Huwag kumain.", n_best=10)
+        assert rs, "Huwag kumain. should parse via 11.X bare-V rule"
+        f = rs[0][1]
+        assert f.feats.get("POLARITY") == "NEG"
+        assert f.feats.get("CLAUSE-MOOD") == "IMP"
+        assert f.feats.get("PRED") == "EAT <SUBJ>"
+        subj = f.feats.get("SUBJ")
+        assert subj is not None
+        assert subj.feats.get("PRED") == "PRO"
+
+
+class TestHuwagBareVScopePreserved:
+    """Phase 11.X scope check: the new bare-V rules don't disrupt
+    the existing canonical Huwag constructions. Each pre-11.X form
+    parses with the same f-structure shape as before — no
+    over-generation, no addressee-bleed."""
+
+    def test_addressee_explicit_form_unchanged(self) -> None:
+        # ``Huwag kang kumain.`` (Phase 10.final.pre-1 Variant A) —
+        # SUBJ binds to overt PRON addressee, NOT PRO. Verifies
+        # the bare-V rule doesn't shadow the addressee-explicit
+        # rule when a PRON daughter is present.
+        rs = parse_text("Huwag kang kumain.", n_best=10)
+        assert rs
+        f = rs[0][1]
+        subj = f.feats.get("SUBJ")
+        assert subj is not None
+        # SUBJ comes from PRON ``ka`` — not synthesized PRO.
+        assert subj.feats.get("PRED") != "PRO"
+
+    def test_matrix_neg_with_overt_subj_unchanged(self) -> None:
+        # ``Huwag kumain ang bata.`` (matrix-NEG rule wrapping a
+        # complete inner S) — SUBJ is the overt NOM-NP ``ang bata``,
+        # NOT PRO. Verifies the bare-V rule doesn't shadow the
+        # matrix-NEG wrap when an inner S parses.
+        rs = parse_text("Huwag kumain ang bata.", n_best=10)
+        assert rs
+        f = rs[0][1]
+        subj = f.feats.get("SUBJ")
+        assert subj is not None
+        assert subj.feats.get("LEMMA") == "bata"
+        assert subj.feats.get("PRED") != "PRO"

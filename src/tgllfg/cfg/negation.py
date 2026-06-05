@@ -223,18 +223,71 @@ def register_rules(rules: list[Rule]) -> None:
     ))
 
 
-    # NOTE on "bare huwag + V[VOICE=AV]" (e.g. ``Huwag kumain.``):
-    # explicitly parked as future work. The bare-imperative form
-    # requires injecting a PRO SUBJ (the implicit addressee) to
-    # satisfy the V's a-structure completeness check — the canonical
-    # Tagalog imperative subject is implicit and would normally be
-    # expressed as a PRO in LFG. Canonical Tagalog generally uses
-    # the addressee-explicit form (``Huwag kang kumain.``, covered
-    # by Variant A above) or an OBJ-bearing form (``Huwag kumain
-    # ng X.``, covered via the matrix-NEG rule above when ``ng X``
-    # is the only argument and SUBJ stays unbound). Adding a PRO-
-    # SUBJ binding for the bare-V case is left for a follow-on
-    # that designs the PRO machinery carefully.
+    # --- Phase 11.X: bare ``Huwag + V[VOICE=AV]`` PRO injection ---
+    #
+    # Closes the bare-imperative form (e.g. ``Huwag kumain.``,
+    # ``Huwag manigarilyo.``, ``Huwag kumain ng aso.``). The
+    # bare-V form is the sign-language / prohibition-sign style
+    # documented in S&O 1972 §8.2 — addressee is implicit (no
+    # overt ``ka`` / ``kayo``).
+    #
+    # **Design choice** (audit doc §3.5 alternative (a)): impersonal
+    # PRO ``(↑ SUBJ PRED) = 'PRO'`` synthesizes a generic addressee
+    # placeholder. Mirrors the Class-1 impersonal pattern from
+    # ``docs/fu-extension-audit.md`` Appendix C (per-instance PRO
+    # classification). The discourse-anchored-addressee alternative
+    # (b) would require a new discourse-level f-structure machinery
+    # not currently in tgllfg — out of scope.
+    #
+    # Two rule variants:
+    #
+    #   (a) Bare V[AV]: ``Huwag kumain.``, ``Huwag manigarilyo.``,
+    #       ``Huwag kumanta.``. Both INTR verbs (manigarilyo) and
+    #       TR verbs used absolutively (kumain) qualify — the V's
+    #       a-structure completeness is satisfied for INTR by the
+    #       SUBJ=PRO injection, and for TR by AV's absolutive
+    #       reading (the OBJ slot stays absorbed at the LMT layer,
+    #       per the same convention as standalone-V imperatives).
+    #   (b) V[AV] + GEN-OBJ: ``Huwag kumain ng aso.`` — the GEN-NP
+    #       binds to OBJ; SUBJ still PRO.
+    #
+    # **No DAT/sa-OBL variant** — pre-existing gap in the bare-V
+    # frame (``Pumunta sa Maynila.`` doesn't parse standalone
+    # either), out of scope for 11.X.
+    #
+    # **Reference**: Schachter & Otanes 1972 §8.2 (negative
+    # imperatives without overt addressee); ``docs/fu-extension-
+    # audit.md`` §3.5 (Phase 11 carry-forward backlog).
+    rules.append(Rule(
+        "S",
+        [
+            "PART[MOOD=IMP, POLARITY=NEG]",
+            "V[VOICE=AV]",
+        ],
+        [
+            "(↑) = ↓2",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ CLAUSE-MOOD) = 'IMP'",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↓1 MOOD) =c 'IMP'",
+        ],
+    ))
+    rules.append(Rule(
+        "S",
+        [
+            "PART[MOOD=IMP, POLARITY=NEG]",
+            "V[VOICE=AV]",
+            "NP[CASE=GEN]",
+        ],
+        [
+            "(↑) = ↓2",
+            "(↑ POLARITY) = 'NEG'",
+            "(↑ CLAUSE-MOOD) = 'IMP'",
+            "(↑ SUBJ PRED) = 'PRO'",
+            "(↑ OBJ) = ↓3",
+            "(↓1 MOOD) =c 'IMP'",
+        ],
+    ))
 
 
     # Variant B: huwag + GEN-actor + linker + S (with inner V[OV]).
