@@ -128,6 +128,7 @@ class TestAnaphoraResolution:
     def test_subj_antecedent_reentrant_with_obj(self) -> None:
         fs, ant = self._find_bound_parse("Nakita niya ang sarili niya.")
         assert fs is not None, "no parse with SUBJ.ANTECEDENT"
+        assert ant is not None  # finder returns ant paired with fs
         # ANTECEDENT is reentrant with the matrix actor — OBJ in
         # AV-pivot syntax for ``nakita``.
         obj = fs.feats.get("OBJ")
@@ -143,6 +144,7 @@ class TestAnaphoraResolution:
         the binding."""
         fs, ant = self._find_bound_parse(sent)
         assert fs is not None, f"no bound parse for {sent!r}"
+        assert ant is not None  # finder returns ant paired with fs
         obj = fs.feats.get("OBJ")
         assert obj is not None
         assert ant.id == obj.id, f"binding broken on {sent!r}"
@@ -190,6 +192,7 @@ class TestSariliAtAVObject:
     def test_obj_antecedent_reentrant_with_subj(self, sent: str) -> None:
         fs, ant = self._find_obj_bound_parse(sent)
         assert fs is not None, f"no OBJ-bound parse for {sent!r}"
+        assert ant is not None  # finder returns ant paired with fs
         subj = fs.feats.get("SUBJ")
         assert subj is not None
         assert ant.id == subj.id, (
@@ -222,6 +225,7 @@ class TestSariliAtOVSubject:
     def test_subj_antecedent_reentrant_with_obj_agent(self, sent: str) -> None:
         fs, ant = self._find_subj_bound_parse(sent)
         assert fs is not None, f"no SUBJ-bound parse for {sent!r}"
+        assert ant is not None  # finder returns ant paired with fs
         # In OV voice, the binder is OBJ-AGENT (the actor).
         obj_agent = fs.feats.get("OBJ-AGENT")
         assert obj_agent is not None, (

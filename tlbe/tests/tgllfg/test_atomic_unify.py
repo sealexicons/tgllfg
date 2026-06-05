@@ -168,6 +168,7 @@ class TestSnapshotRollback:
         # identity for downstream reentrancy.
         live_root_after = g.value(root)
         assert live_root_after is live_root_before
+        assert isinstance(live_root_after, ComplexValue)
         assert set(live_root_after.attrs.keys()) == {"F"}
 
     def test_multiple_snapshots_can_target_distinct_points(self) -> None:

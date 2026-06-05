@@ -179,13 +179,13 @@
 # References: Phase 5i §9.2 (deferred from Phase 5i; corpus
 # surfaced via Phase 5m wh+man builder work); S&O 1972 §6.
 - surface: sino
-  feats: {WH: true, CASE: NOM, HUMAN: True, LEMMA: sino}
+  feats: {WH: true, CASE: NOM, HUMAN: true, LEMMA: sino}
   affix_class: [redup_wh_plural]
 - surface: ano
   feats: {WH: true, CASE: NOM, LEMMA: ano}
   affix_class: [redup_wh_plural]
 - surface: kanino
-  feats: {WH: true, CASE: DAT, HUMAN: True, LEMMA: kanino}
+  feats: {WH: true, CASE: DAT, HUMAN: true, LEMMA: kanino}
   affix_class: [redup_wh_plural]
 - surface: alin
   feats: {WH: true, CASE: NOM, LEMMA: alin}

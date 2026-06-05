@@ -1913,6 +1913,7 @@
   operations:
     - {op: prefix, value: "pinaka"}
   feats: {COMP_DEGREE: SUPERLATIVE, PREDICATIVE: true}
+  notes: "pinaka_adj_from_n — NOUN→ADJ superlative: puno (n. head) → pinakapuno (adj. principal/most important)"
 
 # --- Phase 10.J.post-8.5.5: naka_cv_compar (NOUN→ADJ comparative) -------
 #
@@ -1958,7 +1959,6 @@
     NOUN/ADJ base. bata → nakababata "younger"; tanda →
     nakatatanda "older"; buti → nakabubuti "better"; pagod →
     nakapapagod "tiring". Per-root opt-in.
-  notes: "pinaka_adj_from_n — NOUN→ADJ superlative: puno (n. head) → pinakapuno (adj. principal/most important)"
 
 # --- Phase 8.L Commit 3: kasing_n_eq (NOUN→ADJ equative) ----------------
 # The ``kasing-`` prefix on a measurement-attribute NOUN produces

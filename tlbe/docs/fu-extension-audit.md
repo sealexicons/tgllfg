@@ -1507,8 +1507,8 @@ explicitly:
   flipped to a SHIPPED design note. Surface-collision with
   ADJ `adj_redup` `mura-mura` "rather cheap" now intentional —
   both readings co-exist, disambiguated by lemma / REDUP_SEM /
-  AV_ABSOL. Cross-POS sentry + bare-predicative parse fixtures
-  + 1 informant-attested exemplar (`Puro mura-mura ang lumabas
+  AV_ABSOL. Cross-POS sentry + bare-predicative parse fixtures +
+  1 informant-attested exemplar (`Puro mura-mura ang lumabas
   sa bibig niya.`) in
   `tests/tgllfg/test_phase11_y_mura_curse_iter.py`. Existing
   `test_phase10_h_post1_mura_adj_correction::test_mura_redup_is_full_underspecified`

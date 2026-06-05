@@ -286,6 +286,7 @@ class TestPurposivePROBinding:
         matrix_subj = fs.feats.get("SUBJ")
         purp_subj = purp.feats.get("SUBJ")
         assert id(matrix_subj) == id(purp_subj)
+        assert matrix_subj is not None and purp_subj is not None
         # Both share LEMMA from matrix.
         assert matrix_subj.feats.get("LEMMA") == "juan"
         assert purp_subj.feats.get("LEMMA") == "juan"
@@ -344,6 +345,7 @@ class TestPurposivePROBindingEdgeCases:
         matrix_subj = fs.feats.get("SUBJ")
         purp_subj = purp.feats.get("SUBJ")
         assert id(matrix_subj) == id(purp_subj)
+        assert matrix_subj is not None and purp_subj is not None
         # COORD feature propagates through the binding.
         assert matrix_subj.feats.get("COORD") == "AND"
         assert purp_subj.feats.get("COORD") == "AND"
@@ -356,6 +358,7 @@ class TestPurposivePROBindingEdgeCases:
         matrix_subj = fs.feats.get("SUBJ")
         purp_subj = purp.feats.get("SUBJ")
         assert id(matrix_subj) == id(purp_subj)
+        assert matrix_subj is not None and purp_subj is not None
         # Clitic features propagate.
         assert matrix_subj.feats.get("is_clitic") == purp_subj.feats.get(
             "is_clitic"
