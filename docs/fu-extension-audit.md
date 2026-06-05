@@ -1409,10 +1409,10 @@ rewritten.
 | --- | --- | --- | --- | --- | --- |
 | **11.B.1** | **P0** | A: L47 `=c` → `=` swap | 10.M re-pass | 2-3 commits | none |
 | **11.B.2** | **P1** | B: Sarili 24-rule collapse + C: TestCrossClausalDeferred flip | 10.N inside-out | 4-6 commits | none |
-| **11.B.3** | **P1** | E: Purposive PRO binding + H-Class-3 subset (SHIPPED — PR pending) | 10.N inside-out | 1 sub-PR (c1 + c2 + c5) | 11.B.4.eng (PR #207, shipped) |
+| **11.B.3** | **P1** | E: Purposive PRO binding + H-Class-3 subset (SHIPPED — PR #208) | 10.N inside-out | 1 sub-PR (c1 + c2 + c5) | 11.B.4.eng (PR #207, shipped) |
 | **11.B.4** | **P2** | D: Coordination CONJUNCTS inside-out (SHIPPED — narrowed to S_XCOMP_BARE only; S_XCOMP families 1+2 stay with explicit chains per implementation finding) | 10.N + set-valued `parents_via` | 2 sub-PRs (eng + chart) | self |
 | **11.B.5** | **P2** | §B.2: Cyclic-endpoint pruning (engine + canonical fixture) (SHIPPED) | U-bucket prototype | 2 commits | none |
-| **11.X** | **P2** | §3.5: Bare `Huwag + V[AV]` PRO injection (Phase 10 carry-forward) (SHIPPED — PR pending) | PRO machinery design (non-FU) | 2 commits | none |
+| **11.X** | **P2** | §3.5: Bare `Huwag + V[AV]` PRO injection (Phase 10 carry-forward) (SHIPPED — PR #211) | PRO machinery design (non-FU) | 2 commits | none |
 | **11.final** | **P3** | Phase 11 closure docs (roadmap update, completed.md migration, retrospective) | docs-only | 1 commit | none |
 | ~~(future)~~ | ARCHIVED | ~~F: `{COMP \| XCOMP}*` body~~ — archived per Phase 11.A audit → out-of-scope §18.1.5 | 10.L K-on-A | n/a — no consumer | n/a |
 
@@ -1482,7 +1482,7 @@ explicitly:
 
 - **Bare `Huwag + V[VOICE=AV]`** (e.g. `Huwag kumain.`,
   `Huwag manigarilyo.`) — **SHIPPED 2026-06-04 by Phase 11.X**
-  (PR pending). 2 new chart rules in `cfg/negation.py`
+  (PR #211, ae2a53d). 2 new chart rules in `cfg/negation.py`
   (bare V[AV] + V[AV]+GEN-OBJ) inject `(↑ SUBJ PRED) = 'PRO'`
   per alternative (a) impersonal-PRO choice (Class-1 pattern from
   Appendix C). The audit-time claim that the matrix-NEG rule
@@ -1495,11 +1495,31 @@ explicitly:
   plus 3 unattributed-corpus exemplars under
   `unattributed/bare-huwag-pro`.
 - **`v_iter_redup` for curse-VERB `mura`** — morphology,
-  not FU. Audit-attestation-gated per
-  [[feedback_audit_before_scheduling]]. **Stays
-  audit-attestation-gated** (not on the active Phase 11
-  schedule; if a `mura-mura` curse-iter form appears in
-  wave-2-5+ harvest, schedule as a one-off lex+sentry sub-PR).
+  not FU. **SHIPPED 2026-06-04 by Phase 11.Y** on
+  attestation-pressure landing (informant / reviewer pass
+  confirmed `mura-mura` curse-iter is common, productive
+  ITER/HABITUAL reduplication parallel to `iyak-iyak` /
+  `tawa-tawa`; see `project_mura_mura_attestation` memory).
+  Single-line lex change in `data/tgl/verbs.yaml`:
+  `affix_class: [mag, in_oblig, pag_gerund]` →
+  `[mag, in_oblig, pag_gerund, v_iter_redup]` plus the
+  10.final.pre-1 "intentionally NOT opted-in" comment block
+  flipped to a SHIPPED design note. Surface-collision with
+  ADJ `adj_redup` `mura-mura` "rather cheap" now intentional —
+  both readings co-exist, disambiguated by lemma / REDUP_SEM /
+  AV_ABSOL. Cross-POS sentry + bare-predicative parse fixtures
+  + 1 informant-attested exemplar (`Puro mura-mura ang lumabas
+  sa bibig niya.`) in
+  `tests/tgllfg/test_phase11_y_mura_curse_iter.py`. Existing
+  `test_phase10_h_post1_mura_adj_correction::test_mura_redup_is_full_underspecified`
+  narrowed to ADJ-derived entry (lemma='mura'). 3 unattributed-
+  corpus exemplars under `unattributed/mura-mura-curse-iter`
+  (161→164). NP-head possessor exemplar (`ang mura-mura niya`)
+  remains out of scope — separate construction-class question
+  (nominalized-ITER-in-NP-head); flagged for future
+  construction-class follow-on. `Mura nang mura X.` "X nang X"
+  intensive-repetition exemplar is a different construction
+  (also flagged for future).
 - **Naturalistic ≥80% on the broader wave-2/3/5 corpora** —
   closure-driven engineering, not FU-related. The original
   Phase 9 §7.10 target was set against wave-1; the expanded
