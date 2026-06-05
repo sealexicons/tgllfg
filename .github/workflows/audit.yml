@@ -1,0 +1,51 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
+# CI+ audit gate: re-parses the naturalistic corpus and diffs against the
+# checked-in baseline; any regression fails the build. Wave-sharded across
+# a matrix because multiprocessing.Pool collapses to one worker on 2-core
+# GH runners -- parallelism comes from the matrix, each shard --workers 1.
+# Always-on for PRs targeting main; opt-in elsewhere via the run-ci-plus
+# label or manual dispatch.
+name: audit-gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    paths:
+      - "tlbe/**"
+      - ".github/workflows/audit.yml"
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: tlbe
+
+jobs:
+  audit-diff:
+    name: audit diff
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.base.ref == 'main' ||
+      contains(github.event.pull_request.labels.*.name, 'run-ci-plus')
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        waves:
+          - "wave1-exemplars,wave1-rb86-verbs"
+          - "wave2-ramos1971,wave2-rc1990,wave2-rg-intermediate"
+          - "wave3-rg-conversational,wave3-so1972"
+          - "wave4-kroeger1991"
+          - "wave5-zamar2023"
+          - "unattributed-constructions"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "tlbe/uv.lock"
+      - name: Sync (locked)
+        run: uv sync --locked
+      - name: Audit diff (${{ matrix.waves }})
+        run: uv run tgllfg audit diff --waves "${{ matrix.waves }}" --run --workers 1

@@ -1,0 +1,59 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
+# Frontend (tlfe) CI: build + lint + typecheck + test. Path-filtered to
+# tlfe/. The scaffold lands in Phase 12.D — until tlfe/package.json
+# exists, the build steps are skipped and the job stays green.
+name: tlfe
+
+on:
+  pull_request:
+    paths:
+      - "tlfe/**"
+      - ".github/workflows/tlfe.yml"
+  push:
+    branches-ignore: ["main"]
+    paths:
+      - "tlfe/**"
+      - ".github/workflows/tlfe.yml"
+
+defaults:
+  run:
+    working-directory: tlfe
+
+jobs:
+  build:
+    name: build (eslint + tsc + vite + vitest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect scaffold
+        id: scaffold
+        run: |
+          if [ -f package.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::tlfe scaffold not present yet (Phase 12.D) -- skipping build."
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.scaffold.outputs.present == 'true'
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: tlfe/package-lock.json
+      - name: Install
+        if: steps.scaffold.outputs.present == 'true'
+        run: npm ci
+      - name: Lint
+        if: steps.scaffold.outputs.present == 'true'
+        run: npm run lint --if-present
+      - name: Typecheck
+        if: steps.scaffold.outputs.present == 'true'
+        run: npx --no-install tsc --noEmit
+      - name: Build
+        if: steps.scaffold.outputs.present == 'true'
+        run: npm run build --if-present
+      - name: Test
+        if: steps.scaffold.outputs.present == 'true'
+        run: npm test --if-present
