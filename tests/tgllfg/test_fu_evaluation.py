@@ -2016,3 +2016,136 @@ class TestParentsViaSetValued:
             f"direct-edge inside-out (10.N) should still resolve "
             f"after 11.B.4.eng; got blocking: {_blocking(result)}"
         )
+
+
+class TestCyclicEndpointPruning:
+    """Phase 11.B.5: U-bucket prototype of resolver-side cyclic-endpoint
+    pruning. The :func:`resolve_regex_for_read` resolver gains an
+    optional ``exclude_cyclic_with`` keyword arg; when supplied, any
+    endpoint whose canonical root equals ``graph.find(exclude_cyclic_with)``
+    is filtered out post-dedup. Use case: defining equations of the form
+    ``(↑ X) = (↑ {SUBJ | OBJ})`` where one alternation arm would resolve
+    back to the LHS itself (reflexive's binder enumeration includes its
+    own position), triggering cyclic unification at the occurs-check.
+
+    Engine-only prototype. No chart consumer in ``unify.py`` opts in
+    yet — the canonical Phase 6.F equation-side workaround (which
+    Phase 11.B.2's NP-layer pivot superseded entirely for sarili)
+    remains the recommended pattern. The U-bucket prototype lets
+    future constructions (reciprocals, multi-binder constraints) that
+    genuinely need the alternation form opt in without re-engineering
+    the resolver.
+    """
+
+    def _setup_two_endpoints(
+        self,
+    ) -> tuple[FGraph, NodeId, NodeId, NodeId]:
+        """Build a matrix with two reachable endpoints via
+        ``{SUBJ | OBJ}``: SUBJ → ``cyclic`` (the LHS-as-target),
+        OBJ → ``binder`` (the canonical non-cyclic endpoint).
+
+        Returns ``(graph, matrix, cyclic, binder)``.
+        """
+        g = FGraph()
+        matrix = g.fresh()
+        cyclic = g.fresh()
+        binder = g.fresh()
+        g.set_atom(cyclic, "CYCLIC")
+        g.set_atom(binder, "BINDER")
+        # matrix.SUBJ = cyclic; matrix.OBJ = binder
+        subj, err = g.resolve_path(matrix, ("SUBJ",))
+        assert err is None and subj is not None
+        assert g.unify(subj, cyclic) is None
+        obj, err = g.resolve_path(matrix, ("OBJ",))
+        assert err is None and obj is not None
+        assert g.unify(obj, binder) is None
+        return g, matrix, cyclic, binder
+
+    def test_pruning_off_default_returns_both_endpoints(self) -> None:
+        """Default ``exclude_cyclic_with=None``: both endpoints
+        returned in minimality-sorted order. Backward-compat anchor
+        for the pre-11.B.5 contract."""
+        g, matrix, cyclic, binder = self._setup_two_endpoints()
+        endpoints, err = resolve_regex_for_read(
+            g, matrix, (AltFeature(("SUBJ", "OBJ")),),
+        )
+        assert err is None
+        assert set(endpoints) == {g.find(cyclic), g.find(binder)}
+        assert len(endpoints) == 2  # dedup honored
+
+    def test_pruning_with_lhs_excludes_cyclic_endpoint(self) -> None:
+        """With ``exclude_cyclic_with=cyclic``: only the binder
+        endpoint surfaces. The cyclic endpoint is filtered post-dedup
+        but minimality-ordering of survivors is preserved."""
+        g, matrix, cyclic, binder = self._setup_two_endpoints()
+        endpoints, err = resolve_regex_for_read(
+            g, matrix, (AltFeature(("SUBJ", "OBJ")),),
+            exclude_cyclic_with=cyclic,
+        )
+        assert err is None
+        assert endpoints == [g.find(binder)]
+
+    def test_pruning_canonicalizes_via_find(self) -> None:
+        """``exclude_cyclic_with`` is canonicalized via
+        ``graph.find()`` — passing a node already unified into the
+        cyclic equivalence class still prunes correctly. Covers the
+        audit doc's 'or already in the unification chain of the LHS'
+        clause."""
+        g, matrix, cyclic, binder = self._setup_two_endpoints()
+        # Allocate an extra node, unify it with cyclic; passing it
+        # as exclude_cyclic_with should still prune cyclic's root.
+        alias = g.fresh()
+        assert g.unify(alias, cyclic) is None
+        endpoints, err = resolve_regex_for_read(
+            g, matrix, (AltFeature(("SUBJ", "OBJ")),),
+            exclude_cyclic_with=alias,
+        )
+        assert err is None
+        assert endpoints == [g.find(binder)]
+
+    def test_pruning_no_op_when_excluded_not_in_endpoints(self) -> None:
+        """When ``exclude_cyclic_with`` names a node disjoint from
+        every endpoint, all endpoints survive — pruning is a strict
+        filter, never adds anything."""
+        g, matrix, cyclic, binder = self._setup_two_endpoints()
+        disjoint = g.fresh()
+        g.set_atom(disjoint, "DISJOINT")
+        endpoints, err = resolve_regex_for_read(
+            g, matrix, (AltFeature(("SUBJ", "OBJ")),),
+            exclude_cyclic_with=disjoint,
+        )
+        assert err is None
+        assert set(endpoints) == {g.find(cyclic), g.find(binder)}
+
+    def test_pruning_preserves_minimality_order(self) -> None:
+        """Surviving endpoints stay in the same minimality-sorted
+        order as the pre-prune list (just with the cyclic entry
+        removed)."""
+        g, matrix, cyclic, binder = self._setup_two_endpoints()
+        # Capture pre-prune order for reference.
+        baseline, err = resolve_regex_for_read(
+            g, matrix, (AltFeature(("SUBJ", "OBJ")),),
+        )
+        assert err is None
+        expected_post = [n for n in baseline if n != g.find(cyclic)]
+        pruned, err = resolve_regex_for_read(
+            g, matrix, (AltFeature(("SUBJ", "OBJ")),),
+            exclude_cyclic_with=cyclic,
+        )
+        assert err is None
+        assert pruned == expected_post
+
+    def test_pruning_explicit_none_matches_default(self) -> None:
+        """Backward-compat: explicit ``exclude_cyclic_with=None``
+        keyword arg produces the same result as omitting the kwarg
+        entirely. Verifies the default value contract."""
+        g, matrix, _cyclic, _binder = self._setup_two_endpoints()
+        default_result, err1 = resolve_regex_for_read(
+            g, matrix, (AltFeature(("SUBJ", "OBJ")),),
+        )
+        explicit_none, err2 = resolve_regex_for_read(
+            g, matrix, (AltFeature(("SUBJ", "OBJ")),),
+            exclude_cyclic_with=None,
+        )
+        assert err1 is None and err2 is None
+        assert default_result == explicit_none

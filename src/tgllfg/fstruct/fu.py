@@ -194,6 +194,7 @@ def resolve_regex_for_read(
     path: tuple[PathElement, ...],
     *,
     off_path_eval: OffPathEval | None = None,
+    exclude_cyclic_with: NodeId | None = None,
 ) -> tuple[list[NodeId], Diagnostic | None]:
     """Enumerate the well-formed endpoints reached by a regex path.
 
@@ -217,6 +218,28 @@ def resolve_regex_for_read(
     is ``None``, the resolver returns ``([], Diagnostic("deferred",
     ...))`` — the legacy C2/C3 behavior preserved for direct callers
     that don't go through ``unify.py``.
+
+    Cyclic-endpoint pruning (Phase 11.B.5): when ``exclude_cyclic_with``
+    is supplied, endpoints whose canonical root equals
+    ``graph.find(exclude_cyclic_with)`` are filtered out post-dedup.
+    The use case is a defining equation ``(↑ X) = (↑ {SUBJ | OBJ})``
+    where one of the alternation arms would resolve back to the LHS
+    itself (e.g., reflexive's binder enumeration includes the
+    reflexive's own position), triggering cyclic unification at the
+    occurs-check downstream. Caller passes the LHS-canonical root;
+    the resolver skips the cyclic endpoint and surfaces the
+    non-cyclic complement at the head of the minimality-sorted list.
+    The ``graph.find()`` canonicalization on both sides naturally
+    covers the "or already in the unification chain of the LHS" case
+    — any node previously unified with the LHS shares its root.
+    Default behavior (``exclude_cyclic_with=None``) is unchanged;
+    the prior reflexive-binding equation-side workaround at
+    ``cfg/control.py:1097-1186`` (now removed by Phase 11.B.2's
+    NP-layer pivot) and the post-11.B.2 Dalrymple-canonical NP-layer
+    binding both bypass the resolver-side pruning entirely. The
+    feature is shipped as a U-bucket prototype — no chart consumer
+    in ``unify.py`` opts in yet; consumers will surface as
+    constructions with alternation-form binding emerge.
 
     The resolver is read-only — it does not mutate ``graph``. Per the
     Phase 6.B contract, regex paths are only legal in constraining
@@ -285,6 +308,15 @@ def resolve_regex_for_read(
         if n not in seen:
             seen.add(n)
             result.append(n)
+
+    # Phase 11.B.5 cyclic-endpoint pruning: when an LHS-root is
+    # supplied, filter out any endpoint that would unify cyclically
+    # with the LHS. Done post-dedup so minimality ordering of the
+    # surviving endpoints is preserved.
+    if exclude_cyclic_with is not None:
+        excl_root = graph.find(exclude_cyclic_with)
+        result = [n for n in result if n != excl_root]
+
     return result, None
 
 
