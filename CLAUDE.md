@@ -96,8 +96,11 @@ tlfe/             Tagalog LFG FrontEnd — web inspector (Vite + React;
                   scaffolding Phase 12.D, built out Phase 14)
 
 (top level)       .claude/ (plans + memory), CLAUDE.md, README.md (monorepo),
-                  LICENSE-MIT, LICENSE-APACHE, .gitignore, .markdownlint.json,
-                  tmp/ (gitignored scratch)
+                  LICENSE-MIT, LICENSE-APACHE, .markdownlint.json, .gitignore
+                  (cross-cutting; Python ignores in tlbe/.gitignore, JS in
+                  tlfe/.gitignore). Scratch is per-tree, no crossover:
+                  tlbe/tmp/ for backend (Python) work, tlfe/tmp/ for
+                  frontend; the bare tmp/ pattern ignores any at any depth.
 ```
 
 ## Plans and references

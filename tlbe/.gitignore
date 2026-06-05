@@ -1,0 +1,47 @@
+# tlbe/.gitignore — Python backend (the tgllfg parser + CLI). These
+# patterns moved down from the monorepo top level in Phase 12.B.post-1:
+# they are Python/uv-specific and belong with the tree they describe.
+# (Editor/OS files, *.log, .env*, and tmp/ are handled by the top-level
+# .gitignore, which matches at any depth — not duplicated here.)
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+*.pyd
+*.dylib
+
+# Packaging / build artifacts (hatchling via `uv build`)
+build/
+dist/
+*.whl
+
+# uv-managed virtualenv
+.venv/
+
+# Testing / coverage / tool caches. .ruff_cache/ + .hypothesis/ also
+# self-ignore via an internal .gitignore; listed here for consistency.
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+.mypy_cache/
+.tox/
+.cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Reference works staged locally for grep / corpus mining; excluded for
+# binary-size + licensing reasons.
+data/tgl/references/
+
+# Exemplar harvest corpus — TRACKED as of Phase 12.F (the wave source
+# files ship with the repo: fair use + per-exemplar citation). Only the
+# derived / transient artifacts stay ignored — all regenerable:
+data/tgl/exemplars/*-parse-results.jsonl
+data/tgl/exemplars/*.tmp
+data/tgl/exemplars/coverage-*.md
+data/tgl/exemplars/oov-frequency.tsv

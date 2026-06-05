@@ -1,0 +1,24 @@
+# tlfe/.gitignore — JS frontend (the web inspector; Vite + React + TS).
+# The scaffold lands in Phase 12.D; these are the standard Vite ignores.
+# (Editor/OS files, *.log, .env*, and tmp/ are handled by the top-level
+# .gitignore, which matches at any depth — not duplicated here.)
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Vite / TypeScript build caches
+.vite/
+*.tsbuildinfo
+
+# Local env overrides (Vite)
+*.local
+
+# Package-manager debug logs (suffixed — the top-level *.log misses these)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
