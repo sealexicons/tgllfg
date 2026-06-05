@@ -24,11 +24,11 @@ Two coordinated changes in this slice:
     free of redundant ``"ignore": false, "ignore_reason": null`` on
     every non-ignored record.
 
-* ``scripts/audit_corpus.py``:
-  - ``_load_tasks`` filters ``ex.get("ignore")`` (parallel to the
-    existing ``marked_ungrammatical`` filter), so ignored entries
-    don't reach the parser pool and don't appear in
-    ``parse-results.jsonl``.
+* ``tgllfg.audit.load_tasks`` (Phase 12.F; formerly
+  ``scripts/audit_corpus.py:_load_tasks``):
+  - filters ``ex.get("ignore")`` (parallel to the existing
+    ``marked_ungrammatical`` filter), so ignored entries don't reach
+    the parser pool and don't appear in ``parse-results.jsonl``.
 """
 
 import json
@@ -190,13 +190,15 @@ class TestAsdictDropDefaults:
 
 
 class TestAuditCorpusLoadTasksFilter:
-    """``audit_corpus.py:_load_tasks`` filters out ``ignore: true``
-    entries (parallel to ``marked_ungrammatical`` filtering)."""
+    """``tgllfg.audit.load_tasks`` filters out ``ignore: true`` entries
+    (parallel to ``marked_ungrammatical`` filtering). Phase 12.F moved
+    this from ``scripts/audit_corpus.py:_load_tasks``."""
 
     def test_ignored_entry_filtered_from_tasks(self, tmp_path) -> None:
-        # Import audit_corpus lazily to avoid importing the worker
-        # pool at module load.
-        import audit_corpus as ac  # type: ignore[import-not-found]
+        # Phase 12.F moved the audit logic into ``tgllfg.audit``;
+        # ``load_tasks`` now takes the corpus dir as an argument (no
+        # module-global ``EXEMPLARS`` / ``WAVE_FILES`` to patch).
+        from tgllfg.audit import load_tasks
 
         # Build a 3-entry .jsonl: 1 normal, 1 marked_ungrammatical,
         # 1 ignore=true. Verify only the normal one reaches the task
@@ -220,23 +222,15 @@ class TestAuditCorpusLoadTasksFilter:
             "ignore_reason": "test",
         }
 
-        # The function reads from EXEMPLARS dir; redirect via
-        # monkey-patching the module-level path.
-        fake_path = tmp_path / "test-wave.jsonl"
-        with fake_path.open("w") as f:
+        # ``load_tasks`` reads ``<wave>.jsonl`` from the given dir; name
+        # the fixture after a real wave id and filter to it.
+        wave_path = tmp_path / "wave1-exemplars.jsonl"
+        with wave_path.open("w") as f:
             for r in (rec_normal, rec_ungrammatical, rec_ignored):
                 f.write(json.dumps(r) + "\n")
 
-        orig_exemplars = ac.EXEMPLARS
-        orig_wave_files = ac.WAVE_FILES
-        ac.EXEMPLARS = tmp_path
-        ac.WAVE_FILES = [("test-wave", "test-wave.jsonl")]
-        try:
-            tasks = ac._load_tasks()
-        finally:
-            ac.EXEMPLARS = orig_exemplars
-            ac.WAVE_FILES = orig_wave_files
+        tasks = load_tasks(tmp_path, wave_filter={"wave1-exemplars"})
 
-        # Only the normal one survives.
+        # Only the normal one survives (ungrammatical + ignored dropped).
         assert len(tasks) == 1
         assert tasks[0][2] == "loc-normal"
