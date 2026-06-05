@@ -13,6 +13,10 @@ Subcommands:
 * ``tgllfg parse`` — parse a Tagalog sentence and print its
   c-/f-structure summary. With ``--strict`` it suppresses fragment
   output on full-parse failure (Phase 4 §7.9).
+* ``tgllfg audit run|diff|baseline`` — run the naturalistic-tier
+  corpus audit, diff a run against the checked-in baseline (exit 1
+  on regression — the CI gate), or (re)write that baseline
+  (Phase 12.F).
 """
 
 import argparse
@@ -84,6 +88,64 @@ def _build_parser() -> argparse.ArgumentParser:
         help="cap on the number of complete parses returned (default: 5)",
     )
 
+    audit = sub.add_parser(
+        "audit", help="run / diff / baseline the naturalistic-tier corpus audit"
+    )
+    audit_sub = audit.add_subparsers(dest="audit_cmd", required=True)
+
+    def _add_audit_common(p: argparse.ArgumentParser) -> None:
+        p.add_argument(
+            "--waves",
+            default=None,
+            help="comma-separated wave ids to audit (default: all)",
+        )
+        p.add_argument(
+            "--workers",
+            type=int,
+            default=None,
+            help="worker count (default: min(cpu_count-1, 11); 1 = in-process)",
+        )
+        p.add_argument(
+            "--exemplars-dir",
+            default=None,
+            help="corpus dir (default: data/tgl/exemplars or $TGLLFG_EXEMPLARS_DIR)",
+        )
+
+    a_run = audit_sub.add_parser(
+        "run", help="parse the corpus, writing per-wave parse-results"
+    )
+    _add_audit_common(a_run)
+
+    a_diff = audit_sub.add_parser(
+        "diff", help="diff current parses against a baseline; exit 1 on regression"
+    )
+    _add_audit_common(a_diff)
+    a_diff.add_argument(
+        "--baseline",
+        default=None,
+        help="baseline JSONL (default: tests/tgllfg/data/audit-baseline.jsonl)",
+    )
+    a_diff.add_argument(
+        "--run",
+        action="store_true",
+        help="parse fresh instead of reading existing parse-results",
+    )
+
+    a_base = audit_sub.add_parser(
+        "baseline", help="(re)write the compact, text-free baseline artifact"
+    )
+    _add_audit_common(a_base)
+    a_base.add_argument(
+        "--output",
+        default=None,
+        help="output path (default: tests/tgllfg/data/audit-baseline.jsonl)",
+    )
+    a_base.add_argument(
+        "--run",
+        action="store_true",
+        help="parse fresh instead of reading existing parse-results",
+    )
+
     return parser
 
 
@@ -102,6 +164,10 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     if args.cmd == "parse":
         _cmd_parse(args)
+        return
+
+    if args.cmd == "audit":
+        _cmd_audit(args)
         return
 
     if args.cmd != "lex":
@@ -187,6 +253,73 @@ def _cmd_parse(args: argparse.Namespace) -> None:
         blocking = [d for d in frag.diagnostics if d.is_blocking()]
         for d in blocking[:2]:
             sys.stdout.write(f"  blocked: [{d.kind}] {d.message}\n")
+
+
+def _cmd_audit(args: argparse.Namespace) -> None:
+    """Phase 12.F: run / diff / (re)baseline the naturalistic-tier audit.
+
+    ``run`` parses the corpus and writes per-wave parse-results.
+    ``diff`` compares the current parses against a checked-in baseline
+    and exits non-zero on any regression (the CI gate). ``baseline``
+    (re)writes the compact, text-free baseline artifact. ``diff`` and
+    ``baseline`` reuse the per-wave parse-results on disk unless
+    ``--run`` parses fresh.
+    """
+    from tgllfg.audit import (
+        default_baseline_path,
+        default_exemplars_dir,
+        diff_run,
+        format_diff,
+        format_summary,
+        load_baseline,
+        load_results_dir,
+        run_audit,
+        write_baseline,
+        write_results,
+    )
+
+    exemplars_dir = (
+        Path(args.exemplars_dir) if args.exemplars_dir else default_exemplars_dir()
+    )
+    waves = args.waves.split(",") if args.waves else None
+    wave_set = set(waves) if waves else None
+
+    if args.audit_cmd == "run":
+        run = run_audit(exemplars_dir=exemplars_dir, waves=waves, workers=args.workers)
+        write_results(run.by_wave, exemplars_dir=exemplars_dir)
+        sys.stdout.write(format_summary(run) + "\n")
+        return
+
+    if args.run:
+        by_wave = run_audit(
+            exemplars_dir=exemplars_dir, waves=waves, workers=args.workers
+        ).by_wave
+    else:
+        by_wave = load_results_dir(exemplars_dir=exemplars_dir)
+        if wave_set is not None:
+            by_wave = {w: r for w, r in by_wave.items() if w in wave_set}
+
+    if args.audit_cmd == "baseline":
+        out = Path(args.output) if args.output else default_baseline_path()
+        n = write_baseline(by_wave, out)
+        sys.stdout.write(f"wrote baseline: {n} rows -> {out}\n")
+        return
+
+    if args.audit_cmd == "diff":
+        baseline_path = (
+            Path(args.baseline) if args.baseline else default_baseline_path()
+        )
+        baseline = load_baseline(baseline_path, waves=wave_set)
+        diff = diff_run(baseline, by_wave)
+        sys.stdout.write(format_diff(diff) + "\n")
+        if diff.has_regressions:
+            sys.stderr.write(
+                f"audit diff: {len(diff.regressions)} regression(s) — failing\n"
+            )
+            sys.exit(1)
+        return
+
+    raise AssertionError(f"unhandled audit_cmd: {args.audit_cmd}")  # argparse rejects others
 
 
 if __name__ == "__main__":
