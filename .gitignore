@@ -50,7 +50,7 @@ tmp/
 
 # Reference works staged locally for grep / corpus mining;
 # excluded from the repo for binary-size and licensing reasons.
-data/tgl/references/
+tlbe/data/tgl/references/
 
 # Exemplar harvest corpus — TRACKED as of Phase 12.F (2026-06-05).
 # Promoted from gitignored to tracked: fair use applies and every
@@ -59,10 +59,10 @@ data/tgl/references/
 # fresh clone. The licensed reference PDFs themselves stay ignored
 # (references/, above). Derived / transient artifacts stay ignored —
 # all regenerable from the source corpus:
-data/tgl/exemplars/*-parse-results.jsonl
-data/tgl/exemplars/*.tmp
-data/tgl/exemplars/coverage-*.md
-data/tgl/exemplars/oov-frequency.tsv
+tlbe/data/tgl/exemplars/*-parse-results.jsonl
+tlbe/data/tgl/exemplars/*.tmp
+tlbe/data/tgl/exemplars/coverage-*.md
+tlbe/data/tgl/exemplars/oov-frequency.tsv
 
 # Per-project plan files (live alongside the repo for convenience but
 # remain personal working notes, not project artifacts).
