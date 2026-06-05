@@ -41,8 +41,10 @@ Source = "https://github.com/skynavga/tgllfg"
 [tool.hatch.version]
 path = "src/tgllfg/__version__.py"
 
-[tool.hatch.envs.default]
-dependencies = [
+# Dev dependencies (Phase 12.C: migrated env/deps from hatch envs to uv).
+# Installed by ``uv sync`` (pins captured in ``uv.lock``).
+[dependency-groups]
+dev = [
   "hypothesis>=6.0",
   "mypy>=1.0.0",
   "pytest",
@@ -51,19 +53,30 @@ dependencies = [
   "ruff",
   "testcontainers[postgres]>=4.0",
   "types-pyyaml",
+  "poethepoet>=0.24",
 ]
 
-[tool.hatch.envs.default.scripts]
-check = "ruff check . && mypy --install-types --non-interactive {args:src/tgllfg tests}"
-demo = "python -m tgllfg.examples.demo"
+# Task runner (poethepoet); run via ``uv run poe <task>`` from tlbe/.
+# Phase 12.C replaced the hatch env scripts; hatchling stays the build
+# backend. Simple tasks append extra CLI args; shell tasks carry the
+# &&/&/wait idioms the gate scripts need.
+[tool.poe.tasks]
 lint = "ruff check ."
-test = "(pytest -m postgres {args:} || [ $? = 5 ]) && pytest -m 'not postgres and not xslow' -n auto {args:}"
-test-postgres = "pytest -m postgres {args:}"
-test-fast = "pytest -m 'not postgres and not slow and not xslow' -n auto {args:}"
-test-slow = "pytest -m 'slow and not xslow' -n auto {args:}"
-test-both = "pytest -m 'not postgres and not slow and not xslow' -n auto {args:} & p1=$!; pytest -m 'slow and not xslow' -n auto {args:} & p2=$!; wait $p1; r1=$?; wait $p2; r2=$?; [ $r1 -eq 0 ] && [ $r2 -eq 0 ]"
-test-xslow = "pytest -m 'xslow' -n auto {args:}"
-types = "mypy --install-types --non-interactive {args:src/tgllfg tests}"
+types = "mypy src/tgllfg tests"
+demo = "python -m tgllfg.examples.demo"
+test-fast = "pytest -m 'not postgres and not slow and not xslow' -n auto"
+test-slow = "pytest -m 'slow and not xslow' -n auto"
+test-xslow = "pytest -m 'xslow' -n auto"
+test-postgres = "pytest -m postgres"
+
+[tool.poe.tasks.check]
+shell = "ruff check . && mypy src/tgllfg tests"
+
+[tool.poe.tasks.test]
+shell = "(pytest -m postgres || [ $? = 5 ]) && pytest -m 'not postgres and not xslow' -n auto"
+
+[tool.poe.tasks.test-both]
+shell = "pytest -m 'not postgres and not slow and not xslow' -n auto & p1=$!; pytest -m 'slow and not xslow' -n auto & p2=$!; wait $p1; r1=$?; wait $p2; r2=$?; [ $r1 -eq 0 ] && [ $r2 -eq 0 ]"
 
 [tool.coverage.run]
 source_pkgs = ["tgllfg", "tests"]

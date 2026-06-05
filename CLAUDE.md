@@ -5,29 +5,37 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 
 # tgllfg — Claude Code project notes
 
-Prototype LFG parser for Tagalog. Python ≥ 3.14, Hatch-managed env, pytest-xdist,
-optional Postgres testcontainer. Dual-licensed MIT OR Apache-2.0. Phase 9 is
-the current effort — closing the naturalistic-tier audit corpus toward the
-≥80% parse-rate milestone (Wave 1+2+3 harvest, 2327 sentences).
+Prototype LFG parser for Tagalog, in a `tlbe/` (backend) + `tlfe/` (frontend)
+monorepo. Python ≥ 3.14, **uv-managed env + poe task runner** (hatchling stays
+the build backend), pytest-xdist, optional Postgres testcontainer. Dual-licensed
+MIT OR Apache-2.0. **Phase 12 — engineering foundation** is the current effort:
+the monorepo reorg + uv/poe migration shipped in 12.B/12.C; the REST API is
+Phase 13 and the web inspector Phase 14.
 
 This file is the load-on-every-session brief for working in this repo. Personal
 preferences live in auto-memory; this file is project-wide.
 
 ## Build, test, lint
 
-Always go through Hatch — never invoke `pytest` or `ruff` directly. The Hatch
-aliases pass `-n auto` for xdist parallelism; raw pytest is single-threaded and
-~5× slower.
+**All commands run from `tlbe/`** (the backend root) through **uv + poe** —
+never invoke `pytest` or `ruff` directly. The poe aliases pass `-n auto` for
+xdist parallelism; raw pytest is single-threaded and ~5× slower. One-time
+setup: `uv sync` (creates `tlbe/.venv` from `uv.lock`). From the repo root,
+prefix with `uv --directory tlbe run …` instead of `cd tlbe`.
 
-| Need                                | Command                   | Notes                                       |
-| ----------------------------------- | ------------------------- | ------------------------------------------- |
-| Pre-commit gate (Python changes)    | `hatch run test-both`     | T1 + T2 in parallel; ~130s wall             |
-| Iteration loop (most tests)         | `hatch run test-fast`     | excludes `slow`, `xslow`, `postgres`; ~125s |
-| Iteration loop (T2 / slow only)     | `hatch run test-slow`     | `slow` marker only; ~10s                    |
-| Combinatorial regression check      | `hatch run test-xslow`    | on-demand only; ~300s for one test          |
-| Postgres-backed only                | `hatch run test-postgres` | needs Docker                                |
-| Lint + type check                   | `hatch run check`         | ruff + mypy over `src/tgllfg tests`         |
-| Markdown lint (docs / `README.md`)  | `markdownlint <files>`    | `/opt/homebrew/bin/markdownlint`, not npx   |
+| Need                                | Command (from `tlbe/`)     | Notes                                       |
+| ----------------------------------- | -------------------------- | ------------------------------------------- |
+| Pre-commit gate (Python changes)    | `uv run poe test-both`     | T1 + T2 in parallel; ~190s wall             |
+| Iteration loop (most tests)         | `uv run poe test-fast`     | excludes `slow`, `xslow`, `postgres`; ~125s |
+| Iteration loop (T2 / slow only)     | `uv run poe test-slow`     | `slow` marker only; ~15s                    |
+| Combinatorial regression check      | `uv run poe test-xslow`    | on-demand only; ~300s for one test          |
+| Postgres-backed only                | `uv run poe test-postgres` | needs Docker                                |
+| Lint + type check                   | `uv run poe check`         | ruff + mypy over `src/tgllfg tests`         |
+| Markdown lint (docs / `README.md`)  | `markdownlint <files>`     | `/opt/homebrew/bin/markdownlint`, not npx   |
+
+Any task also runs without poe — `uv run pytest -m '…' -n auto`,
+`uv run ruff check .` — poe just names the composite gates (`test-both`,
+`check`). hatchling remains the build backend (`uv build`).
 
 The `xslow` bucket is reserved for tests whose single-test call duration
 exceeds 60s (currently one: the R&G combined-essay parse, which scales
@@ -37,53 +45,59 @@ excluded from `test-fast` / `test-slow` / `test-both` and only runs via
 the standard gates are enough.
 
 Bash timeouts: 180000ms is enough for `test-fast` / `test-slow` /
-`test-postgres` / `check`; use 240000ms for `test-both` (typical
-wall ~155–170s post-Phase-9.X); bump to 600000ms for `test-xslow`.
-Don't pad to the ceiling for the standard gates.
+`test-postgres` / `check`; use 300000ms for `test-both` (typical wall
+~190s on the uv env); bump to 600000ms for `test-xslow`. Don't pad to
+the ceiling for the standard gates.
 
 Capture-first idiom for failing runs:
-`hatch run test-fast 2>&1 | tee ./tmp/pytest.log | tail -200`. Tee then tail —
+`uv run poe test-fast 2>&1 | tee ./tmp/pytest.log | tail -200`. Tee then tail —
 never the reverse, or you lose the full log.
 
-Docs-only diffs: skip pytest and `hatch run check`; run `markdownlint` only.
+Docs-only diffs: skip pytest and `uv run poe check`; run `markdownlint` only.
 The repo has `.markdownlint.json` (line length 120, fenced code blocks,
 sibling-only duplicate headings).
 
 ## Directory map
 
 ```text
-src/tgllfg/
-  cfg/          c-structure CFG modules, split by area
-                (clause / nominal / coordination / subordination / clitic /
-                control / discourse / extraction / negation; grammar.py is
-                the entry point, compile.py is the rule compiler)
-  core/         pipeline.py (parse_text), feats.py (BINARY_FEATS registry),
-                lexicon loaders, common.py utilities
-  lex/          Postgres-backed lex models, repo, loader, alembic seed
-  morph/        morphological analyzer (paradigms, affix indexing)
-  parse/        chart parser
-  fstruct/      f-structure + unifier (atomic-unify primitive, FU evaluator)
-  lmt/          Lexical Mapping Theory (post-parse validation, PRED pruning)
-  audit/        corpus-audit run / diff / baseline (Phase 12.F; backs
-                the `tgllfg audit` CLI + the `scripts/audit_corpus.py` shim)
-  clitics/ text/ renderers/ cli/ examples/
+tlbe/             Tagalog LFG BackEnd — the parser + `tgllfg` CLI
+  pyproject.toml  uv + poe config; hatchling build backend
+  uv.lock         locked deps (run `uv sync`)
+  alembic/ alembic.ini   Postgres migrations
+  src/tgllfg/
+    cfg/          c-structure CFG modules, split by area
+                  (clause / nominal / coordination / subordination / clitic /
+                  control / discourse / extraction / negation; grammar.py is
+                  the entry point, compile.py is the rule compiler)
+    core/         pipeline.py (parse_text), feats.py (BINARY_FEATS registry),
+                  lexicon loaders, common.py utilities
+    lex/          Postgres-backed lex models, repo, loader, alembic seed
+    morph/        morphological analyzer (paradigms, affix indexing)
+    parse/        chart parser
+    fstruct/      f-structure + unifier (atomic-unify primitive, FU evaluator)
+    lmt/          Lexical Mapping Theory (post-parse validation, PRED pruning)
+    audit/        corpus-audit run / diff / baseline (Phase 12.F; backs
+                  the `tgllfg audit` CLI + the `scripts/audit_corpus.py` shim)
+    clitics/ text/ renderers/ cli/ examples/
+  data/tgl/       YAML lexicon: nouns / verbs / adjectives / numerals /
+                  particles / pronouns / clitics / paradigms / affixes /
+                  adj_paradigms / sandhi / voice_aliases; lexicon/ subdir for
+                  per-entry files; exemplars/ tracked (Phase 12.F — fair use,
+                  cited); references/ gitignored (licensed PDFs)
+  docs/           analysis-choices, diagnostics, definitions, lexicon, lmt,
+                  coverage (naturalistic-tier audit history), feats-binary-audit,
+                  lex-yaml-schema, fu-evaluation, refactor-grammar-and-roots,
+                  root-yaml-metadata
+  tests/tgllfg/   Per-feature test modules; share fixtures from conftest.py
+  scripts/        harvest_exemplars.py, audit_corpus.py, audit_diff.py,
+                  generate_coverage_corpus.py, check_parses_unchanged.py
 
-data/tgl/       YAML lexicon: nouns / verbs / adjectives / numerals /
-                particles / pronouns / clitics / paradigms / affixes /
-                adj_paradigms / sandhi / voice_aliases; lexicon/ subdir for
-                per-entry files; exemplars/ tracked (Phase 12.F — fair
-                use, cited); references/ gitignored (licensed PDFs)
+tlfe/             Tagalog LFG FrontEnd — web inspector (Vite + React;
+                  scaffolding Phase 12.D, built out Phase 14)
 
-docs/           Architecture and analytical decisions:
-                analysis-choices, diagnostics, definitions, lexicon, lmt,
-                coverage (incl. naturalistic-tier audit history),
-                feats-binary-audit, lex-yaml-schema, fu-evaluation,
-                refactor-grammar-and-roots, root-yaml-metadata
-
-tests/tgllfg/   Per-feature test modules; share fixtures from conftest.py
-
-scripts/        harvest_exemplars.py, audit_corpus.py, audit_diff.py,
-                generate_coverage_corpus.py, check_parses_unchanged.py
+(top level)       .claude/ (plans + memory), CLAUDE.md, README.md (monorepo),
+                  LICENSE-MIT, LICENSE-APACHE, .gitignore, .markdownlint.json,
+                  tmp/ (gitignored scratch)
 ```
 
 ## Plans and references
@@ -93,10 +107,10 @@ scripts/        harvest_exemplars.py, audit_corpus.py, audit_diff.py,
   `tgllfg-phase-<n>.md`. Cross-cutting: `tgllfg-roadmap.md`,
   `tgllfg-completed.md`, `tgllfg-out-of-scope.md`,
   `tgllfg-testing-and-risks.md`, `tgllfg-harvest-audit.md`.
-- **Tagalog reference works live in `data/tgl/references/`** (gitignored —
-  licensed PDFs). Hand-transcribed excerpts at
-  `data/tgl/references/transcriptions/` — cite preferentially over OCR.
-- **Audit harvest output**: `data/tgl/exemplars/` — tracked as of
+- **Tagalog reference works live in `tlbe/data/tgl/references/`** (gitignored
+  — licensed PDFs). Hand-transcribed excerpts at
+  `tlbe/data/tgl/references/transcriptions/` — cite preferentially over OCR.
+- **Audit harvest output**: `tlbe/data/tgl/exemplars/` — tracked as of
   Phase 12.F (fair use + per-exemplar citation); the source corpus ships
   with the repo (derived `*-parse-results.jsonl` stay gitignored).
   Generated by `scripts/harvest_exemplars.py`; audited by `tgllfg audit`.
@@ -152,19 +166,20 @@ scripts/        harvest_exemplars.py, audit_corpus.py, audit_diff.py,
   successor item.
 - **Post-PR cleanup is routine** — after a PR merges, switch to `main`, pull,
   and delete the local + remote branches without asking.
-- **Commit messages**: long-body by default, with `hatch run test-both`
+- **Commit messages**: long-body by default, with `uv run poe test-both`
   timing (the "N passed in Xs" line) included as evidence that the
   pre-commit gate ran clean.
 
 ## Process gotchas to avoid
 
-- **Don't background `hatch run pytest` / `hatch run check`** — they're
-  foreground commands. Tail-piping them hides the exit code.
+- **Don't background `uv run poe test-*` / `uv run poe check`** — they're
+  foreground gate commands. Tail-piping them hides the exit code.
 - **No `$((expr))` arithmetic or `${PIPESTATUS[*]}` expansion in Bash
   one-liners** — both trip the permission prompt. pytest already prints its
   duration; trust the summary line.
-- **No heredoc-wrapped hatch invocations** — write Python diagnostics to a
-  `./tmp/probe_*.py` scratch file or use `python -c "…"`.
+- **No heredoc-wrapped `uv run` / `poe` invocations** — write Python
+  diagnostics to a `./tmp/probe_*.py` scratch file or use
+  `uv run python -c "…"`.
 - **Pipe pytest output into `grep` / `tee` on the first run** — never re-run
   pytest just to grep the failure list.
 - **`./tmp` ops are pre-authorized.** Read / write / execute / remove
@@ -174,16 +189,17 @@ scripts/        harvest_exemplars.py, audit_corpus.py, audit_diff.py,
 
 ## Where to find context this file doesn't cover
 
-- Linguistic decisions and analyses → `docs/analysis-choices.md` and
-  `docs/diagnostics.md`
+- Linguistic decisions and analyses → `tlbe/docs/analysis-choices.md` and
+  `tlbe/docs/diagnostics.md`
 - Coverage history (curated + naturalistic-tier audit roll-up) →
-  `docs/coverage.md` (audit snapshots were consolidated 2026-05-22;
+  `tlbe/docs/coverage.md` (audit snapshots were consolidated 2026-05-22;
   prior `docs/coverage-audit-*.md` files retired into the
   Phase 9 — Naturalistic-tier audit closures section)
-- f-structure feat inventory → `docs/feats-binary-audit.md`
-- Current Phase 9 plan-of-record → `.claude/plans/tgllfg-phase-9.md`
+- f-structure feat inventory → `tlbe/docs/feats-binary-audit.md`
+- Current plan-of-record → `.claude/plans/tgllfg-phase-12.md` (foundation;
+  Phase 13/14 in `tgllfg-phase-{13,14}.md`)
 - The big picture / phase roadmap → `.claude/plans/tgllfg-evolution.md` +
   `tgllfg-roadmap.md`
-- License: dual MIT OR Apache-2.0 — see `LICENSE-MIT` and
-  `LICENSE-APACHE` at the repo root; the SPDX expression appears in
-  `pyproject.toml` and every source file's header.
+- License: dual MIT OR Apache-2.0 — see `LICENSE-MIT` and `LICENSE-APACHE`
+  (top level + `tlbe/` for the package); the SPDX expression appears in
+  `tlbe/pyproject.toml` and every source file's header.
