@@ -52,17 +52,17 @@ tmp/
 # excluded from the repo for binary-size and licensing reasons.
 data/tgl/references/
 
-# Exemplar harvest output (derived from gitignored references/).
-# Contents are ignored EXCEPT the hand-authored unattributed-construction
-# corpus (Phase 10.E.5) — `unattributed*.*` is tracked so its regression
-# test reads it on a fresh clone. Listing the dir contents (`/*`) rather
-# than the dir itself keeps the dir traversable so the negation can
-# re-include. Derived parse-results stay ignored (regenerable via
-# `scripts/harvest_exemplars.py parse`).
-data/tgl/exemplars/*
-!data/tgl/exemplars/unattributed*.*
-!data/tgl/exemplars/compounds-*.jsonl
+# Exemplar harvest corpus — TRACKED as of Phase 12.F (2026-06-05).
+# Promoted from gitignored to tracked: fair use applies and every
+# exemplar carries its `source` + `locator` citation, so the harvested
+# example sentences ship with the repo and CI can run the audit on a
+# fresh clone. The licensed reference PDFs themselves stay ignored
+# (references/, above). Derived / transient artifacts stay ignored —
+# all regenerable from the source corpus:
 data/tgl/exemplars/*-parse-results.jsonl
+data/tgl/exemplars/*.tmp
+data/tgl/exemplars/coverage-*.md
+data/tgl/exemplars/oov-frequency.tsv
 
 # Per-project plan files (live alongside the repo for convenience but
 # remain personal working notes, not project artifacts).
