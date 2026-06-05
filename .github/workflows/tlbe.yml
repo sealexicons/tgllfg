@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v8
+      - uses: astral-sh/setup-uv@v8.2.0 # no moving v8 major tag; node24 full pin
         with:
           enable-cache: true
           cache-dependency-glob: "tlbe/uv.lock"
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v8
+      - uses: astral-sh/setup-uv@v8.2.0 # no moving v8 major tag; node24 full pin
         with:
           enable-cache: true
           cache-dependency-glob: "tlbe/uv.lock"
