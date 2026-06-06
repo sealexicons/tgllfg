@@ -150,6 +150,7 @@ class TestPhase9nPedagogicalProseRejection:
         assert he._looks_like_tagalog(inp) is True
 
 
+@pytest.mark.references
 class TestPhase9nEndToEndCorpusHygiene:
     """End-to-end via the wave-specific extractors — verify the
     targeted noise patterns are not leaking through post-9.N."""

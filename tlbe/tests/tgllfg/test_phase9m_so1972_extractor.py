@@ -241,6 +241,7 @@ class TestPhase9mPreserveLegitimateLines:
         assert he._clean_sentence_text(inp) == inp
 
 
+@pytest.mark.references
 class TestPhase9mEndToEndCorpus:
     """End-to-end via ``extract_so1972()`` — verify the post-9.M S&O
     corpus carries no leakage of the rejected categories."""

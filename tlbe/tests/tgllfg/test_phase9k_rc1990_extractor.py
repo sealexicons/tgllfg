@@ -363,6 +363,7 @@ class TestPhase9kInstructionLineRejection:
         assert he._looks_like_tagalog(inp) is True
 
 
+@pytest.mark.references
 class TestPhase9kEndToEnd:
     """End-to-end via ``extract_rc1990()`` — verify the post-9.K
     corpus carries no slot-fill / ungrammatical-marker / OCR-garble

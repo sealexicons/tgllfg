@@ -128,6 +128,7 @@ markers = [
   "postgres: tests that require a running Docker daemon (Postgres 17 testcontainer)",
   "slow: tests with single-test call duration >= 5s (T2 bucket; excluded from test-fast)",
   "xslow: tests with single-test call duration > 60s (excluded from test-fast/test-slow/test-both; run on demand via test-xslow)",
+  "references: end-to-end tests that read the gitignored data/tgl/references/ corpus; auto-skipped when it is absent (CI / fresh clone)",
 ]
 
 [build-system]
