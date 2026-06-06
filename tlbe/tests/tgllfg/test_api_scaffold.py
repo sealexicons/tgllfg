@@ -12,7 +12,7 @@ migration test infrastructure. Uses the shared ``api_app`` fixture
 from collections.abc import Iterator
 
 import pytest
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 
 from tgllfg.api.deps import ANONYMOUS, get_principal
@@ -59,17 +59,14 @@ def test_openapi_under_api_prefix_with_unversioned_health(client_db_ok: TestClie
     assert "/ready" in schema["paths"]
 
 
-def test_get_principal_anonymous_returns_wildcard() -> None:
-    principal = get_principal(Settings(auth_mode="anonymous"))
+async def test_get_principal_anonymous_returns_wildcard() -> None:
+    # Anonymous mode short-circuits before touching the request/JWKS.
+    req = Request({"type": "http", "headers": []})
+    principal = await get_principal(req, Settings(auth_mode="anonymous"))
     assert principal is ANONYMOUS
     assert principal.is_anonymous is True
     assert "*" in principal.roles
-
-
-def test_get_principal_keycloak_not_implemented() -> None:
-    with pytest.raises(HTTPException) as exc:
-        get_principal(Settings(auth_mode="keycloak"))
-    assert exc.value.status_code == 501
+    # Keycloak-mode JWT verification + role gates are in test_api_auth.py.
 
 
 async def test_check_db_false_without_sessionmaker() -> None:

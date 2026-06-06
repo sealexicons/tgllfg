@@ -29,13 +29,14 @@ import asyncio
 from collections.abc import Callable
 from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
 from ...core.common import AStructure, CNode, FStructure
 from ...core.pipeline import Fragment, ParseResult, parse_text_with_fragments
 from ...fstruct import Diagnostic
 
+from ..deps import require_role
 from ..telemetry import TracerDep, traced
 
 parse_router = APIRouter(tags=["parse"])
@@ -258,7 +259,10 @@ def build_parse_response(
 
 
 @parse_router.post(
-    "/parse", response_model=ParseResponse, summary="Parse a Tagalog sentence"
+    "/parse",
+    response_model=ParseResponse,
+    summary="Parse a Tagalog sentence",
+    dependencies=[Depends(require_role("parser:read"))],
 )
 async def parse_endpoint(req: ParseRequest, tracer: TracerDep) -> ParseResponse:
     # The parser is synchronous and CPU-bound; offload it to a worker

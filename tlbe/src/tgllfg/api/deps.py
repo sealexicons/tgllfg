@@ -9,7 +9,7 @@ Common DI / utility code consumed by the versioned route modules under
 session dependency lands in Phase 13.C with its first route consumer.
 """
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from dataclasses import dataclass
 from typing import Annotated
 
@@ -17,10 +17,19 @@ from fastapi import Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..lex import AsyncLexRepository
-from .settings import Settings, get_settings
+from .auth import keycloak_issuer, verify_keycloak_token
+from .settings import Settings
 
-#: Settings as a FastAPI dependency — injected into routes / other deps.
-SettingsDep = Annotated[Settings, Depends(get_settings)]
+
+def get_request_settings(request: Request) -> Settings:
+    """The running app's settings (set by the factory on ``app.state``) so
+    DI consumers agree with ``app.state`` / the lifespan instead of
+    re-reading the env via the cached :func:`get_settings`."""
+    return request.app.state.settings
+
+
+#: Settings as a FastAPI dependency — the *running app's* settings.
+SettingsDep = Annotated[Settings, Depends(get_request_settings)]
 
 
 @dataclass(frozen=True)
@@ -41,20 +50,54 @@ class Principal:
 ANONYMOUS = Principal(subject="anonymous", roles=frozenset({"*"}), is_anonymous=True)
 
 
-def get_principal(settings: SettingsDep) -> Principal:
+async def get_principal(request: Request, settings: SettingsDep) -> Principal:
     """Resolve the request principal.
 
-    ``AUTH_MODE=anonymous`` (the scaffold default) returns
-    :data:`ANONYMOUS`. ``AUTH_MODE=keycloak`` is wired in Phase 13.F;
-    until then it is an explicit ``501`` rather than a silent allow, so a
-    misconfigured deploy fails loudly instead of running unauthenticated.
+    ``AUTH_MODE=anonymous`` returns :data:`ANONYMOUS` (wildcard roles, so
+    every role gate passes — the dev bypass). ``AUTH_MODE=keycloak``
+    validates the ``Authorization: Bearer`` access token against the realm
+    (local JWKS verification — RS256 signature + iss / aud / exp) and
+    builds a principal from its ``realm_access.roles``.
     """
     if settings.auth_mode == "anonymous":
         return ANONYMOUS
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Keycloak authentication is not implemented until Phase 13.F",
+    scheme, _, token = request.headers.get("Authorization", "").partition(" ")
+    if scheme.lower() != "bearer" or not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="missing or malformed bearer token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    claims = await verify_keycloak_token(
+        token,
+        jwks_cache=request.app.state.jwks_cache,
+        issuer=keycloak_issuer(settings),
+        audience=settings.keycloak_audience,
     )
+    roles = claims.get("realm_access", {}).get("roles", [])
+    return Principal(
+        subject=str(claims.get("sub", "")),
+        roles=frozenset(roles),
+        is_anonymous=False,
+    )
+
+
+PrincipalDep = Annotated[Principal, Depends(get_principal)]
+
+
+def require_role(role: str) -> Callable[..., Principal]:
+    """A route dependency that requires ``role``. The anonymous principal's
+    ``"*"`` wildcard satisfies any role, so ``AUTH_MODE=anonymous`` keeps
+    every route open."""
+
+    def _require(principal: PrincipalDep) -> Principal:
+        if "*" in principal.roles or role in principal.roles:
+            return principal
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail=f"requires role: {role}"
+        )
+
+    return _require
 
 
 async def get_session(request: Request) -> AsyncIterator[AsyncSession]:

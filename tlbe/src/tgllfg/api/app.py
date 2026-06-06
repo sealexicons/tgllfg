@@ -21,6 +21,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from ..__version__ import __version__
 from ..cfg import Grammar
 from .health import health_router
+from .auth import JwksCache, keycloak_jwks_uri
 from .settings import Settings, get_settings
 from .telemetry import configure_telemetry, shutdown_telemetry
 from .v1 import v1_router
@@ -47,6 +48,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # rule-compilation cost. Phase 15 may relocate this to a shared redis
     # cache for multi-replica deployments.
     app.state.grammar = Grammar.load_default()
+    # Phase 13.F: in keycloak mode, cache the realm signing keys for local
+    # JWT verification (a test override on app.state.jwks_cache wins).
+    if settings.auth_mode == "keycloak" and getattr(app.state, "jwks_cache", None) is None:
+        app.state.jwks_cache = JwksCache(keycloak_jwks_uri(settings))
     # Audit job state (Phase 13.C.3): run_id -> _AuditJob registry + the
     # set of live audit asyncio.Tasks so shutdown can cancel them.
     app.state.audit_jobs = {}
