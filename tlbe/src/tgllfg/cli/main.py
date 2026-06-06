@@ -160,6 +160,32 @@ def _build_parser() -> argparse.ArgumentParser:
         help="verify docs/grammar.md is in sync (exit 1 on drift); do not write",
     )
 
+    serve_p = sub.add_parser("serve", help="run the REST API under uvicorn")
+    serve_p.add_argument(
+        "--host", default="127.0.0.1", help="bind host (default: 127.0.0.1)"
+    )
+    serve_p.add_argument(
+        "--port", type=int, default=8000, help="bind port (default: 8000)"
+    )
+    serve_p.add_argument(
+        "--workers", type=int, default=1, help="uvicorn worker count (default: 1)"
+    )
+    serve_p.add_argument(
+        "--reload", action="store_true", help="auto-reload on code changes (dev)"
+    )
+
+    openapi_p = sub.add_parser(
+        "openapi", help="(re)generate the committed openapi.json from the app"
+    )
+    openapi_p.add_argument(
+        "--output", default=None, help="output path (default: top-level openapi.json)"
+    )
+    openapi_p.add_argument(
+        "--check",
+        action="store_true",
+        help="verify openapi.json is in sync (exit 1 on drift); do not write",
+    )
+
     return parser
 
 
@@ -186,6 +212,14 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     if args.cmd == "docs":
         _cmd_docs(args)
+        return
+
+    if args.cmd == "serve":
+        _cmd_serve(args)
+        return
+
+    if args.cmd == "openapi":
+        _cmd_openapi(args)
         return
 
     if args.cmd != "lex":
@@ -370,6 +404,54 @@ def _cmd_docs(args: argparse.Namespace) -> None:
         return
 
     raise AssertionError(f"unhandled docs_cmd: {args.docs_cmd}")  # argparse rejects others
+
+
+def _cmd_serve(args: argparse.Namespace) -> None:
+    """Phase 13.D: run the REST API under uvicorn.
+
+    Uses the ``tgllfg.api:create_app`` factory via import string so
+    ``--workers`` / ``--reload`` work (uvicorn needs an import target,
+    not an app instance, for those).
+    """
+    import uvicorn
+
+    uvicorn.run(
+        "tgllfg.api:create_app",
+        factory=True,
+        host=args.host,
+        port=args.port,
+        workers=args.workers,
+        reload=args.reload,
+    )
+
+
+def _cmd_openapi(args: argparse.Namespace) -> None:
+    """Phase 13.D: (re)generate or verify the committed ``openapi.json``.
+
+    Default writes the schema (``app.openapi()``, natural key order) to
+    the top-level ``openapi.json``; ``--check`` verifies the committed file
+    matches a fresh render and exits 1 on drift (the openapi-sync gate),
+    mirroring ``tgllfg docs grammar --check``.
+    """
+    from tgllfg.api import OPENAPI_PATH, render_openapi, write_openapi
+
+    if args.check:
+        expected = render_openapi()
+        actual = (
+            OPENAPI_PATH.read_text(encoding="utf-8") if OPENAPI_PATH.exists() else ""
+        )
+        if actual != expected:
+            sys.stderr.write("openapi.json is out of sync — run `tgllfg openapi`\n")
+            sys.exit(1)
+        sys.stdout.write("openapi.json is in sync\n")
+        return
+
+    if args.output:
+        out = Path(args.output)
+        out.write_text(render_openapi(), encoding="utf-8")
+    else:
+        out = write_openapi()
+    sys.stdout.write(f"wrote {out}\n")
 
 
 if __name__ == "__main__":

@@ -11,5 +11,6 @@ unversioned (:mod:`tgllfg.api.health`).
 """
 
 from .app import create_app
+from .openapi import OPENAPI_PATH, render_openapi, write_openapi
 
-__all__ = ["create_app"]
+__all__ = ["OPENAPI_PATH", "create_app", "render_openapi", "write_openapi"]
