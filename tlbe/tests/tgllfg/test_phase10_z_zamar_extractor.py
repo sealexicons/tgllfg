@@ -184,6 +184,7 @@ class TestZamarExtractFromPage:
 # === extract_zamar2023 — integration ==================================
 
 
+@pytest.mark.references
 class TestZamarIntegration:
     """End-to-end harvest over the real source file."""
 

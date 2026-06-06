@@ -151,6 +151,7 @@ class TestPhase9kRegressionStillHolds:
         assert he._clean_sentence_text(inp) is None
 
 
+@pytest.mark.references
 class TestPhase9lEndToEnd:
     """End-to-end via ``extract_ramos1971()`` — verify the post-9.L
     Ramos corpus carries no & / mid-word-digit / slash-single-letter

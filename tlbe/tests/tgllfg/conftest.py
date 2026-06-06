@@ -18,6 +18,7 @@ without Docker (``pytest -m "not postgres"``).
 """
 
 from collections.abc import AsyncIterator, Iterator
+from pathlib import Path
 
 import pytest
 import pytest_asyncio
@@ -51,3 +52,22 @@ async def pg_session(pg_engine: AsyncEngine) -> AsyncIterator[AsyncSession]:
     async with sessionmaker() as session:
         yield session
         await session.rollback()
+
+
+# --- references-corpus skip -------------------------------------------
+# The gitignored data/tgl/references/ tree (hand-transcriptions + licensed
+# source texts) is absent on a fresh clone / CI. Tests that read it are
+# marked ``@pytest.mark.references``; auto-skip them when the tree is
+# absent so the suite stays green on CI without losing local coverage.
+_REFERENCES_DIR = Path(__file__).resolve().parents[2] / "data" / "tgl" / "references"
+
+
+def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
+    if _REFERENCES_DIR.is_dir():
+        return
+    skip_refs = pytest.mark.skip(
+        reason="data/tgl/references/ absent (gitignored licensed material; CI / fresh clone)"
+    )
+    for item in items:
+        if "references" in item.keywords:
+            item.add_marker(skip_refs)
