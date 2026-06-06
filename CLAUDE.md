@@ -92,8 +92,14 @@ tlbe/             Tagalog LFG BackEnd — the parser + `tgllfg` CLI
   scripts/        harvest_exemplars.py, audit_corpus.py, audit_diff.py,
                   generate_coverage_corpus.py, check_parses_unchanged.py
 
-tlfe/             Tagalog LFG FrontEnd — web inspector (Vite + React;
-                  scaffolding Phase 12.D, built out Phase 14)
+tlfe/             Tagalog LFG FrontEnd — web inspector (Phase 12.D scaffold;
+                  built out Phase 14). Vite 8 + React 19 + TS + Tailwind 4 +
+                  Radix; npm scripts run from tlfe/ (lint / typecheck / build /
+                  test — see tlfe/README.md)
+    package.json  npm config; eslint.config.js / vite.config.ts /
+                  tsconfig*.json / .prettierrc.json alongside
+    src/          main.tsx + App.tsx (placeholder inspector view) +
+                  index.css (Tailwind) + test/ (Vitest + App.test.tsx)
 
 (top level)       .claude/ (plans + memory), CLAUDE.md, README.md (monorepo),
                   LICENSE-MIT, LICENSE-APACHE, .markdownlint.json, .gitignore
@@ -121,12 +127,16 @@ tlfe/             Tagalog LFG FrontEnd — web inspector (Vite + React;
 ## Coding conventions
 
 - **SPDX header on every new tracked source file.** Every git-tracked
-  `*.{ini,md,py,toml,yaml,yml}` file carries the two-line header
-  `Copyright (c) 2025-2026 G & R Associates LLC` /
+  `*.{css,html,ini,js,jsx,md,py,toml,ts,tsx,yaml,yml}` file carries the
+  two-line header `Copyright (c) 2025-2026 G & R Associates LLC` /
   `SPDX-License-Identifier: MIT OR Apache-2.0` at the top. Comment
-  syntax: `#` for `.py / .toml / .yaml / .ini`; `<!-- ... -->` for
-  `.md`. Shebangs on `scripts/*.py` stay on line 1; the header
-  follows immediately after. Empty `__init__.py` files (no exports)
+  syntax: `#` for `.py / .toml / .yaml / .ini`; `//` for
+  `.js / .jsx / .ts / .tsx`; `/* … */` for `.css`; `<!-- … -->` for
+  `.md / .html`. Shebangs on `scripts/*.py` stay on line 1; the header
+  follows immediately after. JSON config (`tlfe/package.json`,
+  `tsconfig*.json`, `.prettierrc.json`) is exempt — JSON has no comment
+  syntax, so `tlfe/package.json`'s `license` field carries the SPDX
+  expression instead. Empty `__init__.py` files (no exports)
   stay empty — the header convention applies only to files with
   content. The corpus generator
   (`scripts/generate_coverage_corpus.py`) emits the header on

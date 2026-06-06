@@ -1,11 +1,12 @@
 # Copyright (c) 2025-2026 G & R Associates LLC
 # SPDX-License-Identifier: MIT OR Apache-2.0
 
-# Frontend (tlfe) CI. Runs on every push touching tlfe/ (all branches,
-# incl main). Guarded behind a package.json check, so it's a no-op until
-# the Phase 12.D scaffold. When the real scaffold lands in 12.D, split the
-# cheap lint/typecheck (every push) from build + vitest (merge to main),
-# mirroring tlbe's static/test split. Concurrency cancels superseded runs.
+# Frontend (tlfe) CI. Mirrors tlbe's static/test split: the `static` job
+# (eslint + prettier + tsc) runs on every push touching tlfe/ (all branches,
+# incl main) for cheap early feedback; the `test` job (build + vitest) runs
+# only on `main` (a merge), since the build/test pass is the local pre-commit
+# gate during branch work and re-running it on every feature push is
+# redundant for a solo repo. Concurrency cancels superseded runs per ref.
 name: tlfe
 
 on:
@@ -24,38 +25,40 @@ defaults:
     working-directory: tlfe
 
 jobs:
-  build:
-    name: build (eslint + tsc + vite + vitest)
+  static:
+    name: static (eslint + prettier + tsc)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Detect scaffold
-        id: scaffold
-        run: |
-          if [ -f package.json ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::tlfe scaffold not present yet (Phase 12.D) -- skipping build."
-          fi
       - uses: actions/setup-node@v6
-        if: steps.scaffold.outputs.present == 'true'
         with:
-          node-version: "22"
+          node-version: "24"
           cache: npm
           cache-dependency-path: tlfe/package-lock.json
-      - name: Install
-        if: steps.scaffold.outputs.present == 'true'
+      - name: Install (clean)
         run: npm ci
-      - name: Lint
-        if: steps.scaffold.outputs.present == 'true'
-        run: npm run lint --if-present
-      - name: Typecheck
-        if: steps.scaffold.outputs.present == 'true'
-        run: npx --no-install tsc --noEmit
-      - name: Build
-        if: steps.scaffold.outputs.present == 'true'
-        run: npm run build --if-present
-      - name: Test
-        if: steps.scaffold.outputs.present == 'true'
-        run: npm test --if-present
+      - name: Lint (eslint)
+        run: npm run lint
+      - name: Format check (prettier)
+        run: npm run format:check
+      - name: Typecheck (tsc -b)
+        run: npm run typecheck
+
+  test:
+    name: test (build + vitest)
+    # build + vitest run only on merge to main; locally they're the gate.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: tlfe/package-lock.json
+      - name: Install (clean)
+        run: npm ci
+      - name: Build (tsc -b + vite build)
+        run: npm run build
+      - name: Test (vitest run)
+        run: npm test
