@@ -161,8 +161,15 @@ def lfg_well_formed(
     ``diagnostics`` is empty (these checks emit only on failure).
 
     The `ctree` is accepted for the legacy signature but currently
-    unused; the §4.5 follow-up will populate the diagnostic
-    ``cnode_label`` field by keeping a node-id → c-node mapping.
+    unused, so well-formedness diagnostics carry a feature ``path``
+    but no ``cnode_label`` (unlike the equation diagnostics in
+    :mod:`tgllfg.fstruct.unify`, which stamp it). Populating it here
+    needs the c-node ↔ f-node correspondence that
+    :func:`tgllfg.fstruct.unify.solve` computes and discards (see the
+    breadcrumb there). Deferred to the Phase 13.B ``/parse`` response
+    schema, where the diagnostic ↔ c-structure correspondence is
+    designed against the inspector's cross-highlighting need (a label
+    string alone can't anchor UI highlighting). Phase 12.G closed OBE.
     """
     diagnostics: list[Diagnostic] = []
     for node, path in _walk_fstructures(f):

@@ -158,7 +158,17 @@ class Diagnostic:
     """Structured failure record. Producers populate `kind`, `message`,
     and (when meaningful) `path` and `detail`; the orchestrator in
     :mod:`tgllfg.unify` annotates `equation` and `cnode_label` so
-    callers see the originating context."""
+    callers see the originating context.
+
+    Phase 13.B breadcrumb (``/parse`` response schema): this record is
+    what the API serializes for the tlfe inspector. ``cnode_label`` is
+    set on equation diagnostics (``unify.py``) but not on the
+    well-formedness diagnostics
+    (:func:`tgllfg.fstruct.checks.lfg_well_formed`). The inspector's
+    diagnostic-to-c-node anchoring wants the full c-node ↔ f-node
+    correspondence (stable node refs), not a label string — design it
+    with the response schema. The Phase 4 §7.9 / Phase 12.G
+    ``cnode_label`` item is closed OBE in favour of that."""
     kind: DiagKind
     message: str
     path: tuple[str, ...] = ()
