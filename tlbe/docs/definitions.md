@@ -54,6 +54,7 @@ group.
 | GF | Grammatical Function | SUBJ, OBJ, OBL-θ, ADJ, etc. (Distinct from "Goal Focus" in S&O — disambiguated by context.) |
 | graph-constraint matcher | Strict category matcher | Phase 6.C — `cfg/compile.py:matches` requires `expected.keys() ⊆ candidate.keys()` plus value compat on shared keys. Replaces the pre-6.C "non-conflict" matcher which silently admitted shared-key-absence matches. K&Z 1989 §3 c-structure faithfulness. |
 | [±r, ±o] | Bresnan–Kanerva intrinsic features | The feature pair that drives LMT mapping. `r` = restricted (cannot be SUBJ); `o` = objective (object-like). Truth table in `docs/lmt.md`. |
+| LDD | Long-Distance Dependency | A filler–gap relation spanning clause boundaries (e.g. relativization through an `XCOMP` body); resolved via functional uncertainty. See `FU`, `XCOMP*`, Kaplan & Zaenen 1989. |
 | LEX-ASTRUCT | Lexical a-structure | F-structure attribute carrying the verb's role list, used by LMT. |
 | LFG | Lexical-Functional Grammar | The formalism the parser implements. |
 | LINK | Linker | Phase 4 §7.5 — `na` / `-ng` allomorphs that join a head NP to its relative clause or modifier. |
@@ -181,14 +182,19 @@ group.
 | CTRL_CLASS | Control class | `PSYCH`, `INTRANS`, `TRANS`, `NONE`, `MODAL`, `KNOW` | Phase 4 §7.6 — discriminates control-verb subtypes for the SUBJ-binding equation. Phase 5i adds `KNOW` for indirect-Q embedders. |
 | SAY_CLASS | Verbal-say class | `SAY`, `∅` | Reporter-class predicates (`sabi`); Phase 5n reported-Q work. |
 
-### Quantifier / modifier / discourse feats (Phase 5–6)
+### f-structure feats (Phase 5–11) — source of truth
 
 F-structure attributes added across Phases 5–11 for quantifier
 semantics, modifier projection, discourse / register tracking,
 reduplication taxonomy (Phase 10.A–10.H), and gap-category
-restriction (Phase 11.B.1). Most are binary (`true` / absent) —
-see `core/feats.py:BINARY_FEATS` for the canonical list
-(75 entries as of Phase 11.B.1).
+restriction (Phase 11.B.1). **This table is the source of truth for feat
+definitions** — it glosses every binary feat in
+`core/feats.py:BINARY_FEATS` (the `test_every_binary_feat_documented`
+gate fails if any is undocumented here) alongside the area's enum /
+string feats. `docs/feats-binary-audit.md` carries the complementary
+binary-vs-enum classification (the YES/NO → bool migration record) and
+links back here for glosses. Type column: `Binary` (`true` / absent),
+`Enum`, `String`, or `Numeric-string`.
 
 | Abbrev | Type | Notes |
 | -------------- | ---------------- | ---------------------------------------------------------------------------------------------------- |
@@ -233,6 +239,49 @@ see `core/feats.py:BINARY_FEATS` for the canonical list
 | WH | Binary | wh-Q / wh-PRON marker. Phase 5i. |
 | WHOLE | Binary | Phase 5l `buong` / `lahat ng N` whole-NP marker; lifts via dedicated whole-NP rule. |
 | WH_LEMMA | String | Phase 6.E free-relative head wh-lemma lifted from the kung-S daughter. |
+| AV_ABSOL | Binary | AV verb appears with an absolutive (GEN) patient argument; gates AV-TR rules (Phase 9.O.4). |
+| CF | Binary | Clause is counterfactual (`sakali` / `kahit pa`). Distinct from the S&O voice abbrev CF = Causative Focus in the voice table above. |
+| CLOCK_MARKER | Binary | PART is the clock-time hour marker (`alas-`). |
+| COLLABORATIVE | Binary | ADV is collaborative-manner (`tulung-tulong`) — Phase 10.J.post-8.5.5. |
+| COMPARATIVE | Binary | ADJ is comparative-marked (`mas`). |
+| COPULA | Binary | V is a copular verb (`maging` / `naging`); gates the `V[COPULA] N/ADJ NP[NOM]` clause rule (Phase 9.X.post-2). |
+| CORREL | Binary | Particle is correlative (`pa` / `pa-rin` paired use). |
+| DECIMAL | Binary | NUM is decimal-form. |
+| DECIMAL_SEP | Binary | Particle is a decimal separator (point / comma). |
+| DIGIT_FORM | Binary | NUM surfaces as a digit (`1`) rather than spelled out (`isa`). |
+| DISPOSITION | Binary | Dispositional / habitual ADJ (`mahiyain`, `matakutin`) — Phase 10.J.post-8.5.2. |
+| DISTRIB_POSS | Binary | Distributive possessive (`kanya-kanya`). |
+| ELLIPSIS | Binary | Clause has an elided / contextually-recoverable subject (`Wala pa.`; Phase 9.X.c22). |
+| EMPHATIC | Binary | Clause carries emphasis. |
+| EXCLAM | Binary | `ang`-exclamative predication (`Ang ganda-ganda mo!`) — Phase 10.E.1. |
+| EXISTENTIAL | Binary | Clause is existential (`may`, `mayroon`). |
+| EXIST_NEG_PREMOD | Binary | Matrix marker on the negative-existential pre-N modifier rule (Phase 10.J.post-12.2). |
+| EXTRACTED | Binary | NP-of-extraction marker. |
+| FOCUS_NEG | Binary | `ni`-focus-negation construction marker (Phase 8.V). |
+| GAPPING | Binary | Matrix carries a gapping coordination. |
+| HAVE | Binary | Possessive-predicate marker. |
+| IDIOM_NEG_INDEF | Binary | NP is the `wh + pa + man` idiomatic NEG-indefinite (`ano pa man` "whatever"); marker stays on the matrix NP — Phase 10.J.post-12.16. |
+| IMPERSONAL | Binary | Predicate licenses a bare clause with a synthesized PRO SUBJ (weather `umulan`; atmospheric ADJ `mainit`; Phase 9.X.c49). |
+| INTENSIFIER | Binary | Particle is an intensifier (`talagang`). |
+| INTERACTION | Binary | Verb is a `makipag-` social / participation derivation (S&O 1972 §5.27); distinct from `RECP` (true reciprocal `mag-…-an`) — Phase 10.J.post-12.12. |
+| INTERJ | Binary | Element is an interjection. |
+| KA_PRED | Binary | N is a `ka-`N companion-predicate (`kasama` / `kasabay`); gates the ka-N S_GAP rule (Phase 9.X.c19). |
+| KASING_N | Binary | ADJ surface derived from a NOUN via `kasing-` (Phase 8.L). |
+| LEXICALIZED | Binary | Surface is a frozen / lexicalized reduplication, not productively derived (Phase 10.G). |
+| LOC_EXISTENTIAL | Binary | Locative-existential reading. |
+| MENTION | Binary | Quoted span is a metalinguistic mention (mention-vs-use; pairs with `QUOTED`) — Phase 10.J.post-12.6. |
+| MGA_INTERNAL | Binary | N is marked by `mga` via the N-level rule; simple-NP-rule disambiguation tag (Phase 9.X.c11). |
+| MODAL_STANDALONE | Binary | Modal is non-complement-taking (standalone). |
+| NAMAN | Binary | Non-clitic `naman` chart-symbol gate for the topic-contrast NP-attachment rule (Phase 10.K.2). |
+| N_CORE | Binary | Base-N marker; c-structure anti-reapply tag on the post-12.2 modifier rule (Phase 10.J.post-12.2). |
+| NEG_TAG | Binary | Clause is a negative tag-question (`… hindi ba`). |
+| ORTHOGRAPHIC_TERMINATOR | Binary | Sentence-final punctuation marker. |
+| POLITE_MARKER | Binary | Clause-level marker on the polite-register lift (Phase 9.O.5). |
+| QUOTED | Binary | Element surfaces inside balanced quote brackets (orthographic; pairs with `MENTION`) — Phase 10.J.post-12.6. |
+| SEQUENCE | Binary | Clause is in a temporal sequence (`at saka` / `at nang`). |
+| STATIVE_PRED | Binary | Predicate is stative / non-actor-changing (Phase 9.O.3). |
+| SYMBOLIC | Binary | Particle is symbolic (a mathematical operator). |
+| UNCERTAIN | Binary | Particle carries uncertainty (`siguro`, `marahil`). |
 
 ### Affix-class labels (`verbs.yaml` `affix_class:`)
 
@@ -314,6 +363,7 @@ extends the same machinery to PART (via `Particle.affix_class`).
 | JSONB | JSON binary | PostgreSQL JSON column type used for AVMs and lists. |
 | MORPH | Morphology | The rule-cascade morphological analyzer / generator (Phase 2 / 2C). |
 | MR | Merge Request | Synonym for PR in some shops; user uses both. |
+| OBE | Overcome By Events | A planned item rendered moot by prior work — e.g. Phase 12.G (`cnode_label` plumbing already shipped in Phases 6/10). Used in plan ledgers + breadcrumb docstrings to mark a carry-forward closed with no new code. |
 | OCR | Optical Character Recognition | Used to ingest dictionary scans during Phase 2C scale-up. |
 | OOV | Out-Of-Vocabulary | A surface form the morph analyzer can't analyze — falls through to `pos='_UNK'`. The Phase 8 coverage audit (rolled up into `docs/coverage.md` § "Phase 9 — Naturalistic-tier audit closures") reports OOV inventories per source as a lex-gap signal. Probed by `oov_probe` in `scripts/harvest_exemplars.py`; Phase 8.Q corrected the probe to apply `split_linker_ng` before reporting, removing false positives on clitic-glued surfaces (`akong` = `ako` + `-ng`, etc.). |
 | ORM | Object-Relational Mapper | SQLAlchemy 2.x. |
@@ -331,6 +381,7 @@ extends the same machinery to PART (via `Particle.affix_class`).
 | UTF-8 | Unicode Transformation Format (8-bit) | Default encoding for YAML and CSV inputs. |
 | UUID | Universally Unique Identifier | UUID v4 (`gen_random_uuid()` from `pgcrypto`). |
 | WF | Well-Formedness | Refers to the LFG well-formedness checks (completeness, coherence, subject condition). |
+| XLE | Xerox Linguistic Environment | The reference LFG grammar-development + parsing platform (Maxwell & Kaplan, PARC); cited for comparison. |
 | YAML | YAML Ain't Markup Language | |
 | BINARY_FEATS | Binary-feat allowlist | Phase 5n.C.4 — `frozenset[str]` in `src/tgllfg/core/feats.py` enumerating the f-structure features whose values are strictly Boolean (`true` / `false`). 75 entries as of Phase 11.B.1 (SUBJ_GAP added; 52 pre-Phase-6.G baseline). Gates the compiler's `[FEAT]` shorthand and validates YAML / equation usage. Audit doc at `docs/feats-binary-audit.md`. |
 | U-bucket | Engine-prototype cadence | Optional-kwarg-with-default-None engine extension pattern: a new keyword argument with `None` default is added to a `fstruct/` API, behavior unchanged when omitted, canonical fixture covers the new path. Five instances: 10.L (Kleene-on-alternation), 10.M (deferred defining-eq re-pass), 10.N (inside-out designators), 11.B.4.eng (set-valued `parents_via`), 11.B.5 (cyclic-endpoint pruning). All five shipped 0 audit-corpus regressions and 0 chart-level changes (no behavior change until consumer opts in) — canonical safe way to ship engine extensions ahead of chart consumers. |
@@ -368,6 +419,9 @@ Terms used in the Phase 8/9 audit work (rolled up into `docs/coverage.md` § "Ph
 | pseudo-cleft | A focus-marked clause of the form `<NP> ang <V-headed-NP>` where the V-headed NP is a headless relative ("the one who Xed"). E.g., `Ang nanay ang nagluto.` "It's the mother who cooked." / "The mother is the one who cooked." Currently zero-parsing in tgllfg (the headless RC doesn't wrap to NP[CASE=NOM]); Phase 8 follow-on. |
 | ay-fronting / ay-inverted | The Phase 4 §7.4 topicalization construction `<NP> ay <S>` where the fronted NP is the topic (and typically SUBJ). Examples: `Ako ay kumain.` (V-clause; works), `Ito ay aklat.` (N-pred; Phase 8.Y). |
 | naturalistic baseline | The clean-parse rate against unprepared reference-grammar text. As of the Phase 11 close (2026-06-04): **32.09% (1952/6082 sentences) across the 9 audit buckets** (wave-1 exemplars + waves 2-5 + unattributed constructions). Wave-1 exemplars hold at 122/122 = 100% (achieved in Phase 10.X). The other buckets, unchanged across Phase 11 (zero existing-sentence regressions or improvements; Phase 11 was engineering-driven, not closure-driven): wave2-ramos1971 78/209 (37.32%); wave2-rc1990 220/1022 (21.53%); wave2-rg-intermediate 493/1919 (25.69%); wave3-rg-conversational 333/666 (50.00%); wave3-so1972 321/1265 (25.38%); wave4-kroeger1991 62/215 (28.84%); wave5-zamar2023 159/500 (31.80%); unattributed-constructions 164/164 (100%; +9 Phase-11 additions from 11.B.3 purposive PRO + 11.X bare-Huwag + 11.Y `mura-mura` curse-iter). Trajectory: Phase 8 close ~11% → Phase 9 close (2026-05-24) 30.91% on Waves 1-4 → Phase 10.Z wave-5 harvest 30.42% on Waves 1-5 → Phase 10 close 31.99% → Phase 11 close 32.09%. The curated `coverage_corpus.yaml` is at 99.7% throughout. |
+| XWAVE | Cross-wave — the combined audit metric across all 9 buckets (waves 1–5 + unattributed-constructions). E.g. XWAVE 32.09% = 1952/6082 at the Phase 11 close; reported by `scripts/audit_corpus.py` / `tgllfg audit`. |
+| ZPF | Zero-Parse Failure — a sentence the parser returns no complete parse for (it may still yield fragments). Used as a verb in the survey docs ("sentence X ZPFs"). |
+| ZPNF | Zero-Parse, No Fragment — a ZPF that also yields no usable fragment. Survey status code `N` (vs `Z` = ZPF, `T` = parse-timeout) in `phase-10-j-post-8-survey.md`. |
 
 ## 2. References — algorithms, processes, and analytical decisions
 

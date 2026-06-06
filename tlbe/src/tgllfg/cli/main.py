@@ -17,6 +17,9 @@ Subcommands:
   corpus audit, diff a run against the checked-in baseline (exit 1
   on regression — the CI gate), or (re)write that baseline
   (Phase 12.F).
+* ``tgllfg docs grammar`` — (re)generate ``docs/grammar.md`` from the
+  cfg rule corpus; ``--check`` verifies it is in sync (exit 1 on
+  drift) instead of writing (Phase 12.final).
 """
 
 import argparse
@@ -146,6 +149,17 @@ def _build_parser() -> argparse.ArgumentParser:
         help="parse fresh instead of reading existing parse-results",
     )
 
+    docs = sub.add_parser("docs", help="documentation generators")
+    docs_sub = docs.add_subparsers(dest="docs_cmd", required=True)
+    g = docs_sub.add_parser(
+        "grammar", help="(re)generate docs/grammar.md from the cfg rules"
+    )
+    g.add_argument(
+        "--check",
+        action="store_true",
+        help="verify docs/grammar.md is in sync (exit 1 on drift); do not write",
+    )
+
     return parser
 
 
@@ -168,6 +182,10 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     if args.cmd == "audit":
         _cmd_audit(args)
+        return
+
+    if args.cmd == "docs":
+        _cmd_docs(args)
         return
 
     if args.cmd != "lex":
@@ -320,6 +338,38 @@ def _cmd_audit(args: argparse.Namespace) -> None:
         return
 
     raise AssertionError(f"unhandled audit_cmd: {args.audit_cmd}")  # argparse rejects others
+
+
+def _cmd_docs(args: argparse.Namespace) -> None:
+    """Phase 12.final: documentation generators.
+
+    ``grammar`` (re)generates ``docs/grammar.md`` from the cfg rule
+    corpus; with ``--check`` it verifies the committed file matches a
+    fresh render and exits 1 on drift (a pre-commit / CI gate) without
+    writing.
+    """
+    from tgllfg.docs import GRAMMAR_DOC_PATH, render_grammar_doc, write_grammar_doc
+
+    if args.docs_cmd == "grammar":
+        if args.check:
+            expected = render_grammar_doc()
+            actual = (
+                GRAMMAR_DOC_PATH.read_text(encoding="utf-8")
+                if GRAMMAR_DOC_PATH.exists()
+                else ""
+            )
+            if actual != expected:
+                sys.stderr.write(
+                    "docs/grammar.md is out of sync — run `tgllfg docs grammar`\n"
+                )
+                sys.exit(1)
+            sys.stdout.write("docs/grammar.md is in sync\n")
+            return
+        path = write_grammar_doc()
+        sys.stdout.write(f"wrote {path}\n")
+        return
+
+    raise AssertionError(f"unhandled docs_cmd: {args.docs_cmd}")  # argparse rejects others
 
 
 if __name__ == "__main__":

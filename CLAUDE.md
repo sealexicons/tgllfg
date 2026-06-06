@@ -8,9 +8,10 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 Prototype LFG parser for Tagalog, in a `tlbe/` (backend) + `tlfe/` (frontend)
 monorepo. Python ≥ 3.14, **uv-managed env + poe task runner** (hatchling stays
 the build backend), pytest-xdist, optional Postgres testcontainer. Dual-licensed
-MIT OR Apache-2.0. **Phase 12 — engineering foundation** is the current effort:
-the monorepo reorg + uv/poe migration shipped in 12.B/12.C; the REST API is
-Phase 13 and the web inspector Phase 14.
+MIT OR Apache-2.0. **Phase 12 — engineering foundation** is complete (monorepo
+reorg + uv/poe + path-filtered CI + audit gate + `tlfe` scaffold +
+architecture/grammar docs). **Phase 13 — REST API** (`tlbe/src/tgllfg/api/`)
+is the next effort; the web inspector is Phase 14.
 
 This file is the load-on-every-session brief for working in this repo. Personal
 preferences live in auto-memory; this file is project-wide.
@@ -84,10 +85,11 @@ tlbe/             Tagalog LFG BackEnd — the parser + `tgllfg` CLI
                   adj_paradigms / sandhi / voice_aliases; lexicon/ subdir for
                   per-entry files; exemplars/ tracked (Phase 12.F — fair use,
                   cited); references/ gitignored (licensed PDFs)
-  docs/           analysis-choices, diagnostics, definitions, lexicon, lmt,
-                  coverage (naturalistic-tier audit history), feats-binary-audit,
-                  lex-yaml-schema, fu-evaluation, refactor-grammar-and-roots,
-                  root-yaml-metadata
+  docs/           architecture (pipeline + topology), grammar (generated rule
+                  reference), analysis-choices, diagnostics, definitions,
+                  lexicon, lmt, coverage (naturalistic-tier audit history),
+                  feats-binary-audit, lex-yaml-schema, fu-evaluation,
+                  refactor-grammar-and-roots, root-yaml-metadata
   tests/tgllfg/   Per-feature test modules; share fixtures from conftest.py
   scripts/        harvest_exemplars.py, audit_corpus.py, audit_diff.py,
                   generate_coverage_corpus.py, check_parses_unchanged.py
@@ -151,9 +153,13 @@ tlfe/             Tagalog LFG FrontEnd — web inspector (Phase 12.D scaffold;
 - **Binary feats must be registered.** Atoms used in `[X=true]` category
   patterns must first appear in `BINARY_FEATS` in
   `src/tgllfg/core/feats.py`. Failing to register surfaces as a `ValueError`
-  at compile time. Update `docs/feats-binary-audit.md` and the corresponding
-  test count in `tests/tgllfg/test_phase5n_c4_feats_audit.py` whenever the set
-  changes.
+  at compile time. Add a glossary entry in `docs/definitions.md` — the
+  **source of truth** for feat definitions (the
+  `test_every_binary_feat_documented` gate fails if a binary feat is
+  undocumented there) — and update `docs/feats-binary-audit.md` (the
+  binary-vs-enum classification, which links back to definitions.md) and
+  the count in `tests/tgllfg/test_phase5n_c4_feats_audit.py` whenever the
+  set changes.
 - **Terse feature names.** Use compact atoms like `NEG_SCOPE`, not
   `POLARITY-WIDE-SCOPE`. Underscore-separated, ≤ 2 segments, terse values.
 - **Orthographic variants point at a canonical lemma** via the `LEMMA`
@@ -202,6 +208,9 @@ tlfe/             Tagalog LFG FrontEnd — web inspector (Phase 12.D scaffold;
 
 ## Where to find context this file doesn't cover
 
+- Architecture overview (pipeline layers + monorepo topology) →
+  `tlbe/docs/architecture.md`; the generated c-structure rule reference →
+  `tlbe/docs/grammar.md` (kept in sync by `test_grammar_doc_sync`)
 - Linguistic decisions and analyses → `tlbe/docs/analysis-choices.md` and
   `tlbe/docs/diagnostics.md`
 - Coverage history (curated + naturalistic-tier audit roll-up) →
@@ -209,8 +218,8 @@ tlfe/             Tagalog LFG FrontEnd — web inspector (Phase 12.D scaffold;
   prior `docs/coverage-audit-*.md` files retired into the
   Phase 9 — Naturalistic-tier audit closures section)
 - f-structure feat inventory → `tlbe/docs/feats-binary-audit.md`
-- Current plan-of-record → `.claude/plans/tgllfg-phase-12.md` (foundation;
-  Phase 13/14 in `tgllfg-phase-{13,14}.md`)
+- Current plan-of-record → `.claude/plans/tgllfg-phase-13.md` (REST API);
+  Phase 12 (foundation) is complete; Phase 14 in `tgllfg-phase-14.md`
 - The big picture / phase roadmap → `.claude/plans/tgllfg-evolution.md` +
   `tgllfg-roadmap.md`
 - License: dual MIT OR Apache-2.0 — see `LICENSE-MIT` and `LICENSE-APACHE`

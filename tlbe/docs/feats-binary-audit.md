@@ -50,6 +50,12 @@ Python `True`/`False`. Grammar rule patterns use the `[X]` shorthand
 for `[X=true]` (LFG-canonical) and explicit `[X=false]` for the
 negative.
 
+> **Feat glosses are the source of truth in
+> [`definitions.md`](definitions.md)** — the
+> `test_every_binary_feat_documented` gate enforces that it covers every
+> binary feat. This table is the binary-vs-enum **classification** for the
+> YES/NO → bool migration; the `role` column is a brief snapshot.
+
 | feat | role |
 | --- | --- |
 | `APPROX` | NP is an approximator (e.g., `mga`) |
