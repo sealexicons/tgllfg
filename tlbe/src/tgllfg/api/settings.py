@@ -51,6 +51,23 @@ class Settings(BaseSettings):
         default="tgllfg",
         validation_alias=AliasChoices("OTEL_SERVICE_NAME", "TGLLFG_OTEL_SERVICE_NAME"),
     )
+    #: Keycloak base URL (e.g. ``http://keycloak:8080``) for the realm JWKS
+    #: + issuer; required when ``auth_mode=keycloak``.
+    keycloak_server_url: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "KEYCLOAK_SERVER_URL", "TGLLFG_KEYCLOAK_SERVER_URL"
+        ),
+    )
+    keycloak_realm: str = Field(
+        default="tgllfg",
+        validation_alias=AliasChoices("KEYCLOAK_REALM", "TGLLFG_KEYCLOAK_REALM"),
+    )
+    #: Expected ``aud`` claim (the API client id).
+    keycloak_audience: str = Field(
+        default="tgllfg-api",
+        validation_alias=AliasChoices("KEYCLOAK_AUDIENCE", "TGLLFG_KEYCLOAK_AUDIENCE"),
+    )
 
 
 @lru_cache

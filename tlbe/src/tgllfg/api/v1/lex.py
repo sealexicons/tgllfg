@@ -9,10 +9,10 @@ first DB-backed route — it consumes the ``get_repo`` dependency, which in
 turn yields a request-scoped ``AsyncSession`` (:mod:`tgllfg.api.deps`).
 """
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
 
-from ..deps import RepoDep
+from ..deps import RepoDep, require_role
 
 lex_router = APIRouter(tags=["lex"])
 
@@ -32,7 +32,10 @@ class LexSearchResponse(BaseModel):
 
 
 @lex_router.get(
-    "/lex/search", response_model=LexSearchResponse, summary="Fuzzy lemma search"
+    "/lex/search",
+    response_model=LexSearchResponse,
+    summary="Fuzzy lemma search",
+    dependencies=[Depends(require_role("lex:read"))],
 )
 async def lex_search(
     repo: RepoDep,

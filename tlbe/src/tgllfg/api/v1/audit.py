@@ -52,6 +52,7 @@ from ...audit import (
 )
 from ...audit.common import Record
 
+from ..deps import require_role
 from ..telemetry import log, traced
 
 audit_router = APIRouter(tags=["audit"])
@@ -290,6 +291,7 @@ async def _run_audit_job(
     response_model=AuditRunStatus,
     status_code=status.HTTP_202_ACCEPTED,
     summary="Start a corpus audit (background job)",
+    dependencies=[Depends(require_role("parser:write"))],
 )
 async def audit_run(
     req: AuditRunRequest,
@@ -316,6 +318,7 @@ async def audit_run(
     "/audit/runs/{run_id}",
     response_model=AuditRunStatus,
     summary="Poll an audit run's status",
+    dependencies=[Depends(require_role("parser:read"))],
 )
 async def audit_run_status(run_id: str, request: Request) -> AuditRunStatus:
     job: _AuditJob | None = request.app.state.audit_jobs.get(run_id)
@@ -332,6 +335,7 @@ async def audit_run_status(run_id: str, request: Request) -> AuditRunStatus:
     "/audit/diff",
     response_model=AuditDiffModel,
     summary="Diff the latest results against the baseline",
+    dependencies=[Depends(require_role("parser:read"))],
 )
 async def audit_diff(
     req: AuditDiffRequest, request: Request, differ: DifferDep
