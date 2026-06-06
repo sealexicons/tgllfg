@@ -5,7 +5,8 @@
 
 DB-free: ``/ready``'s DB probe is overridden so the fast suite needs no
 Postgres; the real-DB readiness check lands in Phase 13.B alongside the
-migration test infrastructure.
+migration test infrastructure. Uses the shared ``api_app`` fixture
+(conftest).
 """
 
 from collections.abc import Iterator
@@ -14,26 +15,15 @@ import pytest
 from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 
-from tgllfg.api import create_app
 from tgllfg.api.deps import ANONYMOUS, get_principal
 from tgllfg.api.health import check_db
 from tgllfg.api.settings import Settings
 
 
-def _app() -> FastAPI:
-    return create_app(
-        settings=Settings(
-            database_url="postgresql+asyncpg://test:test@localhost:5432/test",
-            auth_mode="anonymous",
-        )
-    )
-
-
 @pytest.fixture
-def client_db_ok() -> Iterator[TestClient]:
-    app = _app()
-    app.dependency_overrides[check_db] = lambda: True
-    with TestClient(app) as client:
+def client_db_ok(api_app: FastAPI) -> Iterator[TestClient]:
+    api_app.dependency_overrides[check_db] = lambda: True
+    with TestClient(api_app) as client:
         yield client
 
 
@@ -51,18 +41,15 @@ def test_ready_ok_when_db_and_grammar(client_db_ok: TestClient) -> None:
     assert body["checks"] == {"database": True, "grammar": True}
 
 
-def test_ready_503_when_db_down() -> None:
-    app = _app()
-    app.dependency_overrides[check_db] = lambda: False
-    with TestClient(app) as client:
+def test_ready_503_when_db_down(api_app: FastAPI) -> None:
+    api_app.dependency_overrides[check_db] = lambda: False
+    with TestClient(api_app) as client:
         resp = client.get("/ready")
     assert resp.status_code == 503
     assert resp.json()["checks"]["database"] is False
 
 
-def test_openapi_under_api_prefix_with_unversioned_health(
-    client_db_ok: TestClient,
-) -> None:
+def test_openapi_under_api_prefix_with_unversioned_health(client_db_ok: TestClient) -> None:
     # OpenAPI + docs live under /api so the whole API surface is behind
     # the single /api reverse-proxy path; root /openapi.json is gone.
     assert client_db_ok.get("/openapi.json").status_code == 404
