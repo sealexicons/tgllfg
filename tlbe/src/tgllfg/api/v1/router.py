@@ -9,9 +9,11 @@ Mounted with ``prefix="/api/v1"`` by :func:`tgllfg.api.create_app`. Phase
 
 from fastapi import APIRouter
 
+from .lex import lex_router
 from .parse import parse_router
 
 v1_router = APIRouter()
 v1_router.include_router(parse_router)
+v1_router.include_router(lex_router)
 
-# Phase 13.C continues with the /lex/search and /audit/* sub-routers.
+# Phase 13.C continues with the /audit/* sub-router (13.C.3).

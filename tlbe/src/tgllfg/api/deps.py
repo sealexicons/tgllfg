@@ -9,11 +9,14 @@ Common DI / utility code consumed by the versioned route modules under
 session dependency lands in Phase 13.C with its first route consumer.
 """
 
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from typing import Annotated
 
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, Request, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..lex import AsyncLexRepository
 from .settings import Settings, get_settings
 
 #: Settings as a FastAPI dependency — injected into routes / other deps.
@@ -52,3 +55,22 @@ def get_principal(settings: SettingsDep) -> Principal:
         status_code=status.HTTP_501_NOT_IMPLEMENTED,
         detail="Keycloak authentication is not implemented until Phase 13.F",
     )
+
+
+async def get_session(request: Request) -> AsyncIterator[AsyncSession]:
+    """Yield an :class:`AsyncSession` from the lifespan-built sessionmaker
+    (``app.state.sessionmaker``, set in :mod:`tgllfg.api.app`)."""
+    sessionmaker = request.app.state.sessionmaker
+    async with sessionmaker() as session:
+        yield session
+
+
+SessionDep = Annotated[AsyncSession, Depends(get_session)]
+
+
+def get_repo(session: SessionDep) -> AsyncLexRepository:
+    """The async lexicon repository, bound to the request's DB session."""
+    return AsyncLexRepository(session)
+
+
+RepoDep = Annotated[AsyncLexRepository, Depends(get_repo)]

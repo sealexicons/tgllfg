@@ -13,11 +13,26 @@ SQLAlchemy-free. Methods either return a built ``LexCache`` (for
 startup) or a list of frozen dataclasses (for ad-hoc queries).
 """
 
-from sqlalchemy import select
+from dataclasses import dataclass
+from uuid import UUID
+
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tgllfg.lex import cache as c
 from tgllfg.lex import models as m
+
+
+@dataclass(frozen=True)
+class LemmaMatch:
+    """A fuzzy lemma-search hit plus its pg_trgm similarity score."""
+
+    id: UUID
+    language_id: UUID
+    citation_form: str
+    pos: str
+    gloss: str | None
+    score: float
 
 
 class AsyncLexRepository:
@@ -72,8 +87,33 @@ class AsyncLexRepository:
         ).one_or_none()
         return None if row is None else row.value
 
+    async def search_lemmas(self, query: str, *, limit: int = 20) -> list[LemmaMatch]:
+        """Fuzzy-match ``query`` against lemma citation forms via pg_trgm
+        similarity (the GIN trgm index ``ix_lemma_citation_form_trgm``).
+        Returns up to ``limit`` hits above pg_trgm's similarity threshold,
+        best score first."""
+        score = func.similarity(m.Lemma.citation_form, query)
+        stmt = (
+            select(m.Lemma, score.label("score"))
+            .where(m.Lemma.citation_form.op("%")(query))
+            .order_by(score.desc())
+            .limit(limit)
+        )
+        rows = (await self._session.execute(stmt)).all()
+        return [
+            LemmaMatch(
+                id=lemma.id,
+                language_id=lemma.language_id,
+                citation_form=lemma.citation_form,
+                pos=lemma.pos,
+                gloss=lemma.gloss,
+                score=float(sc),
+            )
+            for lemma, sc in rows
+        ]
+
     async def build_cache(self) -> c.LexCache:
         return await c.build_cache(self._session)
 
 
-__all__ = ["AsyncLexRepository"]
+__all__ = ["AsyncLexRepository", "LemmaMatch"]
