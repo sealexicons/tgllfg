@@ -1,0 +1,9 @@
+dist
+coverage
+tmp
+node_modules
+package-lock.json
+*.tsbuildinfo
+
+# Markdown is linted by the repo-wide markdownlint, not Prettier.
+*.md
