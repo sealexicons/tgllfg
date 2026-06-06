@@ -12,15 +12,19 @@ specification.
 
 import asyncio
 from collections.abc import AsyncIterator
+from typing import Any
 
 import pytest
 import pytest_asyncio
 from alembic import command
-from sqlalchemy import text
+from alembic.autogenerate import compare_metadata
+from alembic.migration import MigrationContext
+from sqlalchemy import Connection, text
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 from testcontainers.postgres import PostgresContainer  # type: ignore[import-untyped]
 
 from tgllfg.lex import build_alembic_config
+from tgllfg.lex.models import Base
 
 pytestmark = pytest.mark.postgres
 
@@ -159,3 +163,44 @@ async def test_uuid_default_uses_pgcrypto(
         result = await session.execute(text("SELECT id FROM language WHERE iso_code = 'tgl'"))
         row = result.one()
         assert row[0] is not None
+
+
+def _include_non_index(
+    obj: Any, name: str | None, type_: str, reflected: bool, compare_to: Any
+) -> bool:
+    # Indexes (incl. the GIN trgm + FTS-expression indexes) are
+    # migration-owned and gated above by ``_EXPECTED_INDEXES``; the ORM
+    # models deliberately don't declare them, so exclude indexes from the
+    # model<->migration structural drift comparison.
+    return type_ != "index"
+
+
+def _compare_models(sync_conn: Connection) -> list[Any]:
+    ctx = MigrationContext.configure(
+        sync_conn,
+        opts={"compare_type": True, "include_object": _include_non_index},
+    )
+    return compare_metadata(ctx, Base.metadata)
+
+
+async def test_models_match_migrations_no_drift(
+    postgres_container: PostgresContainer, fresh_pg_engine: AsyncEngine
+) -> None:
+    """Phase 13.B schema-current gate: the ORM models in ``lex/models.py``
+    match ``upgrade head`` at the table / column / constraint level, so a
+    model change shipped without a migration (or vice versa) fails CI.
+
+    ``compare_metadata`` is the rigorous form of "upgrade head == fresh
+    create_all": it reports the migration ops needed to turn the migrated
+    DB into the models' schema, so an empty list means they already agree.
+    Indexes + extensions are migration-owned (excluded here; gated by the
+    round-trip tests above).
+    """
+    await _reset_database(fresh_pg_engine)
+    cfg = build_alembic_config(postgres_container.get_connection_url())
+    await asyncio.to_thread(command.upgrade, cfg, "head")
+
+    async with fresh_pg_engine.connect() as conn:
+        diffs = await conn.run_sync(_compare_models)
+
+    assert diffs == [], f"models drifted from migrations: {diffs}"

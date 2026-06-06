@@ -352,6 +352,8 @@ extends the same machinery to PART (via `Particle.affix_class`).
 | CLI | Command-Line Interface | The `tgllfg` entry point shipped with the package. |
 | CSV | Comma-Separated Values | Used by `tgllfg lex import`. |
 | DB | Database | The Postgres-backed lexicon (Phase 3). |
+| DI | Dependency Injection | FastAPI's `Depends()` wiring (Phase 13.A, `api/deps.py`): a route declares what it needs (DB session, `Principal`) as a `Depends(...)` parameter and FastAPI injects it per request; `app.dependency_overrides` swaps providers in tests. |
+| DTO | Data Transfer Object | A data carrier across a boundary. Route request/response models are **Pydantic 2** `BaseModel` subclasses (FastAPI drives validation / serialization / the OpenAPI schema from them) — e.g. the `/parse` request/response models (Phase 13.C); internal value objects like `Principal` (`api/deps.py`) stay plain dataclasses. |
 | EBNF | Extended Backus–Naur Form | The equation-language grammar is documented in EBNF. |
 | FK | Foreign Key | |
 | FST | Finite-State Transducer | Considered for Phase 2 morphology; rejected for the rule cascade due to macOS install friction. |

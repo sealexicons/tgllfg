@@ -18,11 +18,18 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
+from tgllfg.lex.models import Base
+
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = None
+# Phase 13.B: wire ORM metadata so ``alembic revision --autogenerate`` and
+# the schema-drift gate (``compare_metadata``) can see the models. The
+# models are authored to match the hand-written migrations (migrations
+# remain the source of truth); ``Base.metadata`` excludes ``alembic_version``
+# (Alembic manages that table itself).
+target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
