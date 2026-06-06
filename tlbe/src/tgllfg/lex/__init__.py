@@ -31,13 +31,14 @@ from tgllfg.lex.loader import (
     resolve_morph_data,
 )
 from tgllfg.lex.migrations import build_alembic_config
-from tgllfg.lex.repo import AsyncLexRepository
+from tgllfg.lex.repo import AsyncLexRepository, LemmaMatch
 
 __all__ = [
     "AffixEntry",
     "AsyncLexRepository",
     "LanguageEntry",
     "LemmaEntry",
+    "LemmaMatch",
     "LexCache",
     "LexEntryRow",
     "ParadigmCellEntry",
