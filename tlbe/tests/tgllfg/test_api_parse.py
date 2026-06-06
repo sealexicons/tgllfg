@@ -3,8 +3,10 @@
 
 """Phase 13.C: POST /api/v1/parse — node-table serialization.
 
-DB-free: the parser reads the YAML lexicon, not Postgres, so these run
-in the fast suite via the TestClient (lifespan warms the grammar once).
+DB-free: the parser reads the YAML lexicon, not Postgres, so these run in
+the fast suite via the TestClient (the compiled grammar is cached, so the
+per-test ``api_app`` is cheap). Uses the shared ``api_app`` fixture
+(conftest).
 """
 
 from collections.abc import Iterator
@@ -13,22 +15,10 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from tgllfg.api import create_app
-from tgllfg.api.settings import Settings
 
-
-def _make_app() -> FastAPI:
-    return create_app(
-        settings=Settings(
-            database_url="postgresql+asyncpg://t:t@localhost:5432/t",
-            auth_mode="anonymous",
-        )
-    )
-
-
-@pytest.fixture(scope="module")
-def client() -> Iterator[TestClient]:
-    with TestClient(_make_app()) as c:
+@pytest.fixture
+def client(api_app: FastAPI) -> Iterator[TestClient]:
+    with TestClient(api_app) as c:
         yield c
 
 

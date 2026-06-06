@@ -4,8 +4,8 @@
 """Phase 13.C.2: GET /api/v1/lex/search — pg_trgm fuzzy lemma lookup.
 
 The HTTP layer is tested DB-free by overriding the repo dependency with a
-fake; the pg_trgm query itself is tested against a real Postgres 17
-testcontainer (postgres-marked).
+fake (on the shared ``api_app`` fixture); the pg_trgm query itself is
+tested against a real Postgres 17 testcontainer (postgres-marked).
 """
 
 import asyncio
@@ -21,9 +21,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 from testcontainers.postgres import PostgresContainer  # type: ignore[import-untyped]
 
-from tgllfg.api import create_app
 from tgllfg.api.deps import get_repo
-from tgllfg.api.settings import Settings
 from tgllfg.lex import build_alembic_config
 from tgllfg.lex.repo import AsyncLexRepository, LemmaMatch
 
@@ -45,20 +43,10 @@ class _FakeRepo:
         ]
 
 
-def _make_app() -> FastAPI:
-    return create_app(
-        settings=Settings(
-            database_url="postgresql+asyncpg://t:t@localhost:5432/t",
-            auth_mode="anonymous",
-        )
-    )
-
-
 @pytest.fixture
-def client() -> Iterator[TestClient]:
-    app = _make_app()
-    app.dependency_overrides[get_repo] = _FakeRepo
-    with TestClient(app) as c:
+def client(api_app: FastAPI) -> Iterator[TestClient]:
+    api_app.dependency_overrides[get_repo] = _FakeRepo
+    with TestClient(api_app) as c:
         yield c
 
 
