@@ -38,6 +38,19 @@ class Settings(BaseSettings):
         default="anonymous",
         validation_alias=AliasChoices("TGLLFG_AUTH_MODE", "AUTH_MODE"),
     )
+    #: OTLP/gRPC endpoint for traces (e.g. ``http://alloy:4317``). Unset →
+    #: tracing is a no-op (Phase 13.E env-gating).
+    otel_endpoint: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices(
+            "OTEL_EXPORTER_OTLP_ENDPOINT", "TGLLFG_OTEL_ENDPOINT"
+        ),
+    )
+    #: ``service.name`` resource attribute for exported traces.
+    otel_service_name: str = Field(
+        default="tgllfg",
+        validation_alias=AliasChoices("OTEL_SERVICE_NAME", "TGLLFG_OTEL_SERVICE_NAME"),
+    )
 
 
 @lru_cache

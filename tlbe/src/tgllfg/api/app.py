@@ -22,6 +22,7 @@ from ..__version__ import __version__
 from ..cfg import Grammar
 from .health import health_router
 from .settings import Settings, get_settings
+from .telemetry import configure_telemetry, shutdown_telemetry
 from .v1 import v1_router
 
 #: Versioned endpoints mount under this prefix, and the app's own docs /
@@ -50,6 +51,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # set of live audit asyncio.Tasks so shutdown can cancel them.
     app.state.audit_jobs = {}
     app.state.audit_tasks = set()
+    # Phase 13.E: structlog (always) + OTel tracing (env-gated) — request +
+    # SQLAlchemy (DB I/O) + compute spans.
+    configure_telemetry(app, engine)
     try:
         yield
     finally:
@@ -61,6 +65,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             task.cancel()
         if live:
             await asyncio.gather(*live, return_exceptions=True)
+        shutdown_telemetry(app, engine)
         await engine.dispose()
 
 

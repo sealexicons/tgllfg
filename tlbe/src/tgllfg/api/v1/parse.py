@@ -36,6 +36,8 @@ from ...core.common import AStructure, CNode, FStructure
 from ...core.pipeline import Fragment, ParseResult, parse_text_with_fragments
 from ...fstruct import Diagnostic
 
+from ..telemetry import TracerDep, traced
+
 parse_router = APIRouter(tags=["parse"])
 
 
@@ -258,10 +260,13 @@ def build_parse_response(
 @parse_router.post(
     "/parse", response_model=ParseResponse, summary="Parse a Tagalog sentence"
 )
-async def parse_endpoint(req: ParseRequest) -> ParseResponse:
+async def parse_endpoint(req: ParseRequest, tracer: TracerDep) -> ParseResponse:
     # The parser is synchronous and CPU-bound; offload it to a worker
-    # thread so it doesn't block the event loop.
-    result = await asyncio.to_thread(
-        parse_text_with_fragments, req.text, n_best=req.n_best
-    )
+    # thread so it doesn't block the event loop. The `parse` compute span
+    # segments parse-compute from any DB I/O (SQLAlchemy auto-spans) in a
+    # trace; it's a no-op when tracing is off.
+    with traced(tracer, "parse", n_best=req.n_best, text_len=len(req.text)):
+        result = await asyncio.to_thread(
+            parse_text_with_fragments, req.text, n_best=req.n_best
+        )
     return build_parse_response(req.text, result, n_best=req.n_best, strict=req.strict)
