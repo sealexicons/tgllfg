@@ -38,6 +38,8 @@ jobs:
         run: uv sync --locked
       - name: Check (ruff + mypy + pyright + yamllint)
         run: uv run poe check
+      - name: Verify openapi.json in sync
+        run: uv run tgllfg openapi --check
 
   test:
     name: test (pytest test-both)

@@ -1,0 +1,978 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "tgllfg",
+    "summary": "Tagalog LFG parser \u2014 REST API",
+    "version": "0.0.1"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "description": "Liveness: the process is up and serving. No external deps.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Ready",
+        "description": "Readiness: DB reachable **and** the compiled grammar warmed.\nReturns ``503`` with a per-check breakdown until both hold.",
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/parse": {
+      "post": {
+        "tags": [
+          "parse"
+        ],
+        "summary": "Parse a Tagalog sentence",
+        "operationId": "parse_endpoint_api_v1_parse_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParseRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/lex/search": {
+      "get": {
+        "tags": [
+          "lex"
+        ],
+        "summary": "Fuzzy lemma search",
+        "operationId": "lex_search_api_v1_lex_search_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Fuzzy query against lemma citation forms.",
+              "title": "Q"
+            },
+            "description": "Fuzzy query against lemma citation forms."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Max matches to return.",
+              "default": 20,
+              "title": "Limit"
+            },
+            "description": "Max matches to return."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LexSearchResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit/run": {
+      "post": {
+        "tags": [
+          "audit"
+        ],
+        "summary": "Start a corpus audit (background job)",
+        "operationId": "audit_run_api_v1_audit_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditRunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditRunStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit/runs/{run_id}": {
+      "get": {
+        "tags": [
+          "audit"
+        ],
+        "summary": "Poll an audit run's status",
+        "operationId": "audit_run_status_api_v1_audit_runs__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditRunStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit/diff": {
+      "post": {
+        "tags": [
+          "audit"
+        ],
+        "summary": "Diff the latest results against the baseline",
+        "operationId": "audit_diff_api_v1_audit_diff_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditDiffRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuditDiffModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AStructureModel": {
+        "properties": {
+          "pred": {
+            "type": "string",
+            "title": "Pred"
+          },
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Roles"
+          },
+          "mapping": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Mapping"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pred",
+          "roles",
+          "mapping"
+        ],
+        "title": "AStructureModel"
+      },
+      "AuditDiffModel": {
+        "properties": {
+          "has_regressions": {
+            "type": "boolean",
+            "title": "Has Regressions"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Counts"
+          },
+          "regressions": {
+            "items": {
+              "$ref": "#/components/schemas/DiffEntryModel"
+            },
+            "type": "array",
+            "title": "Regressions"
+          },
+          "improvements": {
+            "items": {
+              "$ref": "#/components/schemas/DiffEntryModel"
+            },
+            "type": "array",
+            "title": "Improvements"
+          }
+        },
+        "type": "object",
+        "required": [
+          "has_regressions",
+          "counts",
+          "regressions",
+          "improvements"
+        ],
+        "title": "AuditDiffModel"
+      },
+      "AuditDiffRequest": {
+        "properties": {
+          "waves": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Waves",
+            "description": "Wave ids to diff (default: all waves with results)."
+          }
+        },
+        "type": "object",
+        "title": "AuditDiffRequest"
+      },
+      "AuditRunRequest": {
+        "properties": {
+          "waves": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Waves",
+            "description": "Wave ids to audit (default: all waves)."
+          }
+        },
+        "type": "object",
+        "title": "AuditRunRequest"
+      },
+      "AuditRunStatus": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "running",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RunSummaryModel"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "status"
+        ],
+        "title": "AuditRunStatus"
+      },
+      "CNodeModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "children": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Children"
+          },
+          "equations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Equations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "label"
+        ],
+        "title": "CNodeModel"
+      },
+      "CStructure": {
+        "properties": {
+          "root": {
+            "type": "string",
+            "title": "Root"
+          },
+          "nodes": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/CNodeModel"
+            },
+            "type": "object",
+            "title": "Nodes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "root",
+          "nodes"
+        ],
+        "title": "CStructure"
+      },
+      "DiagnosticModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "path": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Path"
+          },
+          "equation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Equation"
+          },
+          "cnode_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cnode Label"
+          },
+          "blocking": {
+            "type": "boolean",
+            "title": "Blocking",
+            "default": false
+          },
+          "detail": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "message"
+        ],
+        "title": "DiagnosticModel"
+      },
+      "DiffEntryModel": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "locator": {
+            "type": "string",
+            "title": "Locator"
+          },
+          "before": {
+            "type": "string",
+            "title": "Before"
+          },
+          "after": {
+            "type": "string",
+            "title": "After"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "locator",
+          "before",
+          "after",
+          "text"
+        ],
+        "title": "DiffEntryModel"
+      },
+      "FNodeModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "feats": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Feats"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "FNodeModel"
+      },
+      "FStructureModel": {
+        "properties": {
+          "root": {
+            "type": "string",
+            "title": "Root"
+          },
+          "nodes": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/FNodeModel"
+            },
+            "type": "object",
+            "title": "Nodes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "root",
+          "nodes"
+        ],
+        "title": "FStructureModel"
+      },
+      "FragmentModel": {
+        "properties": {
+          "span": {
+            "prefixItems": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "type": "array",
+            "maxItems": 2,
+            "minItems": 2,
+            "title": "Span"
+          },
+          "c_structure": {
+            "$ref": "#/components/schemas/CStructure"
+          },
+          "f_structure": {
+            "$ref": "#/components/schemas/FStructureModel"
+          },
+          "a_structure": {
+            "$ref": "#/components/schemas/AStructureModel"
+          },
+          "diagnostics": {
+            "items": {
+              "$ref": "#/components/schemas/DiagnosticModel"
+            },
+            "type": "array",
+            "title": "Diagnostics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "span",
+          "c_structure",
+          "f_structure",
+          "a_structure"
+        ],
+        "title": "FragmentModel"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "LemmaMatchModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "language_id": {
+            "type": "string",
+            "title": "Language Id"
+          },
+          "citation_form": {
+            "type": "string",
+            "title": "Citation Form"
+          },
+          "pos": {
+            "type": "string",
+            "title": "Pos"
+          },
+          "gloss": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gloss"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "language_id",
+          "citation_form",
+          "pos",
+          "score"
+        ],
+        "title": "LemmaMatchModel"
+      },
+      "LexSearchResponse": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/LemmaMatchModel"
+            },
+            "type": "array",
+            "title": "Matches"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "matches"
+        ],
+        "title": "LexSearchResponse"
+      },
+      "ParseMeta": {
+        "properties": {
+          "n_best": {
+            "type": "integer",
+            "title": "N Best"
+          },
+          "parse_count": {
+            "type": "integer",
+            "title": "Parse Count"
+          },
+          "fragment_count": {
+            "type": "integer",
+            "title": "Fragment Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "n_best",
+          "parse_count",
+          "fragment_count"
+        ],
+        "title": "ParseMeta"
+      },
+      "ParseModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "c_structure": {
+            "$ref": "#/components/schemas/CStructure"
+          },
+          "f_structure": {
+            "$ref": "#/components/schemas/FStructureModel"
+          },
+          "a_structure": {
+            "$ref": "#/components/schemas/AStructureModel"
+          },
+          "diagnostics": {
+            "items": {
+              "$ref": "#/components/schemas/DiagnosticModel"
+            },
+            "type": "array",
+            "title": "Diagnostics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "c_structure",
+          "f_structure",
+          "a_structure"
+        ],
+        "title": "ParseModel"
+      },
+      "ParseRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Text",
+            "description": "The Tagalog sentence to parse."
+          },
+          "n_best": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "N Best",
+            "description": "Cap on the number of complete parses returned.",
+            "default": 5
+          },
+          "strict": {
+            "type": "boolean",
+            "title": "Strict",
+            "description": "Suppress fragment output when no complete parse is found (mirrors `tgllfg parse --strict`).",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "ParseRequest"
+      },
+      "ParseResponse": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "parses": {
+            "items": {
+              "$ref": "#/components/schemas/ParseModel"
+            },
+            "type": "array",
+            "title": "Parses"
+          },
+          "fragments": {
+            "items": {
+              "$ref": "#/components/schemas/FragmentModel"
+            },
+            "type": "array",
+            "title": "Fragments"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ParseMeta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "meta"
+        ],
+        "title": "ParseResponse"
+      },
+      "RunSummaryModel": {
+        "properties": {
+          "elapsed_s": {
+            "type": "number",
+            "title": "Elapsed S"
+          },
+          "n_workers": {
+            "type": "integer",
+            "title": "N Workers"
+          },
+          "n_tasks": {
+            "type": "integer",
+            "title": "N Tasks"
+          },
+          "waves": {
+            "items": {
+              "$ref": "#/components/schemas/WaveSummaryModel"
+            },
+            "type": "array",
+            "title": "Waves"
+          },
+          "total_ok": {
+            "type": "integer",
+            "title": "Total Ok"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "total_pct": {
+            "type": "number",
+            "title": "Total Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "elapsed_s",
+          "n_workers",
+          "n_tasks",
+          "waves",
+          "total_ok",
+          "total",
+          "total_pct"
+        ],
+        "title": "RunSummaryModel"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WaveSummaryModel": {
+        "properties": {
+          "wave_id": {
+            "type": "string",
+            "title": "Wave Id"
+          },
+          "ok": {
+            "type": "integer",
+            "title": "Ok"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "pct": {
+            "type": "number",
+            "title": "Pct"
+          },
+          "timeouts": {
+            "type": "integer",
+            "title": "Timeouts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "wave_id",
+          "ok",
+          "total",
+          "pct",
+          "timeouts"
+        ],
+        "title": "WaveSummaryModel"
+      }
+    }
+  }
+}
