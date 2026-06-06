@@ -11,6 +11,7 @@ compiled grammar once at startup. Versioned endpoints mount under
 (:mod:`tgllfg.api.health`).
 """
 
+import asyncio
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -33,8 +34,10 @@ API_PREFIX = "/api"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Startup/shutdown: build the async engine + sessionmaker and warm
-    the compiled-grammar singleton; dispose the engine on shutdown."""
+    """Startup/shutdown: build the async engine + sessionmaker, warm the
+    compiled-grammar singleton, and init the audit-job registry; on
+    shutdown, cancel any in-flight audit runs (terminating their
+    subprocesses) before disposing the engine."""
     settings: Settings = app.state.settings
     engine = create_async_engine(settings.database_url, pool_pre_ping=True)
     app.state.engine = engine
@@ -43,9 +46,21 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     # rule-compilation cost. Phase 15 may relocate this to a shared redis
     # cache for multi-replica deployments.
     app.state.grammar = Grammar.load_default()
+    # Audit job state (Phase 13.C.3): run_id -> _AuditJob registry + the
+    # set of live audit asyncio.Tasks so shutdown can cancel them.
+    app.state.audit_jobs = {}
+    app.state.audit_tasks = set()
     try:
         yield
     finally:
+        # Cancel in-flight audit runs; each task's `finally` terminates its
+        # subprocess and the gather waits for that cleanup, so no audit
+        # child process is orphaned past shutdown.
+        live = list(app.state.audit_tasks)
+        for task in live:
+            task.cancel()
+        if live:
+            await asyncio.gather(*live, return_exceptions=True)
         await engine.dispose()
 
 

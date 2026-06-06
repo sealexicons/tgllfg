@@ -25,6 +25,11 @@ import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from testcontainers.postgres import PostgresContainer  # type: ignore[import-untyped]
 
+from fastapi import FastAPI
+
+from tgllfg.api import create_app
+from tgllfg.api.settings import Settings
+
 
 @pytest.fixture(scope="session")
 def postgres_container() -> Iterator[PostgresContainer]:
@@ -52,6 +57,23 @@ async def pg_session(pg_engine: AsyncEngine) -> AsyncIterator[AsyncSession]:
     async with sessionmaker() as session:
         yield session
         await session.rollback()
+
+
+@pytest.fixture
+def api_app() -> FastAPI:
+    """A fresh FastAPI app for endpoint tests — anonymous auth + a dummy
+    (never-connected) DB URL. Each test adds its own dependency overrides
+    before wrapping it in a ``TestClient``; the lifespan still runs
+    (warms the grammar, inits the audit-job registry, and cancels
+    in-flight audit runs on shutdown). The parse / serializer paths are
+    DB-free, so most endpoint tests need no real Postgres.
+    """
+    return create_app(
+        settings=Settings(
+            database_url="postgresql+asyncpg://test:test@localhost:5432/test",
+            auth_mode="anonymous",
+        )
+    )
 
 
 # --- references-corpus skip -------------------------------------------
