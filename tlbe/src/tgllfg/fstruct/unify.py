@@ -139,6 +139,14 @@ def solve(root: CNode) -> SolveResult:
     _pass_constraining(root, graph, nid_for, parsed_for, diagnostics)
 
     fstr = _project(graph, nid_for[id(root)])
+    # Phase 13.B breadcrumb: ``nid_for`` (id(CNode) → NodeId) is the
+    # c-node ↔ f-node projection correspondence — each c-node's f-graph
+    # node, which ``graph.find`` maps to the canonical ``FStructure.id``.
+    # It is not surfaced in SolveResult or the pipeline tuple, so the
+    # parse output can't say which c-node projects which f-structure.
+    # Expose it in the Phase 13.B ``/parse`` response schema (diagnostic
+    # ↔ c-node anchoring + c↔f cross-highlighting for the tlfe inspector;
+    # supersedes the Phase 4 §7.9 / 12.G cnode_label item, closed OBE).
     return SolveResult(
         fstructure=fstr,
         graph=graph,
