@@ -52,6 +52,8 @@ from ...audit import (
 )
 from ...audit.common import Record
 
+from ..telemetry import log, traced
+
 audit_router = APIRouter(tags=["audit"])
 
 AuditStatus = Literal["running", "completed", "failed", "cancelled"]
@@ -240,28 +242,34 @@ async def _run_audit_job(
     argv = list(command) + (["--waves", ",".join(waves)] if waves else [])
     started = time.monotonic()
     proc: asyncio.subprocess.Process | None = None
+    log.info("audit.run.start", run_id=job.run_id, waves=waves)
     try:
-        proc = await asyncio.create_subprocess_exec(
-            *argv,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-        )
-        job.proc = proc
-        _out, err = await proc.communicate()
+        with traced(app.state.tracer, "audit.run", run_id=job.run_id):
+            proc = await asyncio.create_subprocess_exec(
+                *argv,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+            )
+            job.proc = proc
+            _out, err = await proc.communicate()
         if proc.returncode == 0:
             job.summary = await asyncio.to_thread(
                 summarizer, waves=waves, elapsed_s=time.monotonic() - started
             )
             job.status = "completed"
+            log.info("audit.run.done", run_id=job.run_id, status="completed")
         else:
             job.status = "failed"
             job.error = (err or b"").decode(errors="replace").strip()[-2000:]
+            log.warning("audit.run.done", run_id=job.run_id, status="failed")
     except asyncio.CancelledError:
         job.status = "cancelled"
+        log.warning("audit.run.cancelled", run_id=job.run_id)
         raise
     except Exception as exc:  # noqa: BLE001 — surface any failure to the poller
         job.status = "failed"
         job.error = str(exc)
+        log.error("audit.run.error", run_id=job.run_id, error=str(exc))
     finally:
         # Terminate the subprocess if it's still running (e.g. on cancel),
         # so it isn't orphaned past the job / server lifetime.
@@ -325,5 +333,8 @@ async def audit_run_status(run_id: str, request: Request) -> AuditRunStatus:
     response_model=AuditDiffModel,
     summary="Diff the latest results against the baseline",
 )
-async def audit_diff(req: AuditDiffRequest, differ: DifferDep) -> AuditDiffModel:
-    return await asyncio.to_thread(differ, waves=req.waves)
+async def audit_diff(
+    req: AuditDiffRequest, request: Request, differ: DifferDep
+) -> AuditDiffModel:
+    with traced(request.app.state.tracer, "audit.diff"):
+        return await asyncio.to_thread(differ, waves=req.waves)
