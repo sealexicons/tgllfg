@@ -1,0 +1,49 @@
+// Copyright (c) 2025-2026 G & R Associates LLC
+// SPDX-License-Identifier: MIT OR Apache-2.0
+
+// Grafana Alloy (Phase 13.I): receive OTLP from tlbe on :4317 / :4318 and
+// fan out to the LGTM backends — traces -> tempo, metrics -> prometheus
+// (remote_write), logs -> loki.
+
+otelcol.receiver.otlp "default" {
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+  output {
+    traces  = [otelcol.exporter.otlp.tempo.input]
+    metrics = [otelcol.exporter.prometheus.default.input]
+    logs    = [otelcol.exporter.loki.default.input]
+  }
+}
+
+otelcol.exporter.otlp "tempo" {
+  client {
+    endpoint = "tempo:4317"
+    tls {
+      insecure = true
+    }
+  }
+}
+
+otelcol.exporter.prometheus "default" {
+  forward_to = [prometheus.remote_write.metrics.receiver]
+}
+
+prometheus.remote_write "metrics" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+  }
+}
+
+otelcol.exporter.loki "default" {
+  forward_to = [loki.write.logs.receiver]
+}
+
+loki.write "logs" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
