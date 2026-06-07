@@ -21,8 +21,11 @@ The repo is a two-tree monorepo (Phase 12.B):
   backend.
 - **`tlfe/`** — Tagalog LFG FrontEnd: the Vite + React web inspector
   (scaffold as of Phase 12.D; built out in Phase 14).
-- **Top level** — cross-cutting only: CI workflows, licences, the
-  monorepo README, `.claude/` (plans + memory).
+- **Top level** — cross-cutting plus the local dev stack (Phase 13):
+  `compose.yaml` (profiles), `Dockerfile.tlbe` / `Dockerfile.tlfe`,
+  `deploy/` (keycloak / postgres / observability configs), the committed
+  `openapi.json` contract, CI workflows, licences, the monorepo README,
+  `.claude/` (plans + memory).
 
 Everything below lives under `tlbe/src/tgllfg/`.
 
@@ -147,13 +150,47 @@ term definitions live in [`definitions.md`](definitions.md).
   Coverage history is in [`coverage.md`](coverage.md).
 - **Tests** — `tests/tgllfg/`, run via `uv run poe test-both` (xdist).
 - **Build / CI** — uv + poe (Phase 12.C); path-filtered GitHub Actions
-  (Phase 12.E): linting on every push, `test-both` + audit on merge to
-  `main`.
+  (Phase 12.E): the static job on every push (lint + `openapi --check` +
+  `bench --check-counts`), with `test-both` + audit on merge to `main`.
+- **Perf** — `tgllfg bench` (`uv run poe bench`, Phase 13.J): fixed graded
+  inputs, a committed baseline, and a deterministic forest-size regression
+  gate (machine-independent — the CI gate) plus a soft wall-clock warning.
+
+## REST API + dev stack (Phase 13)
+
+`src/tgllfg/api/` is an async FastAPI service over the parser — the
+contract the Phase 14 inspector consumes.
+
+- **Routes** (`api/v1/`) — `POST /api/v1/parse` (the c-/f-/a-structures as
+  a node table with `$ref` reentrancy), `GET /api/v1/lex/search` (pg_trgm
+  fuzzy lookup), `POST /api/v1/audit/*` (run / poll / diff — the audit
+  engine in a background subprocess). `/health` + `/ready` stay unversioned
+  at the root. The schema is the committed top-level `openapi.json`
+  (regenerated + sync-gated by `tgllfg openapi`).
+- **DI + DTOs** (`api/deps.py`, Pydantic 2 models) — request-scoped async
+  DB sessions, the `Principal` + `require_role` gates, `Settings`.
+- **Auth** (`api/auth.py`) — `AUTH_MODE=anonymous` (open, the dev default)
+  or `keycloak` (local JWT verification: cached JWKS via httpx2, RS256 +
+  iss/aud/exp via pyjwt; role gates `parser:read` / `parser:write` /
+  `lex:read`).
+- **Observability** (`api/telemetry.py`) — env-gated OTel tracing (no
+  endpoint → no-op) + structlog; gross spans segment compute (parse /
+  audit) from DB I/O (SQLAlchemy auto-instrumentation).
+- **CLI** (`cli/`) — `tgllfg serve` (uvicorn), `tgllfg openapi`
+  (generate / check the contract), `tgllfg bench` (the perf gate).
+
+The dev stack runs on Docker Desktop: two multi-stage non-root images
+(`Dockerfile.tlbe` / `Dockerfile.tlfe`) and a top-level `compose.yaml` with
+three profiles — **default** (Postgres + migrate/seed + tlbe + tlfe,
+health-gated, anonymous), **`auth`** (+ Keycloak), **`observability`**
+(+ Alloy → Tempo / Prometheus / Loki + Grafana). See the monorepo
+`README.md` for the run commands.
 
 ## The road ahead
 
-- **Phase 13** — an async FastAPI service under `src/tgllfg/api/`
-  exposing `/parse`, `/audit/*`, and `/lex/search` (the contract the
-  inspector consumes).
-- **Phase 14** — the `tlfe` web inspector, rendering the c-/f-/a-
-  structures with cross-highlighting against the Phase 13 API.
+- **Phase 14** — the `tlfe` web inspector, rendering the c-/f-/a-structures
+  with cross-highlighting against the Phase 13 API (`openapi.json` → a
+  typed client).
+- **Phase 15** — production deployment: a prod compose, a Helm chart + k8s
+  templates (initial single-node cluster), and a redis-backed
+  compiled-grammar cache.

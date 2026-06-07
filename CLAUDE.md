@@ -8,10 +8,13 @@ SPDX-License-Identifier: MIT OR Apache-2.0
 Prototype LFG parser for Tagalog, in a `tlbe/` (backend) + `tlfe/` (frontend)
 monorepo. Python ≥ 3.14, **uv-managed env + poe task runner** (hatchling stays
 the build backend), pytest-xdist, optional Postgres testcontainer. Dual-licensed
-MIT OR Apache-2.0. **Phase 12 — engineering foundation** is complete (monorepo
-reorg + uv/poe + path-filtered CI + audit gate + `tlfe` scaffold +
-architecture/grammar docs). **Phase 13 — REST API** (`tlbe/src/tgllfg/api/`)
-is the next effort; the web inspector is Phase 14.
+MIT OR Apache-2.0. **Phase 13 — REST API + local dev stack** is complete
+(async FastAPI under `tlbe/src/tgllfg/api/` — `/api/v1` routes, committed
+`openapi.json` contract, env-gated OTel + Keycloak auth; `tgllfg serve` /
+`openapi` / `bench`; two Dockerfiles + a top-level `compose.yaml` with
+`auth` / `observability` profiles). **Phase 14 — the `tlfe` web inspector**
+is the next effort; production deployment (prod compose, helm/k8s, redis)
+is Phase 15.
 
 This file is the load-on-every-session brief for working in this repo. Personal
 preferences live in auto-memory; this file is project-wide.
@@ -31,7 +34,8 @@ prefix with `uv --directory tlbe run …` instead of `cd tlbe`.
 | Iteration loop (T2 / slow only)     | `uv run poe test-slow`     | `slow` marker only; ~15s                    |
 | Combinatorial regression check      | `uv run poe test-xslow`    | on-demand only; ~300s for one test          |
 | Postgres-backed only                | `uv run poe test-postgres` | needs Docker                                |
-| Lint + type check                   | `uv run poe check`         | ruff + mypy over `src/tgllfg tests`         |
+| Lint + type check                   | `uv run poe check`         | ruff + mypy + pyright + yamllint            |
+| Perf regression gate                | `uv run poe bench`         | forest-size count gate (+ soft time warn)   |
 | Markdown lint (docs / `README.md`)  | `markdownlint <files>`     | `/opt/homebrew/bin/markdownlint`, not npx   |
 
 Any task also runs without poe — `uv run pytest -m '…' -n auto`,
@@ -79,6 +83,11 @@ tlbe/             Tagalog LFG BackEnd — the parser + `tgllfg` CLI
     lmt/          Lexical Mapping Theory (post-parse validation, PRED pruning)
     audit/        corpus-audit run / diff / baseline (Phase 12.F; backs
                   the `tgllfg audit` CLI + the `scripts/audit_corpus.py` shim)
+    api/          async FastAPI service (Phase 13): app factory + lifespan,
+                  /api/v1 routes (parse / lex / audit), deps (DI), settings,
+                  auth (Keycloak JWT verify), telemetry (OTel), openapi gen
+    bench/        parser perf benchmark (Phase 13.J): fixed inputs + baseline
+                  + deterministic forest-size regression gate (`tgllfg bench`)
     clitics/ text/ renderers/ cli/ examples/
   data/tgl/       YAML lexicon: nouns / verbs / adjectives / numerals /
                   particles / pronouns / clitics / paradigms / affixes /
@@ -103,12 +112,17 @@ tlfe/             Tagalog LFG FrontEnd — web inspector (Phase 12.D scaffold;
     src/          main.tsx + App.tsx (placeholder inspector view) +
                   index.css (Tailwind) + test/ (Vitest + App.test.tsx)
 
-(top level)       .claude/ (plans + memory), CLAUDE.md, README.md (monorepo),
-                  LICENSE-MIT, LICENSE-APACHE, .markdownlint.json, .gitignore
-                  (cross-cutting; Python ignores in tlbe/.gitignore, JS in
-                  tlfe/.gitignore). Scratch is per-tree, no crossover:
-                  tlbe/tmp/ for backend (Python) work, tlfe/tmp/ for
-                  frontend; the bare tmp/ pattern ignores any at any depth.
+(top level)       Dev stack (Phase 13.G/H/I): Dockerfile.tlbe /
+                  Dockerfile.tlfe, compose.yaml (profiles: default / auth /
+                  observability), deploy/ (keycloak realm, postgres init,
+                  alloy + LGTM configs), .env.template, openapi.json
+                  (committed API contract). Plus .claude/ (plans + memory),
+                  CLAUDE.md, README.md (monorepo), LICENSE-MIT, LICENSE-APACHE,
+                  .markdownlint.json, .gitignore (cross-cutting; Python
+                  ignores in tlbe/.gitignore, JS in tlfe/.gitignore). Scratch
+                  is per-tree, no crossover: tlbe/tmp/ for backend (Python)
+                  work, tlfe/tmp/ for frontend; the bare tmp/ pattern ignores
+                  any at any depth.
 ```
 
 ## Plans and references
@@ -218,8 +232,12 @@ tlfe/             Tagalog LFG FrontEnd — web inspector (Phase 12.D scaffold;
   prior `docs/coverage-audit-*.md` files retired into the
   Phase 9 — Naturalistic-tier audit closures section)
 - f-structure feat inventory → `tlbe/docs/feats-binary-audit.md`
-- Current plan-of-record → `.claude/plans/tgllfg-phase-13.md` (REST API);
-  Phase 12 (foundation) is complete; Phase 14 in `tgllfg-phase-14.md`
+- REST API + local dev stack (routes / OpenAPI / OTel / Keycloak / compose
+  profiles / Dockerfiles / perf bench) → `tlbe/docs/architecture.md`
+  (§ REST API + dev stack) + the top-level `compose.yaml` and `README.md`
+- Current plan-of-record → `.claude/plans/tgllfg-phase-14.md` (web
+  inspector); Phase 13 (REST API + dev stack) is complete in
+  `tgllfg-phase-13.md`; production deployment is `tgllfg-phase-15.md`
 - The big picture / phase roadmap → `.claude/plans/tgllfg-evolution.md` +
   `tgllfg-roadmap.md`
 - License: dual MIT OR Apache-2.0 — see `LICENSE-MIT` and `LICENSE-APACHE`
