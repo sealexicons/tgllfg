@@ -6,11 +6,12 @@ import { Tabs } from "radix-ui";
 
 import type { ParseResponse } from "./api/client";
 import { useParse } from "./api/hooks";
+import { CStructureView } from "./views/CStructureView";
 
 // The four LFG projections. The c-/f-/a- renderers land in 14.B.3–14.B.5;
 // until then those tabs point at the JSON tab, which shows the real payload.
 const VIEWS = [
-  { value: "cstructure", label: "C-structure", soon: "14.B.3" },
+  { value: "cstructure", label: "C-structure", soon: null },
   { value: "fstructure", label: "F-structure", soon: "14.B.4" },
   { value: "astructure", label: "A-structure", soon: "14.B.5" },
   { value: "json", label: "JSON", soon: null },
@@ -20,6 +21,7 @@ const N_BEST = 5;
 
 function App() {
   const [text, setText] = useState("");
+  const [selectedParse, setSelectedParse] = useState(0);
   const parse = useParse();
   const result = parse.data;
   const canParse = text.trim().length > 0 && !parse.isPending;
@@ -28,6 +30,7 @@ function App() {
     event.preventDefault();
     const trimmed = text.trim();
     if (!trimmed || parse.isPending) return;
+    setSelectedParse(0);
     parse.mutate({ body: { text: trimmed, n_best: N_BEST, strict: false } });
   }
 
@@ -82,6 +85,12 @@ function App() {
           >
             {view.value === "json" ? (
               <JsonView result={result} />
+            ) : view.value === "cstructure" ? (
+              <CStructureView
+                result={result}
+                selected={selectedParse}
+                onSelect={setSelectedParse}
+              />
             ) : (
               <Placeholder label={view.label} soon={view.soon} hasResult={Boolean(result)} />
             )}
