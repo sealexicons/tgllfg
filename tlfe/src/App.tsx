@@ -6,16 +6,19 @@ import { Tabs } from "radix-ui";
 
 import type { ParseModel, ParseResponse } from "./api/client";
 import { useParse } from "./api/hooks";
+import { AStructureView } from "./views/AStructureView";
 import { CStructureView } from "./views/CStructureView";
+import { DiagnosticsView } from "./views/DiagnosticsView";
 import { FStructureView } from "./views/FStructureView";
 
-// The four LFG projections. The c-/f-/a- renderers land in 14.B.3–14.B.5;
-// until then those tabs point at the JSON tab, which shows the real payload.
+// The five inspector views: the three LFG projections, parse diagnostics, and
+// the raw JSON payload.
 const VIEWS = [
-  { value: "cstructure", label: "C-structure", soon: null },
-  { value: "fstructure", label: "F-structure", soon: null },
-  { value: "astructure", label: "A-structure", soon: "14.B.5" },
-  { value: "json", label: "JSON", soon: null },
+  { value: "cstructure", label: "C-structure" },
+  { value: "fstructure", label: "F-structure" },
+  { value: "astructure", label: "A-structure" },
+  { value: "diagnostics", label: "Diagnostics" },
+  { value: "json", label: "JSON" },
 ] as const;
 
 const N_BEST = 5;
@@ -89,15 +92,19 @@ function App() {
             value={view.value}
             className="rounded-md border border-slate-200 p-4 text-sm"
           >
-            {view.value === "json" ? (
-              <JsonView result={result} />
-            ) : view.value === "cstructure" ? (
+            {view.value === "cstructure" && (
               <CStructureView result={result} selected={selectedParse} />
-            ) : view.value === "fstructure" ? (
-              <FStructureView result={result} selected={selectedParse} />
-            ) : (
-              <Placeholder label={view.label} soon={view.soon} hasResult={Boolean(result)} />
             )}
+            {view.value === "fstructure" && (
+              <FStructureView result={result} selected={selectedParse} />
+            )}
+            {view.value === "astructure" && (
+              <AStructureView result={result} selected={selectedParse} />
+            )}
+            {view.value === "diagnostics" && (
+              <DiagnosticsView result={result} selected={selectedParse} />
+            )}
+            {view.value === "json" && <JsonView result={result} />}
           </Tabs.Content>
         ))}
       </Tabs.Root>
@@ -152,23 +159,6 @@ function JsonView({ result }: { result: ParseResponse | undefined }) {
     <pre className="max-h-[28rem] overflow-auto rounded bg-slate-900 p-3 text-xs leading-relaxed text-slate-100">
       {JSON.stringify(result, null, 2)}
     </pre>
-  );
-}
-
-function Placeholder({
-  label,
-  soon,
-  hasResult,
-}: {
-  label: string;
-  soon: string | null;
-  hasResult: boolean;
-}) {
-  return (
-    <p className="text-slate-500">
-      {label} renderer {soon ? `arrives in ${soon}` : "coming soon"}.
-      {hasResult && " For now, the JSON tab shows the raw payload."}
-    </p>
   );
 }
 
