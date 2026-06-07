@@ -133,10 +133,31 @@ def test_parse_correspondence_maps_cnodes_to_fnodes(client: TestClient) -> None:
     assert corr.get(p["c_structure"]["root"]) == p["f_structure"]["root"]
 
 
-def test_glued_parse_correspondence_empty_until_14b7(client: TestClient) -> None:
-    # 14.B.6 ships solve-path correspondence; glued split-path parses carry an
-    # empty correspondence until 14.B.7.
+def test_glued_parse_correspondence_composed_from_halves(client: TestClient) -> None:
+    # Phase 14.B.7: a glued split-path parse composes its φ correspondence from
+    # the two halves' maps plus the synthetic matrix / punct nodes. This input
+    # takes the colon-split path, and its pre-half ("Ang aso ay tumakbo") itself
+    # rides the ay-fronting split — so it also exercises correspondence
+    # composition through the *chained* split.
     body = client.post(
         "/api/v1/parse", json={"text": "Ang aso ay tumakbo: ang pusa."}
     ).json()
-    assert body["parses"][0]["correspondence"] == {}
+    p = body["parses"][0]
+    corr = p["correspondence"]
+    assert corr, "expected a composed correspondence for a glued parse"
+    c_ids = set(p["c_structure"]["nodes"])
+    f_ids = set(p["f_structure"]["nodes"])
+    for c_id, f_id in corr.items():
+        assert c_id in c_ids, f"correspondence key is not a c-node: {c_id}"
+        assert f_id in f_ids, f"correspondence value is not an f-node: {f_id}"
+    fs = p["f_structure"]
+    # The glued matrix c-root projects to the matrix f-root (= the pre-half fs).
+    assert corr.get(p["c_structure"]["root"]) == fs["root"]
+    # The post-colon half's f-structure (the APP member) is reached by some
+    # c-node — proof the post-half's map was unioned in, resolved under object
+    # identity (the .6 fix) to a distinct f-node, not collapsed onto the root.
+    app = fs["nodes"][fs["root"]]["feats"].get("APP")
+    assert isinstance(app, list) and app, "expected a set-valued APP"
+    app_ref = app[0]["$ref"]
+    assert app_ref != fs["root"]
+    assert app_ref in corr.values(), "post-half correspondence not composed in"
