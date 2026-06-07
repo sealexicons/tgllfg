@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version-file: tlfe/.node-version
           cache: npm
           cache-dependency-path: tlfe/package-lock.json
       - name: Install (clean)
@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version-file: tlfe/.node-version
           cache: npm
           cache-dependency-path: tlfe/package-lock.json
       - name: Install (clean)

@@ -6,7 +6,7 @@
   "description": "Tagalog LFG FrontEnd — web inspector for the tlbe parser (Phase 12.D scaffold; built out in Phase 14).",
   "license": "MIT OR Apache-2.0",
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=24.0.0"
   },
   "scripts": {
     "dev": "vite",
