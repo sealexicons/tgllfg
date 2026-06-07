@@ -197,7 +197,7 @@ class TestNonSStartSymbolBypassesChain:
         assert parses, "NP[CASE=NOM] direct-chart parse expected"
         # The parses are NPs (no TOPIC/REL-PRO/SUBJ at this level
         # — those live on the matrix S, not on an NP).
-        _ct, fs, _astr, _diags = parses[0]
+        _ct, fs, _astr, _diags, _corr = parses[0]
         assert fs.feats.get("CASE") == "NOM"
 
 

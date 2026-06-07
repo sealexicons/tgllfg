@@ -682,7 +682,7 @@
             },
             "type": "object",
             "title": "Correspondence",
-            "description": "Projection \u03c6: c-node id \u2192 the f-node id it projects to. Empty when unavailable (e.g. glued split-path parses, pending 14.B.7)."
+            "description": "Projection \u03c6: c-node id \u2192 the f-node id it projects to (including glued split-path parses). A c-node whose projection is an atomic or set value, not a distinct f-node, is omitted."
           }
         },
         "type": "object",
@@ -852,7 +852,7 @@
             },
             "type": "object",
             "title": "Correspondence",
-            "description": "Projection \u03c6: c-node id \u2192 the f-node id it projects to. Empty when unavailable (e.g. glued split-path parses, pending 14.B.7)."
+            "description": "Projection \u03c6: c-node id \u2192 the f-node id it projects to (including glued split-path parses). A c-node whose projection is an atomic or set value, not a distinct f-node, is omitted."
           }
         },
         "type": "object",
