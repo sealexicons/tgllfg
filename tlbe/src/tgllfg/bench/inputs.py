@@ -33,4 +33,12 @@ BENCH_INPUTS: list[dict[str, str]] = [
         "category": "long",
         "text": "Ibinigay ng guro sa mga bata ang mga libro.",
     },
+    {
+        # The short_transitive base + two PPs -> attachment ambiguity, the
+        # forest-fan-out stress case (where over-generation regressions
+        # surface); gives the deterministic count gate a sensitive signal.
+        "id": "deep_pp_attachment",
+        "category": "attachment",
+        "text": "Kumain ang aso ng tinapay sa bahay sa umaga.",
+    },
 ]

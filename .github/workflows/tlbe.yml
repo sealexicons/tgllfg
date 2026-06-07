@@ -40,6 +40,8 @@ jobs:
         run: uv run poe check
       - name: Verify openapi.json in sync
         run: uv run tgllfg openapi --check
+      - name: Verify no parser over-generation (bench forest-size counts)
+        run: uv run tgllfg bench --check-counts
 
   test:
     name: test (pytest test-both)

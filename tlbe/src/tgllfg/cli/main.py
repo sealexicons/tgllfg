@@ -191,7 +191,12 @@ def _build_parser() -> argparse.ArgumentParser:
     bench_p.add_argument(
         "--check",
         action="store_true",
-        help="compare to the committed baseline; exit 1 on a >20% regression",
+        help="full local gate: forest-size hard-fail + soft wall-clock warning",
+    )
+    bench_p.add_argument(
+        "--check-counts",
+        action="store_true",
+        help="CI gate: fast, deterministic forest-size regression check (no timing)",
     )
     bench_p.add_argument(
         "--update", action="store_true", help="(re)write the committed baseline"
@@ -475,19 +480,33 @@ def _cmd_openapi(args: argparse.Namespace) -> None:
 def _cmd_bench(args: argparse.Namespace) -> None:
     """Phase 13.J: run the parser performance benchmark.
 
-    Default prints a per-input report (total + morph/lex/chart breakdown).
-    ``--check`` compares totals to the committed baseline and exits 1 on a
-    >20% regression (the local perf gate); ``--update`` rewrites the
-    baseline; ``--json`` emits the raw results.
+    The hard gate is **deterministic forest size** (machine-independent
+    over-generation count), so it's CI-safe; wall-clock time is reported
+    but only a soft warning (machine-variable). ``--check-counts`` is the
+    fast, timing-free count gate for CI; ``--check`` is the full local gate
+    (counts hard + time warning); ``--update`` rewrites the baseline;
+    ``--json`` emits the raw results.
     """
     from tgllfg.bench import (
         BASELINE_PATH,
         TOLERANCE,
+        compare_counts,
         compare_to_baseline,
         load_baseline,
         run_bench,
+        run_counts,
         write_baseline,
     )
+
+    if args.check_counts:
+        grown = compare_counts(run_counts(), load_baseline())
+        if grown:
+            sys.stderr.write("forest-size regressions (over-generation):\n")
+            for rid, cur_n, base_n in grown:
+                sys.stderr.write(f"  {rid}: {cur_n} vs {base_n}\n")
+            sys.exit(1)
+        sys.stdout.write("no forest-size regressions vs baseline\n")
+        return
 
     results = run_bench()
 
@@ -504,19 +523,31 @@ def _cmd_bench(args: argparse.Namespace) -> None:
         sys.stdout.write(
             f"{rid:22s} {r['total_ms']:8.2f} ms  "
             f"(morph {r['morph_ms']:.2f} / lex {r['lex_ms']:.2f} / "
-            f"build {r['build_ms']:.2f}; parses={r['parses']})\n"
+            f"build {r['build_ms']:.2f}; forest={r['forest_size']}; "
+            f"parses={r['parses']})\n"
         )
 
     if args.check:
-        regressions = compare_to_baseline(results, load_baseline())
-        if regressions:
-            sys.stderr.write(
-                f"\nperf regressions (> {int(TOLERANCE * 100)}% over baseline):\n"
+        baseline = load_baseline()
+        # Soft: machine-variable wall-clock — warn, never fail.
+        slow = compare_to_baseline(results, baseline)
+        if slow:
+            sys.stdout.write(
+                f"\ntime over baseline +{int(TOLERANCE * 100)}% "
+                "(informational — machine-variable):\n"
             )
-            for rid, cur, base in regressions:
-                sys.stderr.write(f"  {rid}: {cur:.2f} ms vs {base:.2f} ms\n")
+            for rid, cur_ms, base_ms in slow:
+                sys.stdout.write(f"  {rid}: {cur_ms:.2f} ms vs {base_ms:.2f} ms\n")
+        # Hard: deterministic forest-size growth (over-generation).
+        grown = compare_counts(
+            {rid: r["forest_size"] for rid, r in results.items()}, baseline
+        )
+        if grown:
+            sys.stderr.write("\nforest-size regressions (over-generation):\n")
+            for rid, cur_n, base_n in grown:
+                sys.stderr.write(f"  {rid}: {cur_n} vs {base_n}\n")
             sys.exit(1)
-        sys.stdout.write("\nno perf regressions vs baseline\n")
+        sys.stdout.write("\nno forest-size regressions vs baseline\n")
 
 
 if __name__ == "__main__":
