@@ -1,0 +1,53 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
+# Phase 13.G — multi-stage tlbe (backend) image. Build context is ./tlbe:
+#   docker build -f Dockerfile.tlbe -t tgllfg-tlbe ./tlbe
+# Slim Python (not distroless) until prod hardening; non-root leaf.
+
+# --- build stage: resolve + install deps and the package into a venv ----
+FROM python:3.14-slim AS builder
+
+# uv (pinned) from the official image — fast, lockfile-faithful installs.
+COPY --from=ghcr.io/astral-sh/uv:0.11.19 /uv /uvx /bin/
+
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=never
+
+WORKDIR /app
+
+# Deps first (cached unless pyproject / uv.lock change), then the project.
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
+COPY . .
+RUN uv sync --frozen --no-dev
+
+# --- runtime stage: slim, non-root ------------------------------------
+FROM python:3.14-slim AS runtime
+
+# Dedicated non-root user.
+RUN groupadd --system tgllfg \
+    && useradd --system --gid tgllfg --uid 10001 --home /app tgllfg
+
+WORKDIR /app
+
+# The venv (editable install points at /app/src) + the source tree + the
+# Tagalog data the parser loads at startup + alembic for `lex migrate`.
+COPY --from=builder --chown=tgllfg:tgllfg /app/.venv /app/.venv
+COPY --from=builder --chown=tgllfg:tgllfg /app/src /app/src
+COPY --from=builder --chown=tgllfg:tgllfg /app/data /app/data
+COPY --from=builder --chown=tgllfg:tgllfg /app/alembic /app/alembic
+COPY --from=builder --chown=tgllfg:tgllfg /app/alembic.ini /app/pyproject.toml /app/
+
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1
+
+USER tgllfg
+EXPOSE 8000
+
+# Liveness via the unversioned /health probe (stdlib only, no curl needed).
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+    CMD python -c "import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health').status == 200 else 1)"
+
+ENTRYPOINT ["tgllfg", "serve", "--host", "0.0.0.0", "--port", "8000"]

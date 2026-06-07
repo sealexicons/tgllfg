@@ -1,0 +1,21 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
+# Build context hygiene for Dockerfile.tlbe (context: ./tlbe).
+# The host venv must never clobber the builder's fresh one.
+.venv/
+tmp/
+tests/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+*.log
+*.egg-info/
+# Licensed reference PDFs (gitignored) — must not be baked into the image.
+data/tgl/references/
+# Derived audit output (gitignored).
+data/tgl/**/*-parse-results.jsonl
