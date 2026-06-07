@@ -65,7 +65,7 @@ linis,VERB,clean,TR,mag;maka
 ## Test harness
 
 Lexicon tests run against a real Postgres 17 instance, started on demand
-by [`testcontainers-python`][tc] from the `postgres:17` Docker image.
+by [`testcontainers-python`][tc] from the `postgres:17-alpine` Docker image.
 Async tests use SQLAlchemy 2.x's `asyncio` extension (`asyncpg` driver).
 Per-test isolation is provided by a transactional fixture (`pg_session`)
 that wraps each test in a transaction and rolls back on exit — schema
@@ -79,7 +79,7 @@ The plan §6.5 lists both options. We chose `testcontainers` because:
 
 - The user already runs Docker Desktop, so there is no extra system
   dependency on `pg_ctl` or a host Postgres install.
-- The same image (`postgres:17`) runs in CI, in dev, and in tests — no
+- The same image (`postgres:17-alpine`) runs in CI, in dev, and in tests — no
   drift between a host-installed Postgres and the deployment image.
 - Extension availability (`pg_trgm`, `pgcrypto`) is determined by the
   image rather than the host package set, eliminating a class of
