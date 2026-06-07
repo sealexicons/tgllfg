@@ -93,6 +93,18 @@ shell = "(pytest -m postgres || [ $? = 5 ]) && pytest -m 'not postgres and not x
 [tool.poe.tasks.test-both]
 shell = "pytest -m 'not postgres and not slow and not xslow' -n auto & p1=$!; pytest -m 'slow and not xslow' -n auto & p2=$!; wait $p1; r1=$?; wait $p2; r2=$?; [ $r1 -eq 0 ] && [ $r2 -eq 0 ]"
 
+# Full local pre-commit gate: parallel test-both (T1 + T2) then serial
+# test-postgres. Postgres can't fold into test-both — those tests run
+# serially (no -n auto, one shared container) and test-both already
+# saturates all cores, so a concurrent third run would starve it.
+# Fail-fast (poe's sequence default): a test-both failure stops the gate
+# before the postgres leg — don't pay container startup for a result you
+# won't act on. (CI runs the two legs as separate parallel jobs.)
+[tool.poe.tasks.test-gate]
+help = "Full pre-commit gate: test-both then test-postgres (serial; needs Docker)"
+sequence = ["test-both", "test-postgres"]
+default_item_type = "ref"
+
 [tool.coverage.run]
 source_pkgs = ["tgllfg", "tests"]
 branch = true

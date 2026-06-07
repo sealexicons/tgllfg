@@ -29,18 +29,19 @@ prefix with `uv --directory tlbe run …` instead of `cd tlbe`.
 
 | Need                                | Command (from `tlbe/`)     | Notes                                       |
 | ----------------------------------- | -------------------------- | ------------------------------------------- |
-| Pre-commit gate (Python changes)    | `uv run poe test-both`     | T1 + T2 in parallel; ~190s wall             |
+| Pre-commit gate (Python changes)    | `uv run poe test-gate`     | test-both, then test-postgres (serial)      |
+| Gate core (no DB / lex change)      | `uv run poe test-both`     | T1 + T2 in parallel; ~190s wall             |
 | Iteration loop (most tests)         | `uv run poe test-fast`     | excludes `slow`, `xslow`, `postgres`; ~125s |
 | Iteration loop (T2 / slow only)     | `uv run poe test-slow`     | `slow` marker only; ~15s                    |
 | Combinatorial regression check      | `uv run poe test-xslow`    | on-demand only; ~300s for one test          |
-| Postgres-backed only                | `uv run poe test-postgres` | needs Docker                                |
+| Postgres-backed only                | `uv run poe test-postgres` | needs Docker; serial (no `-n auto`)         |
 | Lint + type check                   | `uv run poe check`         | ruff + mypy + pyright + yamllint            |
 | Perf regression gate                | `uv run poe bench`         | forest-size count gate (+ soft time warn)   |
 | Markdown lint (docs / `README.md`)  | `markdownlint <files>`     | `/opt/homebrew/bin/markdownlint`, not npx   |
 
 Any task also runs without poe — `uv run pytest -m '…' -n auto`,
-`uv run ruff check .` — poe just names the composite gates (`test-both`,
-`check`). hatchling remains the build backend (`uv build`).
+`uv run ruff check .` — poe just names the composite gates (`test-gate`,
+`test-both`, `check`). hatchling remains the build backend (`uv build`).
 
 The `xslow` bucket is reserved for tests whose single-test call duration
 exceeds 60s (currently one: the R&G combined-essay parse, which scales
@@ -50,9 +51,10 @@ excluded from `test-fast` / `test-slow` / `test-both` and only runs via
 the standard gates are enough.
 
 Bash timeouts: 180000ms is enough for `test-fast` / `test-slow` /
-`test-postgres` / `check`; use 300000ms for `test-both` (typical wall
-~190s on the uv env); bump to 600000ms for `test-xslow`. Don't pad to
-the ceiling for the standard gates.
+`test-postgres` / `check`; 300000ms for `test-both` (typical wall ~190s
+on the uv env) and 420000ms for `test-gate` (test-both + the serial
+postgres leg, ~210s wall); bump to 600000ms for `test-xslow`. Don't pad
+to the ceiling for the standard gates.
 
 Capture-first idiom for failing runs:
 `uv run poe test-fast 2>&1 | tee ./tmp/pytest.log | tail -200`. Tee then tail —
@@ -199,9 +201,10 @@ tlfe/             Tagalog LFG FrontEnd — web inspector (Phase 12.D scaffold;
   successor item.
 - **Post-PR cleanup is routine** — after a PR merges, switch to `main`, pull,
   and delete the local + remote branches without asking.
-- **Commit messages**: long-body by default, with `uv run poe test-both`
-  timing (the "N passed in Xs" line) included as evidence that the
-  pre-commit gate ran clean.
+- **Commit messages**: long-body by default, with the pre-commit gate's
+  "N passed in Xs" timing included as evidence it ran clean — `test-both`,
+  or `test-gate` (test-both + test-postgres) when the change touches the
+  lex / DB slice.
 
 ## Process gotchas to avoid
 

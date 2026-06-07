@@ -3,10 +3,11 @@
 
 # Backend (tlbe) CI. Triggers on every push touching tlbe/ (all branches,
 # incl main). The `static` job (ruff/mypy/pyright/yamllint) runs always —
-# cheap early feedback. The `test` job (test-both) runs only on `main`
-# (i.e. a merge), since test-both is the pre-commit gate run locally during
-# branch work; re-running it on every feature push is redundant for a
-# solo repo. Concurrency cancels superseded runs on the same ref.
+# cheap early feedback. The `test` (test-both) and `test-postgres`
+# (Docker / testcontainers-backed) jobs run only on `main` (i.e. a merge),
+# since they're the pre-commit gates run locally during branch work;
+# re-running them on every feature push is redundant for a solo repo.
+# Concurrency cancels superseded runs on the same ref.
 name: tlbe
 
 on:
@@ -58,3 +59,23 @@ jobs:
         run: uv sync --locked
       - name: Test (test-both)
         run: uv run poe test-both
+
+  test-postgres:
+    name: test (pytest test-postgres)
+    # Postgres-backed lex tests aren't in test-both (which excludes the
+    # `postgres` marker), so they'd otherwise never run in CI. testcontainers
+    # spins postgres:17-alpine via the runner's Docker daemon (ubuntu-latest
+    # ships Docker), so no `services:` block or conftest change is needed.
+    # main-only, mirroring `test`: run locally before a PR, backstopped here.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v8.2.0 # no moving v8 major tag; node24 full pin
+        with:
+          enable-cache: true
+          cache-dependency-glob: "tlbe/uv.lock"
+      - name: Sync (locked)
+        run: uv sync --locked
+      - name: Test (test-postgres)
+        run: uv run poe test-postgres
