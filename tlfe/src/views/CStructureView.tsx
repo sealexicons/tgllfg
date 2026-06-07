@@ -11,17 +11,14 @@ const EQ_LINE = 12;
 const LABEL_ASCENT = 13;
 const EQ_MAX_CHARS = 18;
 
-// The C-structure tab: an empty/no-parse state, a parse selector when the
-// response carries more than one complete parse (controlled from App so the
-// other projection tabs will share the selection), and the SVG tree.
+// The C-structure tab: empty/no-parse and fragment-only states plus the SVG
+// tree for the selected parse (selection is controlled from App).
 export function CStructureView({
   result,
   selected,
-  onSelect,
 }: {
   result: ParseResponse | undefined;
   selected: number;
-  onSelect: (index: number) => void;
 }) {
   if (!result) {
     return <p className="text-slate-400">Parse a sentence to see its c-structure.</p>;
@@ -39,29 +36,7 @@ export function CStructureView({
   }
 
   const index = Math.min(Math.max(selected, 0), parses.length - 1);
-
-  return (
-    <div className="flex flex-col gap-3">
-      {parses.length > 1 && (
-        <label className="text-xs text-slate-500">
-          Parse{" "}
-          <select
-            value={index}
-            onChange={(event) => onSelect(Number(event.target.value))}
-            className="rounded border border-slate-300 bg-white px-1 py-0.5 text-xs"
-          >
-            {parses.map((parse, i) => (
-              <option key={parse.id} value={i}>
-                {i + 1}
-              </option>
-            ))}
-          </select>{" "}
-          of {parses.length}
-        </label>
-      )}
-      <CStructureTree cstruct={parses[index].c_structure} />
-    </div>
-  );
+  return <CStructureTree cstruct={parses[index].c_structure} />;
 }
 
 function CStructureTree({ cstruct }: { cstruct: CStructure }) {

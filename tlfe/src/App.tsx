@@ -4,15 +4,16 @@
 import { useState, type FormEvent } from "react";
 import { Tabs } from "radix-ui";
 
-import type { ParseResponse } from "./api/client";
+import type { ParseModel, ParseResponse } from "./api/client";
 import { useParse } from "./api/hooks";
 import { CStructureView } from "./views/CStructureView";
+import { FStructureView } from "./views/FStructureView";
 
 // The four LFG projections. The c-/f-/a- renderers land in 14.B.3–14.B.5;
 // until then those tabs point at the JSON tab, which shows the real payload.
 const VIEWS = [
   { value: "cstructure", label: "C-structure", soon: null },
-  { value: "fstructure", label: "F-structure", soon: "14.B.4" },
+  { value: "fstructure", label: "F-structure", soon: null },
   { value: "astructure", label: "A-structure", soon: "14.B.5" },
   { value: "json", label: "JSON", soon: null },
 ] as const;
@@ -24,6 +25,7 @@ function App() {
   const [selectedParse, setSelectedParse] = useState(0);
   const parse = useParse();
   const result = parse.data;
+  const parses = result?.parses ?? [];
   const canParse = text.trim().length > 0 && !parse.isPending;
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -64,6 +66,10 @@ function App() {
 
       <StatusRegion parse={parse} />
 
+      {parses.length > 1 && (
+        <ParseSelector parses={parses} index={selectedParse} onSelect={setSelectedParse} />
+      )}
+
       <Tabs.Root defaultValue="cstructure" className="flex flex-col gap-3">
         <Tabs.List aria-label="Parse views" className="flex gap-1 border-b border-slate-200">
           {VIEWS.map((view) => (
@@ -86,11 +92,9 @@ function App() {
             {view.value === "json" ? (
               <JsonView result={result} />
             ) : view.value === "cstructure" ? (
-              <CStructureView
-                result={result}
-                selected={selectedParse}
-                onSelect={setSelectedParse}
-              />
+              <CStructureView result={result} selected={selectedParse} />
+            ) : view.value === "fstructure" ? (
+              <FStructureView result={result} selected={selectedParse} />
             ) : (
               <Placeholder label={view.label} soon={view.soon} hasResult={Boolean(result)} />
             )}
@@ -165,6 +169,35 @@ function Placeholder({
       {label} renderer {soon ? `arrives in ${soon}` : "coming soon"}.
       {hasResult && " For now, the JSON tab shows the raw payload."}
     </p>
+  );
+}
+
+function ParseSelector({
+  parses,
+  index,
+  onSelect,
+}: {
+  parses: ParseModel[];
+  index: number;
+  onSelect: (next: number) => void;
+}) {
+  const clamped = Math.min(Math.max(index, 0), parses.length - 1);
+  return (
+    <label className="text-xs text-slate-500">
+      Showing parse{" "}
+      <select
+        value={clamped}
+        onChange={(event) => onSelect(Number(event.target.value))}
+        className="rounded border border-slate-300 bg-white px-1 py-0.5 text-xs"
+      >
+        {parses.map((parse, i) => (
+          <option key={parse.id} value={i}>
+            {i + 1}
+          </option>
+        ))}
+      </select>{" "}
+      of {parses.length} in the c-/f-/a- views
+    </label>
   );
 }
 
