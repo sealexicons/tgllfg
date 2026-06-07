@@ -4,11 +4,11 @@
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 
 import {
-  auditDiffApiV1AuditDiffPostMutation,
-  auditRunApiV1AuditRunPostMutation,
-  auditRunStatusApiV1AuditRunsRunIdGetOptions,
-  lexSearchApiV1LexSearchGetOptions,
-  parseEndpointApiV1ParsePostMutation,
+  auditDiffMutation,
+  auditRunMutation,
+  auditRunStatusOptions,
+  lexSearchOptions,
+  parseMutation,
 } from "./client/@tanstack/react-query.gen";
 
 // Thin domain hooks over the generated react-query helpers, so app code
@@ -19,24 +19,28 @@ import {
  * is modelled as a mutation: `parse.mutate({ body: { text, n_best, strict } })`.
  */
 export function useParse() {
-  return useMutation(parseEndpointApiV1ParsePostMutation());
+  return useMutation(parseMutation());
 }
 
 export interface LexSearchParams {
   /** Fuzzy query against lemma citation forms. */
   q: string;
-  /** Max matches to return (the endpoint is limit-only — no offset yet). */
+  /** Max matches to return per page; omit to return all. */
   limit?: number;
+  /** Matches to skip, for pagination; omit to start from the top. */
+  offset?: number;
 }
 
 /**
- * Fuzzy lemma search — a cached, deduplicated query. `keepPreviousData`
- * holds the prior results on screen while a new query/limit loads (smooth
- * incremental paging); disabled for an empty query.
+ * Fuzzy lemma search — a cached, deduplicated, paginated query. The response
+ * carries `total` / `limit` / `offset`; `keepPreviousData` holds the prior
+ * page on screen while the next loads (smooth paging). Disabled for an empty
+ * query. (A `useInfiniteQuery` variant is available via the generated
+ * `lexSearchInfiniteOptions` for infinite-scroll UIs.)
  */
 export function useLexSearch(params: LexSearchParams) {
   return useQuery({
-    ...lexSearchApiV1LexSearchGetOptions({ query: params }),
+    ...lexSearchOptions({ query: params }),
     enabled: params.q.trim().length > 0,
     placeholderData: keepPreviousData,
   });
@@ -44,7 +48,7 @@ export function useLexSearch(params: LexSearchParams) {
 
 /** Start a corpus audit (background job). Returns a run id to poll. */
 export function useRunAudit() {
-  return useMutation(auditRunApiV1AuditRunPostMutation());
+  return useMutation(auditRunMutation());
 }
 
 const AUDIT_TERMINAL: ReadonlySet<string> = new Set(["completed", "failed", "cancelled"]);
@@ -55,7 +59,7 @@ const AUDIT_TERMINAL: ReadonlySet<string> = new Set(["completed", "failed", "can
  */
 export function useAuditRunStatus(runId: string | undefined) {
   return useQuery({
-    ...auditRunStatusApiV1AuditRunsRunIdGetOptions({ path: { run_id: runId ?? "" } }),
+    ...auditRunStatusOptions({ path: { run_id: runId ?? "" } }),
     enabled: Boolean(runId),
     refetchInterval: (query) =>
       query.state.data && AUDIT_TERMINAL.has(query.state.data.status) ? false : 1500,
@@ -64,5 +68,5 @@ export function useAuditRunStatus(runId: string | undefined) {
 
 /** Diff the latest audit results against the baseline. */
 export function useAuditDiff() {
-  return useMutation(auditDiffApiV1AuditDiffPostMutation());
+  return useMutation(auditDiffMutation());
 }

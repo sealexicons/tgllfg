@@ -30,7 +30,9 @@ from tgllfg.lex.repo import AsyncLexRepository, LemmaMatch
 
 
 class _FakeRepo:
-    async def search_lemmas(self, query: str, *, limit: int = 20) -> list[LemmaMatch]:
+    async def search_lemmas(
+        self, query: str, *, limit: int | None = None, offset: int | None = None
+    ) -> list[LemmaMatch]:
         return [
             LemmaMatch(
                 id=uuid4(), language_id=uuid4(), citation_form="aso",
@@ -41,6 +43,9 @@ class _FakeRepo:
                 pos="NOUN", gloss=None, score=0.5,
             ),
         ]
+
+    async def count_lemma_matches(self, query: str) -> int:
+        return 2
 
 
 @pytest.fixture
@@ -55,6 +60,9 @@ def test_lex_search_returns_matches(client: TestClient) -> None:
     assert resp.status_code == 200
     body = resp.json()
     assert body["query"] == "aso"
+    assert body["total"] == 2
+    assert body["limit"] is None  # omitted → no cap (all matches)
+    assert body["offset"] is None
     assert [m["citation_form"] for m in body["matches"]] == ["aso", "asong"]
     assert body["matches"][0]["score"] == 1.0
 
@@ -113,9 +121,18 @@ async def test_search_lemmas_trgm(migrated_engine: AsyncEngine) -> None:
             )
         await session.commit()
 
-        matches = await AsyncLexRepository(session).search_lemmas("aso", limit=10)
+        repo = AsyncLexRepository(session)
+        matches = await repo.search_lemmas("aso", limit=10)
         forms = [m.citation_form for m in matches]
         assert "aso" in forms
         assert matches[0].citation_form == "aso"  # exact match → highest similarity
         assert "pusa" not in forms  # dissimilar, below the trgm threshold
         assert all(m.score > 0 for m in matches)
+
+        # pagination: count is the unpaginated total; omitting limit returns
+        # all matches; offset skips the top hit.
+        total = await repo.count_lemma_matches("aso")
+        assert total == len(forms)
+        assert len(await repo.search_lemmas("aso")) == total
+        paged = await repo.search_lemmas("aso", limit=10, offset=1)
+        assert matches[0].citation_form not in {p.citation_form for p in paged}

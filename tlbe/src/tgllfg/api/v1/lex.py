@@ -28,6 +28,9 @@ class LemmaMatchModel(BaseModel):
 
 class LexSearchResponse(BaseModel):
     query: str
+    total: int
+    limit: int | None
+    offset: int | None
     matches: list[LemmaMatchModel]
 
 
@@ -40,11 +43,20 @@ class LexSearchResponse(BaseModel):
 async def lex_search(
     repo: RepoDep,
     q: str = Query(min_length=1, description="Fuzzy query against lemma citation forms."),
-    limit: int = Query(20, ge=1, le=100, description="Max matches to return."),
+    limit: int | None = Query(
+        None, ge=1, le=100, description="Max matches to return; omit to return all."
+    ),
+    offset: int | None = Query(
+        None, ge=0, description="Matches to skip; omit to start from the top."
+    ),
 ) -> LexSearchResponse:
-    matches = await repo.search_lemmas(q, limit=limit)
+    total = await repo.count_lemma_matches(q)
+    matches = await repo.search_lemmas(q, limit=limit, offset=offset)
     return LexSearchResponse(
         query=q,
+        total=total,
+        limit=limit,
+        offset=offset,
         matches=[
             LemmaMatchModel(
                 id=str(mt.id),

@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AuditDiffApiV1AuditDiffPostData, AuditDiffApiV1AuditDiffPostErrors, AuditDiffApiV1AuditDiffPostResponses, AuditRunApiV1AuditRunPostData, AuditRunApiV1AuditRunPostErrors, AuditRunApiV1AuditRunPostResponses, AuditRunStatusApiV1AuditRunsRunIdGetData, AuditRunStatusApiV1AuditRunsRunIdGetErrors, AuditRunStatusApiV1AuditRunsRunIdGetResponses, HealthHealthGetData, HealthHealthGetResponses, LexSearchApiV1LexSearchGetData, LexSearchApiV1LexSearchGetErrors, LexSearchApiV1LexSearchGetResponses, ParseEndpointApiV1ParsePostData, ParseEndpointApiV1ParsePostErrors, ParseEndpointApiV1ParsePostResponses, ReadyReadyGetData, ReadyReadyGetResponses } from './types.gen';
+import type { AuditDiffData, AuditDiffErrors, AuditDiffResponses, AuditRunData, AuditRunErrors, AuditRunResponses, AuditRunStatusData, AuditRunStatusErrors, AuditRunStatusResponses, HealthData, HealthResponses, LexSearchData, LexSearchErrors, LexSearchResponses, ParseData, ParseErrors, ParseResponses, ReadyData, ReadyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -23,7 +23,7 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
  *
  * Liveness: the process is up and serving. No external deps.
  */
-export const healthHealthGet = <ThrowOnError extends boolean = false>(options?: Options<HealthHealthGetData, ThrowOnError>): RequestResult<HealthHealthGetResponses, unknown, ThrowOnError> => (options?.client ?? client).get<HealthHealthGetResponses, unknown, ThrowOnError>({
+export const health = <ThrowOnError extends boolean = false>(options?: Options<HealthData, ThrowOnError>): RequestResult<HealthResponses, unknown, ThrowOnError> => (options?.client ?? client).get<HealthResponses, unknown, ThrowOnError>({
     responseType: 'json',
     url: '/health',
     ...options
@@ -35,7 +35,7 @@ export const healthHealthGet = <ThrowOnError extends boolean = false>(options?: 
  * Readiness: DB reachable **and** the compiled grammar warmed.
  * Returns ``503`` with a per-check breakdown until both hold.
  */
-export const readyReadyGet = <ThrowOnError extends boolean = false>(options?: Options<ReadyReadyGetData, ThrowOnError>): RequestResult<ReadyReadyGetResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ReadyReadyGetResponses, unknown, ThrowOnError>({
+export const ready = <ThrowOnError extends boolean = false>(options?: Options<ReadyData, ThrowOnError>): RequestResult<ReadyResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ReadyResponses, unknown, ThrowOnError>({
     responseType: 'json',
     url: '/ready',
     ...options
@@ -44,7 +44,7 @@ export const readyReadyGet = <ThrowOnError extends boolean = false>(options?: Op
 /**
  * Parse a Tagalog sentence
  */
-export const parseEndpointApiV1ParsePost = <ThrowOnError extends boolean = false>(options: Options<ParseEndpointApiV1ParsePostData, ThrowOnError>): RequestResult<ParseEndpointApiV1ParsePostResponses, ParseEndpointApiV1ParsePostErrors, ThrowOnError> => (options.client ?? client).post<ParseEndpointApiV1ParsePostResponses, ParseEndpointApiV1ParsePostErrors, ThrowOnError>({
+export const parse = <ThrowOnError extends boolean = false>(options: Options<ParseData, ThrowOnError>): RequestResult<ParseResponses, ParseErrors, ThrowOnError> => (options.client ?? client).post<ParseResponses, ParseErrors, ThrowOnError>({
     responseType: 'json',
     url: '/api/v1/parse',
     ...options,
@@ -57,7 +57,7 @@ export const parseEndpointApiV1ParsePost = <ThrowOnError extends boolean = false
 /**
  * Fuzzy lemma search
  */
-export const lexSearchApiV1LexSearchGet = <ThrowOnError extends boolean = false>(options: Options<LexSearchApiV1LexSearchGetData, ThrowOnError>): RequestResult<LexSearchApiV1LexSearchGetResponses, LexSearchApiV1LexSearchGetErrors, ThrowOnError> => (options.client ?? client).get<LexSearchApiV1LexSearchGetResponses, LexSearchApiV1LexSearchGetErrors, ThrowOnError>({
+export const lexSearch = <ThrowOnError extends boolean = false>(options: Options<LexSearchData, ThrowOnError>): RequestResult<LexSearchResponses, LexSearchErrors, ThrowOnError> => (options.client ?? client).get<LexSearchResponses, LexSearchErrors, ThrowOnError>({
     responseType: 'json',
     url: '/api/v1/lex/search',
     ...options
@@ -66,7 +66,7 @@ export const lexSearchApiV1LexSearchGet = <ThrowOnError extends boolean = false>
 /**
  * Start a corpus audit (background job)
  */
-export const auditRunApiV1AuditRunPost = <ThrowOnError extends boolean = false>(options: Options<AuditRunApiV1AuditRunPostData, ThrowOnError>): RequestResult<AuditRunApiV1AuditRunPostResponses, AuditRunApiV1AuditRunPostErrors, ThrowOnError> => (options.client ?? client).post<AuditRunApiV1AuditRunPostResponses, AuditRunApiV1AuditRunPostErrors, ThrowOnError>({
+export const auditRun = <ThrowOnError extends boolean = false>(options: Options<AuditRunData, ThrowOnError>): RequestResult<AuditRunResponses, AuditRunErrors, ThrowOnError> => (options.client ?? client).post<AuditRunResponses, AuditRunErrors, ThrowOnError>({
     responseType: 'json',
     url: '/api/v1/audit/run',
     ...options,
@@ -79,7 +79,7 @@ export const auditRunApiV1AuditRunPost = <ThrowOnError extends boolean = false>(
 /**
  * Poll an audit run's status
  */
-export const auditRunStatusApiV1AuditRunsRunIdGet = <ThrowOnError extends boolean = false>(options: Options<AuditRunStatusApiV1AuditRunsRunIdGetData, ThrowOnError>): RequestResult<AuditRunStatusApiV1AuditRunsRunIdGetResponses, AuditRunStatusApiV1AuditRunsRunIdGetErrors, ThrowOnError> => (options.client ?? client).get<AuditRunStatusApiV1AuditRunsRunIdGetResponses, AuditRunStatusApiV1AuditRunsRunIdGetErrors, ThrowOnError>({
+export const auditRunStatus = <ThrowOnError extends boolean = false>(options: Options<AuditRunStatusData, ThrowOnError>): RequestResult<AuditRunStatusResponses, AuditRunStatusErrors, ThrowOnError> => (options.client ?? client).get<AuditRunStatusResponses, AuditRunStatusErrors, ThrowOnError>({
     responseType: 'json',
     url: '/api/v1/audit/runs/{run_id}',
     ...options
@@ -88,7 +88,7 @@ export const auditRunStatusApiV1AuditRunsRunIdGet = <ThrowOnError extends boolea
 /**
  * Diff the latest results against the baseline
  */
-export const auditDiffApiV1AuditDiffPost = <ThrowOnError extends boolean = false>(options: Options<AuditDiffApiV1AuditDiffPostData, ThrowOnError>): RequestResult<AuditDiffApiV1AuditDiffPostResponses, AuditDiffApiV1AuditDiffPostErrors, ThrowOnError> => (options.client ?? client).post<AuditDiffApiV1AuditDiffPostResponses, AuditDiffApiV1AuditDiffPostErrors, ThrowOnError>({
+export const auditDiff = <ThrowOnError extends boolean = false>(options: Options<AuditDiffData, ThrowOnError>): RequestResult<AuditDiffResponses, AuditDiffErrors, ThrowOnError> => (options.client ?? client).post<AuditDiffResponses, AuditDiffErrors, ThrowOnError>({
     responseType: 'json',
     url: '/api/v1/audit/diff',
     ...options,

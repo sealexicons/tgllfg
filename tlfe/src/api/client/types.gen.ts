@@ -296,6 +296,18 @@ export type LexSearchResponse = {
      */
     query: string;
     /**
+     * Total
+     */
+    total: number;
+    /**
+     * Limit
+     */
+    limit: number | null;
+    /**
+     * Offset
+     */
+    offset: number | null;
+    /**
      * Matches
      */
     matches: Array<LemmaMatchModel>;
@@ -467,16 +479,16 @@ export type WaveSummaryModel = {
     timeouts: number;
 };
 
-export type HealthHealthGetData = {
+export type HealthData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/health';
 };
 
-export type HealthHealthGetResponses = {
+export type HealthResponses = {
     /**
-     * Response Health Health Get
+     * Response Health
      *
      * Successful Response
      */
@@ -485,48 +497,48 @@ export type HealthHealthGetResponses = {
     };
 };
 
-export type HealthHealthGetResponse = HealthHealthGetResponses[keyof HealthHealthGetResponses];
+export type HealthResponse = HealthResponses[keyof HealthResponses];
 
-export type ReadyReadyGetData = {
+export type ReadyData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/ready';
 };
 
-export type ReadyReadyGetResponses = {
+export type ReadyResponses = {
     /**
      * Successful Response
      */
     200: unknown;
 };
 
-export type ParseEndpointApiV1ParsePostData = {
+export type ParseData = {
     body: ParseRequest;
     path?: never;
     query?: never;
     url: '/api/v1/parse';
 };
 
-export type ParseEndpointApiV1ParsePostErrors = {
+export type ParseErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type ParseEndpointApiV1ParsePostError = ParseEndpointApiV1ParsePostErrors[keyof ParseEndpointApiV1ParsePostErrors];
+export type ParseError = ParseErrors[keyof ParseErrors];
 
-export type ParseEndpointApiV1ParsePostResponses = {
+export type ParseResponses = {
     /**
      * Successful Response
      */
     200: ParseResponse;
 };
 
-export type ParseEndpointApiV1ParsePostResponse = ParseEndpointApiV1ParsePostResponses[keyof ParseEndpointApiV1ParsePostResponses];
+export type ParseResponse2 = ParseResponses[keyof ParseResponses];
 
-export type LexSearchApiV1LexSearchGetData = {
+export type LexSearchData = {
     body?: never;
     path?: never;
     query: {
@@ -539,57 +551,63 @@ export type LexSearchApiV1LexSearchGetData = {
         /**
          * Limit
          *
-         * Max matches to return.
+         * Max matches to return; omit to return all.
          */
-        limit?: number;
+        limit?: number | null;
+        /**
+         * Offset
+         *
+         * Matches to skip; omit to start from the top.
+         */
+        offset?: number | null;
     };
     url: '/api/v1/lex/search';
 };
 
-export type LexSearchApiV1LexSearchGetErrors = {
+export type LexSearchErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type LexSearchApiV1LexSearchGetError = LexSearchApiV1LexSearchGetErrors[keyof LexSearchApiV1LexSearchGetErrors];
+export type LexSearchError = LexSearchErrors[keyof LexSearchErrors];
 
-export type LexSearchApiV1LexSearchGetResponses = {
+export type LexSearchResponses = {
     /**
      * Successful Response
      */
     200: LexSearchResponse;
 };
 
-export type LexSearchApiV1LexSearchGetResponse = LexSearchApiV1LexSearchGetResponses[keyof LexSearchApiV1LexSearchGetResponses];
+export type LexSearchResponse2 = LexSearchResponses[keyof LexSearchResponses];
 
-export type AuditRunApiV1AuditRunPostData = {
+export type AuditRunData = {
     body: AuditRunRequest;
     path?: never;
     query?: never;
     url: '/api/v1/audit/run';
 };
 
-export type AuditRunApiV1AuditRunPostErrors = {
+export type AuditRunErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type AuditRunApiV1AuditRunPostError = AuditRunApiV1AuditRunPostErrors[keyof AuditRunApiV1AuditRunPostErrors];
+export type AuditRunError = AuditRunErrors[keyof AuditRunErrors];
 
-export type AuditRunApiV1AuditRunPostResponses = {
+export type AuditRunResponses = {
     /**
      * Successful Response
      */
     202: AuditRunStatus;
 };
 
-export type AuditRunApiV1AuditRunPostResponse = AuditRunApiV1AuditRunPostResponses[keyof AuditRunApiV1AuditRunPostResponses];
+export type AuditRunResponse = AuditRunResponses[keyof AuditRunResponses];
 
-export type AuditRunStatusApiV1AuditRunsRunIdGetData = {
+export type AuditRunStatusData = {
     body?: never;
     path: {
         /**
@@ -601,45 +619,45 @@ export type AuditRunStatusApiV1AuditRunsRunIdGetData = {
     url: '/api/v1/audit/runs/{run_id}';
 };
 
-export type AuditRunStatusApiV1AuditRunsRunIdGetErrors = {
+export type AuditRunStatusErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type AuditRunStatusApiV1AuditRunsRunIdGetError = AuditRunStatusApiV1AuditRunsRunIdGetErrors[keyof AuditRunStatusApiV1AuditRunsRunIdGetErrors];
+export type AuditRunStatusError = AuditRunStatusErrors[keyof AuditRunStatusErrors];
 
-export type AuditRunStatusApiV1AuditRunsRunIdGetResponses = {
+export type AuditRunStatusResponses = {
     /**
      * Successful Response
      */
     200: AuditRunStatus;
 };
 
-export type AuditRunStatusApiV1AuditRunsRunIdGetResponse = AuditRunStatusApiV1AuditRunsRunIdGetResponses[keyof AuditRunStatusApiV1AuditRunsRunIdGetResponses];
+export type AuditRunStatusResponse = AuditRunStatusResponses[keyof AuditRunStatusResponses];
 
-export type AuditDiffApiV1AuditDiffPostData = {
+export type AuditDiffData = {
     body: AuditDiffRequest;
     path?: never;
     query?: never;
     url: '/api/v1/audit/diff';
 };
 
-export type AuditDiffApiV1AuditDiffPostErrors = {
+export type AuditDiffErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type AuditDiffApiV1AuditDiffPostError = AuditDiffApiV1AuditDiffPostErrors[keyof AuditDiffApiV1AuditDiffPostErrors];
+export type AuditDiffError = AuditDiffErrors[keyof AuditDiffErrors];
 
-export type AuditDiffApiV1AuditDiffPostResponses = {
+export type AuditDiffResponses = {
     /**
      * Successful Response
      */
     200: AuditDiffModel;
 };
 
-export type AuditDiffApiV1AuditDiffPostResponse = AuditDiffApiV1AuditDiffPostResponses[keyof AuditDiffApiV1AuditDiffPostResponses];
+export type AuditDiffResponse = AuditDiffResponses[keyof AuditDiffResponses];

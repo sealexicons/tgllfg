@@ -264,7 +264,7 @@ def build_parse_response(
     summary="Parse a Tagalog sentence",
     dependencies=[Depends(require_role("parser:read"))],
 )
-async def parse_endpoint(req: ParseRequest, tracer: TracerDep) -> ParseResponse:
+async def parse(req: ParseRequest, tracer: TracerDep) -> ParseResponse:
     # The parser is synchronous and CPU-bound; offload it to a worker
     # thread so it doesn't block the event loop. The `parse` compute span
     # segments parse-compute from any DB I/O (SQLAlchemy auto-spans) in a

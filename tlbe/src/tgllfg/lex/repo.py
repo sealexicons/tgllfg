@@ -87,18 +87,25 @@ class AsyncLexRepository:
         ).one_or_none()
         return None if row is None else row.value
 
-    async def search_lemmas(self, query: str, *, limit: int = 20) -> list[LemmaMatch]:
+    async def search_lemmas(
+        self, query: str, *, limit: int | None = None, offset: int | None = None
+    ) -> list[LemmaMatch]:
         """Fuzzy-match ``query`` against lemma citation forms via pg_trgm
-        similarity (the GIN trgm index ``ix_lemma_citation_form_trgm``).
-        Returns up to ``limit`` hits above pg_trgm's similarity threshold,
-        best score first."""
+        similarity (the GIN trgm index ``ix_lemma_citation_form_trgm``), best
+        score first. ``limit`` / ``offset`` are optional: omit ``limit`` to
+        return every match above pg_trgm's threshold, and omit ``offset`` to
+        start from the top. Pair with :meth:`count_lemma_matches` for a
+        paginated envelope."""
         score = func.similarity(m.Lemma.citation_form, query)
         stmt = (
             select(m.Lemma, score.label("score"))
             .where(m.Lemma.citation_form.op("%")(query))
             .order_by(score.desc())
-            .limit(limit)
         )
+        if offset is not None:
+            stmt = stmt.offset(offset)
+        if limit is not None:
+            stmt = stmt.limit(limit)
         rows = (await self._session.execute(stmt)).all()
         return [
             LemmaMatch(
@@ -111,6 +118,16 @@ class AsyncLexRepository:
             )
             for lemma, sc in rows
         ]
+
+    async def count_lemma_matches(self, query: str) -> int:
+        """Total lemma citation forms matching ``query`` above the pg_trgm
+        threshold — the unpaginated count behind :meth:`search_lemmas`."""
+        stmt = (
+            select(func.count())
+            .select_from(m.Lemma)
+            .where(m.Lemma.citation_form.op("%")(query))
+        )
+        return int((await self._session.execute(stmt)).scalar_one())
 
     async def build_cache(self) -> c.LexCache:
         return await c.build_cache(self._session)
