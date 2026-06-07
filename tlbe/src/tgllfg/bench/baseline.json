@@ -1,0 +1,56 @@
+{
+  "tiny_intransitive": {
+    "category": "tiny",
+    "tokens": 3,
+    "parses": 1,
+    "total_ms": 88.06,
+    "morph_ms": 0.007,
+    "lex_ms": 0.017,
+    "build_ms": 88.035
+  },
+  "short_transitive": {
+    "category": "short",
+    "tokens": 5,
+    "parses": 2,
+    "total_ms": 115.476,
+    "morph_ms": 0.01,
+    "lex_ms": 0.021,
+    "build_ms": 115.444
+  },
+  "medium_locative": {
+    "category": "medium",
+    "tokens": 7,
+    "parses": 2,
+    "total_ms": 128.708,
+    "morph_ms": 0.014,
+    "lex_ms": 0.023,
+    "build_ms": 128.672
+  },
+  "coordination": {
+    "category": "multiclause",
+    "tokens": 7,
+    "parses": 1,
+    "total_ms": 177.437,
+    "morph_ms": 0.013,
+    "lex_ms": 0.031,
+    "build_ms": 177.393
+  },
+  "relative_clause": {
+    "category": "ldd-rc",
+    "tokens": 5,
+    "parses": 2,
+    "total_ms": 142.824,
+    "morph_ms": 0.016,
+    "lex_ms": 0.044,
+    "build_ms": 142.764
+  },
+  "long_ditransitive": {
+    "category": "long",
+    "tokens": 9,
+    "parses": 1,
+    "total_ms": 148.393,
+    "morph_ms": 0.014,
+    "lex_ms": 0.023,
+    "build_ms": 148.356
+  }
+}
