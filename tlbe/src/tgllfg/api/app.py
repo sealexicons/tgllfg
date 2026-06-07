@@ -16,6 +16,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.routing import APIRoute
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from ..__version__ import __version__
@@ -32,6 +33,17 @@ from .v1 import v1_router
 #: forwards. ``/health`` + ``/ready`` stay at the root for orchestrator
 #: probes, which reach the container directly rather than via the proxy.
 API_PREFIX = "/api"
+
+
+def _operation_id(route: APIRoute) -> str:
+    """Use the endpoint function name as the OpenAPI ``operationId``.
+
+    FastAPI's default (e.g. ``lex_search_api_v1_lex_search_get``) yields
+    verbose generated-client + Swagger operation names; the bare function
+    name (``lex_search`` → ``lexSearch``) is clean and stable, and endpoint
+    function names are unique across the app, so ids stay unique.
+    """
+    return route.name
 
 
 @asynccontextmanager
@@ -86,6 +98,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         version=__version__,
         summary="Tagalog LFG parser — REST API",
         lifespan=lifespan,
+        generate_unique_id_function=_operation_id,
         openapi_url=f"{API_PREFIX}/openapi.json",
         docs_url=f"{API_PREFIX}/docs",
         redoc_url=f"{API_PREFIX}/redoc",

@@ -13,7 +13,7 @@
         ],
         "summary": "Health",
         "description": "Liveness: the process is up and serving. No external deps.",
-        "operationId": "health_health_get",
+        "operationId": "health",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -24,7 +24,7 @@
                     "type": "string"
                   },
                   "type": "object",
-                  "title": "Response Health Health Get"
+                  "title": "Response Health"
                 }
               }
             }
@@ -39,7 +39,7 @@
         ],
         "summary": "Ready",
         "description": "Readiness: DB reachable **and** the compiled grammar warmed.\nReturns ``503`` with a per-check breakdown until both hold.",
-        "operationId": "ready_ready_get",
+        "operationId": "ready",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -58,7 +58,7 @@
           "parse"
         ],
         "summary": "Parse a Tagalog sentence",
-        "operationId": "parse_endpoint_api_v1_parse_post",
+        "operationId": "parse",
         "requestBody": {
           "content": {
             "application/json": {
@@ -99,7 +99,7 @@
           "lex"
         ],
         "summary": "Fuzzy lemma search",
-        "operationId": "lex_search_api_v1_lex_search_get",
+        "operationId": "lex_search",
         "parameters": [
           {
             "name": "q",
@@ -118,14 +118,39 @@
             "in": "query",
             "required": false,
             "schema": {
-              "type": "integer",
-              "maximum": 100,
-              "minimum": 1,
-              "description": "Max matches to return.",
-              "default": 20,
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 100,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Max matches to return; omit to return all.",
               "title": "Limit"
             },
-            "description": "Max matches to return."
+            "description": "Max matches to return; omit to return all."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Matches to skip; omit to start from the top.",
+              "title": "Offset"
+            },
+            "description": "Matches to skip; omit to start from the top."
           }
         ],
         "responses": {
@@ -158,7 +183,7 @@
           "audit"
         ],
         "summary": "Start a corpus audit (background job)",
-        "operationId": "audit_run_api_v1_audit_run_post",
+        "operationId": "audit_run",
         "requestBody": {
           "content": {
             "application/json": {
@@ -199,7 +224,7 @@
           "audit"
         ],
         "summary": "Poll an audit run's status",
-        "operationId": "audit_run_status_api_v1_audit_runs__run_id__get",
+        "operationId": "audit_run_status",
         "parameters": [
           {
             "name": "run_id",
@@ -241,7 +266,7 @@
           "audit"
         ],
         "summary": "Diff the latest results against the baseline",
-        "operationId": "audit_diff_api_v1_audit_diff_post",
+        "operationId": "audit_diff",
         "requestBody": {
           "content": {
             "application/json": {
@@ -724,6 +749,32 @@
             "type": "string",
             "title": "Query"
           },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit"
+          },
+          "offset": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Offset"
+          },
           "matches": {
             "items": {
               "$ref": "#/components/schemas/LemmaMatchModel"
@@ -735,6 +786,9 @@
         "type": "object",
         "required": [
           "query",
+          "total",
+          "limit",
+          "offset",
           "matches"
         ],
         "title": "LexSearchResponse"

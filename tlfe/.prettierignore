@@ -5,5 +5,8 @@ node_modules
 package-lock.json
 *.tsbuildinfo
 
+# Generated API client (hey-api/openapi-ts output — regenerated via npm run gen:api).
+src/api/client
+
 # Markdown is linted by the repo-wide markdownlint, not Prettier.
 *.md
