@@ -52,8 +52,10 @@ function Tag({ fid, ctx }: { fid: string; ctx: RenderCtx }): ReactElement {
   return (
     <span
       data-fs-id={fid}
-      onMouseEnter={() => ctx.setHovered(fid)}
-      onMouseLeave={() => ctx.setHovered(null)}
+      onMouseOver={(event) => {
+        event.stopPropagation();
+        ctx.setHovered(fid);
+      }}
       className={`cursor-default rounded px-1 font-mono text-[10px] ${
         active ? "bg-amber-200 text-amber-900" : "bg-slate-100 text-slate-500"
       }`}
@@ -95,12 +97,22 @@ function renderNode(fid: string, path: Set<string>, ctx: RenderCtx): ReactElemen
   const node = ctx.nodes[fid];
   const entries = Object.entries(node?.feats ?? {});
   const reentrant = (ctx.refCounts.get(fid) ?? 0) >= 2;
+  const active = ctx.hovered === fid;
   const nextPath = new Set(path).add(fid);
 
   return (
     <span className="inline-flex items-start gap-1 align-top">
       {reentrant && <Tag fid={fid} ctx={ctx} />}
-      <span className="inline-block rounded border border-slate-300 bg-white px-2 py-1">
+      <span
+        data-fs-node={fid}
+        onMouseOver={(event) => {
+          event.stopPropagation();
+          ctx.setHovered(fid);
+        }}
+        className={`inline-block rounded border px-2 py-1 ${
+          active ? "border-amber-400 bg-amber-50" : "border-slate-300 bg-white"
+        }`}
+      >
         {entries.length === 0 ? (
           <span className="font-mono text-xs text-slate-400">[ ]</span>
         ) : (
@@ -118,17 +130,27 @@ function renderNode(fid: string, path: Set<string>, ctx: RenderCtx): ReactElemen
   );
 }
 
-// The F-structure tab: the f-graph as a nested AVM. Reentrant (structure-
-// shared) nodes carry a hoverable id tag at each occurrence so hovering one
-// cross-highlights all of them. Selection is controlled from App.
+// The F-structure tab body: the f-graph as a nested AVM. Reentrant (structure-
+// shared) nodes carry a hoverable id tag at each occurrence; hovering any node
+// (tag or box) cross-highlights it everywhere. Hover is controlled when the
+// combined C/F view supplies `activeFid` + `onHoverNode` (so a c-node hover can
+// light the projected f-node); otherwise it is internal. Selection is
+// controlled from App.
 export function FStructureView({
   result,
   selected,
+  activeFid,
+  onHoverNode,
 }: {
   result: ParseResponse | undefined;
   selected: number;
+  activeFid?: string | null;
+  onHoverNode?: (id: string | null) => void;
 }) {
-  const [hovered, setHovered] = useState<string | null>(null);
+  const [internalHover, setInternalHover] = useState<string | null>(null);
+  const controlled = onHoverNode !== undefined;
+  const hovered = controlled ? (activeFid ?? null) : internalHover;
+  const setHovered = controlled ? onHoverNode : setInternalHover;
 
   if (!result) {
     return <p className="text-slate-400">Parse a sentence to see its f-structure.</p>;
@@ -155,5 +177,9 @@ export function FStructureView({
     setHovered,
   };
 
-  return <div className="overflow-auto">{renderNode(fstruct.root, new Set(), ctx)}</div>;
+  return (
+    <div className="overflow-auto" onMouseLeave={() => setHovered(null)}>
+      {renderNode(fstruct.root, new Set(), ctx)}
+    </div>
+  );
 }

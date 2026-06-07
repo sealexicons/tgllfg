@@ -7,15 +7,14 @@ import { Tabs } from "radix-ui";
 import type { ParseModel, ParseResponse } from "./api/client";
 import { useParse } from "./api/hooks";
 import { AStructureView } from "./views/AStructureView";
-import { CStructureView } from "./views/CStructureView";
+import { CFStructureView } from "./views/CFStructureView";
 import { DiagnosticsView } from "./views/DiagnosticsView";
-import { FStructureView } from "./views/FStructureView";
 
-// The five inspector views: the three LFG projections, parse diagnostics, and
-// the raw JSON payload.
+// The inspector views: the combined c-/f-structure projection (cross-
+// highlighted by the φ correspondence), the a-structure, parse diagnostics,
+// and the raw JSON payload.
 const VIEWS = [
-  { value: "cstructure", label: "C-structure" },
-  { value: "fstructure", label: "F-structure" },
+  { value: "cf", label: "C / F" },
   { value: "astructure", label: "A-structure" },
   { value: "diagnostics", label: "Diagnostics" },
   { value: "json", label: "JSON" },
@@ -40,7 +39,7 @@ function App() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col gap-6 px-6 py-10 text-slate-800">
+    <main className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-10 text-slate-800">
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">tgllfg inspector</h1>
         <p className="text-sm text-slate-500">
@@ -73,7 +72,7 @@ function App() {
         <ParseSelector parses={parses} index={selectedParse} onSelect={setSelectedParse} />
       )}
 
-      <Tabs.Root defaultValue="cstructure" className="flex flex-col gap-3">
+      <Tabs.Root defaultValue="cf" className="flex flex-col gap-3">
         <Tabs.List aria-label="Parse views" className="flex gap-1 border-b border-slate-200">
           {VIEWS.map((view) => (
             <Tabs.Trigger
@@ -92,12 +91,7 @@ function App() {
             value={view.value}
             className="rounded-md border border-slate-200 p-4 text-sm"
           >
-            {view.value === "cstructure" && (
-              <CStructureView result={result} selected={selectedParse} />
-            )}
-            {view.value === "fstructure" && (
-              <FStructureView result={result} selected={selectedParse} />
-            )}
+            {view.value === "cf" && <CFStructureView result={result} selected={selectedParse} />}
             {view.value === "astructure" && (
               <AStructureView result={result} selected={selectedParse} />
             )}

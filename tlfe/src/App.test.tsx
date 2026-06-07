@@ -22,10 +22,9 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: /tgllfg inspector/i })).toBeInTheDocument();
   });
 
-  it("renders the five parse-view tabs", () => {
+  it("renders the parse-view tabs", () => {
     renderApp();
-    expect(screen.getByRole("tab", { name: "C-structure" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "F-structure" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "C / F" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "A-structure" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Diagnostics" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "JSON" })).toBeInTheDocument();
