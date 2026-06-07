@@ -15,6 +15,9 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
+from tgllfg.api.v1.parse import serialize_fstructure
+from tgllfg.core.common import FStructure
+
 
 @pytest.fixture
 def client(api_app: FastAPI) -> Iterator[TestClient]:
@@ -80,3 +83,60 @@ def test_parse_strict_suppresses_fragments(client: TestClient) -> None:
 def test_openapi_lists_parse_route(client: TestClient) -> None:
     schema = client.get("/api/openapi.json").json()
     assert "/api/v1/parse" in schema["paths"]
+
+
+def test_serialize_fstructure_distinguishes_colliding_ids() -> None:
+    # Phase 14.B.6: two distinct FStructure objects with the same .id (as a
+    # glued parse produces from independent graphs) must serialize as two
+    # nodes, not be merged. Keys by object identity, not .id.
+    child = FStructure(feats={"PRED": "child"}, id=0)
+    root = FStructure(feats={"PRED": "root", "SUBJ": child}, id=0)
+    model, _ = serialize_fstructure(root)
+    assert len(model.nodes) == 2
+    subj = model.nodes[model.root].feats["SUBJ"]
+    assert isinstance(subj, dict) and subj["$ref"] != model.root
+
+
+def test_glued_parse_fstructure_not_collapsed(client: TestClient) -> None:
+    # Regression for the pre-14.B.6 bug: a colon split-path parse glues
+    # f-structures from independently-solved graphs whose .id spaces collide;
+    # the serializer must keep distinct nodes distinct (it used to collapse the
+    # whole f-structure onto the root).
+    resp = client.post(
+        "/api/v1/parse", json={"text": "Ang aso ay tumakbo: ang pusa."}
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["parses"], "expected a complete (glued) parse"
+    fs = body["parses"][0]["f_structure"]
+    assert len(fs["nodes"]) > 1, "glued f-structure collapsed to one node"
+    app = fs["nodes"][fs["root"]]["feats"].get("APP")
+    assert isinstance(app, list) and app, "expected a set-valued APP"
+    app_ref = app[0]["$ref"]
+    assert app_ref != fs["root"], "APP collapsed onto the root (id collision)"
+    assert app_ref in fs["nodes"]
+
+
+def test_parse_correspondence_maps_cnodes_to_fnodes(client: TestClient) -> None:
+    # Phase 14.B.6: the φ correspondence maps c-node ids to the f-node ids they
+    # project to (solve-path parse).
+    body = client.post("/api/v1/parse", json={"text": "Kumain ang aso."}).json()
+    p = body["parses"][0]
+    corr = p["correspondence"]
+    assert corr, "expected a non-empty correspondence for a solve-path parse"
+    c_ids = set(p["c_structure"]["nodes"])
+    f_ids = set(p["f_structure"]["nodes"])
+    for c_id, f_id in corr.items():
+        assert c_id in c_ids, f"correspondence key is not a c-node: {c_id}"
+        assert f_id in f_ids, f"correspondence value is not an f-node: {f_id}"
+    # The c-structure root projects to the f-structure root.
+    assert corr.get(p["c_structure"]["root"]) == p["f_structure"]["root"]
+
+
+def test_glued_parse_correspondence_empty_until_14b7(client: TestClient) -> None:
+    # 14.B.6 ships solve-path correspondence; glued split-path parses carry an
+    # empty correspondence until 14.B.7.
+    body = client.post(
+        "/api/v1/parse", json={"text": "Ang aso ay tumakbo: ang pusa."}
+    ).json()
+    assert body["parses"][0]["correspondence"] == {}

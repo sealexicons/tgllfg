@@ -94,6 +94,11 @@ class SolveResult:
     graph: FGraph
     root: NodeId
     diagnostics: list[Diagnostic] = field(default_factory=list)
+    # Phase 14.B.6: c-node → f-node correspondence (φ): id(CNode) → id(the
+    # projected FStructure object). Keyed by object identity so it stays
+    # correct across glued parses whose independent graphs collide on
+    # ``FStructure.id``. Empty for callers that don't project.
+    correspondence: dict[int, int] = field(default_factory=dict)
 
 
 # Phase 10.M: Deferred FU defining-equation queue entry.
@@ -138,20 +143,25 @@ def solve(root: CNode) -> SolveResult:
     _repass_deferred_fu(deferred_fu, graph, diagnostics)
     _pass_constraining(root, graph, nid_for, parsed_for, diagnostics)
 
-    fstr = _project(graph, nid_for[id(root)])
-    # Phase 13.B breadcrumb: ``nid_for`` (id(CNode) → NodeId) is the
-    # c-node ↔ f-node projection correspondence — each c-node's f-graph
-    # node, which ``graph.find`` maps to the canonical ``FStructure.id``.
-    # It is not surfaced in SolveResult or the pipeline tuple, so the
-    # parse output can't say which c-node projects which f-structure.
-    # Expose it in the Phase 13.B ``/parse`` response schema (diagnostic
-    # ↔ c-node anchoring + c↔f cross-highlighting for the tlfe inspector;
-    # supersedes the Phase 4 §7.9 / 12.G cnode_label item, closed OBE).
+    fstr, node_objs = _project(graph, nid_for[id(root)])
+    # Phase 14.B.6: build the c-node → f-node correspondence (φ). ``nid_for``
+    # maps each CNode to its pre-canonicalization NodeId; ``graph.find``
+    # canonicalizes and ``node_objs`` gives the projected FStructure object.
+    # Keyed by object identity (id(fs)), not ``FStructure.id``, so it stays
+    # correct for glued parses whose independently-solved halves collide on
+    # ``.id``. C-nodes whose ↑ projects to an atom or set (no single f-node)
+    # are omitted.
+    correspondence: dict[int, int] = {}
+    for cnode_id, nid in nid_for.items():
+        obj = node_objs.get(graph.find(nid))
+        if obj is not None:
+            correspondence[cnode_id] = id(obj)
     return SolveResult(
         fstructure=fstr,
         graph=graph,
         root=nid_for[id(root)],
         diagnostics=diagnostics,
+        correspondence=correspondence,
     )
 
 
@@ -935,12 +945,19 @@ def _value_summary(v: object) -> str:
 
 # === Projection ============================================================
 
-def _project(graph: FGraph, root: NodeId) -> FStructure:
+def _project(
+    graph: FGraph, root: NodeId
+) -> tuple[FStructure, dict[NodeId, FStructure]]:
     """Project the graph rooted at `root` to a tree-shaped FStructure.
     Shared subgraphs become shared FStructure objects (Python identity)
     so reentrancy is preserved for downstream renderers.
+
+    Also returns a map from canonical NodeId to the projected FStructure
+    object (Phase 14.B.6) — FStructure-valued nodes only — so
+    :func:`solve` can build the c-node ↔ f-node correspondence.
     """
     seen: dict[NodeId, ProjectedValue] = {}
+    objs: dict[NodeId, FStructure] = {}
 
     def go(n: NodeId) -> ProjectedValue:
         n = graph.find(n)
@@ -950,6 +967,7 @@ def _project(graph: FGraph, root: NodeId) -> FStructure:
         if v is None:
             f = FStructure(feats={}, id=n)
             seen[n] = f
+            objs[n] = f
             return f
         if isinstance(v, AtomValue):
             seen[n] = v.atom
@@ -957,11 +975,14 @@ def _project(graph: FGraph, root: NodeId) -> FStructure:
         if isinstance(v, ComplexValue):
             f = FStructure(feats={}, id=n)
             seen[n] = f
+            objs[n] = f
             for feat, child in v.attrs.items():
                 f.feats[feat] = go(child)
             return f
-        # SetValue: project members. Cycles through sets are not
-        # excluded by occurs-check, so we cache before recursing.
+        # SetValue: project members. Cycles through sets are not excluded
+        # by occurs-check, so we cache before recursing. A set-valued node
+        # projects to a frozenset, not a single FStructure, so it is not
+        # recorded in ``objs``.
         placeholder = FStructure(feats={}, id=n)
         seen[n] = placeholder
         members = frozenset(go(m) for m in v.members)
@@ -971,10 +992,10 @@ def _project(graph: FGraph, root: NodeId) -> FStructure:
     n = graph.find(root)
     result = go(n)
     if isinstance(result, FStructure):
-        return result
+        return result, objs
     # Root projects to an atom or set — wrap in a degenerate FStructure
     # so the public API always returns an FStructure.
-    return FStructure(feats={"_": result}, id=n)
+    return FStructure(feats={"_": result}, id=n), objs
 
 
 __all__ = [
