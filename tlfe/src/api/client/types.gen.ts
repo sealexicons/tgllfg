@@ -245,6 +245,14 @@ export type FragmentModel = {
      * Diagnostics
      */
     diagnostics?: Array<DiagnosticModel>;
+    /**
+     * Correspondence
+     *
+     * Projection φ: c-node id → the f-node id it projects to. Empty when unavailable (e.g. glued split-path parses, pending 14.B.7).
+     */
+    correspondence?: {
+        [key: string]: string;
+    };
 };
 
 /**
@@ -346,6 +354,14 @@ export type ParseModel = {
      * Diagnostics
      */
     diagnostics?: Array<DiagnosticModel>;
+    /**
+     * Correspondence
+     *
+     * Projection φ: c-node id → the f-node id it projects to. Empty when unavailable (e.g. glued split-path parses, pending 14.B.7).
+     */
+    correspondence?: {
+        [key: string]: string;
+    };
 };
 
 /**

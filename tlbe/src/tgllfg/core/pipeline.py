@@ -29,7 +29,7 @@ Phase 4 §7.9 robustness:
 """
 
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from ..cfg import Grammar
 from ..clitics import reorder_clitics
@@ -63,6 +63,9 @@ class Fragment:
     fstructure: FStructure
     astructure: AStructure
     diagnostics: list[Diagnostic]
+    # Phase 14.B.6: c-node → f-node correspondence (id(CNode) → id(FStructure
+    # object)); see SolveResult.correspondence. None when not computed.
+    correspondence: dict[int, int] | None = None
 
 
 @dataclass(frozen=True)
@@ -73,6 +76,10 @@ class ParseResult:
     got one); fragments only surface when no complete parse exists."""
     parses: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]]
     fragments: list[Fragment]
+    # Phase 14.B.6: per-parse c-node → f-node correspondence, aligned 1:1 with
+    # ``parses`` (empty list when not computed — e.g. glued split-path parses,
+    # whose correspondence lands in 14.B.7).
+    correspondences: list[dict[int, int] | None] = field(default_factory=list)
 
 
 def parse_text(
@@ -492,7 +499,9 @@ def parse_text_with_fragments(
     # any were accepted (the failsafe for forests dominated by
     # blocking parses, where ``max_candidates`` alone can't escape).
     # Ranking still operates over the bounded pool.
-    candidates: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    candidates: list[
+        tuple[CNode, FStructure, AStructure, list[Diagnostic], dict[int, int]]
+    ] = []
     iterations = 0
     for ctree in forest.iter_trees():
         iterations += 1
@@ -511,14 +520,20 @@ def parse_text_with_fragments(
         # Idempotent: matrices with Q_TYPE already set (wh-cleft,
         # tag-Q, yes/no-Q, Alt-Q from Commit 7) are skipped.
         _lift_in_situ_q_type(result.fstructure)
-        candidates.append((ctree, result.fstructure, a, diagnostics))
+        candidates.append(
+            (ctree, result.fstructure, a, diagnostics, result.correspondence)
+        )
         if max_candidates is not None and len(candidates) >= max_candidates:
             break
     candidates.sort(key=lambda r: _rank_key(r[0]))
-    parses = candidates[:n_best]
+    top = candidates[:n_best]
 
-    if parses:
-        return ParseResult(parses=parses, fragments=[])
+    if top:
+        return ParseResult(
+            parses=[(ct, fs, a, d) for ct, fs, a, d, _corr in top],
+            fragments=[],
+            correspondences=[corr for _ct, _fs, _a, _d, corr in top],
+        )
 
     # No complete parse — emit fragments. Each fragment goes through
     # solve + lfg_well_formed too so the user sees what blocked it.
@@ -541,6 +556,7 @@ def parse_text_with_fragments(
             fstructure=result.fstructure,
             astructure=a,
             diagnostics=diagnostics,
+            correspondence=result.correspondence,
         ))
 
     return ParseResult(parses=[], fragments=fragments)

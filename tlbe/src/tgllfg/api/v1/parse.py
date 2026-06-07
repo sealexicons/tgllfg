@@ -109,6 +109,13 @@ class ParseModel(BaseModel):
     f_structure: FStructureModel
     a_structure: AStructureModel
     diagnostics: list[DiagnosticModel] = Field(default_factory=list)
+    correspondence: dict[str, str] = Field(
+        default_factory=dict,
+        description=(
+            "Projection φ: c-node id → the f-node id it projects to. Empty when "
+            "unavailable (e.g. glued split-path parses, pending 14.B.7)."
+        ),
+    )
 
 
 class FragmentModel(BaseModel):
@@ -117,6 +124,13 @@ class FragmentModel(BaseModel):
     f_structure: FStructureModel
     a_structure: AStructureModel
     diagnostics: list[DiagnosticModel] = Field(default_factory=list)
+    correspondence: dict[str, str] = Field(
+        default_factory=dict,
+        description=(
+            "Projection φ: c-node id → the f-node id it projects to. Empty when "
+            "unavailable (e.g. glued split-path parses, pending 14.B.7)."
+        ),
+    )
 
 
 class ParseMeta(BaseModel):
@@ -153,30 +167,39 @@ def _ser_value(value: object, ensure: Callable[[FStructure], str]) -> Any:
     return str(value)
 
 
-def serialize_cstructure(root: CNode) -> CStructure:
+def serialize_cstructure(root: CNode) -> tuple[CStructure, dict[int, str]]:
     nodes: dict[str, CNodeModel] = {}
+    cid_for: dict[int, str] = {}  # id(CNode) → cN, for the φ join
 
     def visit(c: CNode) -> str:
         cid = f"c{len(nodes)}"
         # Reserve the slot before recursing so ids are DFS pre-order.
         nodes[cid] = CNodeModel(id=cid, label=c.label, equations=list(c.equations))
+        cid_for[id(c)] = cid
         nodes[cid].children = [visit(ch) for ch in c.children]
         return cid
 
     root_id = visit(root)
-    return CStructure(root=root_id, nodes=nodes)
+    return CStructure(root=root_id, nodes=nodes), cid_for
 
 
-def serialize_fstructure(root: FStructure) -> FStructureModel:
-    id_map: dict[int, str] = {}
+def serialize_fstructure(root: FStructure) -> tuple[FStructureModel, dict[int, str]]:
+    # Key by Python object identity, not ``fs.id``: a glued parse can hold
+    # FStructure objects from independently-solved graphs whose ``.id`` spaces
+    # collide (each FGraph counter starts at 0), which would otherwise merge
+    # distinct nodes. Object identity keeps distinct nodes distinct while still
+    # collapsing genuinely-shared (reentrant) objects. Returns id(fs) → fN for
+    # the φ join.
+    fid_for: dict[int, str] = {}
     nodes: dict[str, FNodeModel] = {}
 
     def ensure(fs: FStructure) -> str:
-        existing = id_map.get(fs.id)
+        key = id(fs)
+        existing = fid_for.get(key)
         if existing is not None:
             return existing
-        fid = f"f{len(id_map)}"
-        id_map[fs.id] = fid
+        fid = f"f{len(fid_for)}"
+        fid_for[key] = fid
         # Register before populating feats so reentrant / cyclic refs
         # resolve to this id instead of recursing forever.
         nodes[fid] = FNodeModel(id=fid)
@@ -184,7 +207,7 @@ def serialize_fstructure(root: FStructure) -> FStructureModel:
         return fid
 
     root_id = ensure(root)
-    return FStructureModel(root=root_id, nodes=nodes)
+    return FStructureModel(root=root_id, nodes=nodes), fid_for
 
 
 def serialize_astructure(a: AStructure) -> AStructureModel:
@@ -210,33 +233,68 @@ def serialize_diagnostics(diags: list[Diagnostic]) -> list[DiagnosticModel]:
     ]
 
 
+def _join_correspondence(
+    correspondence: dict[int, int] | None,
+    cid_for: dict[int, str],
+    fid_for: dict[int, str],
+) -> dict[str, str]:
+    """Join the solver's ``id(CNode) → id(FStructure object)`` map onto the
+    serialized cN / fN ids. C-nodes whose projected f-node isn't in the
+    serialized f-structure (atoms / sets, or — pre-glue-path — nothing) are
+    dropped."""
+    if not correspondence:
+        return {}
+    wire: dict[str, str] = {}
+    for cnode_id, c_id in cid_for.items():
+        fobj_id = correspondence.get(cnode_id)
+        if fobj_id is None:
+            continue
+        f_id = fid_for.get(fobj_id)
+        if f_id is not None:
+            wire[c_id] = f_id
+    return wire
+
+
 def _serialize_parse(
-    pid: str, parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]]
+    pid: str,
+    parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    correspondence: dict[int, int] | None,
 ) -> ParseModel:
     ctree, fstruct, astruct, diags = parse
+    c_structure, cid_for = serialize_cstructure(ctree)
+    f_structure, fid_for = serialize_fstructure(fstruct)
     return ParseModel(
         id=pid,
-        c_structure=serialize_cstructure(ctree),
-        f_structure=serialize_fstructure(fstruct),
+        c_structure=c_structure,
+        f_structure=f_structure,
         a_structure=serialize_astructure(astruct),
         diagnostics=serialize_diagnostics(diags),
+        correspondence=_join_correspondence(correspondence, cid_for, fid_for),
     )
 
 
 def _serialize_fragment(fid: str, frag: Fragment) -> FragmentModel:
+    c_structure, cid_for = serialize_cstructure(frag.ctree)
+    f_structure, fid_for = serialize_fstructure(frag.fstructure)
     return FragmentModel(
         span=frag.span,
-        c_structure=serialize_cstructure(frag.ctree),
-        f_structure=serialize_fstructure(frag.fstructure),
+        c_structure=c_structure,
+        f_structure=f_structure,
         a_structure=serialize_astructure(frag.astructure),
         diagnostics=serialize_diagnostics(frag.diagnostics),
+        correspondence=_join_correspondence(frag.correspondence, cid_for, fid_for),
     )
 
 
 def build_parse_response(
     text: str, result: ParseResult, *, n_best: int, strict: bool
 ) -> ParseResponse:
-    parses = [_serialize_parse(f"p{i}", p) for i, p in enumerate(result.parses)]
+    # `correspondences` aligns 1:1 with `parses` when present; treat an absent
+    # list (e.g. glued split-path results) as all-None.
+    corrs = result.correspondences or [None] * len(result.parses)
+    parses = [
+        _serialize_parse(f"p{i}", p, corrs[i]) for i, p in enumerate(result.parses)
+    ]
     # Fragments only surface on full-parse failure, and `strict` suppresses
     # them entirely (mirrors the CLI). parse_text_with_fragments already
     # returns fragments only when `parses` is empty.
