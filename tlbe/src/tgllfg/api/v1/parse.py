@@ -13,16 +13,15 @@ get stable ``f{n}`` ids (first-visit), and a feat that points at another
 f-node serializes as ``{"$ref": "fN"}`` (each f-node expanded once →
 cycles safe).
 
-Phase 12.G / §4 breadcrumb — **c-node ↔ f-node correspondence deferred
-to Phase 14.** The map "which c-node projects which f-node" comes from
-``fstruct/unify.py:solve``'s ``nid_for`` (id(CNode) → NodeId, where
-``graph.find`` maps to the canonical ``FStructure.id``), which the
-pipeline discards; the synthetic split-path trees in ``pipeline.py``
-also assemble parses without a single ``solve`` call. Threading it out
-is invasive on the parse hot path, and §4 says to design it against the
-inspector's *real* need. This endpoint lays the stable-ID foundation the
-correspondence will attach to (an additive ``correspondence`` field) when
-the Phase 14 inspector consumes it.
+Phase 14.B.6/.7 — **c-node ↔ f-node correspondence.** Each parse carries a
+``correspondence`` field: the projection φ mapping c-node ids to the f-node
+ids they project to. ``fstruct/unify.py:solve`` returns it for the normal
+(solved) path (.6); the synthetic split-path trees in ``pipeline.py`` — which
+assemble parses without a single ``solve`` call — compose it from their glued
+halves (.7, see ``pipeline._glue_*``). The correspondence keys f-nodes by
+Python object identity (``id(fs)``), not ``FStructure.id``, so a glued parse
+holding nodes from independently-solved graphs (whose ``.id`` spaces collide)
+keeps distinct nodes distinct.
 """
 
 import asyncio
@@ -112,8 +111,9 @@ class ParseModel(BaseModel):
     correspondence: dict[str, str] = Field(
         default_factory=dict,
         description=(
-            "Projection φ: c-node id → the f-node id it projects to. Empty when "
-            "unavailable (e.g. glued split-path parses, pending 14.B.7)."
+            "Projection φ: c-node id → the f-node id it projects to (including "
+            "glued split-path parses). A c-node whose projection is an atomic or "
+            "set value, not a distinct f-node, is omitted."
         ),
     )
 
@@ -127,8 +127,9 @@ class FragmentModel(BaseModel):
     correspondence: dict[str, str] = Field(
         default_factory=dict,
         description=(
-            "Projection φ: c-node id → the f-node id it projects to. Empty when "
-            "unavailable (e.g. glued split-path parses, pending 14.B.7)."
+            "Projection φ: c-node id → the f-node id it projects to (including "
+            "glued split-path parses). A c-node whose projection is an atomic or "
+            "set value, not a distinct f-node, is omitted."
         ),
     )
 

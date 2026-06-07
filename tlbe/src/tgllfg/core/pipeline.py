@@ -76,10 +76,31 @@ class ParseResult:
     got one); fragments only surface when no complete parse exists."""
     parses: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]]
     fragments: list[Fragment]
-    # Phase 14.B.6: per-parse c-node → f-node correspondence, aligned 1:1 with
-    # ``parses`` (empty list when not computed — e.g. glued split-path parses,
-    # whose correspondence lands in 14.B.7).
+    # Phase 14.B.6/.7: per-parse c-node → f-node correspondence, aligned 1:1
+    # with ``parses`` (empty list when not computed). Solve-path parses get it
+    # from ``solve`` (.6); glued split-path parses compose it from their halves
+    # (.7, see :func:`_glued_result` and the ``_glue_*`` functions).
     correspondences: list[dict[int, int] | None] = field(default_factory=list)
+
+
+# Phase 14.B.7: the internal 5-tuple threaded through the split-and-glue path —
+# a parse plus its φ correspondence (``id(CNode)`` → ``id(FStructure)``). The
+# public :class:`ParseResult` splits this back into ``parses`` (4-tuples) +
+# ``correspondences`` via :func:`_glued_result`; the glue functions compose a
+# child's map by unioning the two halves' maps and pinning each synthetic
+# c-node to the f-structure it projects to.
+_GluedParse = tuple[CNode, FStructure, AStructure, list[Diagnostic], dict[int, int]]
+
+
+def _glued_result(glued: list[_GluedParse]) -> ParseResult:
+    """Build a :class:`ParseResult` from the split-path 5-tuples, peeling the
+    φ correspondence off each into ``correspondences`` (aligned 1:1 with
+    ``parses``)."""
+    return ParseResult(
+        parses=[(ct, fs, a, d) for ct, fs, a, d, _corr in glued],
+        fragments=[],
+        correspondences=[corr for _ct, _fs, _a, _d, corr in glued],
+    )
 
 
 def parse_text(
@@ -721,7 +742,7 @@ def _try_colon_split(
     # parse wins. This mirrors the three chart-level colon-appositive
     # variants in cfg/discourse.py — we don't enumerate post-NP and
     # post-S parses, the first success short-circuits.
-    post_parses: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    post_parses: list[_GluedParse] = []
     for category in _POST_COLON_CATEGORIES:
         post_parses = _parse_segment_as(
             post_text,
@@ -741,7 +762,7 @@ def _try_colon_split(
     # Synthesize one glued parse per (pre × post) combination, capped
     # at ``n_best``. Both halves must keep passing well-formedness on
     # the glued f-structure or the candidate is dropped.
-    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    glued: list[_GluedParse] = []
     for pre_parse in pre_parses:
         for post_parse in post_parses:
             glued_one = _glue_colon_appositive(pre_parse, post_parse)
@@ -754,7 +775,7 @@ def _try_colon_split(
 
     if not glued:
         return None
-    return ParseResult(parses=glued, fragments=[])
+    return _glued_result(glued)
 
 
 def _parse_segment_as(
@@ -767,7 +788,7 @@ def _parse_segment_as(
     max_tree_iterations: int | None,
     precheck_defining: bool,
     splits_applied: frozenset[str] = frozenset(),
-) -> list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]]:
+) -> list[_GluedParse]:
     """Parse ``text`` against the grammar with a non-default start
     symbol (e.g., ``NP[CASE=NOM]``). Returns the surviving parses.
 
@@ -797,7 +818,15 @@ def _parse_segment_as(
             splits_applied=splits_applied,
         )
         if chained_result.parses:
-            return list(chained_result.parses)
+            # Re-attach each parse's φ correspondence (14.B.7) so an outer
+            # glue can compose it. ``correspondences`` aligns 1:1 with
+            # ``parses`` (populated by the chart loop and the split
+            # detectors); pad defensively if it is short / absent.
+            corrs = chained_result.correspondences
+            return [
+                (ct, fs, a, d, (corrs[i] or {}) if i < len(corrs) else {})
+                for i, (ct, fs, a, d) in enumerate(chained_result.parses)
+            ]
         # Pipeline routing returned no parses — the chart attempt
         # inside parse_text_with_fragments already tried and failed,
         # so no falling-through to a duplicate chart parse here.
@@ -821,7 +850,7 @@ def _parse_segment_as(
         start_symbol=start_symbol,
     )
 
-    candidates: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    candidates: list[_GluedParse] = []
     iterations = 0
     for ctree in forest.iter_trees():
         iterations += 1
@@ -834,7 +863,9 @@ def _parse_segment_as(
         diagnostics = list(result.diagnostics) + wf_diags + lmt_diags
         if any(d.is_blocking() for d in diagnostics):
             continue
-        candidates.append((ctree, result.fstructure, a, diagnostics))
+        candidates.append(
+            (ctree, result.fstructure, a, diagnostics, result.correspondence)
+        )
         if max_candidates is not None and len(candidates) >= max_candidates:
             break
     candidates.sort(key=lambda r: _rank_key(r[0]))
@@ -865,9 +896,9 @@ def _parse_segment_as(
 
 
 def _glue_colon_appositive(
-    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    pre_parse: _GluedParse,
+    post_parse: _GluedParse,
+) -> _GluedParse | None:
     """Synthesize the matrix ``S → S PUNCT[COLON] X`` parse from two
     independently-parsed halves.
 
@@ -881,8 +912,8 @@ def _glue_colon_appositive(
     rule's ``↓3 ∈ (↑ APP)``). The pre-half's diagnostics already
     reflect its solve / WF / LMT passes; we just append the post's.
     """
-    pre_ctree, pre_fs, pre_a, pre_diags = pre_parse
-    post_ctree, post_fs, _post_a, post_diags = post_parse
+    pre_ctree, pre_fs, pre_a, pre_diags, pre_corr = pre_parse
+    post_ctree, post_fs, _post_a, post_diags, post_corr = post_parse
     # Synthetic colon PUNCT leaf — no equations, syncategorematic in
     # the chart rule too.
     colon_leaf = CNode(
@@ -920,7 +951,12 @@ def _glue_colon_appositive(
             pre_fs.feats["APP"] = existing_app
         return None
     diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
-    return matrix_ctree, pre_fs, pre_a, diagnostics
+    # φ (14.B.7): union the halves' c→f maps; the synthetic matrix S and
+    # the colon leaf both project to the matrix f-structure (= pre_fs).
+    glued_corr = {**pre_corr, **post_corr}
+    glued_corr[id(matrix_ctree)] = id(pre_fs)
+    glued_corr[id(colon_leaf)] = id(pre_fs)
+    return matrix_ctree, pre_fs, pre_a, diagnostics, glued_corr
 
 
 def _try_emdash_split(
@@ -969,7 +1005,7 @@ def _try_emdash_split(
         return None
 
     # Try the post half against each category in order — first match wins.
-    post_parses: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    post_parses: list[_GluedParse] = []
     for category in _POST_EMDASH_CATEGORIES:
         post_parses = _parse_segment_as(
             post_text,
@@ -1005,7 +1041,7 @@ def _try_emdash_split(
     if not post_parses:
         return None
 
-    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    glued: list[_GluedParse] = []
     for pre_parse in pre_parses:
         for post_parse in post_parses:
             g = _glue_emdash_appositive(pre_parse, post_parse)
@@ -1018,13 +1054,13 @@ def _try_emdash_split(
 
     if not glued:
         return None
-    return ParseResult(parses=glued, fragments=[])
+    return _glued_result(glued)
 
 
 def _glue_emdash_appositive(
-    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    pre_parse: _GluedParse,
+    post_parse: _GluedParse,
+) -> _GluedParse | None:
     """Synthesize the matrix ``S → S PUNCT[DASH] X`` parse from two
     independently-parsed halves. Mirrors :func:`_glue_colon_appositive`
     with the punct class set to DASH.
@@ -1032,8 +1068,8 @@ def _glue_emdash_appositive(
     Returns ``None`` when the synthesized f-structure fails the same
     well-formedness check the chart-level em-dash rule would have run.
     """
-    pre_ctree, pre_fs, pre_a, pre_diags = pre_parse
-    post_ctree, post_fs, _post_a, post_diags = post_parse
+    pre_ctree, pre_fs, pre_a, pre_diags, pre_corr = pre_parse
+    post_ctree, post_fs, _post_a, post_diags, post_corr = post_parse
     dash_leaf = CNode(
         label="PUNCT[PUNCT_CLASS=DASH]",
         children=[],
@@ -1061,7 +1097,12 @@ def _glue_emdash_appositive(
             pre_fs.feats["APP"] = existing_app
         return None
     diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
-    return matrix_ctree, pre_fs, pre_a, diagnostics
+    # φ (14.B.7): the synthetic matrix S and the dash leaf both project
+    # to the matrix f-structure (= pre_fs); union the halves' maps.
+    glued_corr = {**pre_corr, **post_corr}
+    glued_corr[id(matrix_ctree)] = id(pre_fs)
+    glued_corr[id(dash_leaf)] = id(pre_fs)
+    return matrix_ctree, pre_fs, pre_a, diagnostics, glued_corr
 
 
 # === Phase 10.J.post-1: comma+at NP coord split ==========================
@@ -1082,7 +1123,7 @@ def _try_comma_at_np_split(
     max_candidates: int | None,
     max_tree_iterations: int | None,
     precheck_defining: bool,
-) -> list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] | None:
+) -> list[_GluedParse] | None:
     """If ``text`` looks like ``X, at Y`` (or ``X, at Y.``), parse each
     half as ``start_symbol`` (typically ``NP[CASE=NOM]``) and
     synthesize a COORD=AND coordination NP whose CONJUNCTS set
@@ -1146,7 +1187,7 @@ def _try_comma_at_np_split(
     )
     if not post_parses:
         return None
-    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    glued: list[_GluedParse] = []
     for pre_parse in pre_parses:
         for post_parse in post_parses:
             g = _glue_comma_at_np(pre_parse, post_parse, case=case)
@@ -1174,11 +1215,11 @@ def _extract_case(start_symbol: str) -> str | None:
 
 
 def _glue_comma_at_np(
-    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    pre_parse: _GluedParse,
+    post_parse: _GluedParse,
     *,
     case: str,
-) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+) -> _GluedParse | None:
     """Synthesize ``NP[CASE=case, COORD=AND] → NP[CASE=case]
     PUNCT[COMMA] PART[COORD=AND] NP[CASE=case]`` from two parsed
     halves. The matrix f-structure is a fresh node (neither
@@ -1188,8 +1229,8 @@ def _glue_comma_at_np(
     Returns ``None`` if the synthesized f-structure fails the
     chart-equivalent well-formedness check.
     """
-    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
-    post_ctree, post_fs, post_a, post_diags = post_parse
+    pre_ctree, pre_fs, _pre_a, pre_diags, pre_corr = pre_parse
+    post_ctree, post_fs, post_a, post_diags, post_corr = post_parse
     comma_leaf = CNode(
         label="PUNCT[PUNCT_CLASS=COMMA]", children=[], equations=[],
     )
@@ -1218,7 +1259,13 @@ def _glue_comma_at_np(
     if any(d.is_blocking() for d in wf_diags):
         return None
     diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
-    return matrix_ctree, matrix_fs, post_a, diagnostics
+    # φ (14.B.7): both conjuncts keep their own maps; the synthetic coord
+    # matrix node, comma, and coordinator all project to the fresh matrix
+    # f-structure.
+    glued_corr = {**pre_corr, **post_corr}
+    for _syn in (matrix_ctree, comma_leaf, at_leaf):
+        glued_corr[id(_syn)] = id(matrix_fs)
+    return matrix_ctree, matrix_fs, post_a, diagnostics, glued_corr
 
 
 # === Phase 10.J.post-2: fronted-PP-comma split ============================
@@ -1302,7 +1349,7 @@ def _try_fronted_pp_comma_split(
     if not post_parses:
         return None
 
-    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    glued: list[_GluedParse] = []
     for pre_parse in pre_parses:
         for post_parse in post_parses:
             g = _glue_fronted_pp_comma(pre_parse, post_parse)
@@ -1314,7 +1361,7 @@ def _try_fronted_pp_comma_split(
             break
     if not glued:
         return None
-    return ParseResult(parses=glued, fragments=[])
+    return _glued_result(glued)
 
 
 # Phase 10.J.post-7.2: ``dahilan`` is the nominal-form variant of
@@ -1424,7 +1471,7 @@ def _try_fronted_subord_comma_split(
     if not post_parses:
         return None
 
-    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    glued: list[_GluedParse] = []
     for pre_parse in pre_parses:
         for post_parse in post_parses:
             g = _glue_fronted_subord_comma(pre_parse, post_parse)
@@ -1436,13 +1483,13 @@ def _try_fronted_subord_comma_split(
             break
     if not glued:
         return None
-    return ParseResult(parses=glued, fragments=[])
+    return _glued_result(glued)
 
 
 def _glue_fronted_subord_comma(
-    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    pre_parse: _GluedParse,
+    post_parse: _GluedParse,
+) -> _GluedParse | None:
     """Synthesize ``S → SubordClause PUNCT[COMMA] S`` from two parsed
     halves, mirroring subordination.py's chart rule: ``(↑) = ↓3``,
     ``↓1 ∈ (↑ ADJUNCT)``.
@@ -1454,8 +1501,8 @@ def _glue_fronted_subord_comma(
     Returns ``None`` if the assembled f-structure fails the
     well-formedness check.
     """
-    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
-    post_ctree, post_fs, post_a, post_diags = post_parse
+    pre_ctree, pre_fs, _pre_a, pre_diags, pre_corr = pre_parse
+    post_ctree, post_fs, post_a, post_diags, post_corr = post_parse
     comma_leaf = CNode(
         label="PUNCT[PUNCT_CLASS=COMMA]", children=[], equations=[],
     )
@@ -1484,13 +1531,18 @@ def _glue_fronted_subord_comma(
             post_fs.feats["ADJUNCT"] = existing_adj
         return None
     diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
-    return matrix_ctree, post_fs, post_a, diagnostics
+    # φ (14.B.7): matrix = post-comma S (= post_fs); the synthetic matrix
+    # S and the comma leaf project to it; the SubordClause keeps its map.
+    glued_corr = {**pre_corr, **post_corr}
+    glued_corr[id(matrix_ctree)] = id(post_fs)
+    glued_corr[id(comma_leaf)] = id(post_fs)
+    return matrix_ctree, post_fs, post_a, diagnostics, glued_corr
 
 
 def _glue_fronted_pp_comma(
-    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    pre_parse: _GluedParse,
+    post_parse: _GluedParse,
+) -> _GluedParse | None:
     """Synthesize ``S → PP[PREP_TYPE=REASON] PUNCT[COMMA] S`` from
     two parsed halves, mirroring the chart-level c13 rule:
     ``(↑) = ↓3``, ``(↑ TOPIC) = ↓1``, ``↓1 ∈ (↑ ADJ)``.
@@ -1498,8 +1550,8 @@ def _glue_fronted_pp_comma(
     Returns ``None`` if the assembled f-structure fails the
     well-formedness check the chart rule would have run.
     """
-    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
-    post_ctree, post_fs, post_a, post_diags = post_parse
+    pre_ctree, pre_fs, _pre_a, pre_diags, pre_corr = pre_parse
+    post_ctree, post_fs, post_a, post_diags, post_corr = post_parse
     comma_leaf = CNode(
         label="PUNCT[PUNCT_CLASS=COMMA]", children=[], equations=[],
     )
@@ -1537,7 +1589,12 @@ def _glue_fronted_pp_comma(
             post_fs.feats["ADJ"] = existing_adj
         return None
     diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
-    return matrix_ctree, post_fs, post_a, diagnostics
+    # φ (14.B.7): matrix = post-comma S (= post_fs); the synthetic matrix
+    # S and the comma leaf project to it; the fronted PP keeps its map.
+    glued_corr = {**pre_corr, **post_corr}
+    glued_corr[id(matrix_ctree)] = id(post_fs)
+    glued_corr[id(comma_leaf)] = id(post_fs)
+    return matrix_ctree, post_fs, post_a, diagnostics, glued_corr
 
 
 # === Phase 10.J.post-3: ay-fronting split ================================
@@ -1629,7 +1686,7 @@ def _try_ay_fronting_split(
     if not post_parses:
         return None
 
-    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    glued: list[_GluedParse] = []
     for pre_parse in pre_parses:
         for post_parse in post_parses:
             g = _glue_ay_fronted(pre_parse, post_parse)
@@ -1641,7 +1698,7 @@ def _try_ay_fronting_split(
             break
     if not glued:
         return None
-    return ParseResult(parses=glued, fragments=[])
+    return _glued_result(glued)
 
 
 def _split_on_ay(text: str) -> tuple[str, str] | None:
@@ -1672,9 +1729,9 @@ def _split_on_ay(text: str) -> tuple[str, str] | None:
 
 
 def _glue_ay_fronted(
-    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    pre_parse: _GluedParse,
+    post_parse: _GluedParse,
+) -> _GluedParse | None:
     """Synthesize ``S → NP[CASE=NOM] PART[LINK=AY] S_GAP`` from
     two parsed halves, mirroring the Phase 4 §7.4 chart rule:
     ``(↑) = ↓3`` (matrix = inner S_GAP),
@@ -1685,8 +1742,8 @@ def _glue_ay_fronted(
     Returns ``None`` if the synthesized f-structure fails the
     well-formedness check.
     """
-    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
-    post_ctree, post_fs, post_a, post_diags = post_parse
+    pre_ctree, pre_fs, _pre_a, pre_diags, pre_corr = pre_parse
+    post_ctree, post_fs, post_a, post_diags, post_corr = post_parse
     ay_leaf = CNode(
         label="PART[LINK=AY]", children=[], equations=[],
     )
@@ -1725,7 +1782,12 @@ def _glue_ay_fronted(
                 del post_fs.feats[slot]
         return None
     diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
-    return matrix_ctree, post_fs, post_a, diagnostics
+    # φ (14.B.7): matrix = inner S_GAP (= post_fs); the synthetic matrix
+    # S and the ay leaf project to it; the fronted NP keeps its map.
+    glued_corr = {**pre_corr, **post_corr}
+    glued_corr[id(matrix_ctree)] = id(post_fs)
+    glued_corr[id(ay_leaf)] = id(post_fs)
+    return matrix_ctree, post_fs, post_a, diagnostics, glued_corr
 
 
 # === Phase 5n.B Commit 8: in-situ Q_TYPE matrix lift (§18 L50) ============
@@ -1856,7 +1918,7 @@ def _try_lalo_nat_split(
     if not post_parses:
         return None
 
-    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    glued: list[_GluedParse] = []
     for pre_parse in pre_parses:
         for post_parse in post_parses:
             g = _glue_lalo_nat(pre_parse, post_parse)
@@ -1868,7 +1930,7 @@ def _try_lalo_nat_split(
             break
     if not glued:
         return None
-    return ParseResult(parses=glued, fragments=[])
+    return _glued_result(glued)
 
 
 # Right-edge separators between two case-marker-led NPs. Used only by
@@ -1894,7 +1956,7 @@ def _try_subj_bare_comma_np_coord(
     max_tree_iterations: int | None,
     precheck_defining: bool,
     splits_applied: frozenset[str],
-) -> list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] | None:
+) -> list[_GluedParse] | None:
     """Deeper SUBJ-bare-comma synthesis: detect ``<pred-text> <ang-NP1>,
     <ang-NP2>`` and synthesize a matrix S where the SUBJ is a coord-NP
     holding NP1 and NP2 as CONJUNCTS.
@@ -1981,7 +2043,7 @@ def _try_subj_bare_comma_np_coord(
     if not post_parses:
         return None
 
-    glued: list[tuple[CNode, FStructure, AStructure, list[Diagnostic]]] = []
+    glued: list[_GluedParse] = []
     for pre_parse in pre_parses:
         for post_parse in post_parses:
             g = _glue_subj_bare_comma(pre_parse, post_parse, case=np_case)
@@ -1995,11 +2057,11 @@ def _try_subj_bare_comma_np_coord(
 
 
 def _glue_subj_bare_comma(
-    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
+    pre_parse: _GluedParse,
+    post_parse: _GluedParse,
     *,
     case: str,
-) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+) -> _GluedParse | None:
     """Synthesize a matrix S whose SUBJ is a coord-NP holding the
     pre-half's existing SUBJ and the post-half NP as CONJUNCTS.
 
@@ -2007,8 +2069,8 @@ def _glue_subj_bare_comma(
     SUBJ NP replaced by a synthetic ``NP[CASE=case, COORD=AND]`` whose
     children are the original SUBJ NP + ``PUNCT[COMMA]`` + the new NP.
     """
-    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
-    post_ctree, post_fs, post_a, post_diags = post_parse
+    pre_ctree, pre_fs, _pre_a, pre_diags, pre_corr = pre_parse
+    post_ctree, post_fs, post_a, post_diags, post_corr = post_parse
     pre_subj = pre_fs.feats.get("SUBJ")
     if pre_subj is None or not isinstance(pre_subj, FStructure):
         return None
@@ -2052,13 +2114,20 @@ def _glue_subj_bare_comma(
             pre_fs.feats["SUBJ"] = prev_subj
         return None
     diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
-    return matrix_ctree, pre_fs, post_a, diagnostics
+    # φ (14.B.7): matrix S → pre_fs; the synthetic coord-NP wrapper and its
+    # comma project to the fresh coord SUBJ f-structure. The pre-half's own
+    # SUBJ c-node keeps its map to its NP (now the first CONJUNCT).
+    glued_corr = {**pre_corr, **post_corr}
+    glued_corr[id(matrix_ctree)] = id(pre_fs)
+    glued_corr[id(coord_np_ctree)] = id(coord_subj)
+    glued_corr[id(comma_leaf)] = id(coord_subj)
+    return matrix_ctree, pre_fs, post_a, diagnostics, glued_corr
 
 
 def _glue_lalo_nat(
-    pre_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-    post_parse: tuple[CNode, FStructure, AStructure, list[Diagnostic]],
-) -> tuple[CNode, FStructure, AStructure, list[Diagnostic]] | None:
+    pre_parse: _GluedParse,
+    post_parse: _GluedParse,
+) -> _GluedParse | None:
     """Synthesize ``S → S COMMA SubordClause(lalo na 't S)`` mirroring
     the chart rules: matrix-attachment ``(↑) = ↓1, ↓3 ∈ (↑ ADJUNCT)``
     + SubordClause builder ``(↑) = ↓4, (↑ SUBORD_TYPE) = 'REAS',
@@ -2067,8 +2136,8 @@ def _glue_lalo_nat(
     Returns ``None`` if the assembled f-structure fails the
     well-formedness check.
     """
-    pre_ctree, pre_fs, _pre_a, pre_diags = pre_parse
-    post_ctree, post_fs, post_a, post_diags = post_parse
+    pre_ctree, pre_fs, _pre_a, pre_diags, pre_corr = pre_parse
+    post_ctree, post_fs, post_a, post_diags, post_corr = post_parse
     # SubordClause f-structure shares identity with the post-comma S
     # (chart rule's ``(↑) = ↓4``); add the SUBORD_TYPE + EMPHASIS
     # overlay so downstream consumers can distinguish this from a
@@ -2134,7 +2203,15 @@ def _glue_lalo_nat(
             post_fs.feats["SUBORD_TYPE"] = pre_subord_type
         return None
     diagnostics = list(pre_diags) + list(post_diags) + list(wf_diags)
-    return matrix_ctree, pre_fs, post_a, diagnostics
+    # φ (14.B.7): matrix S and its comma → pre_fs; the synthetic
+    # SubordClause wrapper and the lalo/na/at leaves → post_fs (the
+    # SubordClause f-structure, shared with the post-half S).
+    glued_corr = {**pre_corr, **post_corr}
+    glued_corr[id(matrix_ctree)] = id(pre_fs)
+    glued_corr[id(comma_leaf)] = id(pre_fs)
+    for _syn in (subord_ctree, lalo_leaf, na_leaf, at_leaf):
+        glued_corr[id(_syn)] = id(post_fs)
+    return matrix_ctree, pre_fs, post_a, diagnostics, glued_corr
 
 
 def _lift_in_situ_q_type(matrix: FStructure) -> None:

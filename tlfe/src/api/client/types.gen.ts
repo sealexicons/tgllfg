@@ -248,7 +248,7 @@ export type FragmentModel = {
     /**
      * Correspondence
      *
-     * Projection φ: c-node id → the f-node id it projects to. Empty when unavailable (e.g. glued split-path parses, pending 14.B.7).
+     * Projection φ: c-node id → the f-node id it projects to (including glued split-path parses). A c-node whose projection is an atomic or set value, not a distinct f-node, is omitted.
      */
     correspondence?: {
         [key: string]: string;
@@ -357,7 +357,7 @@ export type ParseModel = {
     /**
      * Correspondence
      *
-     * Projection φ: c-node id → the f-node id it projects to. Empty when unavailable (e.g. glued split-path parses, pending 14.B.7).
+     * Projection φ: c-node id → the f-node id it projects to (including glued split-path parses). A c-node whose projection is an atomic or set value, not a distinct f-node, is omitted.
      */
     correspondence?: {
         [key: string]: string;
