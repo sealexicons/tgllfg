@@ -13,6 +13,7 @@ on:
   push:
     paths:
       - "tlfe/**"
+      - "openapi.json"
       - ".github/workflows/tlfe.yml"
   workflow_dispatch:
 
@@ -43,6 +44,19 @@ jobs:
         run: npm run format:check
       - name: Typecheck (tsc -b)
         run: npm run typecheck
+      - name: Verify generated API client in sync
+        # Re-run codegen against the committed root openapi.json; the generated,
+        # committed (prettier/eslint-ignored) client must match — otherwise the
+        # contract changed, or the client was edited, without `npm run gen:api`.
+        # Mirrors tlbe's `tgllfg openapi --check`. Uses `status --porcelain` (not
+        # `diff --exit-status`) so it also catches added/removed files.
+        run: |
+          npm run gen:api
+          if [ -n "$(git status --porcelain -- src/api/client)" ]; then
+            echo "::error::generated API client is out of sync — run 'npm run gen:api' and commit"
+            git status --porcelain -- src/api/client
+            exit 1
+          fi
 
   test:
     name: test (build + vitest)

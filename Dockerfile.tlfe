@@ -3,8 +3,9 @@
 
 # Phase 13.G — multi-stage tlfe (frontend) image. Build context is ./tlfe:
 #   docker build -f Dockerfile.tlfe -t tgllfg-tlfe ./tlfe
-# Serves the Phase 14 placeholder bundle for now; inspector content lands
-# in Phase 14. Non-root nginx (nginxinc/nginx-unprivileged, port 8080).
+# Serves the built parse inspector (Phase 14.B) as a static bundle behind
+# non-root nginx (nginxinc/nginx-unprivileged, port 8080); see nginx/default.conf
+# for the SPA fallback, /api reverse-proxy, and 14.C asset caching + gzip.
 
 # --- build stage: vite build -> static bundle -------------------------
 FROM node:24-bookworm-slim AS builder
