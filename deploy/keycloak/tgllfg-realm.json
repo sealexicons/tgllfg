@@ -1,0 +1,56 @@
+{
+  "realm": "tgllfg",
+  "enabled": true,
+  "sslRequired": "none",
+  "roles": {
+    "realm": [
+      { "name": "parser:read", "description": "Parse Tagalog sentences (POST /api/v1/parse, GET /api/v1/audit/runs, POST /api/v1/audit/diff)" },
+      { "name": "parser:write", "description": "Run corpus audits (POST /api/v1/audit/run)" },
+      { "name": "lex:read", "description": "Search the lexicon (GET /api/v1/lex/search)" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "tgllfg-api",
+      "name": "tgllfg REST API (resource server)",
+      "enabled": true,
+      "bearerOnly": true,
+      "publicClient": false
+    },
+    {
+      "clientId": "tgllfg-web",
+      "name": "tgllfg web inspector (Phase 14)",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:8080/*"],
+      "webOrigins": ["http://localhost:8080"],
+      "protocolMappers": [
+        {
+          "name": "tgllfg-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.client.audience": "tgllfg-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "dev",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "dev@example.com",
+      "firstName": "Dev",
+      "lastName": "User",
+      "requiredActions": [],
+      "credentials": [{ "type": "password", "value": "dev", "temporary": false }],
+      "realmRoles": ["parser:read", "parser:write", "lex:read"]
+    }
+  ]
+}

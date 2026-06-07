@@ -1,0 +1,126 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
+# Dev stack (Phase 13.H) for Docker Desktop. Profiles:
+#   (default)        lean + anonymous: postgres + migrate + seed + tlbe + tlfe
+#   auth             + keycloak (postgres-backed, realm imported on start)
+#   observability    + alloy / LGTM (Phase 13.I)
+# Env vars have safe in-cluster defaults (see .env.template); copy to .env to
+# override. Enable Keycloak with:
+#   AUTH_MODE=keycloak docker compose --profile auth up --build
+name: tgllfg
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tgllfg}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tgllfg}
+      POSTGRES_DB: ${POSTGRES_DB:-tgllfg}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Creates the (auth-profile) keycloak DB on first init; harmless otherwise.
+      - ./deploy/postgres/init-keycloak-db.sql:/docker-entrypoint-initdb.d/10-keycloak-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tgllfg} -d ${POSTGRES_DB:-tgllfg}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  migrate:
+    image: tlbe:dev
+    command: ["lex", "migrate"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://tgllfg:tgllfg@postgres:5432/tgllfg}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  seed:
+    image: tlbe:dev
+    command: ["lex", "seed"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://tgllfg:tgllfg@postgres:5432/tgllfg}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+
+  tlbe:
+    image: tlbe:dev
+    build:
+      context: ./tlbe
+      dockerfile: ../Dockerfile.tlbe
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://tgllfg:tgllfg@postgres:5432/tgllfg}
+      # Default anonymous; set AUTH_MODE=keycloak (+ --profile auth) to enforce.
+      AUTH_MODE: ${AUTH_MODE:-anonymous}
+      KEYCLOAK_SERVER_URL: ${KEYCLOAK_SERVER_URL:-http://keycloak:8080}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM:-tgllfg}
+      KEYCLOAK_AUDIENCE: ${KEYCLOAK_AUDIENCE:-tgllfg-api}
+      # Empty => tracing is a no-op (13.E). 13.I sets http://alloy:4317.
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-tgllfg}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    # Liveness comes from the image's HEALTHCHECK (Dockerfile.tlbe).
+    ports:
+      - "${TLBE_PORT:-8000}:8000"
+
+  tlfe:
+    image: tlfe:dev
+    build:
+      context: ./tlfe
+      dockerfile: ../Dockerfile.tlfe
+    depends_on:
+      tlbe:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    ports:
+      - "${TLFE_PORT:-8080}:8080"
+
+  keycloak:
+    profiles: ["auth"]
+    image: quay.io/keycloak/keycloak:26.4
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: ${POSTGRES_USER:-tgllfg}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD:-tgllfg}
+      KC_HEALTH_ENABLED: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+    volumes:
+      - ./deploy/keycloak/tgllfg-realm.json:/opt/keycloak/data/import/tgllfg-realm.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      # The keycloak image ships no curl/wget; use bash's /dev/tcp against the
+      # management port (9000) health endpoint.
+      test:
+        - "CMD-SHELL"
+        - "exec 3<>/dev/tcp/localhost/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '200 OK' <&3"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+    ports:
+      - "${KEYCLOAK_PORT:-8081}:8080"
+
+volumes:
+  pgdata:

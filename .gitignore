@@ -5,6 +5,8 @@
 # Environment files (backend secrets / Vite env, in either tree)
 .env
 .env.*
+# ...but keep the committed compose template.
+!.env.template
 
 # Editor / OS files (appear in any directory)
 .vscode/
