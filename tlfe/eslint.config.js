@@ -9,7 +9,7 @@ import tseslint from "typescript-eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  globalIgnores(["dist", "coverage", "tmp"]),
+  globalIgnores(["dist", "coverage", "tmp", "src/api/client"]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [
@@ -21,5 +21,9 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+  },
+  {
+    files: ["**/*.d.ts"],
+    rules: { "@typescript-eslint/triple-slash-reference": "off" },
   },
 ]);

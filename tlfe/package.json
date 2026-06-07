@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "gen:api": "openapi-ts",
     "preview": "vite preview",
     "lint": "eslint .",
     "typecheck": "tsc -b",
@@ -19,12 +20,17 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@hey-api/client-axios": "^0.9.1",
+    "@tanstack/react-query": "^5.101.0",
+    "@tanstack/react-query-devtools": "^5.101.0",
+    "axios": "^1.17.0",
     "radix-ui": "^1.5.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@hey-api/openapi-ts": "^0.98.1",
     "@tailwindcss/vite": "^4.3.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
