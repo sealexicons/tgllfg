@@ -33,7 +33,7 @@ from tgllfg.api.settings import Settings
 
 @pytest.fixture(scope="session")
 def postgres_container() -> Iterator[PostgresContainer]:
-    container = PostgresContainer("postgres:17", driver="asyncpg")
+    container = PostgresContainer("postgres:17-alpine", driver="asyncpg")
     container.start()
     try:
         yield container
