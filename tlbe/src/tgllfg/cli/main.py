@@ -24,6 +24,7 @@ Subcommands:
 
 import argparse
 import asyncio
+import json
 import os
 import sys
 from collections.abc import Sequence
@@ -186,6 +187,19 @@ def _build_parser() -> argparse.ArgumentParser:
         help="verify openapi.json is in sync (exit 1 on drift); do not write",
     )
 
+    bench_p = sub.add_parser("bench", help="parser performance benchmark")
+    bench_p.add_argument(
+        "--check",
+        action="store_true",
+        help="compare to the committed baseline; exit 1 on a >20% regression",
+    )
+    bench_p.add_argument(
+        "--update", action="store_true", help="(re)write the committed baseline"
+    )
+    bench_p.add_argument(
+        "--json", action="store_true", help="emit the raw results as JSON"
+    )
+
     return parser
 
 
@@ -220,6 +234,10 @@ def main(argv: Sequence[str] | None = None) -> None:
 
     if args.cmd == "openapi":
         _cmd_openapi(args)
+        return
+
+    if args.cmd == "bench":
+        _cmd_bench(args)
         return
 
     if args.cmd != "lex":
@@ -452,6 +470,53 @@ def _cmd_openapi(args: argparse.Namespace) -> None:
     else:
         out = write_openapi()
     sys.stdout.write(f"wrote {out}\n")
+
+
+def _cmd_bench(args: argparse.Namespace) -> None:
+    """Phase 13.J: run the parser performance benchmark.
+
+    Default prints a per-input report (total + morph/lex/chart breakdown).
+    ``--check`` compares totals to the committed baseline and exits 1 on a
+    >20% regression (the local perf gate); ``--update`` rewrites the
+    baseline; ``--json`` emits the raw results.
+    """
+    from tgllfg.bench import (
+        BASELINE_PATH,
+        TOLERANCE,
+        compare_to_baseline,
+        load_baseline,
+        run_bench,
+        write_baseline,
+    )
+
+    results = run_bench()
+
+    if args.json:
+        sys.stdout.write(json.dumps(results, indent=2) + "\n")
+        return
+
+    if args.update:
+        write_baseline(results)
+        sys.stdout.write(f"wrote baseline: {BASELINE_PATH}\n")
+        return
+
+    for rid, r in results.items():
+        sys.stdout.write(
+            f"{rid:22s} {r['total_ms']:8.2f} ms  "
+            f"(morph {r['morph_ms']:.2f} / lex {r['lex_ms']:.2f} / "
+            f"build {r['build_ms']:.2f}; parses={r['parses']})\n"
+        )
+
+    if args.check:
+        regressions = compare_to_baseline(results, load_baseline())
+        if regressions:
+            sys.stderr.write(
+                f"\nperf regressions (> {int(TOLERANCE * 100)}% over baseline):\n"
+            )
+            for rid, cur, base in regressions:
+                sys.stderr.write(f"  {rid}: {cur:.2f} ms vs {base:.2f} ms\n")
+            sys.exit(1)
+        sys.stdout.write("\nno perf regressions vs baseline\n")
 
 
 if __name__ == "__main__":

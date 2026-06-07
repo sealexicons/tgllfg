@@ -82,6 +82,7 @@ test-fast = "pytest -m 'not postgres and not slow and not xslow' -n auto"
 test-slow = "pytest -m 'slow and not xslow' -n auto"
 test-xslow = "pytest -m 'xslow' -n auto"
 test-postgres = "pytest -m postgres"
+bench = "tgllfg bench --check"
 
 [tool.poe.tasks.check]
 shell = "ruff check . && mypy src/tgllfg tests && pyright && yamllint data/tgl"
