@@ -186,11 +186,41 @@ health-gated, anonymous), **`auth`** (+ Keycloak), **`observability`**
 (+ Alloy → Tempo / Prometheus / Loki + Grafana). See the monorepo
 `README.md` for the run commands.
 
+## Web inspector (`tlfe`, Phase 14)
+
+`tlfe/` is the single-page parse inspector (Vite + React 19 + TypeScript +
+Tailwind + Radix) that consumes the Phase 13 API. The data layer is TanStack
+Query + axios over a typed client generated from the committed `openapi.json`
+by `@hey-api/openapi-ts` (committed under `tlfe/src/api/client/`, sync-gated
+in CI); thin `useParse` / `useLexSearch` / audit hooks wrap the generated
+helpers.
+
+It renders the three projections of a parse plus its diagnostics:
+
+- **c-structure** — an SVG tidy-tree (`views/cstructureLayout.ts` lays it out
+  in a single bottom-up pass; `CStructureView` draws it).
+- **f-structure** — a nested AVM (`FStructureView`); reentrant
+  (structure-shared) nodes carry hoverable id tags.
+- **a-structure** — the PRED + LMT role → GF mapping; **diagnostics** — the
+  per-fragment failure detail (kind, message, blocking flag, and the
+  `cnode_label` locating the failing equation in the c-structure).
+
+The headline view is **C / F** (`CFStructureView`): the tree and AVM side by
+side, linked by the **φ correspondence** the `/parse` endpoint returns
+(c-node id → f-node id). The parser computes φ in `solve()` for ordinary
+parses and composes it from the halves for glued split-path parses (see
+*F-structure* above and `core/pipeline.py`); the inspector inverts it to
+cross-highlight — hovering a c-node lights the f-node it projects to and all
+co-projecting c-nodes, hovering an f-node lights every c-node projecting to
+it.
+
+The image (`Dockerfile.tlfe`) is a multi-stage build serving the static
+bundle behind non-root nginx with SPA history fallback, a `/api` reverse
+proxy to `tlbe`, immutable caching on hashed assets, and gzip; it runs as the
+`tlfe` compose service.
+
 ## The road ahead
 
-- **Phase 14** — the `tlfe` web inspector, rendering the c-/f-/a-structures
-  with cross-highlighting against the Phase 13 API (`openapi.json` → a
-  typed client).
 - **Phase 15** — production deployment: a prod compose, a Helm chart + k8s
-  templates (initial single-node cluster), and a redis-backed
-  compiled-grammar cache.
+  templates (initial single-node cluster), an arm64 `tlfe` image, and a
+  redis-backed compiled-grammar cache.
