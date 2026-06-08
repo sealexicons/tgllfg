@@ -12,9 +12,13 @@ MIT OR Apache-2.0. **Phase 13 — REST API + local dev stack** is complete
 (async FastAPI under `tlbe/src/tgllfg/api/` — `/api/v1` routes, committed
 `openapi.json` contract, env-gated OTel + Keycloak auth; `tgllfg serve` /
 `openapi` / `bench`; two Dockerfiles + a top-level `compose.yaml` with
-`auth` / `observability` profiles). **Phase 14 — the `tlfe` web inspector**
-is the next effort; production deployment (prod compose, helm/k8s, redis)
-is Phase 15.
+`auth` / `observability` profiles). **Phase 14 — the `tlfe` web inspector** is complete (Vite + React 19 + TS +
+Tailwind + Radix; a TanStack-Query + axios data layer over the
+`@hey-api/openapi-ts`-generated client; the c-structure tree and f-structure
+AVM cross-highlighted by the φ correspondence the `/parse` endpoint returns,
+plus a-structure / diagnostics / JSON views; served behind non-root nginx via
+`Dockerfile.tlfe`). **Phase 15 — production deployment** (prod compose,
+helm/k8s, arm64 image, redis-backed grammar cache) is the next effort.
 
 This file is the load-on-every-session brief for working in this repo. Personal
 preferences live in auto-memory; this file is project-wide.
@@ -238,9 +242,10 @@ tlfe/             Tagalog LFG FrontEnd — web inspector (Phase 12.D scaffold;
 - REST API + local dev stack (routes / OpenAPI / OTel / Keycloak / compose
   profiles / Dockerfiles / perf bench) → `tlbe/docs/architecture.md`
   (§ REST API + dev stack) + the top-level `compose.yaml` and `README.md`
-- Current plan-of-record → `.claude/plans/tgllfg-phase-14.md` (web
-  inspector); Phase 13 (REST API + dev stack) is complete in
-  `tgllfg-phase-13.md`; production deployment is `tgllfg-phase-15.md`
+- Current plan-of-record → `.claude/plans/tgllfg-phase-15.md` (production
+  deployment); Phase 14 (web inspector) is complete in
+  `tgllfg-phase-14.md`, Phase 13 (REST API + dev stack) in
+  `tgllfg-phase-13.md`
 - The big picture / phase roadmap → `.claude/plans/tgllfg-evolution.md` +
   `tgllfg-roadmap.md`
 - License: dual MIT OR Apache-2.0 — see `LICENSE-MIT` and `LICENSE-APACHE`
