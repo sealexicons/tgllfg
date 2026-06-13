@@ -24,9 +24,12 @@ export interface TreeLayout {
 }
 
 // Tidy-tree spacing (px). Leaves take evenly-spaced columns; each parent is
-// centred over its children; depth drives the row.
-export const NODE_X_GAP = 96;
-export const NODE_Y_GAP = 84;
+// centred over its children; depth drives the row. The X gap fits the widest
+// bracketed category labels (e.g. N[N_CORE=True]) so neighbours don't collide;
+// the Y gap is tight now that equations live in a click popover rather than
+// stacked under each label (Phase 14.final.post-1).
+export const NODE_X_GAP = 124;
+export const NODE_Y_GAP = 56;
 export const TREE_PAD = 36;
 
 /**

@@ -1,7 +1,7 @@
 // Copyright (c) 2025-2026 G & R Associates LLC
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import type { ParseResponse } from "../api/client";
@@ -15,8 +15,8 @@ const RESULT: ParseResponse = {
       c_structure: {
         root: "c0",
         nodes: {
-          c0: { id: "c0", label: "S", children: ["c1"] },
-          c1: { id: "c1", label: "V", children: [] },
+          c0: { id: "c0", label: "S", children: ["c1"], equations: ["(↑ SUBJ) = ↓"] },
+          c1: { id: "c1", label: "V", children: [], equations: ["(↑ PRED) = 'KAIN'"] },
         },
       },
       f_structure: { root: "f0", nodes: { f0: { id: "f0", feats: {} } } },
@@ -50,5 +50,14 @@ describe("CStructureView", () => {
     render(<CStructureView result={fragmentsOnly} selected={0} />);
     expect(screen.getByText(/no complete parse/i)).toBeInTheDocument();
     expect(screen.getByText(/2 fragments/i)).toBeInTheDocument();
+  });
+
+  it("keeps equations out of the tree until a node is clicked, then shows them", async () => {
+    render(<CStructureView result={RESULT} selected={0} />);
+    // Label-only by default — the functional equations are not drawn inline.
+    expect(screen.queryByText("(↑ PRED) = 'KAIN'")).not.toBeInTheDocument();
+    // Clicking a node opens a popover listing its equations.
+    fireEvent.click(screen.getByText("V"));
+    expect(await screen.findByText("(↑ PRED) = 'KAIN'")).toBeInTheDocument();
   });
 });
