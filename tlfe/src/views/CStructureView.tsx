@@ -2,22 +2,24 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 import { useMemo } from "react";
+import { Popover } from "radix-ui";
 
 import type { CStructure, ParseResponse } from "../api/client";
 import { type LaidOutNode, layoutCStructure } from "./cstructureLayout";
 
-const EQ_DY_START = 14;
-const EQ_LINE = 12;
 const LABEL_ASCENT = 13;
-const EQ_MAX_CHARS = 18;
 const HALO_H = 20;
+// Edges leave a node from the bottom of its label halo (HALO_H - LABEL_ASCENT).
+const EDGE_DROP = HALO_H - LABEL_ASCENT;
 const ARC_RISE = 24;
 
 // The C-structure tab body: empty/no-parse and fragment-only states plus the
-// SVG tree for the selected parse (selection is controlled from App). When the
-// optional `highlight` set / `onHoverNode` callback are supplied (by the
-// combined C/F view) the tree highlights those nodes, draws φ-sharing arcs
-// between them, and reports hover so the f-structure can cross-highlight.
+// SVG tree for the selected parse (selection is controlled from App). Each node
+// shows only its category label; its functional equations open in a click
+// popover (Phase 14.final.post-1) so dense trees stay legible. When the optional
+// `highlight` set / `onHoverNode` callback are supplied (by the combined C/F
+// view) the tree highlights those nodes, draws φ-sharing arcs between them, and
+// reports hover so the f-structure can cross-highlight.
 export function CStructureView({
   result,
   selected,
@@ -107,14 +109,11 @@ function CStructureTree({
           const from = byId.get(edge.from);
           const to = byId.get(edge.to);
           if (!from || !to) return null;
-          const fromBottom =
-            from.y +
-            (from.equations.length > 0 ? EQ_DY_START + from.equations.length * EQ_LINE - 4 : 6);
           return (
             <line
               key={`${edge.from}-${edge.to}`}
               x1={from.x}
-              y1={fromBottom}
+              y1={from.y + EDGE_DROP}
               x2={to.x}
               y2={to.y - LABEL_ASCENT}
               stroke="currentColor"
@@ -132,54 +131,86 @@ function CStructureTree({
             className="text-amber-400"
           />
         ))}
-        {layout.nodes.map((node) => {
-          const active = highlight?.has(node.id) ?? false;
-          const haloW = node.label.length * 7 + 10;
-          return (
-            <g
-              key={node.id}
-              transform={`translate(${node.x}, ${node.y})`}
-              onMouseOver={(event) => {
-                event.stopPropagation();
-                onHoverNode?.(node.id);
-              }}
-            >
-              {node.equations.length > 0 && <title>{node.equations.join("\n")}</title>}
-              <rect
-                x={-haloW / 2}
-                y={-LABEL_ASCENT}
-                width={haloW}
-                height={HALO_H}
-                rx={4}
-                className={active ? "fill-amber-100" : "fill-transparent"}
-                style={{ pointerEvents: "all" }}
-              />
-              <text
-                textAnchor="middle"
-                className={
-                  active
-                    ? "fill-amber-800 text-[13px] font-semibold"
-                    : "fill-violet-700 text-[13px] font-medium"
-                }
-              >
-                {node.label}
-              </text>
-              {node.equations.map((equation, i) => (
-                <text
-                  key={i}
-                  textAnchor="middle"
-                  y={EQ_DY_START + i * EQ_LINE}
-                  className="fill-slate-400 text-[10px]"
-                >
-                  {equation.length > EQ_MAX_CHARS
-                    ? `${equation.slice(0, EQ_MAX_CHARS - 1)}…`
-                    : equation}
-                </text>
-              ))}
-            </g>
-          );
-        })}
+        {layout.nodes.map((node) => (
+          <CStructureNode
+            key={node.id}
+            node={node}
+            active={highlight?.has(node.id) ?? false}
+            onHoverNode={onHoverNode}
+          />
+        ))}
       </svg>
     </div>
+  );
+}
+
+// A single tree node: a category label inside a (transparent until lit) halo
+// that opens a popover of the node's functional equations on click. The label
+// alone keeps the tree readable; the equation stack was what overlapped when it
+// was drawn inline under every node (Phase 14.final.post-1).
+function CStructureNode({
+  node,
+  active,
+  onHoverNode,
+}: {
+  node: LaidOutNode;
+  active: boolean;
+  onHoverNode?: (id: string | null) => void;
+}) {
+  const haloW = node.label.length * 7 + 10;
+  return (
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <g
+          transform={`translate(${node.x}, ${node.y})`}
+          tabIndex={0}
+          aria-label={node.label}
+          style={{ cursor: "pointer" }}
+          onMouseOver={(event) => {
+            event.stopPropagation();
+            onHoverNode?.(node.id);
+          }}
+        >
+          <rect
+            x={-haloW / 2}
+            y={-LABEL_ASCENT}
+            width={haloW}
+            height={HALO_H}
+            rx={4}
+            className={active ? "fill-amber-100" : "fill-transparent"}
+            style={{ pointerEvents: "all" }}
+          />
+          <text
+            textAnchor="middle"
+            className={
+              active
+                ? "fill-amber-800 text-[13px] font-semibold"
+                : "fill-violet-700 text-[13px] font-medium"
+            }
+          >
+            {node.label}
+          </text>
+        </g>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Content
+          side="bottom"
+          sideOffset={6}
+          className="z-50 max-w-sm rounded-md border border-slate-200 bg-white p-3 text-xs shadow-lg"
+        >
+          <p className="mb-1.5 font-semibold text-violet-700">{node.label}</p>
+          {node.equations.length > 0 ? (
+            <ul className="space-y-0.5 font-mono leading-relaxed text-slate-600">
+              {node.equations.map((equation, i) => (
+                <li key={i}>{equation}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-slate-400">No functional equations.</p>
+          )}
+          <Popover.Arrow className="fill-white" />
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
