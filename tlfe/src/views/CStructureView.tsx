@@ -1,7 +1,7 @@
 // Copyright (c) 2025-2026 G & R Associates LLC
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Popover } from "radix-ui";
 
 import type { CStructure, ParseResponse } from "../api/client";
@@ -15,6 +15,13 @@ const ARC_RISE = 24;
 // Equal left/right breathing room inside the SVG around the tree's true extent.
 const VIEW_PAD = 16;
 
+// A request to scroll the tree so the given c-nodes are visible; the nonce makes
+// a repeated request for the same nodes still fire.
+interface ScrollTarget {
+  cids: readonly string[];
+  nonce: number;
+}
+
 // The C-structure tab body: empty/no-parse and fragment-only states plus the
 // SVG tree for the selected parse (selection is controlled from App). Each node
 // shows only its category label; its functional equations open in a click
@@ -26,11 +33,13 @@ export function CStructureView({
   result,
   selected,
   highlight,
+  scrollTo,
   onHoverNode,
 }: {
   result: ParseResponse | undefined;
   selected: number;
   highlight?: ReadonlySet<string>;
+  scrollTo?: ScrollTarget;
   onHoverNode?: (id: string | null) => void;
 }) {
   if (!result) {
@@ -53,6 +62,7 @@ export function CStructureView({
     <CStructureTree
       cstruct={parses[index].c_structure}
       highlight={highlight}
+      scrollTo={scrollTo}
       onHoverNode={onHoverNode}
     />
   );
@@ -61,10 +71,12 @@ export function CStructureView({
 function CStructureTree({
   cstruct,
   highlight,
+  scrollTo,
   onHoverNode,
 }: {
   cstruct: CStructure;
   highlight?: ReadonlySet<string>;
+  scrollTo?: ScrollTarget;
   onHoverNode?: (id: string | null) => void;
 }) {
   const layout = useMemo(() => layoutCStructure(cstruct), [cstruct]);
@@ -73,6 +85,40 @@ function CStructureTree({
     for (const node of layout.nodes) map.set(node.id, node);
     return map;
   }, [layout]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // The tidy-tree pads the right edge by an extra column and ignores label
+  // width, so layout.width is lopsided. Re-derive the real horizontal extent
+  // (label halos included) and pad both sides equally so the mx-auto-centred SVG
+  // actually looks centred. Computed before any early return so the scroll
+  // effect (a hook) can sit above it.
+  let minX = Infinity;
+  let maxX = -Infinity;
+  for (const node of layout.nodes) {
+    const half = labelWidth(displayLabel(node.label)) / 2;
+    minX = Math.min(minX, node.x - half);
+    maxX = Math.max(maxX, node.x + half);
+  }
+  const dx = VIEW_PAD - minX;
+  const width = VIEW_PAD * 2 + maxX - minX;
+
+  // Centre a clicked f-node's φ-image c-nodes in view (smooth scroll). A
+  // φ-orphaned f-node yields no targets, so nothing moves.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || !scrollTo || scrollTo.cids.length === 0) return;
+    const targets = scrollTo.cids
+      .map((id) => byId.get(id))
+      .filter((n): n is LaidOutNode => n !== undefined);
+    if (targets.length === 0) return;
+    const xs = targets.map((n) => n.x + dx);
+    const ys = targets.map((n) => n.y);
+    el.scrollTo({
+      left: (Math.min(...xs) + Math.max(...xs)) / 2 - el.clientWidth / 2,
+      top: (Math.min(...ys) + Math.max(...ys)) / 2 - el.clientHeight / 2,
+      behavior: "smooth",
+    });
+  }, [scrollTo, byId, dx]);
 
   if (layout.nodes.length === 0) {
     return <p className="text-slate-400">Empty c-structure.</p>;
@@ -110,22 +156,8 @@ function CStructureTree({
         })
       : [];
 
-  // The tidy-tree pads the right edge by an extra column and ignores label
-  // width, so layout.width is lopsided. Re-derive the real horizontal extent
-  // (label halos included) and pad both sides equally so the mx-auto-centred
-  // SVG actually looks centred.
-  let minX = Infinity;
-  let maxX = -Infinity;
-  for (const node of layout.nodes) {
-    const half = labelWidth(displayLabel(node.label)) / 2;
-    minX = Math.min(minX, node.x - half);
-    maxX = Math.max(maxX, node.x + half);
-  }
-  const dx = VIEW_PAD - minX;
-  const width = VIEW_PAD * 2 + maxX - minX;
-
   return (
-    <div className="overflow-auto lg:min-h-0 lg:flex-1">
+    <div ref={scrollRef} className="overflow-auto lg:min-h-0 lg:flex-1">
       <svg
         width={width}
         height={layout.height}

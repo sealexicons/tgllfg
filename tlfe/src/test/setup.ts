@@ -20,6 +20,7 @@ elementProto.hasPointerCapture ??= () => false;
 elementProto.setPointerCapture ??= () => {};
 elementProto.releasePointerCapture ??= () => {};
 elementProto.scrollIntoView ??= () => {};
+elementProto.scrollTo ??= () => {};
 
 afterEach(() => {
   cleanup();

@@ -1,9 +1,12 @@
 // Copyright (c) 2025-2026 G & R Associates LLC
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-import { Fragment, type ReactElement, useState } from "react";
+import { Fragment, type ReactElement, useMemo, useState } from "react";
+import { Popover } from "radix-ui";
 
 import type { FStructureModel, ParseResponse } from "../api/client";
+
+type FNodes = FStructureModel["nodes"];
 
 interface FRef {
   $ref: string;
@@ -23,7 +26,7 @@ function isFRef(value: unknown): value is FRef {
 // of which is itself valueless — e.g. INTENS/DISTRIB pointing at an empty node).
 // Valueless feats are hidden for now (a "Show Valueless Features" toggle may
 // surface them later).
-function isValueless(value: unknown, nodes: FStructureModel["nodes"], seen: Set<string>): boolean {
+function isValueless(value: unknown, nodes: FNodes, seen: Set<string>): boolean {
   if (value == null || value === "") return true;
   if (Array.isArray(value)) return value.length === 0;
   if (isFRef(value)) {
@@ -77,10 +80,7 @@ function attrRank(attr: string): number {
   return ATTR_RANK.get(attr) ?? ATTR_ORDER.length; // unlisted: alpha, before LEMMA
 }
 
-function sortedEntries(
-  feats: Record<string, unknown>,
-  nodes: FStructureModel["nodes"],
-): [string, unknown][] {
+function sortedEntries(feats: Record<string, unknown>, nodes: FNodes): [string, unknown][] {
   return Object.entries(feats)
     .filter(([, value]) => !isValueless(value, nodes, new Set()))
     .sort(([a], [b]) => attrRank(a) - attrRank(b) || a.localeCompare(b));
@@ -89,7 +89,7 @@ function sortedEntries(
 // Count how often each f-node is referenced ($ref) across the whole structure.
 // A node referenced >= 2 times is reentrant (structure-shared) and gets a
 // hoverable tag so every occurrence can cross-highlight.
-function countRefs(nodes: FStructureModel["nodes"]): Map<string, number> {
+function countRefs(nodes: FNodes): Map<string, number> {
   const counts = new Map<string, number>();
   const tally = (value: unknown): void => {
     if (isFRef(value)) {
@@ -128,7 +128,7 @@ function flatten(
   path: Set<string>,
   expanded: Set<string>,
   refCounts: Map<string, number>,
-  nodes: FStructureModel["nodes"],
+  nodes: FNodes,
   out: Row[],
 ): void {
   expanded.add(fid);
@@ -158,49 +158,76 @@ function flatten(
   }
 }
 
+// The hover + select wiring shared down the AVM tree. `hovered` / `setHovered`
+// drive cross-highlight; `onSelect` (a clicked f-node id) lets the parent scroll
+// the c-structure to that node's φ-image.
+interface AvmHandlers {
+  hovered: string | null;
+  setHovered: (id: string | null) => void;
+  onSelect?: (id: string) => void;
+}
+
 // A reentrancy tag: the f-node id, shown wherever a structure-shared node is
 // referenced. All tags for one id share `data-fs-id`, so hovering any one
-// highlights the whole structure-sharing set.
+// cross-highlights the whole structure-sharing set. Clicking opens a popover
+// with that f-node's sub-structure (same AVM format) and reports the id so the
+// c-structure can scroll to its φ-image.
 function Tag({
   fid,
-  hovered,
-  setHovered,
+  nodes,
+  handlers,
 }: {
   fid: string;
-  hovered: string | null;
-  setHovered: (fid: string | null) => void;
+  nodes: FNodes;
+  handlers: AvmHandlers;
 }): ReactElement {
-  const active = hovered === fid;
+  const active = handlers.hovered === fid;
   return (
-    <span
-      data-fs-id={fid}
-      onMouseOver={(event) => {
-        event.stopPropagation();
-        setHovered(fid);
-      }}
-      className={`cursor-default rounded px-1 text-[10px] ${
-        active ? "bg-amber-200 text-amber-900" : "bg-slate-100 text-slate-500"
-      }`}
-    >
-      {fid}
-    </span>
+    <Popover.Root>
+      <Popover.Trigger asChild>
+        <span
+          data-fs-id={fid}
+          onMouseOver={(event) => {
+            event.stopPropagation();
+            handlers.setHovered(fid);
+          }}
+          onClick={() => handlers.onSelect?.(fid)}
+          className={`cursor-pointer rounded px-1 text-[10px] ${
+            active ? "bg-amber-200 text-amber-900" : "bg-slate-100 text-slate-500"
+          }`}
+        >
+          {fid}
+        </span>
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Content
+          side="bottom"
+          sideOffset={6}
+          className="z-50 max-h-80 max-w-sm overflow-auto rounded-md border border-slate-200 bg-white p-3 shadow-lg"
+        >
+          <p className="mb-1.5 font-mono text-[10px] font-semibold text-violet-700">{fid}</p>
+          <Avm root={fid} nodes={nodes} handlers={handlers} />
+          <Popover.Arrow className="fill-white" />
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
 
 function ValueCell({
   value,
-  hovered,
-  setHovered,
+  nodes,
+  handlers,
 }: {
   value: RowValue;
-  hovered: string | null;
-  setHovered: (fid: string | null) => void;
+  nodes: FNodes;
+  handlers: AvmHandlers;
 }): ReactElement | null {
   if (value.kind === "scalar") {
     return <span className="text-violet-700">{value.text}</span>;
   }
   if (value.kind === "ref") {
-    return <Tag fid={value.fid} hovered={hovered} setHovered={setHovered} />;
+    return <Tag fid={value.fid} nodes={nodes} handlers={handlers} />;
   }
   if (value.kind === "set") {
     return (
@@ -210,7 +237,7 @@ function ValueCell({
           <Fragment key={i}>
             {i > 0 && <span className="text-slate-300">, </span>}
             {isFRef(member) ? (
-              <Tag fid={member.$ref} hovered={hovered} setHovered={setHovered} />
+              <Tag fid={member.$ref} nodes={nodes} handlers={handlers} />
             ) : (
               <span className="text-violet-700">{String(member)}</span>
             )}
@@ -223,22 +250,82 @@ function ValueCell({
   return null;
 }
 
+// An attribute-value matrix rooted at `root`: the f-graph flattened to indented,
+// aligned rows. Reused for the whole f-structure and, inside a Tag popover, for
+// a referenced sub-structure.
+function Avm({
+  root,
+  nodes,
+  handlers,
+}: {
+  root: string;
+  nodes: FNodes;
+  handlers: AvmHandlers;
+}): ReactElement {
+  const refCounts = useMemo(() => countRefs(nodes), [nodes]);
+  const rows = useMemo(() => {
+    const out: Row[] = [];
+    flatten(root, 0, new Set(), new Set(), refCounts, nodes, out);
+    return out;
+  }, [root, nodes, refCounts]);
+
+  if (rows.length === 0) {
+    return <span className="font-mono text-slate-400">[ ]</span>;
+  }
+
+  // One shared value column: wide enough for the deepest-indented longest
+  // attribute, so every value lines up regardless of nesting (ch ~ one mono
+  // char; +2 leaves a gap before the value).
+  const valueCol = rows.reduce((m, r) => Math.max(m, r.depth * 2 + r.attr.length), 0) + 2;
+
+  return (
+    <>
+      {rows.map((row) => {
+        const active = handlers.hovered === row.fid;
+        return (
+          <div
+            key={row.key}
+            data-fs-node={row.fid}
+            onMouseOver={(event) => {
+              event.stopPropagation();
+              handlers.setHovered(row.fid);
+            }}
+            className={`flex rounded font-mono leading-6 ${active ? "bg-amber-50" : ""}`}
+          >
+            <span
+              className={`shrink-0 ${active ? "text-amber-800" : "text-slate-500"}`}
+              style={{ paddingLeft: `${row.depth * 2}ch`, width: `${valueCol}ch` }}
+            >
+              {row.attr}
+            </span>
+            <ValueCell value={row.value} nodes={nodes} handlers={handlers} />
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
 // The F-structure tab body: the f-graph as an indented AVM. Attributes order
 // canonically (PRED → predicate feats → GFs → adjuncts → nominal feats → LEMMA),
 // nested nodes indent under their attribute (no boxes), and every value aligns
 // in one shared column. Reentrant nodes carry a hoverable id tag; hovering any
-// node (a row or a tag) cross-highlights it everywhere — controlled by the
-// combined C/F view via `activeFid` + `onHoverNode`, otherwise internal.
+// node cross-highlights it everywhere and clicking it opens a sub-structure
+// popover + reports the id (via `onSelectNode`) so the c-structure can scroll to
+// its φ-image. Hover is controlled by the combined C/F view via `activeFid` +
+// `onHoverNode`, otherwise internal.
 export function FStructureView({
   result,
   selected,
   activeFid,
   onHoverNode,
+  onSelectNode,
 }: {
   result: ParseResponse | undefined;
   selected: number;
   activeFid?: string | null;
   onHoverNode?: (id: string | null) => void;
+  onSelectNode?: (id: string) => void;
 }) {
   const [internalHover, setInternalHover] = useState<string | null>(null);
   const controlled = onHoverNode !== undefined;
@@ -262,43 +349,11 @@ export function FStructureView({
 
   const index = Math.min(Math.max(selected, 0), parses.length - 1);
   const fstruct = parses[index].f_structure;
-  const refCounts = countRefs(fstruct.nodes);
-  const rows: Row[] = [];
-  flatten(fstruct.root, 0, new Set(), new Set(), refCounts, fstruct.nodes, rows);
-
-  // One shared value column: wide enough for the deepest-indented longest
-  // attribute, so every value lines up regardless of nesting (ch ~ one mono
-  // char; +2 leaves a gap before the value).
-  const valueCol = rows.reduce((m, r) => Math.max(m, r.depth * 2 + r.attr.length), 0) + 2;
+  const handlers: AvmHandlers = { hovered, setHovered, onSelect: onSelectNode };
 
   return (
     <div className="overflow-auto text-xs" onMouseLeave={() => setHovered(null)}>
-      {rows.length === 0 ? (
-        <span className="font-mono text-slate-400">[ ]</span>
-      ) : (
-        rows.map((row) => {
-          const active = hovered === row.fid;
-          return (
-            <div
-              key={row.key}
-              data-fs-node={row.fid}
-              onMouseOver={(event) => {
-                event.stopPropagation();
-                setHovered(row.fid);
-              }}
-              className={`flex rounded font-mono leading-6 ${active ? "bg-amber-50" : ""}`}
-            >
-              <span
-                className={`shrink-0 ${active ? "text-amber-800" : "text-slate-500"}`}
-                style={{ paddingLeft: `${row.depth * 2}ch`, width: `${valueCol}ch` }}
-              >
-                {row.attr}
-              </span>
-              <ValueCell value={row.value} hovered={hovered} setHovered={setHovered} />
-            </div>
-          );
-        })
-      )}
+      <Avm root={fstruct.root} nodes={fstruct.nodes} handlers={handlers} />
     </div>
   );
 }
