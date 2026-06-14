@@ -1,7 +1,7 @@
 // Copyright (c) 2025-2026 G & R Associates LLC
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { Tabs } from "radix-ui";
 
 import type { ParseModel, ParseResponse } from "./api/client";
@@ -22,18 +22,75 @@ const VIEWS = [
 
 const N_BEST = 5;
 
+// The example shown as placeholder text; Tab on the empty field accepts it.
+const PLACEHOLDER = "Bumili ng aklat ang bata.";
+
 function App() {
   const [text, setText] = useState("");
+  const [history, setHistory] = useState<string[]>([]);
   const [selectedParse, setSelectedParse] = useState(0);
   const parse = useParse();
   const result = parse.data;
   const parses = result?.parses ?? [];
   const canParse = text.trim().length > 0 && !parse.isPending;
 
+  const inputRef = useRef<HTMLInputElement>(null);
+  // Session input history (shell-style ↑/↓). `histPos` indexes `history`;
+  // history.length means "the live draft", stashed in `draft` on the first ↑.
+  const histPos = useRef(0);
+  const draft = useRef("");
+
+  function caretToEnd() {
+    requestAnimationFrame(() => {
+      const el = inputRef.current;
+      if (el) el.setSelectionRange(el.value.length, el.value.length);
+    });
+  }
+
+  function onInputChange(value: string) {
+    setText(value);
+    histPos.current = history.length; // typing leaves history navigation
+  }
+
+  function onInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    // Tab on the empty (placeholder-showing) field accepts the placeholder.
+    if (event.key === "Tab" && !event.shiftKey && text === "") {
+      event.preventDefault();
+      setText(PLACEHOLDER);
+      caretToEnd();
+      return;
+    }
+    // Plain ↑/↓ walk the session history; Ctrl/Meta stay free for the exemplar
+    // picker. With no history yet, let the caret move normally.
+    const plainArrow =
+      (event.key === "ArrowUp" || event.key === "ArrowDown") &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      !event.altKey;
+    if (!plainArrow || history.length === 0) return;
+    event.preventDefault();
+    if (event.key === "ArrowUp") {
+      if (histPos.current === history.length) draft.current = text;
+      histPos.current = Math.max(0, histPos.current - 1);
+      setText(history[histPos.current]);
+    } else {
+      if (histPos.current >= history.length) return;
+      histPos.current += 1;
+      setText(histPos.current === history.length ? draft.current : history[histPos.current]);
+    }
+    caretToEnd();
+  }
+
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmed = text.trim();
     if (!trimmed || parse.isPending) return;
+    const nextHistory = history[history.length - 1] === trimmed ? history : [...history, trimmed];
+    setHistory(nextHistory);
+    // The field keeps the submitted text, so park the cursor *on* that entry —
+    // the first ↑ then steps to the previous one (not back onto the same text).
+    histPos.current = nextHistory.length - 1;
+    draft.current = "";
     setSelectedParse(0);
     parse.mutate({ body: { text: trimmed, n_best: N_BEST, strict: false } });
   }
@@ -49,10 +106,12 @@ function App() {
 
       <form onSubmit={onSubmit} className="flex items-center gap-2">
         <input
+          ref={inputRef}
           type="text"
           value={text}
-          onChange={(event) => setText(event.target.value)}
-          placeholder="Bumili ng aklat ang bata."
+          onChange={(event) => onInputChange(event.target.value)}
+          onKeyDown={onInputKeyDown}
+          placeholder={PLACEHOLDER}
           aria-label="Tagalog sentence"
           autoComplete="off"
           className="flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
