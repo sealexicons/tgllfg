@@ -8,6 +8,7 @@ import {
   auditRunMutation,
   auditRunStatusOptions,
   lexSearchOptions,
+  listExemplarsOptions,
   parseMutation,
 } from "./client/@tanstack/react-query.gen";
 
@@ -69,4 +70,13 @@ export function useAuditRunStatus(runId: string | undefined) {
 /** Diff the latest audit results against the baseline. */
 export function useAuditDiff() {
   return useMutation(auditDiffMutation());
+}
+
+/**
+ * The corpus exemplars for the parse picker — source → section → sentence,
+ * fetched once and cached. Gated by `enabled` so the (sizeable) payload is
+ * only pulled when the user opens the picker.
+ */
+export function useExemplars(enabled: boolean) {
+  return useQuery({ ...listExemplarsOptions(), enabled });
 }

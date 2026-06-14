@@ -60,4 +60,31 @@ describe("CStructureView", () => {
     fireEvent.click(screen.getByText("V"));
     expect(await screen.findByText("(↑ PRED) = 'KAIN'")).toBeInTheDocument();
   });
+
+  it("abbreviates a true binary feature in the label, keeping enum values", () => {
+    const withFeat: ParseResponse = {
+      text: "x",
+      parses: [
+        {
+          id: "p0",
+          c_structure: {
+            root: "c0",
+            nodes: {
+              c0: { id: "c0", label: "NP[CASE=NOM]", children: ["c1"], equations: [] },
+              c1: { id: "c1", label: "N[N_CORE=True]", children: [], equations: [] },
+            },
+          },
+          f_structure: { root: "f0", nodes: { f0: { id: "f0", feats: {} } } },
+          a_structure: { pred: "X", roles: [], mapping: {} },
+          diagnostics: [],
+        },
+      ],
+      fragments: [],
+      meta: { n_best: 5, parse_count: 1, fragment_count: 0 },
+    };
+    render(<CStructureView result={withFeat} selected={0} />);
+    expect(screen.getByText("N[N_CORE]")).toBeInTheDocument();
+    expect(screen.queryByText("N[N_CORE=True]")).not.toBeInTheDocument();
+    expect(screen.getByText("NP[CASE=NOM]")).toBeInTheDocument();
+  });
 });
