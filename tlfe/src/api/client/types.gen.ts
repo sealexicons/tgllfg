@@ -196,6 +196,62 @@ export type DiffEntryModel = {
 };
 
 /**
+ * ExemplarSection
+ */
+export type ExemplarSection = {
+    /**
+     * Section
+     */
+    section: string;
+    /**
+     * Sentences
+     */
+    sentences: Array<ExemplarSentence>;
+};
+
+/**
+ * ExemplarSentence
+ */
+export type ExemplarSentence = {
+    /**
+     * Locator
+     */
+    locator: string;
+    /**
+     * Sentence
+     */
+    sentence: string;
+    /**
+     * Text
+     */
+    text: string;
+};
+
+/**
+ * ExemplarSource
+ */
+export type ExemplarSource = {
+    /**
+     * Source
+     */
+    source: string;
+    /**
+     * Sections
+     */
+    sections: Array<ExemplarSection>;
+};
+
+/**
+ * ExemplarsResponse
+ */
+export type ExemplarsResponse = {
+    /**
+     * Sources
+     */
+    sources: Array<ExemplarSource>;
+};
+
+/**
  * FNodeModel
  */
 export type FNodeModel = {
@@ -677,3 +733,19 @@ export type AuditDiffResponses = {
 };
 
 export type AuditDiffResponse = AuditDiffResponses[keyof AuditDiffResponses];
+
+export type ListExemplarsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/exemplars';
+};
+
+export type ListExemplarsResponses = {
+    /**
+     * Successful Response
+     */
+    200: ExemplarsResponse;
+};
+
+export type ListExemplarsResponse = ListExemplarsResponses[keyof ListExemplarsResponses];

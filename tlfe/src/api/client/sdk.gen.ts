@@ -2,7 +2,7 @@
 
 import type { Client, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AuditDiffData, AuditDiffErrors, AuditDiffResponses, AuditRunData, AuditRunErrors, AuditRunResponses, AuditRunStatusData, AuditRunStatusErrors, AuditRunStatusResponses, HealthData, HealthResponses, LexSearchData, LexSearchErrors, LexSearchResponses, ParseData, ParseErrors, ParseResponses, ReadyData, ReadyResponses } from './types.gen';
+import type { AuditDiffData, AuditDiffErrors, AuditDiffResponses, AuditRunData, AuditRunErrors, AuditRunResponses, AuditRunStatusData, AuditRunStatusErrors, AuditRunStatusResponses, HealthData, HealthResponses, LexSearchData, LexSearchErrors, LexSearchResponses, ListExemplarsData, ListExemplarsResponses, ParseData, ParseErrors, ParseResponses, ReadyData, ReadyResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -96,4 +96,13 @@ export const auditDiff = <ThrowOnError extends boolean = false>(options: Options
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * List corpus exemplars for the parse picker
+ */
+export const listExemplars = <ThrowOnError extends boolean = false>(options?: Options<ListExemplarsData, ThrowOnError>): RequestResult<ListExemplarsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<ListExemplarsResponses, unknown, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/exemplars',
+    ...options
 });
