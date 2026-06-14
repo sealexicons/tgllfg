@@ -4,9 +4,21 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import App from "./App.tsx";
+
+// Stub the parse mutation so submitting (to seed input history) never hits the
+// network; the views render their idle states with data undefined.
+vi.mock("./api/hooks", () => ({
+  useParse: () => ({
+    mutate: vi.fn(),
+    isPending: false,
+    isError: false,
+    error: null,
+    data: undefined,
+  }),
+}));
 
 function renderApp() {
   const queryClient = new QueryClient();
@@ -43,5 +55,47 @@ describe("App", () => {
       target: { value: "Kumain ang bata." },
     });
     expect(button).toBeEnabled();
+  });
+
+  it("accepts the placeholder on Tab when the field is empty", () => {
+    renderApp();
+    const input = screen.getByRole("textbox", { name: /tagalog sentence/i }) as HTMLInputElement;
+    expect(input.value).toBe("");
+    fireEvent.keyDown(input, { key: "Tab" });
+    expect(input.value).toBe("Bumili ng aklat ang bata.");
+  });
+
+  it("walks session input history with ArrowUp / ArrowDown", () => {
+    renderApp();
+    const input = screen.getByRole("textbox", { name: /tagalog sentence/i }) as HTMLInputElement;
+    const form = input.closest("form")!;
+    fireEvent.change(input, { target: { value: "Kumain ang bata." } });
+    fireEvent.submit(form);
+    fireEvent.change(input, { target: { value: "Natulog ang aso." } });
+    fireEvent.submit(form);
+    fireEvent.change(input, { target: { value: "" } });
+
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+    expect(input.value).toBe("Natulog ang aso.");
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+    expect(input.value).toBe("Kumain ang bata.");
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(input.value).toBe("Natulog ang aso.");
+    fireEvent.keyDown(input, { key: "ArrowDown" });
+    expect(input.value).toBe("");
+  });
+
+  it("steps to the previous entry on the first ArrowUp after submitting", () => {
+    renderApp();
+    const input = screen.getByRole("textbox", { name: /tagalog sentence/i }) as HTMLInputElement;
+    const form = input.closest("form")!;
+    fireEvent.change(input, { target: { value: "Kumain ang bata." } });
+    fireEvent.submit(form);
+    fireEvent.change(input, { target: { value: "Natulog ang aso." } });
+    fireEvent.submit(form);
+    // Field still shows the just-submitted entry; one ArrowUp recalls the prior.
+    expect(input.value).toBe("Natulog ang aso.");
+    fireEvent.keyDown(input, { key: "ArrowUp" });
+    expect(input.value).toBe("Kumain ang bata.");
   });
 });
