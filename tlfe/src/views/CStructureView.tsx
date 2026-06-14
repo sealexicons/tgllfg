@@ -12,6 +12,12 @@ const HALO_H = 20;
 // Edges leave a node from the bottom of its label halo (HALO_H - LABEL_ASCENT).
 const EDGE_DROP = HALO_H - LABEL_ASCENT;
 const ARC_RISE = 24;
+// Equal left/right breathing room inside the SVG around the tree's true extent.
+const VIEW_PAD = 16;
+
+// Rough on-screen width of a node label's halo (matches the per-node rect);
+// used both to size the halo and to centre the tree symmetrically.
+const haloWidth = (label: string) => label.length * 7 + 10;
 
 // The C-structure tab body: empty/no-parse and fragment-only states plus the
 // SVG tree for the selected parse (selection is controlled from App). Each node
@@ -96,49 +102,69 @@ function CStructureTree({
         })
       : [];
 
+  // The tidy-tree pads the right edge by an extra column and ignores label
+  // width, so layout.width is lopsided. Re-derive the real horizontal extent
+  // (label halos included) and pad both sides equally so the mx-auto-centred
+  // SVG actually looks centred.
+  let minX = Infinity;
+  let maxX = -Infinity;
+  for (const node of layout.nodes) {
+    const half = haloWidth(node.label) / 2;
+    minX = Math.min(minX, node.x - half);
+    maxX = Math.max(maxX, node.x + half);
+  }
+  const dx = VIEW_PAD - minX;
+  const width = VIEW_PAD * 2 + maxX - minX;
+
   return (
-    <div className="overflow-auto">
+    <div className="overflow-auto lg:min-h-0 lg:flex-1">
       <svg
-        width={layout.width}
+        width={width}
         height={layout.height}
         role="img"
         aria-label="c-structure tree"
         onMouseLeave={() => onHoverNode?.(null)}
+        // The SVG is sized to the tree's true extent with equal side padding,
+        // then mx-auto centres it (margins collapse to 0 when it overflows, so
+        // wide trees still left-align and scroll).
+        className="mx-auto block"
       >
-        {layout.edges.map((edge) => {
-          const from = byId.get(edge.from);
-          const to = byId.get(edge.to);
-          if (!from || !to) return null;
-          return (
-            <line
-              key={`${edge.from}-${edge.to}`}
-              x1={from.x}
-              y1={from.y + EDGE_DROP}
-              x2={to.x}
-              y2={to.y - LABEL_ASCENT}
+        <g transform={`translate(${dx}, 0)`}>
+          {layout.edges.map((edge) => {
+            const from = byId.get(edge.from);
+            const to = byId.get(edge.to);
+            if (!from || !to) return null;
+            return (
+              <line
+                key={`${edge.from}-${edge.to}`}
+                x1={from.x}
+                y1={from.y + EDGE_DROP}
+                x2={to.x}
+                y2={to.y - LABEL_ASCENT}
+                stroke="currentColor"
+                className="text-slate-300"
+              />
+            );
+          })}
+          {arcs.map((arc) => (
+            <path
+              key={arc.key}
+              d={arc.d}
+              fill="none"
               stroke="currentColor"
-              className="text-slate-300"
+              strokeWidth={1.5}
+              className="text-amber-400"
             />
-          );
-        })}
-        {arcs.map((arc) => (
-          <path
-            key={arc.key}
-            d={arc.d}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            className="text-amber-400"
-          />
-        ))}
-        {layout.nodes.map((node) => (
-          <CStructureNode
-            key={node.id}
-            node={node}
-            active={highlight?.has(node.id) ?? false}
-            onHoverNode={onHoverNode}
-          />
-        ))}
+          ))}
+          {layout.nodes.map((node) => (
+            <CStructureNode
+              key={node.id}
+              node={node}
+              active={highlight?.has(node.id) ?? false}
+              onHoverNode={onHoverNode}
+            />
+          ))}
+        </g>
       </svg>
     </div>
   );
@@ -157,7 +183,7 @@ function CStructureNode({
   active: boolean;
   onHoverNode?: (id: string | null) => void;
 }) {
-  const haloW = node.label.length * 7 + 10;
+  const haloW = haloWidth(node.label);
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
