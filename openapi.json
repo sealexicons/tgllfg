@@ -300,6 +300,27 @@
           }
         }
       }
+    },
+    "/api/v1/exemplars": {
+      "get": {
+        "tags": [
+          "exemplars"
+        ],
+        "summary": "List corpus exemplars for the parse picker",
+        "operationId": "list_exemplars",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExemplarsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -604,6 +625,87 @@
           "text"
         ],
         "title": "DiffEntryModel"
+      },
+      "ExemplarSection": {
+        "properties": {
+          "section": {
+            "type": "string",
+            "title": "Section"
+          },
+          "sentences": {
+            "items": {
+              "$ref": "#/components/schemas/ExemplarSentence"
+            },
+            "type": "array",
+            "title": "Sentences"
+          }
+        },
+        "type": "object",
+        "required": [
+          "section",
+          "sentences"
+        ],
+        "title": "ExemplarSection"
+      },
+      "ExemplarSentence": {
+        "properties": {
+          "locator": {
+            "type": "string",
+            "title": "Locator"
+          },
+          "sentence": {
+            "type": "string",
+            "title": "Sentence"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "locator",
+          "sentence",
+          "text"
+        ],
+        "title": "ExemplarSentence"
+      },
+      "ExemplarSource": {
+        "properties": {
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/ExemplarSection"
+            },
+            "type": "array",
+            "title": "Sections"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source",
+          "sections"
+        ],
+        "title": "ExemplarSource"
+      },
+      "ExemplarsResponse": {
+        "properties": {
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/ExemplarSource"
+            },
+            "type": "array",
+            "title": "Sources"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sources"
+        ],
+        "title": "ExemplarsResponse"
       },
       "FNodeModel": {
         "properties": {

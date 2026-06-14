@@ -4,8 +4,8 @@ import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOption
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen';
-import { auditDiff, auditRun, auditRunStatus, health, lexSearch, type Options, parse, ready } from '../sdk.gen';
-import type { AuditDiffData, AuditDiffError, AuditDiffResponse, AuditRunData, AuditRunError, AuditRunResponse, AuditRunStatusData, AuditRunStatusError, AuditRunStatusResponse, HealthData, HealthResponse, LexSearchData, LexSearchError, LexSearchResponse2, ParseData, ParseError, ParseResponse2, ReadyData } from '../types.gen';
+import { auditDiff, auditRun, auditRunStatus, health, lexSearch, listExemplars, type Options, parse, ready } from '../sdk.gen';
+import type { AuditDiffData, AuditDiffError, AuditDiffResponse, AuditRunData, AuditRunError, AuditRunResponse, AuditRunStatusData, AuditRunStatusError, AuditRunStatusResponse, HealthData, HealthResponse, LexSearchData, LexSearchError, LexSearchResponse2, ListExemplarsData, ListExemplarsResponse, ParseData, ParseError, ParseResponse2, ReadyData } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -223,3 +223,21 @@ export const auditDiffMutation = (options?: Partial<Options<AuditDiffData>>): Us
     };
     return mutationOptions;
 };
+
+export const listExemplarsQueryKey = (options?: Options<ListExemplarsData>) => createQueryKey('listExemplars', options);
+
+/**
+ * List corpus exemplars for the parse picker
+ */
+export const listExemplarsOptions = (options?: Options<ListExemplarsData>) => queryOptions<ListExemplarsResponse, AxiosError<DefaultError>, ListExemplarsResponse, ReturnType<typeof listExemplarsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await listExemplars({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listExemplarsQueryKey(options)
+});

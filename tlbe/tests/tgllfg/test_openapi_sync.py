@@ -30,6 +30,7 @@ def test_openapi_lists_the_routes() -> None:
         "/api/v1/audit/run",
         "/api/v1/audit/runs/{run_id}",
         "/api/v1/audit/diff",
+        "/api/v1/exemplars",
         "/health",
         "/ready",
     ):
