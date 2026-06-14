@@ -161,3 +161,61 @@ def test_glued_parse_correspondence_composed_from_halves(client: TestClient) -> 
     app_ref = app[0]["$ref"]
     assert app_ref != fs["root"]
     assert app_ref in corr.values(), "post-half correspondence not composed in"
+
+
+def test_appositive_coordination_fnodes_all_map_to_cnodes(client: TestClient) -> None:
+    # Phase 14.final.post-9: a colon appositive whose post-half is a comma+at
+    # coordination. The appositive glue used to mutate the shared pre-half's
+    # APP in place, leaking every spuriously-ambiguous post-half copy into the
+    # matrix APP set — only one of which any c-node projected to, leaving the
+    # rest φ-orphaned (the inspector couldn't cross-highlight them). After the
+    # dedup fix, APP holds exactly the one real coordination, and it *and* its
+    # CONJUNCTS members all map back to a c-node.
+    text = (
+        "Maganda ang panahon dito: ang panahon ng tag-init mula Abril "
+        "hanggang Hunyo, at ang panahon ng tag-ulan mula Hulyo hanggang "
+        "Oktubre."
+    )
+    body = client.post("/api/v1/parse", json={"text": text}).json()
+    assert body["parses"], "expected a complete (glued) parse"
+    p = body["parses"][0]
+    fs = p["f_structure"]
+    covered = set(p["correspondence"].values())
+
+    app = fs["nodes"][fs["root"]]["feats"].get("APP")
+    assert isinstance(app, list) and len(app) == 1, (
+        f"APP should hold exactly the one appositive coordination; "
+        f"got {0 if app is None else len(app)} (spurious-leak regressed)"
+    )
+    coord_ref = app[0]["$ref"]
+    assert coord_ref in covered, "coordination matrix f-node is φ-orphaned"
+    coord = fs["nodes"][coord_ref]
+    assert coord["feats"].get("COORD") == "AND"
+    conjuncts = coord["feats"].get("CONJUNCTS")
+    assert isinstance(conjuncts, list) and len(conjuncts) == 2
+    for member in conjuncts:
+        assert member["$ref"] in covered, f"conjunct {member['$ref']} is φ-orphaned"
+
+
+def test_synthetic_coordination_cnode_carries_equations(client: TestClient) -> None:
+    # Phase 14.final.post-9: the pipeline-synthesized COORD=AND matrix c-node
+    # (and its coordinator leaf) now carry the chart-rule equations they stand
+    # in for, so the inspector's c-node popover shows real functional structure
+    # instead of "No functional equations".
+    text = (
+        "Maganda ang panahon dito: ang panahon ng tag-init mula Abril "
+        "hanggang Hunyo, at ang panahon ng tag-ulan mula Hulyo hanggang "
+        "Oktubre."
+    )
+    body = client.post("/api/v1/parse", json={"text": text}).json()
+    nodes = body["parses"][0]["c_structure"]["nodes"]
+    coord = [n for n in nodes.values() if n["label"].startswith("NP[CASE=NOM,COORD=AND]")]
+    assert coord, "no synthesized COORD=AND matrix c-node in the serialized tree"
+    eqs = coord[0]["equations"]
+    assert eqs, "coordination matrix c-node serialized with empty equations"
+    joined = " ".join(eqs)
+    assert "CONJUNCTS" in joined and "CASE" in joined
+    coordinator = [n for n in nodes.values() if n["label"] == "PART[COORD=AND]"]
+    assert coordinator and coordinator[0]["equations"], (
+        "coordinator leaf serialized with empty equations"
+    )
