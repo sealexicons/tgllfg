@@ -103,6 +103,60 @@ def _glued_result(glued: list[_GluedParse]) -> ParseResult:
     )
 
 
+def _fstructure_signature(value: object, _ancestors: tuple[int, ...] = ()) -> str:
+    """A cycle-safe structural signature of an f-structure value.
+
+    Two f-structures that are structurally equal (same attributes, same
+    atomic values, same nesting / set membership) get the same string,
+    regardless of object identity or the per-graph ``FStructure.id``
+    counter. Reentrant back-edges within the current DFS path collapse to a
+    fixed ``@cycle`` marker (keeps the walk finite); shared (DAG) subgraphs
+    expand identically in identical inputs, so equal structures still match.
+
+    Phase 14.final.post-9: used by :func:`_dedup_glued` to collapse the
+    spuriously-ambiguous parses the split-and-glue cross-product produces
+    (distinct objects, identical content) before they fan out into matrix
+    parses — the source of the colon/em-dash APP leak on PANAHON sent-2.
+    """
+    if isinstance(value, FStructure):
+        if id(value) in _ancestors:
+            return "@cycle"
+        nxt = _ancestors + (id(value),)
+        body = ",".join(
+            f"{k}={_fstructure_signature(v, nxt)}"
+            for k, v in sorted(value.feats.items())
+        )
+        return "{" + body + "}"
+    if isinstance(value, (frozenset, set)):
+        return "[" + ",".join(sorted(
+            _fstructure_signature(m, _ancestors) for m in value
+        )) + "]"
+    return repr(value)
+
+
+def _dedup_glued(parses: list[_GluedParse]) -> list[_GluedParse]:
+    """Drop parses whose f-structure is structurally identical to an earlier
+    one, keeping the first occurrence (so rank order is preserved).
+
+    Deduping the *halves* a split feeds into its glue loop is what keeps the
+    cumulative in-place APP / set writes correct: when the spurious copies
+    collapse to one, each ``pre_fs`` is glued at most once, so its set-valued
+    feats accumulate exactly one member instead of leaking every sibling
+    glue's contribution (PANAHON sent-2's APP held 4 near-duplicate
+    coordinations, only one of which any c-node projected to — hence the
+    φ-orphaned appositive f-nodes the inspector couldn't cross-highlight).
+    """
+    seen: set[str] = set()
+    out: list[_GluedParse] = []
+    for parse in parses:
+        sig = _fstructure_signature(parse[1])
+        if sig in seen:
+            continue
+        seen.add(sig)
+        out.append(parse)
+    return out
+
+
 def parse_text(
     text: str,
     *,
@@ -737,6 +791,13 @@ def _try_colon_split(
     )
     if not pre_parses:
         return None
+    # Collapse spuriously-ambiguous halves before the cross-product glue
+    # (post-9): the appositive glue adds the post-half to a set on the
+    # shared pre_fs in place, so gluing one pre-half against N
+    # structurally-identical post-halves would leak all N into APP. With
+    # each half deduped to its distinct structures, every pre_fs is glued
+    # at most once per post and APP carries exactly the real appositive.
+    pre_parses = _dedup_glued(pre_parses)
 
     # Try each post-colon category in order; the first that yields a
     # parse wins. This mirrors the three chart-level colon-appositive
@@ -758,6 +819,7 @@ def _try_colon_split(
             break
     if not post_parses:
         return None
+    post_parses = _dedup_glued(post_parses)
 
     # Synthesize one glued parse per (pre × post) combination, capped
     # at ``n_best``. Both halves must keep passing well-formedness on
@@ -921,10 +983,15 @@ def _glue_colon_appositive(
         children=[],
         equations=[],
     )
+    # Carry the chart-rule equations the synthesis stands in for (post-9),
+    # so the inspector's c-node popover shows the appositive's functional
+    # structure instead of "No functional equations": the matrix is the
+    # pre-half ((↑) = ↓1) with the post-half added to its APP set
+    # (↓3 ∈ (↑ APP)). The colon leaf is syncategorematic (no equations).
     matrix_ctree = CNode(
         label="S",
         children=[pre_ctree, colon_leaf, post_ctree],
-        equations=[],
+        equations=["(↑) = ↓1", "↓3 ∈ (↑ APP)"],
     )
     # Set-membership write: APP gets a new frozenset containing the
     # post f-structure (union with any prior APP membership, but the
@@ -1003,6 +1070,9 @@ def _try_emdash_split(
     )
     if not pre_parses:
         return None
+    # Collapse spurious duplicates before the in-place APP glue (post-9 —
+    # see _try_colon_split / _dedup_glued).
+    pre_parses = _dedup_glued(pre_parses)
 
     # Try the post half against each category in order — first match wins.
     post_parses: list[_GluedParse] = []
@@ -1040,6 +1110,7 @@ def _try_emdash_split(
 
     if not post_parses:
         return None
+    post_parses = _dedup_glued(post_parses)
 
     glued: list[_GluedParse] = []
     for pre_parse in pre_parses:
@@ -1075,10 +1146,13 @@ def _glue_emdash_appositive(
         children=[],
         equations=[],
     )
+    # Same chart-rule equations as the colon glue (post-9): the matrix is
+    # the pre-half ((↑) = ↓1) with the post constituent in its APP set
+    # (↓3 ∈ (↑ APP)). The dash leaf is syncategorematic.
     matrix_ctree = CNode(
         label="S",
         children=[pre_ctree, dash_leaf, post_ctree],
-        equations=[],
+        equations=["(↑) = ↓1", "↓3 ∈ (↑ APP)"],
     )
     existing_app = pre_fs.feats.get("APP")
     if existing_app is None:
@@ -1197,7 +1271,12 @@ def _try_comma_at_np_split(
                     break
         if len(glued) >= n_best:
             break
-    return glued or None
+    # Drop spurious duplicates from the conjuncts' cross-product (post-9):
+    # each glue builds a fresh matrix f-structure, so structurally-equal
+    # coordinations are safe to collapse here — and collapsing them keeps a
+    # one-coordination appositive from fanning out into N identical APP
+    # members when this result feeds an enclosing colon / em-dash glue.
+    return _dedup_glued(glued) or None
 
 
 def _extract_case(start_symbol: str) -> str | None:
@@ -1234,13 +1313,24 @@ def _glue_comma_at_np(
     comma_leaf = CNode(
         label="PUNCT[PUNCT_CLASS=COMMA]", children=[], equations=[],
     )
+    # The coordinator carries the COORD value it contributes; the comma is
+    # syncategorematic (post-9 — populate the synthetic c-nodes' equations
+    # so the inspector popover shows the coordination's functional
+    # structure rather than "No functional equations").
     at_leaf = CNode(
-        label="PART[COORD=AND]", children=[], equations=[],
+        label="PART[COORD=AND]", children=[], equations=["(↑ COORD) = 'AND'"],
     )
+    # The matrix is a fresh node carrying CASE / NUM with each conjunct a
+    # CONJUNCTS member (children: pre=↓1, comma=↓2, at=↓3, post=↓4).
     matrix_ctree = CNode(
         label=f"NP[CASE={case},COORD=AND]",
         children=[pre_ctree, comma_leaf, at_leaf, post_ctree],
-        equations=[],
+        equations=[
+            f"(↑ CASE) = '{case}'",
+            "(↑ NUM) = 'PL'",
+            "↓1 ∈ (↑ CONJUNCTS)",
+            "↓4 ∈ (↑ CONJUNCTS)",
+        ],
     )
     matrix_fs = FStructure(feats={
         "CASE": case,
