@@ -23,6 +23,12 @@ export function CFStructureView({
   selected: number;
 }) {
   const [hover, setHover] = useState<Hover>(null);
+  // Target c-nodes to scroll into view when an f-node is clicked; the bumped
+  // nonce makes every click re-trigger the scroll, even on the same node.
+  const [scroll, setScroll] = useState<{ cids: readonly string[]; nonce: number }>({
+    cids: [],
+    nonce: 0,
+  });
 
   const parses = result?.parses ?? [];
   const index = Math.min(Math.max(selected, 0), Math.max(parses.length - 1, 0));
@@ -39,6 +45,12 @@ export function CFStructureView({
     }
     return { correspondence: corr, cIdsByF: inv };
   }, [parse]);
+
+  // Clicking an f-node scrolls the c-structure to the c-node(s) it projects from
+  // (its φ-image); a φ-orphaned f-node yields an empty target, so nothing moves.
+  function selectFNode(fid: string) {
+    setScroll((prev) => ({ cids: cIdsByF.get(fid) ?? [], nonce: prev.nonce + 1 }));
+  }
 
   let activeF: string | null = null;
   let activeCs = new Set<string>();
@@ -60,6 +72,7 @@ export function CFStructureView({
           result={result}
           selected={selected}
           highlight={activeCs}
+          scrollTo={scroll}
           onHoverNode={(id) => setHover(id ? { kind: "c", id } : null)}
         />
       </section>
@@ -76,6 +89,7 @@ export function CFStructureView({
           selected={selected}
           activeFid={activeF}
           onHoverNode={(id) => setHover(id ? { kind: "f", id } : null)}
+          onSelectNode={selectFNode}
         />
       </section>
     </div>

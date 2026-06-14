@@ -1,8 +1,8 @@
 // Copyright (c) 2025-2026 G & R Associates LLC
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 import type { ParseResponse } from "../api/client";
 import { CFStructureView } from "./CFStructureView";
@@ -68,5 +68,43 @@ describe("CFStructureView", () => {
     expect(screen.getByText("S")).not.toHaveClass("fill-amber-800");
     expect(screen.getByText("V")).not.toHaveClass("fill-amber-800");
     expect(subj).toHaveClass("bg-amber-50");
+  });
+
+  it("scrolls the c-structure to a clicked f-node's φ-image", async () => {
+    // f1 is reentrant (SUBJ + OBJ both → f1), so it renders as clickable tags;
+    // φ maps it to c1 + c2.
+    const reentrant: ParseResponse = {
+      text: "Kumain ang bata.",
+      parses: [
+        {
+          id: "p0",
+          c_structure: {
+            root: "c0",
+            nodes: {
+              c0: { id: "c0", label: "S", children: ["c1", "c2"] },
+              c1: { id: "c1", label: "NP", children: [] },
+              c2: { id: "c2", label: "V", children: [] },
+            },
+          },
+          f_structure: {
+            root: "f0",
+            nodes: {
+              f0: { id: "f0", feats: { PRED: "kain", SUBJ: { $ref: "f1" }, OBJ: { $ref: "f1" } } },
+              f1: { id: "f1", feats: { PRED: "bata" } },
+            },
+          },
+          a_structure: { pred: "KAIN", roles: [], mapping: {} },
+          diagnostics: [],
+          correspondence: { c0: "f0", c1: "f1", c2: "f1" },
+        },
+      ],
+      fragments: [],
+      meta: { n_best: 5, parse_count: 1, fragment_count: 0 },
+    };
+    const scrollSpy = vi.spyOn(Element.prototype, "scrollTo").mockImplementation(() => {});
+    const { container } = render(<CFStructureView result={reentrant} selected={0} />);
+    fireEvent.click(container.querySelector('[data-fs-id="f1"]')!);
+    await waitFor(() => expect(scrollSpy).toHaveBeenCalled());
+    scrollSpy.mockRestore();
   });
 });

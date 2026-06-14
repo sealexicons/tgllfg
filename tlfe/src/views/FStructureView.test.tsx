@@ -1,8 +1,8 @@
 // Copyright (c) 2025-2026 G & R Associates LLC
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 import type { ParseResponse } from "../api/client";
 import { FStructureView } from "./FStructureView";
@@ -105,5 +105,23 @@ describe("FStructureView", () => {
     render(<FStructureView result={fragmentsOnly} selected={0} />);
     expect(screen.getByText(/no complete parse/i)).toBeInTheDocument();
     expect(screen.getByText(/3 fragments/i)).toBeInTheDocument();
+  });
+
+  it("opens a sub-structure popover when a reentrancy tag is clicked", async () => {
+    const { container } = render(<FStructureView result={RESULT} selected={0} />);
+    fireEvent.click(container.querySelector('[data-fs-id="f1"]')!);
+    const dialog = await screen.findByRole("dialog");
+    // The popover shows f1's own AVM (PRED Maria).
+    expect(within(dialog).getByText("PRED")).toBeInTheDocument();
+    expect(within(dialog).getByText("Maria")).toBeInTheDocument();
+  });
+
+  it("reports the clicked f-node id via onSelectNode", () => {
+    const onSelectNode = vi.fn();
+    const { container } = render(
+      <FStructureView result={RESULT} selected={0} onSelectNode={onSelectNode} />,
+    );
+    fireEvent.click(container.querySelector('[data-fs-id="f1"]')!);
+    expect(onSelectNode).toHaveBeenCalledWith("f1");
   });
 });
