@@ -9,6 +9,7 @@ import { useParse } from "./api/hooks";
 import { AStructureView } from "./views/AStructureView";
 import { CFStructureView } from "./views/CFStructureView";
 import { DiagnosticsView } from "./views/DiagnosticsView";
+import { JsonView } from "./views/JsonView";
 
 // The inspector views: the combined c-/f-structure projection (cross-
 // highlighted by the φ correspondence), the a-structure, parse diagnostics,
@@ -201,17 +202,6 @@ function MetaBar({ result }: { result: ParseResponse }) {
       )}
       <span className="text-slate-400">n_best={n_best}</span>
     </div>
-  );
-}
-
-function JsonView({ result }: { result: ParseResponse | undefined }) {
-  if (!result) {
-    return <p className="text-slate-400">Parse a sentence to see the raw payload.</p>;
-  }
-  return (
-    <pre className="max-h-[28rem] overflow-auto rounded bg-slate-900 p-3 text-xs leading-relaxed text-slate-100">
-      {JSON.stringify(result, null, 2)}
-    </pre>
   );
 }
 
