@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { Popover } from "radix-ui";
 
 import type { CStructure, ParseResponse } from "../api/client";
-import { type LaidOutNode, layoutCStructure } from "./cstructureLayout";
+import { displayLabel, labelWidth, type LaidOutNode, layoutCStructure } from "./cstructureLayout";
 
 const LABEL_ASCENT = 13;
 const HALO_H = 20;
@@ -14,10 +14,6 @@ const EDGE_DROP = HALO_H - LABEL_ASCENT;
 const ARC_RISE = 24;
 // Equal left/right breathing room inside the SVG around the tree's true extent.
 const VIEW_PAD = 16;
-
-// Rough on-screen width of a node label's halo (matches the per-node rect);
-// used both to size the halo and to centre the tree symmetrically.
-const haloWidth = (label: string) => label.length * 7 + 10;
 
 // The C-structure tab body: empty/no-parse and fragment-only states plus the
 // SVG tree for the selected parse (selection is controlled from App). Each node
@@ -92,6 +88,18 @@ function CStructureTree({
     lit.length >= 2
       ? lit.slice(1).map((to, i) => {
           const from = lit[i];
+          // Vertically-stacked co-projecting nodes (a head and its phrase): trace
+          // the plain tree edge (upper halo-bottom → lower halo-top) so the
+          // highlight matches the grey connector instead of bulging above the top
+          // node. Horizontally-separated nodes keep the shallow upward arc.
+          if (from.x === to.x) {
+            const upper = from.y <= to.y ? from : to;
+            const lower = from.y <= to.y ? to : from;
+            return {
+              key: `${from.id}-${to.id}`,
+              d: `M ${upper.x} ${upper.y + EDGE_DROP} L ${lower.x} ${lower.y - LABEL_ASCENT}`,
+            };
+          }
           const ay = from.y - LABEL_ASCENT;
           const by = to.y - LABEL_ASCENT;
           const cy = Math.min(ay, by) - ARC_RISE;
@@ -109,7 +117,7 @@ function CStructureTree({
   let minX = Infinity;
   let maxX = -Infinity;
   for (const node of layout.nodes) {
-    const half = haloWidth(node.label) / 2;
+    const half = labelWidth(displayLabel(node.label)) / 2;
     minX = Math.min(minX, node.x - half);
     maxX = Math.max(maxX, node.x + half);
   }
@@ -183,14 +191,15 @@ function CStructureNode({
   active: boolean;
   onHoverNode?: (id: string | null) => void;
 }) {
-  const haloW = haloWidth(node.label);
+  const label = displayLabel(node.label);
+  const haloW = labelWidth(label);
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
         <g
           transform={`translate(${node.x}, ${node.y})`}
           tabIndex={0}
-          aria-label={node.label}
+          aria-label={label}
           style={{ cursor: "pointer" }}
           onMouseOver={(event) => {
             event.stopPropagation();
@@ -214,7 +223,7 @@ function CStructureNode({
                 : "fill-violet-700 text-[13px] font-medium"
             }
           >
-            {node.label}
+            {label}
           </text>
         </g>
       </Popover.Trigger>
@@ -224,7 +233,7 @@ function CStructureNode({
           sideOffset={6}
           className="z-50 max-w-sm rounded-md border border-slate-200 bg-white p-3 text-xs shadow-lg"
         >
-          <p className="mb-1.5 font-semibold text-violet-700">{node.label}</p>
+          <p className="mb-1.5 font-semibold text-violet-700">{label}</p>
           {node.equations.length > 0 ? (
             <ul className="space-y-0.5 font-mono leading-relaxed text-slate-600">
               {node.equations.map((equation, i) => (

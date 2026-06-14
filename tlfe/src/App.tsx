@@ -6,6 +6,8 @@ import { Tabs } from "radix-ui";
 
 import type { ParseModel, ParseResponse } from "./api/client";
 import { useParse } from "./api/hooks";
+import { ExemplarPicker } from "./ExemplarPicker";
+import { useExemplarPicker } from "./useExemplarPicker";
 import { AStructureView } from "./views/AStructureView";
 import { CFStructureView } from "./views/CFStructureView";
 import { DiagnosticsView } from "./views/DiagnosticsView";
@@ -30,6 +32,7 @@ function App() {
   const [text, setText] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [selectedParse, setSelectedParse] = useState(0);
+  const [showExemplars, setShowExemplars] = useState(false);
   const parse = useParse();
   const result = parse.data;
   const parses = result?.parses ?? [];
@@ -48,6 +51,17 @@ function App() {
     });
   }
 
+  // Drop a picked exemplar into the field (no auto-parse); treat it as a fresh
+  // draft so ↑ still recalls the submit history.
+  function applyExemplar(value: string) {
+    setText(value);
+    histPos.current = history.length;
+    draft.current = "";
+    caretToEnd();
+  }
+
+  const picker = useExemplarPicker(showExemplars, applyExemplar);
+
   function onInputChange(value: string) {
     setText(value);
     histPos.current = history.length; // typing leaves history navigation
@@ -59,6 +73,16 @@ function App() {
       event.preventDefault();
       setText(PLACEHOLDER);
       caretToEnd();
+      return;
+    }
+    // Ctrl/Meta + ↑/↓ steps the exemplar picker when it's open.
+    const stepArrow =
+      (event.key === "ArrowUp" || event.key === "ArrowDown") &&
+      (event.ctrlKey || event.metaKey) &&
+      !event.altKey;
+    if (stepArrow && showExemplars && picker.ready) {
+      event.preventDefault();
+      picker.step(event.key === "ArrowDown" ? 1 : -1);
       return;
     }
     // Plain ↑/↓ walk the session history; Ctrl/Meta stay free for the exemplar
@@ -105,26 +129,43 @@ function App() {
         </p>
       </header>
 
-      <form onSubmit={onSubmit} className="flex items-center gap-2">
-        <input
-          ref={inputRef}
-          type="text"
-          value={text}
-          onChange={(event) => onInputChange(event.target.value)}
-          onKeyDown={onInputKeyDown}
-          placeholder={PLACEHOLDER}
-          aria-label="Tagalog sentence"
-          autoComplete="off"
-          className="flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
-        />
-        <button
-          type="submit"
-          disabled={!canParse}
-          className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {parse.isPending ? "Parsing…" : "Parse"}
-        </button>
-      </form>
+      <div className="flex flex-col gap-2">
+        <form onSubmit={onSubmit} className="flex items-center gap-2">
+          <input
+            ref={inputRef}
+            type="text"
+            value={text}
+            onChange={(event) => onInputChange(event.target.value)}
+            onKeyDown={onInputKeyDown}
+            placeholder={PLACEHOLDER}
+            aria-label="Tagalog sentence"
+            autoComplete="off"
+            className="flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
+          />
+          <button
+            type="submit"
+            disabled={!canParse}
+            className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {parse.isPending ? "Parsing…" : "Parse"}
+          </button>
+        </form>
+
+        {/* Picker row: checkbox + dropdowns inline, offset to align with the
+            input's first character cell. */}
+        <div className="flex flex-wrap items-center gap-3 pl-3 text-xs">
+          <label className="flex items-center gap-2 text-slate-600">
+            <input
+              type="checkbox"
+              checked={showExemplars}
+              onChange={(event) => setShowExemplars(event.target.checked)}
+              className="accent-violet-600"
+            />
+            Show Exemplars
+          </label>
+          {showExemplars && <ExemplarPicker picker={picker} />}
+        </div>
+      </div>
 
       <StatusRegion parse={parse} />
 

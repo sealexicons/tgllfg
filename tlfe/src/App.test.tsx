@@ -18,6 +18,25 @@ vi.mock("./api/hooks", () => ({
     error: null,
     data: undefined,
   }),
+  useExemplars: () => ({
+    isLoading: false,
+    data: {
+      sources: [
+        {
+          source: "wave1",
+          sections: [
+            {
+              section: "A",
+              sentences: [
+                { locator: "A/s1", sentence: "s1", text: "a-s1" },
+                { locator: "A/s2", sentence: "s2", text: "a-s2" },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  }),
 }));
 
 function renderApp() {
@@ -97,5 +116,21 @@ describe("App", () => {
     expect(input.value).toBe("Natulog ang aso.");
     fireEvent.keyDown(input, { key: "ArrowUp" });
     expect(input.value).toBe("Kumain ang bata.");
+  });
+
+  it("reveals the exemplar picker when 'Show Exemplars' is checked", () => {
+    renderApp();
+    expect(screen.queryByText(/ctrl\+↑\/↓ to step/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("checkbox", { name: /show exemplars/i }));
+    expect(screen.getByText(/ctrl\+↑\/↓ to step/i)).toBeInTheDocument();
+  });
+
+  it("auto-syncs the first exemplar on check, then steps with Ctrl+ArrowDown", () => {
+    renderApp();
+    const input = screen.getByRole("textbox", { name: /tagalog sentence/i }) as HTMLInputElement;
+    fireEvent.click(screen.getByRole("checkbox", { name: /show exemplars/i }));
+    expect(input.value).toBe("a-s1"); // auto-synced on check — no Ctrl needed
+    fireEvent.keyDown(input, { key: "ArrowDown", ctrlKey: true });
+    expect(input.value).toBe("a-s2");
   });
 });

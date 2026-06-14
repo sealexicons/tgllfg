@@ -23,66 +23,102 @@ export interface TreeLayout {
   height: number;
 }
 
-// Tidy-tree spacing (px). Leaves take evenly-spaced columns; each parent is
-// centred over its children; depth drives the row. The X gap fits the widest
-// bracketed category labels (e.g. N[N_CORE=True]) so neighbours don't collide;
-// the Y gap is tight now that equations live in a click popover rather than
-// stacked under each label (Phase 14.final.post-1).
-export const NODE_X_GAP = 124;
+// Display form of a category label: a binary feature that is simply true shows
+// as just its name (N[N_CORE] not N[N_CORE=True]); enum/other values (CASE=NOM)
+// are kept. Display-only; the raw label stays in the JSON payload.
+export const displayLabel = (label: string) => label.replace(/=True\b/g, "");
+
+// Rough on-screen width of a node label's halo. Sized a little generously so the
+// active (bold) label stays inside its highlight — and it drives the layout, so
+// wide labels reserve real horizontal room rather than overrunning neighbours.
+export const labelWidth = (label: string) => label.length * 8 + 14;
+
+// Vertical row pitch + outer padding + the minimum gap between sibling blocks
+// (px). The horizontal layout is width-aware: each subtree occupies a block as
+// wide as the larger of its own label and its children's span, so a wide label
+// like PUNCT[PUNCT_CLASS=COMMA] no longer overlaps its neighbour.
 export const NODE_Y_GAP = 56;
 export const TREE_PAD = 36;
+export const SIBLING_GAP = 24;
 
 /**
- * Lay out a c-structure node table as a tidy tree in a single bottom-up pass:
- * leaves take successive columns, internal nodes centre over their children,
- * depth sets the row. No contour threading — good enough for parse trees; the
- * SVG scrolls when a tree is wide.
+ * Lay out a c-structure node table as a width-aware "block" tree: each subtree
+ * is allocated a block whose width is the larger of its own label width and its
+ * children's combined block widths (plus gaps). Children are centred as a group
+ * beneath their parent, and each parent sits over the midpoint of its first and
+ * last child. Because a node's halo always fits inside its own block, sibling
+ * subtrees — leaves or internal nodes — never overlap regardless of label width.
+ * Depth sets the row; the SVG scrolls when a tree is wide.
  */
 export function layoutCStructure(cstruct: CStructure): TreeLayout {
   const { root, nodes } = cstruct;
-  const placed = new Map<string, { col: number; depth: number }>();
+  const placed = new Map<string, { x: number; depth: number }>();
   const edges: LaidOutEdge[] = [];
-  let nextLeafCol = 0;
   let maxDepth = 0;
 
-  const visit = (id: string, depth: number): number => {
-    const node = nodes[id];
-    // Defensive: the serializer never emits a dangling child ref, but never
-    // recurse into a missing node.
-    if (!node) return nextLeafCol;
-    if (depth > maxDepth) maxDepth = depth;
-    const children = node.children ?? [];
-    let col: number;
-    if (children.length === 0) {
-      col = nextLeafCol;
-      nextLeafCol += 1;
-    } else {
-      const childCols = children.map((childId) => {
-        edges.push({ from: id, to: childId });
-        return visit(childId, depth + 1);
-      });
-      col = (childCols[0] + childCols[childCols.length - 1]) / 2;
+  const widthOf = (id: string) => labelWidth(displayLabel(nodes[id]?.label ?? ""));
+
+  // Block width: max of this node's own label width and its children's span.
+  const blockMemo = new Map<string, number>();
+  const blockWidth = (id: string): number => {
+    const cached = blockMemo.get(id);
+    if (cached !== undefined) return cached;
+    const children = nodes[id]?.children ?? [];
+    let width = widthOf(id);
+    if (children.length > 0) {
+      const span =
+        children.reduce((sum, childId) => sum + blockWidth(childId), 0) +
+        SIBLING_GAP * (children.length - 1);
+      width = Math.max(width, span);
     }
-    placed.set(id, { col, depth });
-    return col;
+    blockMemo.set(id, width);
+    return width;
   };
 
-  if (nodes[root]) visit(root, 0);
+  // Place a subtree within [blockLeft, blockLeft + blockWidth(id)] and return the
+  // node's centre x. Children are centred as a group; the node sits over the
+  // midpoint of its first and last child's centres (classic tidy-tree look).
+  const place = (id: string, blockLeft: number, depth: number): number => {
+    const node = nodes[id];
+    // Defensive: the serializer never emits a dangling child ref.
+    if (!node) return blockLeft;
+    if (depth > maxDepth) maxDepth = depth;
+    const children = node.children ?? [];
+    let center: number;
+    if (children.length === 0) {
+      center = blockLeft + widthOf(id) / 2;
+    } else {
+      const span =
+        children.reduce((sum, childId) => sum + blockWidth(childId), 0) +
+        SIBLING_GAP * (children.length - 1);
+      let cursor = blockLeft + (blockWidth(id) - span) / 2;
+      const childCenters: number[] = [];
+      for (const childId of children) {
+        edges.push({ from: id, to: childId });
+        childCenters.push(place(childId, cursor, depth + 1));
+        cursor += blockWidth(childId) + SIBLING_GAP;
+      }
+      center = (childCenters[0] + childCenters[childCenters.length - 1]) / 2;
+    }
+    placed.set(id, { x: center, depth });
+    return center;
+  };
+
+  if (nodes[root]) place(root, TREE_PAD, 0);
 
   const laidOut: LaidOutNode[] = [];
-  for (const [id, { col, depth }] of placed) {
+  for (const [id, { x, depth }] of placed) {
     const node = nodes[id];
     laidOut.push({
       id,
       label: node.label,
       equations: node.equations ?? [],
-      x: TREE_PAD + col * NODE_X_GAP,
+      x,
       y: TREE_PAD + depth * NODE_Y_GAP,
     });
   }
 
-  const leafSpan = Math.max(nextLeafCol - 1, 0);
-  const width = TREE_PAD * 2 + leafSpan * NODE_X_GAP + NODE_X_GAP;
+  const width = TREE_PAD * 2 + (nodes[root] ? blockWidth(root) : 0);
   const height = TREE_PAD * 2 + maxDepth * NODE_Y_GAP + NODE_Y_GAP;
   return { nodes: laidOut, edges, width, height };
 }
