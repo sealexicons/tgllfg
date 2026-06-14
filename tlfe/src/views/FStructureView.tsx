@@ -18,6 +18,74 @@ function isFRef(value: unknown): value is FRef {
   );
 }
 
+// A feature is "valueless" when it carries nothing to show: an empty set, a
+// null/blank scalar, or a ref to an f-node with no visible content (every feat
+// of which is itself valueless — e.g. INTENS/DISTRIB pointing at an empty node).
+// Valueless feats are hidden for now (a "Show Valueless Features" toggle may
+// surface them later).
+function isValueless(value: unknown, nodes: FStructureModel["nodes"], seen: Set<string>): boolean {
+  if (value == null || value === "") return true;
+  if (Array.isArray(value)) return value.length === 0;
+  if (isFRef(value)) {
+    const target = value.$ref;
+    if (seen.has(target)) return false; // part of a cycle → structural, keep
+    const next = new Set(seen).add(target);
+    const feats = nodes[target]?.feats ?? {};
+    return Object.values(feats).every((v) => isValueless(v, nodes, next));
+  }
+  return false; // a scalar (including boolean false / 0) has a value
+}
+
+// Canonical attribute order, applied at every node: PRED, then predicate
+// features, governable grammatical functions, adjuncts, nominal features, and
+// LEMMA last; anything unlisted sorts alphabetically just before LEMMA.
+const ATTR_ORDER = [
+  "PRED",
+  "VOICE",
+  "ASPECT",
+  "ASPECT_TYPE",
+  "MOOD",
+  "TENSE",
+  "POLARITY",
+  "NEG",
+  "NEG_SCOPE",
+  "LEX-ASTRUCT",
+  "SUBJ",
+  "OBJ",
+  "OBJ2",
+  "OBJ_THETA",
+  "OBL",
+  "COMP",
+  "XCOMP",
+  "POSS",
+  "ADJ",
+  "ADJUNCT",
+  "XADJ",
+  "CASE",
+  "MARKER",
+  "DEM",
+  "DEF",
+  "SPEC",
+  "NUM",
+  "PERS",
+  "GEND",
+];
+const ATTR_RANK = new Map(ATTR_ORDER.map((attr, i) => [attr, i]));
+
+function attrRank(attr: string): number {
+  if (attr === "LEMMA") return ATTR_ORDER.length + 1; // always last
+  return ATTR_RANK.get(attr) ?? ATTR_ORDER.length; // unlisted: alpha, before LEMMA
+}
+
+function sortedEntries(
+  feats: Record<string, unknown>,
+  nodes: FStructureModel["nodes"],
+): [string, unknown][] {
+  return Object.entries(feats)
+    .filter(([, value]) => !isValueless(value, nodes, new Set()))
+    .sort(([a], [b]) => attrRank(a) - attrRank(b) || a.localeCompare(b));
+}
+
 // Count how often each f-node is referenced ($ref) across the whole structure.
 // A node referenced >= 2 times is reentrant (structure-shared) and gets a
 // hoverable tag so every occurrence can cross-highlight.
@@ -36,27 +104,81 @@ function countRefs(nodes: FStructureModel["nodes"]): Map<string, number> {
   return counts;
 }
 
-interface RenderCtx {
-  nodes: FStructureModel["nodes"];
-  refCounts: Map<string, number>;
-  expanded: Set<string>;
-  hovered: string | null;
-  setHovered: (fid: string | null) => void;
+type RowValue =
+  | { kind: "scalar"; text: string }
+  | { kind: "ref"; fid: string } // reentrancy tag: first reentrant occ, or a repeat/cyclic ref
+  | { kind: "set"; members: unknown[] }
+  | { kind: "none" }; // a header that only introduces the indented node below
+
+interface Row {
+  key: string;
+  fid: string; // the f-node this attribute belongs to (drives cross-highlight)
+  attr: string;
+  depth: number;
+  value: RowValue;
 }
 
-// A reentrancy tag: the f-node id, shown at the node's expansion and at every
-// later $ref to it. All tags for one id share `data-fs-id`, so hovering any
-// one highlights the whole structure-sharing set.
-function Tag({ fid, ctx }: { fid: string; ctx: RenderCtx }): ReactElement {
-  const active = ctx.hovered === fid;
+// Flatten the f-graph into ordered, depth-tagged rows. A node expands at its
+// first occurrence; a later or cyclic reference becomes a tag (keeps the walk
+// finite and structure-sharing visible). A nested node's rows simply follow the
+// introducing attribute at depth+1 — indentation, not a box, shows nesting.
+function flatten(
+  fid: string,
+  depth: number,
+  path: Set<string>,
+  expanded: Set<string>,
+  refCounts: Map<string, number>,
+  nodes: FStructureModel["nodes"],
+  out: Row[],
+): void {
+  expanded.add(fid);
+  const nextPath = new Set(path).add(fid);
+  for (const [attr, value] of sortedEntries(nodes[fid]?.feats ?? {}, nodes)) {
+    const key = `${fid}.${attr}`;
+    if (isFRef(value)) {
+      const target = value.$ref;
+      if (expanded.has(target) || path.has(target)) {
+        out.push({ key, fid, attr, depth, value: { kind: "ref", fid: target } });
+      } else {
+        const reentrant = (refCounts.get(target) ?? 0) >= 2;
+        out.push({
+          key,
+          fid,
+          attr,
+          depth,
+          value: reentrant ? { kind: "ref", fid: target } : { kind: "none" },
+        });
+        flatten(target, depth + 1, nextPath, expanded, refCounts, nodes, out);
+      }
+    } else if (Array.isArray(value)) {
+      out.push({ key, fid, attr, depth, value: { kind: "set", members: value } });
+    } else {
+      out.push({ key, fid, attr, depth, value: { kind: "scalar", text: String(value) } });
+    }
+  }
+}
+
+// A reentrancy tag: the f-node id, shown wherever a structure-shared node is
+// referenced. All tags for one id share `data-fs-id`, so hovering any one
+// highlights the whole structure-sharing set.
+function Tag({
+  fid,
+  hovered,
+  setHovered,
+}: {
+  fid: string;
+  hovered: string | null;
+  setHovered: (fid: string | null) => void;
+}): ReactElement {
+  const active = hovered === fid;
   return (
     <span
       data-fs-id={fid}
       onMouseOver={(event) => {
         event.stopPropagation();
-        ctx.setHovered(fid);
+        setHovered(fid);
       }}
-      className={`cursor-default rounded px-1 font-mono text-[10px] ${
+      className={`cursor-default rounded px-1 text-[10px] ${
         active ? "bg-amber-200 text-amber-900" : "bg-slate-100 text-slate-500"
       }`}
     >
@@ -65,77 +187,48 @@ function Tag({ fid, ctx }: { fid: string; ctx: RenderCtx }): ReactElement {
   );
 }
 
-function renderValue(value: unknown, path: Set<string>, ctx: RenderCtx): ReactElement {
-  if (isFRef(value)) {
-    const target = value.$ref;
-    // Expand a node at its first occurrence; a later or cyclic reference shows
-    // just the tag (keeps the render finite and structure-sharing visible).
-    if (ctx.expanded.has(target) || path.has(target)) {
-      return <Tag fid={target} ctx={ctx} />;
-    }
-    return renderNode(target, path, ctx);
+function ValueCell({
+  value,
+  hovered,
+  setHovered,
+}: {
+  value: RowValue;
+  hovered: string | null;
+  setHovered: (fid: string | null) => void;
+}): ReactElement | null {
+  if (value.kind === "scalar") {
+    return <span className="text-violet-700">{value.text}</span>;
   }
-  if (Array.isArray(value)) {
+  if (value.kind === "ref") {
+    return <Tag fid={value.fid} hovered={hovered} setHovered={setHovered} />;
+  }
+  if (value.kind === "set") {
     return (
       <span className="text-slate-400">
         {"{ "}
-        {value.map((member, i) => (
+        {value.members.map((member, i) => (
           <Fragment key={i}>
             {i > 0 && <span className="text-slate-300">, </span>}
-            {renderValue(member, path, ctx)}
+            {isFRef(member) ? (
+              <Tag fid={member.$ref} hovered={hovered} setHovered={setHovered} />
+            ) : (
+              <span className="text-violet-700">{String(member)}</span>
+            )}
           </Fragment>
         ))}
         {" }"}
       </span>
     );
   }
-  return <span className="font-mono text-xs text-violet-700">{String(value)}</span>;
+  return null;
 }
 
-function renderNode(fid: string, path: Set<string>, ctx: RenderCtx): ReactElement {
-  ctx.expanded.add(fid);
-  const node = ctx.nodes[fid];
-  const entries = Object.entries(node?.feats ?? {});
-  const reentrant = (ctx.refCounts.get(fid) ?? 0) >= 2;
-  const active = ctx.hovered === fid;
-  const nextPath = new Set(path).add(fid);
-
-  return (
-    <span className="inline-flex items-start gap-1 align-top">
-      {reentrant && <Tag fid={fid} ctx={ctx} />}
-      <span
-        data-fs-node={fid}
-        onMouseOver={(event) => {
-          event.stopPropagation();
-          ctx.setHovered(fid);
-        }}
-        className={`inline-block rounded border px-2 py-1 ${
-          active ? "border-amber-400 bg-amber-50" : "border-slate-300 bg-white"
-        }`}
-      >
-        {entries.length === 0 ? (
-          <span className="font-mono text-xs text-slate-400">[ ]</span>
-        ) : (
-          <span className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-            {entries.map(([attr, value]) => (
-              <Fragment key={attr}>
-                <span className="font-mono text-xs font-medium text-slate-500">{attr}</span>
-                <span>{renderValue(value, nextPath, ctx)}</span>
-              </Fragment>
-            ))}
-          </span>
-        )}
-      </span>
-    </span>
-  );
-}
-
-// The F-structure tab body: the f-graph as a nested AVM. Reentrant (structure-
-// shared) nodes carry a hoverable id tag at each occurrence; hovering any node
-// (tag or box) cross-highlights it everywhere. Hover is controlled when the
-// combined C/F view supplies `activeFid` + `onHoverNode` (so a c-node hover can
-// light the projected f-node); otherwise it is internal. Selection is
-// controlled from App.
+// The F-structure tab body: the f-graph as an indented AVM. Attributes order
+// canonically (PRED → predicate feats → GFs → adjuncts → nominal feats → LEMMA),
+// nested nodes indent under their attribute (no boxes), and every value aligns
+// in one shared column. Reentrant nodes carry a hoverable id tag; hovering any
+// node (a row or a tag) cross-highlights it everywhere — controlled by the
+// combined C/F view via `activeFid` + `onHoverNode`, otherwise internal.
 export function FStructureView({
   result,
   selected,
@@ -169,17 +262,43 @@ export function FStructureView({
 
   const index = Math.min(Math.max(selected, 0), parses.length - 1);
   const fstruct = parses[index].f_structure;
-  const ctx: RenderCtx = {
-    nodes: fstruct.nodes,
-    refCounts: countRefs(fstruct.nodes),
-    expanded: new Set(),
-    hovered,
-    setHovered,
-  };
+  const refCounts = countRefs(fstruct.nodes);
+  const rows: Row[] = [];
+  flatten(fstruct.root, 0, new Set(), new Set(), refCounts, fstruct.nodes, rows);
+
+  // One shared value column: wide enough for the deepest-indented longest
+  // attribute, so every value lines up regardless of nesting (ch ~ one mono
+  // char; +2 leaves a gap before the value).
+  const valueCol = rows.reduce((m, r) => Math.max(m, r.depth * 2 + r.attr.length), 0) + 2;
 
   return (
-    <div className="overflow-auto" onMouseLeave={() => setHovered(null)}>
-      {renderNode(fstruct.root, new Set(), ctx)}
+    <div className="overflow-auto text-xs" onMouseLeave={() => setHovered(null)}>
+      {rows.length === 0 ? (
+        <span className="font-mono text-slate-400">[ ]</span>
+      ) : (
+        rows.map((row) => {
+          const active = hovered === row.fid;
+          return (
+            <div
+              key={row.key}
+              data-fs-node={row.fid}
+              onMouseOver={(event) => {
+                event.stopPropagation();
+                setHovered(row.fid);
+              }}
+              className={`flex rounded font-mono leading-6 ${active ? "bg-amber-50" : ""}`}
+            >
+              <span
+                className={`shrink-0 ${active ? "text-amber-800" : "text-slate-500"}`}
+                style={{ paddingLeft: `${row.depth * 2}ch`, width: `${valueCol}ch` }}
+              >
+                {row.attr}
+              </span>
+              <ValueCell value={row.value} hovered={hovered} setHovered={setHovered} />
+            </div>
+          );
+        })
+      )}
     </div>
   );
 }
