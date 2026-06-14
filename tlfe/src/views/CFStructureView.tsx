@@ -51,7 +51,7 @@ export function CFStructureView({
   }
 
   return (
-    <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch">
+    <div className="flex flex-col gap-6 lg:flex-row lg:items-stretch lg:gap-0">
       <section className="flex flex-col gap-2 lg:min-w-0 lg:flex-1">
         <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
           C-structure
@@ -63,6 +63,10 @@ export function CFStructureView({
           onHoverNode={(id) => setHover(id ? { kind: "c", id } : null)}
         />
       </section>
+      <div
+        aria-hidden="true"
+        className="hidden lg:mx-6 lg:my-2 lg:block lg:w-0.5 lg:self-stretch lg:bg-slate-300"
+      />
       <section className="flex flex-col gap-2 lg:max-w-md lg:flex-none">
         <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-400">
           F-structure

@@ -54,8 +54,8 @@ describe("CFStructureView", () => {
     expect(screen.getByText("V")).toHaveClass("fill-amber-800");
     expect(screen.getByText("S")).toHaveClass("fill-amber-800");
     expect(screen.getByText("NP")).not.toHaveClass("fill-amber-800");
-    expect(container.querySelector('[data-fs-node="f0"]')).toHaveClass("border-amber-400");
-    expect(container.querySelector('[data-fs-node="f1"]')).not.toHaveClass("border-amber-400");
+    expect(container.querySelector('[data-fs-node="f0"]')).toHaveClass("bg-amber-50");
+    expect(container.querySelector('[data-fs-node="f1"]')).not.toHaveClass("bg-amber-50");
   });
 
   it("hovering an f-node lights the c-nodes that project to it", () => {
@@ -67,6 +67,6 @@ describe("CFStructureView", () => {
     expect(screen.getByText("NP")).toHaveClass("fill-amber-800");
     expect(screen.getByText("S")).not.toHaveClass("fill-amber-800");
     expect(screen.getByText("V")).not.toHaveClass("fill-amber-800");
-    expect(subj).toHaveClass("border-amber-400");
+    expect(subj).toHaveClass("bg-amber-50");
   });
 });

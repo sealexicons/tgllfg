@@ -62,6 +62,40 @@ describe("FStructureView", () => {
     expect(lit).toHaveLength(2);
   });
 
+  it("orders attributes canonically and hides valueless feats", () => {
+    const result: ParseResponse = {
+      text: "x",
+      parses: [
+        {
+          id: "p0",
+          c_structure: { root: "c0", nodes: { c0: { id: "c0", label: "S", children: [] } } },
+          f_structure: {
+            root: "f0",
+            nodes: {
+              f0: {
+                id: "f0",
+                feats: { LEMMA: "x", CASE: "NOM", PRED: "p", ADJUNCT: [], INTENS: { $ref: "f1" } },
+              },
+              f1: { id: "f1", feats: {} },
+            },
+          },
+          a_structure: { pred: "X", roles: [], mapping: {} },
+          diagnostics: [],
+        },
+      ],
+      fragments: [],
+      meta: { n_best: 5, parse_count: 1, fragment_count: 0 },
+    };
+    const { container } = render(<FStructureView result={result} selected={0} />);
+    const text = container.textContent ?? "";
+    // Canonical order: PRED first, CASE (nominal feat) next, LEMMA last.
+    expect(text.indexOf("PRED")).toBeLessThan(text.indexOf("CASE"));
+    expect(text.indexOf("CASE")).toBeLessThan(text.indexOf("LEMMA"));
+    // The empty-set ADJUNCT and the ref to the empty node f1 are both valueless.
+    expect(text).not.toContain("ADJUNCT");
+    expect(text).not.toContain("INTENS");
+  });
+
   it("reports a fragment-only result", () => {
     const fragmentsOnly: ParseResponse = {
       ...RESULT,
