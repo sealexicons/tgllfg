@@ -7,14 +7,16 @@ import type { ParseResponse } from "../api/client";
 import { CStructureView } from "./CStructureView";
 import { FStructureView } from "./FStructureView";
 
-type Hover = { kind: "c" | "f"; id: string } | null;
+type NodeSel = { kind: "c" | "f"; id: string } | null;
 
 // The combined C / F view: the c-structure tree and the f-structure AVM side by
 // side, wired together by the φ correspondence (c-node id → f-node id) the
-// parse endpoint now returns. Hovering a c-node lights the f-node it projects
-// to and every co-projecting c-node (the φ-sharing set); hovering an f-node
-// lights every c-node that projects to it. The two panels are otherwise the
-// standalone views, driven here by one shared hover state.
+// parse endpoint returns. Hovering a c-node lights the f-node it projects to and
+// every co-projecting c-node (the φ-sharing set); hovering an f-node lights
+// every c-node that projects to it. Clicking pins the selection (so it survives
+// the pointer moving away) and scrolls the *other* panel to its φ-image: an
+// f-node click scrolls the c-tree, a c-node's "Show φ" scrolls the AVM
+// (post-10). The two panels are otherwise the standalone views.
 export function CFStructureView({
   result,
   selected,
@@ -22,11 +24,20 @@ export function CFStructureView({
   result: ParseResponse | undefined;
   selected: number;
 }) {
-  const [hover, setHover] = useState<Hover>(null);
-  // Target c-nodes to scroll into view when an f-node is clicked; the bumped
-  // nonce makes every click re-trigger the scroll, even on the same node.
-  const [scroll, setScroll] = useState<{ cids: readonly string[]; nonce: number }>({
+  // `hover` follows the mouse (transient); `pinned` persists a click-selection
+  // so a scrolled-to node stays highlighted after the pointer moves away. The
+  // active highlight is hover ?? pinned.
+  const [hover, setHover] = useState<NodeSel>(null);
+  const [pinned, setPinned] = useState<NodeSel>(null);
+  // Scroll targets, each with a bumped nonce so a repeat selection re-fires:
+  // `cScroll` centres an f-node's φ-image in the c-tree (an f-node was clicked);
+  // `fScroll` centres a c-node's φ-image in the AVM (a c-node's "Show φ").
+  const [cScroll, setCScroll] = useState<{ cids: readonly string[]; nonce: number }>({
     cids: [],
+    nonce: 0,
+  });
+  const [fScroll, setFScroll] = useState<{ fid: string; nonce: number }>({
+    fid: "",
     nonce: 0,
   });
 
@@ -46,20 +57,29 @@ export function CFStructureView({
     return { correspondence: corr, cIdsByF: inv };
   }, [parse]);
 
-  // Clicking an f-node scrolls the c-structure to the c-node(s) it projects from
-  // (its φ-image); a φ-orphaned f-node yields an empty target, so nothing moves.
+  // Clicking an f-node pins it + scrolls the c-structure to the c-node(s) it
+  // projects from (its φ-image); a φ-orphaned f-node yields an empty target.
   function selectFNode(fid: string) {
-    setScroll((prev) => ({ cids: cIdsByF.get(fid) ?? [], nonce: prev.nonce + 1 }));
+    setPinned({ kind: "f", id: fid });
+    setCScroll((prev) => ({ cids: cIdsByF.get(fid) ?? [], nonce: prev.nonce + 1 }));
   }
 
+  // A c-node's "Show φ" / φ-link pins its φ-image f-node + scrolls the AVM to it.
+  function selectFNodeFromC(fid: string) {
+    setPinned({ kind: "f", id: fid });
+    setFScroll((prev) => ({ fid, nonce: prev.nonce + 1 }));
+  }
+
+  // Hover wins while the pointer is over a node; otherwise the pinned click.
+  const active = hover ?? pinned;
   let activeF: string | null = null;
   let activeCs = new Set<string>();
-  if (hover?.kind === "c") {
-    activeF = correspondence[hover.id] ?? null;
-    activeCs = new Set(activeF ? (cIdsByF.get(activeF) ?? [hover.id]) : [hover.id]);
-  } else if (hover?.kind === "f") {
-    activeF = hover.id;
-    activeCs = new Set(cIdsByF.get(hover.id) ?? []);
+  if (active?.kind === "c") {
+    activeF = correspondence[active.id] ?? null;
+    activeCs = new Set(activeF ? (cIdsByF.get(activeF) ?? [active.id]) : [active.id]);
+  } else if (active?.kind === "f") {
+    activeF = active.id;
+    activeCs = new Set(cIdsByF.get(active.id) ?? []);
   }
 
   return (
@@ -72,8 +92,10 @@ export function CFStructureView({
           result={result}
           selected={selected}
           highlight={activeCs}
-          scrollTo={scroll}
+          scrollTo={cScroll}
+          correspondence={correspondence}
           onHoverNode={(id) => setHover(id ? { kind: "c", id } : null)}
+          onSelectFNode={selectFNodeFromC}
         />
       </section>
       <div
@@ -88,6 +110,7 @@ export function CFStructureView({
           result={result}
           selected={selected}
           activeFid={activeF}
+          scrollTo={fScroll}
           onHoverNode={(id) => setHover(id ? { kind: "f", id } : null)}
           onSelectNode={selectFNode}
         />

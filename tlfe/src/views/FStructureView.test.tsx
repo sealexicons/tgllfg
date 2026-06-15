@@ -124,4 +124,46 @@ describe("FStructureView", () => {
     fireEvent.click(container.querySelector('[data-fs-id="f1"]')!);
     expect(onSelectNode).toHaveBeenCalledWith("f1");
   });
+
+  it("makes a singly-referenced scalar ref clickable (post-10)", () => {
+    // f0.SUBJ → f1 referenced exactly once: previously inline-only (no chip),
+    // now a chip so the scalar GF is selectable / openable like any other node.
+    const result: ParseResponse = {
+      text: "x",
+      parses: [
+        {
+          id: "p0",
+          c_structure: { root: "c0", nodes: { c0: { id: "c0", label: "S", children: [] } } },
+          f_structure: {
+            root: "f0",
+            nodes: {
+              f0: { id: "f0", feats: { PRED: "sleep", SUBJ: { $ref: "f1" } } },
+              f1: { id: "f1", feats: { PRED: "bata" } },
+            },
+          },
+          a_structure: { pred: "SLEEP", roles: [], mapping: {} },
+          diagnostics: [],
+        },
+      ],
+      fragments: [],
+      meta: { n_best: 5, parse_count: 1, fragment_count: 0 },
+    };
+    const onSelectNode = vi.fn();
+    const { container } = render(
+      <FStructureView result={result} selected={0} onSelectNode={onSelectNode} />,
+    );
+    const chip = container.querySelector('[data-fs-id="f1"]');
+    expect(chip).not.toBeNull();
+    // It still expands inline (PRED bata shown below the chip).
+    expect(screen.getByText("bata")).toBeInTheDocument();
+    fireEvent.click(chip!);
+    expect(onSelectNode).toHaveBeenCalledWith("f1");
+  });
+
+  it("scrolls the AVM to an f-node when scrollTo is set (post-10)", () => {
+    const scrollIntoView = vi.spyOn(Element.prototype, "scrollIntoView");
+    render(<FStructureView result={RESULT} selected={0} scrollTo={{ fid: "f1", nonce: 1 }} />);
+    expect(scrollIntoView).toHaveBeenCalled();
+    scrollIntoView.mockRestore();
+  });
 });
