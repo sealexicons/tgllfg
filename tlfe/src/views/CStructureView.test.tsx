@@ -2,10 +2,20 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import type { ParseResponse } from "../api/client";
 import { CStructureView } from "./CStructureView";
+
+// The context-menu gloss pulls from /lex/search via useLexSearch; stub it so the
+// gloss assertion is deterministic and DB-free.
+vi.mock("../api/hooks", () => ({
+  useLexSearch: () => ({
+    data: { matches: [{ id: "1", citation_form: "kain", pos: "v", gloss: "to eat", score: 1 }] },
+    isLoading: false,
+    isError: false,
+  }),
+}));
 
 const RESULT: ParseResponse = {
   text: "Kumain ang bata.",
@@ -86,5 +96,61 @@ describe("CStructureView", () => {
     expect(screen.getByText("N[N_CORE]")).toBeInTheDocument();
     expect(screen.queryByText("N[N_CORE=True]")).not.toBeInTheDocument();
     expect(screen.getByText("NP[CASE=NOM]")).toBeInTheDocument();
+  });
+
+  it("offers a clickable φ-link in the equation popover (post-10)", async () => {
+    const onSelectFNode = vi.fn();
+    render(
+      <CStructureView
+        result={RESULT}
+        selected={0}
+        correspondence={{ c1: "f9" }}
+        onSelectFNode={onSelectFNode}
+      />,
+    );
+    fireEvent.click(screen.getByText("V")); // open c1's equation popover
+    fireEvent.click(await screen.findByRole("button", { name: /f9/ }));
+    expect(onSelectFNode).toHaveBeenCalledWith("f9");
+  });
+
+  it("opens a context menu with Show φ on right-click (post-10)", async () => {
+    const onSelectFNode = vi.fn();
+    render(
+      <CStructureView
+        result={RESULT}
+        selected={0}
+        correspondence={{ c1: "f9" }}
+        onSelectFNode={onSelectFNode}
+      />,
+    );
+    fireEvent.contextMenu(screen.getByText("V"));
+    fireEvent.click(await screen.findByRole("menuitem", { name: /Show φ/ }));
+    expect(onSelectFNode).toHaveBeenCalledWith("f9");
+  });
+
+  it("shows a terminal's gloss in the context menu (post-10)", async () => {
+    const withLemma: ParseResponse = {
+      text: "Kumain ang bata.",
+      parses: [
+        {
+          id: "p0",
+          c_structure: {
+            root: "c0",
+            nodes: {
+              c0: { id: "c0", label: "S", children: ["c1"], equations: [] },
+              c1: { id: "c1", label: "V", children: [], equations: ["(↑ LEMMA) = 'kain'"] },
+            },
+          },
+          f_structure: { root: "f0", nodes: { f0: { id: "f0", feats: {} } } },
+          a_structure: { pred: "KAIN", roles: [], mapping: {} },
+          diagnostics: [],
+        },
+      ],
+      fragments: [],
+      meta: { n_best: 5, parse_count: 1, fragment_count: 0 },
+    };
+    render(<CStructureView result={withLemma} selected={0} />);
+    fireEvent.contextMenu(screen.getByText("V"));
+    expect(await screen.findByText("to eat")).toBeInTheDocument();
   });
 });

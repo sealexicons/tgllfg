@@ -107,4 +107,14 @@ describe("CFStructureView", () => {
     await waitFor(() => expect(scrollSpy).toHaveBeenCalled());
     scrollSpy.mockRestore();
   });
+
+  it("scrolls the f-structure to a c-node's φ-image via Show φ (post-10)", async () => {
+    // NP (c1) projects f1; right-click → Show φ pins f1 and scrolls the AVM to it.
+    const scrollSpy = vi.spyOn(Element.prototype, "scrollIntoView").mockImplementation(() => {});
+    render(<CFStructureView result={RESULT} selected={0} />);
+    fireEvent.contextMenu(screen.getByText("NP"));
+    fireEvent.click(await screen.findByRole("menuitem", { name: /Show φ/ }));
+    await waitFor(() => expect(scrollSpy).toHaveBeenCalled());
+    scrollSpy.mockRestore();
+  });
 });

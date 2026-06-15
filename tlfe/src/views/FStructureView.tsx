@@ -1,7 +1,7 @@
 // Copyright (c) 2025-2026 G & R Associates LLC
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-import { Fragment, type ReactElement, useMemo, useState } from "react";
+import { Fragment, type ReactElement, useEffect, useMemo, useRef, useState } from "react";
 import { Popover } from "radix-ui";
 
 import type { FStructureModel, ParseResponse } from "../api/client";
@@ -86,29 +86,10 @@ function sortedEntries(feats: Record<string, unknown>, nodes: FNodes): [string, 
     .sort(([a], [b]) => attrRank(a) - attrRank(b) || a.localeCompare(b));
 }
 
-// Count how often each f-node is referenced ($ref) across the whole structure.
-// A node referenced >= 2 times is reentrant (structure-shared) and gets a
-// hoverable tag so every occurrence can cross-highlight.
-function countRefs(nodes: FNodes): Map<string, number> {
-  const counts = new Map<string, number>();
-  const tally = (value: unknown): void => {
-    if (isFRef(value)) {
-      counts.set(value.$ref, (counts.get(value.$ref) ?? 0) + 1);
-    } else if (Array.isArray(value)) {
-      value.forEach(tally);
-    }
-  };
-  for (const node of Object.values(nodes)) {
-    for (const value of Object.values(node.feats ?? {})) tally(value);
-  }
-  return counts;
-}
-
 type RowValue =
   | { kind: "scalar"; text: string }
-  | { kind: "ref"; fid: string } // reentrancy tag: first reentrant occ, or a repeat/cyclic ref
-  | { kind: "set"; members: unknown[] }
-  | { kind: "none" }; // a header that only introduces the indented node below
+  | { kind: "ref"; fid: string } // an f* chip: a nested node's first occurrence, or a repeat/cyclic ref
+  | { kind: "set"; members: unknown[] };
 
 interface Row {
   key: string;
@@ -118,16 +99,19 @@ interface Row {
   value: RowValue;
 }
 
-// Flatten the f-graph into ordered, depth-tagged rows. A node expands at its
-// first occurrence; a later or cyclic reference becomes a tag (keeps the walk
-// finite and structure-sharing visible). A nested node's rows simply follow the
-// introducing attribute at depth+1 — indentation, not a box, shows nesting.
+// Flatten the f-graph into ordered, depth-tagged rows. Every f-node reference
+// renders a clickable f* chip; a node also expands inline at its first
+// occurrence (a later / cyclic reference is chip-only — keeps the walk finite).
+// Inline rows follow the introducing attribute at depth+1 — indentation, not a
+// box, shows nesting. Repeat occurrences of a structure-shared node share their
+// data-fs-id, so hovering any one cross-highlights them all (post-10 made the
+// chip universal — it was previously reserved for reentrant nodes, leaving
+// singly-referenced scalar GFs like SUBJ / POSS unreachable).
 function flatten(
   fid: string,
   depth: number,
   path: Set<string>,
   expanded: Set<string>,
-  refCounts: Map<string, number>,
   nodes: FNodes,
   out: Row[],
 ): void {
@@ -137,18 +121,10 @@ function flatten(
     const key = `${fid}.${attr}`;
     if (isFRef(value)) {
       const target = value.$ref;
-      if (expanded.has(target) || path.has(target)) {
-        out.push({ key, fid, attr, depth, value: { kind: "ref", fid: target } });
-      } else {
-        const reentrant = (refCounts.get(target) ?? 0) >= 2;
-        out.push({
-          key,
-          fid,
-          attr,
-          depth,
-          value: reentrant ? { kind: "ref", fid: target } : { kind: "none" },
-        });
-        flatten(target, depth + 1, nextPath, expanded, refCounts, nodes, out);
+      const firstVisit = !expanded.has(target) && !path.has(target);
+      out.push({ key, fid, attr, depth, value: { kind: "ref", fid: target } });
+      if (firstVisit) {
+        flatten(target, depth + 1, nextPath, expanded, nodes, out);
       }
     } else if (Array.isArray(value)) {
       out.push({ key, fid, attr, depth, value: { kind: "set", members: value } });
@@ -262,12 +238,11 @@ function Avm({
   nodes: FNodes;
   handlers: AvmHandlers;
 }): ReactElement {
-  const refCounts = useMemo(() => countRefs(nodes), [nodes]);
   const rows = useMemo(() => {
     const out: Row[] = [];
-    flatten(root, 0, new Set(), new Set(), refCounts, nodes, out);
+    flatten(root, 0, new Set(), new Set(), nodes, out);
     return out;
-  }, [root, nodes, refCounts]);
+  }, [root, nodes]);
 
   if (rows.length === 0) {
     return <span className="font-mono text-slate-400">[ ]</span>;
@@ -309,21 +284,25 @@ function Avm({
 // The F-structure tab body: the f-graph as an indented AVM. Attributes order
 // canonically (PRED → predicate feats → GFs → adjuncts → nominal feats → LEMMA),
 // nested nodes indent under their attribute (no boxes), and every value aligns
-// in one shared column. Reentrant nodes carry a hoverable id tag; hovering any
-// node cross-highlights it everywhere and clicking it opens a sub-structure
-// popover + reports the id (via `onSelectNode`) so the c-structure can scroll to
-// its φ-image. Hover is controlled by the combined C/F view via `activeFid` +
-// `onHoverNode`, otherwise internal.
+// in one shared column. Every nested node carries a hoverable / clickable f*
+// chip (post-10); hovering any node cross-highlights it everywhere and clicking
+// it opens a sub-structure popover + reports the id (via `onSelectNode`) so the
+// c-structure can scroll to its φ-image. `scrollTo` is the reverse path: when a
+// c-node reports its φ-image (Show φ), the combined view bumps it here and the
+// AVM scrolls that f-node into view. Hover is controlled by the combined C/F
+// view via `activeFid` + `onHoverNode`, otherwise internal.
 export function FStructureView({
   result,
   selected,
   activeFid,
+  scrollTo,
   onHoverNode,
   onSelectNode,
 }: {
   result: ParseResponse | undefined;
   selected: number;
   activeFid?: string | null;
+  scrollTo?: { fid: string; nonce: number };
   onHoverNode?: (id: string | null) => void;
   onSelectNode?: (id: string) => void;
 }) {
@@ -331,6 +310,15 @@ export function FStructureView({
   const controlled = onHoverNode !== undefined;
   const hovered = controlled ? (activeFid ?? null) : internalHover;
   const setHovered = controlled ? onHoverNode : setInternalHover;
+
+  // Scroll the AVM so a c-node's φ-image f-node (first occurrence) is centred;
+  // scoped to this container's rows so an open popover's copy isn't matched.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!scrollTo?.fid) return;
+    const row = scrollRef.current?.querySelector(`[data-fs-node="${CSS.escape(scrollTo.fid)}"]`);
+    row?.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+  }, [scrollTo]);
 
   if (!result) {
     return <p className="text-slate-400">Parse a sentence to see its f-structure.</p>;
@@ -352,7 +340,7 @@ export function FStructureView({
   const handlers: AvmHandlers = { hovered, setHovered, onSelect: onSelectNode };
 
   return (
-    <div className="overflow-auto text-xs" onMouseLeave={() => setHovered(null)}>
+    <div ref={scrollRef} className="overflow-auto text-xs" onMouseLeave={() => setHovered(null)}>
       <Avm root={fstruct.root} nodes={fstruct.nodes} handlers={handlers} />
     </div>
   );
