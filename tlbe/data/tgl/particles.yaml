@@ -1507,6 +1507,18 @@
 - surface: di
   pos: PART
   feats: {POLARITY: NEG, LEMMA: di}
+# Phase 14.final.post-12: ``diba`` — the fully-grammaticalized one-token
+# tag question (univerbation of ``di`` + ``ba``), sentence-final, requesting
+# confirmation (``Maganda ang babae, diba?`` / ``Maganda ang babae diba?``).
+# Carries BOTH NEG_TAG and QUESTION on a single PART, which the one-token
+# tag-Q rules in cfg/clause.py match (the two-token ``di ba?`` rule needs a
+# separate NEG_TAG ``di`` + a 2P-clitic ``ba``). No CLITIC_CLASS, so the
+# yes/no-Q clitic rule (cfg/clitic.py, which requires CLITIC_CLASS=2P) can't
+# grab it; the NEG_TAG+QUESTION pair is unique to ``diba`` so bare ``di``
+# never spuriously satisfies the one-token tag rule.
+- surface: diba
+  pos: PART
+  feats: {NEG_TAG: true, QUESTION: true, LEMMA: diba}
 
 # === Phase 5j Commit 1: existential clause-typers =========================
 #
