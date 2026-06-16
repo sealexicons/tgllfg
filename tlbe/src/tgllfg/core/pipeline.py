@@ -113,7 +113,7 @@ def _fstructure_signature(value: object, _ancestors: tuple[int, ...] = ()) -> st
     fixed ``@cycle`` marker (keeps the walk finite); shared (DAG) subgraphs
     expand identically in identical inputs, so equal structures still match.
 
-    Phase 14.final.post-9: used by :func:`_dedup_glued` to collapse the
+    Phase 14.final.post-9: used by :func:`_dedup_by_fstructure` to collapse the
     spuriously-ambiguous parses the split-and-glue cross-product produces
     (distinct objects, identical content) before they fan out into matrix
     parses — the source of the colon/em-dash APP leak on PANAHON sent-2.
@@ -134,17 +134,28 @@ def _fstructure_signature(value: object, _ancestors: tuple[int, ...] = ()) -> st
     return repr(value)
 
 
-def _dedup_glued(parses: list[_GluedParse]) -> list[_GluedParse]:
+def _dedup_by_fstructure(parses: list[_GluedParse]) -> list[_GluedParse]:
     """Drop parses whose f-structure is structurally identical to an earlier
-    one, keeping the first occurrence (so rank order is preserved).
+    one, keeping the first occurrence (so rank / glue order is preserved).
 
-    Deduping the *halves* a split feeds into its glue loop is what keeps the
-    cumulative in-place APP / set writes correct: when the spurious copies
-    collapse to one, each ``pre_fs`` is glued at most once, so its set-valued
-    feats accumulate exactly one member instead of leaking every sibling
-    glue's contribution (PANAHON sent-2's APP held 4 near-duplicate
-    coordinations, only one of which any c-node projected to — hence the
-    φ-orphaned appositive f-nodes the inspector couldn't cross-highlight).
+    Two callers:
+
+    * **Glue halves** (Phase 14.final.post-9) — deduping the halves a split
+      feeds into its glue loop keeps the cumulative in-place APP / set writes
+      correct: when the spurious copies collapse to one, each ``pre_fs`` is
+      glued at most once, so its set-valued feats accumulate exactly one member
+      instead of leaking every sibling glue's contribution (PANAHON sent-2's
+      APP held 4 near-duplicate coordinations, only one of which any c-node
+      projected to — hence the φ-orphaned appositive f-nodes the inspector
+      couldn't cross-highlight).
+
+    * **Final solve output** (Phase 14.final.post-12) — collapsing spurious
+      *c-structure* ambiguity that neutralizes in the f-structure, e.g. a
+      SEM_CLASS=TIME noun projecting via both ``N[N_CORE] → NOUN`` and
+      ``N[SEM_CLASS=TIME] → NOUN`` into one possessor NP, so ``ang bilis ng
+      panahon`` no longer solves to two identical f-structures. Two parses with
+      the same signature are the same LFG analysis (the f-structure is the
+      analysis), so this never collapses genuinely-distinct readings.
     """
     seen: set[str] = set()
     out: list[_GluedParse] = []
@@ -601,6 +612,14 @@ def parse_text_with_fragments(
         if max_candidates is not None and len(candidates) >= max_candidates:
             break
     candidates.sort(key=lambda r: _rank_key(r[0]))
+    # Phase 14.final.post-12: collapse spurious *c-structure* ambiguity that
+    # neutralizes in the f-structure — e.g. a SEM_CLASS=TIME noun projects via
+    # both ``N[N_CORE] → NOUN`` and ``N[SEM_CLASS=TIME] → NOUN`` and a general
+    # ``NP`` head accepts either, so ``ang bilis ng panahon`` solved twice to
+    # one identical f-structure. Keep the highest-ranked representative of each
+    # distinct f-structure (sort already ran, so the first survivor is best).
+    # Same f-structure-signature dedup the glue path applies to its halves.
+    candidates = _dedup_by_fstructure(candidates)
     top = candidates[:n_best]
 
     if top:
@@ -797,7 +816,7 @@ def _try_colon_split(
     # structurally-identical post-halves would leak all N into APP. With
     # each half deduped to its distinct structures, every pre_fs is glued
     # at most once per post and APP carries exactly the real appositive.
-    pre_parses = _dedup_glued(pre_parses)
+    pre_parses = _dedup_by_fstructure(pre_parses)
 
     # Try each post-colon category in order; the first that yields a
     # parse wins. This mirrors the three chart-level colon-appositive
@@ -819,7 +838,7 @@ def _try_colon_split(
             break
     if not post_parses:
         return None
-    post_parses = _dedup_glued(post_parses)
+    post_parses = _dedup_by_fstructure(post_parses)
 
     # Synthesize one glued parse per (pre × post) combination, capped
     # at ``n_best``. Both halves must keep passing well-formedness on
@@ -1071,8 +1090,8 @@ def _try_emdash_split(
     if not pre_parses:
         return None
     # Collapse spurious duplicates before the in-place APP glue (post-9 —
-    # see _try_colon_split / _dedup_glued).
-    pre_parses = _dedup_glued(pre_parses)
+    # see _try_colon_split / _dedup_by_fstructure).
+    pre_parses = _dedup_by_fstructure(pre_parses)
 
     # Try the post half against each category in order — first match wins.
     post_parses: list[_GluedParse] = []
@@ -1110,7 +1129,7 @@ def _try_emdash_split(
 
     if not post_parses:
         return None
-    post_parses = _dedup_glued(post_parses)
+    post_parses = _dedup_by_fstructure(post_parses)
 
     glued: list[_GluedParse] = []
     for pre_parse in pre_parses:
@@ -1276,7 +1295,7 @@ def _try_comma_at_np_split(
     # coordinations are safe to collapse here — and collapsing them keeps a
     # one-coordination appositive from fanning out into N identical APP
     # members when this result feeds an enclosing colon / em-dash glue.
-    return _dedup_glued(glued) or None
+    return _dedup_by_fstructure(glued) or None
 
 
 def _extract_case(start_symbol: str) -> str | None:

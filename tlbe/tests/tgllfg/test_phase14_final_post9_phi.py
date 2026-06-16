@@ -7,7 +7,7 @@
 The colon / em-dash appositive glues add the post-half to the pre-half's
 APP set in place, so gluing one pre-half against N structurally-identical
 (spuriously-ambiguous) post-halves used to leak all N into the shared APP —
-N-1 of them φ-orphaned. :func:`_dedup_glued` collapses the structural
+N-1 of them φ-orphaned. :func:`_dedup_by_fstructure` collapses the structural
 duplicates before the glue loop so each pre_fs is glued exactly once; it
 keys on :func:`_fstructure_signature`, a cycle-safe structural fingerprint.
 
@@ -18,12 +18,12 @@ equations) is asserted over the ``/parse`` response in
 """
 
 from tgllfg.core.common import AStructure, CNode, FStructure
-from tgllfg.core.pipeline import _dedup_glued, _fstructure_signature
+from tgllfg.core.pipeline import _dedup_by_fstructure, _fstructure_signature
 
 
 def _parse(fs: FStructure) -> tuple[CNode, FStructure, AStructure, list, dict]:
     """A minimal _GluedParse 5-tuple wrapping ``fs`` (the only field
-    :func:`_dedup_glued` inspects)."""
+    :func:`_dedup_by_fstructure` inspects)."""
     return (CNode(label="S"), fs, AStructure(pred="X", roles=[], mapping={}), [], {})
 
 
@@ -58,7 +58,7 @@ class TestDedupGlued:
         a1 = FStructure(feats={"CASE": "NOM"}, id=1)
         a2 = FStructure(feats={"CASE": "NOM"}, id=2)  # structural dup of a1
         b = FStructure(feats={"CASE": "GEN"}, id=3)
-        out = _dedup_glued([_parse(a1), _parse(a2), _parse(b)])
+        out = _dedup_by_fstructure([_parse(a1), _parse(a2), _parse(b)])
         # a2 is dropped (dup of a1); first-occurrence order preserved.
         assert [g[1] for g in out] == [a1, b]
 
@@ -68,7 +68,7 @@ class TestDedupGlued:
             _parse(FStructure(feats={"CASE": "GEN"}, id=2)),
             _parse(FStructure(feats={"CASE": "DAT"}, id=3)),
         ]
-        assert _dedup_glued(parses) == parses
+        assert _dedup_by_fstructure(parses) == parses
 
     def test_empty_input(self) -> None:
-        assert _dedup_glued([]) == []
+        assert _dedup_by_fstructure([]) == []
