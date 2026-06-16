@@ -501,6 +501,18 @@
             },
             "type": "array",
             "title": "Equations"
+          },
+          "gloss": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gloss",
+            "description": "The terminal's licensing lexical gloss (the root's English gloss), or null on non-terminals and glossless word classes (particles / pronouns / unknowns). Lets the inspector gloss every terminal \u2014 including verbs, which carry no LEMMA equation \u2014 without a separate /lex/search lookup."
           }
         },
         "type": "object",

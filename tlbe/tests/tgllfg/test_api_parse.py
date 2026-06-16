@@ -62,6 +62,28 @@ def test_parse_known_sentence(client: TestClient) -> None:
     assert p["a_structure"]["pred"]
 
 
+def test_parse_terminal_carries_gloss(client: TestClient) -> None:
+    # Phase 14.final.post-11: every content-word terminal c-node carries its
+    # licensing lexical gloss — including the verb, which serializes PRED-only
+    # (no LEMMA equation) and so the inspector's LEMMA-keyed /lex/search lookup
+    # could never gloss it. Non-terminals and glossless function words (DET /
+    # ADP) serialize null, not "".
+    body = client.post(
+        "/api/v1/parse", json={"text": "Bumili ang lalaki ng aklat."}
+    ).json()
+    assert body["parses"], "expected a complete parse"
+    nodes = list(body["parses"][0]["c_structure"]["nodes"].values())
+    verb = [n for n in nodes if n["label"] == "V"]
+    assert verb and verb[0]["gloss"] == "buy", "verb terminal should gloss"
+    assert any(
+        not n["children"] and n["label"] == "NOUN" and n["gloss"] for n in nodes
+    ), "a noun terminal should carry a gloss"
+    # Non-terminals never carry a gloss.
+    assert all(n["gloss"] is None for n in nodes if n["children"])
+    # A glossless function word serializes null, not the empty string.
+    assert all(n["gloss"] is None for n in nodes if n["label"] in ("DET", "ADP"))
+
+
 def test_parse_validation_empty_text(client: TestClient) -> None:
     assert client.post("/api/v1/parse", json={"text": ""}).status_code == 422
 

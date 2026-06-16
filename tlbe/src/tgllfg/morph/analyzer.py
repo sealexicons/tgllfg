@@ -583,6 +583,7 @@ class Analyzer:
                     lemma=canonical_lemma,
                     pos="NOUN",
                     feats=noun_feats,
+                    gloss=r.gloss,
                 )
                 self._index.nouns.setdefault(r.citation.lower(), []).append(
                     noun_analysis,
@@ -837,6 +838,7 @@ class Analyzer:
                 lemma=canonical_lemma,
                 pos=out_pos,
                 feats=feats,
+                gloss=root.gloss,
             )
             if out_pos == "NOUN":
                 _dual_index_surface(self._index.nouns, surface, analysis)
@@ -906,6 +908,7 @@ class Analyzer:
                 lemma=canonical_lemma,
                 pos="ADJ",
                 feats=feats,
+                gloss=root.gloss,
             ),
         )
 
@@ -957,6 +960,7 @@ class Analyzer:
                     lemma=canonical_lemma,
                     pos="ADJ",
                     feats=feats,
+                    gloss=root.gloss,
                 ),
             )
 
@@ -1045,6 +1049,7 @@ class Analyzer:
                 lemma=canonical_lemma,
                 pos="VERB",
                 feats=feats,
+                gloss=root.gloss,
             )
             # Phase 10.J.post-7.1 / post-7.4: ``surfaces`` is the list
             # of variants from ``_generate_form_variants`` — single
@@ -1091,7 +1096,10 @@ class Analyzer:
                     self._index.verb_forms,
                     surface + root.citation,
                     MorphAnalysis(
-                        lemma=canonical_lemma, pos="VERB", feats=redup_feats
+                        lemma=canonical_lemma,
+                        pos="VERB",
+                        feats=redup_feats,
+                        gloss=root.gloss,
                     ),
                 )
 
