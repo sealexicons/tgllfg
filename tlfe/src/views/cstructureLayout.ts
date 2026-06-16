@@ -7,6 +7,10 @@ export interface LaidOutNode {
   id: string;
   label: string;
   equations: string[];
+  // The terminal's licensing lexical gloss (POS-correct, from the entry that
+  // actually projected this node); null on non-terminals and glossless word
+  // classes. Drives the context-menu gloss (Phase 14.final.post-11).
+  gloss: string | null;
   x: number;
   y: number;
 }
@@ -113,6 +117,7 @@ export function layoutCStructure(cstruct: CStructure): TreeLayout {
       id,
       label: node.label,
       equations: node.equations ?? [],
+      gloss: node.gloss ?? null,
       x,
       y: TREE_PAD + depth * NODE_Y_GAP,
     });
