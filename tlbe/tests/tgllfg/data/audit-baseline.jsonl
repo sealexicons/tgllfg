@@ -17,12 +17,12 @@
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-17", "text_sha": "115c3e3e4741", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-18", "text_sha": "c372b7dce097", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-19", "text_sha": "b2fa2255445e", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-20", "text_sha": "b5ff8b22b271", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-20", "text_sha": "b5ff8b22b271", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-21", "text_sha": "0ef356180852", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-22", "text_sha": "0ff305024205", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-23", "text_sha": "2352250ab01b", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-24", "text_sha": "422dce8bf99f", "bucket": "parse-success-1"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-25", "text_sha": "d85c5fd2ac6c", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-25", "text_sha": "d85c5fd2ac6c", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-26", "text_sha": "8873da22cd88", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-27", "text_sha": "57ccd0549d06", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-28", "text_sha": "f0cf21f6df85", "bucket": "parse-success-N"}
@@ -35,7 +35,7 @@
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-35", "text_sha": "d2dc101d3c84", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-36", "text_sha": "877267b2e442", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-37", "text_sha": "412af2ae17b6", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-38", "text_sha": "14afd5af5a1f", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-38", "text_sha": "14afd5af5a1f", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-39", "text_sha": "d0430984e8bb", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-40", "text_sha": "5a08e7fa11ee", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-41", "text_sha": "e7b09bba9350", "bucket": "parse-success-1"}
@@ -48,37 +48,37 @@
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-48", "text_sha": "bb5509040925", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-49", "text_sha": "75b8d77068f7", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-50", "text_sha": "e5a07b5e2e0d", "bucket": "parse-success-1"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-51", "text_sha": "31066c7389be", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG MANOK/sent-51", "text_sha": "31066c7389be", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-1", "text_sha": "79d68ae1ff1c", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-2", "text_sha": "bbb557510fe9", "bucket": "parse-success-1"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-3", "text_sha": "a79e0a594376", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-3", "text_sha": "a79e0a594376", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-4", "text_sha": "134c759e9eb9", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-5", "text_sha": "f9500b5788b1", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-6", "text_sha": "e10e9933917c", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-7", "text_sha": "d5f8a941e593", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-7", "text_sha": "d5f8a941e593", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-8", "text_sha": "27f61737b6b2", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-9", "text_sha": "6521e4457421", "bucket": "parse-success-1"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-10", "text_sha": "88a52db0d3ac", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-10", "text_sha": "88a52db0d3ac", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-11", "text_sha": "9d4d659c59a5", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-13", "text_sha": "7cb00d8a0b4f", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-1", "text_sha": "dcee89c7aa99", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-2", "text_sha": "ef43f1689235", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAG-AARAL NG ISANG WIKA/sent-13", "text_sha": "7cb00d8a0b4f", "bucket": "parse-success-1"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-1", "text_sha": "dcee89c7aa99", "bucket": "parse-success-1"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-2", "text_sha": "ef43f1689235", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-3", "text_sha": "c83862aed245", "bucket": "parse-success-1"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-4", "text_sha": "31a7f25c40aa", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-5", "text_sha": "79154a6e8ee8", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-4", "text_sha": "31a7f25c40aa", "bucket": "parse-success-1"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-5", "text_sha": "79154a6e8ee8", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-6", "text_sha": "97f402067b16", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-7", "text_sha": "3eadde7c5c35", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-8", "text_sha": "0d0479036d53", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-9", "text_sha": "cccda106ff62", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-10", "text_sha": "88fb7b05704a", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-10", "text_sha": "88fb7b05704a", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-11", "text_sha": "f94ae19c763c", "bucket": "parse-success-1"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-12", "text_sha": "a968e08b9a20", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-12", "text_sha": "a968e08b9a20", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-13", "text_sha": "690f8067cb83", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-14", "text_sha": "79ed4ec264e6", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-15", "text_sha": "d96f8116e950", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-16", "text_sha": "18c007a8f78a", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-17", "text_sha": "c2ced0720793", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-18", "text_sha": "6b2d030177da", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-18", "text_sha": "6b2d030177da", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-19", "text_sha": "0b1621215ad6", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-20", "text_sha": "a04e866a4ee7", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-21", "text_sha": "279c25ad90fc", "bucket": "parse-success-N"}
@@ -91,25 +91,25 @@
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-28", "text_sha": "4a5fb13e27d0", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-29", "text_sha": "b91e5d6cf4b6", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-30", "text_sha": "fdfc2daf618e", "bucket": "parse-success-1"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-31", "text_sha": "6b80438249c7", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-31", "text_sha": "6b80438249c7", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-32", "text_sha": "92b57d829905", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-33", "text_sha": "fd8d697b558f", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-34", "text_sha": "f11761f9ab33", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-35", "text_sha": "ddd5aa156e6f", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-35", "text_sha": "ddd5aa156e6f", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-36", "text_sha": "85f34963d526", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-37", "text_sha": "1bbc0ac4dee1", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-38", "text_sha": "83b8b061e6af", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-39", "text_sha": "86ecd45f8011", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-40", "text_sha": "ad02bb8cfada", "bucket": "parse-success-1"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-41", "text_sha": "b016f71cbfe9", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "PANAHON/sent-41", "text_sha": "b016f71cbfe9", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-1", "text_sha": "338fe7fadcc0", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-2", "text_sha": "70ce5850c7f0", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-3", "text_sha": "8b7a8939833a", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-4", "text_sha": "21e49b3881f5", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-4", "text_sha": "21e49b3881f5", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-5", "text_sha": "c010ab46d2db", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-6", "text_sha": "c9352ee3afa1", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-7", "text_sha": "76ba94127a9f", "bucket": "parse-success-N"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-8", "text_sha": "bfda4501ae40", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-8", "text_sha": "bfda4501ae40", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-9", "text_sha": "2f8503ecf626", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-10", "text_sha": "1791bb5306aa", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-11", "text_sha": "ec7407848607", "bucket": "parse-success-N"}
@@ -117,7 +117,7 @@
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-13", "text_sha": "4edc0f347b59", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-14", "text_sha": "68a1b43061a1", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-15", "text_sha": "122ca541f6df", "bucket": "parse-success-1"}
-{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-16", "text_sha": "4ff17ed1d658", "bucket": "parse-success-N"}
+{"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-16", "text_sha": "4ff17ed1d658", "bucket": "parse-success-1"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-17", "text_sha": "6ccfcef3741d", "bucket": "parse-success-N"}
 {"wave": "wave1-exemplars", "source": "rg81/transcriptions", "locator": "ANG PAMILYA/sent-18", "text_sha": "7165a75bc475", "bucket": "parse-success-1"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-at/sent-1", "text_sha": "fe7e5a27b442", "bucket": "parse-success-N"}
@@ -139,7 +139,7 @@
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-akasya/sent-17", "text_sha": "27e21e5bda9f", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-akbrfy/sent-18", "text_sha": "b2fa94aaefc1", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-akmi'/sent-19", "text_sha": "bf83693d39b3", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-aksaya/sent-20", "text_sha": "d37f498d629a", "bucket": "parse-success-N"}
+{"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-aksaya/sent-20", "text_sha": "d37f498d629a", "bucket": "parse-success-1"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-agaw/sent-21", "text_sha": "32883384191c", "bucket": "parse-success-1"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-agaw/sent-22", "text_sha": "a09d63e4db5e", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-áhon/sent-23", "text_sha": "315737108052", "bucket": "zero-parse-fragment"}
@@ -242,9 +242,9 @@
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-marki/sent-120", "text_sha": "a88b5b36d3dc", "bucket": "parse-success-1"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-masld/sent-121", "text_sha": "bf48a9f0c7f6", "bucket": "parse-success-N"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-mfimog/sent-122", "text_sha": "36c23d526b63", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-na/sent-123", "text_sha": "8c25af762548", "bucket": "parse-success-N"}
+{"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-na/sent-123", "text_sha": "8c25af762548", "bucket": "parse-success-1"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-nang/sent-124", "text_sha": "1cb82d71aeb7", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-nang/sent-125", "text_sha": "ecd1f5c0651e", "bucket": "parse-success-N"}
+{"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-nang/sent-125", "text_sha": "ecd1f5c0651e", "bucket": "parse-success-1"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-ngi'/sent-126", "text_sha": "a26948928749", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-ngi'/sent-127", "text_sha": "72663eb8fdcf", "bucket": "parse-success-1"}
 {"wave": "wave2-ramos1971", "source": "ramos1971", "locator": "entry-nl/sent-128", "text_sha": "bb2c8a978e7c", "bucket": "parse-success-1"}
@@ -368,7 +368,7 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Requests/sent-37", "text_sha": "380fd9b4451c", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Requests/sent-38", "text_sha": "68a3d19b2f1f", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Commands/sent-39", "text_sha": "a04c781be4a3", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Responses/sent-40", "text_sha": "f7c08791650b", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Responses/sent-40", "text_sha": "f7c08791650b", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Singular Plural/sent-41", "text_sha": "50a3e5fa476b", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Singular Plural/sent-42", "text_sha": "a33832262bee", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Singular Plural/sent-43", "text_sha": "f46975368cec", "bucket": "zero-parse-no-fragment"}
@@ -394,7 +394,7 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Verb Subject                        Verb Subject/sent-63", "text_sha": "6652e6ca358d", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Verb Subject                        Verb Subject/sent-64", "text_sha": "f515ba857b87", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Verb Subject                        Verb Subject/sent-65", "text_sha": "30e026da5a34", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-66", "text_sha": "2ded59f5a4ff", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-66", "text_sha": "2ded59f5a4ff", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-67", "text_sha": "820b76c9d4ed", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-68", "text_sha": "6af16300a5c5", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-69", "text_sha": "d918ca83a3d0", "bucket": "zero-parse-fragment"}
@@ -573,10 +573,10 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-242", "text_sha": "1f44e7f167f7", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-243", "text_sha": "f39c1a3a3183", "bucket": "parse-success-N"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Negative Tes-No Question/sent-244", "text_sha": "1d2741c032ab", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Negative Tes-No Question/sent-245", "text_sha": "7d99d0b26409", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Negative Tes-No Question/sent-245", "text_sha": "7d99d0b26409", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Negative Tes-No Question/sent-246", "text_sha": "cf8a2e6a37ac", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Negative Tes-No Question/sent-247", "text_sha": "68b75d113582", "bucket": "parse-success-N"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Negative Tes-No Question/sent-248", "text_sha": "274578077ac9", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Negative Tes-No Question/sent-247", "text_sha": "68b75d113582", "bucket": "parse-success-1"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Negative Tes-No Question/sent-248", "text_sha": "274578077ac9", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-249", "text_sha": "a0b991e61b65", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Statement              Tag Question/sent-250", "text_sha": "f75743777491", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Statement              Tag Question/sent-251", "text_sha": "a433f2434c00", "bucket": "zero-parse-no-fragment"}
@@ -669,7 +669,7 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-338", "text_sha": "85f382b69ece", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-339", "text_sha": "d5c8e1655d97", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-340", "text_sha": "50c6ddb9a2fe", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-341", "text_sha": "ee4f510b3a44", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-341", "text_sha": "ee4f510b3a44", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-342", "text_sha": "a785b39bfa48", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-343", "text_sha": "375466b5ccc5", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-344", "text_sha": "7e97d6a586db", "bucket": "zero-parse-no-fragment"}
@@ -724,11 +724,11 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-393", "text_sha": "0d347cd9472a", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-394", "text_sha": "645433513956", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-395", "text_sha": "06d2d0673ad3", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-396", "text_sha": "fe36a89a09a2", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-396", "text_sha": "fe36a89a09a2", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-397", "text_sha": "2b421d92f690", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-398", "text_sha": "0515d0ee33ef", "bucket": "parse-success-1"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-399", "text_sha": "f6934d270622", "bucket": "parse-success-N"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-400", "text_sha": "d4ea1acc5d8a", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-399", "text_sha": "f6934d270622", "bucket": "parse-success-1"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-400", "text_sha": "d4ea1acc5d8a", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-401", "text_sha": "7548adca9710", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-402", "text_sha": "15a4b0f3ba02", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-403", "text_sha": "52458ae85d76", "bucket": "parse-success-1"}
@@ -761,7 +761,7 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Explanation/sent-430", "text_sha": "b74aa7518cc9", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Explanation/sent-431", "text_sha": "585afa68289c", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Explanation/sent-432", "text_sha": "0b4ac891a8a1", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-433", "text_sha": "06f5b15e43d8", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-433", "text_sha": "06f5b15e43d8", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-434", "text_sha": "a459df9a4a18", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-435", "text_sha": "baa260838221", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Contrast/sent-436", "text_sha": "5e37b31182d2", "bucket": "zero-parse-no-fragment"}
@@ -812,7 +812,7 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/1 2 0      Conjoining/sent-481", "text_sha": "5f83f2c3f270", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/1 2 0      Conjoining/sent-482", "text_sha": "bbc215ee68ed", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/1 2 0      Conjoining/sent-483", "text_sha": "482593d9ab5e", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Cause/sent-484", "text_sha": "d3424dcafa2f", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Cause/sent-484", "text_sha": "d3424dcafa2f", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Cause/sent-485", "text_sha": "71f2083ce21c", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Cause/sent-486", "text_sha": "6b79cb92cc91", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-487", "text_sha": "a0c46d2445ec", "bucket": "zero-parse-no-fragment"}
@@ -867,7 +867,7 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-536", "text_sha": "8ba5302febcc", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-537", "text_sha": "cc6817bc8ece", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-538", "text_sha": "ec06b114ad10", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-539", "text_sha": "4db277d8ed48", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-539", "text_sha": "4db277d8ed48", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-540", "text_sha": "df31c8969616", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-541", "text_sha": "e6564d64933d", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Counter-Assumption/sent-542", "text_sha": "12b2ffa1b420", "bucket": "zero-parse-no-fragment"}
@@ -988,7 +988,7 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Transition Phrases/sent-657", "text_sha": "b6e88b1d6b72", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Transition Phrases/sent-658", "text_sha": "c3d3184a4a19", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Transition Phrases/sent-659", "text_sha": "5a3fe9c9523f", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Transition Phrases/sent-660", "text_sha": "eb3148262ef6", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Transition Phrases/sent-660", "text_sha": "eb3148262ef6", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Transition Phrases/sent-661", "text_sha": "d9731013ffac", "bucket": "parse-success-N"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Transition Phrases/sent-662", "text_sha": "d842239a9b31", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/B                                       Well; And/sent-663", "text_sha": "98e07c8de146", "bucket": "parse-success-1"}
@@ -1014,7 +1014,7 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/B                                       Well; And/sent-683", "text_sha": "c5eae0204921", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/B                                       Well; And/sent-684", "text_sha": "255c86fa45a2", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/B                                       Well; And/sent-685", "text_sha": "9b3b091e8f0a", "bucket": "zero-parse-no-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/B                                       Well; And/sent-686", "text_sha": "a275efe986fd", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/B                                       Well; And/sent-686", "text_sha": "a275efe986fd", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/B                                       Well; And/sent-687", "text_sha": "553647920e08", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/B                                       Well; And/sent-688", "text_sha": "4e64d74d3cf5", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Ngayon                             Now/sent-689", "text_sha": "6b4f9d3732f9", "bucket": "zero-parse-fragment"}
@@ -1233,7 +1233,7 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-902", "text_sha": "47a7596a56dc", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-903", "text_sha": "e0652c313987", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-904", "text_sha": "299e4dc781e9", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-905", "text_sha": "2a82754bd296", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-905", "text_sha": "2a82754bd296", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-906", "text_sha": "b367403dcfb0", "bucket": "parse-success-N"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-907", "text_sha": "e267cd60d38c", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-908", "text_sha": "91bf2e326718", "bucket": "zero-parse-fragment"}
@@ -1241,7 +1241,7 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-910", "text_sha": "90604cb023f9", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercise/sent-911", "text_sha": "620fe78f637f", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Embedding       165/sent-912", "text_sha": "016631c8c459", "bucket": "parse-success-N"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Embedding       165/sent-913", "text_sha": "4fbfcb9d3866", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Embedding       165/sent-913", "text_sha": "4fbfcb9d3866", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Embedding       165/sent-914", "text_sha": "016631c8c459", "bucket": "parse-success-N"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Embedding       165/sent-915", "text_sha": "6475b8de473e", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/The Embedded Clause/sent-916", "text_sha": "516a4a5839bc", "bucket": "zero-parse-no-fragment"}
@@ -1292,7 +1292,7 @@
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Relative Clause/sent-961", "text_sha": "bfd461653f9f", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-962", "text_sha": "09f1942201c9", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-963", "text_sha": "b66993918a3b", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-964", "text_sha": "4eab6228f3d1", "bucket": "parse-success-N"}
+{"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-964", "text_sha": "4eab6228f3d1", "bucket": "parse-success-1"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-965", "text_sha": "30085a1dd66e", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-966", "text_sha": "ad3313d00941", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rc1990", "source": "rc1990", "locator": "Ch5-Some Changes/Exercises/sent-967", "text_sha": "36c8a631f2c3", "bucket": "parse-success-1"}
@@ -1362,7 +1362,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-2/numbered/sent-9", "text_sha": "8a74b310c35d", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-2/numbered/sent-10", "text_sha": "2d821e52ce74", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-2/numbered/sent-11", "text_sha": "d81f16a3fd73", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-2/numbered/sent-12", "text_sha": "2d51cbf20f2e", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-2/numbered/sent-12", "text_sha": "2d51cbf20f2e", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-2/numbered/sent-13", "text_sha": "b043f7d77116", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-2/numbered/sent-14", "text_sha": "15191433f224", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-3/numbered/sent-15", "text_sha": "3054032e3c49", "bucket": "parse-success-1"}
@@ -1391,7 +1391,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-12/numbered/sent-38", "text_sha": "96c0ea22c1c7", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-12/numbered/sent-39", "text_sha": "65d0af254f62", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-12/prose/sent-40", "text_sha": "7af93a7d0183", "bucket": "zero-parse-no-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-12/numbered/sent-41", "text_sha": "f8c41b7b70ea", "bucket": "zero-parse-fragment"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-12/numbered/sent-41", "text_sha": "f8c41b7b70ea", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-12/numbered/sent-42", "text_sha": "882efa3b5744", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-12/numbered/sent-43", "text_sha": "df34f46d8adc", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-12/numbered/sent-44", "text_sha": "4203edcc5816", "bucket": "zero-parse-no-fragment"}
@@ -1476,7 +1476,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-24/prose/sent-123", "text_sha": "1515e1eb27f1", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-24/numbered/sent-124", "text_sha": "3aca143792a1", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-24/prose/sent-125", "text_sha": "2fb2f82b24c5", "bucket": "parse-success-1"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-24/prose/sent-126", "text_sha": "8d0175a9f3f2", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-24/prose/sent-126", "text_sha": "8d0175a9f3f2", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-25/prose/sent-127", "text_sha": "29f9fdd46a84", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-25/prose/sent-128", "text_sha": "7244dcc3cdb9", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-25/dialog/sent-129", "text_sha": "a63e31d58d35", "bucket": "zero-parse-no-fragment"}
@@ -1502,11 +1502,11 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-27/numbered/sent-149", "text_sha": "0602152a10c0", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-27/prose/sent-150", "text_sha": "465e3a396486", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-27/prose/sent-151", "text_sha": "8a5286f526bd", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-27/prose/sent-152", "text_sha": "975521af6fee", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-27/prose/sent-152", "text_sha": "975521af6fee", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-27/prose/sent-153", "text_sha": "1b5f0a930921", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-27/prose/sent-154", "text_sha": "e38a1f3933e9", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-27/prose/sent-155", "text_sha": "1fa013c9698c", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-28/prose/sent-156", "text_sha": "c74bd9ac4e82", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-28/prose/sent-156", "text_sha": "c74bd9ac4e82", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-28/prose/sent-157", "text_sha": "c205b778d642", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-28/prose/sent-158", "text_sha": "9bfe08027eb0", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-28/prose/sent-159", "text_sha": "7ef275e87dd3", "bucket": "zero-parse-fragment"}
@@ -1533,7 +1533,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-30/numbered/sent-180", "text_sha": "458d7dc9911d", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-30/numbered/sent-181", "text_sha": "8635d66c2202", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-30/numbered/sent-182", "text_sha": "a2035925fc9a", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-30/numbered/sent-183", "text_sha": "a3f0691ad6ad", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-30/numbered/sent-183", "text_sha": "a3f0691ad6ad", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-30/numbered/sent-184", "text_sha": "b87b6249cffb", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-30/prose/sent-185", "text_sha": "12de0c9379d2", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-31/prose/sent-186", "text_sha": "c4a32ce01624", "bucket": "parse-success-1"}
@@ -1549,7 +1549,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-32/prose/sent-196", "text_sha": "e4c8c98131ee", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-33/numbered/sent-197", "text_sha": "0e8cd7748c33", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-33/numbered/sent-198", "text_sha": "45f2aef14f9e", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-33/numbered/sent-199", "text_sha": "a5d0b229cadc", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-33/numbered/sent-199", "text_sha": "a5d0b229cadc", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-33/dialog/sent-200", "text_sha": "fee517cc09a6", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-33/dialog/sent-201", "text_sha": "b34f8a44f9bd", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-33/prose/sent-202", "text_sha": "41577a578e2d", "bucket": "zero-parse-fragment"}
@@ -1588,7 +1588,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-37/prose/sent-235", "text_sha": "d6c7b81a5425", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-37/prose/sent-236", "text_sha": "3d60a0f30488", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-37/dialog/sent-237", "text_sha": "8a74b310c35d", "bucket": "parse-success-N"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-37/dialog/sent-238", "text_sha": "b28ad0eeb926", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-37/dialog/sent-238", "text_sha": "b28ad0eeb926", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-37/numbered/sent-239", "text_sha": "c51303e5c3b1", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-37/dialog/sent-240", "text_sha": "3a6e84001f63", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-37/prose/sent-241", "text_sha": "9ea45d5b1661", "bucket": "zero-parse-fragment"}
@@ -1678,7 +1678,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-45/prose/sent-325", "text_sha": "379c1a58a1c4", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-46/numbered/sent-326", "text_sha": "51759cec1310", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-46/numbered/sent-327", "text_sha": "5425e9dab90b", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-46/numbered/sent-328", "text_sha": "5492aadcc855", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-46/numbered/sent-328", "text_sha": "5492aadcc855", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-46/numbered/sent-329", "text_sha": "b29c94a88721", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-46/numbered/sent-330", "text_sha": "b8efc5183c4f", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-46/numbered/sent-331", "text_sha": "4cb048e3b2da", "bucket": "parse-success-1"}
@@ -1748,7 +1748,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-53/numbered/sent-395", "text_sha": "9a6fcf0feab9", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-54/dialog/sent-396", "text_sha": "db26d0a35db1", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-54/dialog/sent-397", "text_sha": "f669ac7cc230", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-54/dialog/sent-398", "text_sha": "262a9d94624f", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-54/dialog/sent-398", "text_sha": "262a9d94624f", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-54/dialog/sent-399", "text_sha": "e846563fbc2a", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-54/dialog/sent-400", "text_sha": "1263d6a6f623", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-55/numbered/sent-401", "text_sha": "01ad93ad3b82", "bucket": "zero-parse-fragment"}
@@ -1758,7 +1758,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-55/prose/sent-405", "text_sha": "695b864ae705", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-55/prose/sent-406", "text_sha": "3e8e29ea741a", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-55/prose/sent-407", "text_sha": "80e18972cd84", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-55/prose/sent-408", "text_sha": "d41e24f70146", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-55/prose/sent-408", "text_sha": "d41e24f70146", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-55/prose/sent-409", "text_sha": "91d98052831a", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-55/prose/sent-410", "text_sha": "1d84cb720203", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-55/prose/sent-411", "text_sha": "f3e15848e1b4", "bucket": "zero-parse-fragment"}
@@ -1787,7 +1787,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-59/numbered/sent-434", "text_sha": "49adddc99032", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-59/numbered/sent-435", "text_sha": "eb9b7bd13ca7", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-59/numbered/sent-436", "text_sha": "31592835f939", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-59/numbered/sent-437", "text_sha": "ee18b8e47f6a", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-59/numbered/sent-437", "text_sha": "ee18b8e47f6a", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-59/numbered/sent-438", "text_sha": "3e42850d556d", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-59/numbered/sent-439", "text_sha": "214214b9f6bb", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-59/numbered/sent-440", "text_sha": "148b30a2e0bd", "bucket": "zero-parse-no-fragment"}
@@ -1797,7 +1797,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-60/prose/sent-444", "text_sha": "8d8391c55a7a", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-60/dialog/sent-445", "text_sha": "90a8709109a9", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-61/prose/sent-446", "text_sha": "c627bb2868af", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-61/prose/sent-447", "text_sha": "3936e381bccd", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-61/prose/sent-447", "text_sha": "3936e381bccd", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-62/prose/sent-448", "text_sha": "39e409878aa6", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-62/prose/sent-449", "text_sha": "c06ddfc6b645", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-63/prose/sent-450", "text_sha": "f761277bdd4e", "bucket": "zero-parse-fragment"}
@@ -1819,7 +1819,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-65/numbered/sent-466", "text_sha": "815ba91f1c13", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-65/numbered/sent-467", "text_sha": "305968e55ed9", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-65/numbered/sent-468", "text_sha": "e3b6c5462070", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-65/prose/sent-469", "text_sha": "74822723e4d2", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-65/prose/sent-469", "text_sha": "74822723e4d2", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-65/prose/sent-470", "text_sha": "45c49ae616f8", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-65/prose/sent-471", "text_sha": "6ba3aca6ef77", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-65/prose/sent-472", "text_sha": "417bba845e60", "bucket": "zero-parse-no-fragment"}
@@ -1831,7 +1831,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-66/prose/sent-478", "text_sha": "83b82b438588", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-66/prose/sent-479", "text_sha": "dab23fe44a22", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-66/dialog/sent-480", "text_sha": "caa5a4c49530", "bucket": "parse-success-1"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-66/dialog/sent-481", "text_sha": "416af676cc81", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-66/dialog/sent-481", "text_sha": "416af676cc81", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-67/prose/sent-482", "text_sha": "c2ec9dff8ccc", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-67/prose/sent-483", "text_sha": "33fe6cf0c7b2", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-67/numbered/sent-484", "text_sha": "c334fb5d5b52", "bucket": "zero-parse-fragment"}
@@ -1863,7 +1863,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-72/prose/sent-510", "text_sha": "439470622504", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-72/dialog/sent-511", "text_sha": "8d2705cbb223", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-72/dialog/sent-512", "text_sha": "5f6303a45a86", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-72/dialog/sent-513", "text_sha": "45d1f5cf6ad6", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-72/dialog/sent-513", "text_sha": "45d1f5cf6ad6", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-72/dialog/sent-514", "text_sha": "5f27e9548638", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-73/numbered/sent-515", "text_sha": "f536c65e57f1", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-74/prose/sent-516", "text_sha": "83cd74c0b113", "bucket": "zero-parse-no-fragment"}
@@ -1901,11 +1901,11 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/prose/sent-548", "text_sha": "893599c38bc9", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/prose/sent-549", "text_sha": "b94b446f74c0", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/prose/sent-550", "text_sha": "4c7d5dd9caad", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/prose/sent-551", "text_sha": "7b0d5e41e705", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/prose/sent-551", "text_sha": "7b0d5e41e705", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/dialog/sent-552", "text_sha": "1f863f455391", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/dialog/sent-553", "text_sha": "06fe982d2c93", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/dialog/sent-554", "text_sha": "65b0038d9c62", "bucket": "parse-success-1"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/dialog/sent-555", "text_sha": "19b7ab4e1051", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/dialog/sent-555", "text_sha": "19b7ab4e1051", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/dialog/sent-556", "text_sha": "821daa241585", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/dialog/sent-557", "text_sha": "7646bfb8e3fd", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-80/dialog/sent-558", "text_sha": "5b3cd06861f0", "bucket": "zero-parse-fragment"}
@@ -1938,7 +1938,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-85/dialog/sent-585", "text_sha": "11754d6e423c", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-86/numbered/sent-586", "text_sha": "4efe54a6cbc0", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-86/prose/sent-587", "text_sha": "bf2618e378cc", "bucket": "parse-success-1"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-86/numbered/sent-588", "text_sha": "478c11ccdcbd", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-86/numbered/sent-588", "text_sha": "478c11ccdcbd", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-86/numbered/sent-589", "text_sha": "f92e7a1601ab", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-86/numbered/sent-590", "text_sha": "78e7cce494eb", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-87/prose/sent-591", "text_sha": "b789b84e9bac", "bucket": "zero-parse-fragment"}
@@ -1956,7 +1956,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-88/numbered/sent-603", "text_sha": "06ee236a11ee", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-88/numbered/sent-604", "text_sha": "8c4cbc6239e2", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-88/numbered/sent-605", "text_sha": "26d4d6111c9e", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-89/dialog/sent-606", "text_sha": "3683166ddf66", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-89/dialog/sent-606", "text_sha": "3683166ddf66", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-89/prose/sent-607", "text_sha": "0eb9548ba749", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-89/dialog/sent-608", "text_sha": "334c220c78e5", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-89/dialog/sent-609", "text_sha": "e1fe9f1adcf4", "bucket": "zero-parse-fragment"}
@@ -2031,7 +2031,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-99/prose/sent-678", "text_sha": "3de77315a531", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-99/dialog/sent-679", "text_sha": "713cc4db3432", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-99/dialog/sent-680", "text_sha": "75e6bd6a427d", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-99/prose/sent-681", "text_sha": "be1657e3d0c7", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-99/prose/sent-681", "text_sha": "be1657e3d0c7", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-99/dialog/sent-682", "text_sha": "7496cb9fa0ab", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-100/numbered/sent-683", "text_sha": "32e36ae151a5", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-100/numbered/sent-684", "text_sha": "ee6744c2631b", "bucket": "zero-parse-fragment"}
@@ -2079,7 +2079,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-107/dialog/sent-726", "text_sha": "3331148e9690", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-107/prose/sent-727", "text_sha": "248a38a0f5d3", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-107/prose/sent-728", "text_sha": "6e158b654baf", "bucket": "parse-success-N"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-108/numbered/sent-729", "text_sha": "2ed0103d55e5", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-108/numbered/sent-729", "text_sha": "2ed0103d55e5", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-108/numbered/sent-730", "text_sha": "9fd1bee3e817", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-108/numbered/sent-731", "text_sha": "f3a67c3099cb", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-108/prose/sent-732", "text_sha": "eb1f4b8d9569", "bucket": "zero-parse-fragment"}
@@ -2184,8 +2184,8 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-121/dialog/sent-831", "text_sha": "3f1f2230b128", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-121/dialog/sent-832", "text_sha": "835c0aac8411", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-121/prose/sent-833", "text_sha": "10caa75095c4", "bucket": "zero-parse-no-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-121/prose/sent-834", "text_sha": "1bdbe77a0600", "bucket": "parse-success-N"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-121/dialog/sent-835", "text_sha": "12749516265f", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-121/prose/sent-834", "text_sha": "1bdbe77a0600", "bucket": "parse-success-1"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-121/dialog/sent-835", "text_sha": "12749516265f", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-122/numbered/sent-836", "text_sha": "7e7ca8d60d00", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-122/numbered/sent-837", "text_sha": "74241cc4526e", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-122/numbered/sent-838", "text_sha": "b98421f03ed6", "bucket": "zero-parse-no-fragment"}
@@ -2210,7 +2210,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-124/prose/sent-857", "text_sha": "574f71d9ed01", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-124/prose/sent-858", "text_sha": "c21a663e2f7e", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-124/prose/sent-859", "text_sha": "c63fa371cc92", "bucket": "parse-success-N"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-124/prose/sent-860", "text_sha": "89701abcba55", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-124/prose/sent-860", "text_sha": "89701abcba55", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-124/prose/sent-861", "text_sha": "5dae12b1e208", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-124/prose/sent-862", "text_sha": "12aafe98b6b5", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-125/prose/sent-863", "text_sha": "03ad587f32b9", "bucket": "zero-parse-fragment"}
@@ -2351,7 +2351,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-143/prose/sent-998", "text_sha": "20bf2f8397d0", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-143/prose/sent-999", "text_sha": "335017417b22", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-144/numbered/sent-1000", "text_sha": "f0643bbca56b", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-144/numbered/sent-1001", "text_sha": "4dbaf5ac7241", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-144/numbered/sent-1001", "text_sha": "4dbaf5ac7241", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-144/numbered/sent-1002", "text_sha": "600f84903060", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-144/numbered/sent-1003", "text_sha": "016884158ad3", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-144/numbered/sent-1004", "text_sha": "9b849c326937", "bucket": "zero-parse-fragment"}
@@ -2489,7 +2489,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-164/dialog/sent-1136", "text_sha": "26166f06e5e3", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-164/dialog/sent-1137", "text_sha": "19d5d615a8d1", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-164/prose/sent-1138", "text_sha": "cb477ffba144", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-164/dialog/sent-1139", "text_sha": "12bc11279445", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-164/dialog/sent-1139", "text_sha": "12bc11279445", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-164/prose/sent-1140", "text_sha": "57dd575a71f4", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-165/numbered/sent-1141", "text_sha": "fe07d622e5de", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-165/prose/sent-1142", "text_sha": "7b0a5408ab98", "bucket": "zero-parse-fragment"}
@@ -2525,8 +2525,8 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-168/prose/sent-1172", "text_sha": "1779a577dabe", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-168/prose/sent-1173", "text_sha": "8c9a3e75bf37", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-168/prose/sent-1174", "text_sha": "51a255a33f85", "bucket": "parse-success-N"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-168/prose/sent-1175", "text_sha": "3ed17e148c14", "bucket": "parse-success-N"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-168/prose/sent-1176", "text_sha": "2cfe03a71e3b", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-168/prose/sent-1175", "text_sha": "3ed17e148c14", "bucket": "parse-success-1"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-168/prose/sent-1176", "text_sha": "2cfe03a71e3b", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-169/prose/sent-1177", "text_sha": "8e0e7390cd1c", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-169/prose/sent-1178", "text_sha": "ffa64144a252", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-169/prose/sent-1179", "text_sha": "8e40bfc41bb8", "bucket": "zero-parse-fragment"}
@@ -2539,10 +2539,10 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-169/prose/sent-1186", "text_sha": "36a897ce42ca", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-170/prose/sent-1187", "text_sha": "8bb29bdf3834", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-170/prose/sent-1188", "text_sha": "d5c8d233a378", "bucket": "parse-success-N"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-170/numbered/sent-1189", "text_sha": "1015cb32399c", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-170/numbered/sent-1189", "text_sha": "1015cb32399c", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-170/numbered/sent-1190", "text_sha": "0712a76c77ca", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-170/prose/sent-1191", "text_sha": "fc04b88d4233", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-170/prose/sent-1192", "text_sha": "3cc2c20cfaac", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-170/prose/sent-1192", "text_sha": "3cc2c20cfaac", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-170/prose/sent-1193", "text_sha": "1aba05169095", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-170/prose/sent-1194", "text_sha": "54298f4c36e9", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-170/prose/sent-1195", "text_sha": "a0ea25ab8e55", "bucket": "zero-parse-fragment"}
@@ -2770,7 +2770,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-206/prose/sent-1417", "text_sha": "1ac35d1356da", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-207/dialog/sent-1418", "text_sha": "4b8a6f79b2da", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-207/prose/sent-1419", "text_sha": "ea4f598b5371", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-207/dialog/sent-1420", "text_sha": "5561650d3afe", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-207/dialog/sent-1420", "text_sha": "5561650d3afe", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-207/dialog/sent-1421", "text_sha": "68095d209ac3", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-207/prose/sent-1422", "text_sha": "76fea6e630dc", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-207/dialog/sent-1423", "text_sha": "5e027f4232cd", "bucket": "zero-parse-fragment"}
@@ -2780,7 +2780,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-209/prose/sent-1427", "text_sha": "b3f703cf84c0", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-209/numbered/sent-1428", "text_sha": "2cb3ab700d30", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-209/numbered/sent-1429", "text_sha": "ea4f598b5371", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-209/numbered/sent-1430", "text_sha": "9b40cde8e5dc", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-209/numbered/sent-1430", "text_sha": "9b40cde8e5dc", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-209/prose/sent-1431", "text_sha": "baaa2c4d4892", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-209/prose/sent-1432", "text_sha": "f56c936f6d83", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-209/prose/sent-1433", "text_sha": "2006bbb9093a", "bucket": "zero-parse-no-fragment"}
@@ -2814,7 +2814,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-213/prose/sent-1461", "text_sha": "cbc02e773e48", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-213/prose/sent-1462", "text_sha": "f7ca87b34962", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-213/numbered/sent-1463", "text_sha": "9874fbaccf6e", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-213/prose/sent-1464", "text_sha": "f5a113c1d2be", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-213/prose/sent-1464", "text_sha": "f5a113c1d2be", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-213/prose/sent-1465", "text_sha": "b075d49c7add", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-213/prose/sent-1466", "text_sha": "d370bdff7a17", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-213/prose/sent-1467", "text_sha": "1bcbf6152c6a", "bucket": "zero-parse-fragment"}
@@ -2900,7 +2900,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-222/numbered/sent-1547", "text_sha": "a19fd80aee40", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-223/prose/sent-1548", "text_sha": "55026db57ee3", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-223/prose/sent-1549", "text_sha": "54be4fa05018", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-223/prose/sent-1550", "text_sha": "152f8a7a2e44", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-223/prose/sent-1550", "text_sha": "152f8a7a2e44", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-223/dialog/sent-1551", "text_sha": "195d7ad06878", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-223/dialog/sent-1552", "text_sha": "1a91d9d49ef3", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-223/dialog/sent-1553", "text_sha": "a1cefbd1cfcc", "bucket": "zero-parse-fragment"}
@@ -2915,8 +2915,8 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-224/prose/sent-1562", "text_sha": "bdc89478adf1", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-224/prose/sent-1563", "text_sha": "9c3484580b5e", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-224/prose/sent-1564", "text_sha": "0d0e565bec99", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-224/prose/sent-1565", "text_sha": "152f8a7a2e44", "bucket": "parse-success-N"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-225/prose/sent-1566", "text_sha": "9b40cde8e5dc", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-224/prose/sent-1565", "text_sha": "152f8a7a2e44", "bucket": "parse-success-1"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-225/prose/sent-1566", "text_sha": "9b40cde8e5dc", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-225/prose/sent-1567", "text_sha": "eec5edfd88ab", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-225/prose/sent-1568", "text_sha": "d1ecc3d2fa22", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-225/prose/sent-1569", "text_sha": "b07626411d75", "bucket": "zero-parse-fragment"}
@@ -2947,9 +2947,9 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-228/prose/sent-1594", "text_sha": "dd2206e4a23a", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-228/prose/sent-1595", "text_sha": "849060f392b1", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-228/prose/sent-1596", "text_sha": "6f444f37b21d", "bucket": "parse-success-1"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-228/prose/sent-1597", "text_sha": "3bbaea4ac792", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-228/prose/sent-1597", "text_sha": "3bbaea4ac792", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-229/prose/sent-1598", "text_sha": "79f7fe8fc6d7", "bucket": "parse-success-1"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-229/dialog/sent-1599", "text_sha": "9b40cde8e5dc", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-229/dialog/sent-1599", "text_sha": "9b40cde8e5dc", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-229/dialog/sent-1600", "text_sha": "c435eb922c8a", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-229/dialog/sent-1601", "text_sha": "5eee7e4ddb17", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-230/numbered/sent-1602", "text_sha": "109fc6f12dec", "bucket": "zero-parse-fragment"}
@@ -3039,11 +3039,11 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/prose/sent-1686", "text_sha": "be6e875d7148", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/prose/sent-1687", "text_sha": "a56a4348eca9", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/prose/sent-1688", "text_sha": "01c72792f8c4", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/prose/sent-1689", "text_sha": "3bbaea4ac792", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/prose/sent-1689", "text_sha": "3bbaea4ac792", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/dialog/sent-1690", "text_sha": "9b8dea13ab0a", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/dialog/sent-1691", "text_sha": "61c59647ee68", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/dialog/sent-1692", "text_sha": "8edb4dfbb5fe", "bucket": "parse-success-1"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/dialog/sent-1693", "text_sha": "b790385d4471", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/dialog/sent-1693", "text_sha": "b790385d4471", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/prose/sent-1694", "text_sha": "0620b959ba2c", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/dialog/sent-1695", "text_sha": "247cb2cd520b", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-238/dialog/sent-1696", "text_sha": "db26bd915a73", "bucket": "zero-parse-fragment"}
@@ -3068,10 +3068,10 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-240/numbered/sent-1715", "text_sha": "0ea390e75dcb", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-240/numbered/sent-1716", "text_sha": "85967608ead5", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-241/prose/sent-1717", "text_sha": "a09a86ae666c", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-241/dialog/sent-1718", "text_sha": "aeb3278d1528", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-241/dialog/sent-1718", "text_sha": "aeb3278d1528", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-241/dialog/sent-1719", "text_sha": "6b38ff703430", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-242/numbered/sent-1720", "text_sha": "29d5a0547dca", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-242/numbered/sent-1721", "text_sha": "8c765991a0ab", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-242/numbered/sent-1721", "text_sha": "8c765991a0ab", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-242/numbered/sent-1722", "text_sha": "103271045314", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-242/prose/sent-1723", "text_sha": "126bcdf5f83f", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-242/prose/sent-1724", "text_sha": "6b38ff703430", "bucket": "zero-parse-fragment"}
@@ -3185,7 +3185,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-252/numbered/sent-1832", "text_sha": "242444a57a4c", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-252/numbered/sent-1833", "text_sha": "61ed931ecfbb", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-252/numbered/sent-1834", "text_sha": "ae272905d5e9", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-252/prose/sent-1835", "text_sha": "31066c7389be", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-252/prose/sent-1835", "text_sha": "31066c7389be", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-252/prose/sent-1836", "text_sha": "0c46c9ea6210", "bucket": "parse-success-N"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-252/prose/sent-1837", "text_sha": "974462cab3c2", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-252/prose/sent-1838", "text_sha": "b7e4cd8c6541", "bucket": "parse-success-1"}
@@ -3202,10 +3202,10 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-253/numbered/sent-1849", "text_sha": "696c96bc906e", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-253/prose/sent-1850", "text_sha": "6659ea1a1044", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-253/prose/sent-1851", "text_sha": "14af67033216", "bucket": "parse-success-1"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-255/numbered/sent-1852", "text_sha": "d787c7dfbc65", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-255/numbered/sent-1852", "text_sha": "d787c7dfbc65", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-255/numbered/sent-1853", "text_sha": "47087d078340", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-255/prose/sent-1854", "text_sha": "dcee89c7aa99", "bucket": "parse-success-N"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-255/prose/sent-1855", "text_sha": "31a7f25c40aa", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-255/prose/sent-1854", "text_sha": "dcee89c7aa99", "bucket": "parse-success-1"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-255/prose/sent-1855", "text_sha": "31a7f25c40aa", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-255/prose/sent-1856", "text_sha": "f94ae19c763c", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-255/prose/sent-1857", "text_sha": "0b1621215ad6", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-255/prose/sent-1858", "text_sha": "1fc81ef1c1b0", "bucket": "parse-success-1"}
@@ -3235,7 +3235,7 @@
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-261/numbered/sent-1882", "text_sha": "a4562b8fdd1e", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-261/numbered/sent-1883", "text_sha": "abf06cc07cc6", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-261/numbered/sent-1884", "text_sha": "ec6fdb8abf9e", "bucket": "zero-parse-fragment"}
-{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-261/numbered/sent-1885", "text_sha": "5239efe59f36", "bucket": "parse-success-N"}
+{"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-261/numbered/sent-1885", "text_sha": "5239efe59f36", "bucket": "parse-success-1"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-262/prose/sent-1886", "text_sha": "36b112964c45", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-262/numbered/sent-1887", "text_sha": "554a2fd441da", "bucket": "zero-parse-fragment"}
 {"wave": "wave2-rg-intermediate", "source": "rg-intermediate", "locator": "page-262/numbered/sent-1888", "text_sha": "7675c0e23bdd", "bucket": "zero-parse-fragment"}
@@ -3327,7 +3327,7 @@
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-23/prose/sent-55", "text_sha": "257bf15f6ca4", "bucket": "parse-success-1"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-23/prose/sent-56", "text_sha": "132ba9e62efb", "bucket": "parse-success-1"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-23/prose/sent-57", "text_sha": "7128cbf337a5", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-23/prose/sent-58", "text_sha": "c971ffddc1f7", "bucket": "parse-success-N"}
+{"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-23/prose/sent-58", "text_sha": "c971ffddc1f7", "bucket": "parse-success-1"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-23/prose/sent-59", "text_sha": "8f73d8a8555f", "bucket": "parse-success-1"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-23/prose/sent-60", "text_sha": "e25b3202c66e", "bucket": "parse-success-1"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-23/prose/sent-61", "text_sha": "43ecf54b9b6a", "bucket": "zero-parse-fragment"}
@@ -3540,10 +3540,10 @@
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-64/numbered/sent-268", "text_sha": "3060c80165d6", "bucket": "parse-success-N"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-65/prose/sent-269", "text_sha": "096630735dcd", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-65/prose/sent-270", "text_sha": "5e1ef9ea7662", "bucket": "parse-success-N"}
-{"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-65/prose/sent-271", "text_sha": "5484bb69c007", "bucket": "parse-success-N"}
+{"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-65/prose/sent-271", "text_sha": "5484bb69c007", "bucket": "parse-success-1"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-65/prose/sent-272", "text_sha": "42fef626afda", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-65/prose/sent-273", "text_sha": "6e25ad8b8afa", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-65/numbered/sent-274", "text_sha": "c71240116520", "bucket": "parse-success-N"}
+{"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-65/numbered/sent-274", "text_sha": "c71240116520", "bucket": "parse-success-1"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-65/prose/sent-275", "text_sha": "2395f13b141d", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-66/prose/sent-276", "text_sha": "b82b6491f477", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-66/dialog/sent-277", "text_sha": "d01eca780f0b", "bucket": "zero-parse-fragment"}
@@ -3715,8 +3715,8 @@
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-99/dialog/sent-443", "text_sha": "110fa71fbdad", "bucket": "parse-success-1"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-99/dialog/sent-444", "text_sha": "28bd7a88ce8e", "bucket": "parse-success-1"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-100/prose/sent-445", "text_sha": "1f9a029b3615", "bucket": "parse-success-1"}
-{"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-100/prose/sent-446", "text_sha": "d3d7bcb24cc8", "bucket": "parse-success-N"}
-{"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-100/prose/sent-447", "text_sha": "fa20f2b20912", "bucket": "parse-success-N"}
+{"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-100/prose/sent-446", "text_sha": "d3d7bcb24cc8", "bucket": "parse-success-1"}
+{"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-100/prose/sent-447", "text_sha": "fa20f2b20912", "bucket": "parse-success-1"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-100/prose/sent-448", "text_sha": "750896069c63", "bucket": "parse-success-1"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-101/prose/sent-449", "text_sha": "4562375eb623", "bucket": "parse-success-N"}
 {"wave": "wave3-rg-conversational", "source": "rg-conversational", "locator": "page-102/prose/sent-450", "text_sha": "9a5937497373", "bucket": "zero-parse-no-fragment"}
@@ -4024,7 +4024,7 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-91/sent-86", "text_sha": "589c01e12570", "bucket": "parse-success-N"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-92/sent-87", "text_sha": "1f1bcc98fe92", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-92/sent-88", "text_sha": "0365e229a956", "bucket": "parse-success-1"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-92/sent-89", "text_sha": "3f51581872d7", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-92/sent-89", "text_sha": "3f51581872d7", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-92/sent-90", "text_sha": "fd2bd5335805", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-92/sent-91", "text_sha": "780a13e1a0fb", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-92/sent-92", "text_sha": "4e4297a54678", "bucket": "zero-parse-fragment"}
@@ -4183,8 +4183,8 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-197/sent-245", "text_sha": "32600b41e18c", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-198/sent-246", "text_sha": "0ea60cdfbb76", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-198/sent-247", "text_sha": "b40f57b7aa0f", "bucket": "parse-success-1"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-199/sent-248", "text_sha": "5161dad00c9f", "bucket": "parse-success-N"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-199/sent-249", "text_sha": "05812d712827", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-199/sent-248", "text_sha": "5161dad00c9f", "bucket": "parse-success-1"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-199/sent-249", "text_sha": "05812d712827", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-201/sent-250", "text_sha": "a54273719f2c", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-201/sent-251", "text_sha": "367b7d056a63", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-201/sent-252", "text_sha": "c735ae6bc162", "bucket": "parse-success-1"}
@@ -4482,15 +4482,15 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-407/sent-544", "text_sha": "cef57ed4f226", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-408/sent-545", "text_sha": "483189f397fb", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-408/sent-546", "text_sha": "93c4ad98521b", "bucket": "parse-success-1"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-547", "text_sha": "2ebb1858ce1e", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-547", "text_sha": "2ebb1858ce1e", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-548", "text_sha": "ebc7e3ad36da", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-549", "text_sha": "68372d09c57b", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-550", "text_sha": "254f5d6cc05b", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-550", "text_sha": "254f5d6cc05b", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-551", "text_sha": "71d72531511d", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-552", "text_sha": "854759624e07", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-553", "text_sha": "2ffcad83e66b", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-554", "text_sha": "bd2418e0ff80", "bucket": "parse-success-1"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-555", "text_sha": "dad98faad7d6", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-409/sent-555", "text_sha": "dad98faad7d6", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-410/sent-556", "text_sha": "f61f330ffb1d", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-410/sent-557", "text_sha": "21915661d526", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-410/sent-558", "text_sha": "6ce9437a8e3f", "bucket": "zero-parse-fragment"}
@@ -4538,7 +4538,7 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-420/sent-600", "text_sha": "6616679db57f", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-420/sent-601", "text_sha": "227f70f99187", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-422/sent-602", "text_sha": "baa0053ab7c4", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-422/sent-603", "text_sha": "0570af32c668", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-422/sent-603", "text_sha": "0570af32c668", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-423/sent-604", "text_sha": "26c1db21e497", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-423/sent-605", "text_sha": "3edb83c20e0d", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-423/sent-606", "text_sha": "a80d01ac38bb", "bucket": "parse-success-1"}
@@ -4557,7 +4557,7 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-428/sent-619", "text_sha": "19a35eaa95f4", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-428/sent-620", "text_sha": "29cd3550ce91", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-621", "text_sha": "b7d60b96e681", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-622", "text_sha": "e91c25068def", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-622", "text_sha": "e91c25068def", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-623", "text_sha": "df0a5e216a0a", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-624", "text_sha": "b5c134277e99", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-625", "text_sha": "8934a4e95e0b", "bucket": "parse-success-1"}
@@ -4565,14 +4565,14 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-627", "text_sha": "561231face4c", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-628", "text_sha": "16c56129468d", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-629", "text_sha": "41267bee8ebd", "bucket": "zero-parse-no-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-630", "text_sha": "fb63ea1cb6b3", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-630", "text_sha": "fb63ea1cb6b3", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-429/sent-631", "text_sha": "332cd020ef9e", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-430/sent-632", "text_sha": "2154f05bf132", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-430/sent-632", "text_sha": "2154f05bf132", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-430/sent-633", "text_sha": "7f58647cd4b9", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-430/sent-634", "text_sha": "8ced4bbd47a6", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-430/sent-634", "text_sha": "8ced4bbd47a6", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-430/sent-635", "text_sha": "7ebba7fd6876", "bucket": "parse-success-1"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-430/sent-636", "text_sha": "5413fef8135f", "bucket": "parse-success-N"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-430/sent-637", "text_sha": "b993662591fd", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-430/sent-636", "text_sha": "5413fef8135f", "bucket": "parse-success-1"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-430/sent-637", "text_sha": "b993662591fd", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-431/sent-638", "text_sha": "34722462e8ee", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-431/sent-639", "text_sha": "832243978084", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-431/sent-640", "text_sha": "a4f2905f45bd", "bucket": "zero-parse-fragment"}
@@ -4616,7 +4616,7 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-441/sent-678", "text_sha": "87dfe1bf0b87", "bucket": "parse-success-N"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-441/sent-679", "text_sha": "645c692b5719", "bucket": "parse-success-N"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-441/sent-680", "text_sha": "985547cb1b7a", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-441/sent-681", "text_sha": "735467815676", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-441/sent-681", "text_sha": "735467815676", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-441/sent-682", "text_sha": "ef5fc2cc22cd", "bucket": "parse-success-N"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-441/sent-683", "text_sha": "716799f451eb", "bucket": "parse-success-N"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-441/sent-684", "text_sha": "9c6cb4ffa340", "bucket": "parse-success-1"}
@@ -4774,15 +4774,15 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-507/sent-836", "text_sha": "cef57ed4f226", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-508/sent-837", "text_sha": "483189f397fb", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-508/sent-838", "text_sha": "93c4ad98521b", "bucket": "parse-success-1"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-839", "text_sha": "2ebb1858ce1e", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-839", "text_sha": "2ebb1858ce1e", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-840", "text_sha": "ebc7e3ad36da", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-841", "text_sha": "68372d09c57b", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-842", "text_sha": "254f5d6cc05b", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-842", "text_sha": "254f5d6cc05b", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-843", "text_sha": "71d72531511d", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-844", "text_sha": "854759624e07", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-845", "text_sha": "2ffcad83e66b", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-846", "text_sha": "bd2418e0ff80", "bucket": "parse-success-1"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-847", "text_sha": "dad98faad7d6", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-509/sent-847", "text_sha": "dad98faad7d6", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-510/sent-848", "text_sha": "f61f330ffb1d", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-510/sent-849", "text_sha": "21915661d526", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-510/sent-850", "text_sha": "6ce9437a8e3f", "bucket": "zero-parse-fragment"}
@@ -4828,7 +4828,7 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-519/sent-890", "text_sha": "96833c6d9d5d", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-520/sent-891", "text_sha": "227f70f99187", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-522/sent-892", "text_sha": "baa0053ab7c4", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-522/sent-893", "text_sha": "0570af32c668", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-522/sent-893", "text_sha": "0570af32c668", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-523/sent-894", "text_sha": "26c1db21e497", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-523/sent-895", "text_sha": "3edb83c20e0d", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-523/sent-896", "text_sha": "a80d01ac38bb", "bucket": "parse-success-1"}
@@ -4847,7 +4847,7 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-528/sent-909", "text_sha": "19a35eaa95f4", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-528/sent-910", "text_sha": "29cd3550ce91", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-911", "text_sha": "b7d60b96e681", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-912", "text_sha": "e91c25068def", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-912", "text_sha": "e91c25068def", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-913", "text_sha": "df0a5e216a0a", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-914", "text_sha": "b5c134277e99", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-915", "text_sha": "8934a4e95e0b", "bucket": "parse-success-1"}
@@ -4855,14 +4855,14 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-917", "text_sha": "561231face4c", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-918", "text_sha": "16c56129468d", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-919", "text_sha": "41267bee8ebd", "bucket": "zero-parse-no-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-920", "text_sha": "fb63ea1cb6b3", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-920", "text_sha": "fb63ea1cb6b3", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-529/sent-921", "text_sha": "332cd020ef9e", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-530/sent-922", "text_sha": "2154f05bf132", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-530/sent-922", "text_sha": "2154f05bf132", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-530/sent-923", "text_sha": "7f58647cd4b9", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-530/sent-924", "text_sha": "8ced4bbd47a6", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-530/sent-924", "text_sha": "8ced4bbd47a6", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-530/sent-925", "text_sha": "7ebba7fd6876", "bucket": "parse-success-1"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-530/sent-926", "text_sha": "5413fef8135f", "bucket": "parse-success-N"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-530/sent-927", "text_sha": "b993662591fd", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-530/sent-926", "text_sha": "5413fef8135f", "bucket": "parse-success-1"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-530/sent-927", "text_sha": "b993662591fd", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-531/sent-928", "text_sha": "34722462e8ee", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-531/sent-929", "text_sha": "832243978084", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-531/sent-930", "text_sha": "a4f2905f45bd", "bucket": "zero-parse-fragment"}
@@ -4906,7 +4906,7 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-541/sent-968", "text_sha": "87dfe1bf0b87", "bucket": "parse-success-N"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-541/sent-969", "text_sha": "645c692b5719", "bucket": "parse-success-N"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-541/sent-970", "text_sha": "985547cb1b7a", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-541/sent-971", "text_sha": "735467815676", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-541/sent-971", "text_sha": "735467815676", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-541/sent-972", "text_sha": "ef5fc2cc22cd", "bucket": "parse-success-N"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-541/sent-973", "text_sha": "716799f451eb", "bucket": "parse-success-N"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-541/sent-974", "text_sha": "9c6cb4ffa340", "bucket": "parse-success-1"}
@@ -5067,9 +5067,9 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-608/sent-1129", "text_sha": "e48c9143e950", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-608/sent-1130", "text_sha": "ab12d534d213", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-608/sent-1131", "text_sha": "9bae00ca1f35", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-608/sent-1132", "text_sha": "ba1bbce2e723", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-608/sent-1132", "text_sha": "ba1bbce2e723", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-608/sent-1133", "text_sha": "06549ff24975", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-608/sent-1134", "text_sha": "8195c36dbc9e", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-608/sent-1134", "text_sha": "8195c36dbc9e", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-609/sent-1135", "text_sha": "57160ead8e05", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-609/sent-1136", "text_sha": "36da29a786aa", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-609/sent-1137", "text_sha": "f3f353fd288e", "bucket": "zero-parse-fragment"}
@@ -5088,7 +5088,7 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-614/sent-1150", "text_sha": "1fa7e52afd5e", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-616/sent-1151", "text_sha": "1ef5d608229a", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-616/sent-1152", "text_sha": "54ef7b6138e3", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-616/sent-1153", "text_sha": "45ca722b2082", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-616/sent-1153", "text_sha": "45ca722b2082", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-619/sent-1154", "text_sha": "6f08a094026f", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-619/sent-1155", "text_sha": "823b508ef09e", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-619/sent-1156", "text_sha": "58818d22ae51", "bucket": "zero-parse-fragment"}
@@ -5111,7 +5111,7 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-624/sent-1173", "text_sha": "82a7be008397", "bucket": "parse-success-N"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-624/sent-1174", "text_sha": "1d3abe1cb674", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-624/sent-1175", "text_sha": "02f61f8e92b6", "bucket": "zero-parse-fragment"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-624/sent-1176", "text_sha": "b8d46bb49094", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-624/sent-1176", "text_sha": "b8d46bb49094", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-624/sent-1177", "text_sha": "83e48f4cf6d1", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-624/sent-1178", "text_sha": "ff2057632a21", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-625/sent-1179", "text_sha": "482b8bd84583", "bucket": "zero-parse-fragment"}
@@ -5177,7 +5177,7 @@
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-655/sent-1239", "text_sha": "071555b3c1a4", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-655/sent-1240", "text_sha": "3ba86d7ac2de", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-656/sent-1241", "text_sha": "658422e3f879", "bucket": "parse-success-1"}
-{"wave": "wave3-so1972", "source": "so1972", "locator": "page-656/sent-1242", "text_sha": "0bd3743b198d", "bucket": "parse-success-N"}
+{"wave": "wave3-so1972", "source": "so1972", "locator": "page-656/sent-1242", "text_sha": "0bd3743b198d", "bucket": "parse-success-1"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-656/sent-1243", "text_sha": "45044d5f9df3", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-656/sent-1244", "text_sha": "d02596992f06", "bucket": "zero-parse-fragment"}
 {"wave": "wave3-so1972", "source": "so1972", "locator": "page-656/sent-1245", "text_sha": "304a542439a2", "bucket": "zero-parse-fragment"}
@@ -5303,8 +5303,8 @@
 {"wave": "wave4-kroeger1991", "source": "kroeger1991", "locator": "page-126/ex-24a", "text_sha": "5b53c4ef34e8", "bucket": "zero-parse-fragment"}
 {"wave": "wave4-kroeger1991", "source": "kroeger1991", "locator": "page-126/ex-25a", "text_sha": "d49ff89fd00b", "bucket": "parse-success-N"}
 {"wave": "wave4-kroeger1991", "source": "kroeger1991", "locator": "page-126/fn-58a", "text_sha": "89feaa030861", "bucket": "parse-success-1"}
-{"wave": "wave4-kroeger1991", "source": "kroeger1991", "locator": "page-127/ex-27a", "text_sha": "2a0777006edf", "bucket": "parse-success-N"}
-{"wave": "wave4-kroeger1991", "source": "kroeger1991", "locator": "page-127/ex-27b", "text_sha": "54e5468e4c87", "bucket": "parse-success-N"}
+{"wave": "wave4-kroeger1991", "source": "kroeger1991", "locator": "page-127/ex-27a", "text_sha": "2a0777006edf", "bucket": "parse-success-1"}
+{"wave": "wave4-kroeger1991", "source": "kroeger1991", "locator": "page-127/ex-27b", "text_sha": "54e5468e4c87", "bucket": "parse-success-1"}
 {"wave": "wave4-kroeger1991", "source": "kroeger1991", "locator": "page-129/ex-31a", "text_sha": "40b66be48ba8", "bucket": "zero-parse-fragment"}
 {"wave": "wave4-kroeger1991", "source": "kroeger1991", "locator": "page-131/ex-33a", "text_sha": "aa2032a84a86", "bucket": "parse-success-N"}
 {"wave": "wave4-kroeger1991", "source": "kroeger1991", "locator": "page-131/ex-33b", "text_sha": "b8ac8ea23704", "bucket": "zero-parse-fragment"}
@@ -5552,7 +5552,7 @@
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-60/sent-1", "text_sha": "0f690d5b61b6", "bucket": "zero-parse-fragment"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-60/sent-2", "text_sha": "5e6192b333f6", "bucket": "parse-success-N"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-60/sent-3", "text_sha": "146d671b39f3", "bucket": "parse-success-N"}
-{"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-60/sent-4", "text_sha": "69109ac960c2", "bucket": "parse-success-N"}
+{"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-60/sent-4", "text_sha": "69109ac960c2", "bucket": "parse-success-1"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-60/sent-5", "text_sha": "a52ddb5d6bf1", "bucket": "zero-parse-fragment"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-61/sent-1", "text_sha": "b4bba1373270", "bucket": "zero-parse-fragment"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-61/sent-2", "text_sha": "48dfe8f33af1", "bucket": "zero-parse-fragment"}
@@ -5709,7 +5709,7 @@
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-135/sent-4", "text_sha": "0a3afe43b6dd", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-135/sent-5", "text_sha": "8c9985a6edf4", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-136/sent-1", "text_sha": "f1cb5dcf26b8", "bucket": "zero-parse-fragment"}
-{"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-136/sent-2", "text_sha": "53d3c9500674", "bucket": "parse-success-N"}
+{"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-136/sent-2", "text_sha": "53d3c9500674", "bucket": "parse-success-1"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-136/sent-3", "text_sha": "0bb2370c0e5b", "bucket": "zero-parse-fragment"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-137/sent-1", "text_sha": "f849736d7610", "bucket": "zero-parse-fragment"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-137/sent-2", "text_sha": "362d28582a47", "bucket": "zero-parse-fragment"}
@@ -5758,7 +5758,7 @@
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-148/sent-3", "text_sha": "beb84e6fcc7b", "bucket": "zero-parse-fragment"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-148/sent-4", "text_sha": "4af42ab320fe", "bucket": "zero-parse-fragment"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-148/sent-5", "text_sha": "50bd1f5c4a93", "bucket": "zero-parse-fragment"}
-{"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-148/sent-6", "text_sha": "5e0884d2d531", "bucket": "parse-success-N"}
+{"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-148/sent-6", "text_sha": "5e0884d2d531", "bucket": "parse-success-1"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-148/sent-7", "text_sha": "d20e3586cd58", "bucket": "zero-parse-fragment"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-149/sent-1", "text_sha": "9b9f985dc154", "bucket": "zero-parse-no-fragment"}
 {"wave": "wave5-zamar2023", "source": "zamar2023", "locator": "page-149/sent-2", "text_sha": "ac66d9c2d54a", "bucket": "zero-parse-fragment"}
@@ -5920,7 +5920,7 @@
 {"wave": "unattributed-constructions", "source": "unattributed/redup-adjectival", "locator": "atten-adj/maganda", "text_sha": "e642801f4df5", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/redup-adjectival", "locator": "atten-adj/maliit", "text_sha": "76999f522db2", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/redup-numeral", "locator": "distr-num/dalawa-dalawa", "text_sha": "52f54032f810", "bucket": "parse-success-1"}
-{"wave": "unattributed-constructions", "source": "unattributed/redup-numeral", "locator": "distr-num/isa-isa", "text_sha": "fc412d4f18c4", "bucket": "parse-success-N"}
+{"wave": "unattributed-constructions", "source": "unattributed/redup-numeral", "locator": "distr-num/isa-isa", "text_sha": "fc412d4f18c4", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/redup-temporal", "locator": "freq-adv/araw-araw", "text_sha": "48c7e4a6eae1", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/redup-temporal", "locator": "freq-adv/gabi-gabi", "text_sha": "5bcaf31ac613", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/redup-temporal", "locator": "freq-adv/oras-oras", "text_sha": "219b82ada8d2", "bucket": "parse-success-N"}
@@ -5949,7 +5949,7 @@
 {"wave": "unattributed-constructions", "source": "unattributed/redup-verbal", "locator": "iter-infl/tumawa-tawa", "text_sha": "1cbdd6a632f7", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/redup-verbal", "locator": "iter-infl/umiyak-iyak", "text_sha": "0101efe29e3e", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/redup-verbal", "locator": "iter-infl/umubo-ubo", "text_sha": "cef18e03a4ab", "bucket": "parse-success-1"}
-{"wave": "unattributed-constructions", "source": "unattributed/ay-colon-appositive", "locator": "pred-n/inaani-prutas-gulay", "text_sha": "82dfd43d3508", "bucket": "parse-success-N"}
+{"wave": "unattributed-constructions", "source": "unattributed/ay-colon-appositive", "locator": "pred-n/inaani-prutas-gulay", "text_sha": "82dfd43d3508", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/ay-colon-appositive", "locator": "pred-n/aso-hayop-labrador", "text_sha": "b494a4d3677a", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/ay-colon-appositive", "locator": "pred-n/regalo-libro-3coord", "text_sha": "d5d13d167273", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/np-colon-appositive", "locator": "no-ay/pagkain-isda-gulay", "text_sha": "1ebbccf7ad8b", "bucket": "parse-success-1"}
@@ -5958,10 +5958,10 @@
 {"wave": "unattributed-constructions", "source": "unattributed/ay-colon-appositive", "locator": "pred-n/prutas-masarap-3item", "text_sha": "a87d015d6ae3", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/ay-colon-appositive", "locator": "pred-n/inaani-prutas-6item-long", "text_sha": "d4094262233f", "bucket": "parse-success-N"}
 {"wave": "unattributed-constructions", "source": "unattributed/np-colon-appositive", "locator": "no-ay/ulam-3item", "text_sha": "b90381ee2dae", "bucket": "parse-success-1"}
-{"wave": "unattributed-constructions", "source": "unattributed/np-colon-appositive", "locator": "no-ay/hayop-existential-3item", "text_sha": "86d361d613ee", "bucket": "parse-success-N"}
+{"wave": "unattributed-constructions", "source": "unattributed/np-colon-appositive", "locator": "no-ay/hayop-existential-3item", "text_sha": "86d361d613ee", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/np-colon-appositive", "locator": "no-ay/locative-kusina-3item", "text_sha": "92e0cde77cd1", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/ay-colon-appositive", "locator": "pred-n/prutas-nonoxford-3item", "text_sha": "2e4f32635f53", "bucket": "parse-success-1"}
-{"wave": "unattributed-constructions", "source": "unattributed/np-colon-appositive", "locator": "no-ay/hayop-nonoxford-3item", "text_sha": "c32110a57e5b", "bucket": "parse-success-N"}
+{"wave": "unattributed-constructions", "source": "unattributed/np-colon-appositive", "locator": "no-ay/hayop-nonoxford-3item", "text_sha": "c32110a57e5b", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/ay-colon-appositive", "locator": "pred-n/inaani-nonoxford-5item", "text_sha": "6c4728ca791a", "bucket": "parse-success-N"}
 {"wave": "unattributed-constructions", "source": "unattributed/ay-colon-appositive", "locator": "pred-n/inaani-oxford-3item", "text_sha": "9099fb013591", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/np-colon-appositive", "locator": "no-ay/ulam-oxford-3item", "text_sha": "eedefbe311e6", "bucket": "parse-success-1"}
@@ -5972,9 +5972,9 @@
 {"wave": "unattributed-constructions", "source": "unattributed/fronted-pp-reason", "locator": "dahilan-sa/ulan", "text_sha": "4181ff2b514b", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/fronted-pp-reason", "locator": "dahilan-sa/pagkawala-trabaho", "text_sha": "94893ca6d00e", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/fronted-pp-reason", "locator": "dahilan-sa/pagod", "text_sha": "b63b82befa64", "bucket": "parse-success-1"}
-{"wave": "unattributed-constructions", "source": "unattributed/pp-postv-reason", "locator": "dahilan-sa/ulan-postv", "text_sha": "a43503353439", "bucket": "parse-success-N"}
-{"wave": "unattributed-constructions", "source": "unattributed/fronted-discourse-reform", "locator": "alalaong-baga/masungit", "text_sha": "cd6134b2693a", "bucket": "parse-success-N"}
-{"wave": "unattributed-constructions", "source": "unattributed/fronted-discourse-reform", "locator": "alalaong-baga/marami-dapat-gawin", "text_sha": "29f439d98b94", "bucket": "parse-success-N"}
+{"wave": "unattributed-constructions", "source": "unattributed/pp-postv-reason", "locator": "dahilan-sa/ulan-postv", "text_sha": "a43503353439", "bucket": "parse-success-1"}
+{"wave": "unattributed-constructions", "source": "unattributed/fronted-discourse-reform", "locator": "alalaong-baga/masungit", "text_sha": "cd6134b2693a", "bucket": "parse-success-1"}
+{"wave": "unattributed-constructions", "source": "unattributed/fronted-discourse-reform", "locator": "alalaong-baga/marami-dapat-gawin", "text_sha": "29f439d98b94", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/fronted-pp-source", "locator": "mula-sa/maynila-cebu", "text_sha": "61f3940884fe", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/fronted-pp-source", "locator": "mula-sa/ina-lutuin", "text_sha": "93e33682abf6", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/fronted-pp-source", "locator": "mula-sa/malayong-bayan", "text_sha": "cfa1edd57938", "bucket": "parse-success-1"}
@@ -6003,10 +6003,10 @@
 {"wave": "unattributed-constructions", "source": "unattributed/apostrophe-y-restore", "locator": "kadalasa-y/kadalasa-y-mahirap", "text_sha": "509cb9d4e5ae", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/apostrophe-y-restore", "locator": "kadalasa-y/kadalasa-y-kumakain", "text_sha": "47a2182e70a9", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/apostrophe-y-restore", "locator": "minsa-y/minsa-y-maganda", "text_sha": "267d5b20f2fa", "bucket": "parse-success-1"}
-{"wave": "unattributed-constructions", "source": "unattributed/apostrophe-t-ng-restore", "locator": "hangga-t/hangga-t-tama", "text_sha": "692965258758", "bucket": "parse-success-N"}
+{"wave": "unattributed-constructions", "source": "unattributed/apostrophe-t-ng-restore", "locator": "hangga-t/hangga-t-tama", "text_sha": "692965258758", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/ma-nvol-psych", "locator": "nahihiya/nahihiya-siya", "text_sha": "708a82bf4502", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/ma-nvol-psych", "locator": "nahihiya/hindi-siya-nahihiya", "text_sha": "e7707cd19d69", "bucket": "parse-success-1"}
-{"wave": "unattributed-constructions", "source": "unattributed/magka-nvol", "locator": "magkamali/hindi-nahihiyang-magkamali", "text_sha": "12e41c0d5b91", "bucket": "parse-success-N"}
+{"wave": "unattributed-constructions", "source": "unattributed/magka-nvol", "locator": "magkamali/hindi-nahihiyang-magkamali", "text_sha": "12e41c0d5b91", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/v-nvol-lk-s", "locator": "nahihiyang-kumain/asawa-ni-juan", "text_sha": "5884d1e39c0a", "bucket": "parse-success-N"}
 {"wave": "unattributed-constructions", "source": "unattributed/baka-raising-bare", "locator": "baka/baka-umuulan", "text_sha": "3280f70a79d1", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/nadadalian-headless", "locator": "ang-nadadalian/ang-nadadalian-ay-si-juan", "text_sha": "7b773d2dc279", "bucket": "parse-success-1"}
@@ -6018,7 +6018,7 @@
 {"wave": "unattributed-constructions", "source": "unattributed/lex-completion-noun", "locator": "salin/maganda-ang-salin", "text_sha": "02c28276a17e", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/ma-an-nvol", "locator": "pintas/mapintasan-aklat", "text_sha": "089b2021cb3b", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/ma-x-in-disposition", "locator": "hiya/mahiyain-siya", "text_sha": "6a3b338285a3", "bucket": "parse-success-1"}
-{"wave": "unattributed-constructions", "source": "unattributed/ma-x-in-disposition", "locator": "hiya/mga-taong-mahiyain", "text_sha": "f0e1b5a04e89", "bucket": "parse-success-N"}
+{"wave": "unattributed-constructions", "source": "unattributed/ma-x-in-disposition", "locator": "hiya/mga-taong-mahiyain", "text_sha": "f0e1b5a04e89", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/v-coord-headless", "locator": "kain-kanta/siya-ang-kumakain-at-kumakanta", "text_sha": "99f7f7568912", "bucket": "parse-success-N"}
 {"wave": "unattributed-constructions", "source": "unattributed/v-coord-headless", "locator": "sunod-pasya/siya-ang-nasusunod-at-nagpapasya", "text_sha": "4d19da228e78", "bucket": "parse-success-N"}
 {"wave": "unattributed-constructions", "source": "unattributed/av-absol", "locator": "inom/uminom-ka", "text_sha": "b93015d5b945", "bucket": "parse-success-1"}
@@ -6073,10 +6073,14 @@
 {"wave": "unattributed-constructions", "source": "unattributed/makipag-interaction", "locator": "makipag-kaibigan/standalone", "text_sha": "ad760a396161", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/purposive-pro-inside-out", "locator": "purp-pro/coord-np-matrix-subj", "text_sha": "1a5ebebf7d75", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/purposive-pro-inside-out", "locator": "purp-pro/3sg-pron-matrix-subj", "text_sha": "72d922f6d7fe", "bucket": "parse-success-1"}
-{"wave": "unattributed-constructions", "source": "unattributed/purposive-pro-inside-out", "locator": "purp-pro/neg-wrapped-matrix", "text_sha": "d7b8f27163aa", "bucket": "parse-success-N"}
+{"wave": "unattributed-constructions", "source": "unattributed/purposive-pro-inside-out", "locator": "purp-pro/neg-wrapped-matrix", "text_sha": "d7b8f27163aa", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/bare-huwag-pro", "locator": "bare-huwag/v-av-intr", "text_sha": "62a8b4304a5a", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/bare-huwag-pro", "locator": "bare-huwag/v-av-tr-absorbed-obj", "text_sha": "7692187e5fc8", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/bare-huwag-pro", "locator": "bare-huwag/v-av-with-gen-obj", "text_sha": "18de36b4a184", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/mura-mura-curse-iter", "locator": "mura-mura-curse/bare-pred-pron-subj", "text_sha": "2f79acadf3ea", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/mura-mura-curse-iter", "locator": "mura-mura-curse/bare-pred-full-np-subj", "text_sha": "361f9750438f", "bucket": "parse-success-1"}
 {"wave": "unattributed-constructions", "source": "unattributed/mura-mura-curse-iter", "locator": "mura-mura-curse/puro-x-ang-lumabas", "text_sha": "017a4b9bc1b6", "bucket": "parse-success-N"}
+{"wave": "unattributed-constructions", "source": "unattributed/tag-question", "locator": "diba/comma", "text_sha": "b6d24c65ebb5", "bucket": "parse-success-1"}
+{"wave": "unattributed-constructions", "source": "unattributed/tag-question", "locator": "diba/no-comma", "text_sha": "3d588bfea737", "bucket": "parse-success-1"}
+{"wave": "unattributed-constructions", "source": "unattributed/ang-exclamative", "locator": "quality-noun/bilis-panahon", "text_sha": "2733d74ae01a", "bucket": "parse-success-1"}
+{"wave": "unattributed-constructions", "source": "unattributed/discourse-temporal", "locator": "parang-kailan-lang/full", "text_sha": "ebe98f3f3a6f", "bucket": "parse-success-1"}
