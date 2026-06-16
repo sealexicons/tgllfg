@@ -278,6 +278,34 @@ class SandhiRule:
 
 
 @dataclass
+class MWE:
+    """A fixed multi-word expression recognized as a *single* token by the
+    pre-parse :func:`tgllfg.text.merge_multiword_compounds` pass and then
+    analyzed as one lexical unit.
+
+    ``surface`` is the canonical whitespace-joined form (``oras Pilipino``,
+    ``parang kailan lang``); its lowercase :attr:`norm` is both the merge key
+    and the analyzer's index key. ``pos`` routes the synthesized
+    ``MorphAnalysis`` to the matching index table (NOUN → nouns, ADV / PART →
+    particles, …). The inventory is small and static, so both lex backends
+    read it from ``data/tgl/mwe.yaml`` — MWEs are not DB-seeded.
+    """
+    surface: str
+    pos: str
+    gloss: str = ""
+    feats: dict[str, object] = field(default_factory=dict)
+    pred: str = ""  # optional PRED for predicative MWEs (none in the seed yet)
+
+    @property
+    def norm(self) -> str:
+        return self.surface.lower()
+
+    @property
+    def token_count(self) -> int:
+        return len(self.surface.split())
+
+
+@dataclass
 class MorphData:
     """The fully-loaded morphological lexicon, ready to drive analysis."""
     roots: list[Root] = field(default_factory=list)
@@ -286,6 +314,7 @@ class MorphData:
     particles: list[Particle] = field(default_factory=list)
     pronouns: list[Pronoun] = field(default_factory=list)
     sandhi_rules: list[SandhiRule] = field(default_factory=list)
+    mwes: list[MWE] = field(default_factory=list)
 
 
 __all__ = [

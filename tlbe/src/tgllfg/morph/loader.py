@@ -20,6 +20,7 @@ from typing import Any
 import yaml
 
 from .paradigms import (
+    MWE,
     AdjectiveCell,
     MorphData,
     Operation,
@@ -106,7 +107,18 @@ def load_morph_data(data_dir: Path | None = None) -> MorphData:
         particles=_load_particles(base / "particles.yaml"),
         pronouns=_load_pronouns(base / "pronouns.yaml"),
         sandhi_rules=_load_sandhi_rules(base / "sandhi.yaml"),
+        mwes=_load_mwes(base / "mwe.yaml"),
     )
+
+
+def load_mwes(data_dir: Path | None = None) -> list[MWE]:
+    """Load the multi-word-expression inventory from ``mwe.yaml``.
+
+    Exposed separately from :func:`load_morph_data` so the DB backend (whose
+    ``MorphData`` is rebuilt from the Postgres cache, which does not seed MWEs)
+    can read the same small static file. Missing ``mwe.yaml`` yields ``[]``."""
+    base = Path(data_dir) if data_dir is not None else _DEFAULT_DATA_DIR
+    return _load_mwes(base / "mwe.yaml")
 
 
 def _read_yaml(path: Path) -> list[dict[str, Any]]:
@@ -319,6 +331,20 @@ def _load_sandhi_rules(path: Path) -> list[SandhiRule]:
             pattern=rec.get("pattern", ""),
             replacement=rec.get("replacement", ""),
             context=rec.get("context", ""),
+        ))
+    return out
+
+
+def _load_mwes(path: Path) -> list[MWE]:
+    out: list[MWE] = []
+    for i, rec in enumerate(_read_yaml(path)):
+        where = f"{path}[{i}]"
+        out.append(MWE(
+            surface=_require(rec, "surface", where),
+            pos=_require(rec, "pos", where),
+            gloss=rec.get("gloss", ""),
+            feats=dict(rec.get("feats", {})),
+            pred=rec.get("pred", ""),
         ))
     return out
 

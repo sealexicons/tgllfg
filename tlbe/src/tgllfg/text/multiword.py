@@ -32,70 +32,52 @@ from ..core.common import Token
 from ..morph.prefix_policy import is_vowel_initial
 
 
-# Phase 10.J.post-12.4 — multi-word fixed expressions (MWEs) recognized
-# as a single token after tokenization. Each entry is the lowercased
-# bigram of norms; the merged token's surface preserves the original
-# whitespace-separated form and its norm becomes the same joined-with-
-# space lowercased string (which matches the analyzer's index key for
-# multi-word citations in nouns.yaml).
-#
-# Per user dialog 2026-05-31 (linguistic guidance):
-#
-# * ``oras Pilipino``  — lexicalized MWE for "Filipino time" (idiomatic
-#   for habitual lateness). Non-compositional; ``oras Amerikano`` /
-#   ``oras Hapones`` are not parallel cultural concepts. Treated as a
-#   NOUN MWE (analogous to English ``red tape``, ``brain drain``).
-#
-# * ``ibig sabihin`` — productive verbal/light-verb expression "mean,
-#   signify". The form admits clitic interpolation in productive use
-#   (``ang ibig kong sabihin`` "what I mean"), but every audit-attested
-#   surface is contiguous (PANAHON/sent-41 + wave2-rg-int sent-446 +
-#   sent-1256). The contiguous form is registered as a NOUN MWE so it
-#   composes with the headless-DP construction ``ang + N → NP[NOM]``;
-#   the productive non-contiguous form is future work (STATIVE-VERB
-#   + OV-INF complement infrastructure not yet implemented).
-_MULTIWORD_NORMS: set[str] = {
-    "oras pilipino",
-    "ibig sabihin",
-}
-
-
 def merge_multiword_compounds(tokens: list[Token]) -> list[Token]:
-    """Collapse bigrams of (token[i], token[i+1]) whose lowercased
-    space-joined norms match a registered :data:`_MULTIWORD_NORMS`
-    entry into a single token.
+    """Collapse a run of tokens whose lowercased space-joined norms match a
+    registered multi-word expression into a single token, longest-match-first.
 
-    The merged token preserves the original whitespace-separated
-    surface form (so ``oras Pilipino`` doesn't lose the capitalization
-    or word boundary) and uses the joined-with-space lowercased form
-    as its norm. The analyzer's noun-citation index is keyed on
-    ``citation.lower()`` (see :meth:`tgllfg.morph.analyzer.Analyzer._build_index`),
-    so a NOUN lex entry with citation ``oras Pilipino`` is found
-    directly by the joined norm.
+    The MWE inventory is data-driven (``data/tgl/mwe.yaml``, surfaced as
+    :meth:`tgllfg.morph.analyzer.Analyzer.multiword_norms`) and **n-gram**:
+    ``oras Pilipino`` / ``ibig sabihin`` are bigrams, ``parang kailan lang`` is
+    a trigram. (Phase 14.final.post-12 replaced the hardcoded bigram-only
+    ``_MULTIWORD_NORMS`` set + split ``nouns.yaml`` companions with this.)
 
-    Sentence-internal merges only — leading / trailing whitespace
-    around the matched pair is implicit (each token's ``start``/``end``
-    bounds are preserved, with the merged token spanning ``a.start``
-    to ``b.end``).
+    The merged token preserves the original whitespace-separated surface form
+    (so ``oras Pilipino`` keeps its capitalization + word boundary) and uses
+    the joined-with-space lowercased form as its norm — the same key the
+    analyzer indexes the MWE's ``MorphAnalysis`` under, so ``analyze_one``
+    finds it directly. Sentence-internal merges only; the merged token spans
+    the first token's ``start`` to the last token's ``end``.
     """
+    from ..morph.analyzer import _get_default
+
+    norms = _get_default().multiword_norms()
+    if not norms:
+        return tokens
+    max_n = max(len(s.split()) for s in norms)
     out: list[Token] = []
     i = 0
     n = len(tokens)
-    while i < n - 1:
-        joined_norm = f"{tokens[i].norm} {tokens[i + 1].norm}"
-        if joined_norm in _MULTIWORD_NORMS:
-            out.append(Token(
-                surface=f"{tokens[i].surface} {tokens[i + 1].surface}",
-                norm=joined_norm,
-                start=tokens[i].start,
-                end=tokens[i + 1].end,
-            ))
-            i += 2
-            continue
-        out.append(tokens[i])
-        i += 1
-    if i < n:
-        out.append(tokens[i])
+    while i < n:
+        merged = False
+        # Longest window first so a trigram MWE wins over a bigram prefix it
+        # contains (and so two adjacent MWEs don't mis-merge across the seam).
+        for k in range(min(max_n, n - i), 1, -1):
+            window = tokens[i:i + k]
+            joined_norm = " ".join(t.norm for t in window)
+            if joined_norm in norms:
+                out.append(Token(
+                    surface=" ".join(t.surface for t in window),
+                    norm=joined_norm,
+                    start=window[0].start,
+                    end=window[-1].end,
+                ))
+                i += k
+                merged = True
+                break
+        if not merged:
+            out.append(tokens[i])
+            i += 1
     return out
 
 

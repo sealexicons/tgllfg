@@ -1,0 +1,58 @@
+# Copyright (c) 2025-2026 G & R Associates LLC
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
+# data/tgl/mwe.yaml
+#
+# Fixed multi-word expressions (MWEs): surface spans recognized as a single
+# token by the pre-parse `merge_multiword_compounds` pass (text/multiword.py)
+# and analyzed as one lexical unit. Each entry's lowercased `surface` is both
+# the merge key and the analyzer's index key; `pos` routes the synthesized
+# MorphAnalysis to the matching index table. n-gram (bigram + trigram).
+#
+# Phase 14.final.post-12 introduced this file, unifying what used to be a
+# hardcoded bigram-only `_MULTIWORD_NORMS` set (text/multiword.py) plus split
+# companion NOUN entries in nouns.yaml. The inventory is small and static, so
+# both lex backends read it from disk (it is not DB-seeded).
+#
+# Lexicalize the minimal fixed core only: a string belongs here *iff* it is
+# non-compositional / conventionalized as a unit. Independently-productive
+# material is parsed compositionally (e.g. `ang bilis ng panahon` is a
+# productive ang-exclamative clause, NOT an MWE).
+
+# `oras Pilipino` — idiomatic "Filipino time" (the culturally recognized
+# habitual lateness). Strongly lexicalized; `Pilipino` is not freely
+# substitutable (`oras Amerikano` / `oras Hapones` are not parallel cultural
+# concepts) — like English `red tape`. PANAHON/sent-41: `Kaya nga may
+# sinasabing oras Pilipino -- na ang ibig sabihin ay laging huli.` (migrated
+# from nouns.yaml, originally Phase 10.J.post-12.4).
+- surface: oras Pilipino
+  pos: NOUN
+  gloss: Filipino time (idiomatic, habitual lateness)
+  feats: {LEMMA: oras Pilipino, SUBCLASS: ABSTRACT}
+
+# `ibig sabihin` — deverbal "meaning, sense" (the productive `ibig` STATIVE-V +
+# OV-INF construction; the contiguous surface is registered here as a NOUN MWE
+# that wraps to NP[CASE=NOM] via the headless-DP construction). All audit
+# usages are contiguous (PANAHON/sent-41; wave2-rg-int sent-446 / sent-1256);
+# the clitic-interpolated form (`ang ibig kong sabihin`) is future work.
+- surface: ibig sabihin
+  pos: NOUN
+  gloss: meaning, sense (deverbal MWE — productive ibig+OV-INF construction)
+  feats: {LEMMA: ibig sabihin}
+
+# `parang kailan lang` — conventionalized discourse-temporal adverbial,
+# "it seems like only a short while ago / it feels like just recently".
+# Semi-fixed: speakers do not compute it as "like + when + only"; it prefaces
+# a following clause and is productive over it (`parang kailan lang, graduate
+# pa tayo` / `..., nagsimula ang proyekto`), so only this minimal fixed core is
+# an MWE — the following clause is parsed compositionally (informant 2026-06-16;
+# the full `Parang kailan lang, ang bilis ng panahon.` = this adverbial +
+# comma + a compositional ang-exclamative, NOT a whole-sentence idiom). Once
+# the merge makes it a single ADV, the *existing* comma-fronted AdvP rule
+# (cfg/clause.py 8.D2 `S → AdvP PUNCT[COMMA] S`, via the `AdvP → ADV` lift)
+# parses it as a fronted TOPIC + ADJUNCT — no new grammar rule needed;
+# ADV_TYPE=DISCOURSE_TEMP just records the adverbial's class.
+- surface: parang kailan lang
+  pos: ADV
+  gloss: it seems like only a short while ago (discourse-temporal)
+  feats: {ADV_TYPE: DISCOURSE_TEMP, LEMMA: parang kailan lang}
