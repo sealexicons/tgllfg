@@ -239,19 +239,9 @@ ADV → PART[LEMMA=kung] ADV[LEMMA=minsan]
 
 ```text
 AdvP → ADV
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
 
 AdvP → ADV[ADV_TYPE=TIME] NP[CASE=GEN]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ TIME_N) = ↓2
     (↓1 ADV_TYPE) =c 'TIME'
@@ -768,92 +758,42 @@ NP[CASE=DAT] → ADP[CASE=DAT, DEM]
     (↑ PRED) = 'PRO'
 
 NP[CASE=NOM] → NP[CASE=NOM] PART[LINK=NA] DET[CASE=NOM, DEM]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ DEIXIS) = ↓3 DEIXIS
 
 NP[CASE=GEN] → NP[CASE=GEN] PART[LINK=NA] ADP[CASE=GEN, DEM]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ DEIXIS) = ↓3 DEIXIS
 
 NP[CASE=DAT] → NP[CASE=DAT] PART[LINK=NA] ADP[CASE=DAT, DEM]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ DEIXIS) = ↓3 DEIXIS
 
 NP[CASE=NOM] → NP[CASE=NOM] PART[LINK=NG] DET[CASE=NOM, DEM]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ DEIXIS) = ↓3 DEIXIS
 
 NP[CASE=GEN] → NP[CASE=GEN] PART[LINK=NG] ADP[CASE=GEN, DEM]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ DEIXIS) = ↓3 DEIXIS
 
 NP[CASE=DAT] → NP[CASE=DAT] PART[LINK=NG] ADP[CASE=DAT, DEM]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ DEIXIS) = ↓3 DEIXIS
 
 NP[CASE=GEN] → NP[CASE=GEN] PART[LINK=NA] DET[CASE=NOM, DEM]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ DEIXIS) = ↓3 DEIXIS
 
 NP[CASE=DAT] → NP[CASE=DAT] PART[LINK=NA] DET[CASE=NOM, DEM]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ DEIXIS) = ↓3 DEIXIS
 
 NP[CASE=GEN] → NP[CASE=GEN] PART[LINK=NG] DET[CASE=NOM, DEM]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ DEIXIS) = ↓3 DEIXIS
 
 NP[CASE=DAT] → NP[CASE=DAT] PART[LINK=NG] DET[CASE=NOM, DEM]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ DEIXIS) = ↓3 DEIXIS
 
@@ -2614,92 +2554,42 @@ PP[PREP_TYPE=RANGE] → PREP N PART N
     (↓4 SEM_CLASS) =c 'YEAR'
 
 PP[PREP_TYPE=BENEFICIARY] → PREP[PREP_TYPE=BENEFICIARY] NP[CASE=DAT]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ OBJ) = ↓2
 
 PP[PREP_TYPE=TOPIC] → PREP[PREP_TYPE=TOPIC] NP[CASE=DAT]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ OBJ) = ↓2
 
 PP[PREP_TYPE=SOURCE] → PREP[PREP_TYPE=SOURCE] NP[CASE=DAT]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ OBJ) = ↓2
 
 PP[PREP_TYPE=REASON] → PREP[PREP_TYPE=REASON] NP[CASE=DAT]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ OBJ) = ↓2
 
 PP[PREP_TYPE=GOAL] → PREP[PREP_TYPE=GOAL] NP[CASE=DAT]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ OBJ) = ↓2
 
 PP[PREP_TYPE=EXCEPTIVE] → PREP[PREP_TYPE=EXCEPTIVE] NP[CASE=DAT]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ OBJ) = ↓2
 
 PP[PREP_TYPE=ROLE] → PREP[PREP_TYPE=ROLE] NP[CASE=DAT]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ OBJ) = ↓2
 
 PP[PREP_TYPE=SIMILATIVE] → PREP[PREP_TYPE=SIMILATIVE] NP[CASE=DAT]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ OBJ) = ↓2
 
 PP[PREP_TYPE=ROLE] → PREP[PREP_TYPE=ROLE] N
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ OBJ) = ↓2
 
 PP[PREP_TYPE=ROLE] → PREP[PREP_TYPE=ROLE] N NP[CASE=GEN]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     (↑ OBJ) = ↓2
     (↓2 POSS) = ↓3
@@ -6311,20 +6201,12 @@ S_GAP → V[VOICE=IV]
     (↑ OBJ-AGENT PRED) = 'PRO'
 
 S_GAP → NP[CASE=DAT] PART[LINK=NA] V[VOICE=OV, CAUS=NONE]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
+    (↑) = ↓3
     (↑ OBJ-AGENT) = ↓1
     (↑ SUBJ) = (↑ REL-PRO)
 
 S_GAP → NP[CASE=DAT] PART[LINK=NG] V[VOICE=OV, CAUS=NONE]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
+    (↑) = ↓3
     (↑ OBJ-AGENT) = ↓1
     (↑ SUBJ) = (↑ REL-PRO)
 
@@ -6358,20 +6240,10 @@ S_GAP → ADJ[PREDICATIVE] V[VOICE=AV] NP[CASE=DAT]
     (↓1 PREDICATIVE) =c true
 
 S_GAP → S_GAP PP[TIME_FRAME=PERIODIC]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     ↓2 ∈ (↑ ADJUNCT)
 
 S_GAP → S_GAP PP[TIME_FRAME=PAST]
-    (↑ PRED) = ↓1 PRED
-    (↑ VOICE) = ↓1 VOICE
-    (↑ ASPECT) = ↓1 ASPECT
-    (↑ MOOD) = ↓1 MOOD
-    (↑ LEX-ASTRUCT) = ↓1 LEX-ASTRUCT
     (↑) = ↓1
     ↓2 ∈ (↑ ADJUNCT)
 
