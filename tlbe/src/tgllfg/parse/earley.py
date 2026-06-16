@@ -73,11 +73,15 @@ class LeafCompletion:
     """A scanned token at a chart column. ``category`` is the lex
     pattern (full features); the c-tree label uses just
     ``category.category``. Equations are the LFG annotations
-    contributed by the morph analysis and the lexical entry."""
+    contributed by the morph analysis and the lexical entry. ``gloss``
+    is the licensing root's gloss (``MorphAnalysis.gloss``), threaded
+    onto the terminal c-node for the inspector (Phase 14.final.post-11);
+    empty for glossless word classes."""
     surface: str
     category: CategoryPattern
     equations: tuple[str, ...]
     span: tuple[int, int]
+    gloss: str = ""
 
 
 @dataclass
@@ -406,6 +410,7 @@ class _Earley:
                 category=lex_pat,
                 equations=_lex_equations(ma, le),
                 span=(col, col + 1),
+                gloss=ma.gloss,
             )
             self._advance(state, leaf, col + 1)
 
@@ -555,6 +560,10 @@ def _iter_cnodes(
                         label=c.category.category,
                         children=[],
                         equations=list(c.equations),
+                        # The terminal's gloss rides through for the
+                        # inspector; "" → None keeps the wire clean for
+                        # glossless word classes (Phase 14.final.post-11).
+                        gloss=c.gloss or None,
                     )
                 ])
             else:

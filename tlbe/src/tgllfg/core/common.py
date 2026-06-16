@@ -36,6 +36,14 @@ class MorphAnalysis:
     pos: str
     # e.g., {"VOICE": "OV", "ASPECT": "PFV", "TR": "TR", "CASE": "NOM"}
     feats: dict[str, FeatureValue]
+    # The licensing root's English gloss (``Root.gloss``), copied through
+    # so a terminal can surface it without a lexicon round-trip. Empty for
+    # function words (particles / pronouns carry no gloss) and the fallback
+    # ``_UNK`` / digit / placeholder analyses. Phase 14.final.post-11 — the
+    # web inspector reads it off the terminal c-node instead of re-querying
+    # ``/lex/search`` (which only worked for the LEMMA-bearing word classes,
+    # never verbs).
+    gloss: str = ""
 
 
 @dataclass
@@ -64,6 +72,12 @@ class CNode:
     # LFG functional annotations as equation strings; parsed lazily by
     # the unifier via tgllfg.equations.parse_equation.
     equations: list[str] = field(default_factory=list)
+    # The licensing lexical gloss on a terminal (preterminal) node — copied
+    # from the scanned ``LeafCompletion`` (ultimately ``Root.gloss``). ``None``
+    # on every non-terminal and on terminals whose word class carries no gloss.
+    # Display-only: the unifier never reads it; the ``/parse`` serializer emits
+    # it so the inspector can gloss every terminal (Phase 14.final.post-11).
+    gloss: str | None = None
 
 
 @dataclass(eq=False)

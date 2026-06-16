@@ -66,6 +66,16 @@ class CNodeModel(BaseModel):
     label: str
     children: list[str] = Field(default_factory=list)
     equations: list[str] = Field(default_factory=list)
+    gloss: str | None = Field(
+        default=None,
+        description=(
+            "The terminal's licensing lexical gloss (the root's English "
+            "gloss), or null on non-terminals and glossless word classes "
+            "(particles / pronouns / unknowns). Lets the inspector gloss "
+            "every terminal — including verbs, which carry no LEMMA "
+            "equation — without a separate /lex/search lookup."
+        ),
+    )
 
 
 class CStructure(BaseModel):
@@ -175,7 +185,9 @@ def serialize_cstructure(root: CNode) -> tuple[CStructure, dict[int, str]]:
     def visit(c: CNode) -> str:
         cid = f"c{len(nodes)}"
         # Reserve the slot before recursing so ids are DFS pre-order.
-        nodes[cid] = CNodeModel(id=cid, label=c.label, equations=list(c.equations))
+        nodes[cid] = CNodeModel(
+            id=cid, label=c.label, equations=list(c.equations), gloss=c.gloss
+        )
         cid_for[id(c)] = cid
         nodes[cid].children = [visit(ch) for ch in c.children]
         return cid

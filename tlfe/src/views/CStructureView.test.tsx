@@ -7,16 +7,6 @@ import { describe, expect, it, vi } from "vitest";
 import type { ParseResponse } from "../api/client";
 import { CStructureView } from "./CStructureView";
 
-// The context-menu gloss pulls from /lex/search via useLexSearch; stub it so the
-// gloss assertion is deterministic and DB-free.
-vi.mock("../api/hooks", () => ({
-  useLexSearch: () => ({
-    data: { matches: [{ id: "1", citation_form: "kain", pos: "v", gloss: "to eat", score: 1 }] },
-    isLoading: false,
-    isError: false,
-  }),
-}));
-
 const RESULT: ParseResponse = {
   text: "Kumain ang bata.",
   parses: [
@@ -128,9 +118,12 @@ describe("CStructureView", () => {
     expect(onSelectFNode).toHaveBeenCalledWith("f9");
   });
 
-  it("shows a terminal's gloss in the context menu (post-10)", async () => {
-    const withLemma: ParseResponse = {
-      text: "Kumain ang bata.",
+  it("shows a terminal's gloss from the c-node in the context menu (post-11)", async () => {
+    // The gloss rides on the c-node itself (POS-correct, from the licensing
+    // entry) — no /lex/search round-trip — so a verb (V), which carries no
+    // LEMMA equation, glosses like any other terminal.
+    const withGloss: ParseResponse = {
+      text: "Bumili ang lalaki.",
       parses: [
         {
           id: "p0",
@@ -138,19 +131,27 @@ describe("CStructureView", () => {
             root: "c0",
             nodes: {
               c0: { id: "c0", label: "S", children: ["c1"], equations: [] },
-              c1: { id: "c1", label: "V", children: [], equations: ["(↑ LEMMA) = 'kain'"] },
+              c1: { id: "c1", label: "V", children: [], equations: [], gloss: "buy" },
             },
           },
           f_structure: { root: "f0", nodes: { f0: { id: "f0", feats: {} } } },
-          a_structure: { pred: "KAIN", roles: [], mapping: {} },
+          a_structure: { pred: "BILI", roles: [], mapping: {} },
           diagnostics: [],
         },
       ],
       fragments: [],
       meta: { n_best: 5, parse_count: 1, fragment_count: 0 },
     };
-    render(<CStructureView result={withLemma} selected={0} />);
+    render(<CStructureView result={withGloss} selected={0} />);
     fireEvent.contextMenu(screen.getByText("V"));
-    expect(await screen.findByText("to eat")).toBeInTheDocument();
+    expect(await screen.findByText("buy")).toBeInTheDocument();
+  });
+
+  it("omits the gloss section for a node with no gloss (post-11)", async () => {
+    // c1 (V) carries no gloss → the context menu shows Show φ but no gloss row.
+    render(<CStructureView result={RESULT} selected={0} correspondence={{ c1: "f9" }} />);
+    fireEvent.contextMenu(screen.getByText("V"));
+    expect(await screen.findByRole("menuitem", { name: /Show φ/ })).toBeInTheDocument();
+    expect(screen.queryByText("gloss")).not.toBeInTheDocument();
   });
 });

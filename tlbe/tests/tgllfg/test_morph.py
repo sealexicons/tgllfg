@@ -327,6 +327,22 @@ def test_analyze_unknown_word_falls_back(analyzer: Analyzer) -> None:
     assert out[0].pos == "_UNK"
 
 
+def test_analyze_carries_root_gloss(analyzer: Analyzer) -> None:
+    # Phase 14.final.post-11: every content-word analysis carries its licensing
+    # root's gloss, threaded onto the terminal c-node so the inspector can gloss
+    # verbs (which serialize PRED-only, no LEMMA equation) like any other word.
+    verb = [a for a in analyzer.analyze_one(_tok("kumain")) if a.pos == "VERB"]
+    assert verb and all(a.gloss == "eat" for a in verb)
+    noun = [a for a in analyzer.analyze_one(_tok("aso")) if a.pos == "NOUN"]
+    assert noun and noun[0].gloss == "dog"
+    adj = [a for a in analyzer.analyze_one(_tok("maganda")) if a.pos == "ADJ"]
+    assert adj and adj[0].gloss, "derived adjective should carry its root gloss"
+    # Function words (Particle / Pronoun carry no gloss) and the _UNK fallback
+    # default to the empty gloss.
+    assert all(a.gloss == "" for a in analyzer.analyze_one(_tok("ang")))
+    assert analyzer.analyze_one(_tok("xyzzy"))[0].gloss == ""
+
+
 # === Particle and pronoun lookup =========================================
 
 class TestParticles:

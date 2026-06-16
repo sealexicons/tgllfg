@@ -1,11 +1,10 @@
 // Copyright (c) 2025-2026 G & R Associates LLC
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-import { type ReactNode, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { ContextMenu, Popover } from "radix-ui";
 
 import type { CStructure, ParseResponse } from "../api/client";
-import { useLexSearch } from "../api/hooks";
 import { displayLabel, labelWidth, type LaidOutNode, layoutCStructure } from "./cstructureLayout";
 
 const LABEL_ASCENT = 13;
@@ -224,47 +223,17 @@ function CStructureTree({
   );
 }
 
-// The citation lemma a terminal node carries, pulled from its `(↑ LEMMA) = '…'`
-// equation (nouns / preps / particles / adjectives have one; verbs are
-// PRED-only, so they get no gloss lookup). Drives the context-menu gloss.
-function lemmaOf(node: LaidOutNode): string | null {
-  for (const equation of node.equations ?? []) {
-    const match = /\(↑ LEMMA\)\s*=\s*'([^']*)'/.exec(equation);
-    if (match) return match[1];
-  }
-  return null;
-}
-
-// Glosses for a terminal's lemma, fetched lazily (only while the context menu
-// is open) from the existing /lex/search endpoint and filtered to exact
-// citation-form matches — informational labels, not actions. Postgres-backed,
-// so it degrades to "unavailable" when the DB isn't wired.
-function GlossItems({ lemma }: { lemma: string }): ReactNode {
-  const { data, isLoading, isError } = useLexSearch({ q: lemma, limit: 10 });
-  const rowCls = "px-2 py-0.5 text-xs";
-  if (isLoading) return <div className={`${rowCls} text-slate-400`}>loading…</div>;
-  if (isError) return <div className={`${rowCls} text-slate-400`}>gloss unavailable</div>;
-  const exact = (data?.matches ?? []).filter((m) => m.citation_form === lemma && m.gloss);
-  if (exact.length === 0) {
-    return <div className={`${rowCls} text-slate-400`}>no gloss</div>;
-  }
-  return (
-    <>
-      {exact.map((m) => (
-        <div key={m.id} className={`${rowCls} text-slate-700`}>
-          <span className="text-slate-400">{m.pos}</span> {m.gloss}
-        </div>
-      ))}
-    </>
-  );
-}
-
 // A single tree node: a category label inside a (transparent until lit) halo.
 // Left-click opens a Radix Popover of the node's functional equations (Phase
 // 14.final.post-1); right-click opens a context menu (post-10) with "Show φ"
 // (scroll the f-structure to this node's φ-image) and, for a terminal, its
-// gloss. The φ-image is also a link in the equation popover header. The label
-// alone keeps the tree readable; the equation stack overlapped when drawn inline.
+// lexical gloss. The gloss now rides on the c-node itself (`node.gloss`,
+// post-11) — the gloss of the entry that actually licensed this terminal — so
+// it is POS-correct and always present (verbs included). It replaces the old
+// `(↑ LEMMA)`-keyed /lex/search lookup, which returned every lex entry for the
+// lemma (listing other POSes the node never had) and missed LEMMA-less verbs.
+// The φ-image is also a link in the equation popover header. The label alone
+// keeps the tree readable; the equation stack overlapped when drawn inline.
 function CStructureNode({
   node,
   active,
@@ -280,7 +249,7 @@ function CStructureNode({
 }) {
   const label = displayLabel(node.label);
   const haloW = labelWidth(label);
-  const lemma = lemmaOf(node);
+  const gloss = node.gloss;
   const itemCls =
     "cursor-pointer rounded px-2 py-1 text-xs outline-none data-[highlighted]:bg-violet-50";
   return (
@@ -329,13 +298,13 @@ function CStructureNode({
             ) : (
               <div className="px-2 py-1 text-xs text-slate-400">no φ-image</div>
             )}
-            {lemma !== null && (
+            {gloss && (
               <>
                 <ContextMenu.Separator className="my-1 h-px bg-slate-200" />
                 <div className="px-2 pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                  gloss · {lemma}
+                  gloss
                 </div>
-                <GlossItems lemma={lemma} />
+                <div className="px-2 py-0.5 text-xs text-slate-700">{gloss}</div>
               </>
             )}
           </ContextMenu.Content>

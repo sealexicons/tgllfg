@@ -88,7 +88,10 @@ function sortedEntries(feats: Record<string, unknown>, nodes: FNodes): [string, 
 
 type RowValue =
   | { kind: "scalar"; text: string }
-  | { kind: "ref"; fid: string } // an f* chip: a nested node's first occurrence, or a repeat/cyclic ref
+  // an f* chip. `inline` = this is the node's first occurrence, expanded inline
+  // right below (so the chip is select-only); `!inline` = a collapsed repeat /
+  // cyclic ref with no inline expansion (so the chip opens a popover).
+  | { kind: "ref"; fid: string; inline: boolean }
   | { kind: "set"; members: unknown[] };
 
 interface Row {
@@ -106,7 +109,11 @@ interface Row {
 // box, shows nesting. Repeat occurrences of a structure-shared node share their
 // data-fs-id, so hovering any one cross-highlights them all (post-10 made the
 // chip universal — it was previously reserved for reentrant nodes, leaving
-// singly-referenced scalar GFs like SUBJ / POSS unreachable).
+// singly-referenced scalar GFs like SUBJ / POSS unreachable). The chip records
+// whether it's the inline-expanded first occurrence (`inline`) so the renderer
+// can make those select-only and reserve the sub-structure popover for the
+// collapsed repeats / set members (post-11 — a popover over already-inline
+// content was just a duplicate).
 function flatten(
   fid: string,
   depth: number,
@@ -122,7 +129,7 @@ function flatten(
     if (isFRef(value)) {
       const target = value.$ref;
       const firstVisit = !expanded.has(target) && !path.has(target);
-      out.push({ key, fid, attr, depth, value: { kind: "ref", fid: target } });
+      out.push({ key, fid, attr, depth, value: { kind: "ref", fid: target, inline: firstVisit } });
       if (firstVisit) {
         flatten(target, depth + 1, nextPath, expanded, nodes, out);
       }
@@ -145,36 +152,44 @@ interface AvmHandlers {
 
 // A reentrancy tag: the f-node id, shown wherever a structure-shared node is
 // referenced. All tags for one id share `data-fs-id`, so hovering any one
-// cross-highlights the whole structure-sharing set. Clicking opens a popover
-// with that f-node's sub-structure (same AVM format) and reports the id so the
-// c-structure can scroll to its φ-image.
+// cross-highlights the whole structure-sharing set; clicking reports the id so
+// the c-structure can scroll to its φ-image. When `popover` is set (a collapsed
+// repeat / cyclic ref or a set member — no inline expansion), the chip also
+// opens that f-node's sub-structure in a popover (same AVM format). An
+// inline-expanded ref passes `popover={false}`: its sub-structure is already
+// shown right below, so the chip is select-only — a popover would just
+// duplicate the inline content (post-11).
 function Tag({
   fid,
   nodes,
   handlers,
+  popover,
 }: {
   fid: string;
   nodes: FNodes;
   handlers: AvmHandlers;
+  popover: boolean;
 }): ReactElement {
   const active = handlers.hovered === fid;
+  const chip = (
+    <span
+      data-fs-id={fid}
+      onMouseOver={(event) => {
+        event.stopPropagation();
+        handlers.setHovered(fid);
+      }}
+      onClick={() => handlers.onSelect?.(fid)}
+      className={`cursor-pointer rounded px-1 text-[10px] ${
+        active ? "bg-amber-200 text-amber-900" : "bg-slate-100 text-slate-500"
+      }`}
+    >
+      {fid}
+    </span>
+  );
+  if (!popover) return chip;
   return (
     <Popover.Root>
-      <Popover.Trigger asChild>
-        <span
-          data-fs-id={fid}
-          onMouseOver={(event) => {
-            event.stopPropagation();
-            handlers.setHovered(fid);
-          }}
-          onClick={() => handlers.onSelect?.(fid)}
-          className={`cursor-pointer rounded px-1 text-[10px] ${
-            active ? "bg-amber-200 text-amber-900" : "bg-slate-100 text-slate-500"
-          }`}
-        >
-          {fid}
-        </span>
-      </Popover.Trigger>
+      <Popover.Trigger asChild>{chip}</Popover.Trigger>
       <Popover.Portal>
         <Popover.Content
           side="bottom"
@@ -203,7 +218,8 @@ function ValueCell({
     return <span className="text-violet-700">{value.text}</span>;
   }
   if (value.kind === "ref") {
-    return <Tag fid={value.fid} nodes={nodes} handlers={handlers} />;
+    // Inline-expanded ref → select-only; collapsed repeat / cyclic ref → popover.
+    return <Tag fid={value.fid} nodes={nodes} handlers={handlers} popover={!value.inline} />;
   }
   if (value.kind === "set") {
     return (
@@ -213,7 +229,8 @@ function ValueCell({
           <Fragment key={i}>
             {i > 0 && <span className="text-slate-300">, </span>}
             {isFRef(member) ? (
-              <Tag fid={member.$ref} nodes={nodes} handlers={handlers} />
+              // Set members are never expanded inline → always a popover chip.
+              <Tag fid={member.$ref} nodes={nodes} handlers={handlers} popover />
             ) : (
               <span className="text-violet-700">{String(member)}</span>
             )}

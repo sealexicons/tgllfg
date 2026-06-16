@@ -111,6 +111,12 @@ export type CNodeModel = {
      * Equations
      */
     equations?: Array<string>;
+    /**
+     * Gloss
+     *
+     * The terminal's licensing lexical gloss (the root's English gloss), or null on non-terminals and glossless word classes (particles / pronouns / unknowns). Lets the inspector gloss every terminal — including verbs, which carry no LEMMA equation — without a separate /lex/search lookup.
+     */
+    gloss?: string | null;
 };
 
 /**
