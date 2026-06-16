@@ -213,10 +213,17 @@ def register_rules(rules: list[Rule]) -> None:
                 f"PART[LINK={link}]",
                 "V[VOICE=OV, CAUS=NONE]",
             ],
-            _eqs(
+            # Head is the V (↓3), NOT the DAT-PRON (↓1). The prior `_eqs`
+            # percolated the five verb feats from ↓1 — a pronoun with none
+            # of them — leaving the RC body's PRED/VOICE/ASPECT empty and
+            # the verb's content dropped. `(↑) = ↓3` (the equation this
+            # rule's own header comment specifies) head-shares the verb so
+            # the RC predicate is real; the DAT-PRON is the OBJ-AGENT actor.
+            [
+                "(↑) = ↓3",
                 "(↑ OBJ-AGENT) = ↓1",
                 "(↑ SUBJ) = (↑ REL-PRO)",
-            ),
+            ],
         ))
 
 
@@ -307,10 +314,13 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             "S_GAP",
             ["S_GAP", f"PP[TIME_FRAME={tf_val}]"],
-            _eqs(
+            # Head-share on the inner S_GAP — NOT `_eqs`. The S_GAP already
+            # carries the verb feats via `(↑) = ↓1`; verb-percolation here
+            # is redundant (kept off for consistency with the S-level rule).
+            [
                 "(↑) = ↓1",
                 "↓2 ∈ (↑ ADJUNCT)",
-            ),
+            ],
         ))
 
 
@@ -2127,7 +2137,12 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "AdvP",
         ["ADV"],
-        _eqs("(↑) = ↓1"),
+        # Plain head-share — NOT `_eqs`. An ADV carries no verb features,
+        # so routing through verb-percolation would auto-vivify empty
+        # PRED/VOICE/ASPECT/MOOD/LEX-ASTRUCT on every fronted AdvP's
+        # TOPIC / ADJUNCT (see cfg/_helpers.py). `(↑) = ↓1` already shares
+        # the ADV's real feats (LEMMA, ADV_TYPE, DEIXIS_TIME, ...).
+        ["(↑) = ↓1"],
     ))
 
     # --- Phase 9.W Cluster A/H: compound TIME AdvP -----------------
@@ -2162,13 +2177,14 @@ def register_rules(rules: list[Rule]) -> None:
             "ADV[ADV_TYPE=TIME]",
             "NP[CASE=GEN]",
         ],
-        _eqs(
+        [
+            # Head-share — NOT `_eqs` (head is an ADV, not a verb).
             "(↑) = ↓1",
             "(↑ TIME_N) = ↓2",
             "(↓1 ADV_TYPE) =c 'TIME'",
             "(↓2 CASE) =c 'GEN'",
             "(↓2 SEM_CLASS) =c 'TIME'",
-        ),
+        ],
     ))
 
     # PP: PREP + NP[CASE=DAT]. The compound prepositions in
@@ -2206,10 +2222,12 @@ def register_rules(rules: list[Rule]) -> None:
         rules.append(Rule(
             f"PP[PREP_TYPE={prep_type}]",
             [f"PREP[PREP_TYPE={prep_type}]", "NP[CASE=DAT]"],
-            _eqs(
+            # Head-share on the PREP — NOT `_eqs` (a PREP carries no verb
+            # feats; verb-percolation would empty-vivify on PP ADJUNCTs).
+            [
                 "(↑) = ↓1",
                 "(↑ OBJ) = ↓2",
-            ),
+            ],
         ))
 
     # --- Phase 10.J.post-12.10: bilang N (bare-N role complement) -----
@@ -2251,19 +2269,21 @@ def register_rules(rules: list[Rule]) -> None:
     rules.append(Rule(
         "PP[PREP_TYPE=ROLE]",
         ["PREP[PREP_TYPE=ROLE]", "N"],
-        _eqs(
+        # Head-share on the PREP — NOT `_eqs` (see the sa-NP PP rules above).
+        [
             "(↑) = ↓1",
             "(↑ OBJ) = ↓2",
-        ),
+        ],
     ))
     rules.append(Rule(
         "PP[PREP_TYPE=ROLE]",
         ["PREP[PREP_TYPE=ROLE]", "N", "NP[CASE=GEN]"],
-        _eqs(
+        # Head-share on the PREP — NOT `_eqs` (see the sa-NP PP rules above).
+        [
             "(↑) = ↓1",
             "(↑ OBJ) = ↓2",
             "(↓2 POSS) = ↓3",
-        ),
+        ],
     ))
 
     # ay-fronting an AdvP. The fronted phrase is BOTH the matrix

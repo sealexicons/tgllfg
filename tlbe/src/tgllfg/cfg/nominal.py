@@ -38,7 +38,6 @@ whole Commit 22). Promoted from a local in the original cardinal
 section to a module-level constant per the plan's risk note.
 """
 
-from ._helpers import _eqs
 from .grammar import Rule
 
 # Used by six NP-modifier rule groups — promoted from a local
@@ -485,10 +484,14 @@ def register_rules(rules: list[Rule]) -> None:
                 f"PART[LINK={link}]",
                 "DET[CASE=NOM, DEM]",
             ],
-            _eqs(
+            [
+                # Head-share only — `(↑) = ↓1` already shares the head NP's
+                # real feats (PRED included). NOT `_eqs`: the head is an NP,
+                # not a verb, so verb-percolation would auto-vivify empty
+                # PRED/VOICE/ASPECT/MOOD/LEX-ASTRUCT (see cfg/_helpers.py).
                 "(↑) = ↓1",
                 "(↑ DEIXIS) = ↓3 DEIXIS",
-            ),
+            ],
         ))
         rules.append(Rule(
             "NP[CASE=GEN]",
@@ -497,10 +500,14 @@ def register_rules(rules: list[Rule]) -> None:
                 f"PART[LINK={link}]",
                 "ADP[CASE=GEN, DEM]",
             ],
-            _eqs(
+            [
+                # Head-share only — `(↑) = ↓1` already shares the head NP's
+                # real feats (PRED included). NOT `_eqs`: the head is an NP,
+                # not a verb, so verb-percolation would auto-vivify empty
+                # PRED/VOICE/ASPECT/MOOD/LEX-ASTRUCT (see cfg/_helpers.py).
                 "(↑) = ↓1",
                 "(↑ DEIXIS) = ↓3 DEIXIS",
-            ),
+            ],
         ))
         rules.append(Rule(
             "NP[CASE=DAT]",
@@ -509,10 +516,14 @@ def register_rules(rules: list[Rule]) -> None:
                 f"PART[LINK={link}]",
                 "ADP[CASE=DAT, DEM]",
             ],
-            _eqs(
+            [
+                # Head-share only — `(↑) = ↓1` already shares the head NP's
+                # real feats (PRED included). NOT `_eqs`: the head is an NP,
+                # not a verb, so verb-percolation would auto-vivify empty
+                # PRED/VOICE/ASPECT/MOOD/LEX-ASTRUCT (see cfg/_helpers.py).
                 "(↑) = ↓1",
                 "(↑ DEIXIS) = ↓3 DEIXIS",
-            ),
+            ],
         ))
 
     # --- Phase 9.X.c49: cross-case post-modifier DEM (NOM-form on non-NOM NP) ---
@@ -539,10 +550,14 @@ def register_rules(rules: list[Rule]) -> None:
                 f"PART[LINK={link}]",
                 "DET[CASE=NOM, DEM]",
             ],
-            _eqs(
+            [
+                # Head-share only — `(↑) = ↓1` already shares the head NP's
+                # real feats (PRED included). NOT `_eqs`: the head is an NP,
+                # not a verb, so verb-percolation would auto-vivify empty
+                # PRED/VOICE/ASPECT/MOOD/LEX-ASTRUCT (see cfg/_helpers.py).
                 "(↑) = ↓1",
                 "(↑ DEIXIS) = ↓3 DEIXIS",
-            ),
+            ],
         ))
         rules.append(Rule(
             "NP[CASE=DAT]",
@@ -551,10 +566,14 @@ def register_rules(rules: list[Rule]) -> None:
                 f"PART[LINK={link}]",
                 "DET[CASE=NOM, DEM]",
             ],
-            _eqs(
+            [
+                # Head-share only — `(↑) = ↓1` already shares the head NP's
+                # real feats (PRED included). NOT `_eqs`: the head is an NP,
+                # not a verb, so verb-percolation would auto-vivify empty
+                # PRED/VOICE/ASPECT/MOOD/LEX-ASTRUCT (see cfg/_helpers.py).
                 "(↑) = ↓1",
                 "(↑ DEIXIS) = ↓3 DEIXIS",
-            ),
+            ],
         ))
 
 

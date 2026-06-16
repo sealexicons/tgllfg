@@ -22,6 +22,19 @@ Currently exports:
   rule-specific extras passed by the caller. Used 100+ times in the
   Phase 4 / 5 / 5f rule corpus; the only contract is that ``↓1`` is
   the verb.
+
+**Contract — ``↓1`` must be the verb.** ``_eqs`` is for V-initial clausal
+rules only. A head-sharing *non-verb* lift (``AdvP → ADV``, ``PP → PREP
+NP``, the post-modifier-DEM ``NP → NP PART DET[DEM]`` family, ``S_GAP →
+S_GAP PP``) already unifies the daughter onto the matrix via ``(↑) = ↓1``,
+which shares every feature the daughter actually carries. Routing such a
+rule through ``_eqs`` then *also* copies the five verb features from a
+daughter that has none of them — and ``(↑ PRED) = ↓1 PRED`` against an
+undefined source auto-vivifies an **empty** ``PRED`` / ``VOICE`` /
+``ASPECT`` / ``MOOD`` / ``LEX-ASTRUCT`` f-node on the lifted phrase (a
+fronted ADV's TOPIC, a PP ADJUNCT, a demonstrative-marked SUBJ). Phase
+14.final.post-13 stripped ``_eqs`` from every such head-sharing lift; use
+a plain equation list there, never ``_eqs``.
 """
 
 # Equations every clausal rule emits to percolate verb features up to
