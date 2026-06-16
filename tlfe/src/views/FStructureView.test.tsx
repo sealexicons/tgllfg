@@ -107,13 +107,58 @@ describe("FStructureView", () => {
     expect(screen.getByText(/3 fragments/i)).toBeInTheDocument();
   });
 
-  it("opens a sub-structure popover when a reentrancy tag is clicked", async () => {
+  it("opens a sub-structure popover when a collapsed (repeat) ref tag is clicked", async () => {
     const { container } = render(<FStructureView result={RESULT} selected={0} />);
-    fireEvent.click(container.querySelector('[data-fs-id="f1"]')!);
+    // f1 is referenced twice: inline under f0.SUBJ (first tag), then as a
+    // collapsed repeat under f2.SUBJ (second tag). Only the collapsed one opens
+    // the sub-structure popover (the inline one is select-only — see below).
+    const tags = container.querySelectorAll('[data-fs-id="f1"]');
+    fireEvent.click(tags[1]);
     const dialog = await screen.findByRole("dialog");
     // The popover shows f1's own AVM (PRED Maria).
     expect(within(dialog).getByText("PRED")).toBeInTheDocument();
     expect(within(dialog).getByText("Maria")).toBeInTheDocument();
+  });
+
+  it("makes an inline-expanded ref select-only — no duplicate popover (post-11)", () => {
+    const { container } = render(<FStructureView result={RESULT} selected={0} />);
+    // The first f1 tag is the inline-expanded first occurrence: its PRED Maria
+    // is already shown right below it, so clicking selects but opens no popover.
+    fireEvent.click(container.querySelectorAll('[data-fs-id="f1"]')[0]);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("opens a popover for a collapsed set-member chip (post-11)", async () => {
+    // Set members (CONJUNCTS / APP / ADJ …) are never expanded inline, so each
+    // chip opens its own sub-structure in a popover.
+    const setResult: ParseResponse = {
+      text: "x",
+      parses: [
+        {
+          id: "p0",
+          c_structure: { root: "c0", nodes: { c0: { id: "c0", label: "S", children: [] } } },
+          f_structure: {
+            root: "f0",
+            nodes: {
+              f0: {
+                id: "f0",
+                feats: { COORD: "AND", CONJUNCTS: [{ $ref: "f1" }, { $ref: "f2" }] },
+              },
+              f1: { id: "f1", feats: { PRED: "aso" } },
+              f2: { id: "f2", feats: { PRED: "pusa" } },
+            },
+          },
+          a_structure: { pred: "X", roles: [], mapping: {} },
+          diagnostics: [],
+        },
+      ],
+      fragments: [],
+      meta: { n_best: 5, parse_count: 1, fragment_count: 0 },
+    };
+    const { container } = render(<FStructureView result={setResult} selected={0} />);
+    fireEvent.click(container.querySelector('[data-fs-id="f1"]')!);
+    const dialog = await screen.findByRole("dialog");
+    expect(within(dialog).getByText("aso")).toBeInTheDocument();
   });
 
   it("reports the clicked f-node id via onSelectNode", () => {
@@ -127,7 +172,8 @@ describe("FStructureView", () => {
 
   it("makes a singly-referenced scalar ref clickable (post-10)", () => {
     // f0.SUBJ → f1 referenced exactly once: previously inline-only (no chip),
-    // now a chip so the scalar GF is selectable / openable like any other node.
+    // now a chip so the scalar GF is selectable (post-11 keeps this inline ref
+    // select-only — no popover, since the node is already expanded below).
     const result: ParseResponse = {
       text: "x",
       parses: [
