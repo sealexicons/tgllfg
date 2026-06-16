@@ -12,7 +12,7 @@ grouped by base non-terminal. The grammar is V-initial; see
 rationale and [`architecture.md`](architecture.md) for where
 c-structure sits in the pipeline.
 
-**875 rules across 86 labelled non-terminals (34 base categories).** Equations use `↑` (the mother
+**877 rules across 86 labelled non-terminals (34 base categories).** Equations use `↑` (the mother
 f-structure) and `↓i` (the *i*-th daughter, 1-based); `=c` is a
 constraining equation, `¬` negation / absence, `∈` set membership.
 A trailing `[budget=N]` is a Phase 10.I per-span CNode-emission cap.
@@ -40,7 +40,7 @@ the `test_grammar_doc_sync` test also fails if this file drifts.
 | `PRON` | 14 |
 | `Q` | 2 |
 | `QualityN` | 1 |
-| `S` | 361 |
+| `S` | 363 |
 | `S_AY_COMMENT` | 2 |
 | `S_DECL_COMP` | 1 |
 | `S_GAP` | 34 |
@@ -58,7 +58,7 @@ the `test_grammar_doc_sync` test also fails if this file drifts.
 | `S_XCOMP_BARE_COORD` | 4 |
 | `SubordClause` | 22 |
 | `TimeAdv` | 1 |
-| **Total** | **875** |
+| **Total** | **877** |
 
 ## ADJ
 
@@ -4023,6 +4023,20 @@ S[Q_TYPE=TAG] → S PART[NEG_TAG] PART[QUESTION, CLITIC_CLASS=2P]
     (↑ Q_TYPE) = 'TAG'
     (↓2 NEG_TAG) =c true
     (↓3 QUESTION) =c true
+
+S[Q_TYPE=TAG] → S PUNCT[PUNCT_CLASS=COMMA] PART[NEG_TAG, QUESTION]
+    (↑) = ↓1
+    ↓3 ∈ (↑ ADJ)
+    (↑ Q_TYPE) = 'TAG'
+    (↓3 NEG_TAG) =c true
+    (↓3 QUESTION) =c true
+
+S[Q_TYPE=TAG] → S PART[NEG_TAG, QUESTION]
+    (↑) = ↓1
+    ↓2 ∈ (↑ ADJ)
+    (↑ Q_TYPE) = 'TAG'
+    (↓2 NEG_TAG) =c true
+    (↓2 QUESTION) =c true
 
 S[Q_TYPE=WH] → ADV[WH] S
     (↑) = ↓2

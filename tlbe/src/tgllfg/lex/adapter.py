@@ -16,6 +16,7 @@ takes an ISO code and projects only that language's rows.
 """
 
 from tgllfg.lex.cache import LexCache
+from tgllfg.morph.loader import load_mwes
 from tgllfg.morph.paradigms import (
     MorphData,
     Operation,
@@ -127,6 +128,9 @@ def cache_to_morph_data(cache: LexCache, iso_code: str = "tgl") -> MorphData:
         particles=particles,
         pronouns=pronouns,
         sandhi_rules=sandhi_rules,
+        # MWEs are a small static inventory (not DB-seeded); read them from the
+        # same data/tgl/mwe.yaml the YAML backend uses.
+        mwes=load_mwes(),
     )
 
 

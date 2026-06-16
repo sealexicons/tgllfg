@@ -300,19 +300,21 @@ class TestPhase9qOutOfScope:
         9.X.c3 X-Y reduplication tokenizer rejoin
         (``manaka-naka`` → ``manakanaka``).
 
-        Pin flipped from ``== 0`` to ``== 2``: the two parses
-        correspond to PP-attachment ambiguity introduced by
-        9.X.c8 (NP-internal sa-PP modifier creates one extra
-        reading where ``sa tag-init`` attaches as ADJUNCT on
-        the head N of the post-ay clause's SUBJ, alongside the
-        canonical topic-adjunct reading)."""
+        Pin: ``== 1`` (was ``== 2``). The 9.X.c8 NP-internal sa-PP
+        modifier reading and the canonical topic-adjunct reading are a
+        *c-structure* attachment ambiguity that neutralizes in the
+        f-structure — ``sa tag-init`` lands in the matrix ``ADJ`` set
+        either way, so the two parses carry identical f-structures. The
+        Phase 14.final.post-12 solve-path f-structure dedup collapses
+        them to one."""
         from tgllfg.core.pipeline import parse_text
         parses = parse_text(
             "Sa tag-init ay manaka-naka lamang ang ulan.", n_best=5,
         )
-        assert len(parses) == 2, (
-            f"expected 2 parses (topic-adjunct + NP-internal "
-            f"sa-PP modifier ambiguity); got {len(parses)}"
+        assert len(parses) == 1, (
+            f"expected 1 parse (the topic-adjunct + NP-internal sa-PP "
+            f"c-structure ambiguity neutralizes in f-structure); "
+            f"got {len(parses)}"
         )
 
     def test_sa_wh_cleft(self) -> None:

@@ -445,6 +445,11 @@ class Analyzer:
             or norm in idx.nouns
         )
 
+    def multiword_norms(self) -> set[str]:
+        """The lowercased joined norms of every registered MWE, for the
+        :func:`tgllfg.text.merge_multiword_compounds` pre-pass to recognize."""
+        return {mwe.norm for mwe in self._data.mwes}
+
     # --- Index construction -----------------------------------------------
 
     def _build_index(self) -> None:
@@ -644,6 +649,29 @@ class Analyzer:
                 # here and produces ``tigisa`` / ``tigdalawa`` /
                 # etc., indexed into the particles table.
                 self._index_paradigm_via_base_pos(r)
+
+        # Phase 14.final.post-12: index each fixed multi-word expression under
+        # its joined norm (``oras pilipino``, ``parang kailan lang``), routed to
+        # the POS-appropriate table. The pre-parse ``merge_multiword_compounds``
+        # pass collapses the surface span into one token carrying this norm, so
+        # ``analyze_one``'s table lookup finds the MWE analysis directly.
+        for mwe in self._data.mwes:
+            mwe_feats: dict[str, object] = dict(mwe.feats)
+            mwe_feats.setdefault("LEMMA", mwe.surface)
+            mwe_lemma = mwe_feats.get("LEMMA", mwe.surface)
+            if not isinstance(mwe_lemma, str):
+                mwe_lemma = mwe.surface
+            mwe_analysis = MorphAnalysis(
+                lemma=mwe_lemma, pos=mwe.pos, feats=mwe_feats, gloss=mwe.gloss,
+            )
+            if mwe.pos == "NOUN":
+                self._index.nouns.setdefault(mwe.norm, []).append(mwe_analysis)
+            elif mwe.pos == "ADJ":
+                self._index.adjectives.setdefault(mwe.norm, []).append(mwe_analysis)
+            elif mwe.pos in ("VERB", "V"):
+                self._index.verb_forms.setdefault(mwe.norm, []).append(mwe_analysis)
+            else:  # ADV / PART / DET / Q / … → the particles table
+                self._index.particles.setdefault(mwe.norm, []).append(mwe_analysis)
 
     def _index_pronoun_paradigms(self, pn) -> None:  # type: ignore[no-untyped-def]
         """Phase 5n.C.3 Commit 5: iterate paradigm cells with

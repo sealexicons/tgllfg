@@ -4086,6 +4086,51 @@ def register_rules(rules: list[Rule]) -> None:
         ],
     ))
 
+    # --- Phase 14.final.post-12: one-token grammaticalized tag `diba` ----
+    #
+    # ``Maganda ang babae, diba?``   "The woman is beautiful, isn't she?"
+    # ``Maganda ang babae diba?``    (no-comma colloquial variant)
+    #
+    # ``diba`` is the univerbated one-token tag question (``di`` + ``ba``,
+    # fully grammaticalized). It carries BOTH NEG_TAG and QUESTION on a
+    # single PART (particles.yaml), so these two rules mirror the two-token
+    # ``di ba?`` rules above with one tag daughter instead of two. The comma
+    # form consumes the ``PUNCT[PUNCT_CLASS=COMMA]`` boundary daughter
+    # (syncategorematic — no equation references it); the no-comma form is the
+    # bare colloquial variant. Same ``Q_TYPE=TAG`` matrix + tag-into-ADJ
+    # attachment as the two-token construction. The ``NEG_TAG, QUESTION``
+    # pattern is unique to ``diba`` (bare ``di`` is NEG_TAG only, ``ba`` is
+    # QUESTION+CLITIC_CLASS=2P only), so neither spuriously satisfies it.
+    rules.append(Rule(
+        "S[Q_TYPE=TAG]",
+        [
+            "S",
+            "PUNCT[PUNCT_CLASS=COMMA]",
+            "PART[NEG_TAG, QUESTION]",
+        ],
+        [
+            "(↑) = ↓1",
+            "↓3 ∈ (↑ ADJ)",
+            "(↑ Q_TYPE) = 'TAG'",
+            "(↓3 NEG_TAG) =c true",
+            "(↓3 QUESTION) =c true",
+        ],
+    ))
+    rules.append(Rule(
+        "S[Q_TYPE=TAG]",
+        [
+            "S",
+            "PART[NEG_TAG, QUESTION]",
+        ],
+        [
+            "(↑) = ↓1",
+            "↓2 ∈ (↑ ADJ)",
+            "(↑ Q_TYPE) = 'TAG'",
+            "(↓2 NEG_TAG) =c true",
+            "(↓2 QUESTION) =c true",
+        ],
+    ))
+
 
     # --- Phase 5i Commit 4: adverbial wh fronting ----------------
     #
